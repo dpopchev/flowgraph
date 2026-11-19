@@ -76,7 +76,7 @@ help: ## Show this help
 ### Environment
 # ------------------------------------------------------------------------------
 
-# uv runs the board checker (a PEP 723 script) with no project of this repo.
+# uv is always run through $(UV), never bare.
 UV := uv
 
 # Directory convention (rules/makefile.md -> Directories):
@@ -119,15 +119,15 @@ DELIVERABLES :=
 include $(wildcard mk/*.mk)
 
 .PHONY: clean
-clean: $(CLEANS) ## Run every clean -- inputs, keys, settings, scratch, .board/ .venv/ untouched
-	$(call log_done,cleaned: $(CLEANS) -- inputs$(comma) keys$(comma) settings$(comma) scratch$(comma) .board/ and .venv/ untouched)
+clean: $(CLEANS) ## Run every clean -- inputs, keys, settings, scratch, .venv/ untouched
+	$(call log_done,cleaned: $(CLEANS) -- inputs$(comma) keys$(comma) settings$(comma) scratch and .venv/ untouched)
 
 # ------------------------------------------------------------------------------
 ### Quality
 # ------------------------------------------------------------------------------
 
 .PHONY: check
-check: board-check $(CHECKS) ## Run every check -- the board and each layer
+check: $(CHECKS) ## Run every check -- each layer
 	$(call log_done,all checks passed)
 
 .PHONY: deliverables
@@ -137,45 +137,3 @@ ifeq ($(strip $(DELIVERABLES)),)
 else
 	$(call log_done,deliverables built: $(DELIVERABLES))
 endif
-
-# ------------------------------------------------------------------------------
-### Board
-# ------------------------------------------------------------------------------
-
-# The work record lives in .board/ (rules/board.md); its checker is the board
-# skill's PEP 723 script, run through uv so no project dependency is needed.
-# Transitions take arguments a fixed target cannot carry -- run them ad hoc:
-#   $(BOARD) move T-032 done --evidence "commit abc1234; make check PASS"
-#   $(BOARD) block W-002 --reason "..." --waiting-on W-006
-#   $(BOARD) unblock W-002 --why "..." | note T-032 "..." | archive E-001
-BOARD ?= $(UV) run $(HOME)/.claude/skills/board/scripts/board.py
-
-# .board/ may be tracked or gitignored (rules/board.md): a checkout without it --
-# a fresh clone, CI -- warns once and passes instead of failing every check.
-HAS_BOARD = $(wildcard .board/board.toml)
-NO_BOARD  := no board in this checkout -- .board/ is local or gitignored
-
-.PHONY: board-check
-board-check: ## Validate .board/ with the checker's rules
-	$(if $(HAS_BOARD),@$(BOARD) check)
-	$(if $(HAS_BOARD),$(call log_done,board well-typed),$(call log_warn,$(NO_BOARD)))
-
-.PHONY: board-status
-board-status: ## Show the open path and blocked items
-	$(if $(HAS_BOARD),@$(BOARD) status)
-	$(if $(HAS_BOARD),$(call log_done,board status shown),$(call log_warn,$(NO_BOARD)))
-
-.PHONY: board-next
-board-next: ## Show the current and next item per level
-	$(if $(HAS_BOARD),@$(BOARD) next)
-	$(if $(HAS_BOARD),$(call log_done,board next shown),$(call log_warn,$(NO_BOARD)))
-
-.PHONY: board-knowledge
-board-knowledge: ## List open questions and undistilled facts
-	$(if $(HAS_BOARD),@$(BOARD) knowledge)
-	$(if $(HAS_BOARD),$(call log_done,board knowledge listed),$(call log_warn,$(NO_BOARD)))
-
-.PHONY: board-render
-board-render: board-check ## Regenerate .board/BOARD.md and the optional views
-	$(if $(HAS_BOARD),@$(BOARD) render)
-	$(if $(HAS_BOARD),$(call log_done,board views rendered),$(call log_warn,$(NO_BOARD)))

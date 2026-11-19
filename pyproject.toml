@@ -22,3 +22,25 @@ dev = [
     "pytest>=9.2.0",
     "ruff>=0.17.6",
 ]
+
+# Tool residuals live in local/python/ (mk/python.mk): a tool with a cache key is
+# pointed there here, a tool that only reads the environment in mk/python.mk.
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "src"]
+addopts = "-ra --doctest-modules --import-mode=importlib --strict-markers"
+cache_dir = "local/python/pytest"
+
+[tool.ruff]
+line-length = 100
+cache-dir = "local/python/ruff"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N", "SIM", "RUF"]
+
+[tool.pyright]
+exclude = ["**/__pycache__", ".venv", "build", "local"]
+typeCheckingMode = "standard"
+reportImportCycles = "error"
+venvPath = "."
+venv = ".venv"

@@ -11,12 +11,12 @@ PYTHON_VERSION = $(shell cat .python-version)
 
 RUN := $(UV) run
 
-# Every python residual lives in $(PYTHON_LOCAL), so the tree never shows a cache
-# and clean-python removes one directory. A tool with a pyproject key is pointed
+# Every python residual lives in $(CACHE), so the tree never shows a cache and
+# clean-python removes one directory. A tool with a pyproject key is pointed
 # there in pyproject.toml (pytest, ruff); a tool that only reads the environment
 # gets its export here.
-PYTHON_LOCAL := $(LOCAL)/python
-export PYTHONPYCACHEPREFIX := $(abspath $(PYTHON_LOCAL))/pycache
+CACHE := $(LOCAL)/cache
+export PYTHONPYCACHEPREFIX := $(abspath $(CACHE))/pycache
 
 CHECKS += lint typecheck test
 CLEANS += clean-python
@@ -62,6 +62,6 @@ test-quick: ## Pytest stopping at the first failure
 	$(call log_done,quick tests passed)
 
 .PHONY: clean-python
-clean-python: ## Remove local/python/ -- the python tool caches
-	@rm -rf $(PYTHON_LOCAL)
-	$(call log_done,removed $(PYTHON_LOCAL)/)
+clean-python: ## Remove local/cache/ -- the python tool caches
+	@rm -rf $(CACHE)
+	$(call log_done,removed $(CACHE)/)

@@ -20,6 +20,7 @@ build-backend = "uv_build"
 dev = [
     "pyright>=1.1.414",
     "pytest>=9.2.0",
+    "pytest-cov>=7.1.0",
     "ruff>=0.17.6",
 ]
 
@@ -30,6 +31,22 @@ dev = [
 testpaths = ["tests", "src"]
 addopts = "-ra --doctest-modules --import-mode=importlib --strict-markers"
 cache_dir = "local/cache/pytest"
+
+# Coverage measures only when asked (pytest --cov). Its data file is a residual
+# in local/cache/; a report a person reads is an end product under build/reports/.
+[tool.coverage.run]
+source = ["src"]
+branch = true
+data_file = "local/cache/coverage/data"
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.coverage.html]
+directory = "build/reports/coverage"
+
+[tool.coverage.xml]
+output = "build/reports/coverage.xml"
 
 [tool.ruff]
 line-length = 100

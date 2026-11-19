@@ -60,9 +60,11 @@ define _pytest
 	elif [ $$rc -ne 0 ]; then exit $$rc; fi
 endef
 
+# Every full run measures coverage (the table, missing lines included) and lists
+# the 10 slowest tests; pytest hides a test under 5 ms from that list.
 .PHONY: test
-test: ## Pytest with doctests
-	$(call _pytest,)
+test: ## Pytest with doctests, coverage and the 10 slowest
+	$(call _pytest,--cov --durations=10)
 	$(call log_done,tests passed)
 
 .PHONY: test-quick

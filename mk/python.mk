@@ -15,8 +15,15 @@ RUN := $(UV) run
 # clean-python removes one directory. A tool with a pyproject key is pointed
 # there in pyproject.toml (pytest, ruff); a tool that only reads the environment
 # gets its export here.
-CACHE := $(LOCAL)/cache
-export PYTHONPYCACHEPREFIX := $(abspath $(CACHE))/pycache
+CACHE   := $(LOCAL)/cache
+PYCACHE := $(abspath $(CACHE))/pycache
+export PYTHONPYCACHEPREFIX := $(PYCACHE)
+
+# A bare `uv run` reads no Makefile and uv has no project setting for the
+# environment, so sync also writes $(PYCACHE_PTH) into the venv: a line Python
+# runs at every start, setting the same prefix. uv sync keeps the file; a
+# recreated .venv loses it until the next make sync.
+PYCACHE_PTH := pycache_prefix.pth
 
 CHECKS += lint typecheck test
 CLEANS += clean-python
@@ -24,7 +31,9 @@ CLEANS += clean-python
 .PHONY: sync
 sync: .python-version pyproject.toml | $(LOCAL) ## Create or refresh .venv and uv.lock
 	@$(UV) sync
-	$(call log_done,environment synced -- python $(PYTHON_VERSION)$(comma) uv.lock current)
+	@site="$$($(RUN) --no-sync python -c 'import sysconfig; print(sysconfig.get_path("purelib"))')"; \
+	  printf 'import sys; sys.pycache_prefix = "%s"\n' "$(PYCACHE)" > "$${site}/$(PYCACHE_PTH)"
+	$(call log_done,environment synced -- python $(PYTHON_VERSION)$(comma) uv.lock current$(comma) bytecode to $(CACHE)/pycache)
 
 .PHONY: lint
 lint: ## Ruff check without fixes

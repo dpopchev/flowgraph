@@ -1,6 +1,7 @@
 """The criterion of the help menu: `fgraph --help` and `fgraph -h` print it, no record needed."""
 
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
@@ -21,7 +22,16 @@ class Outcome:
 @pytest.fixture(params=[["--help"], ["-h"]], ids=["--help", "-h"])
 def outcome(request: pytest.FixtureRequest) -> Outcome:
     written: list[str] = []
-    status = run(request.param, Path("/work"), lambda _: False, written.append, written.append)
+    status = run(
+        request.param,
+        Path("/work"),
+        lambda _: False,
+        written.append,
+        written.append,
+        read_story_rows=lambda _: [],
+        write_story=lambda _record, _story: None,
+        now=lambda: datetime(2026, 1, 1, tzinfo=UTC),
+    )
     return Outcome(status, "".join(written))
 
 

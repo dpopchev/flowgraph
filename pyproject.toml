@@ -7,7 +7,10 @@ authors = [
     { name = "dimitar popchev", email = "dpopchev@gmail.com" }
 ]
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "pydantic>=2.14.4",
+    "tomli-w>=1.2.0",
+]
 
 [project.scripts]
 fgraph = "flowgraph.cli:main"

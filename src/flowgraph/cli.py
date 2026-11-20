@@ -1,17 +1,39 @@
-"""The `fgraph` command line: it locates the record, and with no command yet shows the help menu."""
+"""The `fgraph` command line: it locates the record and runs the command on it.
+
+Without a command it shows the help menu and names the record.
+"""
 
 import argparse
 import sys
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Collection, Iterable, Sequence
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import assert_never
 
+from flowgraph import story
 from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, locate
+from flowgraph.story import (
+    EmptyPartError,
+    Now,
+    ReadStoryRows,
+    StoryRow,
+    WriteStory,
+    add_story,
+    story_id_text,
+)
 
 DESCRIPTION = "flowgraph keeps the record of a project's work."
 
 # Write text to a stream; what it returns is ignored, so a stream's write and a list's append fit.
 Write = Callable[[str], object]
+
+# The buckets of the flow in their order, each with the states of an item shown in it. No state
+# leads to InProgress or Completed yet.
+BUCKETS: Sequence[tuple[str, Collection[str]]] = (
+    ("Backlog", frozenset({"backlog"})),
+    ("InProgress", frozenset()),
+    ("Completed", frozenset()),
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -32,11 +54,46 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="PATH",
         help="the record directory, instead of .fgraph/ or else fgraph/ in this directory",
     )
+    commands = parser.add_subparsers(dest="command", metavar="COMMAND")
+    add = commands.add_parser("add", help="add an item to the record", add_help=False, color=False)
+    kinds = add.add_subparsers(dest="kind", metavar="KIND", required=True)
+    story = kinds.add_parser(
+        "story", help="new behavior, with its one Given / When / Then", add_help=False, color=False
+    )
+    story.add_argument("title", metavar="TITLE", help="what is true once the Story is completed")
+    story.add_argument("--given", required=True, metavar="STATE", help="the initial state")
+    story.add_argument("--when", required=True, metavar="ACTION", help="the action")
+    story.add_argument("--then", required=True, metavar="STATE", help="the expected state")
+    story.add_argument("--description", default="", metavar="TEXT", help="free text, optional")
+    commands.add_parser(
+        "status", help="list the items of the record by bucket", add_help=False, color=False
+    )
     return parser
 
 
-def run(argv: Sequence[str], cwd: Path, is_dir: IsDir, write: Write, write_error: Write) -> int:
-    """Read the arguments, locate the record in cwd and return the exit status.
+def status_text(rows: Iterable[StoryRow]) -> str:
+    """The items by bucket, in the order of the flow: a heading with its count, then its items."""
+    listed = list(rows)
+    lines: list[str] = []
+    for bucket, states in BUCKETS:
+        held = [row for row in listed if row.state in states]
+        lines.append(f"{bucket} ({len(held)})\n")
+        lines.extend(f"  {row.id}  {row.title}\n" for row in held)
+    return "".join(lines)
+
+
+def run(
+    argv: Sequence[str],
+    cwd: Path,
+    is_dir: IsDir,
+    write: Write,
+    write_error: Write,
+    *,
+    read_story_rows: ReadStoryRows,
+    write_story: WriteStory,
+    now: Now,
+) -> int:
+    """Read the arguments, locate the record in cwd, run the command and return the exit status.
 
     The help option needs no record; every other call fails with 2 when there is none.
     """
@@ -47,6 +104,26 @@ def run(argv: Sequence[str], cwd: Path, is_dir: IsDir, write: Write, write_error
         return 0
     match locate(cwd, args.dir, is_dir):
         case Found(path) | Given(path):
+            if args.command == "add":
+                try:
+                    added = add_story(
+                        title=args.title,
+                        given=args.given,
+                        when=args.when,
+                        then=args.then,
+                        description=args.description,
+                        find_story_rows=lambda: read_story_rows(path),
+                        save_story=lambda new: write_story(path, new),
+                        now=now,
+                    )
+                except EmptyPartError as error:
+                    write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
+                    return 2
+                write(f"added {story_id_text(added)}\n")
+                return 0
+            if args.command == "status":
+                write(status_text(read_story_rows(path)))
+                return 0
             write(parser.format_help())
             write(f"record: {path}\n")
             return 0
@@ -64,7 +141,18 @@ def run(argv: Sequence[str], cwd: Path, is_dir: IsDir, write: Write, write_error
 
 def main() -> None:
     """Run the command in the working directory of the process, on its arguments and streams."""
-    sys.exit(run(sys.argv[1:], Path.cwd(), Path.is_dir, sys.stdout.write, sys.stderr.write))
+    sys.exit(
+        run(
+            sys.argv[1:],
+            Path.cwd(),
+            Path.is_dir,
+            sys.stdout.write,
+            sys.stderr.write,
+            read_story_rows=story.read_story_rows,
+            write_story=story.write_story,
+            now=lambda: datetime.now(UTC),
+        )
+    )
 
 
 if __name__ == "__main__":

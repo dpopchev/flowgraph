@@ -2,6 +2,7 @@
 
 from collections.abc import Collection, Sequence
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
@@ -11,6 +12,7 @@ from flowgraph.cli import run
 pytestmark = pytest.mark.functional
 
 CWD = Path("/work")
+NOW = datetime(2026, 1, 1, tzinfo=UTC)
 
 
 @dataclass(frozen=True)
@@ -27,7 +29,16 @@ def fgraph(argv: Sequence[str], *existing: str) -> Outcome:
     dirs: Collection[Path] = {CWD / name for name in existing}
     out: list[str] = []
     err: list[str] = []
-    status = run(argv, CWD, lambda path: path in dirs, out.append, err.append)
+    status = run(
+        argv,
+        CWD,
+        lambda path: path in dirs,
+        out.append,
+        err.append,
+        read_story_rows=lambda _: [],
+        write_story=lambda _record, _story: None,
+        now=lambda: NOW,
+    )
     return Outcome(status, "".join(out), "".join(err))
 
 

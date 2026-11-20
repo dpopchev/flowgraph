@@ -43,7 +43,6 @@ def fgraph(argv: Sequence[str], saved: list[Story]) -> Outcome:
     return Outcome(status, "".join(out), "".join(err))
 
 
-@pytest.mark.xfail(strict=True, reason="the add-story Story: red until its last Task")
 class TestAStoryAddedToARecordWithNoItems:
     @pytest.fixture
     def added(self) -> tuple[Outcome, Outcome]:
@@ -61,3 +60,16 @@ class TestAStoryAddedToARecordWithNoItems:
         assert added[1].out == (
             "Backlog (1)\n  ST-0001  a title\nInProgress (0)\nCompleted (0)\n"
         )
+
+
+class TestAStoryAddedWithABlankPart:
+    @pytest.fixture
+    def outcome(self) -> Outcome:
+        blank_given = [" " if word == "a state" else word for word in ADD]
+        return fgraph(blank_given, [])
+
+    def test_exits_with_two(self, outcome: Outcome) -> None:
+        assert outcome.status == 2
+
+    def test_names_the_blank_part(self, outcome: Outcome) -> None:
+        assert outcome.err.endswith("fgraph: error: given is empty\n")

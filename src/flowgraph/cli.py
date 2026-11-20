@@ -5,18 +5,35 @@ Without a command it shows the help menu and names the record.
 
 import argparse
 import sys
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Collection, Iterable, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import assert_never
 
+from flowgraph import story
 from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, locate
-from flowgraph.story import Now, ReadStoryRows, WriteStory, read_story_rows, write_story
+from flowgraph.story import (
+    EmptyPartError,
+    Now,
+    ReadStoryRows,
+    StoryRow,
+    WriteStory,
+    add_story,
+    story_id_text,
+)
 
 DESCRIPTION = "flowgraph keeps the record of a project's work."
 
 # Write text to a stream; what it returns is ignored, so a stream's write and a list's append fit.
 Write = Callable[[str], object]
+
+# The buckets of the flow in their order, each with the states of an item shown in it. No state
+# leads to InProgress or Completed yet.
+BUCKETS: Sequence[tuple[str, Collection[str]]] = (
+    ("Backlog", frozenset({"backlog"})),
+    ("InProgress", frozenset()),
+    ("Completed", frozenset()),
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -54,6 +71,17 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def status_text(rows: Iterable[StoryRow]) -> str:
+    """The items by bucket, in the order of the flow: a heading with its count, then its items."""
+    listed = list(rows)
+    lines: list[str] = []
+    for bucket, states in BUCKETS:
+        held = [row for row in listed if row.state in states]
+        lines.append(f"{bucket} ({len(held)})\n")
+        lines.extend(f"  {row.id}  {row.title}\n" for row in held)
+    return "".join(lines)
+
+
 def run(
     argv: Sequence[str],
     cwd: Path,
@@ -76,8 +104,26 @@ def run(
         return 0
     match locate(cwd, args.dir, is_dir):
         case Found(path) | Given(path):
-            if args.command is not None:
-                raise NotImplementedError(args.command)
+            if args.command == "add":
+                try:
+                    added = add_story(
+                        title=args.title,
+                        given=args.given,
+                        when=args.when,
+                        then=args.then,
+                        description=args.description,
+                        find_story_rows=lambda: read_story_rows(path),
+                        save_story=lambda new: write_story(path, new),
+                        now=now,
+                    )
+                except EmptyPartError as error:
+                    write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
+                    return 2
+                write(f"added {story_id_text(added)}\n")
+                return 0
+            if args.command == "status":
+                write(status_text(read_story_rows(path)))
+                return 0
             write(parser.format_help())
             write(f"record: {path}\n")
             return 0
@@ -102,8 +148,8 @@ def main() -> None:
             Path.is_dir,
             sys.stdout.write,
             sys.stderr.write,
-            read_story_rows=read_story_rows,
-            write_story=write_story,
+            read_story_rows=story.read_story_rows,
+            write_story=story.write_story,
             now=lambda: datetime.now(UTC),
         )
     )

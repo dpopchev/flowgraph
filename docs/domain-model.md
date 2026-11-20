@@ -156,6 +156,48 @@ under a Feature or standing alone, that is the commit on `main` that holds it.
 - A `Story`, `Bug`, `Spike` or `Upkeep` cannot start without at least one
   written Task.
 - A work item is completed only once it is on `main`.
+- Until `fgraph` wraps git, `complete` records the commit and does not check
+  it against `main`.
+
+## Ids
+
+An id is the prefix of its kind and a number counted from 1 per kind, written
+with at least four digits. `fgraph` hands out the next free number.
+
+| Kind | Id |
+|---|---|
+| `Feature` | `F-0001` |
+| `Story` | `ST-0001` |
+| `Bug` | `B-0001` |
+| `Spike` | `SP-0001` |
+| `Upkeep` | `U-0001` |
+| `Task` | `T-0001`, unique across the record |
+
+## Persistence
+
+The record is plain TOML files tracked by git: git is its history, its backup
+and its merge tool.
+
+- One directory per kind, one file per work item with its Tasks inside it:
+  `stories/ST-0001.toml`, later `bugs/`, `spikes/`, `upkeeps/`, `features/`.
+- The file holds a `state` line naming the type it loads into and only the
+  fields that state needs. A kind never changes, so a file never moves.
+- A command loads a work item whole, changes it and saves it whole. The file
+  is validated as it is read; a write is read back before it replaces the
+  file.
+
+Who writes what, so that two branches never change the same file or hand out
+the same number:
+
+| Write | Where |
+|---|---|
+| add a work item or a Task | `main` |
+| start a work item | `main`, before its branch is made |
+| start and complete its Tasks | its branch |
+| complete the work item | `main`, after the merge |
+
+Until `fgraph` wraps git this is a convention; it cannot refuse an `add` made
+off `main`.
 
 ## Left out
 
@@ -183,8 +225,6 @@ under a Feature or standing alone, that is the commit on `main` that holds it.
 - Does a Feature have a stored state? The reading: no, its bucket is derived
   from the items it groups, and it is complete when each is Completed or
   Removed, with no evidence of its own.
-- Until `fgraph` wraps git, does `complete` only record the commit? The
-  reading: yes, and it checks that the commit is on `main` once it wraps git.
 - Does a Task also carry a check command that `fgraph` runs at `complete`?
   The reading: no, its expected output and its commit are enough.
 - Must a Story under a Feature name the Feature criterion it realizes? The
@@ -194,7 +234,6 @@ under a Feature or standing alone, that is the commit on `main` that holds it.
   must it be removed?
 - Can an item be blocked before it is started? The reading: no, only a
   started item.
-- The id prefixes: Story and Spike both start with S.
 - What can the title constructors check? A first word against a closed list
   of verbs and a named artifact can be checked; that a title is worded as an
   outcome cannot.

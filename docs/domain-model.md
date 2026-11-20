@@ -214,6 +214,10 @@ and its merge tool.
 - The file holds a `state` line naming the type it loads into and only the
   fields that state needs. The path follows from the id alone, so a file
   never moves.
+- A Task is one `[[tasks]]` table inside the file of its work item, in the
+  order written, with its own `state` line. Its parent is the file that holds
+  it, so no `parent` field is stored. The next Task id is one above the
+  highest in any file of the record.
 - Each kind reads the files of its own prefix. A file with a prefix no kind
   knows is left alone; nothing reports it yet.
 - A command loads a work item whole, changes it and saves it whole. The file

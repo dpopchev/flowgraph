@@ -4,6 +4,7 @@ from collections.abc import Collection, Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Never
 
 import pytest
 
@@ -13,6 +14,11 @@ pytestmark = pytest.mark.functional
 
 CWD = Path("/work")
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
+
+
+def never_read(*_: object) -> Never:
+    """The read of one Story, which the record lookup never asks for."""
+    raise AssertionError("no Story is read one by one here")
 
 
 @dataclass(frozen=True)
@@ -36,6 +42,9 @@ def fgraph(argv: Sequence[str], *existing: str) -> Outcome:
         out.append,
         err.append,
         read_story_rows=lambda _: [],
+        read_story=never_read,
+        read_story_detail=never_read,
+        read_task_ids=lambda _: [],
         write_story=lambda _record, _story: None,
         now=lambda: NOW,
     )

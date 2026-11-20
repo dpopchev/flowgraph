@@ -15,7 +15,10 @@ from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, locate
 from flowgraph.story import (
     EmptyPartError,
     Now,
+    ReadStory,
+    ReadStoryDetail,
     ReadStoryRows,
+    ReadTaskIds,
     StoryRow,
     WriteStory,
     add_story,
@@ -65,6 +68,17 @@ def build_parser() -> argparse.ArgumentParser:
     story.add_argument("--when", required=True, metavar="ACTION", help="the action")
     story.add_argument("--then", required=True, metavar="STATE", help="the expected state")
     story.add_argument("--description", default="", metavar="TEXT", help="free text, optional")
+    task = kinds.add_parser(
+        "task", help="a deliverable of a Story, with its output", add_help=False, color=False
+    )
+    task.add_argument("title", metavar="TITLE", help="a verb, the artifact and its target state")
+    task.add_argument("--parent", required=True, metavar="ID", help="the Story it is written for")
+    task.add_argument("--output", required=True, metavar="TEXT", help="the expected output")
+    task.add_argument("--description", default="", metavar="TEXT", help="free text, optional")
+    show = commands.add_parser(
+        "show", help="show a Story with its Tasks", add_help=False, color=False
+    )
+    show.add_argument("id", metavar="ID", help="the id of the Story")
     commands.add_parser(
         "status", help="list the items of the record by bucket", add_help=False, color=False
     )
@@ -90,6 +104,9 @@ def run(
     write_error: Write,
     *,
     read_story_rows: ReadStoryRows,
+    read_story: ReadStory,
+    read_story_detail: ReadStoryDetail,
+    read_task_ids: ReadTaskIds,
     write_story: WriteStory,
     now: Now,
 ) -> int:
@@ -104,6 +121,10 @@ def run(
         return 0
     match locate(cwd, args.dir, is_dir):
         case Found(path) | Given(path):
+            if args.command == "add" and args.kind == "task":
+                raise NotImplementedError("fgraph add task")
+            if args.command == "show":
+                raise NotImplementedError("fgraph show")
             if args.command == "add":
                 try:
                     added = add_story(
@@ -149,6 +170,9 @@ def main() -> None:
             sys.stdout.write,
             sys.stderr.write,
             read_story_rows=story.read_story_rows,
+            read_story=story.read_story,
+            read_story_detail=story.read_story_detail,
+            read_task_ids=story.read_task_ids,
             write_story=story.write_story,
             now=lambda: datetime.now(UTC),
         )

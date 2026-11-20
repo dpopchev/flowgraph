@@ -29,7 +29,17 @@ dev = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "src"]
-addopts = "-ra --doctest-modules --import-mode=importlib --strict-markers"
+# pytester: tests/test_conftest.py drives the conftest in throwaway sessions.
+addopts = "-ra --doctest-modules --import-mode=importlib --strict-markers -p pytester"
+# Every test carries exactly one category marker.
+markers = [
+  "edge: primitives to domain types and back; an adapter against a local resource",
+  "model: an aggregate's rules and moves; a value object's constructor",
+  "command: load-change-save with injected load, save and find",
+  "view: a query or projection over primitives",
+  "functional: the work item's criterion",
+  "integration: the real external system; never in make test or make check",
+]
 cache_dir = "local/cache/pytest"
 
 # Coverage measures only when asked (pytest --cov). Its data file is a residual

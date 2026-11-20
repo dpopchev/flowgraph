@@ -3,7 +3,7 @@
 import re
 import tomllib
 from collections.abc import Callable, Collection
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 from pathlib import Path
 from typing import Literal
@@ -218,12 +218,14 @@ def make_task_id(number: int) -> TaskId:
 
     Raises TaskIdError when the number is below 1.
     """
-    raise NotImplementedError
+    if number < 1:
+        raise TaskIdError(f"a Task id counts from 1: {number} is below 1")
+    return TaskId(number)
 
 
 def task_id_text(task_id: TaskId) -> str:
     """The id as it is written: `T-` and the number, at least four digits."""
-    raise NotImplementedError
+    return f"T-{task_id.number:04d}"
 
 
 def parse_task_id(text: str) -> TaskId:
@@ -231,12 +233,15 @@ def parse_task_id(text: str) -> TaskId:
 
     Raises TaskIdError when the text is not `T-` and a number.
     """
-    raise NotImplementedError
+    written = re.fullmatch(r"T-(\d+)", text)
+    if written is None:
+        raise TaskIdError(f"{text!r} is no Task id: it is T- and a number")
+    return make_task_id(int(written.group(1)))
 
 
 def next_task_id(taken: Collection[TaskId]) -> TaskId:
     """The next free id: one above the highest taken, the first when none is."""
-    raise NotImplementedError
+    return make_task_id(max((task_id.number for task_id in taken), default=0) + 1)
 
 
 def make_task(
@@ -246,12 +251,13 @@ def make_task(
 
     Raises EmptyPartError when the title or the expected output is blank.
     """
-    raise NotImplementedError
+    said = _said("title", title), _said("output", expected_output)
+    return Task(task_id, *said, description, created.replace(microsecond=0))
 
 
 def append_task(story: Story, task: Task) -> Story:
     """The Story with the Task written for it, after the Tasks it already has."""
-    raise NotImplementedError
+    return replace(story, tasks=(*story.tasks, task))
 
 
 def story_row(story: Story) -> StoryRow:
@@ -261,7 +267,21 @@ def story_row(story: Story) -> StoryRow:
 
 def story_detail(story: Story) -> StoryDetail:
     """The Story with its criterion and its Tasks as the plain data a view reads."""
-    raise NotImplementedError
+    return StoryDetail(
+        id=story_id_text(story.id),
+        title=story.title,
+        state="backlog",
+        description=story.description,
+        given=story.scenario.given,
+        when=story.scenario.when,
+        then=story.scenario.then,
+        tasks=[
+            TaskRow(
+                task_id_text(task.id), task.title, task.expected_output, task.description, "backlog"
+            )
+            for task in story.tasks
+        ],
+    )
 
 
 def add_story(
@@ -304,7 +324,11 @@ def add_task(
     no such Story, and EmptyPartError when the title or the expected output is blank; nothing is
     saved.
     """
-    raise NotImplementedError
+    story = load_story(parse_story_id(parent))
+    taken = [parse_task_id(text) for text in find_task_ids()]
+    task = make_task(next_task_id(taken), title, expected_output, description, now())
+    save_story(append_task(story, task))
+    return task.id
 
 
 class _CriterionFile(BaseModel):

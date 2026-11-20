@@ -36,8 +36,24 @@ directly, so it holds no Task.
 
 | Title | On | Form | Example |
 |---|---|---|---|
-| outcome | `Feature`, `Story`, `Bug`, `Spike`, `Upkeep` | what is true once it is completed | fgraph finds its record from any subdirectory |
+| outcome | `Feature`, `Story`, `Bug`, `Spike`, `Upkeep` | a directional verb, the target metric or behavior, the quantified shift or target state | Extend where fgraph finds its record from its own directory to any subdirectory |
 | output | `Task` | an imperative verb and the target artifact | Add locate() to src/flowgraph/record.py |
+
+An outcome title describes a measurable change in user behavior, business
+value or system state, never the work done to get there:
+
+```text
+[Directional verb] + [target metric or behavior] + [quantified shift or target state]
+```
+
+| Change in | Example |
+|---|---|
+| user behavior | Cut the commands a developer runs to see the Tasks of a Story from two to one |
+| business value | Raise the kinds of work a project tracks with fgraph from one to five |
+| system state | Extend where fgraph finds its record from its own directory to any subdirectory |
+
+The form is the developer's, given on 2026-11-20; the examples are the
+agent's wording.
 
 ## Acceptance criteria
 
@@ -239,5 +255,8 @@ off `main`.
 - Can an item be blocked before it is started? The reading: no, only a
   started item.
 - What can the title constructors check? A first word against a closed list
-  of verbs and a named artifact can be checked; that a title is worded as an
-  outcome cannot.
+  of verbs -- directional for an outcome, imperative for an output -- and a
+  named artifact can be checked; that the shift is measurable cannot.
+- How does the outcome form read on a `Spike`, whose work ends in a decision
+  and not in a metric? The reading: its target state is the question settled,
+  as in "Settle whether one file per item can hold the record".

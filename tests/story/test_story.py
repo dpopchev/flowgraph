@@ -20,7 +20,7 @@ CREATED = datetime(2026, 1, 1, 12, 30, 15, tzinfo=UTC)
 
 
 def test_a_blank_given_is_refused_by_name() -> None:
-    with pytest.raises(EmptyPartError, match="^given is empty$"):
+    with pytest.raises(EmptyPartError, match=r"^given is empty$"):
         make_scenario(" ", "an action", "another state")
 
 
@@ -33,7 +33,7 @@ def test_a_blank_when_or_then_is_refused_by_name(when: str, then: str, part: str
 
 
 def test_a_blank_title_is_refused_by_name() -> None:
-    with pytest.raises(EmptyPartError, match="^title is empty$"):
+    with pytest.raises(EmptyPartError, match=r"^title is empty$"):
         make_story(make_story_id(1), "", SCENARIO, "", CREATED)
 
 

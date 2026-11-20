@@ -15,11 +15,20 @@ from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, locate
 from flowgraph.story import (
     EmptyPartError,
     Now,
+    ReadStory,
+    ReadStoryDetail,
     ReadStoryRows,
+    ReadTaskIds,
+    StoryDetail,
+    StoryIdError,
+    StoryNotFoundError,
     StoryRow,
     WriteStory,
     add_story,
+    add_task,
+    parse_story_id,
     story_id_text,
+    task_id_text,
 )
 
 DESCRIPTION = "flowgraph keeps the record of a project's work."
@@ -65,6 +74,17 @@ def build_parser() -> argparse.ArgumentParser:
     story.add_argument("--when", required=True, metavar="ACTION", help="the action")
     story.add_argument("--then", required=True, metavar="STATE", help="the expected state")
     story.add_argument("--description", default="", metavar="TEXT", help="free text, optional")
+    task = kinds.add_parser(
+        "task", help="a deliverable of a Story, with its output", add_help=False, color=False
+    )
+    task.add_argument("title", metavar="TITLE", help="a verb, the artifact and its target state")
+    task.add_argument("--parent", required=True, metavar="ID", help="the Story it is written for")
+    task.add_argument("--output", required=True, metavar="TEXT", help="the expected output")
+    task.add_argument("--description", default="", metavar="TEXT", help="free text, optional")
+    show = commands.add_parser(
+        "show", help="show a Story with its Tasks", add_help=False, color=False
+    )
+    show.add_argument("id", metavar="ID", help="the id of the Story")
     commands.add_parser(
         "status", help="list the items of the record by bucket", add_help=False, color=False
     )
@@ -82,6 +102,30 @@ def status_text(rows: Iterable[StoryRow]) -> str:
     return "".join(lines)
 
 
+def show_text(detail: StoryDetail) -> str:
+    """The Story with its bucket and its criterion, then its Tasks, one fact per line.
+
+    A description is listed only when there is one.
+    """
+    bucket = next(name for name, states in BUCKETS if detail.state in states)
+    described = [f"  description  {detail.description}\n"] if detail.description else []
+    lines = [
+        f"{detail.id}  {detail.title}\n",
+        f"  bucket       {bucket}\n",
+        *described,
+        f"  given        {detail.given}\n",
+        f"  when         {detail.when}\n",
+        f"  then         {detail.then}\n",
+        f"Tasks ({len(detail.tasks)})\n",
+    ]
+    for task in detail.tasks:
+        lines.append(f"  {task.id}  {task.title}\n")
+        lines.append(f"    expected output  {task.expected_output}\n")
+        if task.description:
+            lines.append(f"    description      {task.description}\n")
+    return "".join(lines)
+
+
 def run(
     argv: Sequence[str],
     cwd: Path,
@@ -90,6 +134,9 @@ def run(
     write_error: Write,
     *,
     read_story_rows: ReadStoryRows,
+    read_story: ReadStory,
+    read_story_detail: ReadStoryDetail,
+    read_task_ids: ReadTaskIds,
     write_story: WriteStory,
     now: Now,
 ) -> int:
@@ -104,6 +151,31 @@ def run(
         return 0
     match locate(cwd, args.dir, is_dir):
         case Found(path) | Given(path):
+            if args.command == "add" and args.kind == "task":
+                try:
+                    written = add_task(
+                        parent=args.parent,
+                        title=args.title,
+                        expected_output=args.output,
+                        description=args.description,
+                        load_story=lambda story_id: read_story(path, story_id),
+                        find_task_ids=lambda: read_task_ids(path),
+                        save_story=lambda changed: write_story(path, changed),
+                        now=now,
+                    )
+                except (StoryNotFoundError, StoryIdError, EmptyPartError) as error:
+                    write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
+                    return 2
+                write(f"added {task_id_text(written)} to {args.parent}\n")
+                return 0
+            if args.command == "show":
+                try:
+                    detail = read_story_detail(path, parse_story_id(args.id))
+                except (StoryNotFoundError, StoryIdError) as error:
+                    write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
+                    return 2
+                write(show_text(detail))
+                return 0
             if args.command == "add":
                 try:
                     added = add_story(
@@ -149,6 +221,9 @@ def main() -> None:
             sys.stdout.write,
             sys.stderr.write,
             read_story_rows=story.read_story_rows,
+            read_story=story.read_story,
+            read_story_detail=story.read_story_detail,
+            read_task_ids=story.read_task_ids,
             write_story=story.write_story,
             now=lambda: datetime.now(UTC),
         )

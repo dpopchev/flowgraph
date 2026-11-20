@@ -3,12 +3,18 @@
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Never
 
 import pytest
 
 from flowgraph.cli import run
 
 pytestmark = pytest.mark.functional
+
+
+def never_read(*_: object) -> Never:
+    """The read of one Story, which the help menu never asks for."""
+    raise AssertionError("no Story is read one by one here")
 
 
 @dataclass(frozen=True)
@@ -29,6 +35,9 @@ def outcome(request: pytest.FixtureRequest) -> Outcome:
         written.append,
         written.append,
         read_story_rows=lambda _: [],
+        read_story=never_read,
+        read_story_detail=never_read,
+        read_task_ids=lambda _: [],
         write_story=lambda _record, _story: None,
         now=lambda: datetime(2026, 1, 1, tzinfo=UTC),
     )

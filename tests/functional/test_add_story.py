@@ -4,6 +4,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Never
 
 import pytest
 
@@ -26,6 +27,11 @@ class Outcome:
     err: str
 
 
+def never_read(*_: object) -> Never:
+    """The read of one Story, which these commands never ask for."""
+    raise AssertionError("no Story is read one by one here")
+
+
 def fgraph(argv: Sequence[str], saved: list[Story]) -> Outcome:
     """Run the command in CWD on a record whose stories are the ones saved so far."""
     out: list[str] = []
@@ -37,6 +43,9 @@ def fgraph(argv: Sequence[str], saved: list[Story]) -> Outcome:
         out.append,
         err.append,
         read_story_rows=lambda _: [story_row(story) for story in saved],
+        read_story=never_read,
+        read_story_detail=never_read,
+        read_task_ids=lambda _: [],
         write_story=lambda _, story: saved.append(story),
         now=lambda: NOW,
     )

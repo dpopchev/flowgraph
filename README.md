@@ -6,17 +6,17 @@ it builds the ontology of the project on the way: its terms and how they relate.
 
 ## Status
 
-Early: `fgraph` adds a Story to a record and lists the record by bucket; no
-item moves yet.
+Early: `fgraph` adds a Story to a record, writes its Tasks, shows it with
+them and lists the record by bucket; no item moves yet.
 
 | Part                            | State                                     |
 | ------------------------------- | ----------------------------------------- |
 | the `fgraph` command            | runs, prints its help menu                |
 | the wheel                       | built by `make wheel`, ships `fgraph`     |
 | where the record lives          | located on every call but `--help`        |
-| the record and its flow         | a Story is added and listed in Backlog    |
+| the record and its flow         | a Story with its Tasks, listed in Backlog |
 | the ontology                    | not started                               |
-| flowgraph tracking its own work | its Backlog is in `.fgraph/`, since 0.4.0  |
+| flowgraph tracking its own work | its Backlog is in `.fgraph/` since 0.4.0  |
 
 The model of the record -- its item types, states and rules -- is
 `docs/domain-model.md`. flowgraph keeps its own work in `.fgraph/`: run
@@ -51,8 +51,31 @@ fgraph status
 # Completed (0)
 ```
 
-`--description "<text>"` adds free text to the Story. A blank title or part
-exits 2 and is named. Each Story is one file, `items/ST-0001.toml`, in the
+Write the Tasks of a Story, then show it with them. A Task title names the
+output: an imperative verb, the specific artifact, and the target state or
+constraint; `--output` says what is there once the Task is completed:
+
+```sh
+fgraph add task "Add the show command to src/flowgraph/cli.py, listing a Story" \
+  --parent ST-0001 \
+  --output "changed: src/flowgraph/cli.py gains the show command"
+# added T-0001 to ST-0001
+
+fgraph show ST-0001
+# ST-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
+#   bucket       Backlog
+#   given        a record with no items
+#   when         a Story is added
+#   then         fgraph status lists it under Backlog
+# Tasks (1)
+#   T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
+#     expected output  changed: src/flowgraph/cli.py gains the show command
+```
+
+`--description "<text>"` adds free text to a Story or a Task. A blank title or
+part exits 2 and is named; so does a parent, or a Story to show, that the
+record does not hold. Each Story is one file, `items/ST-0001.toml`, in the
+record, with its Tasks inside it; a Task id, `T-0001`, counts across the
 record.
 
 ## Develop

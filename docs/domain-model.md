@@ -37,7 +37,7 @@ directly, so it holds no Task.
 | Title | On | Form | Example |
 |---|---|---|---|
 | outcome | `Feature`, `Story`, `Bug`, `Spike`, `Upkeep` | a directional verb, the target metric or behavior, the quantified shift or target state | Extend where fgraph finds its record from its own directory to any subdirectory |
-| output | `Task` | an imperative verb and the target artifact | Add locate() to src/flowgraph/record.py |
+| output | `Task` | an imperative verb, the specific artifact, the target state or constraint | Add locate() to src/flowgraph/record.py, returning the record of a directory |
 
 An outcome title describes a measurable change in user behavior, business
 value or system state, never the work done to get there:
@@ -52,7 +52,20 @@ value or system state, never the work done to get there:
 | business value | Raise the kinds of work a project tracks with fgraph from one to five |
 | system state | Extend where fgraph finds its record from its own directory to any subdirectory |
 
-The form is the developer's, given on 2026-11-20; the examples are the
+An output title describes a discrete, verifiable deliverable or system change
+with a binary Definition of Done -- it is there or it is not:
+
+```text
+[Imperative verb] + [specific artifact] + [target state or constraint]
+```
+
+| Ends in | Example |
+|---|---|
+| an artifact created | Create src/flowgraph/task.py holding the Task type and its constructor |
+| an artifact changed | Add the start command to src/flowgraph/cli.py, exiting 2 on a Story without a Task |
+| a constraint held | Split src/flowgraph/story.py so that no module exceeds 300 lines |
+
+Both forms are the developer's, given on 2026-11-20; the examples are the
 agent's wording.
 
 ## Acceptance criteria
@@ -91,8 +104,9 @@ Notes:
   criterion.
 - An Upkeep names the behavior that must still hold, never a test: the Upkeep
   may itself move or rename a test while the behavior holds.
-- A Task's title names the action and its target; its expected output states
-  what is there afterwards.
+- A Task's title names the action, the artifact and its target state; its
+  expected output states what is there afterwards, so the Task is done or not
+  done, never partly.
 
 ## Attributes
 

@@ -145,7 +145,11 @@ class TaskIdError(ValueError):
 
 
 class StoryNotFoundError(Exception):
-    """A record that holds no Story of the id asked for."""
+    """A record that holds no Story of the id asked for; `story_id` is that id."""
+
+    def __init__(self, story_id: StoryId) -> None:
+        super().__init__(f"no Story {story_id_text(story_id)} in the record")
+        self.story_id = story_id
 
 
 class StoryFileError(Exception):
@@ -341,6 +345,19 @@ class _CriterionFile(BaseModel):
     then: str
 
 
+class _TaskFile(BaseModel):
+    """One table of the tasks of a Story file: a Task."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    state: Literal["backlog"]
+    title: str
+    description: str = ""
+    expected_output: str
+    created: datetime
+
+
 class _StoryFile(BaseModel):
     """What the file of a Story holds, validated as it is read."""
 
@@ -352,6 +369,7 @@ class _StoryFile(BaseModel):
     description: str = ""
     created: datetime
     criterion: _CriterionFile
+    tasks: list[_TaskFile] = []
 
 
 def _read_story_file(path: Path) -> _StoryFile:
@@ -373,13 +391,21 @@ def read_story_rows(record: Path) -> list[StoryRow]:
     return sorted(rows, key=lambda row: parse_story_id(row.id).number)
 
 
+def _held_path(record: Path, story_id: StoryId) -> Path:
+    """The file of the Story of that id in the record; raises StoryNotFoundError without one."""
+    path = record / ITEMS / f"{story_id_text(story_id)}.toml"
+    if not path.is_file():
+        raise StoryNotFoundError(story_id)
+    return path
+
+
 def read_story(record: Path, story_id: StoryId) -> Story:
     """Adapter: the Story of that id in the record, whole.
 
     Raises StoryNotFoundError when the record holds no such Story and StoryFileError when its
     file does not hold one.
     """
-    raise NotImplementedError
+    return _story_held(_read_story_file(_held_path(record, story_id)))
 
 
 def read_story_detail(record: Path, story_id: StoryId) -> StoryDetail:
@@ -388,7 +414,20 @@ def read_story_detail(record: Path, story_id: StoryId) -> StoryDetail:
     Raises StoryNotFoundError when the record holds no such Story and StoryFileError when its
     file does not hold one.
     """
-    raise NotImplementedError
+    held = _read_story_file(_held_path(record, story_id))
+    return StoryDetail(
+        id=held.id,
+        title=held.title,
+        state=held.state,
+        description=held.description,
+        given=held.criterion.given,
+        when=held.criterion.when,
+        then=held.criterion.then,
+        tasks=[
+            TaskRow(task.id, task.title, task.expected_output, task.description, task.state)
+            for task in held.tasks
+        ],
+    )
 
 
 def read_task_ids(record: Path) -> list[str]:
@@ -396,12 +435,27 @@ def read_task_ids(record: Path) -> list[str]:
 
     Raises StoryFileError naming the first file of a Story that does not hold one.
     """
-    raise NotImplementedError
+    held = [_read_story_file(path) for path in (record / ITEMS).glob("ST-*.toml")]
+    return [task.id for story in held for task in story.tasks]
+
+
+def _task_primitives(task: Task) -> dict[str, object]:
+    """The Task as the primitives its table holds; a description only when there is one."""
+    described = {"description": task.description} if task.description else {}
+    return {
+        "id": task_id_text(task.id),
+        "state": "backlog",
+        "title": task.title,
+        **described,
+        "expected_output": task.expected_output,
+        "created": task.created,
+    }
 
 
 def _story_primitives(story: Story) -> dict[str, object]:
-    """The Story as the primitives its file holds; a description only when there is one."""
+    """The Story as the primitives its file holds; a description and tasks only when it has any."""
     described = {"description": story.description} if story.description else {}
+    tasks = {"tasks": [_task_primitives(task) for task in story.tasks]} if story.tasks else {}
     return {
         "id": story_id_text(story.id),
         "state": "backlog",
@@ -413,16 +467,27 @@ def _story_primitives(story: Story) -> dict[str, object]:
             "when": story.scenario.when,
             "then": story.scenario.then,
         },
+        **tasks,
     }
 
 
+def _task_held(held: _TaskFile) -> Task:
+    """The Task a validated table holds, built through its constructors."""
+    return make_task(
+        parse_task_id(held.id), held.title, held.expected_output, held.description, held.created
+    )
+
+
 def _story_held(held: _StoryFile) -> Story:
-    """The Story a validated file holds, built through its constructors."""
+    """The Story a validated file holds, with its Tasks, built through its constructors."""
     criterion = held.criterion
     scenario = make_scenario(criterion.given, criterion.when, criterion.then)
-    return make_story(
+    story = make_story(
         parse_story_id(held.id), held.title, scenario, held.description, held.created
     )
+    for task in held.tasks:
+        story = append_task(story, _task_held(task))
+    return story
 
 
 def write_story(record: Path, story: Story) -> None:

@@ -1,6 +1,7 @@
-"""The criterion of the help menu: `fgraph --help`, `fgraph -h` and bare `fgraph` print it."""
+"""The criterion of the help menu: `fgraph --help` and `fgraph -h` print it, no record needed."""
 
 from dataclasses import dataclass
+from pathlib import Path
 
 import pytest
 
@@ -17,10 +18,10 @@ class Outcome:
     text: str
 
 
-@pytest.fixture(params=[["--help"], ["-h"], []], ids=["--help", "-h", "bare"])
+@pytest.fixture(params=[["--help"], ["-h"]], ids=["--help", "-h"])
 def outcome(request: pytest.FixtureRequest) -> Outcome:
     written: list[str] = []
-    status = run(request.param, written.append)
+    status = run(request.param, Path("/work"), lambda _: False, written.append, written.append)
     return Outcome(status, "".join(written))
 
 
@@ -36,3 +37,6 @@ class TestHelpMenu:
 
     def test_lists_the_help_option(self, outcome: Outcome) -> None:
         assert "-h, --help" in outcome.text
+
+    def test_lists_the_dir_option(self, outcome: Outcome) -> None:
+        assert "-d, --dir PATH" in outcome.text

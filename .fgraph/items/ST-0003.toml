@@ -1,0 +1,10 @@
+id = "ST-0003"
+state = "backlog"
+title = "fgraph lists a completed Story under Completed with its commit"
+description = "Feature: a developer takes a Story from Backlog to Completed with fgraph; its criterion 4: a developer completes the Tasks and the Story with their commits and sees them in Completed."
+created = 2026-11-20 19:35:06+00:00
+
+[criterion]
+given = "a started Story whose Task is completed"
+when = "the Story is completed with a commit"
+then = "fgraph status lists it under Completed with that commit"

@@ -16,10 +16,11 @@ item moves yet.
 | where the record lives          | located on every call but `--help`        |
 | the record and its flow         | a Story is added and listed in Backlog    |
 | the ontology                    | not started                               |
-| flowgraph tracking its own work | from the first version that can record    |
+| flowgraph tracking its own work | its Backlog is in `.fgraph/`, since 0.4.0  |
 
 The model of the record -- its item types, states and rules -- is
-`docs/domain-model.md`.
+`docs/domain-model.md`. flowgraph keeps its own work in `.fgraph/`: run
+`uv run fgraph status` in the checkout to see what is next.
 
 ## Use
 
@@ -67,6 +68,7 @@ make wheel      # build the wheel into build/dist/
 
 | Path             | Holds                                                        |
 | ---------------- | ------------------------------------------------------------ |
+| `.fgraph/`       | the record of flowgraph's own work, written by `fgraph`      |
 | `src/flowgraph/` | the package                                                  |
 | `tests/`         | the suite                                                    |
 | `mk/`            | the Makefile, one module per section                         |

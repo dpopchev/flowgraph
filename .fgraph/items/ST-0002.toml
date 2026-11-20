@@ -1,0 +1,10 @@
+id = "ST-0002"
+state = "backlog"
+title = "fgraph lists a started Story under InProgress"
+description = "Feature: a developer takes a Story from Backlog to Completed with fgraph; its criterion 3: a developer starts a Story and its Tasks and sees them in InProgress."
+created = 2026-11-20 19:35:06+00:00
+
+[criterion]
+given = "a Story in Backlog with one Task"
+when = "the Story is started"
+then = "fgraph status lists it under InProgress"

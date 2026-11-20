@@ -178,10 +178,14 @@ with at least four digits. `fgraph` hands out the next free number.
 The record is plain TOML files tracked by git: git is its history, its backup
 and its merge tool.
 
-- One directory per kind, one file per work item with its Tasks inside it:
-  `stories/ST-0001.toml`, later `bugs/`, `spikes/`, `upkeeps/`, `features/`.
+- One directory, `items/`, holds every item: one file per work item with its
+  Tasks inside it, named by its id, `items/ST-0001.toml`. The prefix of the id
+  is the one place that says the kind, so there is no directory per kind.
 - The file holds a `state` line naming the type it loads into and only the
-  fields that state needs. A kind never changes, so a file never moves.
+  fields that state needs. The path follows from the id alone, so a file
+  never moves.
+- Each kind reads the files of its own prefix. A file with a prefix no kind
+  knows is left alone; nothing reports it yet.
 - A command loads a work item whole, changes it and saves it whole. The file
   is validated as it is read; a write is read back before it replaces the
   file.

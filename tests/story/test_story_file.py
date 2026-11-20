@@ -1,4 +1,4 @@
-"""The file of a Story: one TOML file per Story under `stories/` in the record, read as rows."""
+"""The file of a Story: one TOML file per Story in `items/` of the record, read as rows."""
 
 import re
 import tomllib
@@ -26,9 +26,9 @@ SCENARIO = make_scenario("a state", "an action", "another state")
 STORY = make_story(make_story_id(1), "a title", SCENARIO, "", CREATED)
 
 
-def test_a_story_is_written_as_its_own_file_under_stories(tmp_path: Path) -> None:
+def test_a_story_is_written_as_its_own_file_in_items(tmp_path: Path) -> None:
     write_story(tmp_path, STORY)
-    assert tomllib.loads((tmp_path / "stories" / "ST-0001.toml").read_text("utf-8")) == {
+    assert tomllib.loads((tmp_path / "items" / "ST-0001.toml").read_text("utf-8")) == {
         "id": "ST-0001",
         "state": "backlog",
         "title": "a title",
@@ -39,7 +39,7 @@ def test_a_story_is_written_as_its_own_file_under_stories(tmp_path: Path) -> Non
 
 def test_a_description_is_written_when_there_is_one(tmp_path: Path) -> None:
     write_story(tmp_path, make_story(make_story_id(1), "a title", SCENARIO, "why", CREATED))
-    written = tomllib.loads((tmp_path / "stories" / "ST-0001.toml").read_text("utf-8"))
+    written = tomllib.loads((tmp_path / "items" / "ST-0001.toml").read_text("utf-8"))
     assert written["description"] == "why"
 
 
@@ -54,13 +54,19 @@ def test_the_rows_come_by_id(tmp_path: Path) -> None:
     assert [row.id for row in read_story_rows(tmp_path)] == ["ST-0001", "ST-0002", "ST-0003"]
 
 
-def test_a_record_with_no_stories_directory_has_no_rows(tmp_path: Path) -> None:
+def test_a_record_with_no_items_directory_has_no_rows(tmp_path: Path) -> None:
     assert read_story_rows(tmp_path) == []
+
+
+def test_a_file_of_another_kind_is_not_read_as_a_story(tmp_path: Path) -> None:
+    write_story(tmp_path, STORY)
+    (tmp_path / "items" / "B-0001.toml").write_text('id = "B-0001"\n', encoding="utf-8")
+    assert read_story_rows(tmp_path) == [story_row(STORY)]
 
 
 @pytest.mark.parametrize("text", ['id = "ST-0001"\n', "no toml at all"], ids=["partial", "no-toml"])
 def test_a_file_that_is_no_story_is_refused_by_its_path(tmp_path: Path, text: str) -> None:
-    path = tmp_path / "stories" / "ST-0001.toml"
+    path = tmp_path / "items" / "ST-0001.toml"
     path.parent.mkdir()
     path.write_text(text, encoding="utf-8")
     with pytest.raises(StoryFileError, match=re.escape(str(path))):
@@ -71,7 +77,7 @@ class TestAWriteThatReadsBackDifferent:
     @pytest.fixture
     def failed(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, str]:
         """The path of a Story written over a previous file, and the message of its failure."""
-        path = tmp_path / "stories" / "ST-0001.toml"
+        path = tmp_path / "items" / "ST-0001.toml"
         path.parent.mkdir()
         path.write_text("previous", encoding="utf-8")
         another = {

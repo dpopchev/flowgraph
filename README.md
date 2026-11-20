@@ -10,7 +10,8 @@ Early: the project is set up, and nothing of the record runs yet.
 
 | Part                            | State                                  |
 | ------------------------------- | -------------------------------------- |
-| the `fgraph` command            | runs, prints a greeting                |
+| the `fgraph` command            | runs, prints its help menu             |
+| the wheel                       | built by `make wheel`, ships `fgraph`  |
 | the record and its flow         | not started                            |
 | the ontology                    | not started                            |
 | flowgraph tracking its own work | from the first version that can record |
@@ -23,6 +24,7 @@ Needs `uv`, `make` and Python 3.14 (`.python-version`).
 make sync       # create or refresh .venv from uv.lock
 make check      # lint, typecheck and test
 uv run fgraph   # run the command
+make wheel      # build the wheel into build/dist/
 ```
 
 `make help` lists every target.

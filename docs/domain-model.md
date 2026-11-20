@@ -1,0 +1,200 @@
+# Domain model of the record
+
+What a flowgraph record holds: the item types, what each carries, and how an
+item moves. Agreed by the developer in conversation on 2026-11-20, remark by
+remark; the open questions at the end are the agent's readings, not yet
+confirmed. It replaces the model of board 1 (`docs/board-review.md`, group 1).
+
+## Levels
+
+Containment is a typed `parent` reference, never inheritance: each type below
+is its own type, with no base class and no generic node that carries a level.
+
+| Level | Types | Holds | Stands alone |
+|---|---|---|---|
+| Top | `Feature` | Stories, Bugs, Spikes, Upkeeps; never Tasks | yes |
+| Work item | `Story`, `Bug`, `Spike`, `Upkeep` | its Tasks | yes, or under one Feature |
+| Bottom | `Task` | nothing | no: exactly one work item above it |
+
+Standing alone is a value of `parent`, not a missing one.
+
+## Work item types
+
+A type exists because the work ends differently, never because of its size.
+
+| Type | Is | Completed when |
+|---|---|---|
+| `Story` | new behavior | the behavior is on `main` |
+| `Bug` | a behavior that fails | the fixed behavior is on `main` |
+| `Spike` | a question to answer | the decision is written |
+| `Upkeep` | work that keeps the behavior and changes the inside | the behavior is proven unchanged on `main` |
+
+A `Feature` groups work items toward one bigger outcome. It is not worked on
+directly, so it holds no Task.
+
+## Titles
+
+| Title | On | Form | Example |
+|---|---|---|---|
+| outcome | `Feature`, `Story`, `Bug`, `Spike`, `Upkeep` | what is true once it is completed | fgraph finds its record from any subdirectory |
+| output | `Task` | an imperative verb and the target artifact | Add locate() to src/flowgraph/record.py |
+
+## Acceptance criteria
+
+Every item states what must be true once it is completed, in the form its
+work ends in.
+
+| Kind | Count | Criterion |
+|---|---|---|
+| `Feature` | one or more | a statement of what the user experiences, free form |
+| `Story` | exactly one | Given (initial state), When (action), Then (expected state) |
+| `Bug` | exactly one | Observed (what happens) and Expected (what we wish to see) |
+| `Upkeep` | exactly one | Given / When / Then, where the When already runs and the Then says it still holds |
+| `Spike` | exactly one | a hypothesis, as a yes/no question |
+| `Task` | exactly one | Expected output: an artifact created, or a content change in a named artifact |
+
+One example per kind:
+
+- Feature: "A developer sees every work item of the project by bucket with
+  one command."
+- Story: Given a record with one Story in Backlog, When `fgraph start` is run
+  on it, Then it is a `StartedStory` shown in InProgress.
+- Bug: Observed: `fgraph --dir` given a file prints a traceback. Expected: it
+  exits 2 and names the path.
+- Upkeep: Given a directory holding `.fgraph/`, When `fgraph` runs there, Then
+  it still uses `./.fgraph/` and exits 0.
+- Upkeep, the whole suite: Given `main`, When `make check` runs, Then it still
+  passes.
+- Spike: "Can one file per item hold the record?"
+- Task: created, `src/flowgraph/story.py`; or changed, `src/flowgraph/cli.py`
+  gains the `start` command.
+
+Notes:
+
+- A Feature is broken down into Stories, as a rule of thumb one Story per
+  criterion.
+- An Upkeep names the behavior that must still hold, never a test: the Upkeep
+  may itself move or rename a test while the behavior holds.
+- A Task's title names the action and its target; its expected output states
+  what is there afterwards.
+
+## Attributes
+
+What each type carries in Backlog. The description is optional free text on
+every type.
+
+| Type | Attributes |
+|---|---|
+| `Feature` | id, outcome title, description, experience criteria, created |
+| `Story` | id, outcome title, description, parent, Given / When / Then, created |
+| `Bug` | id, outcome title, description, parent, observed, expected, created |
+| `Upkeep` | id, outcome title, description, parent, Given / When / Then, created |
+| `Spike` | id, outcome title, description, parent, hypothesis, created |
+| `Task` | id, output title, description, parent, expected output, created |
+
+`parent` is a Feature or standing alone for the four work items, and exactly
+one work item for a Task.
+
+## States are types
+
+The state of an item is its type, so an item carries only what its state
+needs. The same five exist for `Story`, `Bug`, `Spike`, `Upkeep` and `Task`;
+`Story` is shown.
+
+| Type | Bucket | Adds |
+|---|---|---|
+| `Story` | Backlog | the attributes of its kind, above |
+| `StartedStory` | InProgress | started |
+| `BlockedStory` | InProgress, shown as blocked | reason, since, waiting on |
+| `CompletedStory` | Completed | completed on, evidence |
+| `RemovedStory` | Removed | removed on, reason |
+
+`CompletedSpike` also adds the decision, which answers its hypothesis.
+
+- A bucket is derived from the type; it is never a stored field.
+- Blocked is not a bucket: a blocked item stays in InProgress and shows as
+  blocked.
+- Removed stands apart from the flow and keeps what dropped out, with its
+  date and reason. Nothing is deleted.
+- Cycle time and age are derived from the dates, never stored.
+
+## Direction
+
+```text
+Backlog --start--> InProgress --complete--> Completed
+
+Removed: apart, reached by remove
+```
+
+| Move | From | To |
+|---|---|---|
+| start | `X` | `StartedX` |
+| block | `StartedX` | `BlockedX` |
+| unblock | `BlockedX` | `StartedX` |
+| complete | `StartedX` | `CompletedX` |
+| remove | `X`, `StartedX`, `BlockedX` | `RemovedX` |
+
+Completed and Removed are terminal, and no move goes backwards.
+
+## Evidence
+
+A completed item carries the proof that it is completed. For a work item,
+under a Feature or standing alone, that is the commit on `main` that holds it.
+
+| Type | Evidence on its Completed type |
+|---|---|
+| `Story`, `Bug`, `Upkeep`, `Spike` | the commit on `main` |
+| `Task` | its commit |
+
+## Rules
+
+- Every item is completed through `fgraph`. flowgraph is a framework: later
+  `fgraph` wraps git as well.
+- A Feature never holds a Task.
+- A Task has exactly one parent among `Story`, `Bug`, `Spike` and `Upkeep`.
+  It never stands alone and never shows at the level of the work items.
+- A `Story`, `Bug`, `Spike` or `Upkeep` cannot start without at least one
+  written Task.
+- A work item is completed only once it is on `main`.
+
+## Left out
+
+- Class of service (expedite, fixed date, standard): left out for now. It
+  comes back when the order of pulling work must differ by urgency.
+
+## From board 1
+
+| Board 1 | Here |
+|---|---|
+| Epic | `Feature` |
+| issue ending in a behavior | `Story` |
+| issue ending in a step | `Upkeep` |
+| bug | `Bug` |
+| spike | `Spike` |
+| Task | `Task` |
+| todo | the bare type, in Backlog |
+| doing | `StartedX` |
+| blocked, a state | `BlockedX`, a type shown in InProgress |
+| done | `CompletedX` |
+| pruned | `RemovedX` |
+
+## Open questions
+
+- Does a Feature have a stored state? The reading: no, its bucket is derived
+  from the items it groups, and it is complete when each is Completed or
+  Removed, with no evidence of its own.
+- Until `fgraph` wraps git, does `complete` only record the commit? The
+  reading: yes, and it checks that the commit is on `main` once it wraps git.
+- Does a Task also carry a check command that `fgraph` runs at `complete`?
+  The reading: no, its expected output and its commit are enough.
+- Must a Story under a Feature name the Feature criterion it realizes? The
+  reading: no, one Story per criterion stays a rule of thumb.
+- Can a Task start before its work item is started? The reading: no.
+- Can a started work item whose Tasks were all removed still be completed, or
+  must it be removed?
+- Can an item be blocked before it is started? The reading: no, only a
+  started item.
+- The id prefixes: Story and Spike both start with S.
+- What can the title constructors check? A first word against a closed list
+  of verbs and a named artifact can be checked; that a title is worded as an
+  outcome cannot.

@@ -1,10 +1,18 @@
 """A Story: new behavior to build, kept in the record with its one Given / When / Then."""
 
 import re
+import tomllib
 from collections.abc import Callable, Collection
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+from typing import Literal
+
+import tomli_w
+from pydantic import BaseModel, ConfigDict, ValidationError
+
+# The directory of the stories inside a record, one file per Story.
+STORIES = "stories"
 
 
 @dataclass(frozen=True)
@@ -69,6 +77,14 @@ class EmptyPartError(ValueError):
 
 class StoryIdError(ValueError):
     """A number or a text that is no Story id."""
+
+
+class StoryFileError(Exception):
+    """A file under the stories of a record that does not hold a Story; names its path."""
+
+
+class StoryMismatchError(Exception):
+    """A Story read back different from the one written; its file is as it was before."""
 
 
 def make_story_id(number: int) -> StoryId:
@@ -156,11 +172,85 @@ def add_story(
     return story.id
 
 
+class _CriterionFile(BaseModel):
+    """The criterion table of a Story file."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    given: str
+    when: str
+    then: str
+
+
+class _StoryFile(BaseModel):
+    """What the file of a Story holds, validated as it is read."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    state: Literal["backlog"]
+    title: str
+    description: str = ""
+    created: datetime
+    criterion: _CriterionFile
+
+
+def _read_story_file(path: Path) -> _StoryFile:
+    """The content of one Story file; raises StoryFileError naming the path."""
+    try:
+        return _StoryFile.model_validate(tomllib.loads(path.read_text(encoding="utf-8")))
+    except (tomllib.TOMLDecodeError, ValidationError) as error:
+        raise StoryFileError(f"{path} holds no Story: {error}") from error
+
+
 def read_story_rows(record: Path) -> list[StoryRow]:
-    """Adapter: the rows of the stories in the record, by id."""
-    raise NotImplementedError
+    """Adapter: the rows of the stories in the record, by id.
+
+    Raises StoryFileError naming the first file that does not hold a Story.
+    """
+    held = [_read_story_file(path) for path in (record / STORIES).glob("*.toml")]
+    rows = [StoryRow(story.id, story.title, story.state) for story in held]
+    return sorted(rows, key=lambda row: parse_story_id(row.id).number)
+
+
+def _story_primitives(story: Story) -> dict[str, object]:
+    """The Story as the primitives its file holds; a description only when there is one."""
+    described = {"description": story.description} if story.description else {}
+    return {
+        "id": story_id_text(story.id),
+        "state": "backlog",
+        "title": story.title,
+        **described,
+        "created": story.created,
+        "criterion": {
+            "given": story.scenario.given,
+            "when": story.scenario.when,
+            "then": story.scenario.then,
+        },
+    }
+
+
+def _story_held(held: _StoryFile) -> Story:
+    """The Story a validated file holds, built through its constructors."""
+    criterion = held.criterion
+    scenario = make_scenario(criterion.given, criterion.when, criterion.then)
+    return make_story(
+        parse_story_id(held.id), held.title, scenario, held.description, held.created
+    )
 
 
 def write_story(record: Path, story: Story) -> None:
-    """Adapter: write the Story as its one file in the record."""
-    raise NotImplementedError
+    """Adapter: write the Story as its one file in the record.
+
+    The Story is written beside its file and read back before it replaces it. Raises
+    StoryMismatchError naming the file when the Story read back differs; the file is then as
+    it was before.
+    """
+    path = record / STORIES / f"{story_id_text(story.id)}.toml"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    beside = path.with_name(f"{path.name}.tmp")
+    beside.write_text(tomli_w.dumps(_story_primitives(story)), encoding="utf-8")
+    if _story_held(_read_story_file(beside)) != story:
+        beside.unlink()
+        raise StoryMismatchError(f"{path}: the Story written reads back different")
+    beside.replace(path)

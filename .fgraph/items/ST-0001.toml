@@ -1,6 +1,6 @@
 id = "ST-0001"
 state = "backlog"
-title = "fgraph shows the Tasks written for a Story inside it"
+title = "Raise the Tasks a Story can hold from 0 to any number"
 description = "Feature: a developer takes a Story from Backlog to Completed with fgraph; its criterion 2: a developer writes the Tasks of a Story and sees them inside it."
 created = 2026-11-20 19:35:06+00:00
 

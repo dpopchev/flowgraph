@@ -61,11 +61,22 @@ define _pytest
 endef
 
 # Every full run measures coverage (the table, missing lines included) and lists
-# the 10 slowest tests; pytest hides a test under 5 ms from that list.
+# the 10 slowest tests; pytest hides a test under 5 ms from that list. It also
+# rewrites the reports of the last run in $(LAST_RUN): coverage.md, and
+# slowest.md -- the 10 slowest tests by module, test and seconds, from
+# tests/conftest.py. $(CACHE)/pytest is pytest's cache_dir in pyproject.toml.
+LAST_RUN := $(CACHE)/pytest/last-run
+TEST_REPORTS := --cov --cov-report=term --cov-report=markdown:$(LAST_RUN)/coverage.md \
+  --durations=10 --slowest-file=$(LAST_RUN)/slowest.md
+
+$(LAST_RUN):
+	@mkdir -p $@
+	$(call log_warn,created $@/ -- the reports of the last make test$(comma) removed by make clean)
+
 .PHONY: test
-test: ## Pytest with doctests, coverage and the 10 slowest
-	$(call _pytest,--cov --durations=10)
-	$(call log_done,tests passed)
+test: | $(LAST_RUN) ## Pytest with doctests, coverage and the 10 slowest
+	$(call _pytest,$(TEST_REPORTS))
+	$(call log_done,tests passed -- reports in $(LAST_RUN)/)
 
 .PHONY: test-quick
 test-quick: ## Pytest stopping at the first failure

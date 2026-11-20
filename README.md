@@ -49,7 +49,7 @@ fgraph status
 ```
 
 `--description "<text>"` adds free text to the Story. A blank title or part
-exits 2 and is named. Each Story is one file, `stories/ST-0001.toml`, in the
+exits 2 and is named. Each Story is one file, `items/ST-0001.toml`, in the
 record.
 
 ## Develop

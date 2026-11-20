@@ -6,15 +6,26 @@ it builds the ontology of the project on the way: its terms and how they relate.
 
 ## Status
 
-Early: the project is set up, and nothing of the record runs yet.
+Early: `fgraph` finds where a record lives, and nothing of the record runs yet.
 
-| Part                            | State                                  |
-| ------------------------------- | -------------------------------------- |
-| the `fgraph` command            | runs, prints its help menu             |
-| the wheel                       | built by `make wheel`, ships `fgraph`  |
-| the record and its flow         | not started                            |
-| the ontology                    | not started                            |
-| flowgraph tracking its own work | from the first version that can record |
+| Part                            | State                                     |
+| ------------------------------- | ----------------------------------------- |
+| the `fgraph` command            | runs, prints its help menu                |
+| the wheel                       | built by `make wheel`, ships `fgraph`     |
+| where the record lives          | located on every call but `--help`        |
+| the record and its flow         | not started                               |
+| the ontology                    | not started                               |
+| flowgraph tracking its own work | from the first version that can record    |
+
+## Use
+
+`fgraph` looks for the record in the directory it runs in: `.fgraph/` first,
+then `fgraph/`. When neither is there, it exits 2 and asks for the path:
+
+```sh
+fgraph                      # uses ./.fgraph/, else ./fgraph/
+fgraph --dir path/to/record # uses the directory given, without a search
+```
 
 ## Develop
 

@@ -18,10 +18,7 @@ from flowgraph.story import (
     task_id_text,
 )
 
-pytestmark = [
-    pytest.mark.functional,
-    pytest.mark.xfail(strict=True, reason="ST-0001: fgraph add task and fgraph show are stubs"),
-]
+pytestmark = pytest.mark.functional
 
 CWD = Path("/work")
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
@@ -93,4 +90,95 @@ class TestATaskAddedToAStoryInBacklog:
             "Tasks (1)\n"
             "  T-0001  a task title\n"
             "    expected output  an output\n"
+        )
+
+
+def test_show_lists_the_descriptions_of_a_story_and_its_task() -> None:
+    saved: dict[str, Story] = {}
+    fgraph([*ADD_STORY, "--description", "why"], saved)
+    fgraph([*ADD_TASK, "--description", "how"], saved)
+    assert fgraph(["show", "ST-0001"], saved).out == (
+        "ST-0001  a title\n"
+        "  bucket       Backlog\n"
+        "  description  why\n"
+        "  given        a state\n"
+        "  when         an action\n"
+        "  then         another\n"
+        "Tasks (1)\n"
+        "  T-0001  a task title\n"
+        "    expected output  an output\n"
+        "    description      how\n"
+    )
+
+
+def changed(argv: Sequence[str], old: str, new: str) -> list[str]:
+    """The arguments with one word replaced."""
+    return [new if word == old else word for word in argv]
+
+
+class TestATaskAddedToAStoryTheRecordDoesNotHold:
+    @pytest.fixture
+    def outcome(self) -> Outcome:
+        saved: dict[str, Story] = {}
+        fgraph(ADD_STORY, saved)
+        return fgraph(changed(ADD_TASK, "ST-0001", "ST-0002"), saved)
+
+    def test_exits_with_two(self, outcome: Outcome) -> None:
+        assert outcome.status == 2
+
+    def test_names_the_story(self, outcome: Outcome) -> None:
+        assert outcome.err.endswith("fgraph: error: no Story ST-0002 in the record\n")
+
+
+class TestATaskAddedToAParentThatIsNoStory:
+    @pytest.fixture
+    def outcome(self) -> Outcome:
+        return fgraph(changed(ADD_TASK, "ST-0001", "B-0001"), {})
+
+    def test_exits_with_two(self, outcome: Outcome) -> None:
+        assert outcome.status == 2
+
+    def test_names_the_parent(self, outcome: Outcome) -> None:
+        assert outcome.err.endswith(
+            "fgraph: error: 'B-0001' is no Story id: it is ST- and a number\n"
+        )
+
+
+class TestATaskAddedWithABlankOutput:
+    @pytest.fixture
+    def outcome(self) -> Outcome:
+        saved: dict[str, Story] = {}
+        fgraph(ADD_STORY, saved)
+        return fgraph(changed(ADD_TASK, "an output", " "), saved)
+
+    def test_exits_with_two(self, outcome: Outcome) -> None:
+        assert outcome.status == 2
+
+    def test_names_the_blank_part(self, outcome: Outcome) -> None:
+        assert outcome.err.endswith("fgraph: error: output is empty\n")
+
+
+class TestAStoryShownThatTheRecordDoesNotHold:
+    @pytest.fixture
+    def outcome(self) -> Outcome:
+        return fgraph(["show", "ST-0002"], {})
+
+    def test_exits_with_two(self, outcome: Outcome) -> None:
+        assert outcome.status == 2
+
+    def test_names_the_story(self, outcome: Outcome) -> None:
+        assert outcome.err.endswith("fgraph: error: no Story ST-0002 in the record\n")
+
+
+class TestAnIdShownThatIsNoStoryId:
+    @pytest.fixture
+    def outcome(self) -> Outcome:
+        return fgraph(["show", "T-0001"], {})
+
+    def test_exits_with_two(self, outcome: Outcome) -> None:
+        assert outcome.status == 2
+
+    def test_names_the_id(self, outcome: Outcome) -> None:
+        assert outcome.err.endswith(
+            "fgraph: error: 'T-0001' is no Story id: it is ST- and a number\n"
         )

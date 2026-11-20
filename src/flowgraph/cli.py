@@ -19,10 +19,16 @@ from flowgraph.story import (
     ReadStoryDetail,
     ReadStoryRows,
     ReadTaskIds,
+    StoryDetail,
+    StoryIdError,
+    StoryNotFoundError,
     StoryRow,
     WriteStory,
     add_story,
+    add_task,
+    parse_story_id,
     story_id_text,
+    task_id_text,
 )
 
 DESCRIPTION = "flowgraph keeps the record of a project's work."
@@ -96,6 +102,30 @@ def status_text(rows: Iterable[StoryRow]) -> str:
     return "".join(lines)
 
 
+def show_text(detail: StoryDetail) -> str:
+    """The Story with its bucket and its criterion, then its Tasks, one fact per line.
+
+    A description is listed only when there is one.
+    """
+    bucket = next(name for name, states in BUCKETS if detail.state in states)
+    described = [f"  description  {detail.description}\n"] if detail.description else []
+    lines = [
+        f"{detail.id}  {detail.title}\n",
+        f"  bucket       {bucket}\n",
+        *described,
+        f"  given        {detail.given}\n",
+        f"  when         {detail.when}\n",
+        f"  then         {detail.then}\n",
+        f"Tasks ({len(detail.tasks)})\n",
+    ]
+    for task in detail.tasks:
+        lines.append(f"  {task.id}  {task.title}\n")
+        lines.append(f"    expected output  {task.expected_output}\n")
+        if task.description:
+            lines.append(f"    description      {task.description}\n")
+    return "".join(lines)
+
+
 def run(
     argv: Sequence[str],
     cwd: Path,
@@ -122,9 +152,30 @@ def run(
     match locate(cwd, args.dir, is_dir):
         case Found(path) | Given(path):
             if args.command == "add" and args.kind == "task":
-                raise NotImplementedError("fgraph add task")
+                try:
+                    written = add_task(
+                        parent=args.parent,
+                        title=args.title,
+                        expected_output=args.output,
+                        description=args.description,
+                        load_story=lambda story_id: read_story(path, story_id),
+                        find_task_ids=lambda: read_task_ids(path),
+                        save_story=lambda changed: write_story(path, changed),
+                        now=now,
+                    )
+                except (StoryNotFoundError, StoryIdError, EmptyPartError) as error:
+                    write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
+                    return 2
+                write(f"added {task_id_text(written)} to {args.parent}\n")
+                return 0
             if args.command == "show":
-                raise NotImplementedError("fgraph show")
+                try:
+                    detail = read_story_detail(path, parse_story_id(args.id))
+                except (StoryNotFoundError, StoryIdError) as error:
+                    write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
+                    return 2
+                write(show_text(detail))
+                return 0
             if args.command == "add":
                 try:
                     added = add_story(

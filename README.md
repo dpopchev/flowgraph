@@ -33,10 +33,12 @@ fgraph --dir path/to/record # uses the directory given, without a search
 ```
 
 A record is a directory you create (`mkdir .fgraph`). Add a Story with its
-title and its one Given / When / Then, then list the record by bucket:
+title and its one Given / When / Then, then list the record by bucket. The
+title names the outcome: a directional verb, the target metric or behavior,
+and the quantified shift or target state (`docs/domain-model.md`, Titles):
 
 ```sh
-fgraph add story "fgraph lists an added Story under Backlog" \
+fgraph add story "Raise the Stories fgraph lists under Backlog from 0 to 1" \
   --given "a record with no items" \
   --when "a Story is added" \
   --then "fgraph status lists it under Backlog"
@@ -44,7 +46,7 @@ fgraph add story "fgraph lists an added Story under Backlog" \
 
 fgraph status
 # Backlog (1)
-#   ST-0001  fgraph lists an added Story under Backlog
+#   ST-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
 # InProgress (0)
 # Completed (0)
 ```

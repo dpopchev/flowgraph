@@ -11,8 +11,8 @@ from typing import Literal
 import tomli_w
 from pydantic import BaseModel, ConfigDict, ValidationError
 
-# The directory of the stories inside a record, one file per Story.
-STORIES = "stories"
+# The directory of every item inside a record, one file per work item, named by its id.
+ITEMS = "items"
 
 
 @dataclass(frozen=True)
@@ -80,7 +80,7 @@ class StoryIdError(ValueError):
 
 
 class StoryFileError(Exception):
-    """A file under the stories of a record that does not hold a Story; names its path."""
+    """A file named as a Story in a record that does not hold one; names its path."""
 
 
 class StoryMismatchError(Exception):
@@ -206,9 +206,10 @@ def _read_story_file(path: Path) -> _StoryFile:
 def read_story_rows(record: Path) -> list[StoryRow]:
     """Adapter: the rows of the stories in the record, by id.
 
-    Raises StoryFileError naming the first file that does not hold a Story.
+    A Story is a file of the items named `ST-`; a file of another kind is left alone. Raises
+    StoryFileError naming the first such file that does not hold a Story.
     """
-    held = [_read_story_file(path) for path in (record / STORIES).glob("*.toml")]
+    held = [_read_story_file(path) for path in (record / ITEMS).glob("ST-*.toml")]
     rows = [StoryRow(story.id, story.title, story.state) for story in held]
     return sorted(rows, key=lambda row: parse_story_id(row.id).number)
 
@@ -246,7 +247,7 @@ def write_story(record: Path, story: Story) -> None:
     StoryMismatchError naming the file when the Story read back differs; the file is then as
     it was before.
     """
-    path = record / STORIES / f"{story_id_text(story.id)}.toml"
+    path = record / ITEMS / f"{story_id_text(story.id)}.toml"
     path.parent.mkdir(parents=True, exist_ok=True)
     beside = path.with_name(f"{path.name}.tmp")
     beside.write_text(tomli_w.dumps(_story_primitives(story)), encoding="utf-8")

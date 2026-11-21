@@ -24,12 +24,14 @@ commit = "600376c"
 
 [[tasks]]
 id = "T-0171"
-state = "started"
+state = "completed"
 title = "Add development.parallel to the Config of src/flowgraph/config.py and refuse the start of a work item beyond it"
 description = "Removes the xfail mark of tests/functional/test_parallel.py. The started work items are those of every kind, read as fgraph status reads them."
 expected_output = "changed: the Config of src/flowgraph/config.py holds development.parallel, a whole number of 1 or more, or none when the key is left out; with the development on and parallel set, the start of a work item is refused with exit 2 when that many work items are started already, naming each of them, with nothing written and no branch made; the start of a Task is not counted; a parallel below 1 or no whole number is refused as a config.toml naming the key; proved in tests/config/ and in the tests of the start"
 created = 2026-11-21 22:40:23+00:00
 started = 2026-11-21 23:13:02+00:00
+completed = 2026-11-21 23:17:17+00:00
+commit = "151c8a0"
 
 [[tasks]]
 id = "T-0172"

@@ -24,3 +24,11 @@ title = "Add the Feature to src/flowgraph/feature.py and the parent of a work it
 description = "The Feature is its own aggregate: no state, no Task. A blank title or criterion, and a Feature with no criterion, are refused. The write reads itself back, as the write of a work item does."
 expected_output = "created: src/flowgraph/parent.py holds the id of a Feature and the parent of a work item, a Feature or standing alone; src/flowgraph/feature.py holds the Feature with its criteria, its constructor, its file items/F-0001.toml read and written whole, the command that adds one under the next free id and the bucket derived from the states of its work items; their tests are in tests/feature/"
 created = 2026-11-21 12:04:37+00:00
+
+[[tasks]]
+id = "T-0095"
+state = "backlog"
+title = "Add the parent to the work item in src/flowgraph/work_item/ and src/flowgraph/item_file.py"
+description = "Standing alone is a value of parent. The parent is the last field of each state, so a work item made without one stands alone."
+expected_output = "changed: a work item carries its parent, a Feature or standing alone, through every move; its file keeps parent = \"F-0001\" when it is under a Feature and reads a file without the key as standing alone; the row and the detail a view reads gain the parent; their tests are in tests/work_item/"
+created = 2026-11-21 12:04:37+00:00

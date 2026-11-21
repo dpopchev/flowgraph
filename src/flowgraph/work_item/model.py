@@ -31,8 +31,8 @@ from flowgraph.task import (
     Task,
     TaskRow,
     TaskState,
-    all_completed,
 )
+from flowgraph.task_list import all_completed
 
 
 @dataclass(frozen=True)

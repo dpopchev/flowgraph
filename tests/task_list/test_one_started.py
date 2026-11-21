@@ -11,15 +11,13 @@ from flowgraph.criterion import make_commit, make_scenario
 from flowgraph.task import (
     TaskInProgressError,
     TaskState,
-    at_most_one_started,
     blocked,
     completed,
     make_task,
     make_task_id,
     started,
-    started_among,
-    unblocked_among,
 )
+from flowgraph.task_list import at_most_one_started, started_among, unblocked_among
 from flowgraph.work_item import (
     WorkItemFileError,
     append_task,

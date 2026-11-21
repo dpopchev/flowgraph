@@ -12,15 +12,12 @@ from flowgraph.task import (
     StartedAlreadyError,
     TaskNotFoundError,
     TaskState,
-    all_completed,
     completed,
-    completed_among,
     make_task,
     make_task_id,
     started,
-    started_among,
-    task_of,
 )
+from flowgraph.task_list import all_completed, completed_among, started_among, task_of
 
 pytestmark = pytest.mark.model
 

@@ -14,9 +14,7 @@ from flowgraph.task import (
     TaskNotFoundError,
     TaskRow,
     TaskState,
-    all_completed,
     blocked,
-    blocked_among,
     completed,
     make_task,
     make_task_id,
@@ -24,6 +22,7 @@ from flowgraph.task import (
     started,
     task_state_name,
 )
+from flowgraph.task_list import all_completed, blocked_among
 
 pytestmark = pytest.mark.model
 

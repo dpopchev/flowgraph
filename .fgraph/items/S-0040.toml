@@ -13,12 +13,14 @@ then = "the Story is in the record and git log holds no new commit"
 
 [[tasks]]
 id = "T-0163"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_commit_off.py, failing on the criterion of S-0040"
 description = "Built as tests/functional/test_commit_writes.py builds its repository. Seen red, then marked a strict xfail naming S-0040 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_commit_off.py states that fgraph add story, in a git repository whose record holds config.toml with [git] commit = false, writes the Story into the record and leaves git log without a new commit"
 created = 2026-11-21 22:18:52+00:00
 started = 2026-11-21 22:40:37+00:00
+completed = 2026-11-21 22:42:05+00:00
+commit = "8cce2d6"
 
 [[tasks]]
 id = "T-0164"

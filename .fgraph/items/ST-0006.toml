@@ -45,11 +45,12 @@ commit = "368e5f9"
 
 [[tasks]]
 id = "T-0087"
-state = "backlog"
+state = "started"
 title = "Add the Bug kind to src/flowgraph/bug.py, src/flowgraph/store.py, src/flowgraph/item.py, src/flowgraph/cli.py and src/flowgraph/text.py"
 description = "The kinds are listed once, in src/flowgraph/store.py. Removes the xfail mark of tests/functional/test_complete_bug.py."
 expected_output = "changed: fgraph add bug TITLE --observed TEXT --expected TEXT adds B-0001 to Backlog; a Bug takes Tasks and moves as a Story does and is listed by fgraph status; fgraph show prints what is observed and expected; fgraph amend takes --observed and --expected; created: src/flowgraph/bug.py with the kind, its id functions and its names"
 created = 2026-11-21 11:45:00+00:00
+started = 2026-11-21 11:50:53+00:00
 
 [[tasks]]
 id = "T-0088"

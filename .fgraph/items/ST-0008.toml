@@ -23,12 +23,14 @@ commit = "cb5241b"
 
 [[tasks]]
 id = "T-0094"
-state = "started"
+state = "completed"
 title = "Add the Feature to src/flowgraph/feature.py and the parent of a work item to src/flowgraph/parent.py"
 description = "The Feature is its own aggregate: no state, no Task. A blank title or criterion, and a Feature with no criterion, are refused. The write reads itself back, as the write of a work item does."
 expected_output = "created: src/flowgraph/parent.py holds the id of a Feature and the parent of a work item, a Feature or standing alone; src/flowgraph/feature.py holds the Feature with its criteria, its constructor, its file items/F-0001.toml read and written whole, the command that adds one under the next free id and the bucket derived from the states of its work items; their tests are in tests/feature/"
 created = 2026-11-21 12:04:37+00:00
 started = 2026-11-21 12:06:20+00:00
+completed = 2026-11-21 12:06:55+00:00
+commit = "970de05"
 
 [[tasks]]
 id = "T-0095"

@@ -17,3 +17,11 @@ title = "Add tests/functional/test_reorder_feature.py, failing on the criterion 
 description = "decided: S-0051: a work item under a Feature is still reordered, before another work item of the same Feature alone; that order is the one its work items start in. Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_reorder_backlog.py does. Seen red, then marked a strict xfail naming S-0051 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_reorder_feature.py states that, on a record with a Story standing alone and, added after it, a Feature, both in Backlog, fgraph reorder of the Feature before the Story exits 0 and fgraph status lists the Feature before the Story under Backlog"
 created = 2026-11-21 23:10:18+00:00
+
+[[tasks]]
+id = "T-0186"
+state = "backlog"
+title = "Extend the reorder of src/flowgraph/queue.py and src/flowgraph/item.py to the place of a Feature in the Backlog"
+description = "Removes the xfail mark of tests/functional/test_reorder_feature.py. The places queue.toml of this repository already holds stay valid: its work items under a Feature were placed among those of their Feature."
+expected_output = "changed: fgraph reorder takes the id of a Feature on either side, as a work item's; queue.toml places Features by id beside the work items, read and written by src/flowgraph/queue.py; a Feature that is not in Backlog is refused as a work item is; a work item under a Feature is put before another work item of the same Feature alone, and one put before an item outside its Feature, or an item outside put before it, is refused naming the Feature; the status lists the Backlog by those places; the commit of the write reads chore: reorder F-0001 before S-0001 in the record; proved in tests/queue/ and tests/item/"
+created = 2026-11-21 23:10:19+00:00

@@ -22,10 +22,13 @@ commit = "4cafa20"
 
 [[tasks]]
 id = "T-0030"
-state = "backlog"
+state = "completed"
 title = "Create src/flowgraph/work_item/file.py and commands.py holding the item file in each state and the commands that load, move and save it"
 expected_output = "created: src/flowgraph/work_item/file.py and src/flowgraph/work_item/commands.py, one reader and one writer for the files of every prefix"
 created = 2026-11-21 07:18:44+00:00
+started = 2026-11-21 07:24:02+00:00
+completed = 2026-11-21 07:26:40+00:00
+commit = "5947500"
 
 [[tasks]]
 id = "T-0031"

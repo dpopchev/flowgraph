@@ -12,12 +12,14 @@ then = "it lists the Task under its Story, marked =>"
 
 [[tasks]]
 id = "T-0135"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_status_started_task.py, failing on the criterion of ST-0034"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_status_completed_order.py does, with a clock that moves on at every call. Seen red, then marked a strict xfail naming ST-0034 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_status_started_task.py states that fgraph status, run on a record with a Story started and a Task of it started, lists '    => T-0001  <title>' under the line of the Story"
 created = 2026-11-21 17:41:02+00:00
 started = 2026-11-21 17:56:59+00:00
+completed = 2026-11-21 17:57:16+00:00
+commit = "7e5b811"
 
 [[tasks]]
 id = "T-0136"

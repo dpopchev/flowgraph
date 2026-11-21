@@ -3,7 +3,8 @@
 Every write shares this one step. With the development turned on in the configuration of the
 record, the start of a work item also checks its branch out at that commit, in a worktree of its
 own. Outside a git work tree a write is left as its files, and so is the write of a record git
-ignores, whose start branches at HEAD.
+ignores, whose start branches at HEAD, and every write of a record whose configuration turns
+the commits off.
 """
 
 from collections.abc import Callable, Sequence
@@ -113,7 +114,8 @@ def commit_written(
     no branch was made. For a record git ignores nothing is committed either, and the branch of
     a start is checked out at HEAD. A write that changed no file makes no commit. With the
     development off in the configuration the start of a work item is a write as any other: no
-    branch, no worktree and no warning. Raises GitError naming the git command when git refuses
+    branch, no worktree and no warning. With the commits off in the configuration a write is
+    left as that of a record git ignores. Raises GitError naming the git command when git refuses
     a step: a commit refused puts the files back as they were, a worktree refused leaves the
     start as it is, committed or written.
     """
@@ -125,7 +127,7 @@ def commit_written(
         warning = f"fgraph: warning: no branch made: {record} is not inside a git work tree\n"
         return Said(written.out, warning)
     top = work_tree.path.resolve()
-    if work_tree.ignores(record):
+    if not config.git.commit or work_tree.ignores(record):
         at, where = HEAD, ""
     else:
         files = [file.resolve().relative_to(top) for file in store.find_changed_files()]

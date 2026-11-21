@@ -17,6 +17,7 @@ pytestmark = pytest.mark.command
 
 ON = make_config("[development]\nenabled = true\n")
 OFF = make_config("")
+UNCOMMITTED = make_config("[git]\ncommit = false\n")
 TOP = Path("/src/project")
 RECORD = TOP / ".fgraph"
 FILE = RECORD / "items" / "S-0001.toml"
@@ -115,6 +116,22 @@ def test_a_start_with_the_development_off_is_committed_as_any_write() -> None:
 def test_a_start_with_the_development_off_names_no_branch() -> None:
     said = commit_written(STARTED, store([FILE]), RECORD, lambda _: work_tree([]), OFF)
     assert said == Said("started S-0001\n")
+
+
+@pytest.mark.parametrize("written", [ADDED, STARTED], ids=["add", "start"])
+def test_a_write_with_the_commits_off_takes_no_git_step_and_says_its_line_alone(
+    written: Written,
+) -> None:
+    steps: list[object] = []
+    said = commit_written(written, store([FILE]), RECORD, lambda _: work_tree(steps), UNCOMMITTED)
+    assert (steps, said) == ([], Said(written.out))
+
+
+def test_a_write_with_the_commits_off_leaves_its_files_as_written() -> None:
+    restored: list[str] = []
+    refusing = tree(refuse, never)
+    commit_written(ADDED, store([FILE], restored), RECORD, lambda _: refusing, UNCOMMITTED)
+    assert restored == []
 
 
 def ignoring(steps: list[object]) -> WorkTree:

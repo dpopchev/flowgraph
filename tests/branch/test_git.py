@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph.branch import GitError, add_worktree, commit_file, work_tree_of
+from flowgraph.branch import GitError, add_worktree, commit_files, work_tree_of
 
 pytestmark = pytest.mark.edge
 
@@ -61,13 +61,13 @@ def test_a_directory_outside_any_work_tree_names_none(tmp_path: Path) -> None:
 
 def test_a_new_file_is_committed_with_its_message(checkout: Path) -> None:
     (checkout / "item.toml").write_text("id = 1\n", encoding="utf-8")
-    commit_file(checkout, Path("item.toml"), "chore: write the item")
+    commit_files(checkout, [Path("item.toml")],"chore: write the item")
     assert git(checkout, "log", "-1", "--format=%B") == "chore: write the item\n"
 
 
 def test_the_commit_is_named_by_its_sha(checkout: Path) -> None:
     (checkout / "item.toml").write_text("id = 1\n", encoding="utf-8")
-    assert commit_file(checkout, Path("item.toml"), "a message") == git(
+    assert commit_files(checkout, [Path("item.toml")],"a message") == git(
         checkout, "rev-parse", "HEAD"
     )
 
@@ -77,7 +77,7 @@ def test_the_commit_holds_only_the_file_named(checkout: Path) -> None:
     (checkout / "other.txt").write_text("staged\n", encoding="utf-8")
     git(checkout, "add", "other.txt")
     (checkout / "README").write_text("changed\n", encoding="utf-8")
-    commit_file(checkout, Path("item.toml"), "a message")
+    commit_files(checkout, [Path("item.toml")],"a message")
     assert git(checkout, "show", "--name-only", "--format=", "HEAD") == "item.toml"
 
 
@@ -86,13 +86,34 @@ def test_what_else_was_staged_or_changed_stays_so(checkout: Path) -> None:
     (checkout / "other.txt").write_text("staged\n", encoding="utf-8")
     git(checkout, "add", "other.txt")
     (checkout / "README").write_text("changed\n", encoding="utf-8")
-    commit_file(checkout, Path("item.toml"), "a message")
+    commit_files(checkout, [Path("item.toml")],"a message")
     assert git(checkout, "status", "--porcelain").splitlines() == [" M README", "A  other.txt"]
 
 
 def test_a_commit_git_refuses_raises_naming_the_command(checkout: Path) -> None:
     with pytest.raises(GitError, match=r"^git add -- missing.toml failed: .*missing\.toml"):
-        commit_file(checkout, Path("missing.toml"), "a message")
+        commit_files(checkout, [Path("missing.toml")], "a message")
+
+
+def test_several_files_are_held_by_one_commit(checkout: Path) -> None:
+    (checkout / "item.toml").write_text("id = 1\n", encoding="utf-8")
+    (checkout / "queue.toml").write_text("backlog = []\n", encoding="utf-8")
+    commit_files(checkout, [Path("item.toml"), Path("queue.toml")], "a message")
+    assert git(checkout, "show", "--name-only", "--format=", "HEAD").splitlines() == [
+        "item.toml",
+        "queue.toml",
+    ]
+
+
+def test_several_files_git_refuses_to_commit_are_left_unstaged(checkout: Path) -> None:
+    hook = checkout / ".git" / "hooks" / "pre-commit"
+    hook.write_text("#!/bin/sh\nexit 1\n", encoding="utf-8")
+    hook.chmod(0o755)
+    (checkout / "item.toml").write_text("id = 1\n", encoding="utf-8")
+    (checkout / "README").write_text("changed\n", encoding="utf-8")
+    with pytest.raises(GitError):
+        commit_files(checkout, [Path("item.toml"), Path("README")], "a message")
+    assert git(checkout, "status", "--porcelain").splitlines() == [" M README", "?? item.toml"]
 
 
 def test_a_worktree_is_added_on_a_new_branch_at_the_commit(checkout: Path, tmp_path: Path) -> None:
@@ -119,5 +140,5 @@ def test_a_commit_git_refuses_leaves_the_file_unstaged(checkout: Path) -> None:
     hook.chmod(0o755)
     (checkout / "README").write_text("changed\n", encoding="utf-8")
     with pytest.raises(GitError):
-        commit_file(checkout, Path("README"), "a message")
+        commit_files(checkout, [Path("README")], "a message")
     assert git(checkout, "status", "--porcelain") == " M README"

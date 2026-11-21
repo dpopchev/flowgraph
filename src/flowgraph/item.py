@@ -131,7 +131,11 @@ def open_git(directory: Path) -> WorkTree | None:
     top = branch.work_tree_of(directory)
     if top is None:
         return None
-    return WorkTree(top, partial(branch.commit_file, top), partial(branch.add_worktree, top))
+    return WorkTree(
+        top,
+        lambda file, message: branch.commit_files(top, [file], message),
+        partial(branch.add_worktree, top),
+    )
 
 
 def kind_named(name: str) -> Kind:

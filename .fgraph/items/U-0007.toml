@@ -1,0 +1,10 @@
+id = "U-0007"
+state = "backlog"
+title = "Cut the modules of src/flowgraph that name the state started as a constant of their own from three to one"
+description = "Found during T-0171 of S-0044 on 2026-11-21, under the burn of the Backlog; filed at the end of the queue and not burned. The state name started is a constant of src/flowgraph/item.py, of src/flowgraph/worktrees.py and of src/flowgraph/text.py, and src/flowgraph/parallel.py imports it from item.py. Its Tasks are written when it is ordered."
+created = 2026-11-21 23:21:02+00:00
+
+[criterion]
+given = "main"
+when = "make check runs"
+then = "it still passes"

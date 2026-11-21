@@ -12,10 +12,15 @@ from datetime import datetime
 from pathlib import Path
 from typing import Literal
 
-import tomli_w
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 from flowgraph.criterion import EmptyPartError, Scenario, make_scenario
+from flowgraph.item_file import (
+    CriterionFile,
+    criterion_primitives,
+    scenario_held,
+    write_checked,
+)
 from flowgraph.record import ITEMS, Now
 
 
@@ -162,16 +167,6 @@ def add_upkeep(
     return upkeep.id
 
 
-class _CriterionFile(BaseModel):
-    """The criterion table of an Upkeep file."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    given: str
-    when: str
-    then: str
-
-
 class _UpkeepFile(BaseModel):
     """What the file of an Upkeep in Backlog holds, validated as it is read."""
 
@@ -182,7 +177,7 @@ class _UpkeepFile(BaseModel):
     title: str
     description: str = ""
     created: datetime
-    criterion: _CriterionFile
+    criterion: CriterionFile
 
 
 def _read_upkeep_file(path: Path) -> _UpkeepFile:
@@ -239,18 +234,13 @@ def _upkeep_primitives(upkeep: Upkeep) -> dict[str, object]:
         "title": upkeep.title,
         **described,
         "created": upkeep.created,
-        "criterion": {
-            "given": upkeep.scenario.given,
-            "when": upkeep.scenario.when,
-            "then": upkeep.scenario.then,
-        },
+        "criterion": criterion_primitives(upkeep.scenario),
     }
 
 
 def _upkeep_held(held: _UpkeepFile) -> Upkeep:
     """The Upkeep a validated file holds, built through its constructors."""
-    criterion = held.criterion
-    scenario = make_scenario(criterion.given, criterion.when, criterion.then)
+    scenario = scenario_held(held.criterion)
     return make_upkeep(
         parse_upkeep_id(held.id), held.title, scenario, held.description, held.created
     )
@@ -264,10 +254,9 @@ def write_upkeep(record: Path, upkeep: Upkeep) -> None:
     was before.
     """
     path = _upkeep_path(record, upkeep.id)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    beside = path.with_name(f"{path.name}.tmp")
-    beside.write_text(tomli_w.dumps(_upkeep_primitives(upkeep)), encoding="utf-8")
-    if _upkeep_held(_read_upkeep_file(beside)) != upkeep:
-        beside.unlink()
-        raise UpkeepMismatchError(f"{path}: the Upkeep written reads back different")
-    beside.replace(path)
+    write_checked(
+        path,
+        _upkeep_primitives(upkeep),
+        lambda beside: _upkeep_held(_read_upkeep_file(beside)) == upkeep,
+        UpkeepMismatchError(f"{path}: the Upkeep written reads back different"),
+    )

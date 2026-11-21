@@ -6,10 +6,15 @@ from datetime import datetime
 from pathlib import Path
 from typing import Annotated, Literal, assert_never
 
-import tomli_w
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
 
-from flowgraph.criterion import make_commit, make_scenario
+from flowgraph.criterion import make_commit
+from flowgraph.item_file import (
+    CriterionFile,
+    criterion_primitives,
+    scenario_held,
+    write_checked,
+)
 from flowgraph.record import ITEMS
 from flowgraph.story.model import (
     CompletedStory,
@@ -59,16 +64,6 @@ ReadTaskIds = Callable[[Path], list[str]]
 
 # Save the Story whole into the record at the path.
 WriteStory = Callable[[Path, StoryState], None]
-
-
-class _CriterionFile(BaseModel):
-    """The criterion table of a Story file."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    given: str
-    when: str
-    then: str
 
 
 class _TaskFile(BaseModel):
@@ -130,7 +125,7 @@ class _StoryFile(BaseModel):
     title: str
     description: str = ""
     created: datetime
-    criterion: _CriterionFile
+    criterion: CriterionFile
     tasks: list[_TaskFile] = []
 
 
@@ -145,7 +140,7 @@ class _StartedStoryFile(BaseModel):
     description: str = ""
     created: datetime
     started: datetime
-    criterion: _CriterionFile
+    criterion: CriterionFile
     tasks: list[_HeldTask] = []
 
 
@@ -162,7 +157,7 @@ class _CompletedStoryFile(BaseModel):
     started: datetime
     completed: datetime
     commit: str
-    criterion: _CriterionFile
+    criterion: CriterionFile
     tasks: list[_CompletedTaskFile] = []
 
 
@@ -301,11 +296,7 @@ def _story_primitives(story: StoryState) -> dict[str, object]:
         **described,
         "created": story.created,
         **_moves_primitives(story),
-        "criterion": {
-            "given": story.scenario.given,
-            "when": story.scenario.when,
-            "then": story.scenario.then,
-        },
+        "criterion": criterion_primitives(story.scenario),
         **tasks,
     }
 
@@ -340,8 +331,7 @@ def _story_held(held: _HeldStoryFile) -> StoryState:
     A Story and its Tasks past Backlog are built by the moves that took them there, so a file
     holds no state those moves could not reach.
     """
-    criterion = held.criterion
-    scenario = make_scenario(criterion.given, criterion.when, criterion.then)
+    scenario = scenario_held(held.criterion)
     story = make_story(
         parse_story_id(held.id), held.title, scenario, held.description, held.created
     )
@@ -373,10 +363,9 @@ def write_story(record: Path, story: StoryState) -> None:
     it was before.
     """
     path = record / ITEMS / f"{story_id_text(story.id)}.toml"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    beside = path.with_name(f"{path.name}.tmp")
-    beside.write_text(tomli_w.dumps(_story_primitives(story)), encoding="utf-8")
-    if _story_held(_read_story_file(beside)) != story:
-        beside.unlink()
-        raise StoryMismatchError(f"{path}: the Story written reads back different")
-    beside.replace(path)
+    write_checked(
+        path,
+        _story_primitives(story),
+        lambda beside: _story_held(_read_story_file(beside)) == story,
+        StoryMismatchError(f"{path}: the Story written reads back different"),
+    )

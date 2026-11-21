@@ -5,11 +5,17 @@ An Upkeep is added and listed; it holds no Task and does not move yet.
 """
 
 import re
+import tomllib
 from collections.abc import Callable, Collection
 from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
+from typing import Literal
 
-from flowgraph.story import EmptyPartError, Now, Scenario, make_scenario
+import tomli_w
+from pydantic import BaseModel, ConfigDict, ValidationError
+
+from flowgraph.story import ITEMS, EmptyPartError, Now, Scenario, make_scenario
 
 
 @dataclass(frozen=True)
@@ -40,15 +46,54 @@ class UpkeepRow:
     commit: str = ""
 
 
+@dataclass
+class UpkeepDetail:
+    """One Upkeep with its criterion as plain data, as a view reads it whole."""
+
+    id: str
+    title: str
+    state: str
+    description: str
+    given: str
+    when: str
+    then: str
+
+
 # The rows of the upkeeps in the record; an empty list when it holds none.
 FindUpkeepRows = Callable[[], list[UpkeepRow]]
 
 # Save the Upkeep whole.
 SaveUpkeep = Callable[[Upkeep], None]
 
+# The rows of the upkeeps in the record at the path; an empty list when it holds none.
+ReadUpkeepRows = Callable[[Path], list[UpkeepRow]]
+
+# The Upkeep of that id in the record at the path as plain data; raises UpkeepNotFoundError when
+# the record holds none.
+ReadUpkeepDetail = Callable[[Path, UpkeepId], UpkeepDetail]
+
+# Save the Upkeep whole into the record at the path.
+WriteUpkeep = Callable[[Path, Upkeep], None]
+
 
 class UpkeepIdError(ValueError):
     """A number or a text that is no Upkeep id."""
+
+
+class UpkeepNotFoundError(Exception):
+    """A record that holds no Upkeep of the id asked for; `upkeep_id` is that id."""
+
+    def __init__(self, upkeep_id: UpkeepId) -> None:
+        super().__init__(f"no Upkeep {upkeep_id_text(upkeep_id)} in the record")
+        self.upkeep_id = upkeep_id
+
+
+class UpkeepFileError(Exception):
+    """A file named as an Upkeep in a record that does not hold one; names its path."""
+
+
+class UpkeepMismatchError(Exception):
+    """An Upkeep read back different from the one written; its file is as it was before."""
 
 
 def make_upkeep_id(number: int) -> UpkeepId:
@@ -114,3 +159,114 @@ def add_upkeep(
     upkeep = make_upkeep(next_upkeep_id(taken), title, scenario, description, now())
     save_upkeep(upkeep)
     return upkeep.id
+
+
+class _CriterionFile(BaseModel):
+    """The criterion table of an Upkeep file."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    given: str
+    when: str
+    then: str
+
+
+class _UpkeepFile(BaseModel):
+    """What the file of an Upkeep in Backlog holds, validated as it is read."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    state: Literal["backlog"]
+    title: str
+    description: str = ""
+    created: datetime
+    criterion: _CriterionFile
+
+
+def _read_upkeep_file(path: Path) -> _UpkeepFile:
+    """The content of one Upkeep file; raises UpkeepFileError naming the path."""
+    try:
+        return _UpkeepFile.model_validate(tomllib.loads(path.read_text(encoding="utf-8")))
+    except (tomllib.TOMLDecodeError, ValidationError) as error:
+        raise UpkeepFileError(f"{path} holds no Upkeep: {error}") from error
+
+
+def _upkeep_path(record: Path, upkeep_id: UpkeepId) -> Path:
+    """The path of the file of the Upkeep of that id in the record."""
+    return record / ITEMS / f"{upkeep_id_text(upkeep_id)}.toml"
+
+
+def read_upkeep_rows(record: Path) -> list[UpkeepRow]:
+    """Adapter: the rows of the upkeeps in the record, by id.
+
+    An Upkeep is a file of the items named `U-`; a file of another kind is left alone. Raises
+    UpkeepFileError naming the first such file that does not hold an Upkeep.
+    """
+    held = [_read_upkeep_file(path) for path in (record / ITEMS).glob("U-*.toml")]
+    rows = [UpkeepRow(upkeep.id, upkeep.title, upkeep.state) for upkeep in held]
+    return sorted(rows, key=lambda row: parse_upkeep_id(row.id).number)
+
+
+def read_upkeep_detail(record: Path, upkeep_id: UpkeepId) -> UpkeepDetail:
+    """Adapter: the Upkeep of that id in the record, as plain data.
+
+    Raises UpkeepNotFoundError when the record holds no such Upkeep and UpkeepFileError when its
+    file does not hold one.
+    """
+    path = _upkeep_path(record, upkeep_id)
+    if not path.is_file():
+        raise UpkeepNotFoundError(upkeep_id)
+    held = _read_upkeep_file(path)
+    return UpkeepDetail(
+        id=held.id,
+        title=held.title,
+        state=held.state,
+        description=held.description,
+        given=held.criterion.given,
+        when=held.criterion.when,
+        then=held.criterion.then,
+    )
+
+
+def _upkeep_primitives(upkeep: Upkeep) -> dict[str, object]:
+    """The Upkeep as the primitives its file holds; a description only when there is one."""
+    described = {"description": upkeep.description} if upkeep.description else {}
+    return {
+        "id": upkeep_id_text(upkeep.id),
+        "state": "backlog",
+        "title": upkeep.title,
+        **described,
+        "created": upkeep.created,
+        "criterion": {
+            "given": upkeep.scenario.given,
+            "when": upkeep.scenario.when,
+            "then": upkeep.scenario.then,
+        },
+    }
+
+
+def _upkeep_held(held: _UpkeepFile) -> Upkeep:
+    """The Upkeep a validated file holds, built through its constructors."""
+    criterion = held.criterion
+    scenario = make_scenario(criterion.given, criterion.when, criterion.then)
+    return make_upkeep(
+        parse_upkeep_id(held.id), held.title, scenario, held.description, held.created
+    )
+
+
+def write_upkeep(record: Path, upkeep: Upkeep) -> None:
+    """Adapter: write the Upkeep as its one file in the record.
+
+    The Upkeep is written beside its file and read back before it replaces it. Raises
+    UpkeepMismatchError naming the file when the Upkeep read back differs; the file is then as it
+    was before.
+    """
+    path = _upkeep_path(record, upkeep.id)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    beside = path.with_name(f"{path.name}.tmp")
+    beside.write_text(tomli_w.dumps(_upkeep_primitives(upkeep)), encoding="utf-8")
+    if _upkeep_held(_read_upkeep_file(beside)) != upkeep:
+        beside.unlink()
+        raise UpkeepMismatchError(f"{path}: the Upkeep written reads back different")
+    beside.replace(path)

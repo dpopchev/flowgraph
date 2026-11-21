@@ -1,0 +1,10 @@
+id = "ST-0046"
+state = "backlog"
+title = "Raise the Features fgraph status lists inside their bucket, in place of their work items, from none to every one"
+description = "The developer's request of 2026-11-21, after F-0001 was filed, in the agent's words: the Features are to be seen under the Backlog and not in a block outside the buckets, and the work items that are part of a Feature are not listed. The developer's remark of the same day: a Feature is an umbrella, yet it is ordered in the queue of the Backlog as the others are; it does not ride on its work items. This reverses the decision of 2026-11-21 that ST-0025 built (docs/domain-model.md, Persistence: a block of their own above the buckets, the status flat). Readings of the agent, shown with the plan: (1) the heading Features is gone; a Feature is one line in the bucket derived for it, with its progress, counted once beside the heading and toward the top 5; (2) its work items in Backlog and in Completed are listed on no line of their own, and fgraph show of the Feature lists them; (3) a Feature holds a place of its own in the queue: it joins the end when it is added, as a work item does, and is not placed by its first work item; (4) under InProgress the started work items of a Feature are listed under it, indented, each with its progress and its Task being worked, so that what is worked stays in status -- the leading option shown; the developer remarked on the queue alone. Open, decided when it is ordered: where a Feature stands in InProgress and in Completed, by the last start and the last completion of its work items or otherwise; and the order of the work items inside a Feature. Reordering a Feature is ST-0047. Its Tasks are written when it is ordered."
+created = 2026-11-21 21:01:48+00:00
+
+[criterion]
+given = "a record with a Story standing alone and, added after it, a Feature with two Stories under it, all in Backlog"
+when = "fgraph status is run"
+then = "Backlog (2) lists the Story and then the Feature with its progress 0/2 W, and neither Story of the Feature"

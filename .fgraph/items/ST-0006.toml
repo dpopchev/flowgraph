@@ -32,3 +32,11 @@ title = "Add the criterion of a Bug to src/flowgraph/criterion.py and carry the 
 description = "Pure but for the file adapter. The field scenario of a work item becomes criterion, since a Bug has no scenario. A blank observed or expected is refused through said(). A work item made with the criterion of another kind is refused, which the file reader names with its path."
 expected_output = "changed: src/flowgraph/criterion.py holds Defect, what is observed and what is expected, beside Scenario; a kind names the criterion it takes and a work item carries that criterion; the file of a work item keeps either in its criterion table and reads it back; an amend rewrites the parts of the criterion the work item has and refuses the others; the detail a view reads gains observed and expected; their tests are in tests/criterion/ and tests/work_item/"
 created = 2026-11-21 11:45:00+00:00
+
+[[tasks]]
+id = "T-0087"
+state = "backlog"
+title = "Add the Bug kind to src/flowgraph/bug.py, src/flowgraph/store.py, src/flowgraph/item.py, src/flowgraph/cli.py and src/flowgraph/text.py"
+description = "The kinds are listed once, in src/flowgraph/store.py. Removes the xfail mark of tests/functional/test_complete_bug.py."
+expected_output = "changed: fgraph add bug TITLE --observed TEXT --expected TEXT adds B-0001 to Backlog; a Bug takes Tasks and moves as a Story does and is listed by fgraph status; fgraph show prints what is observed and expected; fgraph amend takes --observed and --expected; created: src/flowgraph/bug.py with the kind, its id functions and its names"
+created = 2026-11-21 11:45:00+00:00

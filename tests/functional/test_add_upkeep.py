@@ -86,6 +86,7 @@ class TestAnUpkeepAddedToARecordWithOneStory:
             "  given        a behavior\n"
             "  when         it runs\n"
             "  then         it still holds\n"
+            "Tasks (0)\n"
         )
 
 

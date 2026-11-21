@@ -133,7 +133,7 @@ def start_task(
 ) -> StoryId:
     """Start the Task of that id now, save its Story whole and return the id of that Story.
 
-    Raises TaskNotFoundError when no Story holds the Task, StoryInBacklogError when its Story is
+    Raises TaskNotFoundError when no Story holds the Task, ItemInBacklogError when its Story is
     in Backlog, StartedAlreadyError when it is started and CompletedAlreadyError when it is
     completed; nothing is saved.
     """

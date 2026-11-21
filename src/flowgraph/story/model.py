@@ -10,19 +10,20 @@ from flowgraph.criterion import Commit, Scenario, said
 from flowgraph.task import (
     CompletedAlreadyError,
     CompletedTask,
+    ItemInBacklogError,
+    NoTaskError,
     NotStartedError,
     StartedAlreadyError,
     StartedTask,
     Task,
     TaskId,
-    TaskIdError,
-    TaskNotFoundError,
     TaskRow,
     TaskState,
-    completed,
-    parse_task_id,
-    started,
+    all_completed,
+    completed_among,
+    started_among,
     task_id_text,
+    task_of,
 )
 
 
@@ -138,22 +139,6 @@ class StoryMismatchError(Exception):
     """A Story read back different from the one written; its file is as it was before."""
 
 
-class ItemIdError(ValueError):
-    """A text that is neither a Story id nor a Task id."""
-
-
-class NoTaskError(ValueError):
-    """A Story started without a Task written for it."""
-
-
-class StoryInBacklogError(ValueError):
-    """A Task started while its Story is still in Backlog."""
-
-
-class OpenTaskError(ValueError):
-    """A Story completed while some of its Tasks are not."""
-
-
 def make_story_id(number: int) -> StoryId:
     """The id of the Story with that number in the record.
 
@@ -196,21 +181,6 @@ def make_story(
     return Story(story_id, said("title", title), scenario, description, to_the_second, ())
 
 
-def parse_item_id(text: str) -> StoryId | TaskId:
-    """The Story id or the Task id written as the text.
-
-    Raises ItemIdError when the text is neither.
-    """
-    try:
-        return parse_story_id(text)
-    except StoryIdError:
-        pass
-    try:
-        return parse_task_id(text)
-    except TaskIdError:
-        raise ItemIdError(f"{text!r} is no Story id or Task id") from None
-
-
 def append_task[S: OpenStory](story: S, task: Task) -> S:
     """The Story with the Task written for it, after the Tasks it already has."""
     return replace(story, tasks=(*story.tasks, task))
@@ -225,14 +195,6 @@ def still_open(story: StoryState) -> OpenStory:
             raise CompletedAlreadyError(f"{story_id_text(story.id)} is completed already")
         case _ as unreachable:
             assert_never(unreachable)
-
-
-def _task_of(story: StoryState, task_id: TaskId) -> TaskState:
-    """The Task of that id in the Story; raises TaskNotFoundError when it holds none."""
-    held = [task for task in story.tasks if task.id == task_id]
-    if not held:
-        raise TaskNotFoundError(task_id)
-    return held[0]
 
 
 def started_story(story: StoryState, on: datetime) -> StartedStory:
@@ -266,20 +228,19 @@ def started_story(story: StoryState, on: datetime) -> StartedStory:
 def started_task(story: StoryState, task_id: TaskId, on: datetime) -> StartedStory:
     """The started Story with its Task of that id started on that time, kept to the second.
 
-    Raises TaskNotFoundError when the Story holds no such Task, StoryInBacklogError when the
+    Raises TaskNotFoundError when the Story holds no such Task, ItemInBacklogError when the
     Story is in Backlog, StartedAlreadyError when the Task is started and CompletedAlreadyError
     when it is completed.
     """
-    _task_of(story, task_id)
+    task_of(story.tasks, task_id)
     task = task_id_text(task_id)
     match story:
         case Story():
-            raise StoryInBacklogError(
+            raise ItemInBacklogError(
                 f"{task} cannot start: {story_id_text(story.id)} is in Backlog"
             )
         case StartedStory():
-            tasks = tuple(started(t, on) if t.id == task_id else t for t in story.tasks)
-            return replace(story, tasks=tasks)
+            return replace(story, tasks=started_among(story.tasks, task_id, on))
         case CompletedStory():
             raise CompletedAlreadyError(f"{task} is completed already")
         case _ as unreachable:
@@ -294,14 +255,13 @@ def completed_task(
     Raises TaskNotFoundError when the Story holds no such Task, NotStartedError when the Task is
     in Backlog and CompletedAlreadyError when it is completed.
     """
-    _task_of(story, task_id)
+    task_of(story.tasks, task_id)
     task = task_id_text(task_id)
     match story:
         case Story():
             raise NotStartedError(f"{task} is in Backlog: start it first")
         case StartedStory():
-            done = tuple(completed(t, on, commit) if t.id == task_id else t for t in story.tasks)
-            return replace(story, tasks=done)
+            return replace(story, tasks=completed_among(story.tasks, task_id, on, commit))
         case CompletedStory():
             raise CompletedAlreadyError(f"{task} is completed already")
         case _ as unreachable:
@@ -318,11 +278,7 @@ def completed_story(story: StoryState, on: datetime, commit: Commit) -> Complete
         case Story():
             raise NotStartedError(f"{story_id_text(story.id)} is in Backlog: start it first")
         case StartedStory():
-            done = tuple(task for task in story.tasks if isinstance(task, CompletedTask))
-            left = [task_id_text(t.id) for t in story.tasks if not isinstance(t, CompletedTask)]
-            if left:
-                held = story_id_text(story.id)
-                raise OpenTaskError(f"{held} has Tasks to complete first: {', '.join(left)}")
+            done = all_completed(story.tasks, story_id_text(story.id))
             return CompletedStory(
                 story.id,
                 story.title,

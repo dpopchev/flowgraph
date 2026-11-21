@@ -6,7 +6,6 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph import upkeep
 from flowgraph.criterion import make_scenario
 from flowgraph.upkeep import (
     UpkeepDetail,
@@ -20,6 +19,7 @@ from flowgraph.upkeep import (
     read_upkeep_rows,
     write_upkeep,
 )
+from flowgraph.upkeep import file as upkeep_file
 
 pytestmark = pytest.mark.edge
 
@@ -74,6 +74,7 @@ def test_an_upkeep_is_read_as_detail(tmp_path: Path) -> None:
         given="a behavior",
         when="it runs",
         then="it still holds",
+        tasks=[],
     )
 
 
@@ -103,7 +104,7 @@ class TestAWriteThatReadsBackDifferent:
             "created": CREATED,
             "criterion": {"given": "a behavior", "when": "it runs", "then": "it still holds"},
         }
-        monkeypatch.setattr(upkeep.tomllib, "loads", lambda _: another)
+        monkeypatch.setattr(upkeep_file.tomllib, "loads", lambda _: another)
         with pytest.raises(UpkeepMismatchError) as error:
             write_upkeep(tmp_path, UPKEEP)
         return path, str(error.value)

@@ -2,6 +2,7 @@
 
 import tomllib
 from collections.abc import Callable
+from dataclasses import replace
 from datetime import datetime
 from pathlib import Path
 from typing import Annotated, Literal, assert_never
@@ -10,9 +11,16 @@ from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
 
 from flowgraph.criterion import make_commit
 from flowgraph.item_file import (
+    CompletedTaskFile,
     CriterionFile,
+    HeldTask,
+    TaskFile,
+    backlog_task,
     criterion_primitives,
     scenario_held,
+    task_held,
+    task_primitives,
+    task_row,
     write_checked,
 )
 from flowgraph.record import ITEMS
@@ -29,23 +37,11 @@ from flowgraph.story.model import (
     StoryState,
     append_task,
     completed_story,
-    completed_task,
     make_story,
     parse_story_id,
     started_story,
-    started_task,
     state_name,
     story_id_text,
-)
-from flowgraph.task import (
-    CompletedTask,
-    StartedTask,
-    Task,
-    TaskRow,
-    TaskState,
-    make_task,
-    parse_task_id,
-    task_id_text,
 )
 
 # The rows of the stories in the record at the path; an empty list when it holds none.
@@ -66,55 +62,6 @@ ReadTaskIds = Callable[[Path], list[str]]
 WriteStory = Callable[[Path, StoryState], None]
 
 
-class _TaskFile(BaseModel):
-    """One table of the tasks of a Story file: a Task in Backlog."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    id: str
-    state: Literal["backlog"]
-    title: str
-    description: str = ""
-    expected_output: str
-    created: datetime
-
-
-class _StartedTaskFile(BaseModel):
-    """One table of the tasks of a started Story file: a started Task."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    id: str
-    state: Literal["started"]
-    title: str
-    description: str = ""
-    expected_output: str
-    created: datetime
-    started: datetime
-
-
-class _CompletedTaskFile(BaseModel):
-    """One table of the tasks of a Story file: a completed Task, with its commit."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    id: str
-    state: Literal["completed"]
-    title: str
-    description: str = ""
-    expected_output: str
-    created: datetime
-    started: datetime
-    completed: datetime
-    commit: str
-
-
-# One table of the tasks of a started Story file, told apart by its state line.
-_HeldTask = Annotated[
-    _TaskFile | _StartedTaskFile | _CompletedTaskFile, Field(discriminator="state")
-]
-
-
 class _StoryFile(BaseModel):
     """What the file of a Story in Backlog holds: its Tasks are all in Backlog."""
 
@@ -126,7 +73,7 @@ class _StoryFile(BaseModel):
     description: str = ""
     created: datetime
     criterion: CriterionFile
-    tasks: list[_TaskFile] = []
+    tasks: list[TaskFile] = []
 
 
 class _StartedStoryFile(BaseModel):
@@ -141,7 +88,7 @@ class _StartedStoryFile(BaseModel):
     created: datetime
     started: datetime
     criterion: CriterionFile
-    tasks: list[_HeldTask] = []
+    tasks: list[HeldTask] = []
 
 
 class _CompletedStoryFile(BaseModel):
@@ -158,7 +105,7 @@ class _CompletedStoryFile(BaseModel):
     completed: datetime
     commit: str
     criterion: CriterionFile
-    tasks: list[_CompletedTaskFile] = []
+    tasks: list[CompletedTaskFile] = []
 
 
 # The file of a Story in any of its states.
@@ -170,14 +117,12 @@ _HELD_STORY: TypeAdapter[_HeldStoryFile] = TypeAdapter(
 )
 
 
-def _commit_held(
-    held: _HeldStoryFile | _TaskFile | _StartedTaskFile | _CompletedTaskFile,
-) -> str:
+def _commit_held(held: _HeldStoryFile) -> str:
     """The commit a validated file or table holds; empty for an item not completed."""
     match held:
-        case _CompletedStoryFile() | _CompletedTaskFile():
+        case _CompletedStoryFile():
             return held.commit
-        case _StoryFile() | _StartedStoryFile() | _TaskFile() | _StartedTaskFile():
+        case _StoryFile() | _StartedStoryFile():
             return ""
         case _ as unreachable:
             assert_never(unreachable)
@@ -234,17 +179,7 @@ def read_story_detail(record: Path, story_id: StoryId) -> StoryDetail:
         given=held.criterion.given,
         when=held.criterion.when,
         then=held.criterion.then,
-        tasks=[
-            TaskRow(
-                task.id,
-                task.title,
-                task.expected_output,
-                task.description,
-                task.state,
-                _commit_held(task),
-            )
-            for task in held.tasks
-        ],
+        tasks=[task_row(task) for task in held.tasks],
         commit=_commit_held(held),
     )
 
@@ -258,37 +193,23 @@ def read_task_ids(record: Path) -> list[str]:
     return [task.id for story in held for task in story.tasks]
 
 
-def _moves_primitives(item: StoryState | TaskState) -> dict[str, object]:
+def _moves_primitives(item: StoryState) -> dict[str, object]:
     """The times and the commit of the moves an item has made, as its file holds them."""
     match item:
-        case Story() | Task():
+        case Story():
             return {}
-        case StartedStory() | StartedTask():
+        case StartedStory():
             return {"started": item.started}
-        case CompletedStory() | CompletedTask():
+        case CompletedStory():
             return {"started": item.started, "completed": item.completed, "commit": item.commit.sha}
         case _ as unreachable:
             assert_never(unreachable)
 
 
-def _task_primitives(task: TaskState) -> dict[str, object]:
-    """The Task as the primitives its table holds; a description only when there is one."""
-    described = {"description": task.description} if task.description else {}
-    return {
-        "id": task_id_text(task.id),
-        "state": state_name(task),
-        "title": task.title,
-        **described,
-        "expected_output": task.expected_output,
-        "created": task.created,
-        **_moves_primitives(task),
-    }
-
-
 def _story_primitives(story: StoryState) -> dict[str, object]:
     """The Story as the primitives its file holds; a description and tasks only when it has any."""
     described = {"description": story.description} if story.description else {}
-    tasks = {"tasks": [_task_primitives(task) for task in story.tasks]} if story.tasks else {}
+    tasks = {"tasks": [task_primitives(task) for task in story.tasks]} if story.tasks else {}
     return {
         "id": story_id_text(story.id),
         "state": state_name(story),
@@ -299,30 +220,6 @@ def _story_primitives(story: StoryState) -> dict[str, object]:
         "criterion": criterion_primitives(story.scenario),
         **tasks,
     }
-
-
-def _task_held(held: _TaskFile | _StartedTaskFile | _CompletedTaskFile) -> Task:
-    """The Task a validated table holds, in Backlog, built through its constructors."""
-    return make_task(
-        parse_task_id(held.id), held.title, held.expected_output, held.description, held.created
-    )
-
-
-def _task_moved(
-    story: StartedStory, held: _TaskFile | _StartedTaskFile | _CompletedTaskFile
-) -> StartedStory:
-    """The started Story with the Task of the table moved as far as the table says."""
-    task_id = parse_task_id(held.id)
-    match held:
-        case _TaskFile():
-            return story
-        case _StartedTaskFile():
-            return started_task(story, task_id, held.started)
-        case _CompletedTaskFile():
-            begun = started_task(story, task_id, held.started)
-            return completed_task(begun, task_id, held.completed, make_commit(held.commit))
-        case _ as unreachable:
-            assert_never(unreachable)
 
 
 def _story_held(held: _HeldStoryFile) -> StoryState:
@@ -336,14 +233,13 @@ def _story_held(held: _HeldStoryFile) -> StoryState:
         parse_story_id(held.id), held.title, scenario, held.description, held.created
     )
     for task in held.tasks:
-        story = append_task(story, _task_held(task))
+        story = append_task(story, backlog_task(task))
     match held:
         case _StoryFile():
             return story
         case _StartedStoryFile() | _CompletedStoryFile():
-            begun = started_story(story, held.started)
-            for task in held.tasks:
-                begun = _task_moved(begun, task)
+            tasks = tuple(task_held(task) for task in held.tasks)
+            begun = replace(started_story(story, held.started), tasks=tasks)
             match held:
                 case _CompletedStoryFile():
                     return completed_story(begun, held.completed, make_commit(held.commit))

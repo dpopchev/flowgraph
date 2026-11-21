@@ -6,111 +6,51 @@ Without a command it shows the help menu and names the record.
 import argparse
 import sys
 from collections.abc import Callable, Sequence
-from dataclasses import dataclass
 from datetime import UTC, datetime
-from functools import partial
 from pathlib import Path
 from typing import assert_never
 
-from flowgraph import story, upkeep
-from flowgraph.criterion import CommitError, EmptyPartError, make_commit
-from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, Now, locate
-from flowgraph.story import (
-    FindStoryRows,
-    FindTaskIds,
+from flowgraph.criterion import CommitError, EmptyPartError
+from flowgraph.item import (
     ItemIdError,
-    LoadStory,
-    NoTaskError,
-    OpenTaskError,
-    SaveStory,
-    StoryDetail,
-    StoryId,
-    StoryIdError,
-    StoryInBacklogError,
-    StoryNotFoundError,
-    add_story,
-    add_task,
-    complete_story,
-    complete_task,
-    parse_item_id,
-    parse_story_id,
-    start_story,
-    start_task,
-    story_id_text,
+    OpenStore,
+    Store,
+    complete_item,
+    open_files,
+    show_item,
+    start_item,
+    write_task,
 )
+from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, Now, locate
+from flowgraph.story import StoryIdError, StoryNotFoundError, add_story, story_id_text
 from flowgraph.task import (
     CompletedAlreadyError,
+    ItemInBacklogError,
+    NoTaskError,
     NotStartedError,
+    OpenTaskError,
     StartedAlreadyError,
-    TaskId,
     TaskNotFoundError,
-    task_id_text,
 )
-from flowgraph.text import show_text, show_upkeep_text, status_text
-from flowgraph.upkeep import (
-    FindUpkeepRows,
-    SaveUpkeep,
-    UpkeepDetail,
-    UpkeepId,
-    UpkeepIdError,
-    UpkeepNotFoundError,
-    add_upkeep,
-    parse_upkeep_id,
-    upkeep_id_text,
-)
+from flowgraph.text import status_text
+from flowgraph.upkeep import UpkeepNotFoundError, add_upkeep, upkeep_id_text
+
+__all__ = ["Store", "open_files", "run"]
 
 DESCRIPTION = "flowgraph keeps the record of a project's work."
 
 # Write text to a stream; what it returns is ignored, so a stream's write and a list's append fit.
 Write = Callable[[str], object]
 
-# The Story of that id as plain data; raises StoryNotFoundError when the record holds none.
-FindStoryDetail = Callable[[StoryId], StoryDetail]
-
-# The Upkeep of that id as plain data; raises UpkeepNotFoundError when the record holds none.
-FindUpkeepDetail = Callable[[UpkeepId], UpkeepDetail]
-
-
-@dataclass(frozen=True)
-class Store:
-    """The reads and writes of one record, each already bound to its directory."""
-
-    find_story_rows: FindStoryRows
-    load_story: LoadStory
-    find_story_detail: FindStoryDetail
-    find_task_ids: FindTaskIds
-    save_story: SaveStory
-    find_upkeep_rows: FindUpkeepRows
-    find_upkeep_detail: FindUpkeepDetail
-    save_upkeep: SaveUpkeep
-
-
-# The store of the record in that directory.
-OpenStore = Callable[[Path], Store]
-
-
-def open_files(record: Path) -> Store:
-    """The store of the record in that directory, kept as its files."""
-    return Store(
-        find_story_rows=partial(story.read_story_rows, record),
-        load_story=partial(story.read_story, record),
-        find_story_detail=partial(story.read_story_detail, record),
-        find_task_ids=partial(story.read_task_ids, record),
-        save_story=partial(story.write_story, record),
-        find_upkeep_rows=partial(upkeep.read_upkeep_rows, record),
-        find_upkeep_detail=partial(upkeep.read_upkeep_detail, record),
-        save_upkeep=partial(upkeep.write_upkeep, record),
-    )
-
-
 # The refusals of a start, each written as a usage error.
 START_REFUSED = (
     ItemIdError,
     StoryNotFoundError,
+    UpkeepNotFoundError,
     TaskNotFoundError,
     NoTaskError,
     StartedAlreadyError,
-    StoryInBacklogError,
+    ItemInBacklogError,
     CompletedAlreadyError,
 )
 
@@ -119,6 +59,7 @@ COMPLETE_REFUSED = (
     ItemIdError,
     CommitError,
     StoryNotFoundError,
+    UpkeepNotFoundError,
     TaskNotFoundError,
     NotStartedError,
     OpenTaskError,
@@ -156,10 +97,12 @@ def build_parser() -> argparse.ArgumentParser:
     story.add_argument("--then", required=True, metavar="STATE", help="the expected state")
     story.add_argument("--description", default="", metavar="TEXT", help="free text, optional")
     task = kinds.add_parser(
-        "task", help="a deliverable of a Story, with its output", add_help=False, color=False
+        "task", help="a deliverable of a work item, with its output", add_help=False, color=False
     )
     task.add_argument("title", metavar="TITLE", help="a verb, the artifact and its target state")
-    task.add_argument("--parent", required=True, metavar="ID", help="the Story it is written for")
+    task.add_argument(
+        "--parent", required=True, metavar="ID", help="the Story or Upkeep it is written for"
+    )
     task.add_argument("--output", required=True, metavar="TEXT", help="the expected output")
     task.add_argument("--description", default="", metavar="TEXT", help="free text, optional")
     upkeep = kinds.add_parser(
@@ -174,17 +117,20 @@ def build_parser() -> argparse.ArgumentParser:
     upkeep.add_argument("--then", required=True, metavar="STATE", help="what still holds")
     upkeep.add_argument("--description", default="", metavar="TEXT", help="free text, optional")
     show = commands.add_parser(
-        "show", help="show a Story with its Tasks, or an Upkeep", add_help=False, color=False
+        "show", help="show a Story or an Upkeep with its Tasks", add_help=False, color=False
     )
     show.add_argument("id", metavar="ID", help="the id of the Story or of the Upkeep")
     start = commands.add_parser(
-        "start", help="start a Story or a Task of it", add_help=False, color=False
+        "start", help="start a work item or a Task of it", add_help=False, color=False
     )
-    start.add_argument("id", metavar="ID", help="the id of the Story or of the Task")
+    start.add_argument("id", metavar="ID", help="the id of the Story, the Upkeep or the Task")
     complete = commands.add_parser(
-        "complete", help="complete a Story or a Task of it in a commit", add_help=False, color=False
+        "complete",
+        help="complete a work item or a Task of it in a commit",
+        add_help=False,
+        color=False,
     )
-    complete.add_argument("id", metavar="ID", help="the id of the Story or of the Task")
+    complete.add_argument("id", metavar="ID", help="the id of the Story, the Upkeep or the Task")
     complete.add_argument(
         "--commit", required=True, metavar="SHA", help="the commit that holds its work"
     )
@@ -192,49 +138,6 @@ def build_parser() -> argparse.ArgumentParser:
         "status", help="list the items of the record by bucket", add_help=False, color=False
     )
     return parser
-
-
-def _show(item: str, store: Store) -> str:
-    """The text of the Story or the Upkeep of that id.
-
-    Raises StoryIdError when the text is neither id, naming it as no Story id, and
-    StoryNotFoundError or UpkeepNotFoundError when the record holds no such item.
-    """
-    try:
-        upkeep_id = parse_upkeep_id(item)
-    except UpkeepIdError:
-        return show_text(store.find_story_detail(parse_story_id(item)))
-    return show_upkeep_text(store.find_upkeep_detail(upkeep_id))
-
-
-def _complete(item: str, sha: str, store: Store, now: Now) -> str:
-    """Complete the Story or the Task of that id in the commit of that sha; the line that says so.
-
-    Raises ItemIdError, CommitError, or a refusal of the move (COMPLETE_REFUSED); nothing is saved.
-    """
-    commit = make_commit(sha)
-    match parse_item_id(item):
-        case StoryId() as story_id:
-            complete_story(
-                story_id=story_id,
-                commit=commit,
-                load_story=store.load_story,
-                save_story=store.save_story,
-                now=now,
-            )
-            return f"completed {story_id_text(story_id)} at {commit.sha}\n"
-        case TaskId() as task_id:
-            holder = complete_task(
-                task_id=task_id,
-                commit=commit,
-                find_story_rows=store.find_story_rows,
-                load_story=store.load_story,
-                save_story=store.save_story,
-                now=now,
-            )
-            return f"completed {task_id_text(task_id)} of {story_id_text(holder)} at {commit.sha}\n"
-        case _ as unreachable:
-            assert_never(unreachable)
 
 
 def run(
@@ -261,29 +164,23 @@ def run(
             store = open_store(path)
             if args.command == "add" and args.kind == "task":
                 try:
-                    written = add_task(
-                        parent=args.parent,
-                        title=args.title,
-                        expected_output=args.output,
-                        description=args.description,
-                        load_story=store.load_story,
-                        find_task_ids=store.find_task_ids,
-                        save_story=store.save_story,
-                        now=now,
+                    written = write_task(
+                        args.parent, args.title, args.output, args.description, store, now
                     )
                 except (
                     StoryNotFoundError,
                     StoryIdError,
+                    UpkeepNotFoundError,
                     EmptyPartError,
                     CompletedAlreadyError,
                 ) as error:
                     write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
                     return 2
-                write(f"added {task_id_text(written)} to {args.parent}\n")
+                write(written)
                 return 0
             if args.command == "complete":
                 try:
-                    done = _complete(args.id, args.commit, store, now)
+                    done = complete_item(args.id, args.commit, store, now)
                 except COMPLETE_REFUSED as error:
                     write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
                     return 2
@@ -308,7 +205,7 @@ def run(
                 return 0
             if args.command == "show":
                 try:
-                    shown = _show(args.id, store)
+                    shown = show_item(args.id, store)
                 except (StoryNotFoundError, StoryIdError, UpkeepNotFoundError) as error:
                     write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
                     return 2
@@ -316,29 +213,11 @@ def run(
                 return 0
             if args.command == "start":
                 try:
-                    match parse_item_id(args.id):
-                        case StoryId() as story_id:
-                            start_story(
-                                story_id=story_id,
-                                load_story=store.load_story,
-                                save_story=store.save_story,
-                                now=now,
-                            )
-                            write(f"started {story_id_text(story_id)}\n")
-                        case TaskId() as task_id:
-                            holder = start_task(
-                                task_id=task_id,
-                                find_story_rows=store.find_story_rows,
-                                load_story=store.load_story,
-                                save_story=store.save_story,
-                                now=now,
-                            )
-                            write(f"started {task_id_text(task_id)} of {story_id_text(holder)}\n")
-                        case _ as unreachable:
-                            assert_never(unreachable)
+                    begun = start_item(args.id, store, now)
                 except START_REFUSED as error:
                     write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
                     return 2
+                write(begun)
                 return 0
             if args.command == "add":
                 try:

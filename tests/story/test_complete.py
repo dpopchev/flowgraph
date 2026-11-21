@@ -7,7 +7,6 @@ import pytest
 from flowgraph.criterion import CommitError, make_commit, make_scenario
 from flowgraph.story import (
     CompletedStory,
-    OpenTaskError,
     append_task,
     completed_story,
     completed_task,
@@ -21,6 +20,7 @@ from flowgraph.task import (
     CompletedAlreadyError,
     CompletedTask,
     NotStartedError,
+    OpenTaskError,
     TaskNotFoundError,
     make_task,
     make_task_id,

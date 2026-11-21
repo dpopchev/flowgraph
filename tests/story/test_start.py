@@ -6,18 +6,16 @@ import pytest
 
 from flowgraph.criterion import make_scenario
 from flowgraph.story import (
-    ItemIdError,
-    NoTaskError,
     StartedStory,
-    StoryInBacklogError,
     append_task,
     make_story,
     make_story_id,
-    parse_item_id,
     started_story,
     started_task,
 )
 from flowgraph.task import (
+    ItemInBacklogError,
+    NoTaskError,
     StartedAlreadyError,
     StartedTask,
     TaskNotFoundError,
@@ -77,7 +75,7 @@ def test_a_task_starts_alone_among_the_tasks_of_its_story() -> None:
 
 
 def test_a_task_of_a_story_in_backlog_is_refused_naming_both() -> None:
-    with pytest.raises(StoryInBacklogError, match=r"^T-0001 cannot start: ST-0001 is in Backlog$"):
+    with pytest.raises(ItemInBacklogError, match=r"^T-0001 cannot start: ST-0001 is in Backlog$"):
         started_task(STORY, make_task_id(1), ON)
 
 
@@ -90,15 +88,3 @@ def test_a_started_task_is_refused_by_its_id() -> None:
 def test_a_task_the_story_does_not_hold_is_refused_by_its_id() -> None:
     with pytest.raises(TaskNotFoundError, match=r"^no Task T-0002 in the record$"):
         started_task(started_story(STORY, ON), make_task_id(2), ON)
-
-
-@pytest.mark.parametrize(
-    ("text", "item"), [("ST-0003", make_story_id(3)), ("T-0012", make_task_id(12))]
-)
-def test_an_item_id_is_a_story_id_or_a_task_id(text: str, item: object) -> None:
-    assert parse_item_id(text) == item
-
-
-def test_a_text_that_is_neither_is_refused_by_itself() -> None:
-    with pytest.raises(ItemIdError, match=r"^'B-0001' is no Story id or Task id$"):
-        parse_item_id("B-0001")

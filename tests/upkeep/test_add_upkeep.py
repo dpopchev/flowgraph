@@ -6,8 +6,8 @@ import pytest
 
 from flowgraph.criterion import EmptyPartError, make_scenario
 from flowgraph.upkeep import (
-    Upkeep,
     UpkeepRow,
+    UpkeepState,
     add_upkeep,
     make_upkeep,
     make_upkeep_id,
@@ -18,7 +18,7 @@ pytestmark = pytest.mark.command
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 
 
-def add(saved: list[Upkeep], then: str = "it still holds") -> object:
+def add(saved: list[UpkeepState], then: str = "it still holds") -> object:
     """Add one Upkeep to a record whose highest Upkeep id is U-0002."""
     return add_upkeep(
         title="a title",
@@ -40,7 +40,7 @@ def test_it_returns_the_next_free_upkeep_id() -> None:
 
 
 def test_it_saves_the_upkeep_whole_created_now() -> None:
-    saved: list[Upkeep] = []
+    saved: list[UpkeepState] = []
     add(saved)
     scenario = make_scenario("a behavior", "it runs", "it still holds")
     assert saved == [make_upkeep(make_upkeep_id(3), "a title", scenario, "why", NOW)]

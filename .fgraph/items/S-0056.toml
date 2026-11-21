@@ -25,3 +25,11 @@ title = "Extend the Feature of src/flowgraph/feature.py to a blocked state kept 
 description = "New code the next Task runs. As a blocked Task: the fields of the block leave the file at the unblock."
 expected_output = "changed: src/flowgraph/feature.py holds the BlockedFeature: its started time, the time it is blocked since, its reason and what it waits on; the block of a StartedFeature and the unblock back to it with the started time it had, each refused for a Feature in another state, a blank reason or a blank waiting on refused; its file holds the state line and those fields, read back whole; proved in tests/feature/"
 created = 2026-11-21 23:43:47+00:00
+
+[[tasks]]
+id = "T-0204"
+state = "backlog"
+title = "Add the block and the unblock of a Feature to fgraph block and fgraph unblock"
+description = "The readings of S-0056 as written. Removes the xfail mark of tests/functional/test_block_feature.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
+expected_output = "changed: fgraph block and fgraph unblock take the id of a Feature, each one write and one commit, chore: block F-0001 in the record; while a Feature is blocked no further work item of it starts -- a start of one is refused naming the block, and a completion starts no next one and says so -- and its started work item goes on, its Tasks written as before; the completion of its last work item completes it, blocked or not; fgraph unblock takes it back to started and starts its next work item when none is started, as the completion of one does; fgraph status lists a blocked Feature under InProgress with ! before its id and -- waiting on <what> after its title, its own block before that of a Task of its work item; fgraph show of it lists its reason and what it waits on"
+created = 2026-11-21 23:43:48+00:00

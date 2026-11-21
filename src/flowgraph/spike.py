@@ -1,7 +1,7 @@
-"""A Spike: a question to answer, the kind of work item whose ids are written `SP-0001`.
+"""A Spike: a question to answer, the kind of work item whose ids are written `Q-0001`.
 
-Its criterion is a hypothesis; it is completed with the decision that answers it. Each Spike
-name stands for the name of the shared work item (`flowgraph.work_item`).
+Q stands for question. Its criterion is a hypothesis; it is completed with the decision that
+answers it. Each Spike name stands for the name of the shared work item (`flowgraph.work_item`).
 """
 
 from collections.abc import Collection
@@ -24,7 +24,7 @@ from flowgraph.work_item import (
 )
 
 # The kind of a Spike.
-SPIKE = make_kind("Spike", "a", "SP", Hypothesis)
+SPIKE = make_kind("Spike", "a", "Q", Hypothesis)
 
 SpikeId = WorkItemId
 Spike = WorkItem
@@ -44,7 +44,7 @@ def make_spike_id(number: int) -> SpikeId:
 
 
 def parse_spike_id(text: str) -> SpikeId:
-    """The Spike id written as the text; raises SpikeIdError when it is not `SP-` and a number."""
+    """The Spike id written as the text; raises SpikeIdError when it is not `Q-` and a number."""
     return parse_work_item_id(SPIKE, text)
 
 

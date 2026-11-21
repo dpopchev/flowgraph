@@ -23,11 +23,11 @@ ADD_SPIKE = [
     *("add", "spike", "a spike title"),
     *("--hypothesis", "Can one file per item hold the record?"),
 ]
-ADD_TASK = ["add", "task", "a task title", "--parent", "SP-0001", "--output", "an output"]
-STARTED = [ADD_SPIKE, ADD_TASK, ["start", "SP-0001"], ["start", "T-0001"]]
+ADD_TASK = ["add", "task", "a task title", "--parent", "Q-0001", "--output", "an output"]
+STARTED = [ADD_SPIKE, ADD_TASK, ["start", "Q-0001"], ["start", "T-0001"]]
 TASK_DONE = ["complete", "T-0001", "--commit", "abc1234"]
 SPIKE_DONE = [
-    *("complete", "SP-0001", "--commit", "def5678"),
+    *("complete", "Q-0001", "--commit", "def5678"),
     *("--decision", "yes: one file per work item, its Tasks inside"),
 ]
 
@@ -74,13 +74,13 @@ class TestAStartedSpikeWhoseTaskIsCompletedCompletedWithACommitAndItsDecision:
         assert completed.status == 0
 
     def test_complete_names_the_spike_and_its_commit(self, completed: Outcome) -> None:
-        assert completed.out == "completed SP-0001 at def5678\n"
+        assert completed.out == "completed Q-0001 at def5678\n"
 
     def test_show_prints_the_decision_under_its_hypothesis(
         self, completed: Outcome, tmp_path: Path
     ) -> None:
-        assert fgraph(["show", "SP-0001"], tmp_path).out.splitlines()[:5] == [
-            "SP-0001  a spike title",
+        assert fgraph(["show", "Q-0001"], tmp_path).out.splitlines()[:5] == [
+            "Q-0001  a spike title",
             "  bucket       Completed",
             "  commit       def5678",
             "  hypothesis   Can one file per item hold the record?",
@@ -91,14 +91,14 @@ class TestAStartedSpikeWhoseTaskIsCompletedCompletedWithACommitAndItsDecision:
         self, completed: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["status"], tmp_path).out == (
-            "Backlog (0)\nInProgress (0)\nCompleted (1)\n  SP-0001  def5678  a spike title\n"
+            "Backlog (0)\nInProgress (0)\nCompleted (1)\n  Q-0001  def5678  a spike title\n"
         )
 
 
 def test_a_spike_in_backlog_is_shown_with_its_hypothesis_alone(tmp_path: Path) -> None:
     runs(tmp_path, ADD_STORY, ADD_SPIKE)
-    assert fgraph(["show", "SP-0001"], tmp_path).out == (
-        "SP-0001  a spike title\n"
+    assert fgraph(["show", "Q-0001"], tmp_path).out == (
+        "Q-0001  a spike title\n"
         "  bucket       Backlog\n"
         "  hypothesis   Can one file per item hold the record?\n"
         "Tasks (0)\n"
@@ -106,8 +106,8 @@ def test_a_spike_in_backlog_is_shown_with_its_hypothesis_alone(tmp_path: Path) -
 
 
 def test_the_hypothesis_of_a_spike_is_amended(tmp_path: Path) -> None:
-    runs(tmp_path, ADD_SPIKE, ["amend", "SP-0001", "--hypothesis", "Can one file hold it?"])
-    assert fgraph(["show", "SP-0001"], tmp_path).out.splitlines()[2] == (
+    runs(tmp_path, ADD_SPIKE, ["amend", "Q-0001", "--hypothesis", "Can one file hold it?"])
+    assert fgraph(["show", "Q-0001"], tmp_path).out.splitlines()[2] == (
         "  hypothesis   Can one file hold it?"
     )
 
@@ -117,8 +117,8 @@ def test_the_hypothesis_of_a_spike_is_amended(tmp_path: Path) -> None:
     [
         ([["add", "spike", "a spike title", "--hypothesis", " "]], "hypothesis is empty"),
         (
-            [*STARTED, TASK_DONE, ["complete", "SP-0001", "--commit", "def5678"]],
-            "SP-0001 is completed with its decision: it states a hypothesis",
+            [*STARTED, TASK_DONE, ["complete", "Q-0001", "--commit", "def5678"]],
+            "Q-0001 is completed with its decision: it states a hypothesis",
         ),
         (
             [*STARTED, TASK_DONE, [*SPIKE_DONE[:4], "--decision", " "]],
@@ -133,8 +133,8 @@ def test_the_hypothesis_of_a_spike_is_amended(tmp_path: Path) -> None:
             "ST-0001 has no hypothesis: it states a Given / When / Then",
         ),
         (
-            [ADD_SPIKE, ["amend", "SP-0001", "--given", "a state"]],
-            "SP-0001 has no given, when or then: it states a hypothesis",
+            [ADD_SPIKE, ["amend", "Q-0001", "--given", "a state"]],
+            "Q-0001 has no given, when or then: it states a hypothesis",
         ),
     ],
     ids=[

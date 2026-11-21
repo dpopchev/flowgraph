@@ -217,8 +217,9 @@ of work item. The developer said so on 2026-11-21.
   wide to that width, ending it with `...`, the developer's decision of
   2026-11-21, after board 1's watch; written to a pipe or a file every line
   is whole. So that the cut keeps it, a completed work item is listed with
-  its commit before its title, `S-0001  677f9b0  <title>`; the reason of a
-  removed one still ends its line. Only status is cut, and a frame of watch
+  its commit before its title, `S-0001  677f9b0  <title>`, and one completed
+  without a commit with its id and its title alone (Evidence); the reason of
+  a removed one still ends its line. Only status is cut, and a frame of watch
   with it. The width is an effect: `run()` takes it as a callable, none when
   the output is no terminal, and `main()` reads it from the terminal.
 - `fgraph watch` follows the record live, the developer's request of
@@ -264,10 +265,31 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
 A completed item carries the proof that it is completed. For a work item,
 under a Feature or standing alone, that is the commit on `main` that holds it.
 
-| Type | Evidence on its Completed type |
-|---|---|
-| `Story`, `Bug`, `Upkeep`, `Spike` | the commit on `main` |
-| `Task` | its commit |
+The commit is the evidence of the development, the reading decided when
+S-0041 was ordered, a commit optional always shown and not taken: it names
+the work beside the record that the item is completed with. With the
+development off there is no such work, so an item is completed without a
+commit, a Task as a work item.
+
+| Type | With the development on | With it off |
+|---|---|---|
+| `Story`, `Bug`, `Upkeep`, `Spike` | the commit on `main` | none, or the commit given |
+| `Task` | its commit | none, or the commit given |
+
+- `fgraph complete` needs `--commit` with the development on, of a Task as of
+  a work item: without it, it exits 2 naming `--commit` and the key,
+  `development.enabled`, and nothing is saved.
+- With the development off `fgraph complete` takes none, and a `--commit`
+  given is still kept as the evidence.
+- The evidence is a value of its own in the model, a commit or none (`Commit`
+  or `NoCommit`, `src/flowgraph/criterion.py`): no commit is a value of the
+  evidence, not a missing one, as standing alone is a value of `parent`.
+- A Spike is completed with its decision either way: the decision answers its
+  hypothesis and stands beside the commit or none.
+- `fgraph land` is part of the development and completes the work item at
+  the merge commit, so a landed work item always carries its commit.
+- `fgraph complete` says what it completed and, when there is a commit, where:
+  `completed S-0001 at 677f9b0`, or `completed S-0001` alone.
 
 ## Rules
 
@@ -285,9 +307,11 @@ under a Feature or standing alone, that is the commit on `main` that holds it.
   is refused the same way beside a started Task. The refusal names the
   started Task, and a file that holds two started Tasks is refused when it is
   read, since no move reaches it.
-- A work item is completed only once it is on `main`.
-- Until `fgraph` wraps git, `complete` records the commit and does not check
-  it against `main`.
+- With the development on, a work item is completed only once it is on
+  `main`, and names its commit there. With it off no commit proves it
+  (Evidence).
+- Until `fgraph` wraps git, `complete` records the commit it is given and
+  does not check it against `main`.
 
 ## Ids
 
@@ -353,6 +377,13 @@ and its merge tool.
   `completed` times and its `commit` sha. A started Story's file may hold
   completed Tasks; a completed Story's file holds only completed Tasks, since
   a Story completes once every Task of it has.
+- An item completed without a commit (Evidence) is kept the same way but for
+  the `commit` key, which its file or its `[[tasks]]` table does not hold: a
+  file without the key holds no commit, a value of the evidence in the model,
+  so the files written before read as they are. Its row and its detail carry
+  no commit: `fgraph status` lists such a work item under Completed with its
+  id and its title alone, `S-0001  <title>`, and `fgraph show` lists no
+  `commit` line of it, nor of a Task completed without one.
 - A removed work item is kept as `state = "removed"` with its `removed` time
   and its `reason`, beside the fields and the Tasks it had in Backlog.
   `fgraph remove` removes a work item in Backlog; a removed one takes no Task,
@@ -369,12 +400,13 @@ and its merge tool.
   refused when it is read.
 - A Spike is kept as `items/Q-0001.toml`, its criterion table holding its
   `hypothesis`. It is completed with the decision that answers it,
-  `fgraph complete Q-0001 --commit SHA --decision TEXT`, and `fgraph land`
-  takes `--decision` the same way; the decision is kept beside the hypothesis
-  it answers, as `decision` in the criterion table. A Spike is not completed
-  without its decision, no other kind and no Task takes one, and a file that
-  holds a decision before the Spike is completed is refused. That the
-  hypothesis reads as a yes/no question is not checked.
+  `fgraph complete Q-0001 --commit SHA --decision TEXT`, the commit given as
+  the development needs it (Evidence), and `fgraph land` takes `--decision`
+  the same way; the decision is kept beside the hypothesis it answers, as
+  `decision` in the criterion table. A Spike is not completed without its
+  decision, no other kind and no Task takes one, and a file that holds a
+  decision before the Spike is completed is refused. That the hypothesis
+  reads as a yes/no question is not checked.
 - The Story, the Upkeep, the Bug and the Spike share one work item
   (`src/flowgraph/work_item/`): its state types (`WorkItem`,
   `StartedWorkItem`, `CompletedWorkItem`, `RemovedWorkItem`), its moves, its
@@ -452,6 +484,9 @@ development too.
   committed on `main`, with no branch, no worktree and no warning. Its Tasks
   are written on `main`, it is completed with `fgraph complete`, and
   `fgraph land` is refused with exit 2 naming the key, `development.enabled`.
+- With the development off `fgraph complete` takes no commit, of a Task as of
+  a work item; with it on it needs `--commit` and is refused with exit 2
+  naming the option and the key without it (Evidence).
 - The rules that read a branch `wi/<id>-*` stay as they are: without the
   development `fgraph` makes no such branch, so none scopes a write and no
   worktree takes the Tasks of a started work item.
@@ -580,8 +615,9 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   | remove | `chore: remove S-0001 in the record` |
   | complete | `chore: complete S-0001 in the record`, `chore: complete T-0001 of S-0001 in the record` |
 
-- A write that leaves its file as it was makes no commit. Completing a Task
-  names the commit of its work, so the commit of the record follows it.
+- A write that leaves its file as it was makes no commit. With the
+  development on, completing a Task names the commit of its work, so the
+  commit of the record follows it.
 - With the development on, a start of a work item then checks out the branch
   `wi/<id>-<slug>` at its commit in a new worktree,
   `<parent>/<checkout name>.worktrees/<id>-<slug>`. The slug is given with

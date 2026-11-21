@@ -34,12 +34,14 @@ commit = "53cecd1"
 
 [[tasks]]
 id = "T-0091"
-state = "started"
+state = "completed"
 title = "Add the Spike kind to src/flowgraph/spike.py, src/flowgraph/store.py, src/flowgraph/item.py, src/flowgraph/land.py, src/flowgraph/cli.py and src/flowgraph/text.py"
 description = "The kinds are listed once, in src/flowgraph/store.py. Removes the xfail mark of tests/functional/test_complete_spike.py."
 expected_output = "changed: fgraph add spike TITLE --hypothesis TEXT adds SP-0001 to Backlog; fgraph complete and fgraph land take --decision for a Spike; fgraph show prints the hypothesis and, once completed, the decision under it; fgraph amend takes --hypothesis; created: src/flowgraph/spike.py with the kind, its id functions and its names"
 created = 2026-11-21 11:55:17+00:00
 started = 2026-11-21 11:58:55+00:00
+completed = 2026-11-21 12:02:16+00:00
+commit = "9f3a9a0"
 
 [[tasks]]
 id = "T-0092"

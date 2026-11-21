@@ -1,8 +1,9 @@
 id = "ST-0006"
-state = "backlog"
+state = "started"
 title = "Raise the kinds of work item fgraph takes from Backlog to Completed from 2 to 3: Bug"
 description = "Feature: a project tracks every kind of its work with fgraph; its criterion 3: a developer adds a Bug with what is observed and what is expected, writes its Tasks and takes it from Backlog to Completed with their commits. Ordered after U-0002, so a Bug adds its id and its criterion to the shared work item. Its Tasks are written when it is ordered."
 created = 2026-11-21 07:18:43+00:00
+started = 2026-11-21 11:45:01+00:00
 
 [criterion]
 given = "a started Bug whose Task is completed"

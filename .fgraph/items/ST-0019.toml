@@ -23,11 +23,12 @@ commit = "de9716f"
 
 [[tasks]]
 id = "T-0067"
-state = "backlog"
+state = "started"
 title = "Add the Task ids of every worktree to src/flowgraph/worktrees.py, wired into src/flowgraph/cli.py"
 description = "The store of another worktree is opened by the opener run() is given, so the ids are read by the same adapter. The worktrees are asked for only when a Task is added. Removes the xfail mark of tests/functional/test_task_ids_across_worktrees.py; the fakes of a work tree in tests/ gain the new step."
 expected_output = "created: src/flowgraph/worktrees.py gives the store whose Task ids are those of the record of every worktree of the repository, proved in tests/worktrees/; changed: src/flowgraph/branch.py lists the worktrees of a repository, proved in tests/branch/test_landing_git.py, the work tree of src/flowgraph/commit.py gains that step, and src/flowgraph/cli.py runs every command on that store"
 created = 2026-11-21 11:15:54+00:00
+started = 2026-11-21 11:16:28+00:00
 
 [[tasks]]
 id = "T-0068"

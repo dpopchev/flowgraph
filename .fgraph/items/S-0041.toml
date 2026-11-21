@@ -35,11 +35,12 @@ commit = "66bbb85"
 
 [[tasks]]
 id = "T-0168"
-state = "backlog"
+state = "started"
 title = "Change the complete command of src/flowgraph/parser.py and src/flowgraph/cli.py to need --commit with the development on alone"
 description = "Removes the xfail mark of tests/functional/test_complete_without_commit.py. The tests of other work items that complete with the development on keep their --commit."
 expected_output = "changed: --commit of fgraph complete is optional in src/flowgraph/parser.py; with the development on, a complete of a Task or of a work item without --commit exits 2 naming --commit and the key development.enabled; with it off both are completed without one, and a --commit given is still kept as the evidence; fgraph complete --help says when the commit is needed"
 created = 2026-11-21 22:39:49+00:00
+started = 2026-11-21 23:00:23+00:00
 
 [[tasks]]
 id = "T-0169"

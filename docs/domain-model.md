@@ -222,6 +222,10 @@ and its merge tool.
   beside the fields it had in Backlog. Only a started Story's file may hold a
   started Task; it is read back through the moves that start them, so a file
   holds no state those moves could not reach.
+- A completed item is kept as `state = "completed"` with its `started` and
+  `completed` times and its `commit` sha. A started Story's file may hold
+  completed Tasks; a completed Story's file holds only completed Tasks, since
+  a Story completes once every Task of it has.
 - Each kind reads the files of its own prefix. A file with a prefix no kind
   knows is left alone; nothing reports it yet.
 - A command loads a work item whole, changes it and saves it whole. The file

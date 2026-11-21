@@ -16,12 +16,18 @@ from flowgraph.store import Store
 from flowgraph.work_item import work_item_id_text
 
 
+def _ignores_nothing(path: Path) -> bool:
+    """The `ignores` of a work tree built without it: git ignores no path there."""
+    return False
+
+
 @dataclass(frozen=True)
 class WorkTree:
     """The git work tree a record is inside: its top and its steps, each bound to it.
 
     `commit_files` commits the files, relative to the top, alone with a message and returns the
-    sha; `add_worktree` checks out a new branch at a commit in a new worktree at a path.
+    sha; `add_worktree` checks out a new branch at a commit in a new worktree at a path;
+    `ignores` is true when a rule git reads names a path.
 
     The steps of a landing: `current_branch` names the branch the work tree is on, empty on
     none; `find_branches` lists the branches matching a pattern; `merge` merges a branch as a
@@ -44,6 +50,7 @@ class WorkTree:
     remove_worktree: Callable[[Path], None]
     delete_branch: Callable[[str], None]
     find_worktrees: Callable[[], list[Path]]
+    ignores: Callable[[Path], bool] = _ignores_nothing
 
 
 # The git work tree the directory is inside, or None when it is inside none.
@@ -76,6 +83,7 @@ def open_git(directory: Path) -> WorkTree | None:
         remove_worktree=partial(branch.remove_worktree, top),
         delete_branch=partial(branch.delete_branch, top),
         find_worktrees=partial(branch.worktrees, top),
+        ignores=partial(branch.ignores, top),
     )
 
 

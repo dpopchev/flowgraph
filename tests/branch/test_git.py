@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph.branch import GitError, add_worktree, commit_files, work_tree_of
+from flowgraph.branch import GitError, add_worktree, commit_files, ignores, work_tree_of
 
 pytestmark = pytest.mark.edge
 
@@ -57,6 +57,33 @@ def test_a_directory_inside_a_work_tree_names_its_top(checkout: Path) -> None:
 
 def test_a_directory_outside_any_work_tree_names_none(tmp_path: Path) -> None:
     assert work_tree_of(tmp_path) is None
+
+
+def test_a_directory_a_rule_names_is_ignored(checkout: Path) -> None:
+    (checkout / ".gitignore").write_text(".fgraph/\n", encoding="utf-8")
+    (checkout / ".fgraph").mkdir()
+    assert ignores(checkout, checkout / ".fgraph") is True
+
+
+def test_a_directory_no_rule_names_is_not_ignored(checkout: Path) -> None:
+    (checkout / ".fgraph").mkdir()
+    assert ignores(checkout, checkout / ".fgraph") is False
+
+
+def test_a_directory_a_rule_names_is_ignored_while_a_file_of_it_is_tracked(checkout: Path) -> None:
+    (checkout / ".fgraph").mkdir()
+    (checkout / ".fgraph" / "item.toml").write_text("id = 1\n", encoding="utf-8")
+    git(checkout, "add", ".fgraph/item.toml")
+    git(checkout, "commit", "--quiet", "--message", "track the item")
+    (checkout / ".gitignore").write_text(".fgraph/\n", encoding="utf-8")
+    assert ignores(checkout, checkout / ".fgraph") is True
+
+
+def test_a_path_git_cannot_tell_of_raises_naming_the_command(
+    checkout: Path, tmp_path: Path
+) -> None:
+    with pytest.raises(GitError, match=r"^git check-ignore .* failed: .*outside repository"):
+        ignores(checkout, tmp_path / "elsewhere")
 
 
 def test_a_new_file_is_committed_with_its_message(checkout: Path) -> None:

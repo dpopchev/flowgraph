@@ -59,6 +59,7 @@ def work_tree(branch: str) -> WorkTree:
         find_worktree=never,
         remove_worktree=never,
         delete_branch=never,
+        find_worktrees=never,
     )
 
 

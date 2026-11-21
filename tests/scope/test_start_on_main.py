@@ -34,6 +34,7 @@ def work_tree(branch: str, home: Path | None = HOME) -> WorkTree:
         find_worktree=lambda _: home,
         remove_worktree=never,
         delete_branch=never,
+        find_worktrees=never,
     )
 
 

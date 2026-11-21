@@ -27,7 +27,8 @@ class WorkTree:
     merge of its own, held uncommitted, and merges nothing when git refuses; `abort_merge` drops
     a merge held; `commit_merge` commits it under a message and returns its short sha;
     `find_worktree` is the worktree of a branch, or None; `remove_worktree` and `delete_branch`
-    remove them. Each step raises GitError when git refuses it.
+    remove them. `find_worktrees` lists every worktree of the repository. Each step raises
+    GitError when git refuses it.
     """
 
     path: Path
@@ -41,6 +42,7 @@ class WorkTree:
     find_worktree: Callable[[str], Path | None]
     remove_worktree: Callable[[Path], None]
     delete_branch: Callable[[str], None]
+    find_worktrees: Callable[[], list[Path]]
 
 
 # The git work tree the directory is inside, or None when it is inside none.
@@ -72,6 +74,7 @@ def open_git(directory: Path) -> WorkTree | None:
         find_worktree=partial(branch.worktree_of_branch, top),
         remove_worktree=partial(branch.remove_worktree, top),
         delete_branch=partial(branch.delete_branch, top),
+        find_worktrees=partial(branch.worktrees, top),
     )
 
 

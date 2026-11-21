@@ -176,6 +176,12 @@ def worktree_of_branch(work_tree: Path, branch: str) -> Path | None:
     return None
 
 
+def worktrees(work_tree: Path) -> list[Path]:
+    """Adapter: every worktree of the repository of the work tree, its first checkout first."""
+    listed = _git(work_tree, "worktree", "list", "--porcelain").splitlines()
+    return [Path(line.removeprefix("worktree ")) for line in listed if line.startswith("worktree ")]
+
+
 def remove_worktree(work_tree: Path, path: Path) -> None:
     """Adapter: remove the worktree at the path.
 

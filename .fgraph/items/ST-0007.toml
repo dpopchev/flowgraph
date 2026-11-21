@@ -23,12 +23,14 @@ commit = "f325dcd"
 
 [[tasks]]
 id = "T-0090"
-state = "started"
+state = "completed"
 title = "Add the hypothesis of a Spike and its answer to src/flowgraph/criterion.py, src/flowgraph/work_item/ and src/flowgraph/item_file.py"
 description = "Pure but for the file adapter. A completed Spike adds only its decision, so the completed state stays one type and the answer travels with the criterion. A blank decision is refused through said()."
 expected_output = "changed: src/flowgraph/criterion.py holds Hypothesis and Answer, a hypothesis with the decision that answers it; completing a work item whose criterion is a hypothesis takes the decision and refuses to go without, and every other criterion refuses one; the file of a work item keeps both forms in its criterion table and reads them back; an amend rewrites a hypothesis; the detail a view reads gains hypothesis and decision; their tests are in tests/work_item/"
 created = 2026-11-21 11:55:17+00:00
 started = 2026-11-21 11:56:01+00:00
+completed = 2026-11-21 11:58:55+00:00
+commit = "53cecd1"
 
 [[tasks]]
 id = "T-0091"

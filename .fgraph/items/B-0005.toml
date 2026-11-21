@@ -1,0 +1,9 @@
+id = "B-0005"
+state = "backlog"
+title = "Cut the slugs fgraph start takes and uses for nothing with the development off from every one to none"
+description = "Found during T-0161 of S-0039 on 2026-11-21, under the burn of the Backlog; filed at the end of the queue and not burned. Open: refuse it or say it. Its Tasks are written when it is ordered."
+created = 2026-11-21 22:39:07+00:00
+
+[criterion]
+observed = "with the development off fgraph start S-0001 --slug x takes the slug and uses it for nothing, and fgraph start --help says the slug names the branch of the work item whatever the configuration"
+expected = "a slug given to a start that makes no branch is refused naming development.enabled, or the help says it is read only with the development on"

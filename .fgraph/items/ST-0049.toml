@@ -12,11 +12,12 @@ then = "fgraph status lists it as S-0001 under Backlog"
 
 [[tasks]]
 id = "T-0156"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_story_prefix.py, failing on the criterion of ST-0049"
 description = "decided: ST-0049: the reading its description recommends -- every ST file of the record of flowgraph is renamed to S with its number kept, with the ids in queue.toml, the tests, README.md and docs; the commits already made keep ST. fgraph reads S alone: an ST file of another record is left alone as a file of a prefix no kind knows, as an SP file is since ST-0048, and the docs say so. Run through run() of src/flowgraph/cli.py on a record in tmp_path. Seen red, then marked a strict xfail naming ST-0049 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_story_prefix.py states that fgraph add story on a record with no items, then fgraph status, lists the Story as S-0001 under Backlog"
 created = 2026-11-21 22:00:40+00:00
+started = 2026-11-21 22:07:42+00:00
 
 [[tasks]]
 id = "T-0157"

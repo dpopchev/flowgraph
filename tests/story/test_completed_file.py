@@ -98,7 +98,7 @@ def test_a_story_with_completed_items_is_read_back_whole(story: StoryState, tmp_
 def test_a_completed_story_is_read_as_a_completed_row_with_its_commit(tmp_path: Path) -> None:
     write_story(tmp_path, WHOLE)
     assert read_story_rows(tmp_path) == [
-        StoryRow("ST-0001", "a title", "completed", "def5678", created=CREATED)
+        StoryRow("ST-0001", "a title", "completed", "def5678", created=CREATED, completed=DONE)
     ]
 
 

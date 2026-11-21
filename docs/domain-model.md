@@ -183,9 +183,13 @@ of work item. The developer said so on 2026-11-21.
   by id, each once. A work item nobody placed follows the placed ones in the
   order it was added; those added at one time, by kind and number.
 - A work item that leaves the Backlog leaves the queue with it: the other
-  buckets are listed by kind and number, not by the queue.
+  buckets are not listed by the queue.
 - A reorder names two work items in Backlog; one that is not there, or the
   same one twice, is refused.
+- Completed is listed the last completed first, the developer's decision of
+  2026-11-21: by the completed time each work item holds, so the newest
+  landing is on top; those completed at one time, by kind and number.
+- InProgress and Removed are listed by kind and number.
 
 ## Amendment
 

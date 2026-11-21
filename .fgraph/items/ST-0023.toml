@@ -1,8 +1,9 @@
 id = "ST-0023"
-state = "backlog"
+state = "started"
 title = "Cut the writes fgraph refuses on a record git ignores from every one to none"
 description = "Found during ST-0020, which commits every write. A probe on 2026-11-21 at 9ed00ce: with .fgraph/ in .gitignore, fgraph add story exits 2 with 'git add -- .fgraph/items/ST-0001.toml failed: The following paths are ignored' and the file is put back, so nothing can be written. The start of a work item refused the same way since ST-0009. Open: whether a write on an ignored record warns, and whether a start there still makes its branch. Its Tasks are written when it is ordered."
 created = 2026-11-21 10:58:55+00:00
+started = 2026-11-21 14:19:31+00:00
 
 [criterion]
 given = "a record inside a git work tree whose .gitignore names it"

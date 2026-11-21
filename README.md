@@ -126,12 +126,17 @@ fgraph status
 # Backlog (0)
 # InProgress (1)
 #   ST-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
+#     => T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
 # Completed (0)
 ```
 
 A work item under InProgress is listed with its progress, `0/1 T`: its Tasks
 completed of all it holds. One of three completed reads `1/3 T`, so two are
 still to be completed; a started or a blocked Task is not completed yet.
+
+Under it comes the Task being worked, marked `=>`: the started Task of the
+work item. A Task in Backlog or completed is not listed, and a Task line does
+not count toward the top 5 of a heading (below).
 
 When the record is inside a git work tree, starting a Story commits its file
 alone as `chore: start ST-0001 in the record`, as fgraph commits every write
@@ -228,6 +233,18 @@ fgraph show ST-0001
 #     reason           the review is not back
 #     waiting on       the reviewer
 #     expected output  changed: src/flowgraph/cli.py gains the show command
+```
+
+`fgraph status` lists a blocked Task under its work item too, marked `!` and
+ending with what it waits on:
+
+```sh
+fgraph status
+# Backlog (0)
+# InProgress (1)
+#   ST-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
+#     !  T-0001  Add the show command to src/flowgraph/cli.py, listing a Story  -- waiting on the reviewer
+# Completed (0)
 ```
 
 A block exits 2 and names why when the Task is still in Backlog, blocked

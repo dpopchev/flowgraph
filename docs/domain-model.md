@@ -206,6 +206,13 @@ of work item. The developer said so on 2026-11-21.
   Task is not completed. The lines of Backlog, Completed and Removed carry no
   progress. The Tasks are those the record status reads holds: the row of a
   work item is read with its Tasks, each with its state.
+- Under a work item of InProgress `fgraph status` lists each Task of it being
+  worked, the developer's decision of 2026-11-21, after board 1's watch: the
+  started Task as `    => T-0001  <title>`, and a blocked one as
+  `    !  T-0002  <title>  -- waiting on <what>`, in the order the file holds
+  them. A Task in Backlog or completed is not listed. A Task line belongs to
+  its work item: it does not count toward the top 5 of the heading, nor in
+  the count beside it.
 
 ## Amendment
 

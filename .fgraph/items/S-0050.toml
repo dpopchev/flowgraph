@@ -17,3 +17,11 @@ title = "Add tests/functional/test_status_feature_bucket.py, failing on the crit
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_status_features.py does. Seen red, then marked a strict xfail naming S-0050 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_status_feature_bucket.py states that fgraph status, on a record with a Story standing alone and, added after it, a Feature with two Stories under it, all in Backlog, writes Backlog (2) with the line of the Story, then the line of the Feature with its progress 0/2 W, and no line of either Story of the Feature"
 created = 2026-11-21 22:51:26+00:00
+
+[[tasks]]
+id = "T-0183"
+state = "backlog"
+title = "Change the status of src/flowgraph/item.py and src/flowgraph/text.py to list a Feature in its bucket, in place of its work items"
+description = "The four readings of S-0050 as written; it reverses the block of their own above the buckets that S-0025 built. The tests of other work items that state that block are rewritten, named in the commit. src/flowgraph/item.py is at the cap of 400 lines: the listing of the status moves to a module of its own, named in the commit. Removes the xfail mark of tests/functional/test_status_feature_bucket.py."
+expected_output = "changed: fgraph status has no heading Features: a Feature is one line in its bucket, its id, its progress n/m W and its title, counted once beside the heading and toward the top 5; in the Backlog it holds a place of its own, after what was placed or added before it; the work items of a Feature in Backlog and its completed ones are listed on no line of their own and counted in no heading; under InProgress the started work item of a Feature is listed under the line of its Feature, indented, with its progress and its Task being worked, and counts neither toward the top 5 nor beside the heading; a Feature under Completed is placed by its last completed work item; the bucket of a Feature stays derived as today; fgraph show of a Feature lists its work items as before; proved in tests/item/ and tests/text/"
+created = 2026-11-21 22:51:26+00:00

@@ -10,7 +10,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import assert_never
 
-from flowgraph import story
+from flowgraph import story, upkeep
 from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, locate
 from flowgraph.story import (
     CommitError,
@@ -50,11 +50,30 @@ from flowgraph.story import (
     story_id_text,
     task_id_text,
 )
+from flowgraph.upkeep import (
+    ReadUpkeepDetail,
+    ReadUpkeepRows,
+    UpkeepDetail,
+    UpkeepId,
+    UpkeepIdError,
+    UpkeepNotFoundError,
+    UpkeepRow,
+    WriteUpkeep,
+    add_upkeep,
+    parse_upkeep_id,
+    upkeep_id_text,
+)
 
 DESCRIPTION = "flowgraph keeps the record of a project's work."
 
 # Write text to a stream; what it returns is ignored, so a stream's write and a list's append fit.
 Write = Callable[[str], object]
+
+# The Story of that id as plain data; raises StoryNotFoundError when the record holds none.
+FindStoryDetail = Callable[[StoryId], StoryDetail]
+
+# The Upkeep of that id as plain data; raises UpkeepNotFoundError when the record holds none.
+FindUpkeepDetail = Callable[[UpkeepId], UpkeepDetail]
 
 # The buckets of the flow in their order, each with the states of an item shown in it.
 BUCKETS: Sequence[tuple[str, Collection[str]]] = (
@@ -122,10 +141,21 @@ def build_parser() -> argparse.ArgumentParser:
     task.add_argument("--parent", required=True, metavar="ID", help="the Story it is written for")
     task.add_argument("--output", required=True, metavar="TEXT", help="the expected output")
     task.add_argument("--description", default="", metavar="TEXT", help="free text, optional")
-    show = commands.add_parser(
-        "show", help="show a Story with its Tasks", add_help=False, color=False
+    upkeep = kinds.add_parser(
+        "upkeep",
+        help="work that keeps a behavior, with its one Given / When / Then",
+        add_help=False,
+        color=False,
     )
-    show.add_argument("id", metavar="ID", help="the id of the Story")
+    upkeep.add_argument("title", metavar="TITLE", help="what is true once it is completed")
+    upkeep.add_argument("--given", required=True, metavar="STATE", help="the initial state")
+    upkeep.add_argument("--when", required=True, metavar="ACTION", help="the action that runs")
+    upkeep.add_argument("--then", required=True, metavar="STATE", help="what still holds")
+    upkeep.add_argument("--description", default="", metavar="TEXT", help="free text, optional")
+    show = commands.add_parser(
+        "show", help="show a Story with its Tasks, or an Upkeep", add_help=False, color=False
+    )
+    show.add_argument("id", metavar="ID", help="the id of the Story or of the Upkeep")
     start = commands.add_parser(
         "start", help="start a Story or a Task of it", add_help=False, color=False
     )
@@ -143,7 +173,7 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def status_text(rows: Iterable[StoryRow]) -> str:
+def status_text(rows: Iterable[StoryRow | UpkeepRow]) -> str:
     """The items by bucket, in the order of the flow: a heading with its count, then its items.
 
     A completed item is listed with its commit.
@@ -192,6 +222,42 @@ def show_text(detail: StoryDetail) -> str:
         if task.description:
             lines.append(f"    description      {task.description}\n")
     return "".join(lines)
+
+
+def show_upkeep_text(detail: UpkeepDetail) -> str:
+    """The Upkeep with its bucket and its criterion, one fact per line.
+
+    A description is listed only when there is one.
+    """
+    bucket = next(name for name, states in BUCKETS if detail.state in states)
+    described = [f"  description  {detail.description}\n"] if detail.description else []
+    lines = [
+        f"{detail.id}  {detail.title}\n",
+        f"  bucket       {bucket}\n",
+        *described,
+        f"  given        {detail.given}\n",
+        f"  when         {detail.when}\n",
+        f"  then         {detail.then}\n",
+    ]
+    return "".join(lines)
+
+
+def _show(
+    item: str,
+    *,
+    read_story_detail: FindStoryDetail,
+    read_upkeep_detail: FindUpkeepDetail,
+) -> str:
+    """The text of the Story or the Upkeep of that id.
+
+    Raises StoryIdError when the text is neither id, naming it as no Story id, and
+    StoryNotFoundError or UpkeepNotFoundError when the record holds no such item.
+    """
+    try:
+        upkeep_id = parse_upkeep_id(item)
+    except UpkeepIdError:
+        return show_text(read_story_detail(parse_story_id(item)))
+    return show_upkeep_text(read_upkeep_detail(upkeep_id))
 
 
 def _complete(
@@ -244,6 +310,9 @@ def run(
     read_story_detail: ReadStoryDetail,
     read_task_ids: ReadTaskIds,
     write_story: WriteStory,
+    read_upkeep_rows: ReadUpkeepRows,
+    read_upkeep_detail: ReadUpkeepDetail,
+    write_upkeep: WriteUpkeep,
     now: Now,
 ) -> int:
     """Read the arguments, locate the record in cwd, run the command and return the exit status.
@@ -294,13 +363,34 @@ def run(
                     return 2
                 write(done)
                 return 0
-            if args.command == "show":
+            if args.command == "add" and args.kind == "upkeep":
                 try:
-                    detail = read_story_detail(path, parse_story_id(args.id))
-                except (StoryNotFoundError, StoryIdError) as error:
+                    added_upkeep = add_upkeep(
+                        title=args.title,
+                        given=args.given,
+                        when=args.when,
+                        then=args.then,
+                        description=args.description,
+                        find_upkeep_rows=lambda: read_upkeep_rows(path),
+                        save_upkeep=lambda new: write_upkeep(path, new),
+                        now=now,
+                    )
+                except EmptyPartError as error:
                     write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
                     return 2
-                write(show_text(detail))
+                write(f"added {upkeep_id_text(added_upkeep)}\n")
+                return 0
+            if args.command == "show":
+                try:
+                    shown = _show(
+                        args.id,
+                        read_story_detail=lambda wanted: read_story_detail(path, wanted),
+                        read_upkeep_detail=lambda wanted: read_upkeep_detail(path, wanted),
+                    )
+                except (StoryNotFoundError, StoryIdError, UpkeepNotFoundError) as error:
+                    write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
+                    return 2
+                write(shown)
                 return 0
             if args.command == "start":
                 try:
@@ -346,7 +436,7 @@ def run(
                 write(f"added {story_id_text(added)}\n")
                 return 0
             if args.command == "status":
-                write(status_text(read_story_rows(path)))
+                write(status_text([*read_story_rows(path), *read_upkeep_rows(path)]))
                 return 0
             write(parser.format_help())
             write(f"record: {path}\n")
@@ -377,6 +467,9 @@ def main() -> None:
             read_story_detail=story.read_story_detail,
             read_task_ids=story.read_task_ids,
             write_story=story.write_story,
+            read_upkeep_rows=upkeep.read_upkeep_rows,
+            read_upkeep_detail=upkeep.read_upkeep_detail,
+            write_upkeep=upkeep.write_upkeep,
             now=lambda: datetime.now(UTC),
         )
     )

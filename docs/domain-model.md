@@ -226,6 +226,8 @@ and its merge tool.
   `completed` times and its `commit` sha. A started Story's file may hold
   completed Tasks; a completed Story's file holds only completed Tasks, since
   a Story completes once every Task of it has.
+- An Upkeep is kept as `items/U-0001.toml`, the fields of a Story in Backlog
+  without its Tasks: an Upkeep holds no Task and has no other state yet.
 - Each kind reads the files of its own prefix. A file with a prefix no kind
   knows is left alone; nothing reports it yet.
 - A command loads a work item whole, changes it and saves it whole. The file

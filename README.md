@@ -8,7 +8,8 @@ it builds the ontology of the project on the way: its terms and how they relate.
 
 Early: `fgraph` adds a Story to a record, writes its Tasks, takes them from
 Backlog through InProgress to Completed with their commits, shows a Story
-with its Tasks and lists the record by bucket. Only the Story kind exists.
+with its Tasks and lists the record by bucket. It also adds an Upkeep and
+lists it beside the Stories; an Upkeep does not move yet.
 
 | Part                            | State                                                    |
 | ------------------------------- | -------------------------------------------------------- |
@@ -16,6 +17,7 @@ with its Tasks and lists the record by bucket. Only the Story kind exists.
 | the wheel                       | built by `make wheel`, ships `fgraph`                    |
 | where the record lives          | located on every call but `--help`                       |
 | the record and its flow         | a Story with its Tasks, from Backlog to Completed        |
+| the kinds of work item          | Story; Upkeep, added and listed only                     |
 | the ontology                    | not started                                              |
 | flowgraph tracking its own work | its Stories are in `.fgraph/` since 0.4.0                |
 
@@ -125,6 +127,27 @@ complete exits 2 and names why when the item is still in Backlog, when a
 Story has Tasks not completed, when the item is completed already, when the
 commit is no sha, or when the record does not hold it. A completed Story takes
 no new Task.
+
+An Upkeep is work that keeps a behavior and changes the inside, such as a
+split of a module. Its criterion is a Given / When / Then whose When already
+runs and whose Then says it still holds. Its id counts on its own, `U-0001`:
+
+```sh
+fgraph add upkeep "Cut the lines of the largest module of src/flowgraph from 1068 to 400" \
+  --given "main" \
+  --when "make check runs" \
+  --then "it still passes"
+# added U-0001
+
+fgraph status
+# Backlog (1)
+#   U-0001  Cut the lines of the largest module of src/flowgraph from 1068 to 400
+# InProgress (0)
+# Completed (0)
+```
+
+`fgraph show U-0001` shows it with its criterion. An Upkeep is kept as
+`items/U-0001.toml`; it takes no Task and does not move yet.
 
 ## Develop
 

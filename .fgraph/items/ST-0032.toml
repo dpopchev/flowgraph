@@ -24,3 +24,10 @@ title = "Add the work items completed and held to FeatureRow of src/flowgraph/fe
 description = "Removes the xfail mark of tests/functional/test_status_feature_progress.py. The tests that state the line of a Feature in status -- tests/text/test_status_features.py, tests/item/test_status_features.py and tests/functional/test_status_features.py -- are rewritten to the new line."
 expected_output = "changed: FeatureRow of src/flowgraph/feature.py holds the work items completed and those held, removed ones left out, counted by feature_row from the states it is given; status_text of src/flowgraph/text.py writes a Feature as its id, '<completed>/<held> W', its bucket and its title; proved in tests/feature/ and tests/text/"
 created = 2026-11-21 17:40:34+00:00
+
+[[tasks]]
+id = "T-0131"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say fgraph status lists a Feature with its progress"
+expected_output = "changed: README.md shows fgraph status listing a Feature with '<completed>/<all> W' and its bucket before its title; docs/domain-model.md, Persistence, says the same, what is counted, and names the developer's decision of 2026-11-21"
+created = 2026-11-21 17:40:34+00:00

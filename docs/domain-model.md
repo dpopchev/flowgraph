@@ -358,7 +358,7 @@ and its merge tool.
   `fgraph remove` removes a work item in Backlog; a removed one takes no Task,
   no amend and no move, and leaves the queue as a started one does. Removing
   a Task, and removing a started work item, which has a branch and a
-  worktree, are not built.
+  worktree once the development is on, are not built.
 - An Upkeep is kept as `items/U-0001.toml`, in the shape of a Story file:
   the same fields in each state, `started`, `completed` and `commit` once it
   has moved, and its Tasks as `[[tasks]]` tables, read back through the
@@ -435,8 +435,48 @@ and its merge tool.
   listed, so an id that has left the Backlog drops out at the next reorder;
   `add`, `amend`, `start` and `complete` never write the file.
 
-Who writes what, so that two branches never change the same file or hand out
-the same number:
+A record is layered by its configuration, the developer's request of
+2026-11-21, which names three layers: the items and their lifecycle, kept
+always; their commits on `main`, to be turned off; the development beside the
+source code, to be turned on. The record is meant to be used without the
+development too.
+
+- The configuration is one file beside `items/`, `config.toml`, a table per
+  layer. A record without the file holds the defaults, and so does a table or
+  a key the file leaves out.
+- `[development] enabled` turns the development on: the branch and the
+  worktree of a start, the scoping of a branch, the landing. It is off by
+  default, the reading the developer agreed when the plan was filed on
+  2026-11-21.
+- With the development off the start of a work item is a write as any other:
+  committed on `main`, with no branch, no worktree and no warning. Its Tasks
+  are written on `main`, it is completed with `fgraph complete`, and
+  `fgraph land` is refused with exit 2 naming the key, `development.enabled`.
+- The rules that read a branch `wi/<id>-*` stay as they are: without the
+  development `fgraph` makes no such branch, so none scopes a write and no
+  worktree takes the Tasks of a started work item.
+- With `enabled = true` the start, the scoping and the landing are as this
+  section states them below.
+- The start of a work item is held to `main` with the development on or off,
+  and it alone, the reading decided when S-0039 was ordered: no other write of
+  a record is held to `main`.
+- A `config.toml` that holds a table or a key the configuration does not
+  have, a value of another type than its key takes, or no TOML, is refused
+  with exit 2 naming the file and the key, whatever the command. The help
+  option needs no record and reads none.
+- The configuration is read at the edge into a value of the model
+  (`src/flowgraph/config.py`). Reading it is an effect: `run()` takes it as a
+  callable, the defaults when none is given, and `main()` reads the file.
+- Only this key is built. Not built yet: turning the commits of the record
+  off, the merge, the gate and the parallel work items of the development,
+  and a command that reads and sets the configuration. Until then the file is
+  written by hand; the record of flowgraph holds `[development] enabled =
+  true`.
+
+Who writes what with the development on, so that two branches never change
+the same file or hand out the same number. With it off no work item has a
+branch: every write is made in the checkout, the start of a work item alone
+held to `main`, and there is no landing:
 
 | Write | Where |
 |---|---|
@@ -527,40 +567,45 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 
 - A write that leaves its file as it was makes no commit. Completing a Task
   names the commit of its work, so the commit of the record follows it.
-- A start of a work item then checks out the branch `wi/<id>-<slug>` at its
-  commit in a new worktree, `<parent>/<checkout name>.worktrees/<id>-<slug>`.
-  The slug is given with `--slug`, else it is the first four words of the
-  title, lower-cased and kept to their letters and digits.
+- With the development on, a start of a work item then checks out the branch
+  `wi/<id>-<slug>` at its commit in a new worktree,
+  `<parent>/<checkout name>.worktrees/<id>-<slug>`. The slug is given with
+  `--slug`, else it is the first four words of the title, lower-cased and kept
+  to their letters and digits. With the development off the start ends at its
+  commit.
 - Outside a git work tree a write is made as before, without a commit and
-  without a warning; only a start of a work item warns, that no branch was
-  made. A write refused makes no commit and no branch.
+  without a warning; only a start of a work item with the development on
+  warns, that no branch was made. A write refused makes no commit and no
+  branch.
 - A record git ignores is written without a commit and without a warning, the
   developer's decision of 2026-11-21. The record is ignored when a rule git
   reads names its directory, whether or not git still tracks a file of it.
-- The start of a work item on an ignored record still makes its branch, as the
-  developer ordered on 2026-11-21 after its first slice made none: the start
-  is written with no commit, is held to `main` as any start, and checks out
-  `wi/<id>-<slug>` in its worktree at the commit `main` is on. Git checks an
-  ignored directory out in no worktree, so the record stays in the checkout of
-  `main` alone: the Tasks of the started work item are written there, no
-  branch scopes the writes, and the Task ids are those of the record alone.
-  `fgraph land` lands it as any other, completing the work item with no commit
-  of the record. A worktree git refuses leaves the start written.
+- With the development on, the start of a work item on an ignored record
+  still makes its branch, as the developer ordered on 2026-11-21 after its
+  first slice made none: the start is written with no commit, is held to
+  `main` as any start, and checks out `wi/<id>-<slug>` in its worktree at the
+  commit `main` is on. Git checks an ignored directory out in no worktree, so
+  the record stays in the checkout of `main` alone: the Tasks of the started
+  work item are written there, no branch scopes the writes, and the Task ids
+  are those of the record alone. `fgraph land` lands it as any other,
+  completing the work item with no commit of the record. A worktree git
+  refuses leaves the start written.
 - A git step refused exits 2 naming the command: a commit refused puts every
   file the write changed back as it was, a worktree refused leaves the start
   committed.
-- `fgraph land` lands a started work item, run in the checkout of `main`. It
-  merges the branch `wi/<id>-*` into `main` as a merge of its own, held
-  uncommitted; commits it under the message the developer gives with
-  `--message`; completes the work item at the short sha of that commit, with
-  the commit of the record, `chore: complete <id> in the record`; then removes
-  the worktree of the branch and the branch.
-- A landing is refused, with nothing merged, when the record is outside a git
-  work tree, when the work tree it runs in is not on `main`, when no branch
-  `wi/<id>-*` or more than one is there, when git refuses the merge, and --
-  the merge held dropped again -- when a Task of the work item is not
-  completed or git refuses the merge commit. A step git refuses after the
-  merge commit exits 2 saying how far the landing came.
+- With the development on, `fgraph land` lands a started work item, run in
+  the checkout of `main`. It merges the branch `wi/<id>-*` into `main` as a
+  merge of its own, held uncommitted; commits it under the message the
+  developer gives with `--message`; completes the work item at the short sha
+  of that commit, with the commit of the record, `chore: complete <id> in the
+  record`; then removes the worktree of the branch and the branch.
+- A landing is refused, with nothing merged, when the development is off,
+  when the record is outside a git work tree, when the work tree it runs in
+  is not on `main`, when no branch `wi/<id>-*` or more than one is there,
+  when git refuses the merge, and -- the merge held dropped again -- when a
+  Task of the work item is not completed or git refuses the merge commit. A
+  step git refuses after the merge commit exits 2 saying how far the landing
+  came.
 - `fgraph` makes the commits of the record; the commits of the development
   and their messages stay the developer's, the merge commit of a landing
   among them: `fgraph` makes it, the developer words it. Whether the work

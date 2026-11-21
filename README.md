@@ -12,8 +12,9 @@ with its Tasks and lists the record by bucket. An Upkeep moves the same way,
 with its own Tasks, and is listed beside the Stories. The Backlog is a queue
 that `fgraph reorder` reorders, and a work item still in it is rewritten
 with `fgraph amend`. In a git repository `fgraph` commits every write of the
-record itself, and starting a work item also checks out its branch in a
-worktree of its own.
+record itself. A record is layered by its configuration, `.fgraph/config.toml`:
+once it turns the development on, starting a work item also checks out its
+branch in a worktree of its own, and `fgraph land` lands it.
 
 | Part                            | State                                                    |
 | ------------------------------- | -------------------------------------------------------- |
@@ -25,13 +26,16 @@ worktree of its own.
 | the level above                 | a Feature groups work items; status lists its bucket     |
 | the order of the Backlog        | a queue, reordered by `fgraph reorder`                   |
 | the wording of a work item      | rewritten by `fgraph amend` while in Backlog             |
-| git                             | every write committed; start branches, `fgraph land` lands |
+| git                             | every write of the record committed                      |
+| the layers of a record          | `.fgraph/config.toml`: the development, off by default   |
+| the development                 | once enabled: start branches, `fgraph land` lands        |
 | the ontology                    | not started                                              |
 | flowgraph tracking its own work | its Stories are in `.fgraph/` since 0.4.0                |
 
 The model of the record -- its item types, states and rules -- is
-`docs/domain-model.md`. flowgraph keeps its own work in `.fgraph/`: run
-`uv run fgraph status` in the checkout to see what is next.
+`docs/domain-model.md`. flowgraph keeps its own work in `.fgraph/`, with the
+development turned on: run `uv run fgraph status` in the checkout to see what
+is next.
 
 ## Use
 
@@ -120,8 +124,49 @@ the number. `fgraph` reads `S` alone: an `items/ST-0001.toml` of an older
 record is left alone as a file of a prefix no kind knows, neither read as a
 Story nor renamed.
 
+A record is layered by its configuration, the file `.fgraph/config.toml`, a
+table per layer: the developer's request of 2026-11-21. fgraph keeps the
+items and their lifecycle always. The development beside the source code --
+the branch and the worktree of a start, the scoping of a branch, the landing
+-- is a layer the record turns on:
+
+```toml
+[development]
+enabled = true
+```
+
+A record without the file, or without the key, has the development off. A
+start of a Story is then a write as any other: committed on `main`, with no
+branch, no worktree and no warning. Its Tasks are written on `main`, it is
+completed with `fgraph complete`, and `fgraph land` exits 2 naming the key:
+
+```sh
+fgraph start S-0001
+# started S-0001
+
+fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
+# fgraph: error: S-0001 cannot land: the development is off -- set development.enabled = true in /src/project/.fgraph/config.toml
+```
+
+With `enabled = true` the start, the scoping and the landing are as the rest
+of this page shows them: wherever it names a branch, a worktree or a landing,
+the record has the development on. The start of a Story is held to `main`
+either way, and it alone: no other write is, the reading decided when S-0039
+was ordered. No command writes the file yet; it is written by hand, and the
+record of flowgraph itself holds the key.
+
+A `config.toml` fgraph refuses -- a table or a key the configuration does not
+have, a value of another type than the key takes, a text that is no TOML --
+exits 2 naming the file and the key, whatever the command:
+
+```sh
+fgraph status
+# fgraph: error: /src/project/.fgraph/config.toml: development.enable is no key of the configuration
+```
+
 Start a Story once it has a Task, then start its Tasks one by one. `fgraph
-start` takes a Story id or a Task id:
+start` takes a Story id or a Task id; with the development on, the start of a
+Story names its branch:
 
 ```sh
 fgraph start S-0001
@@ -149,13 +194,18 @@ not count toward the top 5 of a heading (below).
 
 When the record is inside a git work tree, starting a Story commits its file
 alone as `chore: start S-0001 in the record`, as fgraph commits every write
-(below), and checks out the branch `wi/<id>-<slug>` at that
-commit in a worktree beside the checkout, `<parent>/<checkout>.worktrees/`.
-The slug is the first four words of the title, lower-cased and kept to their
-letters and digits; `--slug branch-on-start` gives another. Outside a work
-tree the Story starts as before and fgraph warns that no branch was made. A
+(below). With the development on it then checks out the branch
+`wi/<id>-<slug>` at that commit in a worktree beside the checkout,
+`<parent>/<checkout>.worktrees/`. The slug is the first four words of the
+title, lower-cased and kept to their letters and digits; `--slug
+branch-on-start` gives another. Outside a work tree the Story starts as
+before and, with the development on, fgraph warns that no branch was made. A
 git step refused exits 2 and names the git command: a commit refused puts the
 file back as it was, a worktree refused leaves the start committed.
+
+The rules of a branch that follow are those of a record with the development
+on: with it off fgraph makes no branch `wi/<id>-<slug>` and no worktree, so
+every write is taken on `main`.
 
 On the branch of a started Story, `wi/S-0001-<slug>`, fgraph writes that
 Story alone: its Tasks are added, started and completed there. A Task for
@@ -167,9 +217,9 @@ fgraph add task "Add the show command" --parent S-0002 --output "changed: cli.py
 # fgraph: error: S-0002 is not written here: the branch wi/S-0001-raise-the-stories-fgraph writes S-0001 alone
 ```
 
-A Story starts on main alone. `fgraph start` of a Story exits 2 in a work
-tree on any other branch, with nothing written and no branch made, and names
-the work tree to start it in:
+A Story starts on main alone, with the development on or off. `fgraph start`
+of a Story exits 2 in a work tree on any other branch, with nothing written
+and no branch made, and names the work tree to start it in:
 
 ```sh
 fgraph start S-0002
@@ -179,15 +229,17 @@ fgraph start S-0002
 The start of a Task is not checked against main: a Task starts on the branch
 of its Story.
 
-A Task of a started Story is written in its worktree: added, started and
-completed there. On main the same write exits 2 and names the worktree:
+A Task of a started Story that has a worktree is written there: added,
+started and completed in it. On main the same write exits 2 and names the
+worktree:
 
 ```sh
 fgraph add task "Add the show command" --parent S-0001 --output "changed: cli.py"
 # fgraph: error: S-0001 is started: its Tasks are written in its worktree, /src/project.worktrees/S-0001-raise-the-stories-fgraph
 ```
 
-A started Story whose branch has no worktree is written on main as before.
+A started Story whose branch has no worktree is written on main as before,
+and so is one started with the development off, which has no branch.
 
 `fgraph status` and `fgraph show` on main read a started Story where its Tasks
 are written: they list the Tasks of the Story as its worktree holds them,
@@ -302,9 +354,9 @@ fgraph unblock T-0001
 An unblock exits 2 and names why when the Task is not blocked, when the id is
 a Story's, or when the record does not hold the Task.
 
-In a git repository `fgraph land` does the landing in one step, run in the
-checkout of `main` once every Task of the Story is completed on its branch.
-The message of the merge commit is yours:
+In a git repository whose record has the development on, `fgraph land` does
+the landing in one step, run in the checkout of `main` once every Task of the
+Story is completed on its branch. The message of the merge commit is yours:
 
 ```sh
 fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
@@ -314,10 +366,11 @@ fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
 It merges the branch `wi/S-0001-*` into `main` as one merge commit under
 that message, completes the Story at that commit, commits the record as
 `chore: complete S-0001 in the record`, and removes the worktree and the
-branch. A land exits 2 and names why, with nothing merged, when a Task of the
-Story is not completed, when the checkout it runs in is not on `main`, when
-the Story has no branch or several, when the record is outside a git work
-tree, or when git refuses the merge.
+branch. A land exits 2 and names why, with nothing merged, when the
+development is off, when a Task of the Story is not completed, when the
+checkout it runs in is not on `main`, when the Story has no branch or
+several, when the record is outside a git work tree, or when git refuses the
+merge.
 
 An Upkeep is work that keeps a behavior and changes the inside, such as a
 split of a module. Its criterion is a Given / When / Then whose When already
@@ -642,8 +695,9 @@ command, and every file the write changed is put back as it was. The commits
 of the development and their messages stay yours.
 
 A record git ignores is written without a commit. When a rule of `.gitignore`
-names the record, every write is made with no commit and no warning, and a
-start still makes the branch of the Story, at the commit `main` is on:
+names the record, every write is made with no commit and no warning. With the
+development on, a start still makes the branch of the Story, at the commit
+`main` is on:
 
 ```sh
 echo ".fgraph/" >> .gitignore

@@ -34,12 +34,14 @@ commit = "3420654"
 
 [[tasks]]
 id = "T-0055"
-state = "started"
+state = "completed"
 title = "Add the land command to src/flowgraph/land.py, src/flowgraph/commit.py and src/flowgraph/cli.py"
 description = "src/flowgraph/land.py holds the landing as one function over the store and the git steps, each a callable of the work tree of src/flowgraph/commit.py, proved with fakes in tests/land/. Removes the xfail mark of tests/functional/test_land_work_item.py; the fakes of tests/commit/ gain the new steps."
 expected_output = "changed: fgraph land ID --message TEXT merges the branch of the started work item into main under that message, completes the work item at the merge commit, commits the record, removes the worktree and the branch and prints 'landed <id> at <sha>'; it exits 2 naming why, nothing merged, on each refusal of the first Task"
 created = 2026-11-21 10:59:10+00:00
 started = 2026-11-21 11:01:44+00:00
+completed = 2026-11-21 11:03:28+00:00
+commit = "0c6ed11"
 
 [[tasks]]
 id = "T-0056"

@@ -1,0 +1,10 @@
+id = "ST-0026"
+state = "backlog"
+title = "Cut the modules of src/flowgraph above 400 lines that make check passes from any to none"
+description = "Found by U-0004, landed at 4a556aa on 2026-11-21: src/flowgraph/task.py crossed the 400 lines of U-0001 unseen, since nothing in make check holds the limit. The question U-0004 left open is carried here and is the developer's: whether make check should refuse a module above 400 lines; removed with that reason if the answer is no. Open too: whether the limit counts tests/, and where the number is written once. Its Tasks are written when it is ordered."
+created = 2026-11-21 14:19:30+00:00
+
+[criterion]
+given = "a module of src/flowgraph above 400 lines"
+when = "make check runs"
+then = "it fails and names the module and its lines"

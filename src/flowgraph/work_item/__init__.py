@@ -5,6 +5,7 @@ from flowgraph.work_item.commands import (
     add_task,
     add_work_item,
     amend_work_item,
+    block_task,
     complete_task,
     complete_work_item,
     holder_of,
@@ -44,19 +45,18 @@ from flowgraph.work_item.model import (
     amended_work_item,
     append_task,
     commit_sha,
-    completed_task,
     completed_work_item,
     make_kind,
     make_work_item,
     make_work_item_id,
     next_work_item_id,
     parse_work_item_id,
-    started_task,
     started_work_item,
     state_name,
     still_open,
     work_item_id_text,
 )
+from flowgraph.work_item.tasks import blocked_task, completed_task, started_task
 
 __all__ = [
     "Amendment",
@@ -85,6 +85,8 @@ __all__ = [
     "amend_work_item",
     "amended_work_item",
     "append_task",
+    "block_task",
+    "blocked_task",
     "commit_sha",
     "complete_task",
     "complete_work_item",

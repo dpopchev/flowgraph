@@ -12,8 +12,9 @@ from flowgraph import work_item
 from flowgraph.branch import MAIN, GitError
 from flowgraph.commit import OpenGit, Said, WorkTree, commit_written
 from flowgraph.criterion import make_commit
-from flowgraph.item import Store, complete_item, parse_work_item_id_of_any_kind
+from flowgraph.item import complete_item, parse_work_item_id_of_any_kind
 from flowgraph.record import Now
+from flowgraph.store import Store
 from flowgraph.task import CompletedAlreadyError, NotStartedError, OpenTaskError
 from flowgraph.work_item import WorkItemId, WorkItemNotFoundError, work_item_id_text
 

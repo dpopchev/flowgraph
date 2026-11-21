@@ -9,7 +9,7 @@ from dataclasses import replace
 from pathlib import Path
 
 from flowgraph.commit import OpenGit
-from flowgraph.item import OpenStore, Store
+from flowgraph.store import OpenStore, Store
 
 
 def across_worktrees(store: Store, record: Path, open_git: OpenGit, open_store: OpenStore) -> Store:

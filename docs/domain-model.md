@@ -266,6 +266,12 @@ and its merge tool.
   beside the fields it had in Backlog. Only a started Story's file may hold a
   started Task; it is read back through the moves that start them, so a file
   holds no state those moves could not reach.
+- A blocked Task is kept as `state = "blocked"` with its `started` time, its
+  `since` time, its `reason` and its `waiting_on`. Only a started work item's
+  file may hold one, and it is read back through its start and its block.
+  `fgraph block` blocks a started Task; until unblock is built a blocked Task
+  takes no move, and its work item is not completed while it is blocked.
+  Blocking a work item is not built.
 - A completed item is kept as `state = "completed"` with its `started` and
   `completed` times and its `commit` sha. A started Story's file may hold
   completed Tasks; a completed Story's file holds only completed Tasks, since
@@ -280,7 +286,7 @@ and its merge tool.
   it and the prefix of its ids -- is a value the id carries, so `Story` and
   `StartedUpkeep` are names of those types and a Story tells itself from an
   Upkeep by its id. Each kind keeps only its kind, its id functions and those
-  names; the kinds are listed once, in `src/flowgraph/item.py`.
+  names; the kinds are listed once, in `src/flowgraph/store.py`.
 - Each kind reads the files of its own prefix. A file with a prefix no kind
   knows is left alone; nothing reports it yet.
 - A command loads a work item whole, changes it and saves it whole. The file
@@ -303,7 +309,7 @@ the same number:
 | amend a work item in Backlog | `main` |
 | start a work item | `main`: `fgraph` commits it and makes its branch |
 | add a Task to a started work item | its branch |
-| start and complete its Tasks | its branch |
+| start, block and complete its Tasks | its branch |
 | land the work item | `main`: `fgraph land` merges its branch and completes it |
 | complete the work item | `main`, after a merge made by hand |
 
@@ -344,7 +350,7 @@ agreed on 2026-11-21 that `fgraph` owns the record, its rituals and its rules:
 The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 
 - `fgraph` commits every write of the record, when the record is inside a git
-  work tree: `add`, `amend`, `reorder`, `start` and `complete`. The commit
+  work tree: `add`, `amend`, `reorder`, `start`, `block` and `complete`. The commit
   holds the files of the record the write changed, alone; whatever else is
   staged or changed stays as it was and out of the commit.
 - The commit is worded by `fgraph`, `chore: <write> <id> in the record`:
@@ -356,6 +362,7 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   | amend | `chore: amend ST-0001 in the record` |
   | reorder | `chore: reorder ST-0002 before ST-0001 in the record` |
   | start | `chore: start ST-0001 in the record`, `chore: start T-0001 of ST-0001 in the record` |
+  | block | `chore: block T-0001 of ST-0001 in the record` |
   | complete | `chore: complete ST-0001 in the record`, `chore: complete T-0001 of ST-0001 in the record` |
 
 - A write that leaves its file as it was makes no commit. Completing a Task

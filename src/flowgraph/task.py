@@ -40,6 +40,21 @@ class StartedTask:
 
 
 @dataclass(frozen=True)
+class BlockedTask:
+    """A Task in InProgress that cannot go on: its reason, since when, and what it waits on."""
+
+    id: TaskId
+    title: str
+    expected_output: str
+    description: str
+    created: datetime
+    started: datetime
+    reason: str
+    since: datetime
+    waiting_on: str
+
+
+@dataclass(frozen=True)
 class CompletedTask:
     """A Task in Completed: its work is in its commit."""
 
@@ -54,12 +69,15 @@ class CompletedTask:
 
 
 # A Task in any of its states, as the file of its Story keeps it.
-TaskState = Task | StartedTask | CompletedTask
+TaskState = Task | StartedTask | BlockedTask | CompletedTask
 
 
 @dataclass
 class TaskRow:
-    """One Task as plain data, as a view reads it from the record; a commit once completed."""
+    """One Task as plain data, as a view reads it from the record.
+
+    A commit once completed; a reason and what it waits on while blocked.
+    """
 
     id: str
     title: str
@@ -67,6 +85,8 @@ class TaskRow:
     description: str
     state: str
     commit: str = ""
+    reason: str = ""
+    waiting_on: str = ""
 
 
 class TaskIdError(ValueError):
@@ -85,12 +105,16 @@ class StartedAlreadyError(ValueError):
     """A Story or a Task started once more."""
 
 
+class BlockedError(ValueError):
+    """A blocked Task moved before it is unblocked, or blocked once more."""
+
+
 class CompletedAlreadyError(ValueError):
     """A completed Story or Task moved once more, or a Task written for a completed Story."""
 
 
 class NotStartedError(ValueError):
-    """A Story or a Task completed while it is still in Backlog."""
+    """A Story or a Task completed, or a Task blocked, while it is still in Backlog."""
 
 
 class NoTaskError(ValueError):
@@ -150,7 +174,8 @@ def make_task(
 def started(task: TaskState, on: datetime) -> StartedTask:
     """The Task started on that time.
 
-    Raises StartedAlreadyError when it is started and CompletedAlreadyError when it is completed.
+    Raises StartedAlreadyError when it is started, BlockedError when it is blocked and
+    CompletedAlreadyError when it is completed.
     """
     match task:
         case Task():
@@ -164,6 +189,38 @@ def started(task: TaskState, on: datetime) -> StartedTask:
             )
         case StartedTask():
             raise StartedAlreadyError(f"{task_id_text(task.id)} is started already")
+        case BlockedTask():
+            raise BlockedError(f"{task_id_text(task.id)} is blocked: unblock it first")
+        case CompletedTask():
+            raise CompletedAlreadyError(f"{task_id_text(task.id)} is completed already")
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def blocked(task: TaskState, reason: str, waiting_on: str, on: datetime) -> BlockedTask:
+    """The started Task blocked on that time, kept to the second, for the reason given.
+
+    Raises NotStartedError when it is in Backlog, BlockedError when it is blocked already,
+    CompletedAlreadyError when it is completed and EmptyPartError when the reason or what it
+    waits on is blank.
+    """
+    match task:
+        case Task():
+            raise NotStartedError(f"{task_id_text(task.id)} is in Backlog: start it first")
+        case StartedTask():
+            return BlockedTask(
+                task.id,
+                task.title,
+                task.expected_output,
+                task.description,
+                task.created,
+                task.started,
+                said("reason", reason),
+                on.replace(microsecond=0),
+                said("waiting on", waiting_on),
+            )
+        case BlockedTask():
+            raise BlockedError(f"{task_id_text(task.id)} is blocked already")
         case CompletedTask():
             raise CompletedAlreadyError(f"{task_id_text(task.id)} is completed already")
         case _ as unreachable:
@@ -173,7 +230,8 @@ def started(task: TaskState, on: datetime) -> StartedTask:
 def completed(task: TaskState, on: datetime, commit: Commit) -> CompletedTask:
     """The Task completed on that time in that commit.
 
-    Raises NotStartedError when it is in Backlog and CompletedAlreadyError when it is completed.
+    Raises NotStartedError when it is in Backlog, BlockedError when it is blocked and
+    CompletedAlreadyError when it is completed.
     """
     match task:
         case Task():
@@ -189,6 +247,8 @@ def completed(task: TaskState, on: datetime, commit: Commit) -> CompletedTask:
                 on.replace(microsecond=0),
                 commit,
             )
+        case BlockedTask():
+            raise BlockedError(f"{task_id_text(task.id)} is blocked: unblock it first")
         case CompletedTask():
             raise CompletedAlreadyError(f"{task_id_text(task.id)} is completed already")
         case _ as unreachable:
@@ -208,11 +268,23 @@ def started_among(
 ) -> tuple[TaskState, ...]:
     """The Tasks with the one of that id started on that time, the rest as they are.
 
-    Raises TaskNotFoundError when none has the id, StartedAlreadyError when it is started and
-    CompletedAlreadyError when it is completed.
+    Raises TaskNotFoundError when none has the id, or the refusal of its start.
     """
     task_of(tasks, task_id)
     return tuple(started(task, on) if task.id == task_id else task for task in tasks)
+
+
+def blocked_among(
+    tasks: tuple[TaskState, ...], task_id: TaskId, reason: str, waiting_on: str, on: datetime
+) -> tuple[TaskState, ...]:
+    """The Tasks with the one of that id blocked on that time, the rest as they are.
+
+    Raises TaskNotFoundError when none has the id, or the refusal of its block.
+    """
+    task_of(tasks, task_id)
+    return tuple(
+        blocked(task, reason, waiting_on, on) if task.id == task_id else task for task in tasks
+    )
 
 
 def completed_among(
@@ -220,8 +292,7 @@ def completed_among(
 ) -> tuple[TaskState, ...]:
     """The Tasks with the one of that id completed in that commit, the rest as they are.
 
-    Raises TaskNotFoundError when none has the id, NotStartedError when it is in Backlog and
-    CompletedAlreadyError when it is completed.
+    Raises TaskNotFoundError when none has the id, or the refusal of its complete.
     """
     task_of(tasks, task_id)
     return tuple(completed(task, on, commit) if task.id == task_id else task for task in tasks)
@@ -247,7 +318,31 @@ def task_state_name(task: TaskState) -> str:
             return "backlog"
         case StartedTask():
             return "started"
+        case BlockedTask():
+            return "blocked"
         case CompletedTask():
             return "completed"
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def row_of(task: TaskState) -> TaskRow:
+    """The Task as the row a view reads: its commit once completed, its block while blocked."""
+    row = TaskRow(
+        task_id_text(task.id),
+        task.title,
+        task.expected_output,
+        task.description,
+        task_state_name(task),
+    )
+    match task:
+        case Task() | StartedTask():
+            return row
+        case BlockedTask():
+            row.reason, row.waiting_on = task.reason, task.waiting_on
+            return row
+        case CompletedTask():
+            row.commit = task.commit.sha
+            return row
         case _ as unreachable:
             assert_never(unreachable)

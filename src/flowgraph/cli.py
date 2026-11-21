@@ -16,14 +16,12 @@ from flowgraph.commit import OpenGit, Said, commit_written, open_git
 from flowgraph.criterion import CommitError, EmptyPartError
 from flowgraph.item import (
     ItemIdError,
-    OpenStore,
-    Store,
     Written,
     add_item,
     amend_item,
+    block_item,
     complete_item,
     kind_named,
-    open_files,
     reorder_item,
     show_item,
     start_item,
@@ -41,13 +39,16 @@ from flowgraph.scope import (
     within,
     worktree_of_item,
 )
+from flowgraph.store import OpenStore, Store, open_files
 from flowgraph.task import (
+    BlockedError,
     CompletedAlreadyError,
     ItemInBacklogError,
     NoTaskError,
     NotStartedError,
     OpenTaskError,
     StartedAlreadyError,
+    TaskIdError,
     TaskNotFoundError,
 )
 from flowgraph.work_item import (
@@ -78,10 +79,12 @@ REFUSED = (
     EmptyPartError,
     NoPartError,
     WorkItemNotFoundError,
+    TaskIdError,
     TaskNotFoundError,
     NoTaskError,
     NotStartedError,
     StartedAlreadyError,
+    BlockedError,
     ItemInBacklogError,
     OpenTaskError,
     CompletedAlreadyError,
@@ -161,6 +164,14 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="TEXT",
         help="the words of a work item's branch after its id, instead of its title's first four",
     )
+    block = commands.add_parser(
+        "block", help="block a started Task that cannot go on", add_help=False, color=False
+    )
+    block.add_argument("id", metavar="ID", help="the id of the Task")
+    block.add_argument("--reason", required=True, metavar="TEXT", help="why it cannot go on")
+    block.add_argument(
+        "--waiting-on", required=True, metavar="TEXT", help="who or what it waits on"
+    )
     complete = commands.add_parser(
         "complete",
         help="complete a work item or a Task of it in a commit",
@@ -216,6 +227,8 @@ def _written(args: argparse.Namespace, store: Store, now: Now) -> Written | None
             return complete_item(args.id, args.commit, store, now)
         case "start":
             return start_item(args.id, args.slug, store, now)
+        case "block":
+            return block_item(args.id, args.reason, args.waiting_on, store, now)
         case "reorder":
             return reorder_item(args.id, args.before, store)
         case _:

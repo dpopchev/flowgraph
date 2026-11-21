@@ -180,6 +180,29 @@ Story has Tasks not completed, when the item is completed already, when the
 commit is no sha, or when the record does not hold it. A completed Story takes
 no new Task.
 
+A started Task that cannot go on is blocked, with the reason and who or what
+it waits on. It stays in InProgress and `fgraph show` lists it as blocked:
+
+```sh
+fgraph block T-0001 --reason "the review is not back" --waiting-on "the reviewer"
+# blocked T-0001 of ST-0001
+
+fgraph show ST-0001
+# ...
+# Tasks (1)
+#   T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
+#     bucket           InProgress, blocked
+#     reason           the review is not back
+#     waiting on       the reviewer
+#     expected output  changed: src/flowgraph/cli.py gains the show command
+```
+
+A block exits 2 and names why when the Task is still in Backlog, blocked
+already or completed, when the reason or what it waits on is blank, when the
+id is a Story's, or when the record does not hold the Task. A blocked Task is
+not started or completed, and its Story is not completed, while it is
+blocked; unblocking it is not built yet.
+
 In a git repository `fgraph land` does the landing in one step, run in the
 checkout of `main` once every Task of the Story is completed on its branch.
 The message of the merge commit is yours:

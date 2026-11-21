@@ -8,9 +8,12 @@ from flowgraph.upkeep import UpkeepDetail, UpkeepRow
 # The buckets of the flow in their order, each with the states of an item shown in it.
 BUCKETS: Sequence[tuple[str, Collection[str]]] = (
     ("Backlog", frozenset({"backlog"})),
-    ("InProgress", frozenset({"started"})),
+    ("InProgress", frozenset({"started", "blocked"})),
     ("Completed", frozenset({"completed"})),
 )
+
+# The state of a blocked Task: shown in InProgress, as blocked.
+BLOCKED = "blocked"
 
 
 def status_text(rows: Iterable[StoryRow | UpkeepRow]) -> str:
@@ -36,7 +39,8 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     """The work item with its bucket and its criterion, then its Tasks, one fact per line.
 
     A description and a commit are listed only when there is one, the bucket of a Task only once
-    it has left Backlog.
+    it has left Backlog. A blocked Task is listed in InProgress as blocked, with its reason and
+    what it waits on.
     """
     bucket = next(name for name, states in BUCKETS if detail.state in states)
     committed = [f"  commit       {detail.commit}\n"] if detail.commit else []
@@ -54,7 +58,11 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     for task in detail.tasks:
         lines.append(f"  {task.id}  {task.title}\n")
         task_bucket = next(name for name, states in BUCKETS if task.state in states)
-        if task_bucket != "Backlog":
+        if task.state == BLOCKED:
+            lines.append(f"    bucket           {task_bucket}, blocked\n")
+            lines.append(f"    reason           {task.reason}\n")
+            lines.append(f"    waiting on       {task.waiting_on}\n")
+        elif task_bucket != "Backlog":
             lines.append(f"    bucket           {task_bucket}\n")
         if task.commit:
             lines.append(f"    commit           {task.commit}\n")

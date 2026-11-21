@@ -12,7 +12,7 @@ from flowgraph.task import (
     make_task,
     make_task_id,
 )
-from flowgraph.work_item.model import (
+from flowgraph.work_item import (
     Amendment,
     NoPartError,
     WorkItem,

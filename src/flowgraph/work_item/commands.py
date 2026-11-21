@@ -7,11 +7,10 @@ from flowgraph.record import Now
 from flowgraph.task import (
     TaskId,
     TaskNotFoundError,
-    TaskRow,
     make_task,
     next_task_id,
     parse_task_id,
-    task_id_text,
+    row_of,
 )
 from flowgraph.work_item.model import (
     Amendment,
@@ -27,17 +26,16 @@ from flowgraph.work_item.model import (
     amended_work_item,
     append_task,
     commit_sha,
-    completed_task,
     completed_work_item,
     make_work_item,
     next_work_item_id,
     parse_work_item_id,
-    started_task,
     started_work_item,
     state_name,
     still_open,
     work_item_id_text,
 )
+from flowgraph.work_item.tasks import blocked_task, completed_task, started_task
 
 # The work item that holds the Task of that id, whole; raises TaskNotFoundError when none does.
 LoadHolder = Callable[[TaskId], WorkItemState]
@@ -64,17 +62,7 @@ def work_item_detail(item: WorkItemState) -> WorkItemDetail:
         given=item.scenario.given,
         when=item.scenario.when,
         then=item.scenario.then,
-        tasks=[
-            TaskRow(
-                task_id_text(task.id),
-                task.title,
-                task.expected_output,
-                task.description,
-                state_name(task),
-                commit_sha(task),
-            )
-            for task in item.tasks
-        ],
+        tasks=[row_of(task) for task in item.tasks],
         commit=commit_sha(item),
     )
 
@@ -181,6 +169,26 @@ def start_task(
     """
     item = load_holder(task_id)
     save_work_item(started_task(item, task_id, now()))
+    return item.id
+
+
+def block_task(
+    *,
+    task_id: TaskId,
+    reason: str,
+    waiting_on: str,
+    load_holder: LoadHolder,
+    save_work_item: SaveWorkItem,
+    now: Now,
+) -> WorkItemId:
+    """Block the started Task of that id now, save its work item whole and return its id.
+
+    Raises TaskNotFoundError when no item holds the Task, NotStartedError when it is in Backlog,
+    BlockedError when it is blocked already, CompletedAlreadyError when it is completed and
+    EmptyPartError when the reason or what it waits on is blank; nothing is saved.
+    """
+    item = load_holder(task_id)
+    save_work_item(blocked_task(item, task_id, reason, waiting_on, now()))
     return item.id
 
 

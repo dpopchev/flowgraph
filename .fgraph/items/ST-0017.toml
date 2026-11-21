@@ -45,7 +45,8 @@ commit = "0c6ed11"
 
 [[tasks]]
 id = "T-0056"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say a work item is landed with fgraph land"
 expected_output = "changed: README.md shows fgraph land with its message and what it refuses; docs/domain-model.md, Persistence, lists the git steps of a landing and says landing a work item is written on main by fgraph land"
 created = 2026-11-21 10:59:10+00:00
+started = 2026-11-21 11:03:28+00:00

@@ -9,3 +9,11 @@ created = 2026-11-21 21:22:03+00:00
 given = "a record with a started Feature"
 when = "fgraph block of the Feature is run with a reason and what it waits on"
 then = "fgraph status lists the Feature under InProgress with ! and what it waits on"
+
+[[tasks]]
+id = "T-0202"
+state = "backlog"
+title = "Add tests/functional/test_block_feature.py, failing on the criterion of S-0056"
+description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_block_task.py does. Seen red, then marked a strict xfail naming S-0056 until the Task that turns it green removes the mark."
+expected_output = "created: tests/functional/test_block_feature.py states that, on a record with a started Feature, fgraph block of the Feature with a reason and what it waits on exits 0 and fgraph status lists the Feature under InProgress with ! and what it waits on"
+created = 2026-11-21 23:43:47+00:00

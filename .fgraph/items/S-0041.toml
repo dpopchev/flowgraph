@@ -1,10 +1,12 @@
 id = "S-0041"
-state = "started"
+state = "completed"
 title = "Cut the commits a developer names to complete a work item with the development off from one to none"
 description = "Part of the developer's request of 2026-11-21 to layer fgraph by a configuration, .fgraph/config.toml: (1) the items and their lifecycle, always; (2) their commits on main, optional; (3) the development beside the source code, turned on. The plan was shown and filed on the developer's 'file only' of 2026-11-21. Its Tasks are written when it is ordered. Reading of the agent: the commit is the evidence of the development, so --commit is required of a Task and of a work item only with the development on; with it off a Task completes without one too. The alternative, --commit optional always, was shown and not taken."
 parent = "F-0001"
 created = 2026-11-21 20:32:53+00:00
 started = 2026-11-21 22:49:40+00:00
+completed = 2026-11-21 23:08:44+00:00
+commit = "6818ffb"
 
 [criterion]
 given = "a record with the development off, and a started Story whose Tasks are completed"

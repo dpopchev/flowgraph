@@ -34,7 +34,8 @@ commit = "3ae6e38"
 
 [[tasks]]
 id = "T-0147"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say fgraph show reads a started work item from its worktree"
 expected_output = "changed: README.md and docs/domain-model.md say fgraph show on main reads a started work item from the worktree of its branch, as status does; the line of docs/domain-model.md that names it not built yet is gone"
 created = 2026-11-21 21:35:27+00:00
+started = 2026-11-21 21:40:00+00:00

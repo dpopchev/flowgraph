@@ -1,7 +1,8 @@
 """The scope of a branch: the work item it owns, and the store that saves that work item alone.
 
 The branch `wi/<id>-<slug>` is the branch of the work item of that id. In a work tree on it
-fgraph writes the file of that work item and no other file of the record.
+fgraph writes the file of that work item and no other file of the record; on any other branch
+it leaves the Tasks of a started work item to the worktree of that work item.
 """
 
 import re
@@ -15,7 +16,15 @@ from flowgraph.commit import OpenGit
 from flowgraph.item import ItemIdError, Store, parse_item_id, parse_work_item_id_of_any_kind
 from flowgraph.queue import Queue
 from flowgraph.task import TaskId
-from flowgraph.work_item import WorkItemId, WorkItemIdError, WorkItemState, work_item_id_text
+from flowgraph.work_item import (
+    CompletedWorkItem,
+    StartedWorkItem,
+    WorkItem,
+    WorkItemId,
+    WorkItemIdError,
+    WorkItemState,
+    work_item_id_text,
+)
 
 # The name of the branch of a work item: `wi/`, its id, `-` and its slug.
 OWNED = re.compile(r"wi/([A-Z]+-\d+)-.+")
@@ -31,6 +40,9 @@ class Scope:
 
 # The scope of the branch a write is made on, or None when no work item owns that branch.
 FindScope = Callable[[], Scope | None]
+
+# The worktree the branch of that work item is checked out in, or None when it has none.
+FindItemWorktree = Callable[[WorkItemId], Path | None]
 
 
 class NotOnMainError(Exception):
@@ -64,19 +76,50 @@ def _alone(scope: Scope) -> str:
     return f"the branch {scope.branch} writes {work_item_id_text(scope.owner)} alone"
 
 
-def within(store: Store, find_scope: FindScope) -> Store:
+def worktree_of_item(record: Path, open_git: OpenGit, item_id: WorkItemId) -> Path | None:
+    """The worktree a branch `wi/<id>-*` of the work item is checked out in; None without one.
+
+    A record outside a git work tree has none.
+    """
+    work_tree = open_git(record)
+    if work_tree is None:
+        return None
+    branches = work_tree.find_branches(f"wi/{work_item_id_text(item_id)}-*")
+    found = [work_tree.find_worktree(branch) for branch in branches]
+    return next((path for path in found if path is not None), None)
+
+
+def _is_started(item: WorkItemState) -> bool:
+    """True for a started work item."""
+    match item:
+        case StartedWorkItem():
+            return True
+        case WorkItem() | CompletedWorkItem():
+            return False
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def within(store: Store, find_scope: FindScope, find_worktree: FindItemWorktree) -> Store:
     """The store that saves within the scope found when it saves; its reads are as they were.
 
     On the branch of a work item a save of another work item, or of the queue, raises
-    OutOfScopeError and writes nothing. The scope is asked for only at a save.
+    OutOfScopeError and writes nothing. On any other branch so does a Task write of a started
+    work item that has a worktree: the save of a started work item that was started already.
+    The scope and the worktree are asked for only at a save.
     """
 
     def save_work_item(item: WorkItemState) -> None:
         scope = find_scope()
+        named = work_item_id_text(item.id)
         if scope is not None and item.id != scope.owner:
-            raise OutOfScopeError(
-                f"{work_item_id_text(item.id)} is not written here: {_alone(scope)}"
-            )
+            raise OutOfScopeError(f"{named} is not written here: {_alone(scope)}")
+        if scope is None and _is_started(item) and _is_started(store.load_work_item(item.id)):
+            worktree = find_worktree(item.id)
+            if worktree is not None:
+                raise OutOfScopeError(
+                    f"{named} is started: its Tasks are written in its worktree, {worktree}"
+                )
         store.save_work_item(item)
 
     def save_queue(queue: Queue) -> None:

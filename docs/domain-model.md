@@ -324,8 +324,17 @@ A work item starts on `main` alone, the developer's decision of 2026-11-21:
 - The start of a Task is not checked against `main`, and neither is a record
   outside a git work tree.
 
-The rest of the side of `main` is still a convention: `fgraph` does not
-refuse there a Task write of a started work item.
+`fgraph` holds the side of `main` too, under the principle the developer
+agreed on 2026-11-21 that `fgraph` owns the record, its rituals and its rules:
+
+- A Task write of a started work item -- a Task added, started or completed --
+  is taken in the worktree of that work item. In a work tree on any branch
+  that no work item owns, `main` among them, it is refused with exit 2,
+  nothing written, and the refusal names that worktree.
+- The start, the complete and the landing of the work item itself stay on
+  `main`.
+- A started work item whose branch is checked out in no worktree, and a
+  record outside a git work tree, are written as before.
 
 The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 

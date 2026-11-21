@@ -29,8 +29,8 @@ def add(saved: list[UpkeepState], then: str = "it still holds") -> object:
         then=then,
         description="why",
         find_work_item_rows=lambda: [
-            UpkeepRow("U-0002", "another", "backlog"),
-            UpkeepRow("U-0001", "one more", "backlog"),
+            UpkeepRow("U-0002", "another", "backlog", created=NOW),
+            UpkeepRow("U-0001", "one more", "backlog", created=NOW),
         ],
         save_work_item=saved.append,
         now=lambda: NOW,

@@ -38,4 +38,4 @@ def test_the_created_time_is_kept_to_the_second() -> None:
 
 def test_a_story_reads_as_a_backlog_row() -> None:
     story = make_story(make_story_id(2), "a title", SCENARIO, "", CREATED)
-    assert story_row(story) == StoryRow("ST-0002", "a title", "backlog")
+    assert story_row(story) == StoryRow("ST-0002", "a title", "backlog", created=CREATED)

@@ -49,8 +49,8 @@ def test_the_upkeeps_of_a_record_are_read_as_rows_by_id(tmp_path: Path) -> None:
     write_upkeep(tmp_path, make_upkeep(make_upkeep_id(10), "a later title", SCENARIO, "", CREATED))
     write_upkeep(tmp_path, UPKEEP)
     assert read_upkeep_rows(tmp_path) == [
-        UpkeepRow("U-0001", "a title", "backlog"),
-        UpkeepRow("U-0010", "a later title", "backlog"),
+        UpkeepRow("U-0001", "a title", "backlog", created=CREATED),
+        UpkeepRow("U-0010", "a later title", "backlog", created=CREATED),
     ]
 
 

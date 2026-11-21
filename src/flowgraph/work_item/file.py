@@ -141,7 +141,7 @@ def read_work_item_rows(record: Path, kind: Kind) -> list[WorkItemRow]:
     Raises WorkItemFileError naming the first file of the kind that does not hold one.
     """
     rows = [
-        WorkItemRow(held.id, held.title, held.state, _commit_held(held))
+        WorkItemRow(held.id, held.title, held.state, _commit_held(held), created=held.created)
         for held in _files_of(record, kind)
     ]
     return sorted(rows, key=lambda row: parse_work_item_id(kind, row.id).number)

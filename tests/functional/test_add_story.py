@@ -9,6 +9,7 @@ from typing import Never
 import pytest
 
 from flowgraph.cli import Store, run
+from flowgraph.queue import make_queue
 from flowgraph.story import StoryState, story_row
 
 pytestmark = pytest.mark.functional
@@ -50,6 +51,8 @@ def fgraph(argv: Sequence[str], saved: list[StoryState]) -> Outcome:
             find_work_item_detail=never_read,
             find_task_ids=lambda: [],
             save_work_item=saved.append,
+            load_queue=lambda: make_queue([]),
+            save_queue=lambda _: None,
         ),
         now=lambda: NOW,
     )

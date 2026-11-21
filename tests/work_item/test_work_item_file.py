@@ -69,8 +69,8 @@ def test_the_work_items_of_a_kind_are_read_as_rows_by_id(tmp_path: Path) -> None
     write_work_item(tmp_path, later)
     write_work_item(tmp_path, WHOLE)
     assert read_work_item_rows(tmp_path, CHORE) == [
-        WorkItemRow("CH-0001", "a title", "completed", "abc1234"),
-        WorkItemRow("CH-0010", "a later title", "backlog"),
+        WorkItemRow("CH-0001", "a title", "completed", "abc1234", created=CREATED),
+        WorkItemRow("CH-0010", "a later title", "backlog", created=CREATED),
     ]
 
 

@@ -9,7 +9,8 @@ it builds the ontology of the project on the way: its terms and how they relate.
 Early: `fgraph` adds a Story to a record, writes its Tasks, takes them from
 Backlog through InProgress to Completed with their commits, shows a Story
 with its Tasks and lists the record by bucket. An Upkeep moves the same way,
-with its own Tasks, and is listed beside the Stories.
+with its own Tasks, and is listed beside the Stories. The Backlog is a queue
+that `fgraph reorder` reorders.
 
 | Part                            | State                                                    |
 | ------------------------------- | -------------------------------------------------------- |
@@ -18,6 +19,7 @@ with its own Tasks, and is listed beside the Stories.
 | where the record lives          | located on every call but `--help`                       |
 | the record and its flow         | a work item with its Tasks, from Backlog to Completed    |
 | the kinds of work item          | Story, Upkeep                                            |
+| the order of the Backlog        | a queue, reordered by `fgraph reorder`                   |
 | the ontology                    | not started                                              |
 | flowgraph tracking its own work | its Stories are in `.fgraph/` since 0.4.0                |
 
@@ -167,6 +169,33 @@ fgraph complete U-0001 --commit 6db7fac
 ```
 
 An Upkeep is kept as `items/U-0001.toml`, its Tasks inside it.
+
+The Backlog is a queue: `fgraph status` lists it in the order the work is to
+be pulled. A work item joins the end of the queue when it is added, whatever
+its kind; `fgraph reorder` puts one work item right before another:
+
+```sh
+fgraph status
+# Backlog (2)
+#   ST-0002  Raise the kinds of work item fgraph adds from 1 to 2
+#   U-0002  Cut the lines one kind of work item holds from 885 to 250
+# InProgress (0)
+# Completed (0)
+
+fgraph reorder U-0002 --before ST-0002
+# moved U-0002 before ST-0002
+
+fgraph status
+# Backlog (2)
+#   U-0002  Cut the lines one kind of work item holds from 885 to 250
+#   ST-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# InProgress (0)
+# Completed (0)
+```
+
+A reorder exits 2 and names why when one of the two is not in Backlog, when
+a work item is put before itself, or when a text is no work item id. The
+order given is kept as `queue.toml` in the record, apart from the item files.
 
 ## Develop
 

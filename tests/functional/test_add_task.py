@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from flowgraph.cli import Store, run
+from flowgraph.queue import make_queue
 from flowgraph.story import (
     StoryId,
     StoryNotFoundError,
@@ -64,6 +65,8 @@ def fgraph(argv: Sequence[str], saved: dict[str, StoryState]) -> Outcome:
                 task_id_text(task.id) for story in saved.values() for task in story.tasks
             ],
             save_work_item=lambda story: saved.__setitem__(story_id_text(story.id), story),
+            load_queue=lambda: make_queue([]),
+            save_queue=lambda _: None,
         ),
         now=lambda: NOW,
     )

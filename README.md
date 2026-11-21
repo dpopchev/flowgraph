@@ -43,6 +43,26 @@ fgraph                      # uses ./.fgraph/, else ./fgraph/
 fgraph --dir path/to/record # uses the directory given, without a search
 ```
 
+`fgraph --help` prints the menu of the commands, and every command prints its
+own help, its usage and its options, with `--help` or `-h`. Neither needs a
+record:
+
+```sh
+fgraph start --help
+# usage: fgraph start [-h] [--slug TEXT] ID
+#
+# positional arguments:
+#   ID           the id of the work item or of the Task
+#
+# options:
+#   -h, --help   show the help of this command and exit
+#   --slug TEXT  the words of a work item's branch after its id, instead of its
+#                title's first four
+```
+
+`fgraph add --help` lists the kinds it adds, and each kind prints its own:
+`fgraph add story --help`.
+
 A record is a directory you create (`mkdir .fgraph`). Add a Story with its
 title and its one Given / When / Then, then list the record by bucket. The
 title names the outcome: a directional verb, the target metric or behavior,

@@ -24,3 +24,10 @@ title = "Add the refusal of a Task write of a started work item outside its work
 description = "The worktree of a work item is the one a branch wi/<id>-* is checked out in, found through the steps of the work tree of src/flowgraph/commit.py. Removes the xfail mark of tests/functional/test_main_scope.py."
 expected_output = "changed: the store of src/flowgraph/scope.py refuses, outside the branch of a work item, the save of a started work item that was started already when that work item has a worktree, naming the worktree; src/flowgraph/cli.py gives it the worktree of a work item; proved in tests/scope/"
 created = 2026-11-21 11:12:29+00:00
+
+[[tasks]]
+id = "T-0065"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say main takes no Task write of a started work item"
+expected_output = "changed: docs/domain-model.md, Persistence, says fgraph holds the side of main too and what it refuses there; README.md says a Task of a started Story is written in its worktree and what main answers"
+created = 2026-11-21 11:12:29+00:00

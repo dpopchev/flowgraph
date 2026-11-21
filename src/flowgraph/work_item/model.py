@@ -1,0 +1,350 @@
+"""A work item of any kind: its kind and id, its states, its Tasks and the moves between them.
+
+The kind is a value the id carries, so one set of states and moves serves the Story, the
+Upkeep and every kind that shares their Given / When / Then.
+"""
+
+import re
+from collections.abc import Callable, Collection
+from dataclasses import dataclass, replace
+from datetime import datetime
+from typing import assert_never
+
+from flowgraph.criterion import Commit, Scenario, said
+from flowgraph.task import (
+    CompletedAlreadyError,
+    CompletedTask,
+    ItemInBacklogError,
+    NoTaskError,
+    NotStartedError,
+    StartedAlreadyError,
+    StartedTask,
+    Task,
+    TaskId,
+    TaskRow,
+    TaskState,
+    all_completed,
+    completed_among,
+    started_among,
+    task_id_text,
+    task_of,
+)
+
+
+@dataclass(frozen=True)
+class Kind:
+    """A kind of work item: its noun, the article before the noun, and the prefix of its ids."""
+
+    noun: str
+    article: str
+    prefix: str
+
+
+@dataclass(frozen=True)
+class WorkItemId:
+    """The identity of a work item: its kind and its number among the items of that kind."""
+
+    kind: Kind
+    number: int
+
+
+@dataclass(frozen=True)
+class WorkItem:
+    """A work item in Backlog: added, not yet started, with the Tasks written for it so far."""
+
+    id: WorkItemId
+    title: str
+    scenario: Scenario
+    description: str
+    created: datetime
+    tasks: tuple[Task, ...]
+
+
+@dataclass(frozen=True)
+class StartedWorkItem:
+    """A work item in InProgress: started with at least one Task, each in any state of its own."""
+
+    id: WorkItemId
+    title: str
+    scenario: Scenario
+    description: str
+    created: datetime
+    started: datetime
+    tasks: tuple[TaskState, ...]
+
+
+@dataclass(frozen=True)
+class CompletedWorkItem:
+    """A work item in Completed: every Task of it completed, the item in its commit on `main`."""
+
+    id: WorkItemId
+    title: str
+    scenario: Scenario
+    description: str
+    created: datetime
+    started: datetime
+    completed: datetime
+    commit: Commit
+    tasks: tuple[CompletedTask, ...]
+
+
+# A work item that still takes Tasks: in Backlog or started.
+OpenWorkItem = WorkItem | StartedWorkItem
+
+# A work item in any of its states, as the record keeps it.
+WorkItemState = WorkItem | StartedWorkItem | CompletedWorkItem
+
+
+@dataclass
+class WorkItemRow:
+    """One work item as plain data, as a view reads it from the record; a commit once completed."""
+
+    id: str
+    title: str
+    state: str
+    commit: str = ""
+
+
+@dataclass
+class WorkItemDetail:
+    """One work item with its criterion and its Tasks as plain data, as a view reads it whole."""
+
+    id: str
+    title: str
+    state: str
+    description: str
+    given: str
+    when: str
+    then: str
+    tasks: list[TaskRow]
+    commit: str = ""
+
+
+# The rows of the work items in the record; an empty list when it holds none.
+FindWorkItemRows = Callable[[], list[WorkItemRow]]
+
+# The ids of every Task in the record, as written; an empty list when it holds none.
+FindTaskIds = Callable[[], list[str]]
+
+# The work item of that id, whole; raises WorkItemNotFoundError when the record holds none.
+LoadWorkItem = Callable[[WorkItemId], WorkItemState]
+
+# Save the work item whole.
+SaveWorkItem = Callable[[WorkItemState], None]
+
+
+class KindError(ValueError):
+    """A kind of work item without a noun, or with a prefix that is not capital letters."""
+
+
+class WorkItemIdError(ValueError):
+    """A number or a text that is no id of the kind asked for."""
+
+
+class WorkItemNotFoundError(Exception):
+    """A record that holds no work item of the id asked for; `item_id` is that id."""
+
+    def __init__(self, item_id: WorkItemId) -> None:
+        super().__init__(f"no {item_id.kind.noun} {work_item_id_text(item_id)} in the record")
+        self.item_id = item_id
+
+
+class WorkItemFileError(Exception):
+    """A file named as a work item in a record that does not hold one; names its path."""
+
+
+class WorkItemMismatchError(Exception):
+    """A work item read back different from the one written; its file is as it was before."""
+
+
+def make_kind(noun: str, article: str, prefix: str) -> Kind:
+    """The kind of work item of that noun, written with that article and prefix.
+
+    Raises KindError when the noun is blank or the prefix is not capital letters.
+    """
+    if not noun.strip():
+        raise KindError("a kind names its noun")
+    if re.fullmatch(r"[A-Z]+", prefix) is None:
+        raise KindError(f"{prefix!r} is no prefix: it is capital letters")
+    return Kind(noun, article, prefix)
+
+
+def make_work_item_id(kind: Kind, number: int) -> WorkItemId:
+    """The id of the work item of that kind with that number in the record.
+
+    Raises WorkItemIdError naming the kind when the number is below 1.
+    """
+    if number < 1:
+        raise WorkItemIdError(f"{kind.article} {kind.noun} id counts from 1: {number} is below 1")
+    return WorkItemId(kind, number)
+
+
+def work_item_id_text(item_id: WorkItemId) -> str:
+    """The id as it is written: the prefix of its kind, `-` and the number, four digits at least."""
+    return f"{item_id.kind.prefix}-{item_id.number:04d}"
+
+
+def parse_work_item_id(kind: Kind, text: str) -> WorkItemId:
+    """The id of that kind written as the text.
+
+    Raises WorkItemIdError when the text is not the prefix of the kind, `-` and a number.
+    """
+    written = re.fullmatch(rf"{kind.prefix}-(\d+)", text)
+    if written is None:
+        raise WorkItemIdError(f"{text!r} is no {kind.noun} id: it is {kind.prefix}- and a number")
+    return make_work_item_id(kind, int(written.group(1)))
+
+
+def next_work_item_id(kind: Kind, taken: Collection[WorkItemId]) -> WorkItemId:
+    """The next free id of the kind: one above the highest taken, the first when none is."""
+    return make_work_item_id(kind, max((item_id.number for item_id in taken), default=0) + 1)
+
+
+def make_work_item(
+    item_id: WorkItemId, title: str, scenario: Scenario, description: str, created: datetime
+) -> WorkItem:
+    """A work item in Backlog, its created time kept to the second.
+
+    Raises EmptyPartError when the title is blank.
+    """
+    to_the_second = created.replace(microsecond=0)
+    return WorkItem(item_id, said("title", title), scenario, description, to_the_second, ())
+
+
+def append_task[W: OpenWorkItem](item: W, task: Task) -> W:
+    """The work item with the Task written for it, after the Tasks it already has."""
+    return replace(item, tasks=(*item.tasks, task))
+
+
+def still_open(item: WorkItemState) -> OpenWorkItem:
+    """The work item, which still takes Tasks; raises CompletedAlreadyError when it is completed."""
+    match item:
+        case WorkItem() | StartedWorkItem():
+            return item
+        case CompletedWorkItem():
+            raise CompletedAlreadyError(f"{work_item_id_text(item.id)} is completed already")
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def started_work_item(item: WorkItemState, on: datetime) -> StartedWorkItem:
+    """The work item started on that time, kept to the second, its Tasks still in Backlog.
+
+    Raises NoTaskError when it has no Task, StartedAlreadyError when it is started and
+    CompletedAlreadyError when it is completed.
+    """
+    match item:
+        case WorkItem(tasks=()):
+            raise NoTaskError(f"{work_item_id_text(item.id)} has no Task to start with")
+        case WorkItem():
+            to_the_second = on.replace(microsecond=0)
+            return StartedWorkItem(
+                item.id,
+                item.title,
+                item.scenario,
+                item.description,
+                item.created,
+                to_the_second,
+                item.tasks,
+            )
+        case StartedWorkItem():
+            raise StartedAlreadyError(f"{work_item_id_text(item.id)} is started already")
+        case CompletedWorkItem():
+            raise CompletedAlreadyError(f"{work_item_id_text(item.id)} is completed already")
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def started_task(item: WorkItemState, task_id: TaskId, on: datetime) -> StartedWorkItem:
+    """The started work item with its Task of that id started on that time, kept to the second.
+
+    Raises TaskNotFoundError when the item holds no such Task, ItemInBacklogError when the item
+    is in Backlog, StartedAlreadyError when the Task is started and CompletedAlreadyError when it
+    is completed.
+    """
+    task_of(item.tasks, task_id)
+    task = task_id_text(task_id)
+    match item:
+        case WorkItem():
+            raise ItemInBacklogError(
+                f"{task} cannot start: {work_item_id_text(item.id)} is in Backlog"
+            )
+        case StartedWorkItem():
+            return replace(item, tasks=started_among(item.tasks, task_id, on))
+        case CompletedWorkItem():
+            raise CompletedAlreadyError(f"{task} is completed already")
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def completed_task(
+    item: WorkItemState, task_id: TaskId, on: datetime, commit: Commit
+) -> StartedWorkItem:
+    """The started work item with its Task of that id completed on that time, in that commit.
+
+    Raises TaskNotFoundError when the item holds no such Task, NotStartedError when the Task is
+    in Backlog and CompletedAlreadyError when it is completed.
+    """
+    task_of(item.tasks, task_id)
+    task = task_id_text(task_id)
+    match item:
+        case WorkItem():
+            raise NotStartedError(f"{task} is in Backlog: start it first")
+        case StartedWorkItem():
+            return replace(item, tasks=completed_among(item.tasks, task_id, on, commit))
+        case CompletedWorkItem():
+            raise CompletedAlreadyError(f"{task} is completed already")
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def completed_work_item(item: WorkItemState, on: datetime, commit: Commit) -> CompletedWorkItem:
+    """The work item completed on that time, kept to the second, in that commit.
+
+    Raises NotStartedError when it is in Backlog, OpenTaskError naming the Tasks not completed,
+    and CompletedAlreadyError when it is completed.
+    """
+    match item:
+        case WorkItem():
+            raise NotStartedError(f"{work_item_id_text(item.id)} is in Backlog: start it first")
+        case StartedWorkItem():
+            done = all_completed(item.tasks, work_item_id_text(item.id))
+            return CompletedWorkItem(
+                item.id,
+                item.title,
+                item.scenario,
+                item.description,
+                item.created,
+                item.started,
+                on.replace(microsecond=0),
+                commit,
+                done,
+            )
+        case CompletedWorkItem():
+            raise CompletedAlreadyError(f"{work_item_id_text(item.id)} is completed already")
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def state_name(item: WorkItemState | TaskState) -> str:
+    """The state of a work item or a Task as the record writes it."""
+    match item:
+        case WorkItem() | Task():
+            return "backlog"
+        case StartedWorkItem() | StartedTask():
+            return "started"
+        case CompletedWorkItem() | CompletedTask():
+            return "completed"
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def commit_sha(item: WorkItemState | TaskState) -> str:
+    """The sha of the commit of a completed work item or Task; empty for one not completed."""
+    match item:
+        case CompletedWorkItem() | CompletedTask():
+            return item.commit.sha
+        case WorkItem() | Task() | StartedWorkItem() | StartedTask():
+            return ""
+        case _ as unreachable:
+            assert_never(unreachable)

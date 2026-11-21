@@ -1,5 +1,6 @@
 """The scope of a branch: the work item it owns, and the store that saves that work item alone."""
 
+from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Never
@@ -133,3 +134,8 @@ def test_the_scope_of_a_record_is_the_one_of_the_branch_its_work_tree_is_on() ->
 
 def test_a_record_outside_a_git_work_tree_has_no_scope() -> None:
     assert scope_in(Path("/src/project/.fgraph"), lambda _: None) is None
+
+
+def test_a_record_git_ignores_has_no_scope() -> None:
+    ignoring = replace(work_tree(BRANCH), ignores=lambda _: True)
+    assert scope_in(Path("/src/project/.fgraph"), lambda _: ignoring) is None

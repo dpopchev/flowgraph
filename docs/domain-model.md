@@ -429,6 +429,16 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 - Outside a git work tree a write is made as before, without a commit and
   without a warning; only a start of a work item warns, that no branch was
   made. A write refused makes no commit and no branch.
+- A record git ignores is written as a record outside a git work tree is, the
+  developer's decision of 2026-11-21: every write is made without a commit and
+  without a warning, and a start of a work item makes no branch and warns that
+  none was made, since git ignores the record. The record is ignored when a
+  rule git reads names its directory, whether or not git still tracks a file
+  of it. No other git step is taken there: the start is not checked against
+  `main`, no branch scopes the writes, the Tasks of a started work item are
+  written in the same checkout, the Task ids are those of the record alone,
+  and a landing is refused. The branch of a work item on an ignored record is
+  not built.
 - A git step refused exits 2 naming the command: a commit refused puts every
   file the write changed back as it was, a worktree refused leaves the start
   committed.
@@ -439,7 +449,7 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   the commit of the record, `chore: complete <id> in the record`; then removes
   the worktree of the branch and the branch.
 - A landing is refused, with nothing merged, when the record is outside a git
-  work tree, when the work tree it runs in is not on `main`, when no branch
+  work tree or git ignores it, when the work tree it runs in is not on `main`, when no branch
   `wi/<id>-*` or more than one is there, when git refuses the merge, and --
   the merge held dropped again -- when a Task of the work item is not
   completed or git refuses the merge commit. A step git refuses after the

@@ -258,7 +258,7 @@ that message, completes the Story at that commit, commits the record as
 branch. A land exits 2 and names why, with nothing merged, when a Task of the
 Story is not completed, when the checkout it runs in is not on `main`, when
 the Story has no branch or several, when the record is outside a git work
-tree, or when git refuses the merge.
+tree or one git ignores, or when git refuses the merge.
 
 An Upkeep is work that keeps a behavior and changes the inside, such as a
 split of a module. Its criterion is a Given / When / Then whose When already
@@ -482,6 +482,27 @@ was makes no commit. Outside a git work tree a write is made as before, with
 no commit and no warning. A commit git refuses exits 2 and names the git
 command, and every file the write changed is put back as it was. The commits
 of the development and their messages stay yours.
+
+A record git ignores is written as one outside a git work tree is. When a
+rule of `.gitignore` names the record, every write is made with no commit and
+no warning, and a start makes no branch and says so:
+
+```sh
+echo ".fgraph/" >> .gitignore
+
+fgraph add story "Raise the Stories fgraph lists under Backlog from 0 to 1" \
+  --given "a record with no items" --when "a Story is added" \
+  --then "fgraph status lists it under Backlog"
+# added ST-0001
+
+fgraph start ST-0001
+# started ST-0001
+# fgraph: warning: no branch made: /src/project/.fgraph is ignored by git
+```
+
+The Tasks of a Story started there are written in the same checkout, the
+start is not held to `main`, and `fgraph land` exits 2, since there is no
+branch to merge: complete the Story with `fgraph complete ST-0001 --commit`.
 
 ## Develop
 

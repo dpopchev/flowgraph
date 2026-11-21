@@ -1,5 +1,6 @@
 """The Task ids of every worktree: the store that names the ids of each record, with fakes."""
 
+from dataclasses import replace
 from pathlib import Path
 from typing import Never
 
@@ -67,6 +68,12 @@ def test_a_repository_with_one_work_tree_names_the_ids_of_its_record() -> None:
 
 def test_a_record_outside_a_git_work_tree_names_its_own_ids() -> None:
     shared = across_worktrees(store(RECORD), RECORD, lambda _: None, never)
+    assert shared.find_task_ids() == ["T-0001", "T-0002"]
+
+
+def test_a_record_git_ignores_names_its_own_ids() -> None:
+    ignoring = replace(work_tree([HOME, OTHER]), ignores=lambda _: True)
+    shared = across_worktrees(store(RECORD), RECORD, lambda _: ignoring, never)
     assert shared.find_task_ids() == ["T-0001", "T-0002"]
 
 

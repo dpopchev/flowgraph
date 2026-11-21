@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import assert_never
 
 from flowgraph.branch import MAIN
-from flowgraph.commit import OpenGit
+from flowgraph.commit import OpenGit, kept_in
 from flowgraph.feature import Feature
 from flowgraph.item import ItemIdError, parse_item_id, parse_work_item_id_of_any_kind
 from flowgraph.parent import feature_id_text
@@ -70,8 +70,8 @@ def scope_of(branch: str) -> Scope | None:
 
 
 def scope_in(record: Path, open_git: OpenGit) -> Scope | None:
-    """The scope of the branch the work tree of the record is on; None outside a work tree."""
-    work_tree = open_git(record)
+    """The scope of the branch the work tree that keeps the record is on; None when none does."""
+    work_tree = kept_in(record, open_git)
     return None if work_tree is None else scope_of(work_tree.current_branch())
 
 
@@ -83,9 +83,9 @@ def _alone(scope: Scope) -> str:
 def worktree_of_item(record: Path, open_git: OpenGit, item_id: WorkItemId) -> Path | None:
     """The worktree a branch `wi/<id>-*` of the work item is checked out in; None without one.
 
-    A record outside a git work tree has none.
+    A record outside a git work tree has none, and neither has a record git ignores.
     """
-    work_tree = open_git(record)
+    work_tree = kept_in(record, open_git)
     if work_tree is None:
         return None
     branches = work_tree.find_branches(f"wi/{work_item_id_text(item_id)}-*")
@@ -148,8 +148,8 @@ def check_start_on_main(item: str, record: Path, open_git: OpenGit) -> None:
 
     A work item starts on main alone: raises NotOnMainError naming the branch the work tree of
     the record is on and, when the repository has one, the work tree that is on main. A Task
-    starts anywhere, a record outside a git work tree is not checked, and a text that is no id
-    is left to the start, which refuses it.
+    starts anywhere, a record outside a git work tree or ignored by git is not checked, and a
+    text that is no id is left to the start, which refuses it.
     """
     try:
         item_id = parse_item_id(item)
@@ -159,7 +159,7 @@ def check_start_on_main(item: str, record: Path, open_git: OpenGit) -> None:
         case TaskId():
             return
         case WorkItemId():
-            work_tree = open_git(record)
+            work_tree = kept_in(record, open_git)
             on = MAIN if work_tree is None else work_tree.current_branch()
             if work_tree is None or on == MAIN:
                 return

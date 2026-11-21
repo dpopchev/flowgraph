@@ -1,6 +1,7 @@
 """The commit of a write: the files the write changed, committed under its message, with fakes."""
 
 from collections.abc import Callable, Sequence
+from dataclasses import replace
 from pathlib import Path
 from typing import Never
 
@@ -93,6 +94,35 @@ def test_a_start_of_a_work_item_outside_a_work_tree_warns_that_no_branch_was_mad
     assert commit_written(STARTED, store([FILE]), RECORD, lambda _: None) == Said(
         "started ST-0001\n",
         "fgraph: warning: no branch made: /src/project/.fgraph is not inside a git work tree\n",
+    )
+
+
+def ignoring(steps: list[object]) -> WorkTree:
+    """A work tree at TOP whose git ignores the record; it notes each step it is asked for."""
+    return replace(work_tree(steps), ignores=lambda path: path == RECORD)
+
+
+def test_a_write_on_a_record_git_ignores_makes_no_commit() -> None:
+    steps: list[object] = []
+    commit_written(ADDED, store([FILE]), RECORD, lambda _: ignoring(steps))
+    assert steps == []
+
+
+def test_a_write_on_a_record_git_ignores_says_its_line_without_a_warning() -> None:
+    said = commit_written(ADDED, store([FILE]), RECORD, lambda _: ignoring([]))
+    assert said == Said("added ST-0001\n")
+
+
+def test_a_start_of_a_work_item_on_a_record_git_ignores_takes_no_git_step() -> None:
+    steps: list[object] = []
+    commit_written(STARTED, store([FILE]), RECORD, lambda _: ignoring(steps))
+    assert steps == []
+
+
+def test_a_start_of_a_work_item_on_a_record_git_ignores_warns_that_no_branch_was_made() -> None:
+    assert commit_written(STARTED, store([FILE]), RECORD, lambda _: ignoring([])) == Said(
+        "started ST-0001\n",
+        "fgraph: warning: no branch made: /src/project/.fgraph is ignored by git\n",
     )
 
 

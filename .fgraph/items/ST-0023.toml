@@ -12,31 +12,54 @@ then = "it exits 0 and the Story is written, with no commit"
 
 [[tasks]]
 id = "T-0105"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_ignored_record.py, failing on the criterion of ST-0023"
 description = "Run through run() of src/flowgraph/cli.py on a real git repository in tmp_path, as tests/functional/test_commit_writes.py does. Seen red, then marked a strict xfail naming ST-0023 until the Task that turns it green removes the mark. The developer's decisions of 2026-11-21 for the whole Story, asked when it was ordered: a write on an ignored record is silent, with no commit and no warning; the start of a work item there makes no branch and warns, as outside a git work tree. The agent's readings, each a routine call: (1) a record is ignored when a rule git reads names its directory -- git check-ignore --no-index -- whether or not git still tracks a file of it. (2) An ignored record is written as a record outside a git work tree is: add, amend, reorder, remove, start, block, unblock and complete each exit 0 with no commit. (3) The start of a work item there warns 'fgraph: warning: no branch made: <record> is ignored by git', is not checked against main, and its Tasks are written in the same checkout; no scope of a branch holds there and the Task ids are those of the record alone. (4) fgraph land is refused there with exit 2, '<id> cannot land: <record> is ignored by git'; the work item is completed with fgraph complete --commit. The branch of a work item on an ignored record is added at the end of the Backlog as a work item of its own."
 expected_output = "created: tests/functional/test_ignored_record.py states that fgraph add story, run on a record inside a git work tree whose .gitignore names it, exits 0 and writes the Story, with no commit"
 created = 2026-11-21 14:19:18+00:00
+started = 2026-11-21 14:19:59+00:00
+completed = 2026-11-21 14:20:33+00:00
+commit = "6087822"
 
 [[tasks]]
 id = "T-0106"
-state = "backlog"
+state = "completed"
 title = "Add ignores to src/flowgraph/branch.py and to the git work tree of src/flowgraph/commit.py, telling whether git ignores a path"
 description = "The adapter runs git check-ignore --quiet --no-index, whose exit is 0 for an ignored path and 1 for one that is not; any other exit is the GitError. The step has a default so the tests that build a WorkTree by hand stay as they are."
 expected_output = "changed: ignores of src/flowgraph/branch.py is true when a rule git reads names the path, tracked or not, and raises GitError when git cannot tell; the WorkTree of src/flowgraph/commit.py carries it as a step bound by open_git, a work tree built without it ignoring nothing; proved in tests/branch/ against the real git"
 created = 2026-11-21 14:19:18+00:00
+started = 2026-11-21 14:20:33+00:00
+completed = 2026-11-21 14:21:51+00:00
+commit = "56de8a3"
 
 [[tasks]]
 id = "T-0107"
-state = "backlog"
+state = "completed"
 title = "Add the write of a record git ignores to src/flowgraph/commit.py, src/flowgraph/scope.py, src/flowgraph/worktrees.py and src/flowgraph/land.py"
 description = "Removes the xfail mark of tests/functional/test_ignored_record.py, which gains the start of a work item and the landing on an ignored record."
 expected_output = "changed: commit_written of src/flowgraph/commit.py commits nothing for a record git ignores and warns of a start that no branch was made, naming that git ignores the record; kept_in of src/flowgraph/commit.py is the work tree that keeps a record, none outside one and none for an ignored record, and src/flowgraph/scope.py and src/flowgraph/worktrees.py ask it; land_item of src/flowgraph/land.py refuses an ignored record by name; proved in tests/commit/, tests/scope/, tests/worktrees/ and tests/land/"
 created = 2026-11-21 14:19:18+00:00
+started = 2026-11-21 14:21:51+00:00
+completed = 2026-11-21 14:25:27+00:00
+commit = "0de162d"
 
 [[tasks]]
 id = "T-0108"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a record git ignores is written without a commit"
 expected_output = "changed: README.md says a write on a record .gitignore names is made with no commit and no warning, that a start there makes no branch and warns, and that fgraph land is refused there; docs/domain-model.md, Persistence, says the same of the git steps and names the developer's decision of 2026-11-21"
 created = 2026-11-21 14:19:19+00:00
+started = 2026-11-21 14:26:04+00:00
+completed = 2026-11-21 14:26:50+00:00
+commit = "7b4217f"
+
+[[tasks]]
+id = "T-0109"
+state = "completed"
+title = "Resolve the path that ignores of src/flowgraph/branch.py asks git about, so a record given by a relative --dir is asked of as it is located"
+description = "Found while T-0107 was started: locate of src/flowgraph/record.py hands a --dir path on as given, and git check-ignore runs in the top of the work tree, so fgraph --dir ../.fgraph run in a subdirectory would ask about a path outside the repository and exit 2. It changes the output of T-0106, so it is a Task of its own, added on the branch since ST-0023 is started."
+expected_output = "changed: ignores of src/flowgraph/branch.py asks git about the path resolved against the working directory, so a path relative to another directory than the work tree is answered and not refused as outside the repository; proved in tests/branch/test_git.py"
+created = 2026-11-21 14:25:27+00:00
+started = 2026-11-21 14:25:27+00:00
+completed = 2026-11-21 14:26:04+00:00
+commit = "c1dfc85"

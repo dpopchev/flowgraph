@@ -8,7 +8,7 @@ worktree hand out no id twice. It covers the worktrees of one repository, not tw
 from dataclasses import replace
 from pathlib import Path
 
-from flowgraph.commit import OpenGit
+from flowgraph.commit import OpenGit, kept_in
 from flowgraph.store import OpenStore, Store
 
 
@@ -16,12 +16,13 @@ def across_worktrees(store: Store, record: Path, open_git: OpenGit, open_store: 
     """The store whose Task ids are those of the record of every worktree of the repository.
 
     The record of another worktree is the directory at the same path inside it as the record has
-    inside its own work tree, opened by open_store. Outside a git work tree the ids are those of
-    the record alone. The worktrees are asked for only when the ids are.
+    inside its own work tree, opened by open_store. Outside a git work tree, and for a record git
+    ignores, the ids are those of the record alone. The worktrees are asked for only when the ids
+    are.
     """
 
     def find_task_ids() -> list[str]:
-        work_tree = open_git(record)
+        work_tree = kept_in(record, open_git)
         if work_tree is None:
             return store.find_task_ids()
         top = work_tree.path.resolve()

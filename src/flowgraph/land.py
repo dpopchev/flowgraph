@@ -95,7 +95,8 @@ def land_item(
 
     A Spike lands with the decision that answers its hypothesis. Raises WorkItemIdError when the
     text is the id of no kind of work item, LandError when the record is outside a git work
-    tree, when the work tree is not on main or when the work item has no branch or several, the
+    tree or ignored by git, when the work tree is not on main or when the work item has no
+    branch or several, the
     refusal of the complete when a Task of it is not completed or its decision is missing, and
     GitError when git refuses a step. Nothing is merged unless the merge is committed; a step
     refused after it says how far the landing came.
@@ -105,6 +106,8 @@ def land_item(
     work_tree = open_git(record)
     if work_tree is None:
         raise LandError(f"{text} cannot land: {record} is not inside a git work tree")
+    if work_tree.ignores(record):
+        raise LandError(f"{text} cannot land: {record} is ignored by git")
     on = work_tree.current_branch()
     if on != MAIN:
         raise LandError(f"{text} lands on {MAIN}: {work_tree.path} is on {on or 'no branch'}")

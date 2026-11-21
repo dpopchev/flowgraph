@@ -162,6 +162,21 @@ def test_a_landing_outside_a_git_work_tree_is_refused() -> None:
         land(READY, None)
 
 
+def test_a_landing_on_a_record_git_ignores_is_refused() -> None:
+    ignoring = replace(work_tree([]), ignores=lambda path: path == RECORD)
+    with pytest.raises(
+        LandError, match=r"^ST-0001 cannot land: /src/project/.fgraph is ignored by git$"
+    ):
+        land(READY, ignoring)
+
+
+def test_a_landing_on_a_record_git_ignores_merges_nothing() -> None:
+    steps: list[object] = []
+    with pytest.raises(LandError):
+        land(READY, replace(work_tree(steps), ignores=lambda _: True))
+    assert steps == []
+
+
 def test_a_landing_in_a_work_tree_that_is_not_on_main_is_refused() -> None:
     off_main = replace(work_tree([]), current_branch=lambda: BRANCH)
     with pytest.raises(LandError, match=rf"^ST-0001 lands on main: /src/project is on {BRANCH}$"):

@@ -8,16 +8,16 @@ it builds the ontology of the project on the way: its terms and how they relate.
 
 Early: `fgraph` adds a Story to a record, writes its Tasks, takes them from
 Backlog through InProgress to Completed with their commits, shows a Story
-with its Tasks and lists the record by bucket. It also adds an Upkeep and
-lists it beside the Stories; an Upkeep does not move yet.
+with its Tasks and lists the record by bucket. An Upkeep moves the same way,
+with its own Tasks, and is listed beside the Stories.
 
 | Part                            | State                                                    |
 | ------------------------------- | -------------------------------------------------------- |
 | the `fgraph` command            | runs, prints its help menu                               |
 | the wheel                       | built by `make wheel`, ships `fgraph`                    |
 | where the record lives          | located on every call but `--help`                       |
-| the record and its flow         | a Story with its Tasks, from Backlog to Completed        |
-| the kinds of work item          | Story; Upkeep, added and listed only                     |
+| the record and its flow         | a work item with its Tasks, from Backlog to Completed    |
+| the kinds of work item          | Story, Upkeep                                            |
 | the ontology                    | not started                                              |
 | flowgraph tracking its own work | its Stories are in `.fgraph/` since 0.4.0                |
 
@@ -146,8 +146,27 @@ fgraph status
 # Completed (0)
 ```
 
-`fgraph show U-0001` shows it with its criterion. An Upkeep is kept as
-`items/U-0001.toml`; it takes no Task and does not move yet.
+`fgraph show U-0001` shows it with its criterion and its Tasks. An Upkeep
+takes Tasks and moves as a Story does, by the same commands; a Task id counts
+across both kinds:
+
+```sh
+fgraph add task "Split src/flowgraph/story.py into the story package" \
+  --parent U-0001 \
+  --output "created: src/flowgraph/story/ with no module above 400 lines"
+# added T-0001 to U-0001
+
+fgraph start U-0001
+# started U-0001
+fgraph start T-0001
+# started T-0001 of U-0001
+fgraph complete T-0001 --commit 0636c92
+# completed T-0001 of U-0001 at 0636c92
+fgraph complete U-0001 --commit 6db7fac
+# completed U-0001 at 6db7fac
+```
+
+An Upkeep is kept as `items/U-0001.toml`, its Tasks inside it.
 
 ## Develop
 

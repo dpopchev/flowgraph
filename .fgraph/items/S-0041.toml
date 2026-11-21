@@ -13,11 +13,12 @@ then = "fgraph status lists the Story under Completed"
 
 [[tasks]]
 id = "T-0166"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_complete_without_commit.py, failing on the criterion of S-0041"
 description = "The Tasks of the Story are completed without --commit too, as the reading of S-0041 says. Run through run() of src/flowgraph/cli.py on a record in tmp_path. Seen red, then marked a strict xfail naming S-0041 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_complete_without_commit.py states that, on a record with the development off, fgraph complete of a started Story whose Tasks are completed, run without --commit, exits 0 and fgraph status lists the Story under Completed"
 created = 2026-11-21 22:39:48+00:00
+started = 2026-11-21 22:53:38+00:00
 
 [[tasks]]
 id = "T-0167"

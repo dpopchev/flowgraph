@@ -79,6 +79,16 @@ def test_a_directory_a_rule_names_is_ignored_while_a_file_of_it_is_tracked(check
     assert ignores(checkout, checkout / ".fgraph") is True
 
 
+def test_a_path_relative_to_the_working_directory_is_asked_of_from_there(
+    checkout: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    (checkout / ".gitignore").write_text(".fgraph/\n", encoding="utf-8")
+    (checkout / ".fgraph").mkdir()
+    (checkout / "inside").mkdir()
+    monkeypatch.chdir(checkout / "inside")
+    assert ignores(checkout, Path("../.fgraph")) is True
+
+
 def test_a_path_git_cannot_tell_of_raises_naming_the_command(
     checkout: Path, tmp_path: Path
 ) -> None:

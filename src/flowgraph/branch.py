@@ -98,9 +98,10 @@ def work_tree_of(directory: Path) -> Path | None:
 def ignores(work_tree: Path, path: Path) -> bool:
     """Adapter: True when a rule git reads in the work tree names the path, tracked or not.
 
-    Raises GitError naming the command when git cannot tell, as of a path outside the work tree.
+    A relative path is taken from the working directory, as it was located. Raises GitError
+    naming the command when git cannot tell, as of a path outside the work tree.
     """
-    command = ["git", "check-ignore", "--quiet", "--no-index", "--", str(path)]
+    command = ["git", "check-ignore", "--quiet", "--no-index", "--", str(path.resolve())]
     done = subprocess.run(command, cwd=work_tree, check=False, capture_output=True, text=True)
     if done.returncode > 1:
         raise GitError(f"{' '.join(command)} failed: {done.stderr.strip()}")

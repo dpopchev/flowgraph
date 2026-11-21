@@ -61,8 +61,8 @@ def store(feature_ids: list[str]) -> Store:
 def test_the_features_are_listed_by_number_each_with_the_bucket_of_its_work_items() -> None:
     assert status_item(store(["F-0002", "F-0001"])).splitlines()[:3] == [
         "Features (2)",
-        "  F-0001  a feature title  InProgress",
-        "  F-0002  another feature title  Completed",
+        "  F-0001  0/2 W  InProgress  a feature title",
+        "  F-0002  1/1 W  Completed  another feature title",
     ]
 
 

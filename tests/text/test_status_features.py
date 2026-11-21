@@ -13,16 +13,16 @@ pytestmark = pytest.mark.view
 CREATED = datetime(2026, 1, 1, tzinfo=UTC)
 ROWS = [WorkItemRow("ST-0001", "a title", "started", parent="F-0001", created=CREATED)]
 FEATURES = [
-    FeatureRow("F-0001", "a feature title", "InProgress"),
-    FeatureRow("F-0002", "another feature title", "Backlog"),
+    FeatureRow("F-0001", "a feature title", "InProgress", completed=1, held=3),
+    FeatureRow("F-0002", "another feature title", "Backlog", completed=0, held=0),
 ]
 
 
-def test_the_features_are_listed_above_the_buckets_each_with_its_bucket() -> None:
+def test_the_features_are_listed_above_the_buckets_each_with_its_progress_and_bucket() -> None:
     assert status_text(ROWS, FEATURES) == (
         "Features (2)\n"
-        "  F-0001  a feature title  InProgress\n"
-        "  F-0002  another feature title  Backlog\n"
+        "  F-0001  1/3 W  InProgress  a feature title\n"
+        "  F-0002  0/0 W  Backlog  another feature title\n"
         "Backlog (0)\n"
         "InProgress (1)\n"
         "  ST-0001  a title\n"

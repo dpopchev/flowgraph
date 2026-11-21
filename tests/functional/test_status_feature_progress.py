@@ -15,8 +15,6 @@ from flowgraph.cli import open_files, run
 
 pytestmark = pytest.mark.functional
 
-NOT_YET = pytest.mark.xfail(strict=True, reason="ST-0032: a Feature is listed with no progress yet")
-
 START = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_FEATURE = ["add", "feature", "a feature title", "--criterion", "a criterion"]
@@ -74,7 +72,6 @@ class TestAFeatureWithOneOfItsTwoStoriesCompleted:
     def test_status_exits_with_zero(self, listed: Outcome) -> None:
         assert listed.status == 0
 
-    @NOT_YET
     def test_status_lists_the_feature_with_its_work_items_completed_of_all(
         self, listed: Outcome
     ) -> None:
@@ -89,7 +86,6 @@ class TestAFeatureWithOneOfItsTwoStoriesCompleted:
         )
 
 
-@NOT_YET
 def test_a_removed_story_is_counted_in_neither_number(tmp_path: Path) -> None:
     listed = status_after(tmp_path, *ONE_OF_TWO, ["remove", "ST-0002", "--reason", "a reason"])
     assert listed.out.splitlines()[1] == "  F-0001  1/1 W  Completed  a feature title"

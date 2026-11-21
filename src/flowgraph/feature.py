@@ -17,11 +17,15 @@ from flowgraph.item_file import write_checked
 from flowgraph.parent import FeatureId, feature_id_text, make_feature_id, parse_feature_id
 from flowgraph.record import ITEMS, Now
 
+# The states of a completed and of a removed work item, as the record writes them.
+COMPLETED = "completed"
+REMOVED = "removed"
+
 # The states of a work item that leave nothing more to do on it.
-DONE = frozenset({"completed", "removed"})
+DONE = frozenset({COMPLETED, REMOVED})
 
 # The states of a work item that say work on it has begun.
-BEGUN = frozenset({"started", "completed"})
+BEGUN = frozenset({"started", COMPLETED})
 
 
 @dataclass(frozen=True)
@@ -47,11 +51,16 @@ class FeatureDetail:
 
 @dataclass
 class FeatureRow:
-    """One Feature as a line of a list reads it: its id, its title and its derived bucket."""
+    """One Feature as a line of a list reads it: its id, its title and its derived bucket.
+
+    Its progress is the work items completed of those it holds; a removed one is not held.
+    """
 
     id: str
     title: str
     bucket: str
+    completed: int
+    held: int
 
 
 # The Feature of that id, whole; raises FeatureNotFoundError when the record holds none.
@@ -124,8 +133,15 @@ def bucket_of(states: Collection[str]) -> str:
 
 
 def feature_row(feature: Feature, states: Collection[str]) -> FeatureRow:
-    """The Feature as the row a list reads, its bucket derived from the states of its work items."""
-    return FeatureRow(feature_id_text(feature.id), feature.title, bucket_of(states))
+    """The Feature as the row a list reads, its bucket derived from the states of its work items.
+
+    Its work items completed and held are counted from the same states, as the record writes them.
+    """
+    completed = sum(state == COMPLETED for state in states)
+    held = sum(state != REMOVED for state in states)
+    return FeatureRow(
+        feature_id_text(feature.id), feature.title, bucket_of(states), completed, held
+    )
 
 
 def add_feature(

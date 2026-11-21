@@ -39,6 +39,7 @@ from flowgraph.scope import (
     check_start_on_main,
     scope_in,
     within,
+    worktree_of_item,
 )
 from flowgraph.task import (
     CompletedAlreadyError,
@@ -267,7 +268,11 @@ def run(
         return 0
     match locate(cwd, args.dir, is_dir):
         case Found(path) | Given(path):
-            store = within(open_store(path), partial(scope_in, path, open_git))
+            store = within(
+                open_store(path),
+                partial(scope_in, path, open_git),
+                partial(worktree_of_item, path, open_git),
+            )
             try:
                 said = _said(args, store, now, path, open_git)
             except REFUSED as error:

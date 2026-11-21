@@ -16,9 +16,6 @@ from flowgraph.cli import open_files, open_git, run
 
 pytestmark = pytest.mark.functional
 
-# What main refuses once ST-0018 lands; what is still written has no mark.
-NOT_YET = pytest.mark.xfail(strict=True, reason="ST-0018: main takes every Task write")
-
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "Raise the Stories fgraph lists from 0 to 1", *CRITERION]
@@ -93,7 +90,6 @@ def worktree(checkout: Path, tmp_path: Path) -> Path:
     return tmp_path / WORKTREE
 
 
-@NOT_YET
 class TestATaskAddedToAStartedStoryInTheCheckoutOfMain:
     @pytest.fixture
     def refused(self, checkout: Path) -> Outcome:
@@ -116,7 +112,6 @@ class TestATaskAddedToAStartedStoryInTheCheckoutOfMain:
         ) == ("", "chore: start ST-0001 in the record")
 
 
-@NOT_YET
 def test_a_task_of_a_started_story_started_in_the_checkout_of_main_is_refused(
     checkout: Path, worktree: Path
 ) -> None:

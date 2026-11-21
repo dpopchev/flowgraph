@@ -34,12 +34,14 @@ commit = "2866520"
 
 [[tasks]]
 id = "T-0082"
-state = "started"
+state = "completed"
 title = "Add the remove command to src/flowgraph/work_item/commands.py, src/flowgraph/item.py and src/flowgraph/cli.py, listed by src/flowgraph/text.py"
 description = "The command loads the work item whole, removes it and saves it whole. Removes the xfail mark of tests/functional/test_remove_work_item.py."
 expected_output = "changed: fgraph remove ID --reason TEXT removes a work item in Backlog, prints 'removed <id>' and is committed as every write; fgraph status lists it under Removed with its reason and fgraph show names the bucket and the reason; it exits 2 naming why on each refusal of the first Task"
 created = 2026-11-21 11:37:21+00:00
 started = 2026-11-21 11:41:14+00:00
+completed = 2026-11-21 11:42:58+00:00
+commit = "6e257e0"
 
 [[tasks]]
 id = "T-0083"

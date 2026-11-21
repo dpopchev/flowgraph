@@ -39,6 +39,9 @@ def outcome(request: pytest.FixtureRequest) -> Outcome:
         read_story_detail=never_read,
         read_task_ids=lambda _: [],
         write_story=lambda _record, _story: None,
+        read_upkeep_rows=lambda _: [],
+        read_upkeep_detail=never_read,
+        write_upkeep=lambda _record, _upkeep: None,
         now=lambda: datetime(2026, 1, 1, tzinfo=UTC),
     )
     return Outcome(status, "".join(written))

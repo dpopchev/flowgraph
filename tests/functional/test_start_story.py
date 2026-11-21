@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph import story
+from flowgraph import story, upkeep
 from flowgraph.cli import run
 
 pytestmark = pytest.mark.functional
@@ -48,6 +48,9 @@ def fgraph(argv: Sequence[str], cwd: Path) -> Outcome:
         read_story_detail=story.read_story_detail,
         read_task_ids=story.read_task_ids,
         write_story=story.write_story,
+        read_upkeep_rows=upkeep.read_upkeep_rows,
+        read_upkeep_detail=upkeep.read_upkeep_detail,
+        write_upkeep=upkeep.write_upkeep,
         now=lambda: NOW,
     )
     return Outcome(status, "".join(out), "".join(err))

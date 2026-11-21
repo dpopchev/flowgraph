@@ -4,6 +4,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Never
 
 import pytest
 
@@ -17,6 +18,7 @@ from flowgraph.story import (
     story_row,
     task_id_text,
 )
+from flowgraph.upkeep import UpkeepId, UpkeepNotFoundError
 
 pytestmark = pytest.mark.functional
 
@@ -36,6 +38,11 @@ class Outcome:
     status: int
     out: str
     err: str
+
+
+def no_upkeep(_record: Path, upkeep_id: UpkeepId) -> Never:
+    """A record that holds no Upkeep."""
+    raise UpkeepNotFoundError(upkeep_id)
 
 
 def fgraph(argv: Sequence[str], saved: dict[str, StoryState]) -> Outcome:
@@ -61,6 +68,9 @@ def fgraph(argv: Sequence[str], saved: dict[str, StoryState]) -> Outcome:
             task_id_text(task.id) for story in saved.values() for task in story.tasks
         ],
         write_story=lambda _, story: saved.__setitem__(story_id_text(story.id), story),
+        read_upkeep_rows=lambda _: [],
+        read_upkeep_detail=no_upkeep,
+        write_upkeep=lambda _record, _upkeep: None,
         now=lambda: NOW,
     )
     return Outcome(status, "".join(out), "".join(err))

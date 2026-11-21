@@ -46,6 +46,9 @@ def fgraph(argv: Sequence[str], *existing: str) -> Outcome:
         read_story_detail=never_read,
         read_task_ids=lambda _: [],
         write_story=lambda _record, _story: None,
+        read_upkeep_rows=lambda _: [],
+        read_upkeep_detail=never_read,
+        write_upkeep=lambda _record, _upkeep: None,
         now=lambda: NOW,
     )
     return Outcome(status, "".join(out), "".join(err))

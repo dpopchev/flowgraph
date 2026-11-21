@@ -150,7 +150,7 @@ class TestATaskAddedToAParentThatIsNoStory:
 
     def test_names_the_parent(self, outcome: Outcome) -> None:
         assert outcome.err.endswith(
-            "fgraph: error: 'X-0001' is no Story id: it is ST- and a number\n"
+            "fgraph: error: 'X-0001' is no Story, Upkeep, Bug or Spike id\n"
         )
 
 
@@ -190,5 +190,5 @@ class TestAnIdShownThatIsNoStoryId:
 
     def test_names_the_id(self, outcome: Outcome) -> None:
         assert outcome.err.endswith(
-            "fgraph: error: 'T-0001' is no Story id: it is ST- and a number\n"
+            "fgraph: error: 'T-0001' is no Story, Upkeep, Bug or Spike id\n"
         )

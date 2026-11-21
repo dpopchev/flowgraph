@@ -212,5 +212,5 @@ def test_a_land_of_a_task_exits_with_two(ready: Path) -> None:
     outcome = fgraph(["land", "T-0001", "--message", "feat: land a Task"], ready)
     assert (outcome.status, outcome.err.splitlines()[-1:]) == (
         2,
-        ["fgraph: error: 'T-0001' is no Story id: it is ST- and a number"],
+        ["fgraph: error: 'T-0001' is no Story, Upkeep, Bug or Spike id"],
     )

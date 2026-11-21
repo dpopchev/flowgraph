@@ -107,7 +107,7 @@ class TestAStoryInBacklogRemovedWithAReason:
         ),
         (
             [ADD_STORY, ADD_TASK, ["remove", "T-0001", "--reason", "a reason"]],
-            "'T-0001' is no Story id: it is ST- and a number",
+            "'T-0001' is no Story, Upkeep, Bug or Spike id",
         ),
         ([ADD_STORY, REMOVE, ADD_TASK], "ST-0001 is removed already"),
         ([ADD_STORY, ADD_TASK, REMOVE, START], "ST-0001 is removed already"),

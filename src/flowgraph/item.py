@@ -76,15 +76,15 @@ def kind_named(name: str) -> Kind:
 def parse_work_item_id_of_any_kind(text: str) -> WorkItemId:
     """The id of a work item of any kind written as the text.
 
-    Raises WorkItemIdError as the first kind does when the text is the id of none of them.
+    Raises WorkItemIdError naming every kind when the text is the id of none of them.
     """
-    first, *others = KINDS
-    for kind in others:
+    for kind in KINDS:
         try:
             return parse_work_item_id(kind, text)
         except WorkItemIdError:
             continue
-    return parse_work_item_id(first, text)
+    *nouns, last = (kind.noun for kind in KINDS)
+    raise WorkItemIdError(f"{text!r} is no {', '.join(nouns)} or {last} id")
 
 
 def parse_item_id(text: str) -> ItemId:

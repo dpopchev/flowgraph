@@ -1,0 +1,10 @@
+id = "U-0003"
+state = "backlog"
+title = "Cut the places in src/flowgraph that build the path of a work item file from 3 to 1"
+description = "Found during ST-0009: its T-0043 added work_item_file to src/flowgraph/item.py, line 112, for the commit of a start, beside the two places that built the path already, src/flowgraph/work_item/file.py, lines 132 and 252. The file named was outside the files of that Task, so the path rule was repeated and not shared. One function holds the rule and the three places use it. Its Tasks are written when it is ordered."
+created = 2026-11-21 08:57:17+00:00
+
+[criterion]
+given = "main"
+when = "make check runs"
+then = "it still passes"

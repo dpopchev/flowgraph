@@ -43,16 +43,13 @@ def fgraph(argv: Sequence[str], saved: list[StoryState]) -> Outcome:
         out.append,
         err.append,
         open_store=lambda _: Store(
-            find_story_rows=lambda: [story_row(story) for story in saved],
-            load_story=never_read,
-            find_story_detail=never_read,
+            find_work_item_rows=lambda kind: [
+                story_row(story) for story in saved if story.id.kind == kind
+            ],
+            load_work_item=never_read,
+            find_work_item_detail=never_read,
             find_task_ids=lambda: [],
-            save_story=saved.append,
-            find_upkeep_rows=lambda: [],
-            load_upkeep=never_read,
-            find_upkeep_detail=never_read,
-            find_upkeep_task_ids=lambda: [],
-            save_upkeep=lambda _: None,
+            save_work_item=saved.append,
         ),
         now=lambda: NOW,
     )
@@ -73,9 +70,7 @@ class TestAStoryAddedToARecordWithNoItems:
         assert added[0].out == "added ST-0001\n"
 
     def test_status_lists_it_under_backlog(self, added: tuple[Outcome, Outcome]) -> None:
-        assert added[1].out == (
-            "Backlog (1)\n  ST-0001  a title\nInProgress (0)\nCompleted (0)\n"
-        )
+        assert added[1].out == ("Backlog (1)\n  ST-0001  a title\nInProgress (0)\nCompleted (0)\n")
 
 
 class TestAStoryAddedWithABlankPart:

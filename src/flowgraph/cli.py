@@ -15,14 +15,16 @@ from flowgraph.item import (
     ItemIdError,
     OpenStore,
     Store,
+    add_item,
     complete_item,
+    kind_named,
     open_files,
     show_item,
     start_item,
+    status_item,
     write_task,
 )
 from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, Now, locate
-from flowgraph.story import StoryIdError, StoryNotFoundError, add_story, story_id_text
 from flowgraph.task import (
     CompletedAlreadyError,
     ItemInBacklogError,
@@ -32,8 +34,7 @@ from flowgraph.task import (
     StartedAlreadyError,
     TaskNotFoundError,
 )
-from flowgraph.text import status_text
-from flowgraph.upkeep import UpkeepNotFoundError, add_upkeep, upkeep_id_text
+from flowgraph.work_item import WorkItemIdError, WorkItemNotFoundError
 
 __all__ = ["Store", "open_files", "run"]
 
@@ -45,8 +46,7 @@ Write = Callable[[str], object]
 # The refusals of a start, each written as a usage error.
 START_REFUSED = (
     ItemIdError,
-    StoryNotFoundError,
-    UpkeepNotFoundError,
+    WorkItemNotFoundError,
     TaskNotFoundError,
     NoTaskError,
     StartedAlreadyError,
@@ -58,8 +58,7 @@ START_REFUSED = (
 COMPLETE_REFUSED = (
     ItemIdError,
     CommitError,
-    StoryNotFoundError,
-    UpkeepNotFoundError,
+    WorkItemNotFoundError,
     TaskNotFoundError,
     NotStartedError,
     OpenTaskError,
@@ -168,9 +167,8 @@ def run(
                         args.parent, args.title, args.output, args.description, store, now
                     )
                 except (
-                    StoryNotFoundError,
-                    StoryIdError,
-                    UpkeepNotFoundError,
+                    WorkItemNotFoundError,
+                    WorkItemIdError,
                     EmptyPartError,
                     CompletedAlreadyError,
                 ) as error:
@@ -186,27 +184,10 @@ def run(
                     return 2
                 write(done)
                 return 0
-            if args.command == "add" and args.kind == "upkeep":
-                try:
-                    added_upkeep = add_upkeep(
-                        title=args.title,
-                        given=args.given,
-                        when=args.when,
-                        then=args.then,
-                        description=args.description,
-                        find_upkeep_rows=store.find_upkeep_rows,
-                        save_upkeep=store.save_upkeep,
-                        now=now,
-                    )
-                except EmptyPartError as error:
-                    write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
-                    return 2
-                write(f"added {upkeep_id_text(added_upkeep)}\n")
-                return 0
             if args.command == "show":
                 try:
                     shown = show_item(args.id, store)
-                except (StoryNotFoundError, StoryIdError, UpkeepNotFoundError) as error:
+                except (WorkItemNotFoundError, WorkItemIdError) as error:
                     write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
                     return 2
                 write(shown)
@@ -220,24 +201,17 @@ def run(
                 write(begun)
                 return 0
             if args.command == "add":
+                criterion = (args.given, args.when, args.then)
+                kind = kind_named(args.kind)
                 try:
-                    added = add_story(
-                        title=args.title,
-                        given=args.given,
-                        when=args.when,
-                        then=args.then,
-                        description=args.description,
-                        find_story_rows=store.find_story_rows,
-                        save_story=store.save_story,
-                        now=now,
-                    )
+                    added = add_item(kind, args.title, criterion, args.description, store, now)
                 except EmptyPartError as error:
                     write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
                     return 2
-                write(f"added {story_id_text(added)}\n")
+                write(added)
                 return 0
             if args.command == "status":
-                write(status_text([*store.find_story_rows(), *store.find_upkeep_rows()]))
+                write(status_item(store))
                 return 0
             write(parser.format_help())
             write(f"record: {path}\n")

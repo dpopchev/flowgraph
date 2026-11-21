@@ -4,7 +4,6 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Never
 
 import pytest
 
@@ -18,7 +17,6 @@ from flowgraph.story import (
     story_row,
 )
 from flowgraph.task import task_id_text
-from flowgraph.upkeep import UpkeepId, UpkeepNotFoundError
 
 pytestmark = pytest.mark.functional
 
@@ -40,11 +38,6 @@ class Outcome:
     err: str
 
 
-def no_upkeep(upkeep_id: UpkeepId) -> Never:
-    """A record that holds no Upkeep."""
-    raise UpkeepNotFoundError(upkeep_id)
-
-
 def fgraph(argv: Sequence[str], saved: dict[str, StoryState]) -> Outcome:
     """Run the command in CWD on a record whose stories are the ones saved so far, by id."""
 
@@ -62,18 +55,15 @@ def fgraph(argv: Sequence[str], saved: dict[str, StoryState]) -> Outcome:
         out.append,
         err.append,
         open_store=lambda _: Store(
-            find_story_rows=lambda: [story_row(story) for story in saved.values()],
-            load_story=held,
-            find_story_detail=lambda story_id: story_detail(held(story_id)),
+            find_work_item_rows=lambda kind: [
+                story_row(story) for story in saved.values() if story.id.kind == kind
+            ],
+            load_work_item=held,
+            find_work_item_detail=lambda story_id: story_detail(held(story_id)),
             find_task_ids=lambda: [
                 task_id_text(task.id) for story in saved.values() for task in story.tasks
             ],
-            save_story=lambda story: saved.__setitem__(story_id_text(story.id), story),
-            find_upkeep_rows=lambda: [],
-            load_upkeep=no_upkeep,
-            find_upkeep_detail=no_upkeep,
-            find_upkeep_task_ids=lambda: [],
-            save_upkeep=lambda _: None,
+            save_work_item=lambda story: saved.__setitem__(story_id_text(story.id), story),
         ),
         now=lambda: NOW,
     )

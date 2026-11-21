@@ -12,19 +12,23 @@ then = "the Story is started and its branch, named by its id, exists at the comm
 
 [[tasks]]
 id = "T-0040"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_start_branch.py, failing on the criterion of ST-0009"
 description = "Run through run() of src/flowgraph/cli.py on a real git repository made in tmp_path, never a faked git; the identity of its commits comes from GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL, GIT_COMMITTER_NAME and GIT_COMMITTER_EMAIL set with monkeypatch, never from git config. Seen red, then marked a strict xfail naming ST-0009 until the Task that turns it green removes the mark. The developer's decisions of 2026-11-21 for the whole Story: (1) fgraph makes the commits of the record, here the start, worded by fgraph as 'chore: start <id> in the record' and holding only the file of the item; the commits of the development and their messages stay the developer's. (2) The branch is wi/<id>-<slug>, not wi/<id> as the criterion reads. (3) The branch is checked out in a worktree at <parent>/<checkout name>.worktrees/<id>-<slug>. (4) A record that is not inside a git work tree starts as today, and fgraph warns on its error output that no branch was made, exit 0."
 expected_output = "created: tests/functional/test_start_branch.py states that fgraph start on a Story of a record inside a git repository leaves the start committed and the branch wi/<id>-<slug> at that commit, checked out in its worktree"
 created = 2026-11-21 08:34:30+00:00
+started = 2026-11-21 08:40:16+00:00
+completed = 2026-11-21 08:42:12+00:00
+commit = "75dae43"
 
 [[tasks]]
 id = "T-0041"
-state = "backlog"
+state = "started"
 title = "Create src/flowgraph/branch.py holding the slug, the branch name and the worktree path of a work item"
 description = "Pure, no I/O. The slug is given with --slug; without it, it is the first four words of the title, lower-cased and joined by hyphens, every character but a letter or a digit dropped. That fallback is the agent's choice: the developer said only that wi/<id>-<slug> is better than wi/<id>. A slug that is empty or holds another character is refused by its constructor."
 expected_output = "created: src/flowgraph/branch.py with its tests in tests/branch/: a slug of lower-case letters, digits and hyphens, the branch wi/<id>-<slug> and the worktree path <parent>/<checkout name>.worktrees/<id>-<slug>"
 created = 2026-11-21 08:34:30+00:00
+started = 2026-11-21 08:42:13+00:00
 
 [[tasks]]
 id = "T-0042"

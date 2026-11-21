@@ -16,9 +16,6 @@ from flowgraph.cli import open_files, open_git, run
 
 pytestmark = pytest.mark.functional
 
-# What the branch refuses once ST-0010 lands; what it still writes is stated without the mark.
-NOT_YET = pytest.mark.xfail(strict=True, reason="ST-0010: a branch writes every work item file")
-
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "Raise the Stories fgraph lists from 0 to 1", *CRITERION]
@@ -103,7 +100,6 @@ def branch(checkout: Path, tmp_path: Path) -> Path:
     return tmp_path / WORKTREE
 
 
-@NOT_YET
 class TestATaskAddedToAnotherStoryOnTheBranchOfAStartedStory:
     @pytest.fixture
     def refused(self, branch: Path) -> Outcome:
@@ -129,7 +125,6 @@ def test_a_task_added_to_its_own_story_on_the_branch_is_written(branch: Path) ->
     assert (outcome.status, outcome.out) == (0, "added T-0002 to ST-0001\n")
 
 
-@NOT_YET
 def test_a_story_added_on_the_branch_is_refused(branch: Path) -> None:
     assert refusal(fgraph(ADD_STORY, branch)) == (
         2,
@@ -137,7 +132,6 @@ def test_a_story_added_on_the_branch_is_refused(branch: Path) -> None:
     )
 
 
-@NOT_YET
 def test_a_reorder_on_the_branch_is_refused(branch: Path) -> None:
     assert refusal(fgraph(["reorder", "ST-0003", "--before", "ST-0002"], branch)) == (
         2,

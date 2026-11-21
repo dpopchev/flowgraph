@@ -23,11 +23,12 @@ commit = "4424148"
 
 [[tasks]]
 id = "T-0157"
-state = "backlog"
+state = "started"
 title = "Change the prefix of the Story kind in src/flowgraph/story/model.py from ST to S, with the Stories of this record"
 description = "Removes the xfail mark of tests/functional/test_story_prefix.py. The rewrite of the record is made by hand, since no command of fgraph renames an id; the words 'ST to S' of the title of this Story and of its Tasks stay as written."
 expected_output = "changed: STORY of src/flowgraph/story/model.py is the kind of prefix S, so a Story is S-0001, its file items/S-0001.toml and its branch wi/S-0001-<slug>; the docstrings and the help texts of src/ that name ST name S; the tests that state ST ids state S ids; and in the same commit the record of this repository: every .fgraph/items/ST-nnnn.toml is renamed to S-nnnn.toml with its id line, and every id ST-nnnn written in .fgraph/queue.toml and in the text of an item of the record reads S-nnnn, so fgraph status --all in the worktree lists the items it listed before under the same headings, each Story as S-nnnn; proved in tests/story/"
 created = 2026-11-21 22:00:40+00:00
+started = 2026-11-21 22:08:46+00:00
 
 [[tasks]]
 id = "T-0158"

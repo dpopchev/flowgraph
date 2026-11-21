@@ -34,16 +34,19 @@ commit = "bcf209c"
 
 [[tasks]]
 id = "T-0047"
-state = "started"
+state = "completed"
 title = "Add the amend command to src/flowgraph/cli.py, src/flowgraph/item.py and src/flowgraph/work_item/commands.py"
 description = "The command of src/flowgraph/work_item/commands.py takes its load and its save as callables, as the others do. src/flowgraph/work_item/__init__.py exports what it adds. src/flowgraph/item.py is at 387 lines and stays at or below the 400 of U-0001. Removes the xfail mark of tests/functional/test_amend_work_item.py; tests/functional/test_help_menu.py changes if the menu it states lists the commands."
 expected_output = "changed: fgraph amend ID [--title TEXT] [--description TEXT] [--given STATE] [--when ACTION] [--then STATE] loads the work item whole, amends it, saves it whole and prints 'amended <id>'; it exits 2 naming why on a blank part, on no option, on a work item that has left Backlog, on a Task id and on an id the record does not hold"
 created = 2026-11-21 09:00:37+00:00
 started = 2026-11-21 09:04:05+00:00
+completed = 2026-11-21 09:06:02+00:00
+commit = "f72b9e6"
 
 [[tasks]]
 id = "T-0048"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say a work item in Backlog is amended through fgraph"
 expected_output = "changed: README.md shows fgraph amend and what it refuses; docs/domain-model.md says which parts of a work item in Backlog can be amended, that amend is not a move, and that main writes it"
 created = 2026-11-21 09:00:37+00:00
+started = 2026-11-21 09:06:02+00:00

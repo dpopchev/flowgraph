@@ -49,7 +49,9 @@ def fgraph(argv: Sequence[str], *existing: str) -> Outcome:
             save_work_item=lambda _: None,
             load_queue=never_read,
             save_queue=lambda _: None,
+            find_work_item_file=lambda _: Path("items"),
         ),
+        open_git=lambda _: None,
         now=lambda: NOW,
     )
     return Outcome(status, "".join(out), "".join(err))

@@ -40,6 +40,7 @@ def store(queue: Queue) -> Store:
         save_work_item=never,
         load_queue=lambda: queue,
         save_queue=never,
+        find_work_item_file=never,
     )
 
 

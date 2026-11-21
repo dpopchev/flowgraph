@@ -12,7 +12,7 @@ from typing import assert_never
 
 from flowgraph import work_item
 from flowgraph.branch import Slug, SlugError, make_slug, slug_of_title
-from flowgraph.criterion import Criterion, make_commit
+from flowgraph.criterion import Criterion, DecisionError, make_commit
 from flowgraph.queue import queued, reorder
 from flowgraph.record import Now
 from flowgraph.store import KINDS, Store
@@ -315,11 +315,14 @@ def unblock_item(task: str, store: Store) -> Written:
     return Written(f"unblocked {unblocked}\n", MESSAGE.format(f"unblock {unblocked}"))
 
 
-def complete_item(item: str, sha: str, store: Store, now: Now) -> Written:
+def complete_item(
+    item: str, sha: str, store: Store, now: Now, decision: str | None = None
+) -> Written:
     """Complete the work item or the Task of that id in that commit; what the write says.
 
-    Raises ItemIdError when the text is no id, CommitError when the sha is no commit, or the
-    refusal of the complete; nothing is saved.
+    A Spike is completed with the decision that answers its hypothesis. Raises ItemIdError when
+    the text is no id, CommitError when the sha is no commit, DecisionError when a Spike has no
+    decision or another item is given one, or the refusal of the complete; nothing is saved.
     """
     match parse_item_id(item):
         case WorkItemId() as item_id:
@@ -330,12 +333,18 @@ def complete_item(item: str, sha: str, store: Store, now: Now) -> Written:
                 load_work_item=store.load_work_item,
                 save_work_item=store.save_work_item,
                 now=now,
+                decision=decision,
             )
             text = work_item_id_text(item_id)
             return Written(
                 f"completed {text} at {commit.sha}\n", MESSAGE.format(f"complete {text}")
             )
         case TaskId() as task_id:
+            if decision is not None:
+                named = task_id_text(task_id)
+                raise DecisionError(
+                    f"{named} takes no decision: only a Spike is completed with one"
+                )
             commit = make_commit(sha)
             holder = work_item.complete_task(
                 task_id=task_id,

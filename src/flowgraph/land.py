@@ -6,12 +6,13 @@ commit of the record, then the worktree and the branch removed.
 """
 
 from collections.abc import Sequence
+from dataclasses import dataclass
 from pathlib import Path
 
 from flowgraph import work_item
 from flowgraph.branch import MAIN, GitError
 from flowgraph.commit import OpenGit, Said, WorkTree, commit_written
-from flowgraph.criterion import make_commit
+from flowgraph.criterion import DecisionError, EmptyPartError, make_commit
 from flowgraph.item import complete_item, parse_work_item_id_of_any_kind
 from flowgraph.record import Now
 from flowgraph.store import Store
@@ -33,8 +34,19 @@ NOT_COMMITTED = (
     OpenTaskError,
     CompletedAlreadyError,
     RemovedAlreadyError,
+    DecisionError,
+    EmptyPartError,
     GitError,
 )
+
+
+@dataclass(frozen=True)
+class Landing:
+    """What a landing works on: the store of the record, the clock and the git work tree."""
+
+    store: Store
+    now: Now
+    work_tree: WorkTree
 
 
 class LandError(Exception):
@@ -51,14 +63,15 @@ def _branch_to_land(item: str, found: Sequence[str]) -> str:
 
 
 def _merge_committed(
-    item_id: WorkItemId, message: str, store: Store, now: Now, work_tree: WorkTree
+    item_id: WorkItemId, message: str, decision: str | None, landing: Landing
 ) -> str:
     """Commit the merge held under the message, once the merged work item can complete; its sha.
 
     Raises the refusal of the complete, or GitError when git refuses the commit.
     """
-    work_item.completed_work_item(store.load_work_item(item_id), now(), UNMERGED)
-    return work_tree.commit_merge(message)
+    merged = landing.store.load_work_item(item_id)
+    work_item.completed_work_item(merged, landing.now(), UNMERGED, decision)
+    return landing.work_tree.commit_merge(message)
 
 
 def _removed(work_tree: WorkTree, branch: str) -> None:
@@ -70,15 +83,22 @@ def _removed(work_tree: WorkTree, branch: str) -> None:
 
 
 def land_item(
-    item: str, message: str, store: Store, now: Now, record: Path, open_git: OpenGit
+    item: str,
+    message: str,
+    store: Store,
+    now: Now,
+    record: Path,
+    open_git: OpenGit,
+    decision: str | None = None,
 ) -> Said:
     """Land the started work item of that id on main under the message; what fgraph says.
 
-    Raises WorkItemIdError when the text is the id of no kind of work item, LandError when the
-    record is outside a git work tree, when the work tree is not on main or when the work item
-    has no branch or several, the refusal of the complete when a Task of it is not completed,
-    and GitError when git refuses a step. Nothing is merged unless the merge is committed; a
-    step refused after it says how far the landing came.
+    A Spike lands with the decision that answers its hypothesis. Raises WorkItemIdError when the
+    text is the id of no kind of work item, LandError when the record is outside a git work
+    tree, when the work tree is not on main or when the work item has no branch or several, the
+    refusal of the complete when a Task of it is not completed or its decision is missing, and
+    GitError when git refuses a step. Nothing is merged unless the merge is committed; a step
+    refused after it says how far the landing came.
     """
     item_id = parse_work_item_id_of_any_kind(item)
     text = work_item_id_text(item_id)
@@ -91,11 +111,11 @@ def land_item(
     branch = _branch_to_land(text, work_tree.find_branches(f"wi/{text}-*"))
     work_tree.merge(branch)
     try:
-        sha = _merge_committed(item_id, message, store, now, work_tree)
+        sha = _merge_committed(item_id, message, decision, Landing(store, now, work_tree))
     except NOT_COMMITTED:
         work_tree.abort_merge()
         raise
-    written = complete_item(text, sha, store, now)
+    written = complete_item(text, sha, store, now, decision)
     try:
         commit_written(written, store, record, lambda _: work_tree)
     except GitError as error:

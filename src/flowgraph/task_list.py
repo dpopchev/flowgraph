@@ -3,7 +3,7 @@
 from collections.abc import Iterable
 from datetime import datetime
 
-from flowgraph.criterion import Commit
+from flowgraph.criterion import Evidence
 from flowgraph.task import (
     CompletedTask,
     OpenTaskError,
@@ -85,9 +85,9 @@ def unblocked_among(tasks: tuple[TaskState, ...], task_id: TaskId) -> tuple[Task
 
 
 def completed_among(
-    tasks: tuple[TaskState, ...], task_id: TaskId, on: datetime, commit: Commit
+    tasks: tuple[TaskState, ...], task_id: TaskId, on: datetime, commit: Evidence
 ) -> tuple[TaskState, ...]:
-    """The Tasks with the one of that id completed in that commit, the rest as they are.
+    """The Tasks with the one of that id completed in that commit or none, the rest as they are.
 
     Raises TaskNotFoundError when none has the id, or the refusal of its complete.
     """

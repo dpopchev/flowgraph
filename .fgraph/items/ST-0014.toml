@@ -42,15 +42,18 @@ commit = "5e67f29"
 
 [[tasks]]
 id = "T-0038"
-state = "started"
+state = "completed"
 title = "Add the reorder command to src/flowgraph/cli.py and src/flowgraph/item.py, status listing the Backlog in queue order"
 expected_output = "changed: src/flowgraph/cli.py takes reorder ID --before ID and exits 2 on an id that is unknown or not in Backlog; src/flowgraph/item.py lists the Backlog of status in queue order; the row of src/flowgraph/work_item/ carries created"
 created = 2026-11-21 08:13:26+00:00
 started = 2026-11-21 08:18:02+00:00
+completed = 2026-11-21 08:21:48+00:00
+commit = "a908f5b"
 
 [[tasks]]
 id = "T-0039"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say the Backlog is a queue reordered through fgraph"
 expected_output = "changed: README.md shows fgraph reorder, and docs/domain-model.md says the Backlog is a queue, how it is kept and that main reorders it"
 created = 2026-11-21 08:13:27+00:00
+started = 2026-11-21 08:21:48+00:00

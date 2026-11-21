@@ -1,0 +1,16 @@
+id = "F-0002"
+title = "Raise the operations of a work item a Feature takes from two, add and show, to every one"
+description = "The developer's words of 2026-11-21, in the agent's wording: a Feature is an umbrella -- part of the Backlog, ordered in its queue as the others and not riding on its work items; it just holds a couple of work items. Starting it, when git is used for the development as well, starts its work items one by one in separate branches; they are completed but all stay in progress; when all its work items are completed the Feature moves to Completed. A Feature can be blocked, or gets blocked when its child work item is blocked. The principle the plan was shown under and filed with on the developer's 'file': a Feature is to its work items what a work item is to its Tasks -- it cannot start without one, its work item cannot start before it, one is started at a time, the completed ones stay inside it and are counted, it completes with the last, and a blocked one marks it. This gives a Feature a state of its own, where the decision of 2026-11-21 derived everything about it (docs/domain-model.md, Persistence)."
+created = 2026-11-21 21:22:00+00:00
+criteria = [
+    "a developer sees a Feature inside its bucket, in place of its work items",
+    "a developer reorders a Feature in the queue of the Backlog",
+    "a developer starts a Feature, and its first work item starts with it",
+    "a developer sees the next work item of a Feature start once the one before is completed",
+    "a developer sees a Feature move to Completed with its last work item",
+    "a developer sees a Feature marked blocked while a Task of its work item is blocked",
+    "a developer blocks and unblocks a Feature",
+    "a developer amends a Feature in Backlog",
+    "a developer removes a Feature from the Backlog with a reason",
+    "a developer puts a work item under a Feature, or takes it out",
+]

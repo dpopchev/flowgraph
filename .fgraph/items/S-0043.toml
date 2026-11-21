@@ -1,9 +1,10 @@
 id = "S-0043"
-state = "backlog"
+state = "started"
 title = "Raise the ways a landing merges from one to three"
 description = "Part of the developer's request of 2026-11-21 to layer fgraph by a configuration, .fgraph/config.toml: (1) the items and their lifecycle, always; (2) their commits on main, optional; (3) the development beside the source code, turned on. The plan was shown and filed on the developer's 'file only' of 2026-11-21. Its Tasks are written when it is ordered. The developer asked for options of merging strategies. Reading of the agent: [development] merge is merge-commit, the one merge fgraph land makes today and the default, squash or fast-forward. A landing through a pull request is left out of this Story."
 parent = "F-0001"
 created = 2026-11-21 20:32:54+00:00
+started = 2026-11-21 23:21:03+00:00
 
 [criterion]
 given = "a record with the development on and [development] merge = squash"

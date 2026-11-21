@@ -12,12 +12,14 @@ then = "the Task added in the worktree is T-0004"
 
 [[tasks]]
 id = "T-0066"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_task_ids_across_worktrees.py, failing on the criterion of ST-0019"
 description = "Run through run() of src/flowgraph/cli.py on a real git repository in tmp_path, as tests/functional/test_main_scope.py does. Seen red, then marked a strict xfail naming ST-0019 until the Task that turns it green removes the mark. The developer's decision of 2026-11-21 for the whole Story: the next Task id is one above the highest in the record of every worktree of the repository. The agent's readings, each a routine call: (1) the record of another worktree is the directory at the same path inside it as the record has inside its own work tree; a worktree without that directory holds no Task. (2) The ids are read from the files as they are, committed or not. (3) A record outside a git work tree hands out its ids as today. (4) Work item ids are not part of this: a work item is added on main alone."
 expected_output = "created: tests/functional/test_task_ids_across_worktrees.py states that, with the highest Task id T-0002 in the checkout of main and in the worktree of a started Story, a Task added on main to a Story in Backlog and then a Task added in the worktree to its Story leave the second as T-0004"
 created = 2026-11-21 11:15:53+00:00
 started = 2026-11-21 11:16:13+00:00
+completed = 2026-11-21 11:16:28+00:00
+commit = "de9716f"
 
 [[tasks]]
 id = "T-0067"

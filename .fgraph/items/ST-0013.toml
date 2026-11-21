@@ -23,11 +23,12 @@ commit = "43b0424"
 
 [[tasks]]
 id = "T-0078"
-state = "backlog"
+state = "started"
 title = "Add the rule of one started Task per work item to src/flowgraph/task.py, src/flowgraph/work_item/file.py and src/flowgraph/cli.py"
 description = "The rule sits where the Tasks of one work item are moved together, started_among and unblocked_among, so every caller holds it. Removes the xfail mark of tests/functional/test_one_started_task.py."
 expected_output = "changed: the start and the unblock of a Task in src/flowgraph/task.py are refused while another Task among them is started, naming it; src/flowgraph/work_item/file.py refuses a file holding two started Tasks; src/flowgraph/cli.py writes the refusal as a usage error; proved in tests/task/ and tests/work_item/"
 created = 2026-11-21 11:33:19+00:00
+started = 2026-11-21 11:34:10+00:00
 
 [[tasks]]
 id = "T-0079"

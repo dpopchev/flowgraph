@@ -1,8 +1,10 @@
 id = "ST-0047"
-state = "backlog"
+state = "removed"
 title = "Raise the Features fgraph reorder places in the queue of the Backlog from none to every one"
 description = "The developer's remark of 2026-11-21: a Feature is an umbrella, yet it is ordered in the queue of the Backlog as the others are; it does not ride on its work items. Follows ST-0046, which lists a Feature inside its bucket at a place of its own. Readings of the agent: fgraph reorder takes the id of a Feature on either side, as it takes a work item's; queue.toml places Features by id beside the work items; a Feature that is not in Backlog is refused as a work item is. Open: whether a work item under a Feature is still reordered, among the work items of that Feature alone. Its Tasks are written when it is ordered."
 created = 2026-11-21 21:01:49+00:00
+removed = 2026-11-21 21:22:05+00:00
+reason = "refiled under F-0002 as ST-0051"
 
 [criterion]
 given = "a record with a Story standing alone and, added after it, a Feature, both in Backlog"

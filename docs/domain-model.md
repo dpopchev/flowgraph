@@ -296,13 +296,24 @@ and its merge tool.
   the same fields in each state, `started`, `completed` and `commit` once it
   has moved, and its Tasks as `[[tasks]]` tables, read back through the
   moves.
-- The Story and the Upkeep share one work item (`src/flowgraph/work_item/`):
-  its state types (`WorkItem`, `StartedWorkItem`, `CompletedWorkItem`), its
-  moves, its file and its commands. The kind -- its noun, the article before
-  it and the prefix of its ids -- is a value the id carries, so `Story` and
-  `StartedUpkeep` are names of those types and a Story tells itself from an
-  Upkeep by its id. Each kind keeps only its kind, its id functions and those
-  names; the kinds are listed once, in `src/flowgraph/store.py`.
+- A Bug is kept as `items/B-0001.toml`, in the same shape but for its
+  criterion table: `observed` and `expected` where a Story has `given`,
+  `when` and `then`. A file that holds the criterion of another kind is
+  refused when it is read.
+- The Story, the Upkeep and the Bug share one work item
+  (`src/flowgraph/work_item/`): its state types (`WorkItem`,
+  `StartedWorkItem`, `CompletedWorkItem`, `RemovedWorkItem`), its moves, its
+  file and its commands. The kind -- its noun, the article before it, the
+  prefix of its ids and the form of criterion it takes -- is a value the id
+  carries, so `Story` and `StartedUpkeep` are names of those types and a
+  Story tells itself from an Upkeep by its id. A work item carries the
+  criterion its kind takes: a `Scenario`, its Given / When / Then, or a
+  `Defect`, what is observed and expected. Each kind keeps only its kind, its
+  id functions and those names; the kinds are listed once, in
+  `src/flowgraph/store.py`.
+- An amend rewrites the parts of the criterion the work item has: `--given`,
+  `--when` and `--then`, or `--observed` and `--expected`. A part of the
+  other form is refused.
 - Each kind reads the files of its own prefix. A file with a prefix no kind
   knows is left alone; nothing reports it yet.
 - A command loads a work item whole, changes it and saves it whole. The file

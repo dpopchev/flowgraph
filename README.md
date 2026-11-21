@@ -21,7 +21,7 @@ worktree of its own.
 | the wheel                       | built by `make wheel`, ships `fgraph`                    |
 | where the record lives          | located on every call but `--help`                       |
 | the record and its flow         | a work item with its Tasks, from Backlog to Completed    |
-| the kinds of work item          | Story, Upkeep                                            |
+| the kinds of work item          | Story, Upkeep, Bug                                       |
 | the order of the Backlog        | a queue, reordered by `fgraph reorder`                   |
 | the wording of a work item      | rewritten by `fgraph amend` while in Backlog             |
 | git                             | every write committed; start branches, `fgraph land` lands |
@@ -279,6 +279,28 @@ fgraph complete U-0001 --commit 6db7fac
 ```
 
 An Upkeep is kept as `items/U-0001.toml`, its Tasks inside it.
+
+A Bug is a behavior that fails. Its criterion is what is observed and what is
+expected instead, and its id counts on its own, `B-0001`:
+
+```sh
+fgraph add bug "Cut the tracebacks fgraph --dir prints for a file from 1 to 0" \
+  --observed "fgraph --dir given a file prints a traceback" \
+  --expected "it exits 2 and names the path"
+# added B-0001
+
+fgraph show B-0001
+# B-0001  Cut the tracebacks fgraph --dir prints for a file from 1 to 0
+#   bucket       Backlog
+#   observed     fgraph --dir given a file prints a traceback
+#   expected     it exits 2 and names the path
+# Tasks (0)
+```
+
+A Bug takes Tasks and moves as a Story does, by the same commands, and joins
+the queue of the Backlog. `fgraph amend B-0001 --expected "..."` rewrites its
+criterion; `--given` on a Bug, or `--observed` on a Story, exits 2. A Bug is
+kept as `items/B-0001.toml`.
 
 The Backlog is a queue: `fgraph status` lists it in the order the work is to
 be pulled. A work item joins the end of the queue when it is added, whatever

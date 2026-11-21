@@ -1,15 +1,5 @@
 """An Upkeep: work that keeps a behavior and changes the inside, kept with its Tasks."""
 
-from flowgraph.upkeep.commands import (
-    add_task,
-    add_upkeep,
-    complete_task,
-    complete_upkeep,
-    start_task,
-    start_upkeep,
-    upkeep_detail,
-    upkeep_row,
-)
 from flowgraph.upkeep.file import (
     ReadTaskIds,
     ReadUpkeep,
@@ -45,7 +35,9 @@ from flowgraph.upkeep.model import (
     next_upkeep_id,
     parse_upkeep_id,
     started_upkeep,
+    upkeep_detail,
     upkeep_id_text,
+    upkeep_row,
 )
 from flowgraph.work_item import (
     FindTaskIds,
@@ -80,12 +72,8 @@ __all__ = [
     "UpkeepRow",
     "UpkeepState",
     "WriteUpkeep",
-    "add_task",
-    "add_upkeep",
     "append_task",
     "commit_sha",
-    "complete_task",
-    "complete_upkeep",
     "completed_task",
     "completed_upkeep",
     "make_upkeep",
@@ -96,8 +84,6 @@ __all__ = [
     "read_upkeep",
     "read_upkeep_detail",
     "read_upkeep_rows",
-    "start_task",
-    "start_upkeep",
     "started_task",
     "started_upkeep",
     "state_name",

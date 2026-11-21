@@ -28,7 +28,9 @@ from flowgraph.work_item import (
     next_work_item_id,
     parse_work_item_id,
     started_work_item,
+    work_item_detail,
     work_item_id_text,
+    work_item_row,
 )
 
 # The kind of an Upkeep.
@@ -54,6 +56,8 @@ make_upkeep = make_work_item
 started_upkeep = started_work_item
 completed_upkeep = completed_work_item
 upkeep_id_text = work_item_id_text
+upkeep_row = work_item_row
+upkeep_detail = work_item_detail
 
 
 def make_upkeep_id(number: int) -> UpkeepId:

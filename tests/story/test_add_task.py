@@ -5,8 +5,9 @@ from datetime import UTC, datetime
 import pytest
 
 from flowgraph.criterion import make_scenario
-from flowgraph.story import StoryState, add_task, append_task, make_story, make_story_id
+from flowgraph.story import StoryState, append_task, make_story, make_story_id
 from flowgraph.task import make_task, make_task_id
+from flowgraph.work_item import add_task
 
 pytestmark = pytest.mark.command
 
@@ -17,13 +18,13 @@ STORY = make_story(make_story_id(1), "a title", make_scenario("a", "b", "c"), ""
 def add(saved: list[StoryState]) -> object:
     """Write one Task for ST-0001 in a record whose highest Task id is T-0003."""
     return add_task(
-        parent="ST-0001",
+        parent=make_story_id(1),
         title="a task title",
         expected_output="an output",
         description="",
-        load_story=lambda _: STORY,
+        load_work_item=lambda _: STORY,
         find_task_ids=lambda: ["T-0003", "T-0001"],
-        save_story=saved.append,
+        save_work_item=saved.append,
         now=lambda: NOW,
     )
 

@@ -28,7 +28,9 @@ from flowgraph.work_item import (
     next_work_item_id,
     parse_work_item_id,
     started_work_item,
+    work_item_detail,
     work_item_id_text,
+    work_item_row,
 )
 
 # The kind of a Story.
@@ -54,6 +56,8 @@ make_story = make_work_item
 started_story = started_work_item
 completed_story = completed_work_item
 story_id_text = work_item_id_text
+story_row = work_item_row
+story_detail = work_item_detail
 
 
 def make_story_id(number: int) -> StoryId:

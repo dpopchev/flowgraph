@@ -6,18 +6,17 @@ import pytest
 
 from flowgraph.criterion import make_scenario
 from flowgraph.story import (
-    StoryRow,
     StoryState,
     append_task,
     make_story,
     make_story_id,
-    start_story,
-    start_task,
+    parse_story_id,
     started_story,
     started_task,
     story_id_text,
 )
 from flowgraph.task import TaskNotFoundError, make_task, make_task_id
+from flowgraph.work_item import holder_of, start_task, start_work_item
 
 pytestmark = pytest.mark.command
 
@@ -34,10 +33,10 @@ def story(number: int, task: int) -> StoryState:
 
 def test_a_started_story_is_saved_whole_started_now() -> None:
     saved: list[StoryState] = []
-    start_story(
-        story_id=make_story_id(1),
-        load_story=lambda _: story(1, 1),
-        save_story=saved.append,
+    start_work_item(
+        item_id=make_story_id(1),
+        load_work_item=lambda _: story(1, 1),
+        save_work_item=saved.append,
         now=lambda: NOW,
     )
     assert saved == [started_story(story(1, 1), NOW)]
@@ -53,9 +52,12 @@ def start(task: int, saved: list[StoryState]) -> object:
     """Start the Task of that number in a record of two started Stories, one Task each."""
     return start_task(
         task_id=make_task_id(task),
-        find_story_rows=lambda: [StoryRow(key, "a title", "started") for key in RECORD],
-        load_story=lambda story_id: RECORD[story_id_text(story_id)],
-        save_story=saved.append,
+        load_holder=lambda task_id: holder_of(
+            task_id,
+            [parse_story_id(key) for key in RECORD],
+            lambda story_id: RECORD[story_id_text(story_id)],
+        ),
+        save_work_item=saved.append,
         now=lambda: NOW,
     )
 

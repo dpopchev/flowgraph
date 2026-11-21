@@ -6,21 +6,19 @@ import pytest
 
 from flowgraph.criterion import make_commit, make_scenario
 from flowgraph.story import (
-    StoryRow,
     StoryState,
-    add_task,
     append_task,
-    complete_story,
-    complete_task,
     completed_story,
     completed_task,
     make_story,
     make_story_id,
+    parse_story_id,
     started_story,
     started_task,
     story_id_text,
 )
 from flowgraph.task import CompletedAlreadyError, TaskNotFoundError, make_task, make_task_id
+from flowgraph.work_item import add_task, complete_task, complete_work_item, holder_of
 
 pytestmark = pytest.mark.command
 
@@ -45,9 +43,12 @@ def complete(task: int, saved: list[StoryState]) -> object:
     return complete_task(
         task_id=make_task_id(task),
         commit=COMMIT,
-        find_story_rows=lambda: [StoryRow(key, "a title", "started") for key in RECORD],
-        load_story=lambda story_id: RECORD[story_id_text(story_id)],
-        save_story=saved.append,
+        load_holder=lambda task_id: holder_of(
+            task_id,
+            [parse_story_id(key) for key in RECORD],
+            lambda story_id: RECORD[story_id_text(story_id)],
+        ),
+        save_work_item=saved.append,
         now=lambda: NOW,
     )
 
@@ -72,11 +73,11 @@ HALF = completed_task(begun(1), make_task_id(1), NOW, COMMIT)
 
 def test_a_completed_story_is_saved_whole_completed_now() -> None:
     saved: list[StoryState] = []
-    complete_story(
-        story_id=make_story_id(1),
+    complete_work_item(
+        item_id=make_story_id(1),
         commit=COMMIT,
-        load_story=lambda _: HALF,
-        save_story=saved.append,
+        load_work_item=lambda _: HALF,
+        save_work_item=saved.append,
         now=lambda: NOW,
     )
     assert saved == [completed_story(HALF, NOW, COMMIT)]
@@ -86,12 +87,12 @@ def test_a_task_written_for_a_completed_story_is_refused_by_its_id() -> None:
     saved: list[StoryState] = []
     with pytest.raises(CompletedAlreadyError, match=r"^ST-0001 is completed already$"):
         add_task(
-            parent="ST-0001",
+            parent=make_story_id(1),
             title="a task title",
             expected_output="an output",
             description="",
-            load_story=lambda _: completed_story(HALF, NOW, COMMIT),
+            load_work_item=lambda _: completed_story(HALF, NOW, COMMIT),
             find_task_ids=lambda: ["T-0001"],
-            save_story=saved.append,
+            save_work_item=saved.append,
             now=lambda: NOW,
         )

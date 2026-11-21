@@ -5,7 +5,8 @@ from datetime import UTC, datetime
 import pytest
 
 from flowgraph.criterion import make_scenario
-from flowgraph.story import StoryRow, StoryState, add_story, make_story, make_story_id
+from flowgraph.story import STORY, StoryRow, StoryState, make_story, make_story_id
+from flowgraph.work_item import add_work_item
 
 pytestmark = pytest.mark.command
 
@@ -15,14 +16,15 @@ TAKEN = [StoryRow("ST-0001", "an earlier title", "backlog")]
 
 def add(saved: list[StoryState]) -> object:
     """Add one Story to a record that holds ST-0001, saving into the list."""
-    return add_story(
+    return add_work_item(
+        kind=STORY,
         title="a title",
         given="a state",
         when="an action",
         then="another state",
         description="",
-        find_story_rows=lambda: TAKEN,
-        save_story=saved.append,
+        find_work_item_rows=lambda: TAKEN,
+        save_work_item=saved.append,
         now=lambda: NOW,
     )
 

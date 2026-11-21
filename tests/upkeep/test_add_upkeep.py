@@ -6,12 +6,13 @@ import pytest
 
 from flowgraph.criterion import EmptyPartError, make_scenario
 from flowgraph.upkeep import (
+    UPKEEP,
     UpkeepRow,
     UpkeepState,
-    add_upkeep,
     make_upkeep,
     make_upkeep_id,
 )
+from flowgraph.work_item import add_work_item
 
 pytestmark = pytest.mark.command
 
@@ -20,17 +21,18 @@ NOW = datetime(2026, 1, 1, tzinfo=UTC)
 
 def add(saved: list[UpkeepState], then: str = "it still holds") -> object:
     """Add one Upkeep to a record whose highest Upkeep id is U-0002."""
-    return add_upkeep(
+    return add_work_item(
+        kind=UPKEEP,
         title="a title",
         given="a behavior",
         when="it runs",
         then=then,
         description="why",
-        find_upkeep_rows=lambda: [
+        find_work_item_rows=lambda: [
             UpkeepRow("U-0002", "another", "backlog"),
             UpkeepRow("U-0001", "one more", "backlog"),
         ],
-        save_upkeep=saved.append,
+        save_work_item=saved.append,
         now=lambda: NOW,
     )
 

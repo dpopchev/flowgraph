@@ -8,7 +8,7 @@ from typing import Never
 
 import pytest
 
-from flowgraph.cli import run
+from flowgraph.cli import Store, run
 
 pytestmark = pytest.mark.functional
 
@@ -41,14 +41,16 @@ def fgraph(argv: Sequence[str], *existing: str) -> Outcome:
         lambda path: path in dirs,
         out.append,
         err.append,
-        read_story_rows=lambda _: [],
-        read_story=never_read,
-        read_story_detail=never_read,
-        read_task_ids=lambda _: [],
-        write_story=lambda _record, _story: None,
-        read_upkeep_rows=lambda _: [],
-        read_upkeep_detail=never_read,
-        write_upkeep=lambda _record, _upkeep: None,
+        open_store=lambda _: Store(
+            find_story_rows=lambda: [],
+            load_story=never_read,
+            find_story_detail=never_read,
+            find_task_ids=lambda: [],
+            save_story=lambda _: None,
+            find_upkeep_rows=lambda: [],
+            find_upkeep_detail=never_read,
+            save_upkeep=lambda _: None,
+        ),
         now=lambda: NOW,
     )
     return Outcome(status, "".join(out), "".join(err))

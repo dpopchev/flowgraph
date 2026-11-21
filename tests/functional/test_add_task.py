@@ -8,7 +8,7 @@ from typing import Never
 
 import pytest
 
-from flowgraph.cli import run
+from flowgraph.cli import Store, run
 from flowgraph.story import (
     StoryId,
     StoryNotFoundError,
@@ -40,7 +40,7 @@ class Outcome:
     err: str
 
 
-def no_upkeep(_record: Path, upkeep_id: UpkeepId) -> Never:
+def no_upkeep(upkeep_id: UpkeepId) -> Never:
     """A record that holds no Upkeep."""
     raise UpkeepNotFoundError(upkeep_id)
 
@@ -61,16 +61,18 @@ def fgraph(argv: Sequence[str], saved: dict[str, StoryState]) -> Outcome:
         lambda path: path == CWD / ".fgraph",
         out.append,
         err.append,
-        read_story_rows=lambda _: [story_row(story) for story in saved.values()],
-        read_story=lambda _, story_id: held(story_id),
-        read_story_detail=lambda _, story_id: story_detail(held(story_id)),
-        read_task_ids=lambda _: [
-            task_id_text(task.id) for story in saved.values() for task in story.tasks
-        ],
-        write_story=lambda _, story: saved.__setitem__(story_id_text(story.id), story),
-        read_upkeep_rows=lambda _: [],
-        read_upkeep_detail=no_upkeep,
-        write_upkeep=lambda _record, _upkeep: None,
+        open_store=lambda _: Store(
+            find_story_rows=lambda: [story_row(story) for story in saved.values()],
+            load_story=held,
+            find_story_detail=lambda story_id: story_detail(held(story_id)),
+            find_task_ids=lambda: [
+                task_id_text(task.id) for story in saved.values() for task in story.tasks
+            ],
+            save_story=lambda story: saved.__setitem__(story_id_text(story.id), story),
+            find_upkeep_rows=lambda: [],
+            find_upkeep_detail=no_upkeep,
+            save_upkeep=lambda _: None,
+        ),
         now=lambda: NOW,
     )
     return Outcome(status, "".join(out), "".join(err))

@@ -6,7 +6,9 @@ Without a command it shows the help menu and names the record.
 import argparse
 import sys
 from collections.abc import Callable, Collection, Iterable, Sequence
+from dataclasses import dataclass
 from datetime import UTC, datetime
+from functools import partial
 from pathlib import Path
 from typing import assert_never
 
@@ -17,16 +19,13 @@ from flowgraph.story import (
     CompletedAlreadyError,
     EmptyPartError,
     FindStoryRows,
+    FindTaskIds,
     ItemIdError,
     LoadStory,
     NoTaskError,
     NotStartedError,
     Now,
     OpenTaskError,
-    ReadStory,
-    ReadStoryDetail,
-    ReadStoryRows,
-    ReadTaskIds,
     SaveStory,
     StartedAlreadyError,
     StoryDetail,
@@ -37,7 +36,6 @@ from flowgraph.story import (
     StoryRow,
     TaskId,
     TaskNotFoundError,
-    WriteStory,
     add_story,
     add_task,
     complete_story,
@@ -51,14 +49,13 @@ from flowgraph.story import (
     task_id_text,
 )
 from flowgraph.upkeep import (
-    ReadUpkeepDetail,
-    ReadUpkeepRows,
+    FindUpkeepRows,
+    SaveUpkeep,
     UpkeepDetail,
     UpkeepId,
     UpkeepIdError,
     UpkeepNotFoundError,
     UpkeepRow,
-    WriteUpkeep,
     add_upkeep,
     parse_upkeep_id,
     upkeep_id_text,
@@ -74,6 +71,39 @@ FindStoryDetail = Callable[[StoryId], StoryDetail]
 
 # The Upkeep of that id as plain data; raises UpkeepNotFoundError when the record holds none.
 FindUpkeepDetail = Callable[[UpkeepId], UpkeepDetail]
+
+
+@dataclass(frozen=True)
+class Store:
+    """The reads and writes of one record, each already bound to its directory."""
+
+    find_story_rows: FindStoryRows
+    load_story: LoadStory
+    find_story_detail: FindStoryDetail
+    find_task_ids: FindTaskIds
+    save_story: SaveStory
+    find_upkeep_rows: FindUpkeepRows
+    find_upkeep_detail: FindUpkeepDetail
+    save_upkeep: SaveUpkeep
+
+
+# The store of the record in that directory.
+OpenStore = Callable[[Path], Store]
+
+
+def open_files(record: Path) -> Store:
+    """The store of the record in that directory, kept as its files."""
+    return Store(
+        find_story_rows=partial(story.read_story_rows, record),
+        load_story=partial(story.read_story, record),
+        find_story_detail=partial(story.read_story_detail, record),
+        find_task_ids=partial(story.read_task_ids, record),
+        save_story=partial(story.write_story, record),
+        find_upkeep_rows=partial(upkeep.read_upkeep_rows, record),
+        find_upkeep_detail=partial(upkeep.read_upkeep_detail, record),
+        save_upkeep=partial(upkeep.write_upkeep, record),
+    )
+
 
 # The buckets of the flow in their order, each with the states of an item shown in it.
 BUCKETS: Sequence[tuple[str, Collection[str]]] = (
@@ -242,12 +272,7 @@ def show_upkeep_text(detail: UpkeepDetail) -> str:
     return "".join(lines)
 
 
-def _show(
-    item: str,
-    *,
-    read_story_detail: FindStoryDetail,
-    read_upkeep_detail: FindUpkeepDetail,
-) -> str:
+def _show(item: str, store: Store) -> str:
     """The text of the Story or the Upkeep of that id.
 
     Raises StoryIdError when the text is neither id, naming it as no Story id, and
@@ -256,19 +281,11 @@ def _show(
     try:
         upkeep_id = parse_upkeep_id(item)
     except UpkeepIdError:
-        return show_text(read_story_detail(parse_story_id(item)))
-    return show_upkeep_text(read_upkeep_detail(upkeep_id))
+        return show_text(store.find_story_detail(parse_story_id(item)))
+    return show_upkeep_text(store.find_upkeep_detail(upkeep_id))
 
 
-def _complete(
-    item: str,
-    sha: str,
-    *,
-    find_story_rows: FindStoryRows,
-    load_story: LoadStory,
-    save_story: SaveStory,
-    now: Now,
-) -> str:
+def _complete(item: str, sha: str, store: Store, now: Now) -> str:
     """Complete the Story or the Task of that id in the commit of that sha; the line that says so.
 
     Raises ItemIdError, CommitError, or a refusal of the move (COMPLETE_REFUSED); nothing is saved.
@@ -279,8 +296,8 @@ def _complete(
             complete_story(
                 story_id=story_id,
                 commit=commit,
-                load_story=load_story,
-                save_story=save_story,
+                load_story=store.load_story,
+                save_story=store.save_story,
                 now=now,
             )
             return f"completed {story_id_text(story_id)} at {commit.sha}\n"
@@ -288,9 +305,9 @@ def _complete(
             holder = complete_task(
                 task_id=task_id,
                 commit=commit,
-                find_story_rows=find_story_rows,
-                load_story=load_story,
-                save_story=save_story,
+                find_story_rows=store.find_story_rows,
+                load_story=store.load_story,
+                save_story=store.save_story,
                 now=now,
             )
             return f"completed {task_id_text(task_id)} of {story_id_text(holder)} at {commit.sha}\n"
@@ -305,14 +322,7 @@ def run(
     write: Write,
     write_error: Write,
     *,
-    read_story_rows: ReadStoryRows,
-    read_story: ReadStory,
-    read_story_detail: ReadStoryDetail,
-    read_task_ids: ReadTaskIds,
-    write_story: WriteStory,
-    read_upkeep_rows: ReadUpkeepRows,
-    read_upkeep_detail: ReadUpkeepDetail,
-    write_upkeep: WriteUpkeep,
+    open_store: OpenStore,
     now: Now,
 ) -> int:
     """Read the arguments, locate the record in cwd, run the command and return the exit status.
@@ -326,6 +336,7 @@ def run(
         return 0
     match locate(cwd, args.dir, is_dir):
         case Found(path) | Given(path):
+            store = open_store(path)
             if args.command == "add" and args.kind == "task":
                 try:
                     written = add_task(
@@ -333,9 +344,9 @@ def run(
                         title=args.title,
                         expected_output=args.output,
                         description=args.description,
-                        load_story=lambda story_id: read_story(path, story_id),
-                        find_task_ids=lambda: read_task_ids(path),
-                        save_story=lambda changed: write_story(path, changed),
+                        load_story=store.load_story,
+                        find_task_ids=store.find_task_ids,
+                        save_story=store.save_story,
                         now=now,
                     )
                 except (
@@ -350,14 +361,7 @@ def run(
                 return 0
             if args.command == "complete":
                 try:
-                    done = _complete(
-                        args.id,
-                        args.commit,
-                        find_story_rows=lambda: read_story_rows(path),
-                        load_story=lambda wanted: read_story(path, wanted),
-                        save_story=lambda changed: write_story(path, changed),
-                        now=now,
-                    )
+                    done = _complete(args.id, args.commit, store, now)
                 except COMPLETE_REFUSED as error:
                     write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
                     return 2
@@ -371,8 +375,8 @@ def run(
                         when=args.when,
                         then=args.then,
                         description=args.description,
-                        find_upkeep_rows=lambda: read_upkeep_rows(path),
-                        save_upkeep=lambda new: write_upkeep(path, new),
+                        find_upkeep_rows=store.find_upkeep_rows,
+                        save_upkeep=store.save_upkeep,
                         now=now,
                     )
                 except EmptyPartError as error:
@@ -382,11 +386,7 @@ def run(
                 return 0
             if args.command == "show":
                 try:
-                    shown = _show(
-                        args.id,
-                        read_story_detail=lambda wanted: read_story_detail(path, wanted),
-                        read_upkeep_detail=lambda wanted: read_upkeep_detail(path, wanted),
-                    )
+                    shown = _show(args.id, store)
                 except (StoryNotFoundError, StoryIdError, UpkeepNotFoundError) as error:
                     write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
                     return 2
@@ -398,17 +398,17 @@ def run(
                         case StoryId() as story_id:
                             start_story(
                                 story_id=story_id,
-                                load_story=lambda wanted: read_story(path, wanted),
-                                save_story=lambda changed: write_story(path, changed),
+                                load_story=store.load_story,
+                                save_story=store.save_story,
                                 now=now,
                             )
                             write(f"started {story_id_text(story_id)}\n")
                         case TaskId() as task_id:
                             holder = start_task(
                                 task_id=task_id,
-                                find_story_rows=lambda: read_story_rows(path),
-                                load_story=lambda wanted: read_story(path, wanted),
-                                save_story=lambda changed: write_story(path, changed),
+                                find_story_rows=store.find_story_rows,
+                                load_story=store.load_story,
+                                save_story=store.save_story,
                                 now=now,
                             )
                             write(f"started {task_id_text(task_id)} of {story_id_text(holder)}\n")
@@ -426,8 +426,8 @@ def run(
                         when=args.when,
                         then=args.then,
                         description=args.description,
-                        find_story_rows=lambda: read_story_rows(path),
-                        save_story=lambda new: write_story(path, new),
+                        find_story_rows=store.find_story_rows,
+                        save_story=store.save_story,
                         now=now,
                     )
                 except EmptyPartError as error:
@@ -436,7 +436,7 @@ def run(
                 write(f"added {story_id_text(added)}\n")
                 return 0
             if args.command == "status":
-                write(status_text([*read_story_rows(path), *read_upkeep_rows(path)]))
+                write(status_text([*store.find_story_rows(), *store.find_upkeep_rows()]))
                 return 0
             write(parser.format_help())
             write(f"record: {path}\n")
@@ -462,14 +462,7 @@ def main() -> None:
             Path.is_dir,
             sys.stdout.write,
             sys.stderr.write,
-            read_story_rows=story.read_story_rows,
-            read_story=story.read_story,
-            read_story_detail=story.read_story_detail,
-            read_task_ids=story.read_task_ids,
-            write_story=story.write_story,
-            read_upkeep_rows=upkeep.read_upkeep_rows,
-            read_upkeep_detail=upkeep.read_upkeep_detail,
-            write_upkeep=upkeep.write_upkeep,
+            open_store=open_files,
             now=lambda: datetime.now(UTC),
         )
     )

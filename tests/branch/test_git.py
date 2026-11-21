@@ -61,13 +61,13 @@ def test_a_directory_outside_any_work_tree_names_none(tmp_path: Path) -> None:
 
 def test_a_new_file_is_committed_with_its_message(checkout: Path) -> None:
     (checkout / "item.toml").write_text("id = 1\n", encoding="utf-8")
-    commit_files(checkout, [Path("item.toml")],"chore: write the item")
+    commit_files(checkout, [Path("item.toml")], "chore: write the item")
     assert git(checkout, "log", "-1", "--format=%B") == "chore: write the item\n"
 
 
 def test_the_commit_is_named_by_its_sha(checkout: Path) -> None:
     (checkout / "item.toml").write_text("id = 1\n", encoding="utf-8")
-    assert commit_files(checkout, [Path("item.toml")],"a message") == git(
+    assert commit_files(checkout, [Path("item.toml")], "a message") == git(
         checkout, "rev-parse", "HEAD"
     )
 
@@ -77,7 +77,7 @@ def test_the_commit_holds_only_the_file_named(checkout: Path) -> None:
     (checkout / "other.txt").write_text("staged\n", encoding="utf-8")
     git(checkout, "add", "other.txt")
     (checkout / "README").write_text("changed\n", encoding="utf-8")
-    commit_files(checkout, [Path("item.toml")],"a message")
+    commit_files(checkout, [Path("item.toml")], "a message")
     assert git(checkout, "show", "--name-only", "--format=", "HEAD") == "item.toml"
 
 
@@ -86,7 +86,7 @@ def test_what_else_was_staged_or_changed_stays_so(checkout: Path) -> None:
     (checkout / "other.txt").write_text("staged\n", encoding="utf-8")
     git(checkout, "add", "other.txt")
     (checkout / "README").write_text("changed\n", encoding="utf-8")
-    commit_files(checkout, [Path("item.toml")],"a message")
+    commit_files(checkout, [Path("item.toml")], "a message")
     assert git(checkout, "status", "--porcelain").splitlines() == [" M README", "A  other.txt"]
 
 

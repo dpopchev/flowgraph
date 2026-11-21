@@ -10,10 +10,11 @@ from functools import partial
 from pathlib import Path
 from typing import assert_never
 
-from flowgraph import work_item
+from flowgraph import branch, work_item
+from flowgraph.branch import GitError, SlugError, branch_of, make_slug, slug_of_title
 from flowgraph.criterion import make_commit
 from flowgraph.queue import LoadQueue, SaveQueue, queued, read_queue, reorder, write_queue
-from flowgraph.record import Now
+from flowgraph.record import ITEMS, Now
 from flowgraph.story import STORY
 from flowgraph.task import TaskId, TaskIdError, parse_task_id, task_id_text
 from flowgraph.text import show_text, status_text
@@ -46,6 +47,12 @@ FindWorkItemDetail = Callable[[WorkItemId], WorkItemDetail]
 # The id of an item of any kind.
 ItemId = WorkItemId | TaskId
 
+# The path of the file of the work item of that id, whether or not it exists.
+FindWorkItemFile = Callable[[WorkItemId], Path]
+
+# The message of the commit that holds the start of a work item, for its id.
+START_MESSAGE = "chore: start {} in the record"
+
 
 @dataclass(frozen=True)
 class Store:
@@ -58,10 +65,37 @@ class Store:
     save_work_item: SaveWorkItem
     load_queue: LoadQueue
     save_queue: SaveQueue
+    find_work_item_file: FindWorkItemFile
 
 
 # The store of the record in that directory.
 OpenStore = Callable[[Path], Store]
+
+
+@dataclass(frozen=True)
+class WorkTree:
+    """The git work tree a record is inside: its top and its steps, each bound to it.
+
+    `commit_file` commits one file, relative to the top, with a message and returns its sha;
+    `add_worktree` checks out a new branch at a commit in a new worktree at a path. Each raises
+    GitError when git refuses it.
+    """
+
+    path: Path
+    commit_file: Callable[[Path, str], str]
+    add_worktree: Callable[[str, Path, str], None]
+
+
+# The git work tree the directory is inside, or None when it is inside none.
+OpenGit = Callable[[Path], WorkTree | None]
+
+
+@dataclass(frozen=True)
+class Begun:
+    """What a start says: its lines on the output and a warning on the error output, or none."""
+
+    out: str
+    warning: str = ""
 
 
 class ItemIdError(ValueError):
@@ -71,6 +105,11 @@ class ItemIdError(ValueError):
 def read_every_task_id(record: Path) -> list[str]:
     """Adapter: the ids of every Task of every kind in the record, as written, in no order."""
     return [task for kind in KINDS for task in work_item.read_task_ids(record, kind)]
+
+
+def work_item_file(record: Path, item_id: WorkItemId) -> Path:
+    """The path of the file of the work item of that id in the record."""
+    return record / ITEMS / f"{work_item_id_text(item_id)}.toml"
 
 
 def open_files(record: Path) -> Store:
@@ -83,7 +122,16 @@ def open_files(record: Path) -> Store:
         save_work_item=partial(work_item.write_work_item, record),
         load_queue=partial(read_queue, record, KINDS),
         save_queue=partial(write_queue, record, KINDS),
+        find_work_item_file=partial(work_item_file, record),
     )
+
+
+def open_git(directory: Path) -> WorkTree | None:
+    """The git work tree the directory is inside, its steps run by git; None when in none."""
+    top = branch.work_tree_of(directory)
+    if top is None:
+        return None
+    return WorkTree(top, partial(branch.commit_file, top), partial(branch.add_worktree, top))
 
 
 def kind_named(name: str) -> Kind:
@@ -241,28 +289,68 @@ def _load_holder(store: Store) -> work_item.LoadHolder:
     return holder
 
 
-def start_item(item: str, store: Store, now: Now) -> str:
-    """Start the work item or the Task of that id; the line that says so.
+def _start_work_item(
+    item_id: WorkItemId, slug: str | None, store: Store, now: Now, record: Path, open_git: OpenGit
+) -> Begun:
+    """Start the work item, commit its file and check out its branch in a new worktree.
 
-    Raises ItemIdError when the text is no id, or the refusal of the start; nothing is saved.
+    Outside a git work tree it is started alone, with a warning. When the commit fails the file
+    is put back as it was; when the worktree fails the start stays committed. Either raises
+    GitError naming the git command.
+    """
+    previous = store.load_work_item(item_id)
+    named = make_slug(slug) if slug is not None else slug_of_title(previous.title)
+    work_tree = open_git(record)
+    work_item.start_work_item(
+        item_id=item_id,
+        load_work_item=store.load_work_item,
+        save_work_item=store.save_work_item,
+        now=now,
+    )
+    started = f"started {work_item_id_text(item_id)}\n"
+    if work_tree is None:
+        warning = f"fgraph: warning: no branch made: {record} is not inside a git work tree\n"
+        return Begun(started, warning)
+    top = work_tree.path.resolve()
+    file = store.find_work_item_file(item_id).resolve().relative_to(top)
+    try:
+        sha = work_tree.commit_file(file, START_MESSAGE.format(work_item_id_text(item_id)))
+    except GitError:
+        store.save_work_item(previous)
+        raise
+    made = branch_of(item_id, named, top)
+    try:
+        work_tree.add_worktree(made.name, made.path, sha)
+    except GitError as error:
+        raise GitError(
+            f"{error} -- {work_item_id_text(item_id)} is started at {sha[:7]}, its branch is not"
+        ) from error
+    return Begun(f"{started}branch {made.name} in {made.path}\n")
+
+
+def start_item(
+    item: str, slug: str | None, store: Store, now: Now, *, record: Path, open_git: OpenGit
+) -> Begun:
+    """Start the work item or the Task of that id; what the start says.
+
+    A work item is committed and branched when the record is inside a git work tree; its slug
+    is the one given, else the slug of its title. Raises ItemIdError when the text is no id,
+    SlugError when the slug is none or is given for a Task, the refusal of the start before
+    anything is saved, or GitError when git refuses a step.
     """
     match parse_item_id(item):
         case WorkItemId() as item_id:
-            work_item.start_work_item(
-                item_id=item_id,
-                load_work_item=store.load_work_item,
-                save_work_item=store.save_work_item,
-                now=now,
-            )
-            return f"started {work_item_id_text(item_id)}\n"
+            return _start_work_item(item_id, slug, store, now, record, open_git)
         case TaskId() as task_id:
+            if slug is not None:
+                raise SlugError(f"--slug names the branch of a work item: {item} is a Task")
             holder = work_item.start_task(
                 task_id=task_id,
                 load_holder=_load_holder(store),
                 save_work_item=store.save_work_item,
                 now=now,
             )
-            return f"started {task_id_text(task_id)} of {work_item_id_text(holder)}\n"
+            return Begun(f"started {task_id_text(task_id)} of {work_item_id_text(holder)}\n")
         case _ as unreachable:
             assert_never(unreachable)
 

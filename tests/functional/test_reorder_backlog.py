@@ -43,6 +43,7 @@ def fgraph(argv: Sequence[str], cwd: Path) -> Outcome:
         out.append,
         err.append,
         open_store=open_files,
+        open_git=lambda _: None,
         now=lambda: NOW,
     )
     return Outcome(status, "".join(out), "".join(err))

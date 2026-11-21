@@ -10,15 +10,18 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import assert_never
 
+from flowgraph.branch import GitError, SlugError
 from flowgraph.criterion import CommitError, EmptyPartError
 from flowgraph.item import (
     ItemIdError,
+    OpenGit,
     OpenStore,
     Store,
     add_item,
     complete_item,
     kind_named,
     open_files,
+    open_git,
     reorder_item,
     show_item,
     start_item,
@@ -38,16 +41,18 @@ from flowgraph.task import (
 )
 from flowgraph.work_item import WorkItemIdError, WorkItemNotFoundError
 
-__all__ = ["Store", "open_files", "run"]
+__all__ = ["Store", "open_files", "open_git", "run"]
 
 DESCRIPTION = "flowgraph keeps the record of a project's work."
 
 # Write text to a stream; what it returns is ignored, so a stream's write and a list's append fit.
 Write = Callable[[str], object]
 
-# The refusals of a start, each written as a usage error.
+# The refusals of a start, each written as a usage error; a git step refused among them.
 START_REFUSED = (
     ItemIdError,
+    SlugError,
+    GitError,
     WorkItemNotFoundError,
     TaskNotFoundError,
     NoTaskError,
@@ -128,6 +133,11 @@ def build_parser() -> argparse.ArgumentParser:
         "start", help="start a work item or a Task of it", add_help=False, color=False
     )
     start.add_argument("id", metavar="ID", help="the id of the Story, the Upkeep or the Task")
+    start.add_argument(
+        "--slug",
+        metavar="TEXT",
+        help="the words of a work item's branch after its id, instead of its title's first four",
+    )
     complete = commands.add_parser(
         "complete",
         help="complete a work item or a Task of it in a commit",
@@ -162,11 +172,13 @@ def run(
     write_error: Write,
     *,
     open_store: OpenStore,
+    open_git: OpenGit,
     now: Now,
 ) -> int:
     """Read the arguments, locate the record in cwd, run the command and return the exit status.
 
-    The help option needs no record; every other call fails with 2 when there is none.
+    The help option needs no record; every other call fails with 2 when there is none. A start
+    of a work item finds the git work tree of the record through open_git.
     """
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -209,11 +221,15 @@ def run(
                 return 0
             if args.command == "start":
                 try:
-                    begun = start_item(args.id, store, now)
+                    begun = start_item(
+                        args.id, args.slug, store, now, record=path, open_git=open_git
+                    )
                 except START_REFUSED as error:
                     write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
                     return 2
-                write(begun)
+                write(begun.out)
+                if begun.warning:
+                    write_error(begun.warning)
                 return 0
             if args.command == "add":
                 criterion = (args.given, args.when, args.then)
@@ -261,6 +277,7 @@ def main() -> None:
             sys.stdout.write,
             sys.stderr.write,
             open_store=open_files,
+            open_git=open_git,
             now=lambda: datetime.now(UTC),
         )
     )

@@ -4,6 +4,7 @@ Run end to end through `run` on a real git repository in a temporary directory, 
 git; the identity of its commits comes from the environment and no git config is read.
 """
 
+import re
 import subprocess
 from collections.abc import Sequence
 from dataclasses import dataclass
@@ -12,12 +13,9 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph.cli import open_files, run
+from flowgraph.cli import open_files, open_git, run
 
-pytestmark = [
-    pytest.mark.functional,
-    pytest.mark.xfail(strict=True, reason="ST-0009: fgraph start makes no branch yet"),
-]
+pytestmark = pytest.mark.functional
 
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 TITLE = "Raise the Stories fgraph lists from 0 to 1"
@@ -46,9 +44,6 @@ class Outcome:
 
 def fgraph(argv: Sequence[str], cwd: Path) -> Outcome:
     """Run the command in cwd, whose record is `.fgraph/`, on its files and the real git."""
-    # Imported here, unchecked, until T-0043 adds it to flowgraph.cli; then at the top.
-    from flowgraph.cli import GIT  # pyright: ignore[reportAttributeAccessIssue]
-
     (cwd / ".fgraph").mkdir(exist_ok=True)
     out: list[str] = []
     err: list[str] = []
@@ -60,7 +55,7 @@ def fgraph(argv: Sequence[str], cwd: Path) -> Outcome:
         err.append,
         open_store=open_files,
         now=lambda: NOW,
-        git=GIT,  # pyright: ignore[reportCallIssue]
+        open_git=open_git,
     )
     return Outcome(status, "".join(out), "".join(err))
 
@@ -171,3 +166,69 @@ class TestAStoryStartedOutsideAGitWorkTree:
             f"fgraph: warning: no branch made: {tmp_path / 'project' / '.fgraph'}"
             " is not inside a git work tree\n"
         )
+
+
+class TestAStartWhoseCommitGitRefuses:
+    @pytest.fixture
+    def refused(self, checkout: Path) -> Outcome:
+        hook = checkout / ".git" / "hooks" / "pre-commit"
+        hook.write_text("#!/bin/sh\necho refused by the hook >&2\nexit 1\n", encoding="utf-8")
+        hook.chmod(0o755)
+        return fgraph(["start", "ST-0001"], checkout)
+
+    def test_start_exits_with_two(self, refused: Outcome) -> None:
+        assert refused.status == 2
+
+    def test_start_names_the_git_command_and_its_error(self, refused: Outcome) -> None:
+        assert refused.err.splitlines()[-1] == (
+            "fgraph: error: git commit --quiet --only --message chore: start ST-0001 in the record"
+            " -- .fgraph/items/ST-0001.toml failed: refused by the hook"
+        )
+
+    def test_the_file_of_the_story_is_put_back_as_it_was(
+        self, refused: Outcome, checkout: Path
+    ) -> None:
+        assert git(checkout, "status", "--porcelain") == ""
+
+
+class TestAStartWhoseWorktreeGitRefuses:
+    @pytest.fixture
+    def refused(self, checkout: Path) -> Outcome:
+        git(checkout, "branch", BRANCH)
+        return fgraph(["start", "ST-0001"], checkout)
+
+    def test_start_exits_with_two(self, refused: Outcome) -> None:
+        assert refused.status == 2
+
+    def test_start_names_the_git_error_and_that_the_start_stays(self, refused: Outcome) -> None:
+        assert re.fullmatch(
+            rf"fgraph: error: git worktree add .* failed: fatal: a branch named '{BRANCH}'"
+            r" already exists -- ST-0001 is started at [0-9a-f]{7}, its branch is not",
+            refused.err.splitlines()[-1],
+        )
+
+    def test_the_start_stays_committed_on_main(self, refused: Outcome, checkout: Path) -> None:
+        assert git(checkout, "log", "-1", "--format=%s", "main") == (
+            "chore: start ST-0001 in the record"
+        )
+
+
+@pytest.mark.parametrize(
+    ("argvs", "error"),
+    [
+        (
+            [["start", "ST-0001", "--slug", "Bad Slug"]],
+            "'Bad Slug' is no slug: it is lower-case letters and digits joined by hyphens",
+        ),
+        (
+            [["start", "ST-0001"], ["start", "T-0001", "--slug", "a-slug"]],
+            "--slug names the branch of a work item: T-0001 is a Task",
+        ),
+    ],
+    ids=["slug-of-another-character", "slug-for-a-task"],
+)
+def test_a_slug_refused_exits_with_two_and_names_why(
+    argvs: list[list[str]], error: str, checkout: Path
+) -> None:
+    outcome = runs(checkout, *argvs)
+    assert (outcome.status, outcome.err.splitlines()[-1]) == (2, f"fgraph: error: {error}")

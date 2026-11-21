@@ -67,7 +67,9 @@ def fgraph(argv: Sequence[str], saved: dict[str, StoryState]) -> Outcome:
             save_work_item=lambda story: saved.__setitem__(story_id_text(story.id), story),
             load_queue=lambda: make_queue([]),
             save_queue=lambda _: None,
+            find_work_item_file=lambda _: Path("items"),
         ),
+        open_git=lambda _: None,
         now=lambda: NOW,
     )
     return Outcome(status, "".join(out), "".join(err))

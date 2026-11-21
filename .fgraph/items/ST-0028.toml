@@ -23,11 +23,12 @@ commit = "2a55514"
 
 [[tasks]]
 id = "T-0118"
-state = "backlog"
+state = "started"
 title = "Add the branch of a start and the landing on a record git ignores to src/flowgraph/commit.py, src/flowgraph/scope.py and src/flowgraph/land.py"
 description = "Removes the xfail mark of tests/functional/test_ignored_record_branch.py. It changes outputs of T-0107 of ST-0023: the warning of a start, the start off main and the refusal of a landing on an ignored record, each with its test."
 expected_output = "changed: commit_written of src/flowgraph/commit.py checks the branch of a start out at HEAD for a record git ignores, with no commit and no warning; check_start_on_main of src/flowgraph/scope.py holds that start to main; land_item of src/flowgraph/land.py lands there, the work item completed with no commit of the record; proved in tests/commit/, tests/scope/ and tests/land/; tests/functional/test_ignored_record.py states the start and the landing as they are now"
 created = 2026-11-21 14:40:41+00:00
+started = 2026-11-21 14:42:01+00:00
 
 [[tasks]]
 id = "T-0119"

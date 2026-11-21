@@ -51,6 +51,7 @@ from flowgraph.item import (
     write_task,
 )
 from flowgraph.land import LandError, land_item
+from flowgraph.parallel import ParallelError, check_parallel
 from flowgraph.parent import FeatureIdError
 from flowgraph.parser import TOP, build_command_line, help_asked
 from flowgraph.queue import NotInBacklogError, SameItemError
@@ -109,6 +110,7 @@ REFUSED = (
     GitError,
     LandError,
     NotOnMainError,
+    ParallelError,
     OutOfScopeError,
     CommitError,
     CommitNeededError,
@@ -228,11 +230,13 @@ def _said(
     """Run the command the arguments name on the record; None when they name none.
 
     A write is committed once it is made. The lines of status are cut to the width, when there
-    is one. The configuration says whether a start branches and a landing is taken. Raises the
-    refusal of the command, a git step refused among them.
+    is one. The configuration says whether a start branches, how many work items are started at
+    once and whether a landing is taken. Raises the refusal of the command, a git step refused
+    among them.
     """
     if args.command == "start":
         check_start_on_main(args.id, record, open_git)
+        check_parallel(args.id, store.find_work_item_rows, config)
     written = _written(args, store, now, config)
     if written is not None:
         return commit_written(written, store, record, open_git, config)

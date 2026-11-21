@@ -4,13 +4,14 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph.config import ConfigError, make_config, read_config
+from flowgraph.config import UNLIMITED, ConfigError, Parallel, make_config, read_config
 
 pytestmark = pytest.mark.edge
 
 FILE = "config.toml"
 ENABLED = "[development]\nenabled = true\n"
 UNCOMMITTED = "[git]\ncommit = false\n"
+TAKES_A_COUNT = "it takes a whole number of 1 or more"
 
 
 @pytest.mark.parametrize(
@@ -24,6 +25,41 @@ def test_the_development_is_off_unless_enabled(text: str, enabled: bool) -> None
 
 def test_the_development_enabled_is_on() -> None:
     assert make_config(ENABLED).development.enabled is True
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["", "[development]\n", ENABLED],
+    ids=["no-table", "no-key", "development-on"],
+)
+def test_the_work_items_started_at_once_are_unlimited_unless_parallel_is_set(text: str) -> None:
+    assert make_config(text).development.parallel == UNLIMITED
+
+
+@pytest.mark.parametrize(
+    ("text", "most"),
+    [(f"{ENABLED}parallel = 1\n", 1), (f"{ENABLED}parallel = 3\n", 3)],
+    ids=["one", "several"],
+)
+def test_parallel_set_is_the_most_work_items_started_at_once(text: str, most: int) -> None:
+    assert make_config(text).development.parallel == Parallel(most)
+
+
+def test_parallel_is_held_as_written_with_the_development_off() -> None:
+    assert make_config("[development]\nparallel = 2\n").development.parallel == Parallel(2)
+
+
+@pytest.mark.parametrize(
+    ("value", "written"),
+    [("0", "0"), ("-1", "-1"), ("1.5", "1.5"), ('"2"', '"2"'), ("true", "true")],
+    ids=["zero", "negative", "fraction", "text", "true"],
+)
+def test_a_parallel_that_is_no_whole_number_of_one_or_more_is_refused_naming_the_key(
+    value: str, written: str
+) -> None:
+    with pytest.raises(ConfigError) as error:
+        make_config(f"[development]\nparallel = {value}\n")
+    assert str(error.value) == f"development.parallel is {written}: {TAKES_A_COUNT}"
 
 
 @pytest.mark.parametrize(

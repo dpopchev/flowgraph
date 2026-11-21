@@ -4,7 +4,9 @@ The file holds a table per layer, each key with its default, so a record without
 the defaults. The commits fgraph makes of the writes of the record are on unless `[git] commit =
 false`. The development -- the branch and the worktree of a start, the scoping of a branch, the
 landing -- is off unless `[development] enabled = true`. The layers build on each other: the
-branch of a work item carries its record, so the development needs the commits.
+branch of a work item carries its record, so the development needs the commits. `[development]
+parallel` is the most work items started at once; it has no default, so left out nothing limits
+them.
 """
 
 import json
@@ -13,13 +15,16 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
-from pydantic import BaseModel, ConfigDict, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 # The file of the configuration inside a record.
 CONFIG = "config.toml"
 
 # The key that turns the development on, as a refusal names it.
 DEVELOPMENT_ENABLED = "development.enabled"
+
+# The key that limits the work items started at once, as a refusal names it.
+DEVELOPMENT_PARALLEL = "development.parallel"
 
 # The key that turns the commits of the record off, as a refusal names it.
 GIT_COMMIT = "git.commit"
@@ -33,10 +38,33 @@ class Git:
 
 
 @dataclass(frozen=True)
+class Parallel:
+    """The most work items started at once: a whole number of 1 or more."""
+
+    most: int
+
+
+@dataclass(frozen=True)
+class Unlimited:
+    """No limit of the work items started at once: a value of the limit, not a missing one."""
+
+
+# The one value of no limit.
+UNLIMITED = Unlimited()
+
+# How many work items are started at once: at most that many, or as many as are started.
+Limit = Parallel | Unlimited
+
+
+@dataclass(frozen=True)
 class Development:
-    """The development beside the source code: turned on, or off."""
+    """The development beside the source code: turned on, or off, and its limit as written.
+
+    The limit is a key of the development: it limits nothing while the development is off.
+    """
 
     enabled: bool
+    parallel: Limit
 
 
 @dataclass(frozen=True)
@@ -74,6 +102,7 @@ class _DevelopmentTable(_Table):
     """What `[development]` holds; a key left out is its default."""
 
     enabled: bool = False
+    parallel: int | None = Field(default=None, ge=1)
 
 
 class _ConfigFile(_Table):
@@ -83,8 +112,16 @@ class _ConfigFile(_Table):
     development: _DevelopmentTable = _DevelopmentTable()
 
 
+# What a count takes, whether its value is no whole number or one below 1.
+_COUNT = "a whole number of 1 or more"
+
 # What the value of a key takes, by the type of the error pydantic reports of it.
-_TAKES = {"bool_type": "true or false", "model_type": "a table"}
+_TAKES = {
+    "bool_type": "true or false",
+    "model_type": "a table",
+    "int_type": _COUNT,
+    "greater_than_equal": _COUNT,
+}
 
 
 def _refusal(error: ValidationError) -> str:
@@ -102,8 +139,8 @@ def make_config(text: str) -> Config:
     """The configuration the text of a config.toml holds; a key it leaves out is its default.
 
     Raises ConfigError naming the first table or key the configuration does not have, or whose
-    value is of another type than the key takes, and when the text is no TOML; naming both keys
-    when it turns the development on with the commits off.
+    value is of another type than the key takes or a count below 1, and when the text is no
+    TOML; naming both keys when it turns the development on with the commits off.
     """
     try:
         held = _ConfigFile.model_validate(tomllib.loads(text))
@@ -116,9 +153,11 @@ def make_config(text: str) -> Config:
             f"{DEVELOPMENT_ENABLED} is true while {GIT_COMMIT} is false:"
             " the development needs the commits of the record"
         )
+    most = held.development.parallel
+    parallel = UNLIMITED if most is None else Parallel(most)
     return Config(
         git=Git(commit=held.git.commit),
-        development=Development(enabled=held.development.enabled),
+        development=Development(enabled=held.development.enabled, parallel=parallel),
     )
 
 

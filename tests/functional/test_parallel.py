@@ -15,10 +15,7 @@ import pytest
 
 from flowgraph.cli import open_files, open_git, read_config, run
 
-pytestmark = [
-    pytest.mark.functional,
-    pytest.mark.xfail(strict=True, reason="S-0044: development.parallel is no key yet"),
-]
+pytestmark = pytest.mark.functional
 
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")

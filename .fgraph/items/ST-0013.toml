@@ -34,8 +34,10 @@ commit = "7f7cbbe"
 
 [[tasks]]
 id = "T-0079"
-state = "started"
+state = "completed"
 title = "Update docs/domain-model.md and README.md to say one work item holds at most one started Task"
 expected_output = "changed: docs/domain-model.md, Rules, holds the rule that one work item has at most one started Task and that a blocked Task does not count; README.md says what a second start answers"
 created = 2026-11-21 11:33:19+00:00
 started = 2026-11-21 11:35:50+00:00
+completed = 2026-11-21 11:36:23+00:00
+commit = "250d656"

@@ -12,8 +12,9 @@ then = "it still passes"
 
 [[tasks]]
 id = "T-0144"
-state = "backlog"
+state = "started"
 title = "Extend work_item_row of src/flowgraph/work_item/commands.py to the started and completed times and the Tasks of the work item"
 description = "decided: U-0006: make the projection whole, the simplest reading that keeps make check passing -- the functional fakes that build their rows with story_row stay as they are. Red first: a test in tests/work_item/ stating that the row of a started work item with a Task, saved and read back with read_work_item_rows, equals work_item_row of it."
 expected_output = "changed: work_item_row of src/flowgraph/work_item/commands.py returns the row with the started time of a started work item, the started and completed times of a completed one and its Tasks as rows, so it equals the row read_work_item_rows of src/flowgraph/work_item/file.py reads of the same work item; the tests of tests/work_item/, tests/story/ and tests/upkeep/ that compared the two compare them whole, with no replace() patching the difference; proved in tests/work_item/"
 created = 2026-11-21 21:30:35+00:00
+started = 2026-11-21 21:30:42+00:00

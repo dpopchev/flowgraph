@@ -35,7 +35,7 @@ from flowgraph.work_item.model import (
     still_open,
     work_item_id_text,
 )
-from flowgraph.work_item.tasks import completed_task, started_task
+from flowgraph.work_item.tasks import blocked_task, completed_task, started_task
 
 # The work item that holds the Task of that id, whole; raises TaskNotFoundError when none does.
 LoadHolder = Callable[[TaskId], WorkItemState]
@@ -169,6 +169,26 @@ def start_task(
     """
     item = load_holder(task_id)
     save_work_item(started_task(item, task_id, now()))
+    return item.id
+
+
+def block_task(
+    *,
+    task_id: TaskId,
+    reason: str,
+    waiting_on: str,
+    load_holder: LoadHolder,
+    save_work_item: SaveWorkItem,
+    now: Now,
+) -> WorkItemId:
+    """Block the started Task of that id now, save its work item whole and return its id.
+
+    Raises TaskNotFoundError when no item holds the Task, NotStartedError when it is in Backlog,
+    BlockedError when it is blocked already, CompletedAlreadyError when it is completed and
+    EmptyPartError when the reason or what it waits on is blank; nothing is saved.
+    """
+    item = load_holder(task_id)
+    save_work_item(blocked_task(item, task_id, reason, waiting_on, now()))
     return item.id
 
 

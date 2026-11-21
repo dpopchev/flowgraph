@@ -10,8 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph import story, upkeep
-from flowgraph.cli import run
+from flowgraph.cli import open_files, run
 
 pytestmark = pytest.mark.functional
 
@@ -43,14 +42,7 @@ def fgraph(argv: Sequence[str], cwd: Path) -> Outcome:
         Path.is_dir,
         out.append,
         err.append,
-        read_story_rows=story.read_story_rows,
-        read_story=story.read_story,
-        read_story_detail=story.read_story_detail,
-        read_task_ids=story.read_task_ids,
-        write_story=story.write_story,
-        read_upkeep_rows=upkeep.read_upkeep_rows,
-        read_upkeep_detail=upkeep.read_upkeep_detail,
-        write_upkeep=upkeep.write_upkeep,
+        open_store=open_files,
         now=lambda: NOW,
     )
     return Outcome(status, "".join(out), "".join(err))

@@ -4,20 +4,18 @@ from datetime import UTC, datetime
 
 import pytest
 
+from flowgraph.criterion import make_scenario
 from flowgraph.story import (
     StoryRow,
-    TaskRow,
     append_task,
-    make_scenario,
     make_story,
     make_story_id,
-    make_task,
-    make_task_id,
     started_story,
     started_task,
     story_detail,
     story_row,
 )
+from flowgraph.task import TaskRow, make_task, make_task_id
 
 pytestmark = pytest.mark.view
 

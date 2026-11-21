@@ -2,7 +2,14 @@
 
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
+
+# The directory of every item inside a record, one file per work item, named by its id.
+ITEMS = "items"
+
+# The current time, with its zone.
+Now = Callable[[], datetime]
 
 # The names searched for in a directory, in the order they are tried.
 NAMES = (".fgraph", "fgraph")

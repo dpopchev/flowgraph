@@ -4,14 +4,8 @@ from datetime import UTC, datetime
 
 import pytest
 
-from flowgraph.story import (
-    EmptyPartError,
-    StoryRow,
-    make_scenario,
-    make_story,
-    make_story_id,
-    story_row,
-)
+from flowgraph.criterion import EmptyPartError, make_scenario
+from flowgraph.story import StoryRow, make_story, make_story_id, story_row
 
 pytestmark = pytest.mark.model
 

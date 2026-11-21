@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 from flowgraph import upkeep
-from flowgraph.story import make_scenario
+from flowgraph.criterion import make_scenario
 from flowgraph.upkeep import (
     UpkeepDetail,
     UpkeepFileError,

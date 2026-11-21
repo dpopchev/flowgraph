@@ -1,9 +1,11 @@
 id = "ST-0025"
-state = "started"
+state = "completed"
 title = "Raise the Features fgraph status lists from none to every one, each with its derived bucket"
 description = "Found during ST-0008, which left it out of its slice: fgraph show F-0001 shows one Feature, but no command lists the Features of a record, so a developer has to know the id. Open: where status lists them -- a block of its own above the buckets, or each Feature in the bucket derived for it -- and whether a work item under a Feature is listed with it. Amending and removing a Feature, and moving a work item to another Feature, are not built either. Its Tasks are written when it is ordered."
 created = 2026-11-21 12:13:12+00:00
 started = 2026-11-21 14:28:07+00:00
+completed = 2026-11-21 14:32:27+00:00
+commit = "a1c62ad"
 
 [criterion]
 given = "a record with a Feature and a Story added under it"

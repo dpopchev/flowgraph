@@ -224,6 +224,12 @@ under a Feature or standing alone, that is the commit on `main` that holds it.
   It never stands alone and never shows at the level of the work items.
 - A `Story`, `Bug`, `Spike` or `Upkeep` cannot start without at least one
   written Task.
+- One work item holds at most one started Task; a blocked Task does not
+  count. Agreed by the developer on 2026-11-21. A second Task is started once
+  the first is completed or blocked; an unblock makes a Task started, so it
+  is refused the same way beside a started Task. The refusal names the
+  started Task, and a file that holds two started Tasks is refused when it is
+  read, since no move reaches it.
 - A work item is completed only once it is on `main`.
 - Until `fgraph` wraps git, `complete` records the commit and does not check
   it against `main`.

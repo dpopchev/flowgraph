@@ -23,11 +23,12 @@ commit = "8194536"
 
 [[tasks]]
 id = "T-0133"
-state = "backlog"
+state = "started"
 title = "Add the Tasks to WorkItemRow of src/flowgraph/work_item/model.py and write their progress in status_text of src/flowgraph/text.py"
 description = "Removes the xfail mark of tests/functional/test_status_work_item_progress.py. The tests of other Stories that state a line under InProgress are rewritten to the new line, named in the commit."
 expected_output = "changed: WorkItemRow of src/flowgraph/work_item/model.py holds the Tasks of its work item, each a TaskRow, read by read_work_item_rows of src/flowgraph/work_item/file.py; status_text of src/flowgraph/text.py writes a work item under InProgress as its id, '<completed>/<all> T' and its title; proved in tests/work_item/ and tests/text/"
 created = 2026-11-21 17:40:36+00:00
+started = 2026-11-21 17:50:31+00:00
 
 [[tasks]]
 id = "T-0134"

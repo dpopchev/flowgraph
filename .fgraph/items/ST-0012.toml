@@ -34,8 +34,10 @@ commit = "8766ea4"
 
 [[tasks]]
 id = "T-0076"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a blocked Task is unblocked with fgraph unblock"
 expected_output = "changed: README.md shows fgraph unblock and what it refuses, and no longer says unblock is not built; docs/domain-model.md says the unblock move of a Task is built and what it leaves in the file"
 created = 2026-11-21 11:29:30+00:00
 started = 2026-11-21 11:31:55+00:00
+completed = 2026-11-21 11:32:33+00:00
+commit = "8b622ae"

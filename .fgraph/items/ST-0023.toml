@@ -12,12 +12,14 @@ then = "it exits 0 and the Story is written, with no commit"
 
 [[tasks]]
 id = "T-0105"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_ignored_record.py, failing on the criterion of ST-0023"
 description = "Run through run() of src/flowgraph/cli.py on a real git repository in tmp_path, as tests/functional/test_commit_writes.py does. Seen red, then marked a strict xfail naming ST-0023 until the Task that turns it green removes the mark. The developer's decisions of 2026-11-21 for the whole Story, asked when it was ordered: a write on an ignored record is silent, with no commit and no warning; the start of a work item there makes no branch and warns, as outside a git work tree. The agent's readings, each a routine call: (1) a record is ignored when a rule git reads names its directory -- git check-ignore --no-index -- whether or not git still tracks a file of it. (2) An ignored record is written as a record outside a git work tree is: add, amend, reorder, remove, start, block, unblock and complete each exit 0 with no commit. (3) The start of a work item there warns 'fgraph: warning: no branch made: <record> is ignored by git', is not checked against main, and its Tasks are written in the same checkout; no scope of a branch holds there and the Task ids are those of the record alone. (4) fgraph land is refused there with exit 2, '<id> cannot land: <record> is ignored by git'; the work item is completed with fgraph complete --commit. The branch of a work item on an ignored record is added at the end of the Backlog as a work item of its own."
 expected_output = "created: tests/functional/test_ignored_record.py states that fgraph add story, run on a record inside a git work tree whose .gitignore names it, exits 0 and writes the Story, with no commit"
 created = 2026-11-21 14:19:18+00:00
 started = 2026-11-21 14:19:59+00:00
+completed = 2026-11-21 14:20:33+00:00
+commit = "6087822"
 
 [[tasks]]
 id = "T-0106"

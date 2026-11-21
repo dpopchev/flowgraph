@@ -1,0 +1,9 @@
+id = "B-0006"
+state = "backlog"
+title = "Raise the writes README.md names as committed by fgraph from five to the eight it commits"
+description = "Found during T-0162 of S-0039 on 2026-11-21, under the burn of the Backlog; filed at the end of the queue and not burned. Its Tasks are written when it is ordered."
+created = 2026-11-21 22:39:07+00:00
+
+[criterion]
+observed = "README.md says fgraph commits every write of the record and names add, amend, reorder, start and complete, leaving out remove, block and unblock, which docs/domain-model.md lists"
+expected = "README.md names the eight writes fgraph commits, as docs/domain-model.md does"

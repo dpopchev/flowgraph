@@ -56,8 +56,10 @@ commit = "b8c4d00"
 
 [[tasks]]
 id = "T-0088"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph tracks a Bug from Backlog to Completed"
 expected_output = "changed: README.md shows fgraph add bug with what is observed and expected and lists Bug among the kinds; docs/domain-model.md, Persistence, says how the file of a Bug keeps its criterion and that the Story, the Upkeep and the Bug share one work item"
 created = 2026-11-21 11:45:00+00:00
 started = 2026-11-21 11:53:29+00:00
+completed = 2026-11-21 11:54:10+00:00
+commit = "2417882"

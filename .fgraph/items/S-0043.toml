@@ -24,12 +24,14 @@ commit = "8aa7771"
 
 [[tasks]]
 id = "T-0174"
-state = "started"
+state = "completed"
 title = "Add development.merge to the Config of src/flowgraph/config.py and land a work item by it in src/flowgraph/land.py"
 description = "Removes the xfail mark of tests/functional/test_land_merge.py. A landing through a pull request is left out, as S-0043 says. A branch landed by squash is not an ancestor of main, so its removal is a step of its own."
 expected_output = "changed: the Config of src/flowgraph/config.py holds development.merge, one of merge-commit, squash and fast-forward, merge-commit when the key is left out, any other word refused naming the key; fgraph land merges by it: merge-commit as it lands today; squash puts the work of the branch on main as one commit with one parent, worded by --message; fast-forward moves main to the tip of the branch with no new commit and is refused, with nothing merged, when main holds a commit the branch lacks; each completes the work item at the commit main is then on and removes the worktree and the branch; --message is needed by merge-commit and squash and refused with fast-forward, which makes no commit to word; the git steps are named adapters of src/flowgraph/branch.py, proved against git in tmp_path"
 created = 2026-11-21 22:40:42+00:00
 started = 2026-11-21 23:23:48+00:00
+completed = 2026-11-21 23:37:36+00:00
+commit = "fc82831"
 
 [[tasks]]
 id = "T-0175"

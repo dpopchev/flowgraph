@@ -218,9 +218,28 @@ of work item. The developer said so on 2026-11-21.
   2026-11-21, after board 1's watch; written to a pipe or a file every line
   is whole. So that the cut keeps it, a completed work item is listed with
   its commit before its title, `ST-0001  677f9b0  <title>`; the reason of a
-  removed one still ends its line. Only status is cut. The width is an
-  effect: `run()` takes it as a callable, none when the output is no
-  terminal, and `main()` reads it from the terminal.
+  removed one still ends its line. Only status is cut, and a frame of watch
+  with it. The width is an effect: `run()` takes it as a callable, none when
+  the output is no terminal, and `main()` reads it from the terminal.
+- `fgraph watch` follows the record live, the developer's request of
+  2026-11-21, "file a story for a fgraph watch command", after board 1's
+  watch: until then the live view took two commands, `watch` around `fgraph
+  status`, and status then wrote to a pipe and cut no line. Four readings
+  were decided when its Story was ordered. A frame is what `fgraph status`
+  writes, read anew from the record each time: watch writes a frame, waits
+  and writes the next, every 5 seconds or every `-n SECS`, a part of a
+  second too. Each line is cut to the width of the terminal as status cuts
+  it, the width asked for again at every frame. `--all` lists every item, as
+  on status. It ends after `--count N` frames with exit 0, no wait after the
+  last; without a count Ctrl-C ends it, with exit 0 and no traceback, since
+  that is how a watch is left. A `-n` or a `--count` that is no positive
+  number is refused with exit 2 before a frame is written.
+- On a terminal a frame of watch replaces the one before it: it opens with
+  the sequence that puts the cursor home and clears the screen, written only
+  when there is a width. Written to a pipe or a file the frames follow each
+  other, every line whole. The wait between two frames is an effect: `run()`
+  takes it as a callable, one that returns at once by default, and `main()`
+  binds it to `time.sleep`.
 
 ## Amendment
 

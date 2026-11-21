@@ -33,6 +33,7 @@ COMMANDS = [
     ("remove",),
     ("reorder",),
     ("status",),
+    ("watch",),
 ]
 
 

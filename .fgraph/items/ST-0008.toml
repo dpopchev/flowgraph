@@ -45,11 +45,12 @@ commit = "85ed1ff"
 
 [[tasks]]
 id = "T-0096"
-state = "backlog"
+state = "started"
 title = "Add the Feature commands to src/flowgraph/feature_item.py, src/flowgraph/store.py, src/flowgraph/scope.py, src/flowgraph/item.py, src/flowgraph/parser.py, src/flowgraph/cli.py and src/flowgraph/text.py"
 description = "The store of a record gains the reads and writes of a Feature, journaled as the others; a store built without them holds no Feature. The branch of a work item does not write a Feature. Removes the xfail mark of tests/functional/test_feature.py."
 expected_output = "changed: fgraph add feature TITLE --criterion TEXT adds F-0001 and is committed as every write; fgraph add story, upkeep, bug and spike take --parent ID; fgraph show F-0001 lists the criteria of the Feature and its work items with their buckets, under its derived bucket; fgraph show on a work item names its parent; each refusal exits 2 naming why"
 created = 2026-11-21 12:04:37+00:00
+started = 2026-11-21 12:09:27+00:00
 
 [[tasks]]
 id = "T-0097"

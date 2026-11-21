@@ -8,6 +8,7 @@ from flowgraph.criterion import Commit
 from flowgraph.task import (
     CompletedAlreadyError,
     ItemInBacklogError,
+    NotBlockedError,
     NotStartedError,
     TaskId,
     blocked_among,
@@ -15,6 +16,7 @@ from flowgraph.task import (
     started_among,
     task_id_text,
     task_of,
+    unblocked_among,
 )
 from flowgraph.work_item.model import (
     CompletedWorkItem,
@@ -66,6 +68,22 @@ def blocked_task(
             return replace(item, tasks=tasks)
         case CompletedWorkItem():
             raise CompletedAlreadyError(f"{task} is completed already")
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def unblocked_task(item: WorkItemState, task_id: TaskId) -> StartedWorkItem:
+    """The started work item with its blocked Task of that id started again.
+
+    Raises TaskNotFoundError when the item holds no such Task and NotBlockedError when the Task
+    is not blocked, as in a work item in Backlog or completed.
+    """
+    task_of(item.tasks, task_id)
+    match item:
+        case StartedWorkItem():
+            return replace(item, tasks=unblocked_among(item.tasks, task_id))
+        case WorkItem() | CompletedWorkItem():
+            raise NotBlockedError(f"{task_id_text(task_id)} is not blocked")
         case _ as unreachable:
             assert_never(unreachable)
 

@@ -11,6 +11,7 @@ from flowgraph.work_item.commands import (
     holder_of,
     start_task,
     start_work_item,
+    unblock_task,
     work_item_detail,
     work_item_row,
 )
@@ -56,7 +57,12 @@ from flowgraph.work_item.model import (
     still_open,
     work_item_id_text,
 )
-from flowgraph.work_item.tasks import blocked_task, completed_task, started_task
+from flowgraph.work_item.tasks import (
+    blocked_task,
+    completed_task,
+    started_task,
+    unblocked_task,
+)
 
 __all__ = [
     "Amendment",
@@ -108,6 +114,8 @@ __all__ = [
     "started_work_item",
     "state_name",
     "still_open",
+    "unblock_task",
+    "unblocked_task",
     "work_item_detail",
     "work_item_id_text",
     "work_item_row",

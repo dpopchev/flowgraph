@@ -289,6 +289,20 @@ def block_item(task: str, reason: str, waiting_on: str, store: Store, now: Now) 
     return Written(f"blocked {blocked}\n", MESSAGE.format(f"block {blocked}"))
 
 
+def unblock_item(task: str, store: Store) -> Written:
+    """Unblock the blocked Task of that id; what the write says.
+
+    Raises TaskIdError when the text is no Task id, or the refusal of the unblock; nothing is
+    saved.
+    """
+    task_id = parse_task_id(task)
+    holder = work_item.unblock_task(
+        task_id=task_id, load_holder=_load_holder(store), save_work_item=store.save_work_item
+    )
+    unblocked = f"{task_id_text(task_id)} of {work_item_id_text(holder)}"
+    return Written(f"unblocked {unblocked}\n", MESSAGE.format(f"unblock {unblocked}"))
+
+
 def complete_item(item: str, sha: str, store: Store, now: Now) -> Written:
     """Complete the work item or the Task of that id in that commit; what the write says.
 

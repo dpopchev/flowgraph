@@ -2,10 +2,11 @@
 
 import pytest
 
-from flowgraph.item import ItemIdError, parse_item_id
+from flowgraph.item import ItemIdError, parse_item_id, parse_work_item_id_of_any_kind
 from flowgraph.story import make_story_id
 from flowgraph.task import make_task_id
 from flowgraph.upkeep import make_upkeep_id
+from flowgraph.work_item import WorkItemIdError
 
 pytestmark = pytest.mark.edge
 
@@ -23,3 +24,13 @@ def test_an_item_id_is_read_as_the_id_of_its_kind(text: str, item: object) -> No
 def test_a_text_that_is_no_id_of_any_kind_is_refused_by_itself(text: str) -> None:
     with pytest.raises(ItemIdError, match=f"^'{text}' is no Story, Upkeep, Bug, Spike or Task id$"):
         parse_item_id(text)
+
+
+@pytest.mark.parametrize(
+    "text", ["F-0001", "T-0001", "ST-0000"], ids=["a-feature", "a-task", "below-one"]
+)
+def test_a_text_that_is_no_work_item_id_of_any_kind_is_refused_naming_every_kind(
+    text: str,
+) -> None:
+    with pytest.raises(WorkItemIdError, match=f"^'{text}' is no Story, Upkeep, Bug or Spike id$"):
+        parse_work_item_id_of_any_kind(text)

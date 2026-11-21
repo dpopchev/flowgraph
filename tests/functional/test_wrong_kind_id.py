@@ -16,10 +16,6 @@ from flowgraph.cli import open_files, run
 
 pytestmark = pytest.mark.functional
 
-NOT_YET = pytest.mark.xfail(
-    strict=True, reason="B-0001: a work item command names the Story alone for a wrong id yet"
-)
-
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_FEATURE = ["add", "feature", "a feature title", "--criterion", "a criterion"]
@@ -60,7 +56,6 @@ def runs(cwd: Path, *argvs: Sequence[str]) -> Outcome:
     return outcomes[-1]
 
 
-@NOT_YET
 @pytest.mark.parametrize(
     "argv",
     [

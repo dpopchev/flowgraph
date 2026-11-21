@@ -40,3 +40,10 @@ title = "Add the block command to src/flowgraph/work_item/commands.py, src/flowg
 description = "The command loads the work item that holds the Task whole, blocks the Task and saves it whole, as start and complete do. Removes the xfail mark of tests/functional/test_block_task.py; tests/functional/test_help_menu.py changes if the menu it states lists the commands."
 expected_output = "changed: fgraph block ID --reason TEXT --waiting-on TEXT blocks a started Task, prints 'blocked <task> of <work item>' and is committed as every write; fgraph show lists the Task in InProgress as blocked with its reason and what it waits on; it exits 2 naming why on each refusal of the first Task"
 created = 2026-11-21 11:19:52+00:00
+
+[[tasks]]
+id = "T-0073"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say a started Task is blocked with fgraph block"
+expected_output = "changed: README.md shows fgraph block, what fgraph show then lists and what a block refuses; docs/domain-model.md says the block move of a Task is built, what a BlockedTask carries in its file and that unblock is not built yet"
+created = 2026-11-21 11:19:52+00:00

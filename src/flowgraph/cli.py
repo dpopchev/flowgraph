@@ -26,6 +26,7 @@ from flowgraph.item import (
     show_item,
     start_item,
     status_item,
+    unblock_item,
     write_task,
 )
 from flowgraph.land import LandError, land_item
@@ -45,6 +46,7 @@ from flowgraph.task import (
     CompletedAlreadyError,
     ItemInBacklogError,
     NoTaskError,
+    NotBlockedError,
     NotStartedError,
     OpenTaskError,
     StartedAlreadyError,
@@ -85,6 +87,7 @@ REFUSED = (
     NotStartedError,
     StartedAlreadyError,
     BlockedError,
+    NotBlockedError,
     ItemInBacklogError,
     OpenTaskError,
     CompletedAlreadyError,
@@ -172,6 +175,10 @@ def build_parser() -> argparse.ArgumentParser:
     block.add_argument(
         "--waiting-on", required=True, metavar="TEXT", help="who or what it waits on"
     )
+    unblock = commands.add_parser(
+        "unblock", help="take a blocked Task back to started", add_help=False, color=False
+    )
+    unblock.add_argument("id", metavar="ID", help="the id of the Task")
     complete = commands.add_parser(
         "complete",
         help="complete a work item or a Task of it in a commit",
@@ -229,6 +236,8 @@ def _written(args: argparse.Namespace, store: Store, now: Now) -> Written | None
             return start_item(args.id, args.slug, store, now)
         case "block":
             return block_item(args.id, args.reason, args.waiting_on, store, now)
+        case "unblock":
+            return unblock_item(args.id, store)
         case "reorder":
             return reorder_item(args.id, args.before, store)
         case _:

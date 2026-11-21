@@ -109,6 +109,10 @@ class BlockedError(ValueError):
     """A blocked Task moved before it is unblocked, or blocked once more."""
 
 
+class NotBlockedError(ValueError):
+    """A Task unblocked while it is not blocked."""
+
+
 class CompletedAlreadyError(ValueError):
     """A completed Story or Task moved once more, or a Task written for a completed Story."""
 
@@ -227,6 +231,27 @@ def blocked(task: TaskState, reason: str, waiting_on: str, on: datetime) -> Bloc
             assert_never(unreachable)
 
 
+def unblocked(task: TaskState) -> StartedTask:
+    """The blocked Task started again, with the started time it had; its block is dropped.
+
+    Raises NotBlockedError when it is in Backlog, started or completed.
+    """
+    match task:
+        case BlockedTask():
+            return StartedTask(
+                task.id,
+                task.title,
+                task.expected_output,
+                task.description,
+                task.created,
+                task.started,
+            )
+        case Task() | StartedTask() | CompletedTask():
+            raise NotBlockedError(f"{task_id_text(task.id)} is not blocked")
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
 def completed(task: TaskState, on: datetime, commit: Commit) -> CompletedTask:
     """The Task completed on that time in that commit.
 
@@ -285,6 +310,15 @@ def blocked_among(
     return tuple(
         blocked(task, reason, waiting_on, on) if task.id == task_id else task for task in tasks
     )
+
+
+def unblocked_among(tasks: tuple[TaskState, ...], task_id: TaskId) -> tuple[TaskState, ...]:
+    """The Tasks with the one of that id unblocked, the rest as they are.
+
+    Raises TaskNotFoundError when none has the id and NotBlockedError when it is not blocked.
+    """
+    task_of(tasks, task_id)
+    return tuple(unblocked(task) if task.id == task_id else task for task in tasks)
 
 
 def completed_among(

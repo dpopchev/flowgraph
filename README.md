@@ -201,7 +201,18 @@ A block exits 2 and names why when the Task is still in Backlog, blocked
 already or completed, when the reason or what it waits on is blank, when the
 id is a Story's, or when the record does not hold the Task. A blocked Task is
 not started or completed, and its Story is not completed, while it is
-blocked; unblocking it is not built yet.
+blocked.
+
+Unblock it once it can go on. It is started again, with the started time it
+had, and can be completed or blocked once more:
+
+```sh
+fgraph unblock T-0001
+# unblocked T-0001 of ST-0001
+```
+
+An unblock exits 2 and names why when the Task is not blocked, when the id is
+a Story's, or when the record does not hold the Task.
 
 In a git repository `fgraph land` does the landing in one step, run in the
 checkout of `main` once every Task of the Story is completed on its branch.

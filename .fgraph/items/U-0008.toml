@@ -1,0 +1,10 @@
+id = "U-0008"
+state = "backlog"
+title = "Cut the steps of a landing that every fake work tree of the tests names from every one to none"
+description = "Found during T-0174 of S-0043 on 2026-11-21, under the burn of the Backlog; filed at the end of the queue and not burned. WorkTree of src/flowgraph/commit.py holds 16 steps; the four a landing gained had to be added as never to the fake work trees of eight test files outside the landing. A value of their own for the steps of a landing would stop that. Its Tasks are written when it is ordered."
+created = 2026-11-21 23:42:01+00:00
+
+[criterion]
+given = "main"
+when = "make check runs"
+then = "it still passes"

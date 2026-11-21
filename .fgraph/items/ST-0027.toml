@@ -16,3 +16,10 @@ title = "Add ruff format --check to the lint target of mk/python.mk, failing mak
 description = "The developer ordered the Backlog on 2026-11-21 after the burn, which answers the question U-0005 left open: make check runs ruff format --check. The agent's reading, a routine call: it joins the lint target, which stays one check of CHECKS, and names the file as ruff does. No Python changes, so no test is added. Check, red today since the line is not there: make -n lint | grep -q 'ruff format --check'."
 expected_output = "changed: the lint target of mk/python.mk runs ruff format --check . after ruff check ., so make lint and make check fail naming a file ruff format would rewrite, and pass today"
 created = 2026-11-21 14:38:43+00:00
+
+[[tasks]]
+id = "T-0116"
+state = "backlog"
+title = "Update README.md to say make check fails on an unformatted file"
+expected_output = "changed: README.md, Develop, says the lint of make check also runs ruff format --check and that make format rewrites the files it names"
+created = 2026-11-21 14:38:43+00:00

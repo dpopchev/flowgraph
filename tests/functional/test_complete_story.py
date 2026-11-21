@@ -19,10 +19,10 @@ ADD_STORY = [
     *("add", "story", "a title"),
     *("--given", "a state", "--when", "an action", "--then", "another"),
 ]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
-STARTED = [ADD_STORY, ADD_TASK, ["start", "ST-0001"], ["start", "T-0001"]]
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+STARTED = [ADD_STORY, ADD_TASK, ["start", "S-0001"], ["start", "T-0001"]]
 TASK_DONE = ["complete", "T-0001", "--commit", "abc1234"]
-STORY_DONE = ["complete", "ST-0001", "--commit", "def5678"]
+STORY_DONE = ["complete", "S-0001", "--commit", "def5678"]
 
 
 @dataclass(frozen=True)
@@ -67,7 +67,7 @@ class TestAStartedStoryWhoseTaskIsCompletedCompleted:
     def test_complete_names_the_task_its_story_and_its_commit(
         self, completed: tuple[Outcome, Outcome]
     ) -> None:
-        assert completed[0].out == "completed T-0001 of ST-0001 at abc1234\n"
+        assert completed[0].out == "completed T-0001 of S-0001 at abc1234\n"
 
     def test_complete_exits_with_zero(self, completed: tuple[Outcome, Outcome]) -> None:
         assert completed[1].status == 0
@@ -75,20 +75,20 @@ class TestAStartedStoryWhoseTaskIsCompletedCompleted:
     def test_complete_names_the_story_and_its_commit(
         self, completed: tuple[Outcome, Outcome]
     ) -> None:
-        assert completed[1].out == "completed ST-0001 at def5678\n"
+        assert completed[1].out == "completed S-0001 at def5678\n"
 
     def test_status_lists_it_under_completed_with_that_commit(
         self, completed: tuple[Outcome, Outcome], tmp_path: Path
     ) -> None:
         assert fgraph(["status"], tmp_path).out == (
-            "Backlog (0)\nInProgress (0)\nCompleted (1)\n  ST-0001  def5678  a title\n"
+            "Backlog (0)\nInProgress (0)\nCompleted (1)\n  S-0001  def5678  a title\n"
         )
 
     def test_show_names_the_bucket_and_commit_of_each(
         self, completed: tuple[Outcome, Outcome], tmp_path: Path
     ) -> None:
-        assert fgraph(["show", "ST-0001"], tmp_path).out == (
-            "ST-0001  a title\n"
+        assert fgraph(["show", "S-0001"], tmp_path).out == (
+            "S-0001  a title\n"
             "  bucket       Completed\n"
             "  commit       def5678\n"
             "  given        a state\n"
@@ -105,22 +105,22 @@ class TestAStartedStoryWhoseTaskIsCompletedCompleted:
 @pytest.mark.parametrize(
     ("argvs", "error"),
     [
-        ([*STARTED, STORY_DONE], "ST-0001 has Tasks to complete first: T-0001"),
-        ([ADD_STORY, ADD_TASK, STORY_DONE], "ST-0001 is in Backlog: start it first"),
+        ([*STARTED, STORY_DONE], "S-0001 has Tasks to complete first: T-0001"),
+        ([ADD_STORY, ADD_TASK, STORY_DONE], "S-0001 is in Backlog: start it first"),
         (
-            [ADD_STORY, ADD_TASK, ["start", "ST-0001"], TASK_DONE],
+            [ADD_STORY, ADD_TASK, ["start", "S-0001"], TASK_DONE],
             "T-0001 is in Backlog: start it first",
         ),
         ([ADD_STORY, ADD_TASK, TASK_DONE], "T-0001 is in Backlog: start it first"),
         ([*STARTED, TASK_DONE, TASK_DONE], "T-0001 is completed already"),
-        ([*STARTED, TASK_DONE, STORY_DONE, STORY_DONE], "ST-0001 is completed already"),
-        ([*STARTED, TASK_DONE, STORY_DONE, ["start", "ST-0001"]], "ST-0001 is completed already"),
-        ([*STARTED, TASK_DONE, STORY_DONE, ADD_TASK], "ST-0001 is completed already"),
+        ([*STARTED, TASK_DONE, STORY_DONE, STORY_DONE], "S-0001 is completed already"),
+        ([*STARTED, TASK_DONE, STORY_DONE, ["start", "S-0001"]], "S-0001 is completed already"),
+        ([*STARTED, TASK_DONE, STORY_DONE, ADD_TASK], "S-0001 is completed already"),
         (
             [*STARTED, ["complete", "T-0001", "--commit", "xyz"]],
             "'xyz' is no commit: it is 7 to 40 hex digits",
         ),
-        ([["complete", "ST-0002", "--commit", "abc1234"]], "no Story ST-0002 in the record"),
+        ([["complete", "S-0002", "--commit", "abc1234"]], "no Story S-0002 in the record"),
         ([*STARTED, ["complete", "T-0002", "--commit", "abc1234"]], "no Task T-0002 in the record"),
     ],
     ids=[

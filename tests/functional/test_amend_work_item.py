@@ -19,14 +19,14 @@ NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "a title", *CRITERION, "--description", "why"]
 ADD_UPKEEP = ["add", "upkeep", "a title", *CRITERION]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
-AMEND = ["amend", "ST-0001"]
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+AMEND = ["amend", "S-0001"]
 AMEND_THEN = [*AMEND, "--then", "a new state"]
-SHOW = ["show", "ST-0001"]
+SHOW = ["show", "S-0001"]
 COMPLETE = [
     ["start", "T-0001"],
     ["complete", "T-0001", "--commit", "abc1234"],
-    ["complete", "ST-0001", "--commit", "abc1234"],
+    ["complete", "S-0001", "--commit", "abc1234"],
 ]
 
 
@@ -72,13 +72,13 @@ class TestAStoryInBacklogAmendedWithAnotherThen:
         assert amended.status == 0
 
     def test_amend_names_the_story(self, amended: Outcome) -> None:
-        assert amended.out == "amended ST-0001\n"
+        assert amended.out == "amended S-0001\n"
 
     def test_show_prints_the_new_then_and_every_other_part_as_it_was(
         self, amended: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(SHOW, tmp_path).out == (
-            "ST-0001  a title\n"
+            "S-0001  a title\n"
             "  bucket       Backlog\n"
             "  description  why\n"
             "  given        a state\n"
@@ -93,7 +93,7 @@ class TestAStoryInBacklogAmendedWithAnotherThen:
 @pytest.mark.parametrize(
     ("option", "text", "line"),
     [
-        ("--title", "another title", "ST-0001  another title"),
+        ("--title", "another title", "S-0001  another title"),
         ("--description", "why not", "  description  why not"),
         ("--given", "a new state", "  given        a new state"),
         ("--when", "a new action", "  when         a new action"),
@@ -111,7 +111,7 @@ def test_each_other_part_is_rewritten_alone(
 def test_several_parts_are_rewritten_by_one_amend(tmp_path: Path) -> None:
     amend = [*AMEND, "--title", "another title", "--given", "a new state"]
     assert runs(tmp_path, ADD_STORY, amend, SHOW).out.splitlines()[:4] == [
-        "ST-0001  another title",
+        "S-0001  another title",
         "  bucket       Backlog",
         "  description  why",
         "  given        a new state",
@@ -134,19 +134,19 @@ def test_an_upkeep_in_backlog_is_amended_as_a_story_is(tmp_path: Path) -> None:
     [
         ([ADD_STORY, [*AMEND, "--then", " "]], "then is empty"),
         ([ADD_STORY, [*AMEND, "--title", ""]], "title is empty"),
-        ([ADD_STORY, AMEND], "amend rewrites no part of ST-0001: name one"),
-        ([ADD_STORY, ADD_TASK, ["start", "ST-0001"], AMEND_THEN], "ST-0001 is started already"),
+        ([ADD_STORY, AMEND], "amend rewrites no part of S-0001: name one"),
+        ([ADD_STORY, ADD_TASK, ["start", "S-0001"], AMEND_THEN], "S-0001 is started already"),
         (
-            [ADD_STORY, ADD_TASK, ["start", "ST-0001"], *COMPLETE, AMEND_THEN],
-            "ST-0001 is completed already",
+            [ADD_STORY, ADD_TASK, ["start", "S-0001"], *COMPLETE, AMEND_THEN],
+            "S-0001 is completed already",
         ),
         (
             [ADD_STORY, ADD_TASK, ["amend", "T-0001", "--then", "a new state"]],
             "'T-0001' is no Story, Upkeep, Bug or Spike id",
         ),
         (
-            [ADD_STORY, ["amend", "ST-0002", "--then", "a new state"]],
-            "no Story ST-0002 in the record",
+            [ADD_STORY, ["amend", "S-0002", "--then", "a new state"]],
+            "no Story S-0002 in the record",
         ),
     ],
     ids=[

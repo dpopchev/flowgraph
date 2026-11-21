@@ -19,14 +19,14 @@ START = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 LONG = "a title that is much longer than a terminal of forty columns is wide"
 ADD_STORY = ["add", "story", LONG, *CRITERION]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
 COMPLETED = [
     ADD_STORY,
     ADD_TASK,
-    ["start", "ST-0001"],
+    ["start", "S-0001"],
     ["start", "T-0001"],
     ["complete", "T-0001", "--commit", "abc1234"],
-    ["complete", "ST-0001", "--commit", "abc1234"],
+    ["complete", "S-0001", "--commit", "abc1234"],
 ]
 
 
@@ -80,15 +80,15 @@ class TestAStoryWhoseLineIsLongerThanTheTerminal:
         self, listed: Outcome
     ) -> None:
         assert listed.out == (
-            "Backlog (1)\n  ST-0001  a title that is much longe...\nInProgress (0)\nCompleted (0)\n"
+            "Backlog (1)\n  S-0001  a title that is much longer...\nInProgress (0)\nCompleted (0)\n"
         )
 
 
 def test_status_written_to_no_terminal_lists_the_line_whole(tmp_path: Path) -> None:
     listed = status_after(tmp_path, [ADD_STORY], None)
-    assert listed.out.splitlines()[1] == f"  ST-0001  {LONG}"
+    assert listed.out.splitlines()[1] == f"  S-0001  {LONG}"
 
 
 def test_status_keeps_the_commit_of_a_completed_story_on_a_line_cut(tmp_path: Path) -> None:
     listed = status_after(tmp_path, COMPLETED, 40)
-    assert listed.out.splitlines()[3] == "  ST-0001  abc1234  a title that is m..."
+    assert listed.out.splitlines()[3] == "  S-0001  abc1234  a title that is mu..."

@@ -1,0 +1,45 @@
+id = "S-0025"
+state = "completed"
+title = "Raise the Features fgraph status lists from none to every one, each with its derived bucket"
+description = "Found during S-0008, which left it out of its slice: fgraph show F-0001 shows one Feature, but no command lists the Features of a record, so a developer has to know the id. Open: where status lists them -- a block of its own above the buckets, or each Feature in the bucket derived for it -- and whether a work item under a Feature is listed with it. Amending and removing a Feature, and moving a work item to another Feature, are not built either. Its Tasks are written when it is ordered."
+created = 2026-11-21 12:13:12+00:00
+started = 2026-11-21 14:28:07+00:00
+completed = 2026-11-21 14:32:27+00:00
+commit = "a1c62ad"
+
+[criterion]
+given = "a record with a Feature and a Story added under it"
+when = "fgraph status is run"
+then = "it lists the Feature with its derived bucket"
+
+[[tasks]]
+id = "T-0110"
+state = "completed"
+title = "Add tests/functional/test_status_features.py, failing on the criterion of S-0025"
+description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_feature.py does. Seen red, then marked a strict xfail naming S-0025 until the Task that turns it green removes the mark. The developer's decisions of 2026-11-21 for the whole Story, asked when it was ordered: status lists the Features in a block of their own above Backlog, under the heading 'Features (n)', each with its derived bucket, the heading listed only when the record holds a Feature, as Removed is; status stays flat, so a work item under a Feature is listed in its bucket as today and not with its Feature. The agent's readings, each a routine call: (1) the line of a Feature is its id, its title and its derived bucket, '  F-0001  <title>  InProgress'. (2) The Features are listed by number. (3) The buckets, their counts and the order of the Backlog are those of the work items, as today. (4) Amending and removing a Feature, and moving a work item to another Feature, stay not built."
+expected_output = "created: tests/functional/test_status_features.py states that fgraph status, run on a record with a Feature and a Story added under it, lists the Feature with its derived bucket"
+created = 2026-11-21 14:28:06+00:00
+started = 2026-11-21 14:28:23+00:00
+completed = 2026-11-21 14:29:02+00:00
+commit = "72aec74"
+
+[[tasks]]
+id = "T-0111"
+state = "completed"
+title = "Add the Features to the status of src/flowgraph/item.py, each a row of src/flowgraph/feature.py written by src/flowgraph/text.py"
+description = "The work items are read once, for the buckets and for the Features. Removes the xfail mark of tests/functional/test_status_features.py."
+expected_output = "changed: src/flowgraph/feature.py holds FeatureRow and feature_row, a Feature as a line of a list with its derived bucket; status_text of src/flowgraph/text.py lists the Features it is given under 'Features (n)' above the buckets, and no heading without one; status_item of src/flowgraph/item.py gives it the Features of the record by number, each with the bucket its work items derive; proved in tests/feature/, tests/text/ and tests/item/"
+created = 2026-11-21 14:28:06+00:00
+started = 2026-11-21 14:29:02+00:00
+completed = 2026-11-21 14:31:24+00:00
+commit = "b9c6617"
+
+[[tasks]]
+id = "T-0112"
+state = "completed"
+title = "Update README.md and docs/domain-model.md to say fgraph status lists the Features"
+expected_output = "changed: README.md shows fgraph status listing a Feature with its derived bucket above the buckets; docs/domain-model.md, Persistence, says status lists the Features, where and when, names the developer's decision of 2026-11-21, and no longer lists Features in fgraph status as not built"
+created = 2026-11-21 14:28:06+00:00
+started = 2026-11-21 14:31:24+00:00
+completed = 2026-11-21 14:32:17+00:00
+commit = "3023a46"

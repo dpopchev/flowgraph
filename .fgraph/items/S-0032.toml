@@ -1,0 +1,45 @@
+id = "S-0032"
+state = "completed"
+title = "Raise the Features fgraph status lists with their progress from none to every one"
+description = "The developer's request of 2026-11-21: 'when it is a feature shows also how many work items are to be done'. The readings the developer agreed with 'go' on 2026-11-21: (1) the progress is written as board watch of board 1 writes it, '<completed>/<all> W', after the id: '  F-0001  1/2 W  InProgress  <title>'. (2) Every Feature is listed with it, in any bucket; one without a work item reads 0/0 W. (3) A removed work item is counted in neither number. (4) The derived bucket moves before the title, so that the cut of S-0036 keeps it."
+created = 2026-11-21 17:40:33+00:00
+started = 2026-11-21 17:46:07+00:00
+completed = 2026-11-21 17:49:36+00:00
+commit = "fc6e224"
+
+[criterion]
+given = "a record with a Feature and two Stories under it, one of them completed"
+when = "fgraph status is run"
+then = "it lists the Feature with 1/2 W, its work items completed of all"
+
+[[tasks]]
+id = "T-0129"
+state = "completed"
+title = "Add tests/functional/test_status_feature_progress.py, failing on the criterion of S-0032"
+description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_status_completed_order.py does, with a clock that moves on at every call. Seen red, then marked a strict xfail naming S-0032 until the Task that turns it green removes the mark."
+expected_output = "created: tests/functional/test_status_feature_progress.py states that fgraph status, run on a record with a Feature and two Stories under it, one completed, lists the Feature as '  F-0001  1/2 W  InProgress  <title>'"
+created = 2026-11-21 17:40:33+00:00
+started = 2026-11-21 17:46:08+00:00
+completed = 2026-11-21 17:46:31+00:00
+commit = "512260d"
+
+[[tasks]]
+id = "T-0130"
+state = "completed"
+title = "Add the work items completed and held to FeatureRow of src/flowgraph/feature.py and write them in status_text of src/flowgraph/text.py"
+description = "Removes the xfail mark of tests/functional/test_status_feature_progress.py. The tests that state the line of a Feature in status -- tests/text/test_status_features.py, tests/item/test_status_features.py and tests/functional/test_status_features.py -- are rewritten to the new line."
+expected_output = "changed: FeatureRow of src/flowgraph/feature.py holds the work items completed and those held, removed ones left out, counted by feature_row from the states it is given; status_text of src/flowgraph/text.py writes a Feature as its id, '<completed>/<held> W', its bucket and its title; proved in tests/feature/ and tests/text/"
+created = 2026-11-21 17:40:34+00:00
+started = 2026-11-21 17:46:32+00:00
+completed = 2026-11-21 17:48:48+00:00
+commit = "ecba133"
+
+[[tasks]]
+id = "T-0131"
+state = "completed"
+title = "Update README.md and docs/domain-model.md to say fgraph status lists a Feature with its progress"
+expected_output = "changed: README.md shows fgraph status listing a Feature with '<completed>/<all> W' and its bucket before its title; docs/domain-model.md, Persistence, says the same, what is counted, and names the developer's decision of 2026-11-21"
+created = 2026-11-21 17:40:34+00:00
+started = 2026-11-21 17:48:49+00:00
+completed = 2026-11-21 17:49:35+00:00
+commit = "842372a"

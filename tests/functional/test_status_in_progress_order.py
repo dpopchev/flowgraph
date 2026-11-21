@@ -19,11 +19,11 @@ START = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "a title", *CRITERION]
 ADD_OTHER = ["add", "story", "another title", *CRITERION]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
-ADD_OTHER_TASK = ["add", "task", "a task title", "--parent", "ST-0002", "--output", "an output"]
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+ADD_OTHER_TASK = ["add", "task", "a task title", "--parent", "S-0002", "--output", "an output"]
 ADDED = [ADD_STORY, ADD_OTHER, ADD_TASK, ADD_OTHER_TASK]
-START_FIRST = ["start", "ST-0001"]
-START_SECOND = ["start", "ST-0002"]
+START_FIRST = ["start", "S-0001"]
+START_SECOND = ["start", "S-0002"]
 
 
 @dataclass(frozen=True)
@@ -74,8 +74,8 @@ class TestTwoStoriesStartedTheFirstBeforeTheSecond:
         assert listed.out == (
             "Backlog (0)\n"
             "InProgress (2)\n"
-            "  ST-0002  0/1 T  another title\n"
-            "  ST-0001  0/1 T  a title\n"
+            "  S-0002  0/1 T  another title\n"
+            "  S-0001  0/1 T  a title\n"
             "Completed (0)\n"
         )
 
@@ -84,6 +84,6 @@ def test_the_first_story_started_after_the_second_is_listed_above_it(tmp_path: P
     listed = status_after(tmp_path, *ADDED, START_SECOND, START_FIRST)
     assert listed.out.splitlines()[1:4] == [
         "InProgress (2)",
-        "  ST-0001  0/1 T  a title",
-        "  ST-0002  0/1 T  another title",
+        "  S-0001  0/1 T  a title",
+        "  S-0002  0/1 T  another title",
     ]

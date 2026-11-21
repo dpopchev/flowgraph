@@ -18,13 +18,13 @@ pytestmark = pytest.mark.functional
 START = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "a title", *CRITERION]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
 ONE_OF_THREE = [
     ADD_STORY,
     ADD_TASK,
     ADD_TASK,
     ADD_TASK,
-    ["start", "ST-0001"],
+    ["start", "S-0001"],
     ["start", "T-0001"],
     ["complete", "T-0001", "--commit", "abc1234"],
 ]
@@ -74,10 +74,10 @@ class TestAStoryStartedWithOneOfItsThreeTasksCompleted:
 
     def test_status_lists_the_story_with_its_tasks_completed_of_all(self, listed: Outcome) -> None:
         assert listed.out == (
-            "Backlog (0)\nInProgress (1)\n  ST-0001  1/3 T  a title\nCompleted (0)\n"
+            "Backlog (0)\nInProgress (1)\n  S-0001  1/3 T  a title\nCompleted (0)\n"
         )
 
 
 def test_a_started_task_is_not_counted_as_completed(tmp_path: Path) -> None:
     listed = status_after(tmp_path, *ONE_OF_THREE, ["start", "T-0002"])
-    assert listed.out.splitlines()[2] == "  ST-0001  1/3 T  a title"
+    assert listed.out.splitlines()[2] == "  S-0001  1/3 T  a title"

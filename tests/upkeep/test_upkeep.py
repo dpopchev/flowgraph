@@ -34,8 +34,8 @@ def test_an_upkeep_id_is_read_from_its_text() -> None:
 
 
 def test_a_text_that_is_no_upkeep_id_is_refused_by_itself() -> None:
-    with pytest.raises(UpkeepIdError, match=r"^'ST-0001' is no Upkeep id: it is U- and a number$"):
-        parse_upkeep_id("ST-0001")
+    with pytest.raises(UpkeepIdError, match=r"^'S-0001' is no Upkeep id: it is U- and a number$"):
+        parse_upkeep_id("S-0001")
 
 
 def test_the_next_upkeep_id_is_one_above_the_highest_taken() -> None:

@@ -19,23 +19,23 @@ pytestmark = pytest.mark.functional
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "Raise the Stories fgraph lists from 0 to 1", *CRITERION]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
-STORY_FILE = Path(".fgraph") / "items" / "ST-0001.toml"
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+STORY_FILE = Path(".fgraph") / "items" / "S-0001.toml"
 
 # Every write of a record, from the add of a Story to its complete and the remove of another.
 WRITES: tuple[Sequence[str], ...] = (
     ADD_STORY,
     ADD_TASK,
     ["add", "story", "another title", *CRITERION],
-    ["amend", "ST-0002", "--then", "one more"],
-    ["reorder", "ST-0002", "--before", "ST-0001"],
-    ["start", "ST-0001"],
+    ["amend", "S-0002", "--then", "one more"],
+    ["reorder", "S-0002", "--before", "S-0001"],
+    ["start", "S-0001"],
     ["start", "T-0001"],
     ["block", "T-0001", "--reason", "a reason", "--waiting-on", "someone"],
     ["unblock", "T-0001"],
     ["complete", "T-0001", "--commit", "3e9ae5c"],
-    ["complete", "ST-0001", "--commit", "677f9b0"],
-    ["remove", "ST-0002", "--reason", "a reason"],
+    ["complete", "S-0001", "--commit", "677f9b0"],
+    ["remove", "S-0002", "--reason", "a reason"],
 )
 IDENTITY = {
     "GIT_AUTHOR_NAME": "a developer",
@@ -110,7 +110,7 @@ class TestAStoryAddedOnARecordGitIgnores:
         assert added.status == 0
 
     def test_add_says_the_story_is_added_and_warns_of_nothing(self, added: Outcome) -> None:
-        assert (added.out, added.err) == ("added ST-0001\n", "")
+        assert (added.out, added.err) == ("added S-0001\n", "")
 
     def test_the_story_is_written(self, added: Outcome, checkout: Path) -> None:
         assert (checkout / STORY_FILE).is_file()

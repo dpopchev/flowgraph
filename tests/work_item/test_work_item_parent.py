@@ -132,8 +132,8 @@ def test_the_row_and_the_detail_read_from_the_file_name_the_parent(tmp_path: Pat
 def test_a_file_whose_parent_is_no_feature_id_is_refused(tmp_path: Path) -> None:
     write_work_item(tmp_path, BARE)
     path = tmp_path / FILE
-    path.write_text(path.read_text("utf-8").replace("F-0001", "ST-0001"), "utf-8")
+    path.write_text(path.read_text("utf-8").replace("F-0001", "S-0001"), "utf-8")
     with pytest.raises(
-        WorkItemFileError, match=r"CH-0001.toml holds no Chore: 'ST-0001' is no Feature id"
+        WorkItemFileError, match=r"CH-0001.toml holds no Chore: 'S-0001' is no Feature id"
     ):
         read_work_item(tmp_path, ONE)

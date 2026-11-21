@@ -61,8 +61,8 @@ def runs(cwd: Path, *argvs: Sequence[str]) -> Outcome:
     [
         ["amend", "F-0001", "--title", "another title"],
         ["remove", "F-0001", "--reason", "a reason"],
-        ["reorder", "F-0001", "--before", "ST-0001"],
-        ["reorder", "ST-0001", "--before", "F-0001"],
+        ["reorder", "F-0001", "--before", "S-0001"],
+        ["reorder", "S-0001", "--before", "F-0001"],
         ["add", "task", "a task title", "--parent", "F-0001", "--output", "an output"],
     ],
     ids=["amend", "remove", "reorder", "reorder-before", "add-task-parent"],

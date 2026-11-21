@@ -60,7 +60,7 @@ def test_a_completed_task_returns_the_id_of_the_story_that_holds_it() -> None:
 def test_a_completed_task_saves_its_story_whole_with_the_task_completed_now() -> None:
     saved: list[StoryState] = []
     complete(2, saved)
-    assert saved == [completed_task(RECORD["ST-0002"], make_task_id(2), NOW, COMMIT)]
+    assert saved == [completed_task(RECORD["S-0002"], make_task_id(2), NOW, COMMIT)]
 
 
 def test_a_task_no_story_holds_is_refused_by_its_id() -> None:
@@ -85,7 +85,7 @@ def test_a_completed_story_is_saved_whole_completed_now() -> None:
 
 def test_a_task_written_for_a_completed_story_is_refused_by_its_id() -> None:
     saved: list[StoryState] = []
-    with pytest.raises(CompletedAlreadyError, match=r"^ST-0001 is completed already$"):
+    with pytest.raises(CompletedAlreadyError, match=r"^S-0001 is completed already$"):
         add_task(
             parent=make_story_id(1),
             title="a task title",

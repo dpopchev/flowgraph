@@ -34,7 +34,7 @@ def test_a_started_story_reads_as_a_started_row() -> None:
         TaskRow("T-0002", "another task", "another output", "", "backlog"),
     ]
     assert story_row(STARTED) == StoryRow(
-        "ST-0001", "a title", "started", created=CREATED, started=CREATED, tasks=tasks
+        "S-0001", "a title", "started", created=CREATED, started=CREATED, tasks=tasks
     )
 
 

@@ -21,11 +21,11 @@ CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 TITLE = "Raise the Stories fgraph lists from 0 to 1"
 ADD_STORY = ["add", "story", TITLE, *CRITERION]
 ADD_OTHER = ["add", "story", "another title", *CRITERION]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
-LAND = ["land", "ST-0001", "--message", "feat: land the first Story"]
-BRANCH = "wi/ST-0001-raise-the-stories-fgraph"
-WORKTREE = Path("project.worktrees") / "ST-0001-raise-the-stories-fgraph"
-STORY_FILE = ".fgraph/items/ST-0001.toml"
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+LAND = ["land", "S-0001", "--message", "feat: land the first Story"]
+BRANCH = "wi/S-0001-raise-the-stories-fgraph"
+WORKTREE = Path("project.worktrees") / "S-0001-raise-the-stories-fgraph"
+STORY_FILE = ".fgraph/items/S-0001.toml"
 IDENTITY = {
     "GIT_AUTHOR_NAME": "a developer",
     "GIT_AUTHOR_EMAIL": "developer@example.com",
@@ -87,7 +87,7 @@ def started(tmp_path: Path) -> Path:
     checkout = tmp_path / "project"
     checkout.mkdir()
     git(checkout, "init", "--quiet", "--initial-branch", "main")
-    for argv in (ADD_STORY, ADD_TASK, ["start", "ST-0001"]):
+    for argv in (ADD_STORY, ADD_TASK, ["start", "S-0001"]):
         fgraph(argv, checkout)
     worktree = tmp_path / WORKTREE
     fgraph(["start", "T-0001"], worktree)
@@ -114,14 +114,14 @@ class TestAStoryLandedInTheCheckoutOfMain:
         assert landed.status == 0
 
     def test_land_names_the_story_and_the_merge_commit(self, landed: Outcome, ready: Path) -> None:
-        assert landed.out == f"landed ST-0001 at {git(ready, 'rev-parse', '--short', 'HEAD~1')}\n"
+        assert landed.out == f"landed S-0001 at {git(ready, 'rev-parse', '--short', 'HEAD~1')}\n"
 
     def test_status_lists_it_under_completed_with_the_merge_commit(
         self, landed: Outcome, ready: Path
     ) -> None:
         merge = git(ready, "rev-parse", "--short", "HEAD~1")
         assert fgraph(["status"], ready).out == (
-            f"Backlog (0)\nInProgress (0)\nCompleted (1)\n  ST-0001  {merge}  {TITLE}\n"
+            f"Backlog (0)\nInProgress (0)\nCompleted (1)\n  S-0001  {merge}  {TITLE}\n"
         )
 
     def test_the_merge_commit_is_worded_by_the_developer(
@@ -141,7 +141,7 @@ class TestAStoryLandedInTheCheckoutOfMain:
         assert (
             git(ready, "log", "-1", "--format=%s"),
             git(ready, "show", "--name-only", "--format=", "HEAD"),
-        ) == ("chore: complete ST-0001 in the record", STORY_FILE)
+        ) == ("chore: complete S-0001 in the record", STORY_FILE)
 
     def test_the_worktree_of_the_branch_is_removed(self, landed: Outcome, tmp_path: Path) -> None:
         assert not (tmp_path / WORKTREE).exists()
@@ -164,7 +164,7 @@ class TestALandWithATaskNotCompleted:
 
     def test_land_names_the_task_to_complete_first(self, refused: tuple[Outcome, str]) -> None:
         assert refused[0].err.splitlines()[-1:] == [
-            "fgraph: error: ST-0001 has Tasks to complete first: T-0001"
+            "fgraph: error: S-0001 has Tasks to complete first: T-0001"
         ]
 
     def test_nothing_is_merged(self, refused: tuple[Outcome, str], started: Path) -> None:
@@ -183,16 +183,16 @@ def test_a_land_in_a_checkout_that_is_not_on_main_exits_with_two_and_names_it(
     outcome = fgraph(LAND, tmp_path / WORKTREE)
     assert (outcome.status, outcome.err.splitlines()[-1:]) == (
         2,
-        [f"fgraph: error: ST-0001 lands on main: {tmp_path / WORKTREE} is on {BRANCH}"],
+        [f"fgraph: error: S-0001 lands on main: {tmp_path / WORKTREE} is on {BRANCH}"],
     )
 
 
 def test_a_land_of_a_story_without_a_branch_exits_with_two_and_names_it(ready: Path) -> None:
     fgraph(ADD_OTHER, ready)
-    outcome = fgraph(["land", "ST-0002", "--message", "feat: land another"], ready)
+    outcome = fgraph(["land", "S-0002", "--message", "feat: land another"], ready)
     assert (outcome.status, outcome.err.splitlines()[-1:]) == (
         2,
-        ["fgraph: error: ST-0002 has no branch wi/ST-0002-* to land"],
+        ["fgraph: error: S-0002 has no branch wi/S-0002-* to land"],
     )
 
 
@@ -204,7 +204,7 @@ def test_a_land_outside_a_git_work_tree_exits_with_two_and_names_the_record(
     record = tmp_path / ".fgraph"
     assert (outcome.status, outcome.err.splitlines()[-1:]) == (
         2,
-        [f"fgraph: error: ST-0001 cannot land: {record} is not inside a git work tree"],
+        [f"fgraph: error: S-0001 cannot land: {record} is not inside a git work tree"],
     )
 
 

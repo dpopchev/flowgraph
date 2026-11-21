@@ -55,10 +55,8 @@ def test_a_feature_id_is_read_from_its_text() -> None:
 
 @pytest.mark.model
 def test_a_text_that_is_no_feature_id_is_refused_by_itself() -> None:
-    with pytest.raises(
-        FeatureIdError, match=r"^'ST-0001' is no Feature id: it is F- and a number$"
-    ):
-        parse_feature_id("ST-0001")
+    with pytest.raises(FeatureIdError, match=r"^'S-0001' is no Feature id: it is F- and a number$"):
+        parse_feature_id("S-0001")
 
 
 @pytest.mark.model

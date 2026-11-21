@@ -27,7 +27,7 @@ ADD_BUG = [
     *("add", "bug", "a bug title", "--observed", "a traceback", "--expected", "exit 2"),
     *("--parent", "F-0001"),
 ]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
 
 
 @dataclass(frozen=True)
@@ -81,7 +81,7 @@ class TestAFeatureWithAStoryAddedUnderIt:
             "  a developer sees every work item by bucket\n"
             "  a developer adds every kind of work\n"
             "Work items (1)\n"
-            "  ST-0001  a title  Backlog\n"
+            "  S-0001  a title  Backlog\n"
         )
 
 
@@ -92,21 +92,21 @@ def test_a_feature_added_is_named_by_its_id(tmp_path: Path) -> None:
 
 def test_a_story_under_a_feature_names_its_parent(tmp_path: Path) -> None:
     runs(tmp_path, ADD_FEATURE, ADD_STORY)
-    assert fgraph(["show", "ST-0001"], tmp_path).out.splitlines()[:3] == [
-        "ST-0001  a title",
+    assert fgraph(["show", "S-0001"], tmp_path).out.splitlines()[:3] == [
+        "S-0001  a title",
         "  bucket       Backlog",
         "  parent       F-0001",
     ]
 
 
 def test_a_feature_is_in_progress_once_a_work_item_of_it_is_started(tmp_path: Path) -> None:
-    runs(tmp_path, ADD_FEATURE, ADD_STORY, ADD_BUG, ADD_TASK, ["start", "ST-0001"])
+    runs(tmp_path, ADD_FEATURE, ADD_STORY, ADD_BUG, ADD_TASK, ["start", "S-0001"])
     assert fgraph(["show", "F-0001"], tmp_path).out.splitlines()[1:2] + fgraph(
         ["show", "F-0001"], tmp_path
     ).out.splitlines()[-3:] == [
         "  bucket       InProgress",
         "Work items (2)",
-        "  ST-0001  a title  InProgress",
+        "  S-0001  a title  InProgress",
         "  B-0001  a bug title  Backlog",
     ]
 
@@ -120,10 +120,10 @@ def test_a_feature_is_completed_once_each_work_item_of_it_is_completed_or_remove
         ADD_STORY,
         ADD_BUG,
         ADD_TASK,
-        ["start", "ST-0001"],
+        ["start", "S-0001"],
         ["start", "T-0001"],
         ["complete", "T-0001", "--commit", "abc1234"],
-        ["complete", "ST-0001", "--commit", "def5678"],
+        ["complete", "S-0001", "--commit", "def5678"],
         ["remove", "B-0001", "--reason", "not a bug"],
     )
     assert fgraph(["show", "F-0001"], tmp_path).out.splitlines()[1] == "  bucket       Completed"
@@ -136,8 +136,8 @@ def test_a_feature_is_completed_once_each_work_item_of_it_is_completed_or_remove
         ([["add", "feature", " ", "--criterion", "a criterion"]], "title is empty"),
         ([ADD_STORY], "no Feature F-0001 in the record"),
         (
-            [ADD_FEATURE, [*ADD_ALONE, "--parent", "ST-0001"]],
-            "'ST-0001' is no Feature id: it is F- and a number",
+            [ADD_FEATURE, [*ADD_ALONE, "--parent", "S-0001"]],
+            "'S-0001' is no Feature id: it is F- and a number",
         ),
         ([["show", "F-0001"]], "no Feature F-0001 in the record"),
     ],

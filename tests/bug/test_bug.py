@@ -36,8 +36,8 @@ def test_a_bug_id_is_read_from_its_text() -> None:
 
 
 def test_a_text_that_is_no_bug_id_is_refused_by_itself() -> None:
-    with pytest.raises(BugIdError, match=r"^'ST-0001' is no Bug id: it is B- and a number$"):
-        parse_bug_id("ST-0001")
+    with pytest.raises(BugIdError, match=r"^'S-0001' is no Bug id: it is B- and a number$"):
+        parse_bug_id("S-0001")
 
 
 def test_the_next_bug_id_is_one_above_the_highest_taken() -> None:

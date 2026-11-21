@@ -19,8 +19,8 @@ pytestmark = pytest.mark.functional
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "Raise the Stories fgraph lists from 0 to 1", *CRITERION]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
-WORKTREE = Path("project.worktrees") / "ST-0001-raise-the-stories-fgraph"
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+WORKTREE = Path("project.worktrees") / "S-0001-raise-the-stories-fgraph"
 IDENTITY = {
     "GIT_AUTHOR_NAME": "a developer",
     "GIT_AUTHOR_EMAIL": "developer@example.com",
@@ -75,11 +75,11 @@ def environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
 
 @pytest.fixture
 def checkout(tmp_path: Path) -> Path:
-    """The checkout of main: ST-0001 with one Task, started on its worktree branch."""
+    """The checkout of main: S-0001 with one Task, started on its worktree branch."""
     path = tmp_path / "project"
     path.mkdir()
     git(path, "init", "--quiet", "--initial-branch", "main")
-    for argv in (ADD_STORY, ADD_TASK, ["start", "ST-0001"]):
+    for argv in (ADD_STORY, ADD_TASK, ["start", "S-0001"]):
         fgraph(argv, path)
     return path
 
@@ -102,14 +102,14 @@ class TestATaskAddedToAStartedStoryInTheCheckoutOfMain:
         self, refused: Outcome, worktree: Path
     ) -> None:
         assert refused.err.splitlines()[-1:] == [
-            f"fgraph: error: ST-0001 is started: its Tasks are written in its worktree, {worktree}"
+            f"fgraph: error: S-0001 is started: its Tasks are written in its worktree, {worktree}"
         ]
 
     def test_nothing_is_written_on_main(self, refused: Outcome, checkout: Path) -> None:
         assert (
             git(checkout, "status", "--porcelain"),
             git(checkout, "log", "-1", "--format=%s"),
-        ) == ("", "chore: start ST-0001 in the record")
+        ) == ("", "chore: start S-0001 in the record")
 
 
 def test_a_task_of_a_started_story_started_in_the_checkout_of_main_is_refused(
@@ -118,13 +118,13 @@ def test_a_task_of_a_started_story_started_in_the_checkout_of_main_is_refused(
     outcome = fgraph(["start", "T-0001"], checkout)
     assert (outcome.status, outcome.err.splitlines()[-1:]) == (
         2,
-        [f"fgraph: error: ST-0001 is started: its Tasks are written in its worktree, {worktree}"],
+        [f"fgraph: error: S-0001 is started: its Tasks are written in its worktree, {worktree}"],
     )
 
 
 def test_a_task_added_to_a_started_story_in_its_worktree_is_written(worktree: Path) -> None:
     outcome = fgraph(ADD_TASK, worktree)
-    assert (outcome.status, outcome.out) == (0, "added T-0002 to ST-0001\n")
+    assert (outcome.status, outcome.out) == (0, "added T-0002 to S-0001\n")
 
 
 def test_a_task_added_on_main_to_a_started_story_without_a_worktree_is_written(
@@ -132,4 +132,4 @@ def test_a_task_added_on_main_to_a_started_story_without_a_worktree_is_written(
 ) -> None:
     git(checkout, "worktree", "remove", str(worktree))
     outcome = fgraph(ADD_TASK, checkout)
-    assert (outcome.status, outcome.out) == (0, "added T-0002 to ST-0001\n")
+    assert (outcome.status, outcome.out) == (0, "added T-0002 to S-0001\n")

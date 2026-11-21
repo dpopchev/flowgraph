@@ -1,7 +1,7 @@
 id = "U-0001"
 state = "completed"
 title = "Cut the lines of the largest module in src/flowgraph from 1068 to at most 400"
-description = "Split src/flowgraph/story.py by the parts of its aggregate; share the id, criterion and file code that src/flowgraph/upkeep.py repeats; bundle the adapters run() takes into one record port, so a new kind no longer rewires every functional test helper. Found while working ST-0004 (87c0307). Its Tasks are planned when it is ordered: an Upkeep holds no Task until ST-0005."
+description = "Split src/flowgraph/story.py by the parts of its aggregate; share the id, criterion and file code that src/flowgraph/upkeep.py repeats; bundle the adapters run() takes into one record port, so a new kind no longer rewires every functional test helper. Found while working S-0004 (87c0307). Its Tasks are planned when it is ordered: an Upkeep holds no Task until S-0005."
 created = 2026-11-21 06:33:40+00:00
 started = 2026-11-21 07:12:50+00:00
 completed = 2026-11-21 07:12:53+00:00

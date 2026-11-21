@@ -1,0 +1,45 @@
+id = "S-0030"
+state = "completed"
+title = "Extend the order fgraph status lists InProgress in from kind and number to the last started first"
+description = "The developer's decision of 2026-11-21: the Backlog stays in the order of its queue, InProgress lists the work item started last on top, Completed the one completed last on top. The agent's readings, each a routine call: (1) the order is that of the started time the file of a work item already holds, so no file changes. (2) Work items started at one time are listed by kind and number, as before. (3) A blocked Task does not move its work item in the list. Completed is S-0029. Amended on 2026-11-21 before its start: as first filed the criterion named S-0002 started before S-0001, which the order by number already lists as wanted; the expected output of T-0123 still names the ids that way, a Task not being amended yet, and its test states the criterion as amended."
+created = 2026-11-21 17:01:26+00:00
+started = 2026-11-21 17:08:32+00:00
+completed = 2026-11-21 17:12:30+00:00
+commit = "6df1c98"
+
+[criterion]
+given = "a record with two Stories started, S-0001 before S-0002"
+when = "fgraph status is run"
+then = "it lists S-0002 above S-0001 under InProgress"
+
+[[tasks]]
+id = "T-0123"
+state = "completed"
+title = "Add tests/functional/test_status_in_progress_order.py, failing on the criterion of S-0030"
+description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_status_completed_order.py does, with a clock that moves on at every call. Seen red, then marked a strict xfail naming S-0030 until the Task that turns it green removes the mark."
+expected_output = "created: tests/functional/test_status_in_progress_order.py states that fgraph status, run on a record with two Stories started, S-0002 before S-0001, lists S-0001 above S-0002 under InProgress"
+created = 2026-11-21 17:01:26+00:00
+started = 2026-11-21 17:08:33+00:00
+completed = 2026-11-21 17:09:28+00:00
+commit = "67a63d5"
+
+[[tasks]]
+id = "T-0124"
+state = "completed"
+title = "Add the started time to the row of src/flowgraph/work_item/model.py and order InProgress by it in src/flowgraph/item.py, the last started first"
+description = "Removes the xfail mark of tests/functional/test_status_in_progress_order.py."
+expected_output = "changed: WorkItemRow of src/flowgraph/work_item/model.py holds the started time of a started work item, read by read_work_item_rows of src/flowgraph/work_item/file.py; status_item of src/flowgraph/item.py lists InProgress the last started first, those started at one time by kind and number; proved in tests/work_item/ and tests/item/"
+created = 2026-11-21 17:01:27+00:00
+started = 2026-11-21 17:09:28+00:00
+completed = 2026-11-21 17:11:47+00:00
+commit = "983b1e1"
+
+[[tasks]]
+id = "T-0125"
+state = "completed"
+title = "Update README.md and docs/domain-model.md to say fgraph status lists InProgress the last started first"
+expected_output = "changed: README.md says fgraph status lists InProgress the last started first; docs/domain-model.md says the same where it states the order of the buckets and names the developer's decision of 2026-11-21"
+created = 2026-11-21 17:01:27+00:00
+started = 2026-11-21 17:11:47+00:00
+completed = 2026-11-21 17:12:30+00:00
+commit = "6a4f9cb"

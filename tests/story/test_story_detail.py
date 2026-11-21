@@ -20,7 +20,7 @@ def test_a_story_reads_as_its_detail_with_its_tasks() -> None:
         make_task(make_task_id(2), "a task title", "an output", "how", CREATED),
     )
     assert story_detail(story) == StoryDetail(
-        id="ST-0001",
+        id="S-0001",
         title="a title",
         state="backlog",
         description="why",

@@ -105,7 +105,7 @@ class TestAStartedUpkeepWhoseTaskIsCompletedCompleted:
 
 
 def test_a_task_id_counts_across_stories_and_upkeeps(tmp_path: Path) -> None:
-    story_task = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
+    story_task = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
     assert runs(tmp_path, ADD_STORY, story_task, ADD_UPKEEP, ADD_TASK).out == (
         "added T-0002 to U-0001\n"
     )

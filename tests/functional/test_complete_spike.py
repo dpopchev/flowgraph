@@ -129,8 +129,8 @@ def test_the_hypothesis_of_a_spike_is_amended(tmp_path: Path) -> None:
             "T-0001 takes no decision: only a Spike is completed with one",
         ),
         (
-            [ADD_STORY, ["amend", "ST-0001", "--hypothesis", "Can it?"]],
-            "ST-0001 has no hypothesis: it states a Given / When / Then",
+            [ADD_STORY, ["amend", "S-0001", "--hypothesis", "Can it?"]],
+            "S-0001 has no hypothesis: it states a Given / When / Then",
         ),
         (
             [ADD_SPIKE, ["amend", "Q-0001", "--given", "a state"]],
@@ -154,12 +154,12 @@ def test_a_spike_refused_exits_with_two_and_names_why(
 
 
 def test_a_story_completed_with_a_decision_is_refused(tmp_path: Path) -> None:
-    task = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
-    done = ["complete", "ST-0001", "--commit", "def5678", "--decision", "yes"]
+    task = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+    done = ["complete", "S-0001", "--commit", "def5678", "--decision", "yes"]
     outcome = runs(
-        tmp_path, ADD_STORY, task, ["start", "ST-0001"], ["start", "T-0001"], TASK_DONE, done
+        tmp_path, ADD_STORY, task, ["start", "S-0001"], ["start", "T-0001"], TASK_DONE, done
     )
     assert (outcome.status, outcome.err.splitlines()[-1:]) == (
         2,
-        ["fgraph: error: ST-0001 takes no decision: only a Spike is completed with one"],
+        ["fgraph: error: S-0001 takes no decision: only a Spike is completed with one"],
     )

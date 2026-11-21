@@ -18,7 +18,7 @@ from flowgraph.work_item import WorkItemState
 
 pytestmark = pytest.mark.command
 
-BRANCH = "wi/ST-0001-a-slug"
+BRANCH = "wi/S-0001-a-slug"
 SCOPE = Scope(BRANCH, make_story_id(1))
 CREATED = datetime(2026, 1, 1, tzinfo=UTC)
 SCENARIO = make_scenario("a", "b", "c")
@@ -76,7 +76,7 @@ def test_the_branch_of_an_upkeep_is_owned_by_that_upkeep() -> None:
 
 @pytest.mark.parametrize(
     "branch",
-    ["main", "", "wi/ST-0001", "wi/XX-0001-a-slug", "feature/ST-0001-a-slug", "wi/T-0001-a-slug"],
+    ["main", "", "wi/S-0001", "wi/XX-0001-a-slug", "feature/S-0001-a-slug", "wi/T-0001-a-slug"],
     ids=["main", "no-branch", "no-slug", "no-kind", "no-wi-prefix", "a-task"],
 )
 def test_a_branch_named_otherwise_is_owned_by_no_work_item(branch: str) -> None:
@@ -92,7 +92,7 @@ def test_the_work_item_the_branch_owns_is_saved() -> None:
 def test_another_work_item_is_refused_naming_the_owner_of_the_branch() -> None:
     with pytest.raises(
         OutOfScopeError,
-        match=rf"^ST-0002 is not written here: the branch {BRANCH} writes ST-0001 alone$",
+        match=rf"^S-0002 is not written here: the branch {BRANCH} writes S-0001 alone$",
     ):
         within(store([]), lambda: SCOPE, never).save_work_item(OTHER)
 
@@ -107,7 +107,7 @@ def test_another_work_item_refused_is_not_saved() -> None:
 def test_the_queue_is_refused_naming_the_owner_of_the_branch() -> None:
     with pytest.raises(
         OutOfScopeError,
-        match=rf"^the Backlog is not reordered here: the branch {BRANCH} writes ST-0001 alone$",
+        match=rf"^the Backlog is not reordered here: the branch {BRANCH} writes S-0001 alone$",
     ):
         within(store([]), lambda: SCOPE, never).save_queue(make_queue([]))
 

@@ -102,7 +102,7 @@ def test_every_command_prints_its_own_usage_and_exits_with_zero(command: tuple[s
     "argv",
     [
         ["start", "-h"],
-        ["start", "ST-0001", "--help"],
+        ["start", "S-0001", "--help"],
         ["start", "--slug", "a-slug", "--help"],
         ["--dir", "elsewhere", "start", "--help"],
     ],

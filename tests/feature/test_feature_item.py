@@ -20,8 +20,8 @@ ONE = make_feature_id(1)
 FEATURE = make_feature(ONE, "a feature title", ["a criterion", "another"], "why", CREATED)
 ROWS = {
     STORY: [
-        WorkItemRow("ST-0001", "a story", "started", parent="F-0001", created=CREATED),
-        WorkItemRow("ST-0002", "a story alone", "backlog", created=CREATED),
+        WorkItemRow("S-0001", "a story", "started", parent="F-0001", created=CREATED),
+        WorkItemRow("S-0002", "a story alone", "backlog", created=CREATED),
     ],
     UPKEEP: [WorkItemRow("U-0001", "an upkeep", "backlog", parent="F-0001", created=CREATED)],
 }
@@ -79,7 +79,7 @@ def test_a_feature_is_shown_with_its_criteria_and_its_work_items_by_bucket() -> 
         "  a criterion\n"
         "  another\n"
         "Work items (2)\n"
-        "  ST-0001  a story  InProgress\n"
+        "  S-0001  a story  InProgress\n"
         "  U-0001  an upkeep  Backlog\n"
     )
 
@@ -108,10 +108,8 @@ def test_a_parent_the_record_does_not_hold_is_refused() -> None:
 
 @pytest.mark.command
 def test_a_parent_that_is_no_feature_id_is_refused() -> None:
-    with pytest.raises(
-        FeatureIdError, match=r"^'ST-0001' is no Feature id: it is F- and a number$"
-    ):
-        parent_named("ST-0001", store())
+    with pytest.raises(FeatureIdError, match=r"^'S-0001' is no Feature id: it is F- and a number$"):
+        parent_named("S-0001", store())
 
 
 @pytest.mark.command
@@ -122,10 +120,10 @@ def test_a_store_built_without_features_holds_none() -> None:
 
 @pytest.mark.command
 def test_a_feature_is_not_written_on_the_branch_of_a_work_item() -> None:
-    scope = Scope("wi/ST-0001-a-slug", make_story_id(1))
+    scope = Scope("wi/S-0001-a-slug", make_story_id(1))
     with pytest.raises(
         OutOfScopeError,
-        match=r"^F-0001 is not written here: the branch wi/ST-0001-a-slug writes ST-0001 alone$",
+        match=r"^F-0001 is not written here: the branch wi/S-0001-a-slug writes S-0001 alone$",
     ):
         within(store(), lambda: scope, never).features.save_feature(FEATURE)
 

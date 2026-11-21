@@ -1,4 +1,4 @@
-"""A Story: new behavior to build, the kind of work item whose ids are written `ST-0001`.
+"""A Story: new behavior to build, the kind of work item whose ids are written `S-0001`.
 
 Each Story name stands for the name of the shared work item (`flowgraph.work_item`).
 """
@@ -34,7 +34,7 @@ from flowgraph.work_item import (
 )
 
 # The kind of a Story.
-STORY = make_kind("Story", "a", "ST")
+STORY = make_kind("Story", "a", "S")
 
 StoryId = WorkItemId
 Story = WorkItem
@@ -66,7 +66,7 @@ def make_story_id(number: int) -> StoryId:
 
 
 def parse_story_id(text: str) -> StoryId:
-    """The Story id written as the text; raises StoryIdError when it is not `ST-` and a number."""
+    """The Story id written as the text; raises StoryIdError when it is not `S-` and a number."""
     return parse_work_item_id(STORY, text)
 
 

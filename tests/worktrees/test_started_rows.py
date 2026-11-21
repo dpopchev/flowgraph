@@ -17,15 +17,15 @@ from flowgraph.worktrees import across_worktrees
 pytestmark = pytest.mark.view
 
 HOME = Path("/src/project")
-OTHER = Path("/src/project.worktrees/ST-0001-a-slug")
+OTHER = Path("/src/project.worktrees/S-0001-a-slug")
 RECORD = HOME / ".fgraph"
-BRANCH = "wi/ST-0001-a-slug"
+BRANCH = "wi/S-0001-a-slug"
 CREATED = datetime(2026, 1, 1, tzinfo=UTC)
 WAITING = TaskRow("T-0001", "a task title", "an output", "", "backlog")
 DONE = TaskRow("T-0001", "a task title", "an output", "", "completed", "abc1234")
-AT_START = WorkItemRow("ST-0001", "a title", "started", created=CREATED, tasks=[WAITING])
-WORKED = WorkItemRow("ST-0001", "a title", "started", created=CREATED, tasks=[DONE])
-QUEUED = WorkItemRow("ST-0002", "another title", "backlog", created=CREATED)
+AT_START = WorkItemRow("S-0001", "a title", "started", created=CREATED, tasks=[WAITING])
+WORKED = WorkItemRow("S-0001", "a title", "started", created=CREATED, tasks=[DONE])
+QUEUED = WorkItemRow("S-0002", "another title", "backlog", created=CREATED)
 ROWS = {RECORD: [AT_START, QUEUED], OTHER / ".fgraph": [WORKED]}
 
 
@@ -50,13 +50,13 @@ def store(record: Path) -> Store:
 
 
 def work_tree(on: str = "main", worktree: Path | None = OTHER) -> WorkTree:
-    """The work tree at HOME, on that branch, where the branch of ST-0001 has that worktree."""
+    """The work tree at HOME, on that branch, where the branch of S-0001 has that worktree."""
     return WorkTree(
         path=HOME,
         commit_files=never,
         add_worktree=never,
         current_branch=lambda: on,
-        find_branches=lambda pattern: [BRANCH] if pattern == "wi/ST-0001-*" else [],
+        find_branches=lambda pattern: [BRANCH] if pattern == "wi/S-0001-*" else [],
         merge=never,
         abort_merge=never,
         commit_merge=never,
@@ -89,7 +89,7 @@ def test_a_record_git_ignores_reads_its_own_rows() -> None:
 
 
 def test_in_the_worktree_of_a_work_item_the_rows_are_those_of_its_record() -> None:
-    elsewhere = work_tree(on="wi/ST-0002-another-slug")
+    elsewhere = work_tree(on="wi/S-0002-another-slug")
     shared = across_worktrees(store(RECORD), RECORD, lambda _: elsewhere, never)
     assert shared.find_work_item_rows(STORY) == [AT_START, QUEUED]
 

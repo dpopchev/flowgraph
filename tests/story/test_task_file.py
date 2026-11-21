@@ -29,8 +29,8 @@ TASK = make_task(make_task_id(1), "a task title", "an output", "", CREATED)
 
 
 def written_tasks(record: Path) -> object:
-    """The tasks table of the file of ST-0001 in the record."""
-    return tomllib.loads((record / "items" / "ST-0001.toml").read_text("utf-8"))["tasks"]
+    """The tasks table of the file of S-0001 in the record."""
+    return tomllib.loads((record / "items" / "S-0001.toml").read_text("utf-8"))["tasks"]
 
 
 def test_a_task_is_written_inside_the_file_of_its_story(tmp_path: Path) -> None:
@@ -68,7 +68,7 @@ def test_a_written_story_is_read_back_whole_with_its_tasks(tmp_path: Path) -> No
 
 def test_a_story_the_record_does_not_hold_is_refused_by_its_id(tmp_path: Path) -> None:
     write_story(tmp_path, STORY)
-    with pytest.raises(StoryNotFoundError, match=r"^no Story ST-0002 in the record$"):
+    with pytest.raises(StoryNotFoundError, match=r"^no Story S-0002 in the record$"):
         read_story(tmp_path, make_story_id(2))
 
 
@@ -90,5 +90,5 @@ def test_a_written_story_is_read_as_its_detail(tmp_path: Path) -> None:
 
 
 def test_the_detail_of_a_story_the_record_does_not_hold_is_refused(tmp_path: Path) -> None:
-    with pytest.raises(StoryNotFoundError, match=r"^no Story ST-0001 in the record$"):
+    with pytest.raises(StoryNotFoundError, match=r"^no Story S-0001 in the record$"):
         read_story_detail(tmp_path, make_story_id(1))

@@ -17,9 +17,9 @@ pytestmark = pytest.mark.functional
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "a title", *CRITERION]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
 BLOCK = ["block", "T-0001", "--reason", "a reason", "--waiting-on", "someone"]
-ONE_STARTED = (ADD_STORY, ADD_TASK, ADD_TASK, ["start", "ST-0001"], ["start", "T-0001"])
+ONE_STARTED = (ADD_STORY, ADD_TASK, ADD_TASK, ["start", "S-0001"], ["start", "T-0001"])
 FIRST = "T-0001 is started -- complete or block it first"
 
 
@@ -68,7 +68,7 @@ class TestASecondTaskStartedBesideAStartedOne:
         assert refused.err.splitlines()[-1:] == [f"fgraph: error: T-0002 cannot start: {FIRST}"]
 
     def test_the_second_task_stays_in_backlog(self, refused: Outcome, tmp_path: Path) -> None:
-        assert fgraph(["show", "ST-0001"], tmp_path).out.splitlines()[-2:] == [
+        assert fgraph(["show", "S-0001"], tmp_path).out.splitlines()[-2:] == [
             "  T-0002  a task title",
             "    expected output  an output",
         ]
@@ -85,13 +85,13 @@ def test_a_task_unblocked_beside_a_started_one_is_refused_naming_it(tmp_path: Pa
 
 def test_a_second_task_is_started_once_the_first_is_blocked(tmp_path: Path) -> None:
     outcome = runs(tmp_path, *ONE_STARTED, BLOCK, ["start", "T-0002"])
-    assert (outcome.status, outcome.out) == (0, "started T-0002 of ST-0001\n")
+    assert (outcome.status, outcome.out) == (0, "started T-0002 of S-0001\n")
 
 
 def test_a_second_task_is_started_once_the_first_is_completed(tmp_path: Path) -> None:
     done = ["complete", "T-0001", "--commit", "3e9ae5c"]
     outcome = runs(tmp_path, *ONE_STARTED, done, ["start", "T-0002"])
-    assert (outcome.status, outcome.out) == (0, "started T-0002 of ST-0001\n")
+    assert (outcome.status, outcome.out) == (0, "started T-0002 of S-0001\n")
 
 
 def test_a_task_started_already_says_so_itself(tmp_path: Path) -> None:

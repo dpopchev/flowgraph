@@ -17,8 +17,8 @@ pytestmark = pytest.mark.functional
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "a title", *CRITERION]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
-START_STORY = ["start", "ST-0001"]
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+START_STORY = ["start", "S-0001"]
 START_TASK = ["start", "T-0001"]
 BLOCK = ["block", "T-0001", "--reason", "the review is not back", "--waiting-on", "the reviewer"]
 STARTED = (ADD_STORY, ADD_TASK, START_STORY, START_TASK)
@@ -66,13 +66,13 @@ class TestAStartedTaskBlockedWithAReasonAndWhatItWaitsOn:
         assert blocked.status == 0
 
     def test_block_names_the_task_and_its_story(self, blocked: Outcome) -> None:
-        assert blocked.out == "blocked T-0001 of ST-0001\n"
+        assert blocked.out == "blocked T-0001 of S-0001\n"
 
     def test_show_lists_it_in_inprogress_as_blocked_with_its_reason_and_what_it_waits_on(
         self, blocked: Outcome, tmp_path: Path
     ) -> None:
-        assert fgraph(["show", "ST-0001"], tmp_path).out == (
-            "ST-0001  a title\n"
+        assert fgraph(["show", "S-0001"], tmp_path).out == (
+            "S-0001  a title\n"
             "  bucket       InProgress\n"
             "  given        a state\n"
             "  when         an action\n"
@@ -91,7 +91,7 @@ class TestAStartedTaskBlockedWithAReasonAndWhatItWaitsOn:
         assert fgraph(["status"], tmp_path).out == (
             "Backlog (0)\n"
             "InProgress (1)\n"
-            "  ST-0001  0/1 T  a title\n"
+            "  S-0001  0/1 T  a title\n"
             "    !  T-0001  a task title  -- waiting on the reviewer\n"
             "Completed (0)\n"
         )
@@ -115,8 +115,8 @@ class TestAStartedTaskBlockedWithAReasonAndWhatItWaitsOn:
             "waiting on is empty",
         ),
         (
-            [*STARTED, ["block", "ST-0001", "--reason", "a reason", "--waiting-on", "someone"]],
-            "'ST-0001' is no Task id: it is T- and a number",
+            [*STARTED, ["block", "S-0001", "--reason", "a reason", "--waiting-on", "someone"]],
+            "'S-0001' is no Task id: it is T- and a number",
         ),
         (
             [*STARTED, ["block", "T-0009", "--reason", "a reason", "--waiting-on", "someone"]],
@@ -128,8 +128,8 @@ class TestAStartedTaskBlockedWithAReasonAndWhatItWaitsOn:
         ),
         ([*STARTED, BLOCK, START_TASK], "T-0001 is blocked: unblock it first"),
         (
-            [*STARTED, BLOCK, ["complete", "ST-0001", "--commit", "3e9ae5c"]],
-            "ST-0001 has Tasks to complete first: T-0001",
+            [*STARTED, BLOCK, ["complete", "S-0001", "--commit", "3e9ae5c"]],
+            "S-0001 has Tasks to complete first: T-0001",
         ),
     ],
     ids=[

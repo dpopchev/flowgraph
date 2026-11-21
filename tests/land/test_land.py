@@ -28,9 +28,9 @@ pytestmark = pytest.mark.command
 
 TOP = Path("/src/project")
 RECORD = TOP / ".fgraph"
-FILE = RECORD / "items" / "ST-0001.toml"
-BRANCH = "wi/ST-0001-a-slug"
-WORKTREE = Path("/src/project.worktrees/ST-0001-a-slug")
+FILE = RECORD / "items" / "S-0001.toml"
+BRANCH = "wi/S-0001-a-slug"
+WORKTREE = Path("/src/project.worktrees/S-0001-a-slug")
 CREATED = datetime(2026, 1, 1, tzinfo=UTC)
 NOW = datetime(2026, 1, 3, tzinfo=UTC)
 TASK = make_task(make_task_id(1), "a task", "an output", "", CREATED)
@@ -96,8 +96,8 @@ def work_tree(steps: list[object]) -> WorkTree:
 def land(
     item: WorkItemState, tree: WorkTree | None, saved: list[WorkItemState] | None = None
 ) -> Said:
-    """Land ST-0001 on the record holding that work item, in that work tree."""
-    return land_item("ST-0001", MESSAGE, store(item, saved), lambda: NOW, RECORD, lambda _: tree)
+    """Land S-0001 on the record holding that work item, in that work tree."""
+    return land_item("S-0001", MESSAGE, store(item, saved), lambda: NOW, RECORD, lambda _: tree)
 
 
 def test_a_landing_takes_its_git_steps_in_order() -> None:
@@ -106,14 +106,14 @@ def test_a_landing_takes_its_git_steps_in_order() -> None:
     assert steps == [
         ("merge", BRANCH),
         ("commit merge", MESSAGE),
-        ("commit", [".fgraph/items/ST-0001.toml"], "chore: complete ST-0001 in the record"),
+        ("commit", [".fgraph/items/S-0001.toml"], "chore: complete S-0001 in the record"),
         ("remove worktree", WORKTREE),
         ("delete branch", BRANCH),
     ]
 
 
 def test_a_landing_names_the_work_item_and_the_merge_commit() -> None:
-    assert land(READY, work_tree([])) == Said("landed ST-0001 at 3e9ae5c\n")
+    assert land(READY, work_tree([])) == Said("landed S-0001 at 3e9ae5c\n")
 
 
 def test_a_landing_completes_the_work_item_at_the_merge_commit() -> None:
@@ -128,7 +128,7 @@ def test_a_branch_without_a_worktree_is_deleted_alone() -> None:
     steps: list[object] = []
     land(READY, replace(work_tree(steps), find_worktree=lambda _: None))
     assert steps[-2:] == [
-        ("commit", [".fgraph/items/ST-0001.toml"], "chore: complete ST-0001 in the record"),
+        ("commit", [".fgraph/items/S-0001.toml"], "chore: complete S-0001 in the record"),
         ("delete branch", BRANCH),
     ]
 
@@ -157,7 +157,7 @@ def test_a_merge_git_refuses_takes_no_other_step() -> None:
 def test_a_landing_outside_a_git_work_tree_is_refused() -> None:
     with pytest.raises(
         LandError,
-        match=r"^ST-0001 cannot land: /src/project/.fgraph is not inside a git work tree$",
+        match=r"^S-0001 cannot land: /src/project/.fgraph is not inside a git work tree$",
     ):
         land(READY, None)
 
@@ -185,19 +185,19 @@ def test_a_landing_on_a_record_git_ignores_completes_the_work_item_at_the_merge_
 
 def test_a_landing_in_a_work_tree_that_is_not_on_main_is_refused() -> None:
     off_main = replace(work_tree([]), current_branch=lambda: BRANCH)
-    with pytest.raises(LandError, match=rf"^ST-0001 lands on main: /src/project is on {BRANCH}$"):
+    with pytest.raises(LandError, match=rf"^S-0001 lands on main: /src/project is on {BRANCH}$"):
         land(READY, off_main)
 
 
 def test_a_landing_without_a_branch_is_refused() -> None:
-    with pytest.raises(LandError, match=r"^ST-0001 has no branch wi/ST-0001-\* to land$"):
+    with pytest.raises(LandError, match=r"^S-0001 has no branch wi/S-0001-\* to land$"):
         land(READY, replace(work_tree([]), find_branches=lambda _: []))
 
 
 def test_a_landing_with_several_branches_is_refused_naming_them() -> None:
-    two = replace(work_tree([]), find_branches=lambda _: [BRANCH, "wi/ST-0001-other"])
+    two = replace(work_tree([]), find_branches=lambda _: [BRANCH, "wi/S-0001-other"])
     with pytest.raises(
-        LandError, match=rf"^ST-0001 has several branches to land: {BRANCH}, wi/ST-0001-other$"
+        LandError, match=rf"^S-0001 has several branches to land: {BRANCH}, wi/S-0001-other$"
     ):
         land(READY, two)
 
@@ -205,7 +205,7 @@ def test_a_landing_with_several_branches_is_refused_naming_them() -> None:
 def test_a_worktree_git_refuses_to_remove_says_the_work_item_is_landed() -> None:
     with pytest.raises(
         GitError,
-        match=r"^git failed: refused -- ST-0001 is landed at 3e9ae5c,"
+        match=r"^git failed: refused -- S-0001 is landed at 3e9ae5c,"
         r" its worktree and its branch are not removed$",
     ):
         land(READY, replace(work_tree([]), remove_worktree=refuse))

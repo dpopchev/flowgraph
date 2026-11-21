@@ -19,9 +19,9 @@ pytestmark = pytest.mark.functional
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "Raise the Stories fgraph lists from 0 to 1", *CRITERION]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
-BRANCH = "wi/ST-0001-raise-the-stories-fgraph"
-WORKTREE = Path("project.worktrees") / "ST-0001-raise-the-stories-fgraph"
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+BRANCH = "wi/S-0001-raise-the-stories-fgraph"
+WORKTREE = Path("project.worktrees") / "S-0001-raise-the-stories-fgraph"
 MESSAGE = "feat: land the first Story"
 IDENTITY = {
     "GIT_AUTHOR_NAME": "a developer",
@@ -98,7 +98,7 @@ def worktree(tmp_path: Path) -> Path:
 class TestAStoryStartedOnMainOnARecordGitIgnores:
     @pytest.fixture
     def started(self, checkout: Path) -> Outcome:
-        return fgraph(["start", "ST-0001"], checkout)
+        return fgraph(["start", "S-0001"], checkout)
 
     def test_start_exits_with_zero(self, started: Outcome) -> None:
         assert started.status == 0
@@ -106,7 +106,7 @@ class TestAStoryStartedOnMainOnARecordGitIgnores:
     def test_start_names_the_branch_and_its_worktree(
         self, started: Outcome, worktree: Path
     ) -> None:
-        assert started.out == f"started ST-0001\nbranch {BRANCH} in {worktree}\n"
+        assert started.out == f"started S-0001\nbranch {BRANCH} in {worktree}\n"
 
     def test_start_warns_of_nothing(self, started: Outcome) -> None:
         assert started.err == ""
@@ -128,25 +128,25 @@ class TestAStoryStartedOnMainOnARecordGitIgnores:
         self, started: Outcome, checkout: Path
     ) -> None:
         outcome = fgraph(["start", "T-0001"], checkout)
-        assert (outcome.status, outcome.out) == (0, "started T-0001 of ST-0001\n")
+        assert (outcome.status, outcome.out) == (0, "started T-0001 of S-0001\n")
 
 
 class TestAStoryLandedOnARecordGitIgnores:
     @pytest.fixture
     def landed(self, checkout: Path, worktree: Path) -> Outcome:
-        fgraph(["start", "ST-0001"], checkout)
+        fgraph(["start", "S-0001"], checkout)
         fgraph(["start", "T-0001"], checkout)
         (worktree / "work.txt").write_text("the work of the Task\n", encoding="utf-8")
         git(worktree, "add", "work.txt")
         git(worktree, "commit", "--quiet", "--message", "feat: do the work")
         fgraph(["complete", "T-0001", "--commit", git(worktree, "rev-parse", "HEAD")], checkout)
-        return fgraph(["land", "ST-0001", "--message", MESSAGE], checkout)
+        return fgraph(["land", "S-0001", "--message", MESSAGE], checkout)
 
     def test_land_exits_with_zero(self, landed: Outcome) -> None:
         assert landed.status == 0
 
     def test_land_names_the_merge_commit(self, landed: Outcome, checkout: Path) -> None:
-        assert landed.out == f"landed ST-0001 at {git(checkout, 'rev-parse', '--short', 'HEAD')}\n"
+        assert landed.out == f"landed S-0001 at {git(checkout, 'rev-parse', '--short', 'HEAD')}\n"
 
     def test_the_merge_commit_is_the_last_of_main_under_the_message(
         self, landed: Outcome, checkout: Path
@@ -162,7 +162,7 @@ class TestAStoryLandedOnARecordGitIgnores:
         sha = git(checkout, "rev-parse", "--short", "HEAD")
         assert fgraph(["status"], checkout).out.splitlines()[-2:] == [
             "Completed (1)",
-            f"  ST-0001  {sha}  Raise the Stories fgraph lists from 0 to 1",
+            f"  S-0001  {sha}  Raise the Stories fgraph lists from 0 to 1",
         ]
 
     def test_the_branch_is_removed(self, landed: Outcome, checkout: Path) -> None:
@@ -174,8 +174,8 @@ class TestAStoryLandedOnARecordGitIgnores:
 
 def test_a_story_started_off_main_on_a_record_git_ignores_names_main(checkout: Path) -> None:
     git(checkout, "switch", "--quiet", "--create", "a-feature")
-    outcome = fgraph(["start", "ST-0001"], checkout)
+    outcome = fgraph(["start", "S-0001"], checkout)
     assert (outcome.status, outcome.err.splitlines()[-1:]) == (
         2,
-        [f"fgraph: error: ST-0001 starts on main: {checkout} is on a-feature"],
+        [f"fgraph: error: S-0001 starts on main: {checkout} is on a-feature"],
     )

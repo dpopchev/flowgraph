@@ -69,7 +69,7 @@ def test_a_started_task_returns_the_id_of_the_story_that_holds_it() -> None:
 def test_a_started_task_saves_its_story_whole_with_the_task_started_now() -> None:
     saved: list[StoryState] = []
     start(2, saved)
-    assert saved == [started_task(RECORD["ST-0002"], make_task_id(2), NOW)]
+    assert saved == [started_task(RECORD["S-0002"], make_task_id(2), NOW)]
 
 
 def test_a_task_no_story_holds_is_refused_by_its_id() -> None:

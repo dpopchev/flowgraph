@@ -20,10 +20,10 @@ NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "Raise the Stories fgraph lists from 0 to 1", *CRITERION]
 ADD_OTHER = ["add", "story", "another title", *CRITERION]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
-TASK_FOR_OTHER = ["add", "task", "a task title", "--parent", "ST-0002", "--output", "an output"]
-BRANCH = "wi/ST-0001-raise-the-stories-fgraph"
-WORKTREE = Path("project.worktrees") / "ST-0001-raise-the-stories-fgraph"
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+TASK_FOR_OTHER = ["add", "task", "a task title", "--parent", "S-0002", "--output", "an output"]
+BRANCH = "wi/S-0001-raise-the-stories-fgraph"
+WORKTREE = Path("project.worktrees") / "S-0001-raise-the-stories-fgraph"
 IDENTITY = {
     "GIT_AUTHOR_NAME": "a developer",
     "GIT_AUTHOR_EMAIL": "developer@example.com",
@@ -78,11 +78,11 @@ def environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
 
 @pytest.fixture
 def checkout(tmp_path: Path) -> Path:
-    """The checkout of main: ST-0001 started on its worktree branch, ST-0002 in Backlog."""
+    """The checkout of main: S-0001 started on its worktree branch, S-0002 in Backlog."""
     path = tmp_path / "project"
     path.mkdir()
     git(path, "init", "--quiet", "--initial-branch", "main")
-    for argv in (ADD_STORY, ADD_OTHER, ADD_TASK, TASK_FOR_OTHER, ["start", "ST-0001"]):
+    for argv in (ADD_STORY, ADD_OTHER, ADD_TASK, TASK_FOR_OTHER, ["start", "S-0001"]):
         fgraph(argv, path)
     return path
 
@@ -96,7 +96,7 @@ def worktree(checkout: Path, tmp_path: Path) -> Path:
 class TestAnotherStoryStartedInTheWorktreeOfAStartedStory:
     @pytest.fixture
     def refused(self, worktree: Path) -> Outcome:
-        return fgraph(["start", "ST-0002"], worktree)
+        return fgraph(["start", "S-0002"], worktree)
 
     def test_start_exits_with_two(self, refused: Outcome) -> None:
         assert refused.status == 2
@@ -105,33 +105,33 @@ class TestAnotherStoryStartedInTheWorktreeOfAStartedStory:
         self, refused: Outcome, checkout: Path, worktree: Path
     ) -> None:
         assert refused.err.splitlines()[-1:] == [
-            f"fgraph: error: ST-0002 starts on main, in {checkout}: {worktree} is on {BRANCH}"
+            f"fgraph: error: S-0002 starts on main, in {checkout}: {worktree} is on {BRANCH}"
         ]
 
     def test_nothing_is_written_in_the_worktree(self, refused: Outcome, worktree: Path) -> None:
         assert (
             git(worktree, "status", "--porcelain"),
             git(worktree, "log", "-1", "--format=%s"),
-        ) == ("", "chore: start ST-0001 in the record")
+        ) == ("", "chore: start S-0001 in the record")
 
     def test_no_branch_is_made(self, refused: Outcome, checkout: Path) -> None:
-        assert git(checkout, "branch", "--list", "wi/ST-0002-*") == ""
+        assert git(checkout, "branch", "--list", "wi/S-0002-*") == ""
 
 
 def test_a_story_started_in_a_checkout_on_another_branch_names_that_branch(checkout: Path) -> None:
     git(checkout, "switch", "--quiet", "--create", "a-feature")
-    outcome = fgraph(["start", "ST-0002"], checkout)
+    outcome = fgraph(["start", "S-0002"], checkout)
     assert (outcome.status, outcome.err.splitlines()[-1:]) == (
         2,
-        [f"fgraph: error: ST-0002 starts on main: {checkout} is on a-feature"],
+        [f"fgraph: error: S-0002 starts on main: {checkout} is on a-feature"],
     )
 
 
 def test_a_story_started_in_the_checkout_of_main_is_started(checkout: Path) -> None:
-    outcome = fgraph(["start", "ST-0002", "--slug", "another"], checkout)
-    assert (outcome.status, outcome.out.splitlines()[:1]) == (0, ["started ST-0002"])
+    outcome = fgraph(["start", "S-0002", "--slug", "another"], checkout)
+    assert (outcome.status, outcome.out.splitlines()[:1]) == (0, ["started S-0002"])
 
 
 def test_a_task_started_in_the_worktree_of_its_story_is_started(worktree: Path) -> None:
     outcome = fgraph(["start", "T-0001"], worktree)
-    assert (outcome.status, outcome.out) == (0, "started T-0001 of ST-0001\n")
+    assert (outcome.status, outcome.out) == (0, "started T-0001 of S-0001\n")

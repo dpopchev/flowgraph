@@ -19,10 +19,10 @@ pytestmark = pytest.mark.functional
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "a title", *CRITERION]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
 LONG = "a title that is much longer than a terminal of forty columns is wide"
-IN_BACKLOG = "Backlog (1)\n  ST-0001  a title\nInProgress (0)\nCompleted (0)\n"
-IN_PROGRESS = "Backlog (0)\nInProgress (1)\n  ST-0001  0/1 T  a title\nCompleted (0)\n"
+IN_BACKLOG = "Backlog (1)\n  S-0001  a title\nInProgress (0)\nCompleted (0)\n"
+IN_PROGRESS = "Backlog (0)\nInProgress (1)\n  S-0001  0/1 T  a title\nCompleted (0)\n"
 
 # What a terminal reads as: put the cursor home and clear the screen.
 CLEAR = "\x1b[H\x1b[2J"
@@ -90,7 +90,7 @@ class TestAStoryInBacklogStartedBetweenTwoFrames:
         return fgraph(
             ["watch", "--count", "2"],
             tmp_path,
-            wait=lambda _: fgraph(["start", "ST-0001"], tmp_path),
+            wait=lambda _: fgraph(["start", "S-0001"], tmp_path),
         )
 
     def test_watch_exits_with_zero(self, watched: Outcome) -> None:
@@ -129,23 +129,23 @@ def test_on_a_terminal_a_frame_replaces_the_one_before_it(tmp_path: Path) -> Non
 def test_on_a_terminal_watch_cuts_a_line_to_its_width(tmp_path: Path) -> None:
     fgraph(["add", "story", LONG, *CRITERION], tmp_path)
     watched = fgraph(["watch", "--count", "1"], tmp_path, width=40)
-    assert watched.out.splitlines()[1] == "  ST-0001  a title that is much longe..."
+    assert watched.out.splitlines()[1] == "  S-0001  a title that is much longer..."
 
 
 def test_watch_written_to_no_terminal_lists_a_line_whole(tmp_path: Path) -> None:
     fgraph(["add", "story", LONG, *CRITERION], tmp_path)
     watched = fgraph(["watch", "--count", "1"], tmp_path)
-    assert watched.out.splitlines()[1] == f"  ST-0001  {LONG}"
+    assert watched.out.splitlines()[1] == f"  S-0001  {LONG}"
 
 
 def test_watch_lists_the_top_five_under_a_heading(six_in_backlog: Path) -> None:
     watched = fgraph(["watch", "--count", "1"], six_in_backlog)
-    assert watched.out.splitlines()[5:7] == ["  ST-0005  a title", "  ... 1 more"]
+    assert watched.out.splitlines()[5:7] == ["  S-0005  a title", "  ... 1 more"]
 
 
 def test_watch_all_lists_every_item(six_in_backlog: Path) -> None:
     watched = fgraph(["watch", "--all", "--count", "1"], six_in_backlog)
-    assert watched.out.splitlines()[5:7] == ["  ST-0005  a title", "  ST-0006  a title"]
+    assert watched.out.splitlines()[5:7] == ["  S-0005  a title", "  S-0006  a title"]
 
 
 @pytest.mark.parametrize(

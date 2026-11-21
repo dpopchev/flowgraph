@@ -20,12 +20,12 @@ CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_FEATURE = ["add", "feature", "a feature title", "--criterion", "a criterion"]
 ADD_STORY = ["add", "story", "a title", *CRITERION, "--parent", "F-0001"]
 ADD_OTHER = ["add", "story", "another title", *CRITERION, "--parent", "F-0001"]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
 COMPLETE_FIRST = [
-    ["start", "ST-0001"],
+    ["start", "S-0001"],
     ["start", "T-0001"],
     ["complete", "T-0001", "--commit", "abc1234"],
-    ["complete", "ST-0001", "--commit", "abc1234"],
+    ["complete", "S-0001", "--commit", "abc1234"],
 ]
 ONE_OF_TWO = [ADD_FEATURE, ADD_STORY, ADD_OTHER, ADD_TASK, *COMPLETE_FIRST]
 
@@ -79,13 +79,13 @@ class TestAFeatureWithOneOfItsTwoStoriesCompleted:
             "Features (1)\n"
             "  F-0001  1/2 W  InProgress  a feature title\n"
             "Backlog (1)\n"
-            "  ST-0002  another title\n"
+            "  S-0002  another title\n"
             "InProgress (0)\n"
             "Completed (1)\n"
-            "  ST-0001  abc1234  a title\n"
+            "  S-0001  abc1234  a title\n"
         )
 
 
 def test_a_removed_story_is_counted_in_neither_number(tmp_path: Path) -> None:
-    listed = status_after(tmp_path, *ONE_OF_TWO, ["remove", "ST-0002", "--reason", "a reason"])
+    listed = status_after(tmp_path, *ONE_OF_TWO, ["remove", "S-0002", "--reason", "a reason"])
     assert listed.out.splitlines()[1] == "  F-0001  1/1 W  Completed  a feature title"

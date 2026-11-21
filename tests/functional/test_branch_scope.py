@@ -21,11 +21,11 @@ CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "Raise the Stories fgraph lists from 0 to 1", *CRITERION]
 ADD_OTHER = ["add", "story", "another title", *CRITERION]
 ADD_THIRD = ["add", "story", "a third title", *CRITERION]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
-TASK_FOR_OTHER = ["add", "task", "a task title", "--parent", "ST-0002", "--output", "an output"]
-BRANCH = "wi/ST-0001-raise-the-stories-fgraph"
-WORKTREE = Path("project.worktrees") / "ST-0001-raise-the-stories-fgraph"
-ALONE = f"the branch {BRANCH} writes ST-0001 alone"
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+TASK_FOR_OTHER = ["add", "task", "a task title", "--parent", "S-0002", "--output", "an output"]
+BRANCH = "wi/S-0001-raise-the-stories-fgraph"
+WORKTREE = Path("project.worktrees") / "S-0001-raise-the-stories-fgraph"
+ALONE = f"the branch {BRANCH} writes S-0001 alone"
 IDENTITY = {
     "GIT_AUTHOR_NAME": "a developer",
     "GIT_AUTHOR_EMAIL": "developer@example.com",
@@ -85,11 +85,11 @@ def environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
 
 @pytest.fixture
 def checkout(tmp_path: Path) -> Path:
-    """The checkout of main: ST-0001 started on its worktree branch, two Stories in Backlog."""
+    """The checkout of main: S-0001 started on its worktree branch, two Stories in Backlog."""
     path = tmp_path / "project"
     path.mkdir()
     git(path, "init", "--quiet", "--initial-branch", "main")
-    for argv in (ADD_STORY, ADD_OTHER, ADD_THIRD, ADD_TASK, ["start", "ST-0001"]):
+    for argv in (ADD_STORY, ADD_OTHER, ADD_THIRD, ADD_TASK, ["start", "S-0001"]):
         fgraph(argv, path)
     return path
 
@@ -110,30 +110,30 @@ class TestATaskAddedToAnotherStoryOnTheBranchOfAStartedStory:
 
     def test_add_task_names_the_story_the_branch_owns(self, refused: Outcome) -> None:
         assert refused.err.splitlines()[-1:] == [
-            f"fgraph: error: ST-0002 is not written here: {ALONE}"
+            f"fgraph: error: S-0002 is not written here: {ALONE}"
         ]
 
     def test_nothing_is_written_on_the_branch(self, refused: Outcome, branch: Path) -> None:
         assert (git(branch, "status", "--porcelain"), git(branch, "log", "-1", "--format=%s")) == (
             "",
-            "chore: start ST-0001 in the record",
+            "chore: start S-0001 in the record",
         )
 
 
 def test_a_task_added_to_its_own_story_on_the_branch_is_written(branch: Path) -> None:
     outcome = fgraph(ADD_TASK, branch)
-    assert (outcome.status, outcome.out) == (0, "added T-0002 to ST-0001\n")
+    assert (outcome.status, outcome.out) == (0, "added T-0002 to S-0001\n")
 
 
 def test_a_story_added_on_the_branch_is_refused(branch: Path) -> None:
     assert refusal(fgraph(ADD_STORY, branch)) == (
         2,
-        [f"fgraph: error: ST-0004 is not written here: {ALONE}"],
+        [f"fgraph: error: S-0004 is not written here: {ALONE}"],
     )
 
 
 def test_a_reorder_on_the_branch_is_refused(branch: Path) -> None:
-    assert refusal(fgraph(["reorder", "ST-0003", "--before", "ST-0002"], branch)) == (
+    assert refusal(fgraph(["reorder", "S-0003", "--before", "S-0002"], branch)) == (
         2,
         [f"fgraph: error: the Backlog is not reordered here: {ALONE}"],
     )
@@ -141,4 +141,4 @@ def test_a_reorder_on_the_branch_is_refused(branch: Path) -> None:
 
 def test_a_task_added_to_another_story_in_the_checkout_of_main_is_written(checkout: Path) -> None:
     outcome = fgraph(TASK_FOR_OTHER, checkout)
-    assert (outcome.status, outcome.out) == (0, "added T-0002 to ST-0002\n")
+    assert (outcome.status, outcome.out) == (0, "added T-0002 to S-0002\n")

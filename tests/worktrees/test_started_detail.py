@@ -59,9 +59,13 @@ def work_tree(on: str = "main", worktree: Path | None = OTHER) -> WorkTree:
         merge=never,
         abort_merge=never,
         commit_merge=never,
+        commit_squash=never,
+        can_fast_forward=never,
+        fast_forward=never,
         find_worktree=lambda branch: worktree if branch == BRANCH else None,
         remove_worktree=never,
         delete_branch=never,
+        delete_unmerged_branch=never,
         find_worktrees=never,
     )
 

@@ -40,9 +40,13 @@ class WorkTree:
     none; `find_branches` lists the branches matching a pattern; `merge` merges a branch as a
     merge of its own, held uncommitted, and merges nothing when git refuses; `abort_merge` drops
     a merge held; `commit_merge` commits it under a message and returns its short sha;
-    `find_worktree` is the worktree of a branch, or None; `remove_worktree` and `delete_branch`
-    remove them. `find_worktrees` lists every worktree of the repository. Each step raises
-    GitError when git refuses it.
+    `commit_squash` commits it as one commit of the branch of the work tree alone, and merges
+    nothing when git refuses; `can_fast_forward` is true when a branch holds every commit the
+    work tree is on; `fast_forward` moves the work tree to the tip of a branch with no commit
+    and returns its short sha; `find_worktree` is the worktree of a branch, or None;
+    `remove_worktree` and `delete_branch` remove them, `delete_unmerged_branch` a branch whose
+    commits the work tree does not hold. `find_worktrees` lists every worktree of the
+    repository. Each step raises GitError when git refuses it.
     """
 
     path: Path
@@ -53,9 +57,13 @@ class WorkTree:
     merge: Callable[[str], None]
     abort_merge: Callable[[], None]
     commit_merge: Callable[[str], str]
+    commit_squash: Callable[[str], str]
+    can_fast_forward: Callable[[str], bool]
+    fast_forward: Callable[[str], str]
     find_worktree: Callable[[str], Path | None]
     remove_worktree: Callable[[Path], None]
     delete_branch: Callable[[str], None]
+    delete_unmerged_branch: Callable[[str], None]
     find_worktrees: Callable[[], list[Path]]
     ignores: Callable[[Path], bool] = _ignores_nothing
 
@@ -86,9 +94,13 @@ def open_git(directory: Path) -> WorkTree | None:
         merge=partial(branch.merge_uncommitted, top),
         abort_merge=partial(branch.abort_merge, top),
         commit_merge=partial(branch.commit_merge, top),
+        commit_squash=partial(branch.commit_squash, top),
+        can_fast_forward=partial(branch.can_fast_forward, top),
+        fast_forward=partial(branch.fast_forward, top),
         find_worktree=partial(branch.worktree_of_branch, top),
         remove_worktree=partial(branch.remove_worktree, top),
         delete_branch=partial(branch.delete_branch, top),
+        delete_unmerged_branch=partial(branch.delete_unmerged_branch, top),
         find_worktrees=partial(branch.worktrees, top),
         ignores=partial(branch.ignores, top),
     )

@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph.config import UNLIMITED, ConfigError, Parallel, make_config, read_config
+from flowgraph.config import UNLIMITED, ConfigError, Merge, Parallel, make_config, read_config
 
 pytestmark = pytest.mark.edge
 
@@ -12,6 +12,7 @@ FILE = "config.toml"
 ENABLED = "[development]\nenabled = true\n"
 UNCOMMITTED = "[git]\ncommit = false\n"
 TAKES_A_COUNT = "it takes a whole number of 1 or more"
+TAKES_A_WAY = "it takes merge-commit, squash or fast-forward"
 
 
 @pytest.mark.parametrize(
@@ -60,6 +61,42 @@ def test_a_parallel_that_is_no_whole_number_of_one_or_more_is_refused_naming_the
     with pytest.raises(ConfigError) as error:
         make_config(f"[development]\nparallel = {value}\n")
     assert str(error.value) == f"development.parallel is {written}: {TAKES_A_COUNT}"
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["", "[development]\n", ENABLED],
+    ids=["no-table", "no-key", "development-on"],
+)
+def test_a_landing_merges_by_a_merge_commit_unless_merge_is_set(text: str) -> None:
+    assert make_config(text).development.merge is Merge.MERGE_COMMIT
+
+
+@pytest.mark.parametrize(
+    ("word", "merge"),
+    [
+        ("merge-commit", Merge.MERGE_COMMIT),
+        ("squash", Merge.SQUASH),
+        ("fast-forward", Merge.FAST_FORWARD),
+    ],
+)
+def test_merge_set_is_how_a_landing_merges(word: str, merge: Merge) -> None:
+    assert make_config(f'{ENABLED}merge = "{word}"\n').development.merge is merge
+
+
+def test_merge_is_held_as_written_with_the_development_off() -> None:
+    assert make_config('[development]\nmerge = "squash"\n').development.merge is Merge.SQUASH
+
+
+@pytest.mark.parametrize(
+    "value",
+    ['"rebase"', '"Squash"', '""', "1", "true"],
+    ids=["another-word", "another-case", "no-word", "number", "true"],
+)
+def test_a_merge_that_is_no_way_of_merging_is_refused_naming_the_key(value: str) -> None:
+    with pytest.raises(ConfigError) as error:
+        make_config(f"[development]\nmerge = {value}\n")
+    assert str(error.value) == f"development.merge is {value}: {TAKES_A_WAY}"
 
 
 @pytest.mark.parametrize(

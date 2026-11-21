@@ -29,6 +29,9 @@ pytestmark = pytest.mark.command
 
 ON = make_config("[development]\nenabled = true\n")
 OFF = make_config("")
+SQUASH = make_config('[development]\nenabled = true\nmerge = "squash"\n')
+FAST_FORWARD = make_config('[development]\nenabled = true\nmerge = "fast-forward"\n')
+RECORD_COMMIT = ("commit", [".fgraph/items/S-0001.toml"], "chore: complete S-0001 in the record")
 TOP = Path("/src/project")
 RECORD = TOP / ".fgraph"
 FILE = RECORD / "items" / "S-0001.toml"
@@ -80,6 +83,14 @@ def work_tree(steps: list[object]) -> WorkTree:
         steps.append(("commit merge", message))
         return "3e9ae5c"
 
+    def commit_squash(message: str) -> str:
+        steps.append(("commit squash", message))
+        return "5d1e0aa"
+
+    def fast_forward(branch: str) -> str:
+        steps.append(("fast-forward", branch))
+        return "9f8e7d6"
+
     return WorkTree(
         path=TOP,
         commit_files=commit_files,
@@ -89,9 +100,13 @@ def work_tree(steps: list[object]) -> WorkTree:
         merge=lambda branch: steps.append(("merge", branch)),
         abort_merge=lambda: steps.append("abort merge"),
         commit_merge=commit_merge,
+        commit_squash=commit_squash,
+        can_fast_forward=lambda _: True,
+        fast_forward=fast_forward,
         find_worktree=lambda _: WORKTREE,
         remove_worktree=lambda path: steps.append(("remove worktree", path)),
         delete_branch=lambda branch: steps.append(("delete branch", branch)),
+        delete_unmerged_branch=lambda branch: steps.append(("delete unmerged branch", branch)),
         find_worktrees=never,
     )
 
@@ -101,10 +116,11 @@ def land(
     tree: WorkTree | None,
     saved: list[WorkItemState] | None = None,
     config: Config = ON,
+    message: str | None = MESSAGE,
 ) -> Said:
     """Land S-0001 on the record holding that work item, in that work tree, the development on."""
     kept = store(item, saved)
-    return land_item("S-0001", MESSAGE, kept, lambda: NOW, RECORD, lambda _: tree, config)
+    return land_item("S-0001", message, kept, lambda: NOW, RECORD, lambda _: tree, config)
 
 
 def test_a_landing_with_the_development_off_is_refused_naming_the_key() -> None:
@@ -232,3 +248,141 @@ def test_a_worktree_git_refuses_to_remove_says_the_work_item_is_landed() -> None
         r" its worktree and its branch are not removed$",
     ):
         land(READY, replace(work_tree([]), remove_worktree=refuse))
+
+
+@pytest.mark.parametrize(
+    ("config", "word"), [(ON, "merge-commit"), (SQUASH, "squash")], ids=["merge-commit", "squash"]
+)
+def test_a_landing_that_makes_a_commit_is_refused_without_a_message_naming_the_key(
+    config: Config, word: str
+) -> None:
+    with pytest.raises(LandError) as error:
+        land(READY, work_tree([]), config=config, message=None)
+    assert str(error.value) == (
+        f"S-0001 cannot land without --message: development.merge = {word} makes a commit to word"
+    )
+
+
+@pytest.mark.parametrize("config", [ON, SQUASH], ids=["merge-commit", "squash"])
+def test_a_landing_refused_without_a_message_takes_no_git_step(config: Config) -> None:
+    steps: list[object] = []
+    with pytest.raises(LandError):
+        land(READY, work_tree(steps), config=config, message=None)
+    assert steps == []
+
+
+def test_a_landing_by_squash_takes_its_git_steps_in_order() -> None:
+    steps: list[object] = []
+    land(READY, work_tree(steps), config=SQUASH)
+    assert steps == [
+        ("merge", BRANCH),
+        ("commit squash", MESSAGE),
+        RECORD_COMMIT,
+        ("remove worktree", WORKTREE),
+        ("delete unmerged branch", BRANCH),
+    ]
+
+
+def test_a_landing_by_squash_names_the_work_item_and_the_squash_commit() -> None:
+    assert land(READY, work_tree([]), config=SQUASH) == Said("landed S-0001 at 5d1e0aa\n")
+
+
+def test_a_landing_by_squash_completes_the_work_item_at_the_squash_commit() -> None:
+    saved: list[WorkItemState] = []
+    land(READY, work_tree([]), saved, SQUASH)
+    assert [item.commit for item in saved if isinstance(item, CompletedWorkItem)] == [
+        make_commit("5d1e0aa")
+    ]
+
+
+def test_a_landing_by_squash_with_a_task_not_completed_aborts_the_merge() -> None:
+    steps: list[object] = []
+    with pytest.raises(OpenTaskError):
+        land(OPEN, work_tree(steps), config=SQUASH)
+    assert steps == [("merge", BRANCH), "abort merge"]
+
+
+def test_a_squash_commit_git_refuses_takes_no_step_of_the_record() -> None:
+    steps: list[object] = []
+    with pytest.raises(GitError):
+        land(READY, replace(work_tree(steps), commit_squash=refuse), config=SQUASH)
+    assert steps == [("merge", BRANCH), "abort merge"]
+
+
+def test_a_landing_by_fast_forward_takes_its_git_steps_in_order() -> None:
+    steps: list[object] = []
+    land(READY, work_tree(steps), config=FAST_FORWARD, message=None)
+    assert steps == [
+        ("merge", BRANCH),
+        "abort merge",
+        ("fast-forward", BRANCH),
+        RECORD_COMMIT,
+        ("remove worktree", WORKTREE),
+        ("delete branch", BRANCH),
+    ]
+
+
+def test_a_landing_by_fast_forward_names_the_work_item_and_the_tip_of_the_branch() -> None:
+    landed = land(READY, work_tree([]), config=FAST_FORWARD, message=None)
+    assert landed == Said("landed S-0001 at 9f8e7d6\n")
+
+
+def test_a_landing_by_fast_forward_completes_the_work_item_at_the_tip_of_the_branch() -> None:
+    saved: list[WorkItemState] = []
+    land(READY, work_tree([]), saved, FAST_FORWARD, None)
+    assert [item.commit for item in saved if isinstance(item, CompletedWorkItem)] == [
+        make_commit("9f8e7d6")
+    ]
+
+
+def test_a_landing_by_fast_forward_with_a_task_not_completed_moves_main_nowhere() -> None:
+    steps: list[object] = []
+    with pytest.raises(OpenTaskError):
+        land(OPEN, work_tree(steps), config=FAST_FORWARD, message=None)
+    assert steps == [("merge", BRANCH), "abort merge"]
+
+
+def test_a_landing_by_fast_forward_is_refused_with_a_message_naming_the_key() -> None:
+    with pytest.raises(LandError) as error:
+        land(READY, work_tree([]), config=FAST_FORWARD)
+    assert str(error.value) == (
+        "S-0001 cannot land with --message:"
+        " development.merge = fast-forward makes no commit to word"
+    )
+
+
+def test_a_landing_by_fast_forward_refused_with_a_message_takes_no_git_step() -> None:
+    steps: list[object] = []
+    with pytest.raises(LandError):
+        land(READY, work_tree(steps), config=FAST_FORWARD)
+    assert steps == []
+
+
+def test_a_landing_by_fast_forward_is_refused_when_main_holds_a_commit_the_branch_lacks() -> None:
+    ahead = replace(work_tree([]), can_fast_forward=lambda _: False)
+    with pytest.raises(LandError) as error:
+        land(READY, ahead, config=FAST_FORWARD, message=None)
+    assert str(error.value) == (
+        f"S-0001 cannot land by fast-forward: main holds a commit {BRANCH} lacks"
+        f" -- rebase {BRANCH} on main or merge main into it"
+    )
+
+
+def test_a_landing_by_fast_forward_refused_for_a_commit_of_main_merges_nothing() -> None:
+    steps: list[object] = []
+    ahead = replace(work_tree(steps), can_fast_forward=lambda _: False)
+    with pytest.raises(LandError):
+        land(READY, ahead, config=FAST_FORWARD, message=None)
+    assert steps == []
+
+
+def test_a_fast_forward_git_refuses_takes_no_step_of_the_record() -> None:
+    steps: list[object] = []
+    with pytest.raises(GitError):
+        land(
+            READY,
+            replace(work_tree(steps), fast_forward=refuse),
+            config=FAST_FORWARD,
+            message=None,
+        )
+    assert steps == [("merge", BRANCH), "abort merge"]

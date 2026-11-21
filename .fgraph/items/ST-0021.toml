@@ -12,11 +12,12 @@ then = "it exits 2 and names the checkout to start it in"
 
 [[tasks]]
 id = "T-0060"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_start_on_main.py, failing on the criterion of ST-0021"
 description = "Run through run() of src/flowgraph/cli.py on a real git repository in tmp_path, as tests/functional/test_branch_scope.py does. Seen red, then marked a strict xfail naming ST-0021 until the Task that turns it green removes the mark. The developer's decision of 2026-11-21 for the whole Story: a start in the checkout is refused unless its branch is main. The agent's readings, each a routine call: (1) the rule holds for the start of a work item in every work tree: it is refused with exit 2, nothing written, unless the branch of the work tree is main. (2) The refusal reads '<id> starts on main, in <the work tree that is on main>: <this work tree> is on <branch>'; when no work tree of the repository is on main it reads '<id> starts on main: <this work tree> is on <branch>'. (3) The start of a Task, and a record outside a git work tree, are as today."
 expected_output = "created: tests/functional/test_start_on_main.py states that fgraph start on another Story, run in the worktree of a started Story, exits 2 and names the checkout to start it in"
 created = 2026-11-21 11:08:45+00:00
+started = 2026-11-21 11:09:10+00:00
 
 [[tasks]]
 id = "T-0061"

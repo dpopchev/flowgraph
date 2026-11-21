@@ -23,11 +23,12 @@ commit = "7e5b811"
 
 [[tasks]]
 id = "T-0136"
-state = "backlog"
+state = "started"
 title = "Add the started and the blocked Tasks of a work item under InProgress to status_text of src/flowgraph/text.py, each on a line under it"
 description = "Removes the xfail mark of tests/functional/test_status_started_task.py. The tests of other Stories that state the lines under InProgress with a started Task are rewritten to hold its line, named in the commit."
 expected_output = "changed: status_text of src/flowgraph/text.py writes under a work item of InProgress its started Task as '    => <id>  <title>' and each blocked one as '    !  <id>  <title>  -- waiting on <what>', in the order of the file, none of them counted toward the top; proved in tests/text/"
 created = 2026-11-21 17:41:02+00:00
+started = 2026-11-21 17:57:17+00:00
 
 [[tasks]]
 id = "T-0137"

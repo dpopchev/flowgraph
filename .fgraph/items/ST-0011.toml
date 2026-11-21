@@ -12,12 +12,14 @@ then = "fgraph show lists it in InProgress as blocked, with its reason and what 
 
 [[tasks]]
 id = "T-0069"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_block_task.py, failing on the criterion of ST-0011"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, through the file adapters, as tests/functional/test_amend_work_item.py does. Seen red, then marked a strict xfail naming ST-0011 until the Task that turns it green removes the mark. The description leaves no question open. The agent's readings, each a routine call: (1) the command is fgraph block ID --reason TEXT --waiting-on TEXT, both options required and neither blank; the id is a Task's, since blocking a work item is not part of this. (2) Only a started Task is blocked: one in Backlog is refused with 'start it first', a blocked one with 'is blocked already', a completed one with 'is completed already', each exit 2. (3) A BlockedTask keeps its started time and adds its reason, since -- the time of the block, to the second -- and what it waits on; its table in the file has state 'blocked'. (4) Until ST-0012 builds unblock, a blocked Task takes no move: start and complete refuse it with 'is blocked: unblock it first', and its work item is not completed while it is blocked. (5) fgraph show lists it as '    bucket           InProgress, blocked', then '    reason           <text>' and '    waiting on       <text>'. (6) It prints 'blocked <task> of <work item>' and its commit is 'chore: block <task> of <work item> in the record'."
 expected_output = "created: tests/functional/test_block_task.py states that a started Task of a started Story, blocked with a reason and what it waits on, is listed by fgraph show in InProgress as blocked, with its reason and what it waits on"
 created = 2026-11-21 11:19:51+00:00
 started = 2026-11-21 11:20:20+00:00
+completed = 2026-11-21 11:20:37+00:00
+commit = "29e579e"
 
 [[tasks]]
 id = "T-0070"

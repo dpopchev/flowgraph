@@ -23,11 +23,12 @@ commit = "95fa7a0"
 
 [[tasks]]
 id = "T-0146"
-state = "backlog"
+state = "started"
 title = "Extend across_worktrees of src/flowgraph/worktrees.py to the detail fgraph show reads of a started work item"
 description = "Removes the xfail mark of tests/functional/test_show_worktree.py. The show of a Feature lists its work items from the rows, which already read the worktree."
 expected_output = "changed: the store across_worktrees of src/flowgraph/worktrees.py gives reads the detail of a started work item from the worktree of its branch wi/<id>-*, the file at the same path inside it, committed or not, as its row is read; a work item not started, one without such a worktree, a record outside a git work tree, a record git ignores and a work tree on the branch of a work item read the record itself; proved in tests/worktrees/"
 created = 2026-11-21 21:35:27+00:00
+started = 2026-11-21 21:37:39+00:00
 
 [[tasks]]
 id = "T-0147"

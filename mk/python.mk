@@ -42,9 +42,10 @@ sync: .python-version pyproject.toml | $(LOCAL) ## Create or refresh .venv and u
 	$(call log_done,environment synced -- python $(PYTHON_VERSION)$(comma) uv.lock current$(comma) bytecode to $(CACHE)/pycache)
 
 .PHONY: lint
-lint: ## Ruff check without fixes
+lint: ## Ruff check and format check, without fixes
 	@$(RUN) ruff check .
-	$(call log_done,ruff check clean)
+	@$(RUN) ruff format --check .
+	$(call log_done,ruff check clean$(comma) every file formatted)
 
 .PHONY: lines
 lines: ## Fail on a module of src/ above MAX_LINES lines, naming it

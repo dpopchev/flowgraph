@@ -25,7 +25,6 @@ from flowgraph.feature import (
 from flowgraph.journal import Change, changed_files, noted, restore
 from flowgraph.parent import FeatureId
 from flowgraph.queue import QUEUE, LoadQueue, Queue, SaveQueue, read_queue, write_queue
-from flowgraph.record import ITEMS
 from flowgraph.spike import SPIKE
 from flowgraph.story import STORY
 from flowgraph.upkeep import UPKEEP
@@ -38,7 +37,6 @@ from flowgraph.work_item import (
     WorkItemId,
     WorkItemRow,
     WorkItemState,
-    work_item_id_text,
 )
 
 # The kinds of work item a record holds, in the order fgraph reads them.
@@ -112,11 +110,6 @@ def read_every_task_id(record: Path) -> list[str]:
     return [task for kind in KINDS for task in work_item.read_task_ids(record, kind)]
 
 
-def work_item_file(record: Path, item_id: WorkItemId) -> Path:
-    """The path of the file of the work item of that id in the record."""
-    return record / ITEMS / f"{work_item_id_text(item_id)}.toml"
-
-
 def open_files(record: Path) -> Store:
     """The store of the record in that directory, kept as its files.
 
@@ -127,7 +120,7 @@ def open_files(record: Path) -> Store:
 
     def save_work_item(item: WorkItemState) -> None:
         nonlocal journal
-        journal = noted(journal, work_item_file(record, item.id))
+        journal = noted(journal, work_item.work_item_path(record, item.id))
         work_item.write_work_item(record, item)
 
     def save_queue(queue: Queue) -> None:

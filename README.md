@@ -230,7 +230,7 @@ fgraph status
 # Backlog (0)
 # InProgress (0)
 # Completed (1)
-#   ST-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  677f9b0
+#   ST-0001  677f9b0  Raise the Stories fgraph lists under Backlog from 0 to 1
 ```
 
 `fgraph show` names the commit of the Story and of each completed Task. A
@@ -486,8 +486,8 @@ fgraph status
 #   B-0001  0/2 T  Cut the tracebacks fgraph --dir prints for a file from 1 to 0
 #   ST-0003  1/3 T  Raise the kinds of work item fgraph adds from 2 to 3
 # Completed (2)
-#   U-0002  Cut the lines one kind of work item holds from 885 to 250  757fbaf
-#   ST-0002  Raise the kinds of work item fgraph adds from 1 to 2  87c0307
+#   U-0002  757fbaf  Cut the lines one kind of work item holds from 885 to 250
+#   ST-0002  87c0307  Raise the kinds of work item fgraph adds from 1 to 2
 ```
 
 `fgraph status` lists the top 5 under each heading -- Features, Backlog,
@@ -500,15 +500,32 @@ fgraph status
 # Backlog (0)
 # InProgress (0)
 # Completed (7)
-#   ST-0007  Raise the kinds of work item fgraph takes to Completed from 3 to 4  e82af5a
-#   ST-0006  Raise the kinds of work item fgraph takes to Completed from 2 to 3  c29f1b7
-#   ST-0005  Raise the kinds of work item fgraph takes to Completed from 1 to 2  c399b40
-#   ST-0004  Raise the kinds of work item fgraph adds and lists from 1 to 2  87c0307
-#   ST-0003  Raise the buckets a Story can reach from 2 to 3  4f1ae12
+#   ST-0007  e82af5a  Raise the kinds of work item fgraph takes to Completed from 3 to 4
+#   ST-0006  c29f1b7  Raise the kinds of work item fgraph takes to Completed from 2 to 3
+#   ST-0005  c399b40  Raise the kinds of work item fgraph takes to Completed from 1 to 2
+#   ST-0004  87c0307  Raise the kinds of work item fgraph adds and lists from 1 to 2
+#   ST-0003  4f1ae12  Raise the buckets a Story can reach from 2 to 3
 #   ... 2 more
 ```
 
 `fgraph status --all` lists every item, with no such line.
+
+On a terminal `fgraph status` cuts each line to the width of the terminal and
+ends a line it cut with `...`, so every item stays on one line. The commit of
+a completed work item stands before its title, where a cut keeps it:
+
+```sh
+fgraph status        # on a terminal 60 columns wide
+# Backlog (0)
+# InProgress (0)
+# Completed (7)
+#   ST-0007  e82af5a  Raise the kinds of work item fgraph t...
+#   ST-0006  c29f1b7  Raise the kinds of work item fgraph t...
+#   ...
+```
+
+Written to a pipe or a file, `fgraph status | less` or `fgraph status > f`,
+every line is whole. Only status is cut; `fgraph show` writes as before.
 
 A work item still in Backlog is rewritten with `fgraph amend`: its title, its
 description and each part of its criterion, each by its own option. A part

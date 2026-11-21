@@ -82,7 +82,7 @@ class TestAFeatureWithOneOfItsTwoStoriesCompleted:
             "  ST-0002  another title\n"
             "InProgress (0)\n"
             "Completed (1)\n"
-            "  ST-0001  a title  abc1234\n"
+            "  ST-0001  abc1234  a title\n"
         )
 
 

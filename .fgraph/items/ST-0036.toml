@@ -12,23 +12,32 @@ then = "the line of the Story ends with ... at the width of the terminal"
 
 [[tasks]]
 id = "T-0141"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_status_width.py, failing on the criterion of ST-0036"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_status_completed_order.py does, with a clock that moves on at every call. Seen red, then marked a strict xfail naming ST-0036 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_status_width.py states that fgraph status, run on a terminal 40 columns wide on a record with a Story whose line is longer, writes that line 40 characters long, ending with '...'"
 created = 2026-11-21 17:41:05+00:00
+started = 2026-11-21 18:04:39+00:00
+completed = 2026-11-21 18:06:41+00:00
+commit = "eb64d5a"
 
 [[tasks]]
 id = "T-0142"
-state = "backlog"
+state = "completed"
 title = "Add the width of the terminal to run of src/flowgraph/cli.py and cut the lines of status to it in src/flowgraph/text.py"
 description = "Removes the xfail mark of tests/functional/test_status_width.py. The tests of other Stories that state a line under Completed are rewritten to the commit before the title, named in the commit."
 expected_output = "changed: run of src/flowgraph/cli.py takes the width of the terminal as a callable, none when the output is no terminal, read in main(); src/flowgraph/text.py cuts a line of status longer than the width to it, ending with '...', and writes the commit of a completed work item before its title; proved in tests/text/"
 created = 2026-11-21 17:41:05+00:00
+started = 2026-11-21 18:06:41+00:00
+completed = 2026-11-21 18:09:46+00:00
+commit = "4cd8015"
 
 [[tasks]]
 id = "T-0143"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph status cuts its lines to the terminal"
 expected_output = "changed: README.md says fgraph status cuts a line to the width of the terminal and writes a pipe whole, and shows the commit of a completed work item before its title in every example; docs/domain-model.md says the same where it states what status lists, and names the developer's decision of 2026-11-21"
 created = 2026-11-21 17:41:05+00:00
+started = 2026-11-21 18:09:46+00:00
+completed = 2026-11-21 18:10:40+00:00
+commit = "c76f721"

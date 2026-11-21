@@ -162,7 +162,7 @@ class TestAStoryLandedOnARecordGitIgnores:
         sha = git(checkout, "rev-parse", "--short", "HEAD")
         assert fgraph(["status"], checkout).out.splitlines()[-2:] == [
             "Completed (1)",
-            f"  ST-0001  Raise the Stories fgraph lists from 0 to 1  {sha}",
+            f"  ST-0001  {sha}  Raise the Stories fgraph lists from 0 to 1",
         ]
 
     def test_the_branch_is_removed(self, landed: Outcome, checkout: Path) -> None:

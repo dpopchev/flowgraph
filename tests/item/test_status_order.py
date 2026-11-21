@@ -53,7 +53,7 @@ def test_the_backlog_is_listed_as_added_and_by_kind_and_id_when_added_at_one_tim
         "  ST-0001  a story\n"
         "InProgress (0)\n"
         "Completed (1)\n"
-        "  ST-0002  a done story  abc1234\n"
+        "  ST-0002  abc1234  a done story\n"
     )
 
 

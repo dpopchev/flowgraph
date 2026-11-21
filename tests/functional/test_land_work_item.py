@@ -121,7 +121,7 @@ class TestAStoryLandedInTheCheckoutOfMain:
     ) -> None:
         merge = git(ready, "rev-parse", "--short", "HEAD~1")
         assert fgraph(["status"], ready).out == (
-            f"Backlog (0)\nInProgress (0)\nCompleted (1)\n  ST-0001  {TITLE}  {merge}\n"
+            f"Backlog (0)\nInProgress (0)\nCompleted (1)\n  ST-0001  {merge}  {TITLE}\n"
         )
 
     def test_the_merge_commit_is_worded_by_the_developer(

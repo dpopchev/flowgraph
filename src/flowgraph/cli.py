@@ -4,6 +4,7 @@ Without a command it shows the help menu and names the record.
 """
 
 import argparse
+import shutil
 import sys
 from collections.abc import Callable, Sequence
 from datetime import UTC, datetime
@@ -73,6 +74,7 @@ from flowgraph.task import (
     TaskInProgressError,
     TaskNotFoundError,
 )
+from flowgraph.text import cut_lines
 from flowgraph.work_item import (
     Amendment,
     NoPartError,
@@ -87,6 +89,9 @@ __all__ = ["Store", "open_files", "open_git", "run"]
 
 # Write text to a stream; what it returns is ignored, so a stream's write and a list's append fit.
 Write = Callable[[str], object]
+
+# The width in columns of the terminal the output is written to; None when it is no terminal.
+Width = Callable[[], int | None]
 
 # The refusals of a command, each written as a usage error; a git step refused among them.
 REFUSED = (
@@ -181,13 +186,31 @@ def _written(args: argparse.Namespace, store: Store, now: Now) -> Written | None
             return None
 
 
+def _no_terminal() -> None:
+    """The width of an output that is no terminal: none."""
+    return None
+
+
+def terminal_width() -> int | None:
+    """Adapter: the columns of the terminal the output of the process is written to.
+
+    None when the output is a pipe or a file.
+    """
+    return shutil.get_terminal_size().columns if sys.stdout.isatty() else None
+
+
 def _said(
-    args: argparse.Namespace, store: Store, now: Now, record: Path, open_git: OpenGit
+    args: argparse.Namespace,
+    store: Store,
+    now: Now,
+    record: Path,
+    open_git: OpenGit,
+    width: Width,
 ) -> Said | None:
     """Run the command the arguments name on the record; None when they name none.
 
-    A write is committed once it is made. Raises the refusal of the command, a git step refused
-    among them.
+    A write is committed once it is made. The lines of status are cut to the width, when there
+    is one. Raises the refusal of the command, a git step refused among them.
     """
     if args.command == "start":
         check_start_on_main(args.id, record, open_git)
@@ -202,7 +225,7 @@ def _said(
         case "show":
             return Said(show_item(args.id, store))
         case "status":
-            return Said(status_item(store, None if args.all else TOP))
+            return Said(cut_lines(status_item(store, None if args.all else TOP), width()))
         case _:
             return None
 
@@ -217,12 +240,14 @@ def run(
     open_store: OpenStore,
     open_git: OpenGit,
     now: Now,
+    width: Width = _no_terminal,
 ) -> int:
     """Read the arguments, locate the record in cwd, run the command and return the exit status.
 
     The help option needs no record, after a command as alone: it prints the help of the command
     the arguments name. Every other call fails with 2 when there is no record. A write finds the
-    git work tree of the record through open_git and is committed there.
+    git work tree of the record through open_git and is committed there. The lines of status are
+    cut to the width of the terminal; without one, as by default, they are whole.
     """
     command_line = build_command_line()
     parser = command_line.parser
@@ -239,7 +264,7 @@ def run(
                 partial(worktree_of_item, path, open_git),
             )
             try:
-                said = _said(args, store, now, path, open_git)
+                said = _said(args, store, now, path, open_git, width)
             except REFUSED as error:
                 write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
                 return 2
@@ -275,6 +300,7 @@ def main() -> None:
             open_store=open_files,
             open_git=open_git,
             now=lambda: datetime.now(UTC),
+            width=terminal_width,
         )
     )
 

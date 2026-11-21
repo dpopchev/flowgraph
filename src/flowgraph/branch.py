@@ -178,6 +178,45 @@ def commit_merge(work_tree: Path, message: str) -> str:
     return _git(work_tree, "rev-parse", "--short", "HEAD")
 
 
+def commit_squash(work_tree: Path, message: str) -> str:
+    """Adapter: commit the merge held in the work tree as one commit of its branch alone.
+
+    The commit holds what the merge brought under the message and has one parent; its short sha
+    is returned. The merge is held as one of its own and not by `git merge --squash`, which takes
+    a staged change of the work tree into the commit. Raises GitError when git refuses the
+    commit; nothing is merged then, and a change that is not staged stays.
+    """
+    _git(work_tree, "merge", "--quit")
+    try:
+        _git(work_tree, "commit", "--quiet", "--message", message)
+    except GitError:
+        _git(work_tree, "reset", "--merge")
+        raise
+    return _git(work_tree, "rev-parse", "--short", "HEAD")
+
+
+def can_fast_forward(work_tree: Path, branch: str) -> bool:
+    """Adapter: True when the branch holds every commit the work tree is on.
+
+    Raises GitError naming the command when git cannot tell, as of a branch that is none.
+    """
+    command = ["git", "merge-base", "--is-ancestor", "HEAD", branch]
+    done = subprocess.run(command, cwd=work_tree, check=False, capture_output=True, text=True)
+    if done.returncode > 1:
+        raise GitError(f"{' '.join(command)} failed: {done.stderr.strip()}")
+    return done.returncode == 0
+
+
+def fast_forward(work_tree: Path, branch: str) -> str:
+    """Adapter: move the branch of the work tree to the tip of the branch; its short sha.
+
+    No commit is made. Raises GitError when the work tree is on a commit the branch lacks;
+    nothing is merged then.
+    """
+    _git(work_tree, "merge", "--ff-only", "--quiet", branch)
+    return _git(work_tree, "rev-parse", "--short", "HEAD")
+
+
 def worktree_of_branch(work_tree: Path, branch: str) -> Path | None:
     """Adapter: the worktree the branch is checked out in, or None when it is in none."""
     path = None
@@ -206,3 +245,11 @@ def remove_worktree(work_tree: Path, path: Path) -> None:
 def delete_branch(work_tree: Path, branch: str) -> None:
     """Adapter: delete the branch; raises GitError when it is not merged or is checked out."""
     _git(work_tree, "branch", "--quiet", "-d", branch)
+
+
+def delete_unmerged_branch(work_tree: Path, branch: str) -> None:
+    """Adapter: delete the branch, merged or not; raises GitError when it is checked out.
+
+    The step of a branch landed by squash, whose commits main never holds.
+    """
+    _git(work_tree, "branch", "--quiet", "-D", branch)

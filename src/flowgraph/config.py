@@ -6,13 +6,15 @@ false`. The development -- the branch and the worktree of a start, the scoping o
 landing -- is off unless `[development] enabled = true`. The layers build on each other: the
 branch of a work item carries its record, so the development needs the commits. `[development]
 parallel` is the most work items started at once; it has no default, so left out nothing limits
-them.
+them. `[development] merge` is how a landing merges: `merge-commit` unless it names `squash` or
+`fast-forward`.
 """
 
 import json
 import tomllib
 from collections.abc import Callable
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
@@ -22,6 +24,9 @@ CONFIG = "config.toml"
 
 # The key that turns the development on, as a refusal names it.
 DEVELOPMENT_ENABLED = "development.enabled"
+
+# The key that says how a landing merges, as a refusal names it.
+DEVELOPMENT_MERGE = "development.merge"
 
 # The key that limits the work items started at once, as a refusal names it.
 DEVELOPMENT_PARALLEL = "development.parallel"
@@ -56,15 +61,24 @@ UNLIMITED = Unlimited()
 Limit = Parallel | Unlimited
 
 
+class Merge(Enum):
+    """How a landing merges the branch of a work item into main; each is its word in the file."""
+
+    MERGE_COMMIT = "merge-commit"
+    SQUASH = "squash"
+    FAST_FORWARD = "fast-forward"
+
+
 @dataclass(frozen=True)
 class Development:
-    """The development beside the source code: turned on, or off, and its limit as written.
+    """The development beside the source code: turned on, or off, and its keys as written.
 
-    The limit is a key of the development: it limits nothing while the development is off.
+    The limit and the merge are keys of the development: neither says anything while it is off.
     """
 
     enabled: bool
     parallel: Limit
+    merge: Merge
 
 
 @dataclass(frozen=True)
@@ -103,6 +117,8 @@ class _DevelopmentTable(_Table):
 
     enabled: bool = False
     parallel: int | None = Field(default=None, ge=1)
+    # Not strict, so that the word of the file is read as the way of merging it names.
+    merge: Merge = Field(default=Merge.MERGE_COMMIT, strict=False)
 
 
 class _ConfigFile(_Table):
@@ -115,12 +131,17 @@ class _ConfigFile(_Table):
 # What a count takes, whether its value is no whole number or one below 1.
 _COUNT = "a whole number of 1 or more"
 
+# What a way of merging takes: one of the words of Merge.
+_WORDS = [merge.value for merge in Merge]
+_WAY = f"{', '.join(_WORDS[:-1])} or {_WORDS[-1]}"
+
 # What the value of a key takes, by the type of the error pydantic reports of it.
 _TAKES = {
     "bool_type": "true or false",
     "model_type": "a table",
     "int_type": _COUNT,
     "greater_than_equal": _COUNT,
+    "enum": _WAY,
 }
 
 
@@ -139,8 +160,8 @@ def make_config(text: str) -> Config:
     """The configuration the text of a config.toml holds; a key it leaves out is its default.
 
     Raises ConfigError naming the first table or key the configuration does not have, or whose
-    value is of another type than the key takes or a count below 1, and when the text is no
-    TOML; naming both keys when it turns the development on with the commits off.
+    value is of another type than the key takes, a count below 1 or no way of merging, and when
+    the text is no TOML; naming both keys when it turns the development on with the commits off.
     """
     try:
         held = _ConfigFile.model_validate(tomllib.loads(text))
@@ -155,10 +176,10 @@ def make_config(text: str) -> Config:
         )
     most = held.development.parallel
     parallel = UNLIMITED if most is None else Parallel(most)
-    return Config(
-        git=Git(commit=held.git.commit),
-        development=Development(enabled=held.development.enabled, parallel=parallel),
+    development = Development(
+        enabled=held.development.enabled, parallel=parallel, merge=held.development.merge
     )
+    return Config(git=Git(commit=held.git.commit), development=development)
 
 
 def read_config(record: Path) -> Config:

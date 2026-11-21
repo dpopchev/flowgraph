@@ -1,19 +1,27 @@
 """The landing of a work item: its branch merged into main, the item completed at that merge.
 
-`fgraph land` takes the git steps a developer ran by hand: one merge commit of the branch on
-main under the developer's message, the complete of the work item at that commit with the
-commit of the record, then the worktree and the branch removed. It is part of the development:
-a record whose configuration leaves the development off has no landing.
+`fgraph land` takes the git steps a developer ran by hand: the branch merged into main, the
+complete of the work item at the commit main is then on with the commit of the record, then the
+worktree and the branch removed. It is part of the development: a record whose configuration
+leaves the development off has no landing.
+
+`[development] merge` of the configuration says how it merges. By `merge-commit` main gains one
+merge commit of the branch under the developer's message; by `squash` one commit of its own
+alone that holds the work of the branch, under the message too; by `fast-forward` main moves to
+the tip of the branch and no commit is made, so it takes no message. Each holds the merge
+uncommitted first, to complete the work item as the branch has it before main moves.
 """
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
+from functools import partial
 from pathlib import Path
+from typing import assert_never
 
 from flowgraph import work_item
 from flowgraph.branch import MAIN, GitError
 from flowgraph.commit import OpenGit, Said, WorkTree, commit_written
-from flowgraph.config import CONFIG, DEVELOPMENT_ENABLED, Config
+from flowgraph.config import CONFIG, DEVELOPMENT_ENABLED, DEVELOPMENT_MERGE, Config, Merge
 from flowgraph.criterion import DecisionError, EmptyPartError, make_commit
 from flowgraph.item import complete_item, parse_work_item_id_of_any_kind
 from flowgraph.record import Now
@@ -51,8 +59,62 @@ class Landing:
     work_tree: WorkTree
 
 
+@dataclass(frozen=True)
+class MergeCommit:
+    """A landing by one merge commit of the branch on main, under the developer's message."""
+
+    message: str
+
+
+@dataclass(frozen=True)
+class Squash:
+    """A landing by one commit of main alone holding the work of the branch, under the message."""
+
+    message: str
+
+
+@dataclass(frozen=True)
+class FastForward:
+    """A landing that moves main to the tip of the branch: it makes no commit to word."""
+
+
+# How a work item lands: the merge of the configuration, with the message of the commit it makes.
+Way = MergeCommit | Squash | FastForward
+
+# Check that the work item can complete as the merge held brought it; raises its refusal.
+Check = Callable[[], None]
+
+
 class LandError(Exception):
     """A landing refused before anything is merged; the message says why."""
+
+
+def _worded(item: str, merge: Merge, message: str | None) -> str:
+    """The message of the commit a landing by that merge makes; raises LandError without one."""
+    if message is None:
+        makes = f"{DEVELOPMENT_MERGE} = {merge.value} makes a commit to word"
+        raise LandError(f"{item} cannot land without --message: {makes}")
+    return message
+
+
+def make_way(item: str, merge: Merge, message: str | None) -> Way:
+    """How the work item of that id lands: the merge of the configuration, with its message.
+
+    Raises LandError naming the key when a merge that makes a commit has no message to word it,
+    and when a fast-forward, which makes none, is given one.
+    """
+    match merge:
+        case Merge.MERGE_COMMIT:
+            return MergeCommit(_worded(item, merge, message))
+        case Merge.SQUASH:
+            return Squash(_worded(item, merge, message))
+        case Merge.FAST_FORWARD:
+            if message is not None:
+                makes = f"{DEVELOPMENT_MERGE} = {merge.value} makes no commit to word"
+                raise LandError(f"{item} cannot land with --message: {makes}")
+            return FastForward()
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 def _branch_to_land(item: str, found: Sequence[str]) -> str:
@@ -64,29 +126,83 @@ def _branch_to_land(item: str, found: Sequence[str]) -> str:
     return found[0]
 
 
-def _merge_committed(
-    item_id: WorkItemId, message: str, decision: str | None, landing: Landing
-) -> str:
-    """Commit the merge held under the message, once the merged work item can complete; its sha.
-
-    Raises the refusal of the complete, or GitError when git refuses the commit.
-    """
+def _check_completes(item_id: WorkItemId, decision: str | None, landing: Landing) -> None:
+    """Check that the work item can complete as the merge held brought it; raises its refusal."""
     merged = landing.store.load_work_item(item_id)
     work_item.completed_work_item(merged, landing.now(), UNMERGED, decision)
-    return landing.work_tree.commit_merge(message)
 
 
-def _removed(work_tree: WorkTree, branch: str) -> None:
-    """Remove the worktree of the branch, when it has one, then the branch; raises GitError."""
+def _committed(work_tree: WorkTree, branch: str, check: Check, commit: Callable[[], str]) -> str:
+    """Hold the merge of the branch, check it, then commit it; the sha of that commit.
+
+    Raises the refusal of the check, or GitError when git refuses the merge or the commit; the
+    merge held is dropped then.
+    """
+    work_tree.merge(branch)
+    try:
+        check()
+        return commit()
+    except NOT_COMMITTED:
+        work_tree.abort_merge()
+        raise
+
+
+def _fast_forwarded(work_tree: WorkTree, branch: str, check: Check) -> str:
+    """Hold the merge of the branch to check it, drop it, then move main to the tip; its sha.
+
+    A fast-forward cannot be held, so the merge held is the one look at the record of the branch
+    before main moves. Raises the refusal of the check, or GitError when git refuses a step;
+    main is where it was then.
+    """
+    work_tree.merge(branch)
+    try:
+        check()
+    finally:
+        work_tree.abort_merge()
+    return work_tree.fast_forward(branch)
+
+
+def _merged(way: Way, item: str, branch: str, work_tree: WorkTree, check: Check) -> str:
+    """Merge the branch into main by the way, once the check holds; the commit main is then on.
+
+    Raises LandError when a fast-forward finds a commit on main that the branch lacks, the
+    refusal of the check, or GitError when git refuses a step; nothing is merged then.
+    """
+    match way:
+        case MergeCommit(message):
+            return _committed(work_tree, branch, check, partial(work_tree.commit_merge, message))
+        case Squash(message):
+            return _committed(work_tree, branch, check, partial(work_tree.commit_squash, message))
+        case FastForward():
+            if not work_tree.can_fast_forward(branch):
+                bring = f"rebase {branch} on {MAIN} or merge {MAIN} into it"
+                lacks = f"{MAIN} holds a commit {branch} lacks"
+                raise LandError(f"{item} cannot land by fast-forward: {lacks} -- {bring}")
+            return _fast_forwarded(work_tree, branch, check)
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def _removed(way: Way, work_tree: WorkTree, branch: str) -> None:
+    """Remove the worktree of the branch, when it has one, then the branch; raises GitError.
+
+    Main holds no commit of a branch landed by squash, so git deletes it as an unmerged one.
+    """
     worktree = work_tree.find_worktree(branch)
     if worktree is not None:
         work_tree.remove_worktree(worktree)
-    work_tree.delete_branch(branch)
+    match way:
+        case MergeCommit() | FastForward():
+            work_tree.delete_branch(branch)
+        case Squash():
+            work_tree.delete_unmerged_branch(branch)
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 def land_item(
     item: str,
-    message: str,
+    message: str | None,
     store: Store,
     now: Now,
     record: Path,
@@ -94,22 +210,25 @@ def land_item(
     config: Config,
     decision: str | None = None,
 ) -> Said:
-    """Land the started work item of that id on main under the message; what fgraph says.
+    """Land the started work item of that id on main, by the merge of the configuration.
 
-    A Spike lands with the decision that answers its hypothesis. Raises WorkItemIdError when the
-    text is the id of no kind of work item, LandError when the development is off in the
-    configuration, naming the key that turns it on, when the record is outside a git work tree,
-    when the work tree is not on main or when the work item has no branch or several, the
-    refusal of the complete when a Task of it is not completed or its decision is missing, and
-    GitError when git refuses a step. Nothing is merged unless the merge is committed; a step
-    refused after it says how far the landing came. A record git ignores is completed with no
-    commit of the record.
+    The message words the commit a merge-commit or a squash makes. A Spike lands with the
+    decision that answers its hypothesis. Raises WorkItemIdError when the text is the id of no
+    kind of work item, LandError when the development is off in the configuration, naming the
+    key that turns it on, when the merge makes a commit and no message is given or makes none
+    and one is, when the record is outside a git work tree, when the work tree is not on main,
+    when the work item has no branch or several or when a fast-forward finds a commit on main
+    that the branch lacks, the refusal of the complete when a Task of it is not completed or its
+    decision is missing, and GitError when git refuses a step. Nothing is merged unless main is
+    moved; a step refused after it says how far the landing came. A record git ignores is
+    completed with no commit of the record.
     """
     item_id = parse_work_item_id_of_any_kind(item)
     text = work_item_id_text(item_id)
     if not config.development.enabled:
         turn_on = f"set {DEVELOPMENT_ENABLED} = true in {record / CONFIG}"
         raise LandError(f"{text} cannot land: the development is off -- {turn_on}")
+    way = make_way(text, config.development.merge, message)
     work_tree = open_git(record)
     if work_tree is None:
         raise LandError(f"{text} cannot land: {record} is not inside a git work tree")
@@ -117,19 +236,15 @@ def land_item(
     if on != MAIN:
         raise LandError(f"{text} lands on {MAIN}: {work_tree.path} is on {on or 'no branch'}")
     branch = _branch_to_land(text, work_tree.find_branches(f"wi/{text}-*"))
-    work_tree.merge(branch)
-    try:
-        sha = _merge_committed(item_id, message, decision, Landing(store, now, work_tree))
-    except NOT_COMMITTED:
-        work_tree.abort_merge()
-        raise
+    check = partial(_check_completes, item_id, decision, Landing(store, now, work_tree))
+    sha = _merged(way, text, branch, work_tree, check)
     written = complete_item(text, sha, store, now, config, decision)
     try:
         commit_written(written, store, record, lambda _: work_tree, config)
     except GitError as error:
         raise GitError(f"{error} -- {text} is merged at {sha}, complete it there") from error
     try:
-        _removed(work_tree, branch)
+        _removed(way, work_tree, branch)
     except GitError as error:
         landed = f"{text} is landed at {sha}"
         raise GitError(

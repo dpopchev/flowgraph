@@ -12,9 +12,13 @@ from flowgraph.branch import (
     GitError,
     abort_merge,
     branches_like,
+    can_fast_forward,
     commit_merge,
+    commit_squash,
     current_branch,
     delete_branch,
+    delete_unmerged_branch,
+    fast_forward,
     merge_uncommitted,
     remove_worktree,
     worktree_of_branch,
@@ -132,6 +136,113 @@ def test_a_merge_git_refuses_leaves_nothing_merged(checkout: Path) -> None:
     assert git(checkout, "status", "--porcelain") == ""
 
 
+def test_a_merge_squashed_is_one_commit_on_main_alone_under_the_message(checkout: Path) -> None:
+    head = git(checkout, "rev-parse", "HEAD")
+    merge_uncommitted(checkout, BRANCH)
+    commit_squash(checkout, "feat: land the work")
+    parents = git(checkout, "log", "-1", "--format=%P").split()
+    assert (git(checkout, "log", "-1", "--format=%s"), parents) == ("feat: land the work", [head])
+
+
+def test_a_merge_squashed_holds_the_work_of_the_branch(checkout: Path) -> None:
+    merge_uncommitted(checkout, BRANCH)
+    commit_squash(checkout, "a message")
+    merged, branch = git(checkout, "rev-parse", "HEAD^{tree}", BRANCH + "^{tree}").splitlines()
+    assert merged == branch
+
+
+def test_a_merge_squashed_onto_other_work_of_main_holds_both(checkout: Path) -> None:
+    commit(checkout, "other.txt", "other work\n")
+    merge_uncommitted(checkout, BRANCH)
+    commit_squash(checkout, "a message")
+    assert git(checkout, "ls-tree", "--name-only", "HEAD").splitlines() == [
+        "README",
+        "other.txt",
+        "work.txt",
+    ]
+
+
+def test_a_merge_squashed_is_named_by_its_short_sha(checkout: Path) -> None:
+    merge_uncommitted(checkout, BRANCH)
+    assert commit_squash(checkout, "a message") == git(checkout, "rev-parse", "--short", "HEAD")
+
+
+def test_a_merge_squashed_leaves_nothing_held(checkout: Path) -> None:
+    merge_uncommitted(checkout, BRANCH)
+    commit_squash(checkout, "a message")
+    assert git(checkout, "status", "--porcelain") == ""
+
+
+def test_a_squash_commit_git_refuses_raises_naming_the_command(checkout: Path) -> None:
+    merge_uncommitted(checkout, BRANCH)
+    with pytest.raises(GitError, match=r"^git commit --quiet --message  failed"):
+        commit_squash(checkout, "")
+
+
+def test_a_squash_commit_git_refuses_leaves_nothing_merged(checkout: Path) -> None:
+    head = git(checkout, "rev-parse", "HEAD")
+    merge_uncommitted(checkout, BRANCH)
+    with pytest.raises(GitError):
+        commit_squash(checkout, "")
+    assert (git(checkout, "rev-parse", "HEAD"), git(checkout, "status", "--porcelain")) == (
+        head,
+        "",
+    )
+
+
+def test_a_squash_commit_git_refuses_keeps_a_change_that_is_not_staged(checkout: Path) -> None:
+    (checkout / "README").write_text("a project, edited\n", encoding="utf-8")
+    merge_uncommitted(checkout, BRANCH)
+    with pytest.raises(GitError):
+        commit_squash(checkout, "")
+    assert git(checkout, "status", "--porcelain") == " M README"
+
+
+def test_a_branch_ahead_of_main_can_be_fast_forwarded_to(checkout: Path) -> None:
+    assert can_fast_forward(checkout, BRANCH) is True
+
+
+def test_a_branch_lacking_a_commit_of_main_cannot_be_fast_forwarded_to(checkout: Path) -> None:
+    commit(checkout, "other.txt", "other work\n")
+    assert can_fast_forward(checkout, BRANCH) is False
+
+
+def test_a_branch_that_is_none_raises_naming_the_command(checkout: Path) -> None:
+    with pytest.raises(GitError, match=r"^git merge-base --is-ancestor HEAD wi/none failed"):
+        can_fast_forward(checkout, "wi/none")
+
+
+def test_a_fast_forward_moves_main_to_the_tip_of_the_branch(checkout: Path) -> None:
+    fast_forward(checkout, BRANCH)
+    assert git(checkout, "rev-parse", "main") == git(checkout, "rev-parse", BRANCH)
+
+
+def test_a_fast_forward_brings_the_work_and_leaves_nothing_to_commit(checkout: Path) -> None:
+    fast_forward(checkout, BRANCH)
+    assert ((checkout / "work.txt").is_file(), git(checkout, "status", "--porcelain")) == (True, "")
+
+
+def test_a_fast_forward_is_named_by_the_short_sha_of_the_tip(checkout: Path) -> None:
+    assert fast_forward(checkout, BRANCH) == git(checkout, "rev-parse", "--short", BRANCH)
+
+
+def test_a_fast_forward_git_refuses_raises_naming_the_command(checkout: Path) -> None:
+    commit(checkout, "other.txt", "other work\n")
+    with pytest.raises(GitError, match=rf"^git merge --ff-only --quiet {BRANCH} failed"):
+        fast_forward(checkout, BRANCH)
+
+
+def test_a_fast_forward_git_refuses_leaves_main_where_it_was(checkout: Path) -> None:
+    commit(checkout, "other.txt", "other work\n")
+    head = git(checkout, "rev-parse", "HEAD")
+    with pytest.raises(GitError):
+        fast_forward(checkout, BRANCH)
+    assert (git(checkout, "rev-parse", "HEAD"), git(checkout, "status", "--porcelain")) == (
+        head,
+        "",
+    )
+
+
 def test_the_worktree_of_a_branch_is_found(checkout: Path, worktree: Path) -> None:
     assert worktree_of_branch(checkout, BRANCH) == worktree
 
@@ -172,3 +283,28 @@ def test_a_branch_not_merged_is_not_deleted(checkout: Path, worktree: Path) -> N
     remove_worktree(checkout, worktree)
     with pytest.raises(GitError, match=rf"^git branch --quiet -d {BRANCH} failed"):
         delete_branch(checkout, BRANCH)
+
+
+def test_a_branch_landed_by_squash_is_not_deleted_as_a_merged_one(
+    checkout: Path, worktree: Path
+) -> None:
+    merge_uncommitted(checkout, BRANCH)
+    commit_squash(checkout, "a message")
+    remove_worktree(checkout, worktree)
+    with pytest.raises(GitError, match=rf"^git branch --quiet -d {BRANCH} failed"):
+        delete_branch(checkout, BRANCH)
+
+
+def test_a_branch_landed_by_squash_is_deleted_as_an_unmerged_one(
+    checkout: Path, worktree: Path
+) -> None:
+    merge_uncommitted(checkout, BRANCH)
+    commit_squash(checkout, "a message")
+    remove_worktree(checkout, worktree)
+    delete_unmerged_branch(checkout, BRANCH)
+    assert git(checkout, "branch", "--list", BRANCH) == ""
+
+
+def test_a_branch_checked_out_is_not_deleted_as_an_unmerged_one(checkout: Path) -> None:
+    with pytest.raises(GitError, match=rf"^git branch --quiet -D {BRANCH} failed"):
+        delete_unmerged_branch(checkout, BRANCH)

@@ -287,7 +287,9 @@ commit, a Task as a work item.
 - A Spike is completed with its decision either way: the decision answers its
   hypothesis and stands beside the commit or none.
 - `fgraph land` is part of the development and completes the work item at
-  the merge commit, so a landed work item always carries its commit.
+  the commit the landing leaves `main` on -- its merge commit, its squash
+  commit or the tip of the branch, by `[development] merge` -- so a landed
+  work item always carries its commit.
 - `fgraph complete` says what it completed and, when there is a commit, where:
   `completed S-0001 at 677f9b0`, or `completed S-0001` alone.
 
@@ -509,6 +511,26 @@ development too.
 - The start of a Task is neither counted nor limited by `parallel`: a work
   item has one started Task at a time whatever the key. A work item that is
   not in Backlog is left to the start, which refuses it for its own state.
+- `[development] merge` names how a landing merges, one of three words:
+  `merge-commit`, `squash` or `fast-forward`, the reading of the developer's
+  request for merging strategies taken when S-0043 was ordered. Left out it
+  is `merge-commit`, the one merge a landing made before the key, so a record
+  that names none lands as it did. It is a key of the development, so it says
+  nothing with the development off, where it is held as written. A landing
+  through a pull request is no way of merging: it is left out.
+- What `main` gains by each: by `merge-commit` one merge commit of the
+  branch, with two parents; by `squash` one commit of its own alone that
+  holds the work of the branch, with one parent, so `main` holds none of the
+  commits of the branch; by `fast-forward` no new commit, `main` moved to the
+  tip of the branch. `--message` words the commit a `merge-commit` or a
+  `squash` makes and is needed by both; a `fast-forward` makes none to word
+  and is refused with one. Both refusals exit 2 naming the option and the
+  key, `development.merge`, before any git step.
+- The way of merging is a closed set in the model (`Merge`,
+  `src/flowgraph/config.py`), and a landing is built from it with its message
+  as one of three values -- `MergeCommit` and `Squash`, each with the
+  message, and `FastForward`, with none (`src/flowgraph/land.py`) -- so a
+  fast-forward with a message and a commit without one cannot be built.
 - `[git] commit` turns the commits of the record off. It is on by default,
   the reading of S-0040, off until set shown and not taken: inside a git work
   tree that does not ignore the record `fgraph` commits every write of it, as
@@ -527,15 +549,16 @@ development too.
   branches.
 - A `config.toml` that holds a table or a key the configuration does not
   have, a value of another type than its key takes, a `parallel` below 1 or
-  no whole number, or no TOML, is refused with exit 2 naming the file and the
-  key, whatever the command. The help option needs no record and reads none.
+  no whole number, a `merge` that is none of its three words, or no TOML, is
+  refused with exit 2 naming the file and the key, whatever the command. The
+  help option needs no record and reads none.
 - The configuration is read at the edge into a value of the model
   (`src/flowgraph/config.py`). Reading it is an effect: `run()` takes it as a
   callable, the defaults when none is given, and `main()` reads the file.
-- Only these three keys are built. Not built yet: the merge and the gate of
-  the development, and a command that reads and sets the configuration. Until
+- Only these four keys are built. Not built yet: the gate of the
+  development, and a command that reads and sets the configuration. Until
   then the file is written by hand; the record of flowgraph holds
-  `[development] enabled = true` and no `parallel`.
+  `[development] enabled = true`, no `parallel` and no `merge`.
 
 Who writes what with the development on, so that two branches never change
 the same file or hand out the same number. With it off no work item has a
@@ -667,18 +690,35 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   merge of its own, held uncommitted; commits it under the message the
   developer gives with `--message`; completes the work item at the short sha
   of that commit, with the commit of the record, `chore: complete <id> in the
-  record`; then removes the worktree of the branch and the branch.
+  record`; then removes the worktree of the branch and the branch. These are
+  the steps of a landing by `merge-commit`.
+- Every way of merging holds that same merge uncommitted first: the record
+  of the branch is then in the checkout of `main`, where the work item is
+  checked to complete before `main` moves. A `squash` commits the merge held
+  as one commit of `main` alone, under the message, and removes the branch
+  as an unmerged one, a step of its own, since `main` holds none of its
+  commits. A `fast-forward` cannot be held: the merge held is dropped once
+  checked, then `main` is moved to the tip of the branch, and the branch is
+  removed as a merged one. Either completes the work item at the short sha
+  of the commit `main` is then on, with the commit of the record.
+- A squash is not made by `git merge --squash`: that takes a change staged
+  in the checkout into the commit and drops it with the squash. The merge of
+  its own refuses such a checkout, and committed with one parent it holds
+  the same work.
 - A landing is refused, with nothing merged, when the development is off,
+  when `--message` is missing for a commit or given to a `fast-forward`,
   when the record is outside a git work tree, when the work tree it runs in
   is not on `main`, when no branch `wi/<id>-*` or more than one is there,
-  when git refuses the merge, and -- the merge held dropped again -- when a
-  Task of the work item is not completed or git refuses the merge commit. A
-  step git refuses after the merge commit exits 2 saying how far the landing
-  came.
+  when a `fast-forward` finds a commit on `main` that the branch lacks, when
+  git refuses the merge, and -- the merge held dropped again -- when a Task
+  of the work item is not completed or git refuses the commit or the
+  fast-forward. A step git refuses after `main` moved exits 2 saying how far
+  the landing came.
 - `fgraph` makes the commits of the record; the commits of the development
-  and their messages stay the developer's, the merge commit of a landing
-  among them: `fgraph` makes it, the developer words it. Whether the work
-  tree is on `main` is checked by a landing and by the start of a work item.
+  and their messages stay the developer's, the merge commit and the squash
+  commit of a landing among them: `fgraph` makes it, the developer words it.
+  Whether the work tree is on `main` is checked by a landing and by the start
+  of a work item.
 
 ## Left out
 

@@ -16,3 +16,11 @@ title = "Add tests/functional/test_status_worktree.py, failing on the criterion 
 description = "Run through run() of src/flowgraph/cli.py on a git repository in tmp_path, on the file and git adapters of the package, as tests/functional/test_task_ids_across_worktrees.py does. Seen red, then marked a strict xfail naming ST-0035 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_status_worktree.py states that fgraph status, run in the checkout of main of a repository with a Story started and one of its two Tasks completed in its worktree, lists the Story as '  ST-0001  1/2 T  <title>' under InProgress"
 created = 2026-11-21 17:41:03+00:00
+
+[[tasks]]
+id = "T-0139"
+state = "backlog"
+title = "Add the rows of a started work item read from its worktree to src/flowgraph/worktrees.py, wired in run of src/flowgraph/cli.py"
+description = "Removes the xfail mark of tests/functional/test_status_worktree.py."
+expected_output = "changed: src/flowgraph/worktrees.py holds the store whose row of a started work item is the one the record of its worktree holds, and the row of the record itself without a worktree, outside a git work tree and on a record git ignores; run of src/flowgraph/cli.py opens the record through it; proved in tests/worktrees/"
+created = 2026-11-21 17:41:04+00:00

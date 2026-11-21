@@ -1,0 +1,11 @@
+id = "ST-0055"
+state = "backlog"
+title = "Raise the Features fgraph status marks blocked by a blocked Task of their work item from none to every one"
+description = "Part of F-0002. The developer's words of 2026-11-21, in the agent's wording: a Feature is part of the Backlog and just holds a couple of work items; starting it, when git is used for the development as well, starts its work items one by one in separate branches; they are completed but all stay in progress; when all are completed the Feature moves to Completed; a Feature can be blocked, or gets blocked when its child work item is blocked. The principle the plan was shown under: a Feature is to its work items what a work item is to its Tasks. Filed on the developer's 'file' of 2026-11-21. Its Tasks are written when it is ordered. Readings of the agent: the mark is derived and kept in no file; a child work item is blocked when it holds a blocked Task -- the alternative, a block of a work item itself, is not built and was shown and not taken. Open: whether a started Task beside the blocked one lifts the mark of the Feature."
+parent = "F-0002"
+created = 2026-11-21 21:22:02+00:00
+
+[criterion]
+given = "a record with a started Feature whose started Story holds a blocked Task"
+when = "fgraph status is run"
+then = "the line of the Feature starts with ! and ends with what the Task waits on"

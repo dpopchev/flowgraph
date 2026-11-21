@@ -13,11 +13,10 @@ from pathlib import Path
 from typing import assert_never
 
 from flowgraph import story, upkeep
+from flowgraph.criterion import CommitError, EmptyPartError
 from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, locate
 from flowgraph.story import (
-    CommitError,
     CompletedAlreadyError,
-    EmptyPartError,
     FindStoryRows,
     FindTaskIds,
     ItemIdError,

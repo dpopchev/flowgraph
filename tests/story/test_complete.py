@@ -4,8 +4,8 @@ from datetime import UTC, datetime
 
 import pytest
 
+from flowgraph.criterion import CommitError
 from flowgraph.story import (
-    CommitError,
     CompletedAlreadyError,
     CompletedStory,
     CompletedTask,

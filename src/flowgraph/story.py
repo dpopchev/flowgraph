@@ -11,8 +11,8 @@ from typing import Annotated, Literal, assert_never
 import tomli_w
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
 
-# The directory of every item inside a record, one file per work item, named by its id.
-ITEMS = "items"
+from flowgraph.criterion import Commit, Scenario, make_commit, make_scenario, said
+from flowgraph.record import ITEMS, Now
 
 
 @dataclass(frozen=True)
@@ -20,15 +20,6 @@ class StoryId:
     """The identity of a Story: its number in the record, written `ST-0001`."""
 
     number: int
-
-
-@dataclass(frozen=True)
-class Scenario:
-    """The one criterion of a Story: the initial state, the action and the expected state."""
-
-    given: str
-    when: str
-    then: str
 
 
 @dataclass(frozen=True)
@@ -71,13 +62,6 @@ class StartedTask:
     description: str
     created: datetime
     started: datetime
-
-
-@dataclass(frozen=True)
-class Commit:
-    """The commit that holds the work of an item: its sha, 7 to 40 hex digits."""
-
-    sha: str
 
 
 @dataclass(frozen=True)
@@ -182,9 +166,6 @@ LoadStory = Callable[[StoryId], StoryState]
 # Save the Story whole.
 SaveStory = Callable[[StoryState], None]
 
-# The current time, with its zone.
-Now = Callable[[], datetime]
-
 # The rows of the stories in the record at the path; an empty list when it holds none.
 ReadStoryRows = Callable[[Path], list[StoryRow]]
 
@@ -201,14 +182,6 @@ ReadTaskIds = Callable[[Path], list[str]]
 
 # Save the Story whole into the record at the path.
 WriteStory = Callable[[Path, StoryState], None]
-
-
-class EmptyPartError(ValueError):
-    """A part of a Story that must say something is blank; `part` names it."""
-
-    def __init__(self, part: str) -> None:
-        super().__init__(f"{part} is empty")
-        self.part = part
 
 
 class StoryIdError(ValueError):
@@ -259,10 +232,6 @@ class StoryInBacklogError(ValueError):
     """A Task started while its Story is still in Backlog."""
 
 
-class CommitError(ValueError):
-    """A text that is no commit sha."""
-
-
 class CompletedAlreadyError(ValueError):
     """A completed Story or Task moved once more, or a Task written for a completed Story."""
 
@@ -306,21 +275,6 @@ def next_story_id(taken: Collection[StoryId]) -> StoryId:
     return make_story_id(max((story_id.number for story_id in taken), default=0) + 1)
 
 
-def _said(part: str, text: str) -> str:
-    """The text of the part, which must say something; raises EmptyPartError naming it."""
-    if not text.strip():
-        raise EmptyPartError(part)
-    return text
-
-
-def make_scenario(given: str, when: str, then: str) -> Scenario:
-    """The criterion of a Story.
-
-    Raises EmptyPartError naming the first part that is blank.
-    """
-    return Scenario(_said("given", given), _said("when", when), _said("then", then))
-
-
 def make_story(
     story_id: StoryId, title: str, scenario: Scenario, description: str, created: datetime
 ) -> Story:
@@ -329,7 +283,7 @@ def make_story(
     Raises EmptyPartError when the title is blank.
     """
     to_the_second = created.replace(microsecond=0)
-    return Story(story_id, _said("title", title), scenario, description, to_the_second, ())
+    return Story(story_id, said("title", title), scenario, description, to_the_second, ())
 
 
 def make_task_id(number: int) -> TaskId:
@@ -370,8 +324,8 @@ def make_task(
 
     Raises EmptyPartError when the title or the expected output is blank.
     """
-    said = _said("title", title), _said("output", expected_output)
-    return Task(task_id, *said, description, created.replace(microsecond=0))
+    parts = said("title", title), said("output", expected_output)
+    return Task(task_id, *parts, description, created.replace(microsecond=0))
 
 
 def parse_item_id(text: str) -> StoryId | TaskId:
@@ -387,16 +341,6 @@ def parse_item_id(text: str) -> StoryId | TaskId:
         return parse_task_id(text)
     except TaskIdError:
         raise ItemIdError(f"{text!r} is no Story id or Task id") from None
-
-
-def make_commit(text: str) -> Commit:
-    """The commit of that sha.
-
-    Raises CommitError when the text is not 7 to 40 lowercase hex digits.
-    """
-    if re.fullmatch(r"[0-9a-f]{7,40}", text) is None:
-        raise CommitError(f"{text!r} is no commit: it is 7 to 40 hex digits")
-    return Commit(text)
 
 
 def append_task[S: OpenStory](story: S, task: Task) -> S:

@@ -4,8 +4,8 @@ from datetime import UTC, datetime
 
 import pytest
 
+from flowgraph.criterion import EmptyPartError
 from flowgraph.story import (
-    EmptyPartError,
     append_task,
     make_scenario,
     make_story,

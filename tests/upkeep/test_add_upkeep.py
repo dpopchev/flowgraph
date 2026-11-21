@@ -4,7 +4,8 @@ from datetime import UTC, datetime
 
 import pytest
 
-from flowgraph.story import EmptyPartError, make_scenario
+from flowgraph.criterion import EmptyPartError
+from flowgraph.story import make_scenario
 from flowgraph.upkeep import (
     Upkeep,
     UpkeepRow,

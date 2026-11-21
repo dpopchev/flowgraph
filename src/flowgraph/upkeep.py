@@ -15,7 +15,8 @@ from typing import Literal
 import tomli_w
 from pydantic import BaseModel, ConfigDict, ValidationError
 
-from flowgraph.story import ITEMS, EmptyPartError, Now, Scenario, make_scenario
+from flowgraph.criterion import EmptyPartError, Scenario, make_scenario
+from flowgraph.record import ITEMS, Now
 
 
 @dataclass(frozen=True)

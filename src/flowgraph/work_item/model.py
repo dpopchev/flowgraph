@@ -84,6 +84,20 @@ class CompletedWorkItem:
 
 
 @dataclass(frozen=True)
+class RemovedWorkItem:
+    """A work item in Removed: dropped out of Backlog for a reason, its Tasks kept as written."""
+
+    id: WorkItemId
+    title: str
+    scenario: Scenario
+    description: str
+    created: datetime
+    removed: datetime
+    reason: str
+    tasks: tuple[Task, ...]
+
+
+@dataclass(frozen=True)
 class Amendment:
     """The parts of a work item to rewrite: each its new text, or None where it stays as it was."""
 
@@ -98,20 +112,22 @@ class Amendment:
 OpenWorkItem = WorkItem | StartedWorkItem
 
 # A work item in any of its states, as the record keeps it.
-WorkItemState = WorkItem | StartedWorkItem | CompletedWorkItem
+WorkItemState = WorkItem | StartedWorkItem | CompletedWorkItem | RemovedWorkItem
 
 
 @dataclass
 class WorkItemRow:
-    """One work item as plain data, as a view reads it from the record; a commit once completed.
+    """One work item as plain data, as a view reads it from the record.
 
-    Its created time is what orders the work items of the Backlog nobody placed.
+    A commit once completed, a reason once removed. Its created time is what orders the work
+    items of the Backlog nobody placed.
     """
 
     id: str
     title: str
     state: str
     commit: str = ""
+    reason: str = ""
     created: datetime = field(kw_only=True)
 
 
@@ -128,6 +144,7 @@ class WorkItemDetail:
     then: str
     tasks: list[TaskRow]
     commit: str = ""
+    reason: str = ""
 
 
 # The rows of the work items in the record; an empty list when it holds none.
@@ -161,6 +178,13 @@ class WorkItemNotFoundError(Exception):
     def __init__(self, item_id: WorkItemId) -> None:
         super().__init__(f"no {item_id.kind.noun} {work_item_id_text(item_id)} in the record")
         self.item_id = item_id
+
+
+class RemovedAlreadyError(ValueError):
+    """A removed work item moved, amended or given a Task; the message names it."""
+
+    def __init__(self, item_id: WorkItemId) -> None:
+        super().__init__(f"{work_item_id_text(item_id)} is removed already")
 
 
 class WorkItemFileError(Exception):
@@ -237,6 +261,8 @@ def still_open(item: WorkItemState) -> OpenWorkItem:
             return item
         case CompletedWorkItem():
             raise CompletedAlreadyError(f"{work_item_id_text(item.id)} is completed already")
+        case RemovedWorkItem():
+            raise RemovedAlreadyError(item.id)
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -267,6 +293,8 @@ def amended_work_item(item: WorkItemState, amendment: Amendment) -> WorkItem:
             raise StartedAlreadyError(f"{named} is started already")
         case CompletedWorkItem():
             raise CompletedAlreadyError(f"{named} is completed already")
+        case RemovedWorkItem():
+            raise RemovedAlreadyError(item.id)
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -295,6 +323,8 @@ def started_work_item(item: WorkItemState, on: datetime) -> StartedWorkItem:
             raise StartedAlreadyError(f"{work_item_id_text(item.id)} is started already")
         case CompletedWorkItem():
             raise CompletedAlreadyError(f"{work_item_id_text(item.id)} is completed already")
+        case RemovedWorkItem():
+            raise RemovedAlreadyError(item.id)
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -323,6 +353,8 @@ def completed_work_item(item: WorkItemState, on: datetime, commit: Commit) -> Co
             )
         case CompletedWorkItem():
             raise CompletedAlreadyError(f"{work_item_id_text(item.id)} is completed already")
+        case RemovedWorkItem():
+            raise RemovedAlreadyError(item.id)
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -338,6 +370,8 @@ def state_name(item: WorkItemState | TaskState) -> str:
             return "blocked"
         case CompletedWorkItem() | CompletedTask():
             return "completed"
+        case RemovedWorkItem():
+            return "removed"
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -347,7 +381,9 @@ def commit_sha(item: WorkItemState | TaskState) -> str:
     match item:
         case CompletedWorkItem() | CompletedTask():
             return item.commit.sha
-        case WorkItem() | Task() | StartedWorkItem() | StartedTask() | BlockedTask():
+        case WorkItem() | StartedWorkItem() | RemovedWorkItem():
+            return ""
+        case Task() | StartedTask() | BlockedTask():
             return ""
         case _ as unreachable:
             assert_never(unreachable)

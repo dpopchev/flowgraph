@@ -12,31 +12,43 @@ then = "fgraph status lists it under Removed with its reason"
 
 [[tasks]]
 id = "T-0080"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_remove_work_item.py, failing on the criterion of ST-0016"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, through the file adapters, as tests/functional/test_block_task.py does. Seen red, then marked a strict xfail naming ST-0016 until the Task that turns it green removes the mark. The description leaves no question open. The agent's readings, each a routine call: (1) the command is fgraph remove ID --reason TEXT, the reason required and not blank; a Task id is refused, since removing a Task is not part of this. (2) Only a work item in Backlog is removed: a started one is refused with 'is started already', which keeps removing a started work item out of this slice, a completed one with 'is completed already', a removed one with 'is removed already', each exit 2. (3) A RemovedWorkItem keeps its Tasks as written and adds the time it was removed, to the second, and its reason; its file has state 'removed'. Nothing is deleted. (4) Removed stands apart from the flow: fgraph status lists the heading 'Removed (n)' after Completed only when a work item is removed, each as '  <id>  <title>  -- <reason>'; fgraph show names the bucket Removed and the reason. (5) A removed work item takes no Task, no amend and no move, and a reorder refuses it as not in Backlog; it leaves the queue as a started one does. (6) It prints 'removed <id>' and its commit is 'chore: remove <id> in the record'."
 expected_output = "created: tests/functional/test_remove_work_item.py states that fgraph remove, run with a reason on a Story in Backlog, leaves fgraph status listing it under Removed with its reason"
 created = 2026-11-21 11:37:20+00:00
+started = 2026-11-21 11:37:42+00:00
+completed = 2026-11-21 11:38:16+00:00
+commit = "98592a8"
 
 [[tasks]]
 id = "T-0081"
-state = "backlog"
+state = "completed"
 title = "Add the RemovedWorkItem and its remove move to src/flowgraph/work_item/model.py and src/flowgraph/work_item/removal.py, kept by src/flowgraph/work_item/file.py"
 description = "Pure but for the file adapter. The move sits in a module of its own so that src/flowgraph/work_item/model.py stays below the 400 lines of U-0001. Every exhaustive match over the states of a work item gains the removed case, in src/flowgraph/work_item/tasks.py, src/flowgraph/scope.py and src/flowgraph/land.py too."
 expected_output = "changed: src/flowgraph/work_item/model.py holds RemovedWorkItem among the states of a work item, refused by every other move; created: src/flowgraph/work_item/removal.py removes a work item in Backlog with its reason; src/flowgraph/work_item/file.py keeps it with state 'removed' and reads it back through the move; the rows a view reads gain the reason; their tests are in tests/work_item/"
 created = 2026-11-21 11:37:21+00:00
+started = 2026-11-21 11:38:16+00:00
+completed = 2026-11-21 11:41:14+00:00
+commit = "2866520"
 
 [[tasks]]
 id = "T-0082"
-state = "backlog"
+state = "completed"
 title = "Add the remove command to src/flowgraph/work_item/commands.py, src/flowgraph/item.py and src/flowgraph/cli.py, listed by src/flowgraph/text.py"
 description = "The command loads the work item whole, removes it and saves it whole. Removes the xfail mark of tests/functional/test_remove_work_item.py."
 expected_output = "changed: fgraph remove ID --reason TEXT removes a work item in Backlog, prints 'removed <id>' and is committed as every write; fgraph status lists it under Removed with its reason and fgraph show names the bucket and the reason; it exits 2 naming why on each refusal of the first Task"
 created = 2026-11-21 11:37:21+00:00
+started = 2026-11-21 11:41:14+00:00
+completed = 2026-11-21 11:42:58+00:00
+commit = "6e257e0"
 
 [[tasks]]
 id = "T-0083"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a work item in Backlog is removed with fgraph remove"
 expected_output = "changed: README.md shows fgraph remove, what fgraph status then lists and what a remove refuses; docs/domain-model.md says the remove move is built for a work item in Backlog, what its file keeps, when status lists Removed and that removing a Task or a started work item is not built"
 created = 2026-11-21 11:37:21+00:00
+started = 2026-11-21 11:42:58+00:00
+completed = 2026-11-21 11:43:40+00:00
+commit = "7de08e7"

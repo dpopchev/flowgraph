@@ -70,6 +70,7 @@ def work_tree(branches: list[str], worktree: Path | None) -> WorkTree:
         find_worktree=lambda _: worktree,
         remove_worktree=never,
         delete_branch=never,
+        find_worktrees=never,
     )
 
 

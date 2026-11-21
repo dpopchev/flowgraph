@@ -18,6 +18,7 @@ from flowgraph.branch import (
     merge_uncommitted,
     remove_worktree,
     worktree_of_branch,
+    worktrees,
 )
 
 pytestmark = pytest.mark.edge
@@ -138,6 +139,12 @@ def test_the_worktree_of_a_branch_is_found(checkout: Path, worktree: Path) -> No
 def test_a_branch_without_a_worktree_has_none(checkout: Path) -> None:
     git(checkout, "branch", "wi/CH-0002-other")
     assert worktree_of_branch(checkout, "wi/CH-0002-other") is None
+
+
+def test_the_worktrees_of_a_repository_are_listed_from_any_of_them(
+    checkout: Path, worktree: Path
+) -> None:
+    assert worktrees(worktree) == [checkout, worktree]
 
 
 def test_a_worktree_is_removed(checkout: Path, worktree: Path) -> None:

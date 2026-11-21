@@ -240,7 +240,7 @@ with at least four digits. `fgraph` hands out the next free number.
 | `Bug` | `B-0001` |
 | `Spike` | `SP-0001` |
 | `Upkeep` | `U-0001` |
-| `Task` | `T-0001`, unique across the record |
+| `Task` | `T-0001`, unique across the record and the worktrees of its repository |
 
 ## Persistence
 
@@ -255,8 +255,13 @@ and its merge tool.
   never moves.
 - A Task is one `[[tasks]]` table inside the file of its work item, in the
   order written, with its own `state` line. Its parent is the file that holds
-  it, so no `parent` field is stored. The next Task id is one above the
-  highest in any file of the record.
+  it, so no `parent` field is stored.
+- The next Task id is one above the highest in the record of every worktree
+  of the repository, the developer's decision of 2026-11-21: `main` and the
+  worktree of a started work item hand out no id twice. The record of another
+  worktree is the directory at the same path inside it; its files are read as
+  they are, committed or not. It covers the worktrees of one repository, not
+  two clones, and a record outside a git work tree counts its own files.
 - A started item is kept as `state = "started"` with its `started` time,
   beside the fields it had in Backlog. Only a started Story's file may hold a
   started Task; it is read back through the moves that start them, so a file

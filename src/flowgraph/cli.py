@@ -56,6 +56,7 @@ from flowgraph.work_item import (
     WorkItemIdError,
     WorkItemNotFoundError,
 )
+from flowgraph.worktrees import across_worktrees
 
 __all__ = ["Store", "open_files", "open_git", "run"]
 
@@ -269,7 +270,7 @@ def run(
     match locate(cwd, args.dir, is_dir):
         case Found(path) | Given(path):
             store = within(
-                open_store(path),
+                across_worktrees(open_store(path), path, open_git, open_store),
                 partial(scope_in, path, open_git),
                 partial(worktree_of_item, path, open_git),
             )

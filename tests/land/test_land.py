@@ -89,6 +89,7 @@ def work_tree(steps: list[object]) -> WorkTree:
         find_worktree=lambda _: WORKTREE,
         remove_worktree=lambda path: steps.append(("remove worktree", path)),
         delete_branch=lambda branch: steps.append(("delete branch", branch)),
+        find_worktrees=never,
     )
 
 

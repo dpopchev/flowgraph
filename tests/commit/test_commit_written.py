@@ -68,6 +68,7 @@ def tree(
         find_worktree=never,
         remove_worktree=never,
         delete_branch=never,
+        find_worktrees=never,
     )
 
 

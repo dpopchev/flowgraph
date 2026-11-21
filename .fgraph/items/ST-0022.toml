@@ -24,3 +24,10 @@ title = "Add the help of every command to src/flowgraph/parser.py and src/flowgr
 description = "The arguments are read for the command they name before argparse parses them, since a command asked for its help is given without its required arguments. Removes the xfail mark of tests/functional/test_command_help.py."
 expected_output = "changed: src/flowgraph/parser.py builds the parser of every command with its help option and names the help the arguments ask for; src/flowgraph/cli.py prints it and exits 0 before a record is located; proved in tests/parser/"
 created = 2026-11-21 12:13:12+00:00
+
+[[tasks]]
+id = "T-0100"
+state = "backlog"
+title = "Update README.md to say every command prints its own help"
+expected_output = "changed: README.md shows fgraph start --help and says every command and every kind under add prints its usage and its options with --help, without a record"
+created = 2026-11-21 12:13:13+00:00

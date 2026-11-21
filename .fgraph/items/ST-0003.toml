@@ -8,3 +8,38 @@ created = 2026-11-20 19:35:06+00:00
 given = "a started Story whose Task is completed"
 when = "the Story is completed with a commit"
 then = "fgraph status lists it under Completed with that commit"
+
+[[tasks]]
+id = "T-0006"
+state = "backlog"
+title = "Add tests/functional/test_complete_story.py, failing on the criterion of ST-0003"
+expected_output = "created: tests/functional/test_complete_story.py states that fgraph status lists a completed Story under Completed with its commit"
+created = 2026-11-21 05:59:00+00:00
+
+[[tasks]]
+id = "T-0007"
+state = "backlog"
+title = "Add CompletedStory, CompletedTask and their complete moves to src/flowgraph/story.py, refusing a Story whose Tasks are not all completed"
+expected_output = "changed: src/flowgraph/story.py gains CompletedStory, CompletedTask, the commit value and the functions that complete a Story and a Task"
+created = 2026-11-21 05:59:01+00:00
+
+[[tasks]]
+id = "T-0008"
+state = "backlog"
+title = "Extend the item file and the views in src/flowgraph/story.py to keep the completed state with its date and commit"
+expected_output = "changed: src/flowgraph/story.py reads and writes the completed state of a Story and of a Task with its completed date and commit"
+created = 2026-11-21 05:59:01+00:00
+
+[[tasks]]
+id = "T-0009"
+state = "backlog"
+title = "Add the complete command to src/flowgraph/cli.py, listing a completed Story under Completed with its commit"
+expected_output = "changed: src/flowgraph/cli.py gains fgraph complete ID --commit SHA, and fgraph status lists a completed Story under Completed with its commit"
+created = 2026-11-21 05:59:02+00:00
+
+[[tasks]]
+id = "T-0010"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to show fgraph complete"
+expected_output = "changed: README.md shows fgraph complete, and docs/domain-model.md says how a completed item is kept"
+created = 2026-11-21 05:59:02+00:00

@@ -74,6 +74,13 @@ def test_the_work_items_of_a_kind_are_read_as_rows_by_id(tmp_path: Path) -> None
     ]
 
 
+def test_a_started_work_item_is_read_as_a_row_with_its_started_time(tmp_path: Path) -> None:
+    write_work_item(tmp_path, HALF)
+    assert read_work_item_rows(tmp_path, CHORE) == [
+        WorkItemRow("CH-0001", "a title", "started", created=CREATED, started=ON)
+    ]
+
+
 def test_a_file_of_another_kind_is_left_alone(tmp_path: Path) -> None:
     write_work_item(tmp_path, BARE)
     (tmp_path / "items" / "ER-0001.toml").write_text("not a chore", encoding="utf-8")

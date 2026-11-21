@@ -15,9 +15,6 @@ from flowgraph.cli import open_files, run
 
 pytestmark = pytest.mark.functional
 
-# What status lists once ST-0030 lands; what holds already has no mark.
-NOT_YET = pytest.mark.xfail(strict=True, reason="ST-0030: InProgress is listed by number yet")
-
 START = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "a title", *CRITERION]
@@ -71,7 +68,6 @@ class TestTwoStoriesStartedTheFirstBeforeTheSecond:
     def test_status_exits_with_zero(self, listed: Outcome) -> None:
         assert listed.status == 0
 
-    @NOT_YET
     def test_status_lists_the_second_above_the_first_under_in_progress(
         self, listed: Outcome
     ) -> None:

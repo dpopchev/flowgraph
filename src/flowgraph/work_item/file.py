@@ -151,6 +151,17 @@ def _reason_held(held: _HeldItemFile) -> str:
             assert_never(unreachable)
 
 
+def _started_held(held: _HeldItemFile) -> datetime | None:
+    """The started time a validated file of a started item holds; none in any other state."""
+    match held:
+        case _StartedItemFile():
+            return held.started
+        case _ItemFile() | _CompletedItemFile() | _RemovedItemFile():
+            return None
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
 def _completed_held(held: _HeldItemFile) -> datetime | None:
     """The completed time a validated file holds; none for an item not completed."""
     match held:
@@ -205,6 +216,7 @@ def read_work_item_rows(record: Path, kind: Kind) -> list[WorkItemRow]:
             _reason_held(held),
             held.parent,
             created=held.created,
+            started=_started_held(held),
             completed=_completed_held(held),
         )
         for held in _files_of(record, kind)

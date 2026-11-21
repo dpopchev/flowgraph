@@ -533,7 +533,26 @@ fgraph status        # on a terminal 60 columns wide
 ```
 
 Written to a pipe or a file, `fgraph status | less` or `fgraph status > f`,
-every line is whole. Only status is cut; `fgraph show` writes as before.
+every line is whole. Only status is cut, and the frames of `fgraph watch`
+with it; `fgraph show` writes as before.
+
+`fgraph watch` follows the record live: it writes what `fgraph status` writes
+as a frame, waits 5 seconds and writes the next, each frame read anew from
+the record. On a terminal a frame replaces the one before it, each line cut
+to the width the terminal has then; written to a pipe or a file the frames
+follow each other, every line whole. Ctrl-C ends it, with exit 0:
+
+```sh
+fgraph watch            # a frame every 5 seconds, until Ctrl-C
+fgraph watch -n 2       # a frame every 2 seconds; -n 0.5 for two a second
+fgraph watch --all      # every item in each frame, as fgraph status --all
+fgraph watch --count 3  # three frames, then exit 0
+```
+
+So a Story started while `fgraph watch` runs is listed under InProgress in
+its next frame, and on main the frames read a started Story where its Tasks
+are written, as `fgraph status` does. A `-n` or a `--count` that is no
+positive number exits 2 and writes no frame.
 
 A work item still in Backlog is rewritten with `fgraph amend`: its title, its
 description and each part of its criterion, each by its own option. A part

@@ -1,0 +1,10 @@
+id = "ST-0036"
+state = "backlog"
+title = "Cut the lines of fgraph status longer than the terminal from every one to none"
+description = "The developer's request of 2026-11-21: 'make the status showing more compact', with board watch of board 1, which cuts each line to the width of the terminal, as the inspiration. The readings the developer agreed with 'go' on 2026-11-21: (1) on a terminal a line of status longer than its width is cut to that width and ends with '...'; written to a pipe or a file every line is whole. (2) A completed work item is listed with its commit before its title, '  ST-0001  677f9b0  <title>', so that the cut keeps it. (3) Only status is cut; show and the other commands write as before. (4) The width is an effect: given to run() of src/flowgraph/cli.py as a callable and read from the terminal in main()."
+created = 2026-11-21 17:41:04+00:00
+
+[criterion]
+given = "a record with a Story whose line is longer than the terminal is wide"
+when = "fgraph status is run on that terminal"
+then = "the line of the Story ends with ... at the width of the terminal"

@@ -24,3 +24,11 @@ title = "Move the amend of a work item from src/flowgraph/work_item/model.py to 
 description = "Room for the criterion of a kind: model.py is at 389 lines, against the 400 of U-0001. No behavior changes."
 expected_output = "changed: src/flowgraph/work_item/model.py holds the work item in at most 350 lines, Amendment, NoPartError and amended_work_item now in src/flowgraph/work_item/amend.py; src/flowgraph/work_item/__init__.py exports them as before and make check still passes"
 created = 2026-11-21 11:45:00+00:00
+
+[[tasks]]
+id = "T-0086"
+state = "backlog"
+title = "Add the criterion of a Bug to src/flowgraph/criterion.py and carry the criterion of its kind through src/flowgraph/work_item/ and src/flowgraph/item_file.py"
+description = "Pure but for the file adapter. The field scenario of a work item becomes criterion, since a Bug has no scenario. A blank observed or expected is refused through said(). A work item made with the criterion of another kind is refused, which the file reader names with its path."
+expected_output = "changed: src/flowgraph/criterion.py holds Defect, what is observed and what is expected, beside Scenario; a kind names the criterion it takes and a work item carries that criterion; the file of a work item keeps either in its criterion table and reads it back; an amend rewrites the parts of the criterion the work item has and refuses the others; the detail a view reads gains observed and expected; their tests are in tests/criterion/ and tests/work_item/"
+created = 2026-11-21 11:45:00+00:00

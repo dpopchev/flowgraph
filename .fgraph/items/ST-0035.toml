@@ -1,0 +1,10 @@
+id = "ST-0035"
+state = "backlog"
+title = "Raise the started work items fgraph status reads from their worktree on main from none to every one"
+description = "Found while planning ST-0033 on 2026-11-21: a Task write of a started work item is taken in its worktree (docs/domain-model.md, Persistence), so the record of main holds its Tasks as they were at the start until the landing, and status run on main would list 0/2 T and no started Task. The readings the developer agreed with 'go' on 2026-11-21: (1) status reads a started work item from the worktree its branch wi/<id>-* is checked out in: the file at the same path inside it, as it is, committed or not, as the Task ids are read (ST-0019). (2) A started work item without a worktree, a record outside a git work tree and a record git ignores are read as before. (3) Run in the worktree of a work item, status reads the record of that worktree as before. Not in this Story: fgraph show on main still reads the record of main."
+created = 2026-11-21 17:41:03+00:00
+
+[criterion]
+given = "a repository with a Story started, and one of its two Tasks completed in its worktree"
+when = "fgraph status is run in the checkout of main"
+then = "it lists the Story with 1/2 T under InProgress"

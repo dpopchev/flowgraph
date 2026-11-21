@@ -1,0 +1,130 @@
+"""The commit of a write: the files the write changed, committed under its message, with fakes."""
+
+from collections.abc import Sequence
+from pathlib import Path
+from typing import Never
+
+import pytest
+
+from flowgraph.branch import GitError, make_slug
+from flowgraph.commit import Said, WorkTree, commit_written
+from flowgraph.item import Store, ToBranch, Written
+from flowgraph.story import make_story_id
+
+pytestmark = pytest.mark.command
+
+TOP = Path("/src/project")
+RECORD = TOP / ".fgraph"
+FILE = RECORD / "items" / "ST-0001.toml"
+ADDED = Written("added ST-0001\n", "chore: add ST-0001 in the record")
+STARTED = Written(
+    "started ST-0001\n",
+    "chore: start ST-0001 in the record",
+    ToBranch(make_story_id(1), make_slug("a-slug")),
+)
+BRANCHED = "branch wi/ST-0001-a-slug in /src/project.worktrees/ST-0001-a-slug\n"
+
+
+def never(*_: object) -> Never:
+    """A read or a write of the record that committing a write never asks for."""
+    raise AssertionError("a commit names the changed files and puts them back, no more")
+
+
+def refuse(*_: object) -> Never:
+    """A git step that git refuses."""
+    raise GitError("git commit failed: refused")
+
+
+def store(files: Sequence[Path], restored: list[str] | None = None) -> Store:
+    """The store of a record whose last write changed those files; it notes a restore."""
+    notes = [] if restored is None else restored
+    return Store(
+        find_work_item_rows=never,
+        load_work_item=never,
+        find_work_item_detail=never,
+        find_task_ids=never,
+        save_work_item=never,
+        load_queue=never,
+        save_queue=never,
+        find_changed_files=lambda: list(files),
+        restore_files=lambda: notes.append("restored"),
+    )
+
+
+def work_tree(steps: list[object], sha: str = "3e9ae5c0000") -> WorkTree:
+    """A work tree at TOP that notes each step it is asked for and commits at that sha."""
+
+    def commit_files(files: Sequence[Path], message: str) -> str:
+        steps.append((list(files), message))
+        return sha
+
+    def add_worktree(branch: str, path: Path, commit: str) -> None:
+        steps.append((branch, path, commit))
+
+    return WorkTree(TOP, commit_files, add_worktree)
+
+
+def test_a_write_outside_a_work_tree_says_its_line_without_a_warning() -> None:
+    assert commit_written(ADDED, store([FILE]), RECORD, lambda _: None) == Said("added ST-0001\n")
+
+
+def test_a_start_of_a_work_item_outside_a_work_tree_warns_that_no_branch_was_made() -> None:
+    assert commit_written(STARTED, store([FILE]), RECORD, lambda _: None) == Said(
+        "started ST-0001\n",
+        "fgraph: warning: no branch made: /src/project/.fgraph is not inside a git work tree\n",
+    )
+
+
+def test_the_changed_files_are_committed_relative_to_the_top_under_the_message() -> None:
+    steps: list[object] = []
+    commit_written(ADDED, store([FILE]), RECORD, lambda _: work_tree(steps))
+    assert steps == [([Path(".fgraph/items/ST-0001.toml")], "chore: add ST-0001 in the record")]
+
+
+def test_a_committed_write_says_its_line() -> None:
+    said = commit_written(ADDED, store([FILE]), RECORD, lambda _: work_tree([]))
+    assert said == Said("added ST-0001\n")
+
+
+def test_a_write_that_changed_no_file_makes_no_commit() -> None:
+    steps: list[object] = []
+    commit_written(ADDED, store([]), RECORD, lambda _: work_tree(steps))
+    assert steps == []
+
+
+def test_a_commit_refused_puts_the_files_back() -> None:
+    restored: list[str] = []
+    refusing = WorkTree(TOP, refuse, never)
+    with pytest.raises(GitError):
+        commit_written(ADDED, store([FILE], restored), RECORD, lambda _: refusing)
+    assert restored == ["restored"]
+
+
+def test_a_start_of_a_work_item_checks_its_branch_out_at_the_commit() -> None:
+    steps: list[object] = []
+    commit_written(STARTED, store([FILE]), RECORD, lambda _: work_tree(steps))
+    assert steps[1:] == [
+        ("wi/ST-0001-a-slug", Path("/src/project.worktrees/ST-0001-a-slug"), "3e9ae5c0000")
+    ]
+
+
+def test_a_start_of_a_work_item_names_its_branch_and_its_worktree() -> None:
+    said = commit_written(STARTED, store([FILE]), RECORD, lambda _: work_tree([]))
+    assert said == Said(f"started ST-0001\n{BRANCHED}")
+
+
+def test_a_worktree_refused_says_the_start_stays_committed() -> None:
+    committing = WorkTree(TOP, lambda *_: "3e9ae5c0000", refuse)
+    with pytest.raises(
+        GitError,
+        match=r"^git commit failed: refused -- ST-0001 is started at 3e9ae5c, its branch is not$",
+    ):
+        commit_written(STARTED, store([FILE]), RECORD, lambda _: committing)
+
+
+def test_a_worktree_refused_leaves_the_files_as_committed() -> None:
+    restored: list[str] = []
+    committing = WorkTree(TOP, lambda *_: "3e9ae5c0000", refuse)
+    with pytest.raises(GitError):
+        commit_written(STARTED, store([FILE], restored), RECORD, lambda _: committing)
+    assert restored == []

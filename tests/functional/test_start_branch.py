@@ -85,13 +85,11 @@ def environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
 
 @pytest.fixture
 def checkout(tmp_path: Path) -> Path:
-    """A git repository on main whose first commit holds a Story in Backlog with one Task."""
+    """A git repository on main whose commits hold a Story in Backlog with one Task."""
     path = tmp_path / "project"
     path.mkdir()
     git(path, "init", "--quiet", "--initial-branch", "main")
     runs(path, ADD_STORY, ADD_TASK)
-    git(path, "add", ".fgraph")
-    git(path, "commit", "--quiet", "--message", "chore: write ST-0001 in the record")
     return path
 
 

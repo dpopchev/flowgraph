@@ -1,7 +1,8 @@
 """An item of any kind, named by its id: the store of a record, and the commands by id.
 
 Each command reads the id, finds the kind it names and runs the work item command on the store;
-it returns the line fgraph writes, or raises the refusal of the move.
+a view returns the text fgraph writes, a write what it says and the message of its commit, and
+each raises the refusal of the move.
 """
 
 from collections.abc import Callable, Mapping
@@ -10,10 +11,20 @@ from functools import partial
 from pathlib import Path
 from typing import assert_never
 
-from flowgraph import branch, work_item
-from flowgraph.branch import GitError, SlugError, branch_of, make_slug, slug_of_title
+from flowgraph import work_item
+from flowgraph.branch import Slug, SlugError, make_slug, slug_of_title
 from flowgraph.criterion import make_commit
-from flowgraph.queue import LoadQueue, SaveQueue, queued, read_queue, reorder, write_queue
+from flowgraph.journal import Change, changed_files, noted, restore
+from flowgraph.queue import (
+    QUEUE,
+    LoadQueue,
+    Queue,
+    SaveQueue,
+    queued,
+    read_queue,
+    reorder,
+    write_queue,
+)
 from flowgraph.record import ITEMS, Now
 from flowgraph.story import STORY
 from flowgraph.task import TaskId, TaskIdError, parse_task_id, task_id_text
@@ -28,6 +39,7 @@ from flowgraph.work_item import (
     WorkItemId,
     WorkItemIdError,
     WorkItemRow,
+    WorkItemState,
     parse_work_item_id,
     work_item_id_text,
 )
@@ -47,11 +59,14 @@ FindWorkItemDetail = Callable[[WorkItemId], WorkItemDetail]
 # The id of an item of any kind.
 ItemId = WorkItemId | TaskId
 
-# The path of the file of the work item of that id, whether or not it exists.
-FindWorkItemFile = Callable[[WorkItemId], Path]
+# The files of the record written since the store was opened whose content changed.
+FindChangedFiles = Callable[[], list[Path]]
 
-# The message of the commit that holds the start of a work item, for its id.
-START_MESSAGE = "chore: start {} in the record"
+# Put every file written since the store was opened back as it was before.
+RestoreFiles = Callable[[], object]
+
+# The message of the commit that holds a write, for what was written.
+MESSAGE = "chore: {} in the record"
 
 
 @dataclass(frozen=True)
@@ -65,7 +80,8 @@ class Store:
     save_work_item: SaveWorkItem
     load_queue: LoadQueue
     save_queue: SaveQueue
-    find_work_item_file: FindWorkItemFile
+    find_changed_files: FindChangedFiles
+    restore_files: RestoreFiles
 
 
 # The store of the record in that directory.
@@ -73,29 +89,23 @@ OpenStore = Callable[[Path], Store]
 
 
 @dataclass(frozen=True)
-class WorkTree:
-    """The git work tree a record is inside: its top and its steps, each bound to it.
+class ToBranch:
+    """The work item a start branches, and the slug of its branch."""
 
-    `commit_file` commits one file, relative to the top, with a message and returns its sha;
-    `add_worktree` checks out a new branch at a commit in a new worktree at a path. Each raises
-    GitError when git refuses it.
-    """
-
-    path: Path
-    commit_file: Callable[[Path, str], str]
-    add_worktree: Callable[[str, Path, str], None]
-
-
-# The git work tree the directory is inside, or None when it is inside none.
-OpenGit = Callable[[Path], WorkTree | None]
+    item: WorkItemId
+    slug: Slug
 
 
 @dataclass(frozen=True)
-class Begun:
-    """What a start says: its lines on the output and a warning on the error output, or none."""
+class Written:
+    """What a write of the record says, and the message of the commit that holds it.
+
+    `branch` names the branch to check out at that commit: set by the start of a work item only.
+    """
 
     out: str
-    warning: str = ""
+    message: str
+    branch: ToBranch | None = None
 
 
 class ItemIdError(ValueError):
@@ -113,28 +123,33 @@ def work_item_file(record: Path, item_id: WorkItemId) -> Path:
 
 
 def open_files(record: Path) -> Store:
-    """The store of the record in that directory, kept as its files."""
+    """The store of the record in that directory, kept as its files.
+
+    It journals each file before it writes it, so it names the files a write changed and puts
+    them back as they were.
+    """
+    journal: list[Change] = []
+
+    def save_work_item(item: WorkItemState) -> None:
+        nonlocal journal
+        journal = noted(journal, work_item_file(record, item.id))
+        work_item.write_work_item(record, item)
+
+    def save_queue(queue: Queue) -> None:
+        nonlocal journal
+        journal = noted(journal, record / QUEUE)
+        write_queue(record, KINDS, queue)
+
     return Store(
         find_work_item_rows=partial(work_item.read_work_item_rows, record),
         load_work_item=partial(work_item.read_work_item, record),
         find_work_item_detail=partial(work_item.read_work_item_detail, record),
         find_task_ids=partial(read_every_task_id, record),
-        save_work_item=partial(work_item.write_work_item, record),
+        save_work_item=save_work_item,
         load_queue=partial(read_queue, record, KINDS),
-        save_queue=partial(write_queue, record, KINDS),
-        find_work_item_file=partial(work_item_file, record),
-    )
-
-
-def open_git(directory: Path) -> WorkTree | None:
-    """The git work tree the directory is inside, its steps run by git; None when in none."""
-    top = branch.work_tree_of(directory)
-    if top is None:
-        return None
-    return WorkTree(
-        top,
-        lambda file, message: branch.commit_files(top, [file], message),
-        partial(branch.add_worktree, top),
+        save_queue=save_queue,
+        find_changed_files=lambda: changed_files(journal),
+        restore_files=lambda: restore(journal),
     )
 
 
@@ -202,8 +217,8 @@ def status_item(store: Store) -> str:
     return status_text([*(rows[item_id] for item_id in backlog), *moved_on])
 
 
-def reorder_item(item: str, before: str, store: Store) -> str:
-    """Put the work item right before the other in the queue of the Backlog; the line saying so.
+def reorder_item(item: str, before: str, store: Store) -> Written:
+    """Put the work item right before the other in the queue of the Backlog; what the write says.
 
     Raises WorkItemIdError when a text is the id of no kind, NotInBacklogError when one of the
     two is not in Backlog and SameItemError when they are one work item; nothing is saved.
@@ -217,7 +232,8 @@ def reorder_item(item: str, before: str, store: Store) -> str:
         load_queue=store.load_queue,
         save_queue=store.save_queue,
     )
-    return f"moved {work_item_id_text(moved)} before {work_item_id_text(other)}\n"
+    placed = f"{work_item_id_text(moved)} before {work_item_id_text(other)}"
+    return Written(f"moved {placed}\n", MESSAGE.format(f"reorder {placed}"))
 
 
 def show_item(item: str, store: Store) -> str:
@@ -236,8 +252,8 @@ def add_item(
     description: str,
     store: Store,
     now: Now,
-) -> str:
-    """Add a work item of that kind with its Given / When / Then; the line that says so.
+) -> Written:
+    """Add a work item of that kind with its Given / When / Then; what the write says.
 
     Raises EmptyPartError when the title or a part of the criterion is blank; nothing is saved.
     """
@@ -253,11 +269,12 @@ def add_item(
         save_work_item=store.save_work_item,
         now=now,
     )
-    return f"added {work_item_id_text(added)}\n"
+    text = work_item_id_text(added)
+    return Written(f"added {text}\n", MESSAGE.format(f"add {text}"))
 
 
-def amend_item(item: str, parts: work_item.Amendment, store: Store) -> str:
-    """Rewrite the parts named of the work item in Backlog of that id; the line that says so.
+def amend_item(item: str, parts: work_item.Amendment, store: Store) -> Written:
+    """Rewrite the parts named of the work item in Backlog of that id; what the write says.
 
     Raises WorkItemIdError when the text is the id of no kind, or the refusal of the amend.
     """
@@ -266,21 +283,23 @@ def amend_item(item: str, parts: work_item.Amendment, store: Store) -> str:
     work_item.amend_work_item(
         item_id=item_id, amendment=parts, load_work_item=load, save_work_item=save
     )
-    return f"amended {work_item_id_text(item_id)}\n"
+    text = work_item_id_text(item_id)
+    return Written(f"amended {text}\n", MESSAGE.format(f"amend {text}"))
 
 
 def write_task(
     parent: str, title: str, expected_output: str, description: str, store: Store, now: Now
-) -> str:
-    """Write a Task for the work item named as parent; the line that says so.
+) -> Written:
+    """Write a Task for the work item named as parent; what the write says.
 
     Its id is the next free one across every kind. Raises WorkItemIdError when the parent is the
     id of no kind, WorkItemNotFoundError when the record holds no such item,
     CompletedAlreadyError when it is completed and EmptyPartError when a part is blank; nothing
     is saved.
     """
+    holder = parse_work_item_id_of_any_kind(parent)
     written = work_item.add_task(
-        parent=parse_work_item_id_of_any_kind(parent),
+        parent=holder,
         title=title,
         expected_output=expected_output,
         description=description,
@@ -289,7 +308,9 @@ def write_task(
         save_work_item=store.save_work_item,
         now=now,
     )
-    return f"added {task_id_text(written)} to {parent}\n"
+    task = task_id_text(written)
+    message = MESSAGE.format(f"add {task} of {work_item_id_text(holder)}")
+    return Written(f"added {task} to {parent}\n", message)
 
 
 def _load_holder(store: Store) -> work_item.LoadHolder:
@@ -306,58 +327,26 @@ def _load_holder(store: Store) -> work_item.LoadHolder:
     return holder
 
 
-def _start_work_item(
-    item_id: WorkItemId, slug: str | None, store: Store, now: Now, record: Path, open_git: OpenGit
-) -> Begun:
-    """Start the work item, commit its file and check out its branch in a new worktree.
+def start_item(item: str, slug: str | None, store: Store, now: Now) -> Written:
+    """Start the work item or the Task of that id; what the write says.
 
-    Outside a git work tree it is started alone, with a warning. When the commit fails the file
-    is put back as it was; when the worktree fails the start stays committed. Either raises
-    GitError naming the git command.
-    """
-    previous = store.load_work_item(item_id)
-    named = make_slug(slug) if slug is not None else slug_of_title(previous.title)
-    work_tree = open_git(record)
-    work_item.start_work_item(
-        item_id=item_id,
-        load_work_item=store.load_work_item,
-        save_work_item=store.save_work_item,
-        now=now,
-    )
-    started = f"started {work_item_id_text(item_id)}\n"
-    if work_tree is None:
-        warning = f"fgraph: warning: no branch made: {record} is not inside a git work tree\n"
-        return Begun(started, warning)
-    top = work_tree.path.resolve()
-    file = store.find_work_item_file(item_id).resolve().relative_to(top)
-    try:
-        sha = work_tree.commit_file(file, START_MESSAGE.format(work_item_id_text(item_id)))
-    except GitError:
-        store.save_work_item(previous)
-        raise
-    made = branch_of(item_id, named, top)
-    try:
-        work_tree.add_worktree(made.name, made.path, sha)
-    except GitError as error:
-        raise GitError(
-            f"{error} -- {work_item_id_text(item_id)} is started at {sha[:7]}, its branch is not"
-        ) from error
-    return Begun(f"{started}branch {made.name} in {made.path}\n")
-
-
-def start_item(
-    item: str, slug: str | None, store: Store, now: Now, *, record: Path, open_git: OpenGit
-) -> Begun:
-    """Start the work item or the Task of that id; what the start says.
-
-    A work item is committed and branched when the record is inside a git work tree; its slug
-    is the one given, else the slug of its title. Raises ItemIdError when the text is no id,
-    SlugError when the slug is none or is given for a Task, the refusal of the start before
-    anything is saved, or GitError when git refuses a step.
+    A work item names the branch to check out at the commit of its start: its slug is the one
+    given, else the slug of its title. Raises ItemIdError when the text is no id, SlugError when
+    the slug is none or is given for a Task, or the refusal of the start; nothing is saved.
     """
     match parse_item_id(item):
         case WorkItemId() as item_id:
-            return _start_work_item(item_id, slug, store, now, record, open_git)
+            title = store.load_work_item(item_id).title
+            named = make_slug(slug) if slug is not None else slug_of_title(title)
+            work_item.start_work_item(
+                item_id=item_id,
+                load_work_item=store.load_work_item,
+                save_work_item=store.save_work_item,
+                now=now,
+            )
+            text = work_item_id_text(item_id)
+            message = MESSAGE.format(f"start {text}")
+            return Written(f"started {text}\n", message, ToBranch(item_id, named))
         case TaskId() as task_id:
             if slug is not None:
                 raise SlugError(f"--slug names the branch of a work item: {item} is a Task")
@@ -367,13 +356,14 @@ def start_item(
                 save_work_item=store.save_work_item,
                 now=now,
             )
-            return Begun(f"started {task_id_text(task_id)} of {work_item_id_text(holder)}\n")
+            task = f"{task_id_text(task_id)} of {work_item_id_text(holder)}"
+            return Written(f"started {task}\n", MESSAGE.format(f"start {task}"))
         case _ as unreachable:
             assert_never(unreachable)
 
 
-def complete_item(item: str, sha: str, store: Store, now: Now) -> str:
-    """Complete the work item or the Task of that id in that commit; the line that says so.
+def complete_item(item: str, sha: str, store: Store, now: Now) -> Written:
+    """Complete the work item or the Task of that id in that commit; what the write says.
 
     Raises ItemIdError when the text is no id, CommitError when the sha is no commit, or the
     refusal of the complete; nothing is saved.
@@ -388,7 +378,10 @@ def complete_item(item: str, sha: str, store: Store, now: Now) -> str:
                 save_work_item=store.save_work_item,
                 now=now,
             )
-            return f"completed {work_item_id_text(item_id)} at {commit.sha}\n"
+            text = work_item_id_text(item_id)
+            return Written(
+                f"completed {text} at {commit.sha}\n", MESSAGE.format(f"complete {text}")
+            )
         case TaskId() as task_id:
             commit = make_commit(sha)
             holder = work_item.complete_task(
@@ -398,7 +391,9 @@ def complete_item(item: str, sha: str, store: Store, now: Now) -> str:
                 save_work_item=store.save_work_item,
                 now=now,
             )
-            task = task_id_text(task_id)
-            return f"completed {task} of {work_item_id_text(holder)} at {commit.sha}\n"
+            task = f"{task_id_text(task_id)} of {work_item_id_text(holder)}"
+            return Written(
+                f"completed {task} at {commit.sha}\n", MESSAGE.format(f"complete {task}")
+            )
         case _ as unreachable:
             assert_never(unreachable)

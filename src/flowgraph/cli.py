@@ -11,18 +11,18 @@ from pathlib import Path
 from typing import assert_never
 
 from flowgraph.branch import GitError, SlugError
+from flowgraph.commit import OpenGit, Said, commit_written, open_git
 from flowgraph.criterion import CommitError, EmptyPartError
 from flowgraph.item import (
     ItemIdError,
-    OpenGit,
     OpenStore,
     Store,
+    Written,
     add_item,
     amend_item,
     complete_item,
     kind_named,
     open_files,
-    open_git,
     reorder_item,
     show_item,
     start_item,
@@ -54,42 +54,26 @@ DESCRIPTION = "flowgraph keeps the record of a project's work."
 # Write text to a stream; what it returns is ignored, so a stream's write and a list's append fit.
 Write = Callable[[str], object]
 
-# The refusals of a start, each written as a usage error; a git step refused among them.
-START_REFUSED = (
+# The refusals of a command, each written as a usage error; a git step refused among them.
+REFUSED = (
     ItemIdError,
+    WorkItemIdError,
     SlugError,
     GitError,
+    CommitError,
+    EmptyPartError,
+    NoPartError,
     WorkItemNotFoundError,
     TaskNotFoundError,
     NoTaskError,
+    NotStartedError,
     StartedAlreadyError,
     ItemInBacklogError,
-    CompletedAlreadyError,
-)
-
-# The refusals of a complete, each written as a usage error.
-COMPLETE_REFUSED = (
-    ItemIdError,
-    CommitError,
-    WorkItemNotFoundError,
-    TaskNotFoundError,
-    NotStartedError,
     OpenTaskError,
     CompletedAlreadyError,
+    NotInBacklogError,
+    SameItemError,
 )
-
-# The refusals of an amend, each written as a usage error.
-AMEND_REFUSED = (
-    WorkItemIdError,
-    WorkItemNotFoundError,
-    NoPartError,
-    EmptyPartError,
-    StartedAlreadyError,
-    CompletedAlreadyError,
-)
-
-# The refusals of a reorder, each written as a usage error.
-REORDER_REFUSED = (WorkItemIdError, NotInBacklogError, SameItemError)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -189,6 +173,51 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _written(args: argparse.Namespace, store: Store, now: Now) -> Written | None:
+    """Make the write the arguments name on the store; None when they name a view or no command.
+
+    Raises the refusal of the write; nothing is saved then.
+    """
+    match args.command:
+        case "add" if args.kind == "task":
+            return write_task(args.parent, args.title, args.output, args.description, store, now)
+        case "add":
+            criterion = (args.given, args.when, args.then)
+            kind = kind_named(args.kind)
+            return add_item(kind, args.title, criterion, args.description, store, now)
+        case "amend":
+            parts = Amendment(args.title, args.description, args.given, args.when, args.then)
+            return amend_item(args.id, parts, store)
+        case "complete":
+            return complete_item(args.id, args.commit, store, now)
+        case "start":
+            return start_item(args.id, args.slug, store, now)
+        case "reorder":
+            return reorder_item(args.id, args.before, store)
+        case _:
+            return None
+
+
+def _said(
+    args: argparse.Namespace, store: Store, now: Now, record: Path, open_git: OpenGit
+) -> Said | None:
+    """Run the command the arguments name on the record; None when they name none.
+
+    A write is committed once it is made. Raises the refusal of the command, a git step refused
+    among them.
+    """
+    written = _written(args, store, now)
+    if written is not None:
+        return commit_written(written, store, record, open_git)
+    match args.command:
+        case "show":
+            return Said(show_item(args.id, store))
+        case "status":
+            return Said(status_item(store))
+        case _:
+            return None
+
+
 def run(
     argv: Sequence[str],
     cwd: Path,
@@ -202,8 +231,8 @@ def run(
 ) -> int:
     """Read the arguments, locate the record in cwd, run the command and return the exit status.
 
-    The help option needs no record; every other call fails with 2 when there is none. A start
-    of a work item finds the git work tree of the record through open_git.
+    The help option needs no record; every other call fails with 2 when there is none. A write
+    finds the git work tree of the record through open_git and is committed there.
     """
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -212,82 +241,18 @@ def run(
         return 0
     match locate(cwd, args.dir, is_dir):
         case Found(path) | Given(path):
-            store = open_store(path)
-            if args.command == "add" and args.kind == "task":
-                try:
-                    written = write_task(
-                        args.parent, args.title, args.output, args.description, store, now
-                    )
-                except (
-                    WorkItemNotFoundError,
-                    WorkItemIdError,
-                    EmptyPartError,
-                    CompletedAlreadyError,
-                ) as error:
-                    write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
-                    return 2
-                write(written)
+            try:
+                said = _said(args, open_store(path), now, path, open_git)
+            except REFUSED as error:
+                write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
+                return 2
+            if said is None:
+                write(parser.format_help())
+                write(f"record: {path}\n")
                 return 0
-            if args.command == "amend":
-                parts = Amendment(args.title, args.description, args.given, args.when, args.then)
-                try:
-                    amended = amend_item(args.id, parts, store)
-                except AMEND_REFUSED as error:
-                    write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
-                    return 2
-                write(amended)
-                return 0
-            if args.command == "complete":
-                try:
-                    done = complete_item(args.id, args.commit, store, now)
-                except COMPLETE_REFUSED as error:
-                    write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
-                    return 2
-                write(done)
-                return 0
-            if args.command == "show":
-                try:
-                    shown = show_item(args.id, store)
-                except (WorkItemNotFoundError, WorkItemIdError) as error:
-                    write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
-                    return 2
-                write(shown)
-                return 0
-            if args.command == "start":
-                try:
-                    begun = start_item(
-                        args.id, args.slug, store, now, record=path, open_git=open_git
-                    )
-                except START_REFUSED as error:
-                    write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
-                    return 2
-                write(begun.out)
-                if begun.warning:
-                    write_error(begun.warning)
-                return 0
-            if args.command == "add":
-                criterion = (args.given, args.when, args.then)
-                kind = kind_named(args.kind)
-                try:
-                    added = add_item(kind, args.title, criterion, args.description, store, now)
-                except EmptyPartError as error:
-                    write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
-                    return 2
-                write(added)
-                return 0
-            if args.command == "reorder":
-                try:
-                    moved = reorder_item(args.id, args.before, store)
-                except REORDER_REFUSED as error:
-                    write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
-                    return 2
-                write(moved)
-                return 0
-            if args.command == "status":
-                write(status_item(store))
-                return 0
-            write(parser.format_help())
-            write(f"record: {path}\n")
+            write(said.out)
+            if said.warning:
+                write_error(said.warning)
             return 0
         case NotFound(searched, tried):
             names = " or ".join(f"{name}/" for name in tried)

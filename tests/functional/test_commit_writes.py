@@ -14,10 +14,7 @@ import pytest
 
 from flowgraph.cli import open_files, open_git, run
 
-pytestmark = [
-    pytest.mark.functional,
-    pytest.mark.xfail(strict=True, reason="ST-0020: a write of the record is not committed yet"),
-]
+pytestmark = pytest.mark.functional
 
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
@@ -160,11 +157,7 @@ class TestAStoryAddedInsideAGitRepository:
         assert git(checkout, "status", "--porcelain") == ""
 
 
-# The steps this Story makes commit; the start of a work item commits since ST-0009.
-COMMITTED_HERE = [at for at, step in enumerate(STEPS) if step.argv != ("start", "ST-0001")]
-
-
-@pytest.mark.parametrize("last", COMMITTED_HERE, ids=[STEPS[at].subject for at in COMMITTED_HERE])
+@pytest.mark.parametrize("last", range(len(STEPS)), ids=[step.subject for step in STEPS])
 def test_a_write_leaves_its_commit_holding_only_its_file(
     last: int, checkout: Path, tmp_path: Path
 ) -> None:
@@ -189,6 +182,17 @@ def test_a_change_beside_the_record_stays_out_of_the_commit(checkout: Path) -> N
         "A  notes.txt",
         STORY_FILE,
     )
+
+
+def test_a_write_that_leaves_its_file_as_it_was_makes_no_commit(checkout: Path) -> None:
+    fgraph(ADD_STORY, checkout)
+    fgraph(["amend", "ST-0001", "--then", "another"], checkout)
+    assert git(checkout, "log", "-1", "--format=%s") == "chore: add ST-0001 in the record"
+
+
+def test_a_write_outside_a_git_work_tree_is_made_without_a_warning(tmp_path: Path) -> None:
+    outcome = fgraph(ADD_STORY, tmp_path)
+    assert (outcome.status, outcome.out, outcome.err) == (0, "added ST-0001\n", "")
 
 
 class TestAnAddWhoseCommitGitRefuses:

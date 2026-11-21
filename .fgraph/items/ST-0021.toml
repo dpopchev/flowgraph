@@ -34,7 +34,8 @@ commit = "6403647"
 
 [[tasks]]
 id = "T-0062"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say a work item starts on main alone"
 expected_output = "changed: README.md says fgraph start of a Story exits 2 off main and what it names; docs/domain-model.md, Persistence, says the start of a work item is checked against main and no longer says it is not"
 created = 2026-11-21 11:08:46+00:00
+started = 2026-11-21 11:11:08+00:00

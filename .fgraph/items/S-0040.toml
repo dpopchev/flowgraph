@@ -35,8 +35,10 @@ commit = "11e4745"
 
 [[tasks]]
 id = "T-0165"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say the commits of the record are turned off in .fgraph/config.toml"
 expected_output = "changed: README.md and docs/domain-model.md say [git] commit of .fgraph/config.toml turns the commits of the record off, that it is on by default inside a git work tree that does not ignore the record, what a write does with it off, and that the development is refused without it"
 created = 2026-11-21 22:18:53+00:00
 started = 2026-11-21 22:44:48+00:00
+completed = 2026-11-21 22:47:32+00:00
+commit = "10db864"

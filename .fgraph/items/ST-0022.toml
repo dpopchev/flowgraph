@@ -12,12 +12,14 @@ then = "it prints the usage and the options of start and exits 0"
 
 [[tasks]]
 id = "T-0098"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_command_help.py, failing on the criterion of ST-0022"
 description = "Run through run() of src/flowgraph/cli.py with no record in the directory, as tests/functional/test_help_menu.py does. Seen red, then marked a strict xfail naming ST-0022 until the Task that turns it green removes the mark. The description leaves no question open. The agent's readings, each a routine call: (1) --help and -h after a command print the help of that command -- its usage line, its arguments and its options -- and exit 0, wherever they stand among its arguments, required ones given or not. (2) Every command prints its own: add, each kind under add, amend, show, start, block, unblock, complete, land, remove, reorder and status; fgraph add --help lists the kinds. (3) The help of a command needs no record and reads none, as the menu; --dir before the command changes nothing. (4) Each help lists the option itself, '-h, --help'."
 expected_output = "created: tests/functional/test_command_help.py states that fgraph start --help, run in any directory, prints the usage and the options of start and exits 0"
 created = 2026-11-21 12:13:12+00:00
 started = 2026-11-21 12:13:32+00:00
+completed = 2026-11-21 12:14:08+00:00
+commit = "0b06b3a"
 
 [[tasks]]
 id = "T-0099"

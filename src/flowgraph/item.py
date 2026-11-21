@@ -144,19 +144,19 @@ def _feature_rows(store: Store, rows: Collection[WorkItemRow]) -> list[FeatureRo
     ]
 
 
-def status_item(store: Store) -> str:
+def status_item(store: Store, top: int | None = None) -> str:
     """The text of the Features of the record, then its work items of every kind by bucket.
 
     The Features are listed by number, each with its derived bucket. The Backlog is listed in
     the order of its queue, InProgress the last started first and Completed the last completed
-    first; Removed by kind and number.
+    first; Removed by kind and number. Under a top each heading lists that many, the first ones.
     """
     rows = _rows_by_id(store)
     backlog = queued(store.load_queue(), _backlog_as_added(rows))
     moved = [*_last_first(rows, STARTED), *_last_first(rows, COMPLETED)]
     others = [row for row in rows.values() if row.state not in (BACKLOG, STARTED, COMPLETED)]
     listed = [*(rows[item_id] for item_id in backlog), *moved, *others]
-    return status_text(listed, _feature_rows(store, rows.values()))
+    return status_text(listed, _feature_rows(store, rows.values()), top)
 
 
 def reorder_item(item: str, before: str, store: Store) -> Written:

@@ -15,8 +15,6 @@ from flowgraph.cli import open_files, run
 
 pytestmark = pytest.mark.functional
 
-NOT_YET = pytest.mark.xfail(strict=True, reason="ST-0031: status lists every item yet")
-
 START = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 SIX = range(1, 7)
@@ -80,7 +78,6 @@ class TestSixStoriesCompleted:
     def test_status_exits_with_zero(self, listed: Outcome) -> None:
         assert listed.status == 0
 
-    @NOT_YET
     def test_status_lists_the_five_completed_last_then_one_more(self, listed: Outcome) -> None:
         assert listed.out == (
             "Backlog (0)\n"
@@ -95,7 +92,6 @@ class TestSixStoriesCompleted:
         )
 
 
-@NOT_YET
 def test_status_all_lists_every_one(tmp_path: Path) -> None:
     listed = after(tmp_path, SIX_COMPLETED, ["status", "--all"])
     assert listed.out.splitlines()[-1] == "  ST-0001  title 1  abc1231"

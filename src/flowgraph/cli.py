@@ -48,7 +48,7 @@ from flowgraph.item import (
 )
 from flowgraph.land import LandError, land_item
 from flowgraph.parent import FeatureIdError
-from flowgraph.parser import build_command_line, help_asked
+from flowgraph.parser import TOP, build_command_line, help_asked
 from flowgraph.queue import NotInBacklogError, SameItemError
 from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, Now, locate
 from flowgraph.scope import (
@@ -202,7 +202,7 @@ def _said(
         case "show":
             return Said(show_item(args.id, store))
         case "status":
-            return Said(status_item(store))
+            return Said(status_item(store, None if args.all else TOP))
         case _:
             return None
 

@@ -217,6 +217,44 @@ fgraph status
 # fgraph: error: /src/project/.fgraph/config.toml: development.merge is "rebase": it takes merge-commit, squash or fast-forward
 ```
 
+The development gates a landing when the record names a command:
+
+```toml
+[development]
+enabled = true
+gate = "make check"
+```
+
+`gate` is one command of the record, a command line run at a landing. It is
+the reading, decided when S-0042 was ordered, of the developer's words of
+2026-11-21 on starting a work item, "checks if criteria are met before
+closing": no check per Task run at a complete, and the Given / When / Then of
+the Story is neither run nor confirmed by it. `fgraph land` runs the gate
+through the shell at the top of the work tree of `main`, once the work of the
+branch is merged there and before the landing is committed or the Story
+completed, so the gate checks the tree `main` will have. Its output is
+written as the gate writes it. A gate that exits with another status than 0
+leaves `main` where it was, whatever the `merge`, and the landing exits 2
+naming the command and its status:
+
+```sh
+fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
+# fgraph: error: S-0001 cannot land: development.gate = "make check" exited with status 2
+```
+
+Nothing is merged then: the Story stays started, with its branch and its
+worktree, to be fixed there and landed again. A gate that passes lands as the
+landing is shown further down. The Tasks completed stay the first rule of a
+landing: a Story with a Task to complete is refused for it, and its gate is
+not run. The key has no default: left out, a landing runs no gate. It is a
+key of the development, so it gates nothing with the development off. An
+empty command line exits 2 naming the key, whatever the command:
+
+```sh
+fgraph status
+# fgraph: error: /src/project/.fgraph/config.toml: development.gate is "": it takes a command line
+```
+
 The commits of the record are a layer the record turns off:
 
 ```toml
@@ -254,8 +292,8 @@ fgraph status
 
 A `config.toml` fgraph refuses -- a table or a key the configuration does not
 have, a value of another type than the key takes, a `parallel` below 1, a
-`merge` that is none of its three words, a text that is no TOML -- exits 2
-naming the file and the key, whatever the command:
+`merge` that is none of its three words, an empty `gate`, a text that is no
+TOML -- exits 2 naming the file and the key, whatever the command:
 
 ```sh
 fgraph status
@@ -514,8 +552,8 @@ that message, completes the Story at that commit, commits the record as
 branch. A land exits 2 and names why, with nothing merged, when the
 development is off, when a Task of the Story is not completed, when the
 checkout it runs in is not on `main`, when the Story has no branch or
-several, when the record is outside a git work tree, or when git refuses the
-merge.
+several, when the record is outside a git work tree, when git refuses the
+merge, or when the gate of the record fails.
 
 That is a landing by `merge-commit`, the way of a record whose `config.toml`
 names no `[development] merge`. With `merge = "squash"` the same command puts
@@ -552,6 +590,14 @@ fgraph land S-0001
 
 Every other rule of a landing holds for each way: what it refuses, that
 nothing is merged then, and the commit of the record after it.
+
+A record whose `config.toml` names a `[development] gate` runs that command
+at every landing, by each way, between the merge and the commit. The gate
+runs in the checkout of `main` with the work of the branch merged in, not yet
+committed; a landing by `fast-forward` runs it on that same merge before
+`main` moves to the tip. When the gate fails the landing exits 2 naming the
+command and its status, as shown with the configuration, and the merge is
+dropped: `main` is where it was.
 
 An Upkeep is work that keeps a behavior and changes the inside, such as a
 split of a module. Its criterion is a Given / When / Then whose When already

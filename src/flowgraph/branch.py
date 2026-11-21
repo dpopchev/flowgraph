@@ -11,6 +11,9 @@ from pathlib import Path
 
 from flowgraph.work_item import WorkItemId, work_item_id_text
 
+# The branch a work item is started on and lands on.
+MAIN = "main"
+
 # The words of a title its slug is made of, when no slug is given.
 SLUG_WORDS = 4
 

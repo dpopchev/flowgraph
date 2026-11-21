@@ -16,9 +16,6 @@ from flowgraph.cli import open_files, open_git, run
 
 pytestmark = pytest.mark.functional
 
-# What a start off main is refused for once ST-0021 lands; what still starts has no mark.
-NOT_YET = pytest.mark.xfail(strict=True, reason="ST-0021: a work item starts in every work tree")
-
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "Raise the Stories fgraph lists from 0 to 1", *CRITERION]
@@ -104,7 +101,6 @@ class TestAnotherStoryStartedInTheWorktreeOfAStartedStory:
     def test_start_exits_with_two(self, refused: Outcome) -> None:
         assert refused.status == 2
 
-    @NOT_YET
     def test_start_names_the_checkout_to_start_it_in(
         self, refused: Outcome, checkout: Path, worktree: Path
     ) -> None:
@@ -122,7 +118,6 @@ class TestAnotherStoryStartedInTheWorktreeOfAStartedStory:
         assert git(checkout, "branch", "--list", "wi/ST-0002-*") == ""
 
 
-@NOT_YET
 def test_a_story_started_in_a_checkout_on_another_branch_names_that_branch(checkout: Path) -> None:
     git(checkout, "switch", "--quiet", "--create", "a-feature")
     outcome = fgraph(["start", "ST-0002"], checkout)

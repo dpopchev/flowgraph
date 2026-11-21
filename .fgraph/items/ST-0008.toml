@@ -34,11 +34,12 @@ commit = "970de05"
 
 [[tasks]]
 id = "T-0095"
-state = "backlog"
+state = "started"
 title = "Add the parent to the work item in src/flowgraph/work_item/ and src/flowgraph/item_file.py"
 description = "Standing alone is a value of parent. The parent is the last field of each state, so a work item made without one stands alone."
 expected_output = "changed: a work item carries its parent, a Feature or standing alone, through every move; its file keeps parent = \"F-0001\" when it is under a Feature and reads a file without the key as standing alone; the row and the detail a view reads gain the parent; their tests are in tests/work_item/"
 created = 2026-11-21 12:04:37+00:00
+started = 2026-11-21 12:06:55+00:00
 
 [[tasks]]
 id = "T-0096"

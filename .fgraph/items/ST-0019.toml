@@ -1,9 +1,11 @@
 id = "ST-0019"
-state = "started"
+state = "completed"
 title = "Cut the Task ids two worktrees of one record can hand out twice from any to none"
 description = "Split from ST-0010 on 2026-11-21; it closes the open question written there. Once a Task of a started item is added in its worktree, main and the worktree can hand out the same number, and a Task id held by two files is silent today: a probe on 2026-11-21 showed fgraph status exit 0 with T-0002 in two files. The agent's proposal: the next Task id is one above the highest in the record of every worktree of the repository. It covers the worktrees of one machine, not two clones. The other way, not chosen: refuse a duplicate when the work item lands. Ordered after ST-0010. Its Tasks are written when it is ordered."
 created = 2026-11-21 08:37:16+00:00
 started = 2026-11-21 11:15:54+00:00
+completed = 2026-11-21 11:18:36+00:00
+commit = "c80b4a2"
 
 [criterion]
 given = "the checkout of main and the worktree of a started Story, the highest Task id T-0002 in both"

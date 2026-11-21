@@ -442,6 +442,26 @@ fgraph status
 #   ST-0002  Raise the kinds of work item fgraph adds from 1 to 2  87c0307
 ```
 
+`fgraph status` lists the top 5 under each heading -- Features, Backlog,
+InProgress, Completed and Removed -- in the order above, and then how many
+more the heading holds. The count beside the heading stays that of all its
+items:
+
+```sh
+fgraph status
+# Backlog (0)
+# InProgress (0)
+# Completed (7)
+#   ST-0007  Raise the kinds of work item fgraph takes to Completed from 3 to 4  e82af5a
+#   ST-0006  Raise the kinds of work item fgraph takes to Completed from 2 to 3  c29f1b7
+#   ST-0005  Raise the kinds of work item fgraph takes to Completed from 1 to 2  c399b40
+#   ST-0004  Raise the kinds of work item fgraph adds and lists from 1 to 2  87c0307
+#   ST-0003  Raise the buckets a Story can reach from 2 to 3  4f1ae12
+#   ... 2 more
+```
+
+`fgraph status --all` lists every item, with no such line.
+
 A work item still in Backlog is rewritten with `fgraph amend`: its title, its
 description and each part of its criterion, each by its own option. A part
 without its option stays as it was, and so do its Tasks and its place in the

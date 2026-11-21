@@ -21,25 +21,36 @@ APART = "Removed"
 BLOCKED = "blocked"
 
 
-def status_text(rows: Iterable[StoryRow | UpkeepRow], features: Iterable[FeatureRow] = ()) -> str:
+def status_text(
+    rows: Iterable[StoryRow | UpkeepRow],
+    features: Iterable[FeatureRow] = (),
+    top: int | None = None,
+) -> str:
     """The items by bucket, in the order of the flow: a heading with its count, then its items.
 
     A completed item is listed with its commit, a removed one with its reason. Removed stands
     apart from the flow: its heading is listed only when an item is removed. The Features come
     first, under a heading of their own, each with its derived bucket; that heading is listed
-    only when there is a Feature.
+    only when there is a Feature. Under a top a heading lists that many of its items, the first
+    ones given, then how many more it holds; its count stays that of all of them.
     """
     listed = list(rows)
-    grouping = list(features)
-    lines = [f"Features ({len(grouping)})\n"] if grouping else []
-    lines.extend(f"  {feature.id}  {feature.title}  {feature.bucket}\n" for feature in grouping)
+    grouping = [f"  {feature.id}  {feature.title}  {feature.bucket}\n" for feature in features]
+    lines = [f"Features ({len(grouping)})\n", *_top_of(grouping, top)] if grouping else []
     for bucket, states in BUCKETS:
-        held = [row for row in listed if row.state in states]
+        held = [_status_line(row) for row in listed if row.state in states]
         if bucket == APART and not held:
             continue
         lines.append(f"{bucket} ({len(held)})\n")
-        lines.extend(_status_line(row) for row in held)
+        lines.extend(_top_of(held, top))
     return "".join(lines)
+
+
+def _top_of(lines: Sequence[str], top: int | None) -> list[str]:
+    """The first lines up to the top, then how many more there are; every line without a top."""
+    if top is None or len(lines) <= top:
+        return list(lines)
+    return [*lines[:top], f"  ... {len(lines) - top} more\n"]
 
 
 def _status_line(row: StoryRow | UpkeepRow) -> str:

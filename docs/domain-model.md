@@ -193,6 +193,12 @@ of work item. The developer said so on 2026-11-21.
   started time each work item holds; those started at one time, by kind and
   number. A blocked Task does not move its work item in the list.
 - Removed is listed by kind and number.
+- `fgraph status` lists the top 5 under each heading, the developer's
+  decision of 2026-11-21: the first five of the Features, of the Backlog, of
+  InProgress, of Completed and of Removed, in the order each is listed in,
+  then one line `... N more` for the N it does not list. The count beside the
+  heading stays that of all its items, and a heading of five or fewer has no
+  such line. `fgraph status --all` lists every one.
 
 ## Amendment
 

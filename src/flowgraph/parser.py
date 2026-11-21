@@ -18,6 +18,9 @@ HELP = ("-h", "--help")
 # The options of the command line that take the record directory as their value.
 DIR = ("-d", "--dir")
 
+# The items status lists under one heading, unless every one is asked for.
+TOP = 5
+
 # The path of a command among the commands: `()` the command line, `("add", "story")` a kind.
 CommandPath = tuple[str, ...]
 
@@ -161,6 +164,11 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         "--before", required=True, metavar="ID", help="the work item it is listed right above"
     )
     status = _command(commands, "status", "list the items of the record by bucket")
+    status.add_argument(
+        "--all",
+        action="store_true",
+        help=f"list every item, instead of the top {TOP} under each heading",
+    )
     return {
         "amend": amend,
         "show": show,

@@ -8,3 +8,38 @@ created = 2026-11-20 19:35:06+00:00
 given = "a Story in Backlog with one Task"
 when = "the Story is started"
 then = "fgraph status lists it under InProgress"
+
+[[tasks]]
+id = "T-0001"
+state = "backlog"
+title = "Add tests/functional/test_start_story.py, failing on the criterion of ST-0002"
+expected_output = "created: tests/functional/test_start_story.py states that fgraph status lists a started Story under InProgress"
+created = 2026-11-21 05:32:13+00:00
+
+[[tasks]]
+id = "T-0002"
+state = "backlog"
+title = "Add StartedStory, StartedTask and their start functions to src/flowgraph/story.py, refusing a Story without a Task"
+expected_output = "changed: src/flowgraph/story.py gains StartedStory, StartedTask and the functions that start a Story and a Task"
+created = 2026-11-21 05:32:13+00:00
+
+[[tasks]]
+id = "T-0003"
+state = "backlog"
+title = "Extend the item file in src/flowgraph/story.py to load and save the started state with its date"
+expected_output = "changed: src/flowgraph/story.py reads and writes the started state of a Story and of a Task with its started date"
+created = 2026-11-21 05:32:13+00:00
+
+[[tasks]]
+id = "T-0004"
+state = "backlog"
+title = "Add the start command to src/flowgraph/cli.py, exiting 2 on a Story without a Task or an unknown id"
+expected_output = "changed: src/flowgraph/cli.py gains the start command, and fgraph status lists a started Story under InProgress"
+created = 2026-11-21 05:32:13+00:00
+
+[[tasks]]
+id = "T-0005"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to show fgraph start"
+expected_output = "changed: README.md shows fgraph start, and docs/domain-model.md says how a started item is kept"
+created = 2026-11-21 05:32:13+00:00

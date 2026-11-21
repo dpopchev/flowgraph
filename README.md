@@ -125,9 +125,13 @@ fgraph start T-0001
 fgraph status
 # Backlog (0)
 # InProgress (1)
-#   ST-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
+#   ST-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
 # Completed (0)
 ```
+
+A work item under InProgress is listed with its progress, `0/1 T`: its Tasks
+completed of all it holds. One of three completed reads `1/3 T`, so two are
+still to be completed; a started or a blocked Task is not completed yet.
 
 When the record is inside a git work tree, starting a Story commits its file
 alone as `chore: start ST-0001 in the record`, as fgraph commits every write
@@ -441,8 +445,8 @@ completed at one time are listed by kind and number:
 fgraph status
 # Backlog (0)
 # InProgress (2)
-#   B-0001  Cut the tracebacks fgraph --dir prints for a file from 1 to 0
-#   ST-0003  Raise the kinds of work item fgraph adds from 2 to 3
+#   B-0001  0/2 T  Cut the tracebacks fgraph --dir prints for a file from 1 to 0
+#   ST-0003  1/3 T  Raise the kinds of work item fgraph adds from 2 to 3
 # Completed (2)
 #   U-0002  Cut the lines one kind of work item holds from 885 to 250  757fbaf
 #   ST-0002  Raise the kinds of work item fgraph adds from 1 to 2  87c0307

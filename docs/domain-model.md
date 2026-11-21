@@ -199,6 +199,13 @@ of work item. The developer said so on 2026-11-21.
   then one line `... N more` for the N it does not list. The count beside the
   heading stays that of all its items, and a heading of five or fewer has no
   such line. `fgraph status --all` lists every one.
+- `fgraph status` lists a work item under InProgress with its progress, the
+  developer's decision of 2026-11-21: `<completed>/<all> T`, its Tasks
+  completed of all it holds, between its id and its title, written as board
+  1's watch writes it -- `ST-0001  1/3 T  <title>`. A started or a blocked
+  Task is not completed. The lines of Backlog, Completed and Removed carry no
+  progress. The Tasks are those the record status reads holds: the row of a
+  work item is read with its Tasks, each with its state.
 
 ## Amendment
 

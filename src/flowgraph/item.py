@@ -5,7 +5,7 @@ a view returns the text fgraph writes, a write what it says and the message of i
 each raises the refusal of the move.
 """
 
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Collection, Mapping
 from dataclasses import dataclass
 from functools import partial
 from typing import assert_never
@@ -13,7 +13,8 @@ from typing import assert_never
 from flowgraph import work_item
 from flowgraph.branch import Slug, SlugError, make_slug, slug_of_title
 from flowgraph.criterion import Criterion, DecisionError, make_commit
-from flowgraph.parent import STANDALONE, Parent
+from flowgraph.feature import FeatureRow, feature_row
+from flowgraph.parent import STANDALONE, Parent, feature_id_text, parse_feature_id
 from flowgraph.queue import queued, reorder
 from flowgraph.record import Now
 from flowgraph.store import KINDS, Store
@@ -115,15 +116,32 @@ def _backlog_as_added(rows: Mapping[WorkItemId, WorkItemRow]) -> list[WorkItemId
     return sorted(backlog, key=lambda item_id: rows[item_id].created)
 
 
-def status_item(store: Store) -> str:
-    """The text of the work items of every kind in the record, by bucket.
+def _feature_rows(store: Store, rows: Collection[WorkItemRow]) -> list[FeatureRow]:
+    """The Features of the record by number, each with the bucket its work items derive."""
+    held = sorted(
+        (parse_feature_id(text) for text in store.features.find_feature_ids()),
+        key=lambda feature_id: feature_id.number,
+    )
+    return [
+        feature_row(
+            store.features.load_feature(feature_id),
+            [row.state for row in rows if row.parent == feature_id_text(feature_id)],
+        )
+        for feature_id in held
+    ]
 
-    The Backlog is listed in the order of its queue; the other buckets by kind and number.
+
+def status_item(store: Store) -> str:
+    """The text of the Features of the record, then its work items of every kind by bucket.
+
+    The Features are listed by number, each with its derived bucket. The Backlog is listed in
+    the order of its queue; the other buckets by kind and number.
     """
     rows = _rows_by_id(store)
     backlog = queued(store.load_queue(), _backlog_as_added(rows))
     moved_on = [row for row in rows.values() if row.state != BACKLOG]
-    return status_text([*(rows[item_id] for item_id in backlog), *moved_on])
+    listed = [*(rows[item_id] for item_id in backlog), *moved_on]
+    return status_text(listed, _feature_rows(store, rows.values()))
 
 
 def reorder_item(item: str, before: str, store: Store) -> Written:

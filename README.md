@@ -22,7 +22,7 @@ worktree of its own.
 | where the record lives          | located on every call but `--help`                       |
 | the record and its flow         | a work item with its Tasks, from Backlog to Completed    |
 | the kinds of work item          | Story, Upkeep, Bug, Spike                                |
-| the level above                 | a Feature groups work items; its bucket is derived       |
+| the level above                 | a Feature groups work items; status lists its bucket     |
 | the order of the Backlog        | a queue, reordered by `fgraph reorder`                   |
 | the wording of a work item      | rewritten by `fgraph amend` while in Backlog             |
 | git                             | every write committed; start branches, `fgraph land` lands |
@@ -381,7 +381,24 @@ It is InProgress once one of them is started or completed, and Completed when
 each is completed or removed. `fgraph show ST-0001` names the Feature as its
 `parent`. An add exits 2 and names why when a criterion or the title is blank
 or when `--parent` names no Feature of the record. A Feature is kept as
-`items/F-0001.toml`; `fgraph status` does not list Features yet.
+`items/F-0001.toml`.
+
+`fgraph status` lists the Features of the record first, by number, each with
+its derived bucket, and then the work items by bucket as before:
+
+```sh
+fgraph status
+# Features (1)
+#   F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5  Backlog
+# Backlog (1)
+#   ST-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
+# InProgress (0)
+# Completed (0)
+```
+
+The heading Features is listed only when the record holds a Feature. A work
+item under a Feature stays in its own bucket; `fgraph show F-0001` lists the
+work items of a Feature.
 
 The Backlog is a queue: `fgraph status` lists it in the order the work is to
 be pulled. A work item joins the end of the queue when it is added, whatever

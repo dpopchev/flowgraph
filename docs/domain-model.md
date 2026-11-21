@@ -336,8 +336,16 @@ and its merge tool.
   that stands alone: standing alone is a value of `parent` in the model, and
   the files written before the Feature read as they are. `--parent` is given
   when the work item is added and names a Feature the record holds.
-- Not built yet: Features in `fgraph status`, amending or removing a Feature,
-  and moving a work item to another Feature.
+- `fgraph status` lists the Features of a record in a block of their own
+  above the buckets, the developer's decision of 2026-11-21: the heading
+  `Features` with their count, then each Feature by number with its id, its
+  title and its derived bucket. The heading is listed only when the record
+  holds a Feature, as Removed is. The status stays flat: a work item under a
+  Feature is listed in its own bucket and not with its Feature, and the
+  buckets, their counts and the order of the Backlog are those of the work
+  items.
+- Not built yet: amending or removing a Feature, and moving a work item to
+  another Feature.
 - Each kind reads the files of its own prefix. A file with a prefix no kind
   knows is left alone; nothing reports it yet.
 - A command loads a work item whole, changes it and saves it whole. The file

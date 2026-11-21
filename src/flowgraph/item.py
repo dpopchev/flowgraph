@@ -195,6 +195,20 @@ def amend_item(item: str, parts: work_item.Amendment, store: Store) -> Written:
     return Written(f"amended {text}\n", MESSAGE.format(f"amend {text}"))
 
 
+def remove_item(item: str, reason: str, store: Store, now: Now) -> Written:
+    """Remove the work item in Backlog of that id for the reason given; what the write says.
+
+    Raises WorkItemIdError when the text is the id of no kind, or the refusal of the remove.
+    """
+    item_id = parse_work_item_id_of_any_kind(item)
+    load, save = store.load_work_item, store.save_work_item
+    work_item.remove_work_item(
+        item_id=item_id, reason=reason, load_work_item=load, save_work_item=save, now=now
+    )
+    text = work_item_id_text(item_id)
+    return Written(f"removed {text}\n", MESSAGE.format(f"remove {text}"))
+
+
 def write_task(
     parent: str, title: str, expected_output: str, description: str, store: Store, now: Now
 ) -> Written:

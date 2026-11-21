@@ -14,9 +14,6 @@ from flowgraph.cli import open_files, run
 
 pytestmark = pytest.mark.functional
 
-# What a remove does once ST-0016 lands; what status lists without one has no mark.
-NOT_YET = pytest.mark.xfail(strict=True, reason="ST-0016: fgraph remove is not built yet")
-
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "a title", *CRITERION]
@@ -59,7 +56,6 @@ def runs(cwd: Path, *argvs: Sequence[str]) -> Outcome:
     return outcomes[-1]
 
 
-@NOT_YET
 class TestAStoryInBacklogRemovedWithAReason:
     @pytest.fixture
     def removed(self, tmp_path: Path) -> Outcome:
@@ -99,7 +95,6 @@ class TestAStoryInBacklogRemovedWithAReason:
         )
 
 
-@NOT_YET
 @pytest.mark.parametrize(
     ("argvs", "error"),
     [

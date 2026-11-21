@@ -22,6 +22,7 @@ from flowgraph.item import (
     block_item,
     complete_item,
     kind_named,
+    remove_item,
     reorder_item,
     show_item,
     start_item,
@@ -57,6 +58,7 @@ from flowgraph.task import (
 from flowgraph.work_item import (
     Amendment,
     NoPartError,
+    RemovedAlreadyError,
     WorkItemIdError,
     WorkItemNotFoundError,
 )
@@ -81,6 +83,7 @@ REFUSED = (
     CommitError,
     EmptyPartError,
     NoPartError,
+    RemovedAlreadyError,
     WorkItemNotFoundError,
     TaskIdError,
     TaskNotFoundError,
@@ -201,6 +204,14 @@ def build_parser() -> argparse.ArgumentParser:
     land.add_argument(
         "--message", required=True, metavar="TEXT", help="the message of the merge commit"
     )
+    remove = commands.add_parser(
+        "remove",
+        help="remove a work item in Backlog, kept with its reason",
+        add_help=False,
+        color=False,
+    )
+    remove.add_argument("id", metavar="ID", help="the id of the Story or of the Upkeep")
+    remove.add_argument("--reason", required=True, metavar="TEXT", help="why it is removed")
     reorder = commands.add_parser(
         "reorder",
         help="put a work item of the Backlog before another",
@@ -240,6 +251,8 @@ def _written(args: argparse.Namespace, store: Store, now: Now) -> Written | None
             return block_item(args.id, args.reason, args.waiting_on, store, now)
         case "unblock":
             return unblock_item(args.id, store)
+        case "remove":
+            return remove_item(args.id, args.reason, store, now)
         case "reorder":
             return reorder_item(args.id, args.before, store)
         case _:

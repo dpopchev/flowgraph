@@ -35,7 +35,7 @@ from flowgraph.work_item.model import (
     still_open,
     work_item_id_text,
 )
-from flowgraph.work_item.removal import reason_of
+from flowgraph.work_item.removal import reason_of, removed_work_item
 from flowgraph.work_item.tasks import blocked_task, completed_task, started_task, unblocked_task
 
 # The work item that holds the Task of that id, whole; raises TaskNotFoundError when none does.
@@ -130,6 +130,23 @@ def add_task(
     task = make_task(next_task_id(taken), title, expected_output, description, now())
     save_work_item(append_task(item, task))
     return task.id
+
+
+def remove_work_item(
+    *,
+    item_id: WorkItemId,
+    reason: str,
+    load_work_item: LoadWorkItem,
+    save_work_item: SaveWorkItem,
+    now: Now,
+) -> None:
+    """Remove the work item in Backlog of that id now, for the reason, and save it whole.
+
+    Raises WorkItemNotFoundError when the record holds no such item, EmptyPartError when the
+    reason is blank, StartedAlreadyError when the item is started, CompletedAlreadyError when it
+    is completed and RemovedAlreadyError when it is removed; nothing is saved.
+    """
+    save_work_item(removed_work_item(load_work_item(item_id), reason, now()))
 
 
 def amend_work_item(

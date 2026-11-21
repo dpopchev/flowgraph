@@ -49,8 +49,8 @@ def _status_line(row: StoryRow | UpkeepRow) -> str:
 def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     """The work item with its bucket and its criterion, then its Tasks, one fact per line.
 
-    The criterion is listed by the parts its kind states: a Given / When / Then, or what is
-    observed and expected.
+    The criterion is listed by the parts its kind states: a Given / When / Then, what is
+    observed and expected, or a hypothesis with, once it is answered, its decision under it.
     A description, a commit and the reason of a removal are listed only when there is one, the
     bucket of a Task only once it has left Backlog. A blocked Task is listed in InProgress as
     blocked, with its reason and what it waits on.
@@ -65,6 +65,8 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
         "then": detail.then,
         "observed": detail.observed,
         "expected": detail.expected,
+        "hypothesis": detail.hypothesis,
+        "decision": detail.decision,
     }
     lines = [
         f"{detail.id}  {detail.title}\n",

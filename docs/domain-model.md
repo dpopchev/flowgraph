@@ -300,20 +300,29 @@ and its merge tool.
   criterion table: `observed` and `expected` where a Story has `given`,
   `when` and `then`. A file that holds the criterion of another kind is
   refused when it is read.
-- The Story, the Upkeep and the Bug share one work item
+- A Spike is kept as `items/SP-0001.toml`, its criterion table holding its
+  `hypothesis`. It is completed with the decision that answers it,
+  `fgraph complete SP-0001 --commit SHA --decision TEXT`, and `fgraph land`
+  takes `--decision` the same way; the decision is kept beside the hypothesis
+  it answers, as `decision` in the criterion table. A Spike is not completed
+  without its decision, no other kind and no Task takes one, and a file that
+  holds a decision before the Spike is completed is refused. That the
+  hypothesis reads as a yes/no question is not checked.
+- The Story, the Upkeep, the Bug and the Spike share one work item
   (`src/flowgraph/work_item/`): its state types (`WorkItem`,
   `StartedWorkItem`, `CompletedWorkItem`, `RemovedWorkItem`), its moves, its
   file and its commands. The kind -- its noun, the article before it, the
   prefix of its ids and the form of criterion it takes -- is a value the id
   carries, so `Story` and `StartedUpkeep` are names of those types and a
   Story tells itself from an Upkeep by its id. A work item carries the
-  criterion its kind takes: a `Scenario`, its Given / When / Then, or a
-  `Defect`, what is observed and expected. Each kind keeps only its kind, its
-  id functions and those names; the kinds are listed once, in
-  `src/flowgraph/store.py`.
+  criterion its kind takes: a `Scenario`, its Given / When / Then; a
+  `Defect`, what is observed and expected; or a `Hypothesis`, which its
+  completion turns into an `Answer`, the hypothesis with its decision. Each
+  kind keeps only its kind, its id functions and those names; the kinds are
+  listed once, in `src/flowgraph/store.py`.
 - An amend rewrites the parts of the criterion the work item has: `--given`,
-  `--when` and `--then`, or `--observed` and `--expected`. A part of the
-  other form is refused.
+  `--when` and `--then`, `--observed` and `--expected`, or `--hypothesis`. A
+  part of another form is refused.
 - Each kind reads the files of its own prefix. A file with a prefix no kind
   knows is left alone; nothing reports it yet.
 - A command loads a work item whole, changes it and saves it whole. The file

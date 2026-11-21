@@ -23,13 +23,30 @@ class Defect:
     expected: str
 
 
-# The criterion of a work item: the one its kind takes.
-Criterion = Scenario | Defect
+@dataclass(frozen=True)
+class Hypothesis:
+    """The one criterion of a Spike: a question to answer."""
+
+    question: str
+
+
+@dataclass(frozen=True)
+class Answer:
+    """The criterion of a completed Spike: its hypothesis, and the decision that answers it."""
+
+    question: str
+    decision: str
+
+
+# The criterion of a work item: the one its kind takes, a hypothesis answered once completed.
+Criterion = Scenario | Defect | Hypothesis | Answer
 
 # What a criterion of each form states, as a refusal words it.
 STATES: Mapping[type[Criterion], str] = {
     Scenario: "a Given / When / Then",
     Defect: "what is observed and expected",
+    Hypothesis: "a hypothesis",
+    Answer: "a hypothesis and its decision",
 }
 
 
@@ -50,6 +67,10 @@ class EmptyPartError(ValueError):
 
 class CriterionError(ValueError):
     """A criterion of another form than the one a kind of work item takes."""
+
+
+class DecisionError(ValueError):
+    """A hypothesis completed without its decision, or a decision given where none answers."""
 
 
 class CommitError(ValueError):
@@ -79,6 +100,34 @@ def make_defect(observed: str, expected: str) -> Defect:
     return Defect(said("observed", observed), said("expected", expected))
 
 
+def make_hypothesis(question: str) -> Hypothesis:
+    """The criterion of a Spike; raises EmptyPartError when the question is blank."""
+    return Hypothesis(said("hypothesis", question))
+
+
+def settled(criterion: Criterion, decision: str | None, named: str) -> Criterion:
+    """The criterion as the completion of its work item leaves it, for the item of that name.
+
+    A hypothesis is answered by the decision; every other criterion stays as it is. Raises
+    DecisionError when a hypothesis is given no decision, or another criterion is given one,
+    and EmptyPartError when the decision is blank.
+    """
+    match criterion:
+        case Hypothesis():
+            if decision is None:
+                stated = STATES[Hypothesis]
+                raise DecisionError(f"{named} is completed with its decision: it states {stated}")
+            return Answer(criterion.question, said("decision", decision))
+        case Scenario() | Defect() | Answer():
+            if decision is not None:
+                raise DecisionError(
+                    f"{named} takes no decision: only a Spike is completed with one"
+                )
+            return criterion
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
 def criterion_parts(criterion: Criterion) -> dict[str, str]:
     """The parts of the criterion by name, in the order they are stated."""
     match criterion:
@@ -86,6 +135,10 @@ def criterion_parts(criterion: Criterion) -> dict[str, str]:
             return {"given": criterion.given, "when": criterion.when, "then": criterion.then}
         case Defect():
             return {"observed": criterion.observed, "expected": criterion.expected}
+        case Hypothesis():
+            return {"hypothesis": criterion.question}
+        case Answer():
+            return {"hypothesis": criterion.question, "decision": criterion.decision}
         case _ as unreachable:
             assert_never(unreachable)
 

@@ -49,3 +49,11 @@ state = "backlog"
 title = "Update README.md and docs/domain-model.md to say a record git ignores is written without a commit"
 expected_output = "changed: README.md says a write on a record .gitignore names is made with no commit and no warning, that a start there makes no branch and warns, and that fgraph land is refused there; docs/domain-model.md, Persistence, says the same of the git steps and names the developer's decision of 2026-11-21"
 created = 2026-11-21 14:19:19+00:00
+
+[[tasks]]
+id = "T-0109"
+state = "backlog"
+title = "Resolve the path that ignores of src/flowgraph/branch.py asks git about, so a record given by a relative --dir is asked of as it is located"
+description = "Found while T-0107 was started: locate of src/flowgraph/record.py hands a --dir path on as given, and git check-ignore runs in the top of the work tree, so fgraph --dir ../.fgraph run in a subdirectory would ask about a path outside the repository and exit 2. It changes the output of T-0106, so it is a Task of its own, added on the branch since ST-0023 is started."
+expected_output = "changed: ignores of src/flowgraph/branch.py asks git about the path resolved against the working directory, so a path relative to another directory than the work tree is answered and not refused as outside the repository; proved in tests/branch/test_git.py"
+created = 2026-11-21 14:25:27+00:00

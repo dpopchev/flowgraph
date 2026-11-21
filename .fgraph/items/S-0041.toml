@@ -46,8 +46,10 @@ commit = "0892a2b"
 
 [[tasks]]
 id = "T-0169"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a work item completes without a commit with the development off"
 expected_output = "changed: README.md and docs/domain-model.md say the commit is the evidence of the development: fgraph complete needs --commit with the development on and takes none with it off, of a Task as of a work item; Evidence and Persistence say what a completed item holds without one, and how status and show list it"
 created = 2026-11-21 22:39:49+00:00
 started = 2026-11-21 23:05:03+00:00
+completed = 2026-11-21 23:07:37+00:00
+commit = "c696c4c"

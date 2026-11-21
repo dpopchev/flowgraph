@@ -13,6 +13,7 @@ from flowgraph.criterion import (
     criterion_parts,
     make_commit,
     make_defect,
+    make_hypothesis,
     make_scenario,
 )
 from flowgraph.task import (
@@ -51,8 +52,25 @@ class DefectFile(BaseModel):
     expected: str
 
 
+class HypothesisFile(BaseModel):
+    """The criterion table of the file of a Spike not yet completed: its hypothesis."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    hypothesis: str
+
+
+class AnswerFile(BaseModel):
+    """The criterion table of the file of a completed Spike: its hypothesis and its decision."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    hypothesis: str
+    decision: str
+
+
 # The criterion table of a work item file, in the form its kind takes.
-AnyCriterionFile = CriterionFile | DefectFile
+AnyCriterionFile = CriterionFile | DefectFile | HypothesisFile | AnswerFile
 
 
 class TaskFile(BaseModel):
@@ -131,12 +149,29 @@ def criterion_primitives(criterion: Criterion) -> dict[str, object]:
 
 
 def criterion_held(held: AnyCriterionFile) -> Criterion:
-    """The criterion a validated table holds, built through its constructor."""
+    """The criterion a validated table holds as its work item had it in Backlog.
+
+    Built through its constructor; a hypothesis is held without the decision that answers it,
+    which the completion of the work item adds (decision_held).
+    """
     match held:
         case CriterionFile():
             return make_scenario(held.given, held.when, held.then)
         case DefectFile():
             return make_defect(held.observed, held.expected)
+        case HypothesisFile() | AnswerFile():
+            return make_hypothesis(held.hypothesis)
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def decision_held(held: AnyCriterionFile) -> str | None:
+    """The decision a validated criterion table holds; None for one without a decision."""
+    match held:
+        case AnswerFile():
+            return held.decision
+        case CriterionFile() | DefectFile() | HypothesisFile():
+            return None
         case _ as unreachable:
             assert_never(unreachable)
 

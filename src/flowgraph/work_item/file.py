@@ -11,7 +11,7 @@ from typing import Annotated, Literal, assert_never
 
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
 
-from flowgraph.criterion import CriterionError, make_commit
+from flowgraph.criterion import CriterionError, DecisionError, make_commit
 from flowgraph.item_file import (
     AnyCriterionFile,
     CompletedTaskFile,
@@ -20,6 +20,7 @@ from flowgraph.item_file import (
     backlog_task,
     criterion_held,
     criterion_primitives,
+    decision_held,
     task_held,
     task_primitives,
     task_row,
@@ -195,7 +196,7 @@ def read_work_item(record: Path, item_id: WorkItemId) -> WorkItemState:
     held = _read_file(path, item_id.kind)
     try:
         return _item_held(held, item_id.kind)
-    except (TaskInProgressError, CriterionError) as error:
+    except (TaskInProgressError, CriterionError, DecisionError) as error:
         raise WorkItemFileError(f"{path} holds no {item_id.kind.noun}: {error}") from error
 
 
@@ -262,9 +263,13 @@ def _item_held(held: _HeldItemFile, kind: Kind) -> WorkItemState:
 
     An item and its Tasks past Backlog are built by the moves that took them there, so a file
     holds no state those moves could not reach. Raises TaskInProgressError when it holds more
-    than one started Task.
+    than one started Task, CriterionError when it holds the criterion of another kind or a
+    decision before it is completed, and DecisionError when its completion lacks its decision.
     """
     criterion = criterion_held(held.criterion)
+    decision = decision_held(held.criterion)
+    if decision is not None and not isinstance(held, _CompletedItemFile):
+        raise CriterionError(f"{kind.article} {kind.noun} holds its decision once it is completed")
     item_id = parse_work_item_id(kind, held.id)
     item = make_work_item(item_id, held.title, criterion, held.description, held.created)
     for task in held.tasks:
@@ -279,7 +284,8 @@ def _item_held(held: _HeldItemFile, kind: Kind) -> WorkItemState:
             begun = replace(started_work_item(item, held.started), tasks=tasks)
             match held:
                 case _CompletedItemFile():
-                    return completed_work_item(begun, held.completed, make_commit(held.commit))
+                    commit = make_commit(held.commit)
+                    return completed_work_item(begun, held.completed, commit, decision)
                 case _StartedItemFile():
                     return begun
                 case _ as unreachable:

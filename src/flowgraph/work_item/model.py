@@ -10,7 +10,15 @@ from dataclasses import dataclass, field, replace
 from datetime import datetime
 from typing import assert_never
 
-from flowgraph.criterion import STATES, Commit, Criterion, CriterionError, Scenario, said
+from flowgraph.criterion import (
+    STATES,
+    Commit,
+    Criterion,
+    CriterionError,
+    Scenario,
+    said,
+    settled,
+)
 from flowgraph.task import (
     BlockedTask,
     CompletedAlreadyError,
@@ -139,6 +147,8 @@ class WorkItemDetail:
     then: str = ""
     observed: str = ""
     expected: str = ""
+    hypothesis: str = ""
+    decision: str = ""
     commit: str = ""
     reason: str = ""
 
@@ -295,11 +305,15 @@ def started_work_item(item: WorkItemState, on: datetime) -> StartedWorkItem:
             assert_never(unreachable)
 
 
-def completed_work_item(item: WorkItemState, on: datetime, commit: Commit) -> CompletedWorkItem:
+def completed_work_item(
+    item: WorkItemState, on: datetime, commit: Commit, decision: str | None = None
+) -> CompletedWorkItem:
     """The work item completed on that time, kept to the second, in that commit.
 
-    Raises NotStartedError when it is in Backlog, OpenTaskError naming the Tasks not completed,
-    and CompletedAlreadyError when it is completed.
+    A work item that states a hypothesis is completed with the decision that answers it. Raises
+    NotStartedError when it is in Backlog, OpenTaskError naming the Tasks not completed,
+    DecisionError when a hypothesis has no decision or another criterion is given one, and
+    CompletedAlreadyError when it is completed.
     """
     match item:
         case WorkItem():
@@ -309,7 +323,7 @@ def completed_work_item(item: WorkItemState, on: datetime, commit: Commit) -> Co
             return CompletedWorkItem(
                 item.id,
                 item.title,
-                item.criterion,
+                settled(item.criterion, decision, work_item_id_text(item.id)),
                 item.description,
                 item.created,
                 item.started,

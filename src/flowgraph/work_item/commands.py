@@ -226,14 +226,17 @@ def complete_work_item(
     load_work_item: LoadWorkItem,
     save_work_item: SaveWorkItem,
     now: Now,
+    decision: str | None = None,
 ) -> None:
     """Complete the work item of that id now in that commit and save it whole.
 
-    Raises WorkItemNotFoundError when the record holds no such item, NotStartedError when it is
-    in Backlog, OpenTaskError when a Task of it is not completed and CompletedAlreadyError when
-    it is completed; nothing is saved.
+    A work item that states a hypothesis takes the decision that answers it. Raises
+    WorkItemNotFoundError when the record holds no such item, NotStartedError when it is in
+    Backlog, OpenTaskError when a Task of it is not completed, DecisionError when a hypothesis
+    has no decision or another criterion is given one, and CompletedAlreadyError when it is
+    completed; nothing is saved.
     """
-    save_work_item(completed_work_item(load_work_item(item_id), now(), commit))
+    save_work_item(completed_work_item(load_work_item(item_id), now(), commit, decision))
 
 
 def complete_task(

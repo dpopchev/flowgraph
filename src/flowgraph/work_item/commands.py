@@ -12,8 +12,8 @@ from flowgraph.task import (
     parse_task_id,
     row_of,
 )
+from flowgraph.work_item.amend import Amendment, amended_work_item
 from flowgraph.work_item.model import (
-    Amendment,
     FindTaskIds,
     FindWorkItemRows,
     Kind,
@@ -23,7 +23,6 @@ from flowgraph.work_item.model import (
     WorkItemId,
     WorkItemRow,
     WorkItemState,
-    amended_work_item,
     append_task,
     commit_sha,
     completed_work_item,

@@ -10,7 +10,7 @@ from dataclasses import dataclass, field, replace
 from datetime import datetime
 from typing import assert_never
 
-from flowgraph.criterion import Commit, Scenario, make_scenario, said
+from flowgraph.criterion import Commit, Scenario, said
 from flowgraph.task import (
     BlockedTask,
     CompletedAlreadyError,
@@ -97,17 +97,6 @@ class RemovedWorkItem:
     tasks: tuple[Task, ...]
 
 
-@dataclass(frozen=True)
-class Amendment:
-    """The parts of a work item to rewrite: each its new text, or None where it stays as it was."""
-
-    title: str | None = None
-    description: str | None = None
-    given: str | None = None
-    when: str | None = None
-    then: str | None = None
-
-
 # A work item that still takes Tasks: in Backlog or started.
 OpenWorkItem = WorkItem | StartedWorkItem
 
@@ -166,10 +155,6 @@ class KindError(ValueError):
 
 class WorkItemIdError(ValueError):
     """A number or a text that is no id of the kind asked for."""
-
-
-class NoPartError(ValueError):
-    """An amendment that names no part of the work item to rewrite."""
 
 
 class WorkItemNotFoundError(Exception):
@@ -261,38 +246,6 @@ def still_open(item: WorkItemState) -> OpenWorkItem:
             return item
         case CompletedWorkItem():
             raise CompletedAlreadyError(f"{work_item_id_text(item.id)} is completed already")
-        case RemovedWorkItem():
-            raise RemovedAlreadyError(item.id)
-        case _ as unreachable:
-            assert_never(unreachable)
-
-
-def amended_work_item(item: WorkItemState, amendment: Amendment) -> WorkItem:
-    """The work item in Backlog with the parts the amendment names rewritten, the rest as it was.
-
-    Raises NoPartError when it names none, EmptyPartError when its title or a part of its
-    criterion is blank, StartedAlreadyError when the item is started and CompletedAlreadyError
-    when it is completed.
-    """
-    named = work_item_id_text(item.id)
-    match item:
-        case WorkItem():
-            if amendment == Amendment():
-                raise NoPartError(f"amend rewrites no part of {named}: name one")
-            was = item.scenario
-            scenario = make_scenario(
-                was.given if amendment.given is None else amendment.given,
-                was.when if amendment.when is None else amendment.when,
-                was.then if amendment.then is None else amendment.then,
-            )
-            title = said("title", item.title if amendment.title is None else amendment.title)
-            kept = amendment.description is None
-            description = item.description if kept else amendment.description
-            return replace(item, title=title, scenario=scenario, description=description)
-        case StartedWorkItem():
-            raise StartedAlreadyError(f"{named} is started already")
-        case CompletedWorkItem():
-            raise CompletedAlreadyError(f"{named} is completed already")
         case RemovedWorkItem():
             raise RemovedAlreadyError(item.id)
         case _ as unreachable:

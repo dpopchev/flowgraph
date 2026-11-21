@@ -1,5 +1,6 @@
 """A work item of any kind, kept in the record with its criterion and its Tasks."""
 
+from flowgraph.work_item.amend import Amendment, NoPartError, amended_work_item
 from flowgraph.work_item.commands import (
     LoadHolder,
     add_task,
@@ -24,14 +25,12 @@ from flowgraph.work_item.file import (
     write_work_item,
 )
 from flowgraph.work_item.model import (
-    Amendment,
     CompletedWorkItem,
     FindTaskIds,
     FindWorkItemRows,
     Kind,
     KindError,
     LoadWorkItem,
-    NoPartError,
     OpenWorkItem,
     RemovedAlreadyError,
     RemovedWorkItem,
@@ -46,7 +45,6 @@ from flowgraph.work_item.model import (
     WorkItemNotFoundError,
     WorkItemRow,
     WorkItemState,
-    amended_work_item,
     append_task,
     commit_sha,
     completed_work_item,

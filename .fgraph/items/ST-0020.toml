@@ -1,0 +1,10 @@
+id = "ST-0020"
+state = "backlog"
+title = "Cut the commits a developer makes by hand for the record from one per write to none"
+description = "The developer's decision of 2026-11-21: fgraph makes the commits related to its items; the commits of the development and their messages stay the developer's. ST-0009 does it for the start of a work item; this Story carries it to every write of the record: add, amend, reorder, remove, the moves of a Task and complete. Each commit holds only the files of the record that the write changed and is worded by fgraph in the form used by hand so far, 'chore: <write> <id> in the record'. Completing a Task still names the commit of its work, so the commit of the record follows it. Open: whether a write outside a git work tree warns each time; the agent's reading is no, it is written as today. Split from ST-0010. Its Tasks are written when it is ordered."
+created = 2026-11-21 08:37:16+00:00
+
+[criterion]
+given = "a record inside a git repository"
+when = "fgraph add story is run"
+then = "git log shows one new commit, made by fgraph, holding only the file of that Story"

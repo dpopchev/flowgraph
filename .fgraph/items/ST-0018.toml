@@ -1,0 +1,10 @@
+id = "ST-0018"
+state = "backlog"
+title = "Cut the Task writes of a started work item fgraph takes in the checkout of main from all to none"
+description = "The mirror of ST-0010, split from it on 2026-11-21. The table fgraph holds, agreed by the developer on 2026-11-21 under the principle that fgraph owns .fgraph and its rituals and rules: adding, amending, reordering or removing a work item and adding a Task to a Backlog item are taken in the checkout of main; starting a work item on main, with its commit, branch and worktree; adding, starting, blocking, unblocking and completing a Task of a started item in the worktree of that item; landing a work item on main. This Story holds the third row from the side of main: a Task write of a started work item is refused there. Completing or landing the work item itself stays on main. A started work item without a worktree, or a record outside a git work tree, is written as today. Ordered after ST-0010. Its Tasks are written when it is ordered."
+created = 2026-11-21 08:37:15+00:00
+
+[criterion]
+given = "a started Story with its worktree branch"
+when = "fgraph add task for that Story is run in the checkout of main"
+then = "it exits 2 and names the worktree of the Story"

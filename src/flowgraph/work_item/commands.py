@@ -43,7 +43,13 @@ LoadHolder = Callable[[TaskId], WorkItemState]
 
 def work_item_row(item: WorkItemState) -> WorkItemRow:
     """The work item as the row a view reads."""
-    return WorkItemRow(work_item_id_text(item.id), item.title, state_name(item), commit_sha(item))
+    return WorkItemRow(
+        work_item_id_text(item.id),
+        item.title,
+        state_name(item),
+        commit_sha(item),
+        created=item.created,
+    )
 
 
 def work_item_detail(item: WorkItemState) -> WorkItemDetail:

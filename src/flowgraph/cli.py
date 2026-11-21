@@ -19,11 +19,13 @@ from flowgraph.item import (
     complete_item,
     kind_named,
     open_files,
+    reorder_item,
     show_item,
     start_item,
     status_item,
     write_task,
 )
+from flowgraph.queue import NotInBacklogError, SameItemError
 from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, Now, locate
 from flowgraph.task import (
     CompletedAlreadyError,
@@ -64,6 +66,9 @@ COMPLETE_REFUSED = (
     OpenTaskError,
     CompletedAlreadyError,
 )
+
+# The refusals of a reorder, each written as a usage error.
+REORDER_REFUSED = (WorkItemIdError, NotInBacklogError, SameItemError)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -132,6 +137,16 @@ def build_parser() -> argparse.ArgumentParser:
     complete.add_argument("id", metavar="ID", help="the id of the Story, the Upkeep or the Task")
     complete.add_argument(
         "--commit", required=True, metavar="SHA", help="the commit that holds its work"
+    )
+    reorder = commands.add_parser(
+        "reorder",
+        help="put a work item of the Backlog before another",
+        add_help=False,
+        color=False,
+    )
+    reorder.add_argument("id", metavar="ID", help="the id of the work item to move")
+    reorder.add_argument(
+        "--before", required=True, metavar="ID", help="the work item it is listed right above"
     )
     commands.add_parser(
         "status", help="list the items of the record by bucket", add_help=False, color=False
@@ -209,6 +224,14 @@ def run(
                     write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
                     return 2
                 write(added)
+                return 0
+            if args.command == "reorder":
+                try:
+                    moved = reorder_item(args.id, args.before, store)
+                except REORDER_REFUSED as error:
+                    write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
+                    return 2
+                write(moved)
                 return 0
             if args.command == "status":
                 write(status_item(store))

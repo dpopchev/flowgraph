@@ -30,11 +30,13 @@ WHOLE = completed_story(HALF, CREATED, make_commit("def5678"))
 
 
 def test_a_completed_story_reads_as_a_completed_row_with_its_commit() -> None:
-    assert story_row(WHOLE) == StoryRow("ST-0001", "a title", "completed", "def5678")
+    assert story_row(WHOLE) == StoryRow(
+        "ST-0001", "a title", "completed", "def5678", created=CREATED
+    )
 
 
 def test_a_story_not_completed_reads_as_a_row_without_a_commit() -> None:
-    assert story_row(HALF) == StoryRow("ST-0001", "a title", "started", "")
+    assert story_row(HALF) == StoryRow("ST-0001", "a title", "started", "", created=CREATED)
 
 
 def test_a_completed_story_reads_as_detail_with_the_commit_of_each() -> None:

@@ -54,7 +54,9 @@ def test_a_work_item_is_added_under_the_next_id_of_its_kind() -> None:
         when="b",
         then="c",
         description="",
-        find_work_item_rows=lambda: [WorkItemRow("CH-0002", "an earlier title", "backlog")],
+        find_work_item_rows=lambda: [
+            WorkItemRow("CH-0002", "an earlier title", "backlog", created=CREATED)
+        ],
         save_work_item=saved.append,
         now=lambda: CREATED,
     )
@@ -131,7 +133,7 @@ def test_a_task_no_work_item_holds_is_refused_by_its_id() -> None:
 
 
 def test_a_work_item_is_the_row_a_view_reads() -> None:
-    assert work_item_row(ITEM) == WorkItemRow("CH-0001", "a title", "backlog")
+    assert work_item_row(ITEM) == WorkItemRow("CH-0001", "a title", "backlog", created=CREATED)
 
 
 def test_a_work_item_is_the_detail_a_view_reads_with_its_tasks() -> None:

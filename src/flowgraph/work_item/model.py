@@ -6,7 +6,7 @@ Upkeep and every kind that shares their Given / When / Then.
 
 import re
 from collections.abc import Callable, Collection
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from datetime import datetime
 from typing import assert_never
 
@@ -97,12 +97,16 @@ WorkItemState = WorkItem | StartedWorkItem | CompletedWorkItem
 
 @dataclass
 class WorkItemRow:
-    """One work item as plain data, as a view reads it from the record; a commit once completed."""
+    """One work item as plain data, as a view reads it from the record; a commit once completed.
+
+    Its created time is what orders the work items of the Backlog nobody placed.
+    """
 
     id: str
     title: str
     state: str
     commit: str = ""
+    created: datetime = field(kw_only=True)
 
 
 @dataclass

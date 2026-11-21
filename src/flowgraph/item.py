@@ -4,7 +4,7 @@ Each command reads the id, finds the kind it names and runs the work item comman
 it returns the line fgraph writes, or raises the refusal of the move.
 """
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
@@ -12,6 +12,7 @@ from typing import assert_never
 
 from flowgraph import work_item
 from flowgraph.criterion import make_commit
+from flowgraph.queue import LoadQueue, SaveQueue, queued, read_queue, reorder, write_queue
 from flowgraph.record import Now
 from flowgraph.story import STORY
 from flowgraph.task import TaskId, TaskIdError, parse_task_id, task_id_text
@@ -33,6 +34,9 @@ from flowgraph.work_item import (
 # The kinds of work item a record holds, in the order fgraph reads them.
 KINDS: tuple[Kind, ...] = (STORY, UPKEEP)
 
+# The state of a row in Backlog, as the record writes it.
+BACKLOG = "backlog"
+
 # The rows of the work items of that kind in the record; an empty list when it holds none.
 FindKindRows = Callable[[Kind], list[WorkItemRow]]
 
@@ -52,6 +56,8 @@ class Store:
     find_work_item_detail: FindWorkItemDetail
     find_task_ids: FindTaskIds
     save_work_item: SaveWorkItem
+    load_queue: LoadQueue
+    save_queue: SaveQueue
 
 
 # The store of the record in that directory.
@@ -75,6 +81,8 @@ def open_files(record: Path) -> Store:
         find_work_item_detail=partial(work_item.read_work_item_detail, record),
         find_task_ids=partial(read_every_task_id, record),
         save_work_item=partial(work_item.write_work_item, record),
+        load_queue=partial(read_queue, record, KINDS),
+        save_queue=partial(write_queue, record, KINDS),
     )
 
 
@@ -116,9 +124,48 @@ def parse_item_id(text: str) -> ItemId:
     raise ItemIdError(f"{text!r} is no {nouns} or Task id")
 
 
+def _rows_by_id(store: Store) -> dict[WorkItemId, WorkItemRow]:
+    """The row of every work item in the record under its id, by kind and then by number."""
+    return {
+        parse_work_item_id(kind, row.id): row
+        for kind in KINDS
+        for row in store.find_work_item_rows(kind)
+    }
+
+
+def _backlog_as_added(rows: Mapping[WorkItemId, WorkItemRow]) -> list[WorkItemId]:
+    """The work items in Backlog in the order added; those added at one time as the rows list."""
+    backlog = [item_id for item_id, row in rows.items() if row.state == BACKLOG]
+    return sorted(backlog, key=lambda item_id: rows[item_id].created)
+
+
 def status_item(store: Store) -> str:
-    """The text of the work items of every kind in the record, by bucket."""
-    return status_text([row for kind in KINDS for row in store.find_work_item_rows(kind)])
+    """The text of the work items of every kind in the record, by bucket.
+
+    The Backlog is listed in the order of its queue; the other buckets by kind and number.
+    """
+    rows = _rows_by_id(store)
+    backlog = queued(store.load_queue(), _backlog_as_added(rows))
+    moved_on = [row for row in rows.values() if row.state != BACKLOG]
+    return status_text([*(rows[item_id] for item_id in backlog), *moved_on])
+
+
+def reorder_item(item: str, before: str, store: Store) -> str:
+    """Put the work item right before the other in the queue of the Backlog; the line saying so.
+
+    Raises WorkItemIdError when a text is the id of no kind, NotInBacklogError when one of the
+    two is not in Backlog and SameItemError when they are one work item; nothing is saved.
+    """
+    moved = parse_work_item_id_of_any_kind(item)
+    other = parse_work_item_id_of_any_kind(before)
+    reorder(
+        item=moved,
+        before=other,
+        find_backlog=lambda: _backlog_as_added(_rows_by_id(store)),
+        load_queue=store.load_queue,
+        save_queue=store.save_queue,
+    )
+    return f"moved {work_item_id_text(moved)} before {work_item_id_text(other)}\n"
 
 
 def show_item(item: str, store: Store) -> str:

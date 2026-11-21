@@ -47,6 +47,8 @@ def fgraph(argv: Sequence[str], *existing: str) -> Outcome:
             find_work_item_detail=never_read,
             find_task_ids=lambda: [],
             save_work_item=lambda _: None,
+            load_queue=never_read,
+            save_queue=lambda _: None,
         ),
         now=lambda: NOW,
     )

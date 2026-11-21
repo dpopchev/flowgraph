@@ -34,7 +34,8 @@ commit = "9b4699c"
 
 [[tasks]]
 id = "T-0152"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say fgraph watch follows the record live"
 expected_output = "changed: README.md shows fgraph watch with its options beside fgraph status, and docs/domain-model.md says what a frame is, how often it is redrawn and how it ends, naming the developer's request of 2026-11-21 and the readings decided when it was ordered"
 created = 2026-11-21 21:36:57+00:00
+started = 2026-11-21 21:56:55+00:00

@@ -10,7 +10,8 @@ Early: `fgraph` adds a Story to a record, writes its Tasks, takes them from
 Backlog through InProgress to Completed with their commits, shows a Story
 with its Tasks and lists the record by bucket. An Upkeep moves the same way,
 with its own Tasks, and is listed beside the Stories. The Backlog is a queue
-that `fgraph reorder` reorders.
+that `fgraph reorder` reorders. Starting a work item in a git repository
+commits the start and checks out its branch in a worktree of its own.
 
 | Part                            | State                                                    |
 | ------------------------------- | -------------------------------------------------------- |
@@ -20,6 +21,7 @@ that `fgraph reorder` reorders.
 | the record and its flow         | a work item with its Tasks, from Backlog to Completed    |
 | the kinds of work item          | Story, Upkeep                                            |
 | the order of the Backlog        | a queue, reordered by `fgraph reorder`                   |
+| git                             | the start of a work item: its commit, branch, worktree   |
 | the ontology                    | not started                                              |
 | flowgraph tracking its own work | its Stories are in `.fgraph/` since 0.4.0                |
 
@@ -89,6 +91,7 @@ start` takes a Story id or a Task id:
 ```sh
 fgraph start ST-0001
 # started ST-0001
+# branch wi/ST-0001-raise-the-stories-fgraph in /src/project.worktrees/ST-0001-raise-the-stories-fgraph
 
 fgraph start T-0001
 # started T-0001 of ST-0001
@@ -99,6 +102,17 @@ fgraph status
 #   ST-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
 # Completed (0)
 ```
+
+When the record is inside a git work tree, starting a Story commits its file
+alone as `chore: start ST-0001 in the record` -- whatever else is staged or
+changed stays out -- and checks out the branch `wi/<id>-<slug>` at that
+commit in a worktree beside the checkout, `<parent>/<checkout>.worktrees/`.
+The slug is the first four words of the title, lower-cased and kept to their
+letters and digits; `--slug branch-on-start` gives another. Outside a work
+tree the Story starts as before and fgraph warns that no branch was made. A
+git step refused exits 2 and names the git command: a commit refused puts the
+file back as it was, a worktree refused leaves the start committed. The
+commits of the development and their messages stay yours.
 
 `fgraph show` then names the bucket of the Story and of each Task that has
 left Backlog (`    bucket           InProgress`). A start exits 2 and names
@@ -160,6 +174,7 @@ fgraph add task "Split src/flowgraph/story.py into the story package" \
 
 fgraph start U-0001
 # started U-0001
+# branch wi/U-0001-cut-the-lines-of in /src/project.worktrees/U-0001-cut-the-lines-of
 fgraph start T-0001
 # started T-0001 of U-0001
 fgraph complete T-0001 --commit 0636c92

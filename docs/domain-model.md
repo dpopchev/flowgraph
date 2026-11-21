@@ -198,8 +198,9 @@ under a Feature or standing alone, that is the commit on `main` that holds it.
 
 ## Rules
 
-- Every item is completed through `fgraph`. flowgraph is a framework: later
-  `fgraph` wraps git as well.
+- Every item is completed through `fgraph`. flowgraph is a framework: it
+  wraps git step by step, starting with the start of a work item
+  (Persistence).
 - A Feature never holds a Task.
 - A Task has exactly one parent among `Story`, `Bug`, `Spike` and `Upkeep`.
   It never stands alone and never shows at the level of the work items.
@@ -275,12 +276,30 @@ the same number:
 |---|---|
 | add a work item or a Task | `main` |
 | reorder the Backlog | `main` |
-| start a work item | `main`, before its branch is made |
+| start a work item | `main`: `fgraph` commits it and makes its branch |
 | start and complete its Tasks | its branch |
 | complete the work item | `main`, after the merge |
 
 Until `fgraph` wraps git this is a convention; it cannot refuse an `add` made
 off `main`.
+
+The git steps `fgraph` takes, decided by the developer on 2026-11-21:
+
+- A start of a work item, when the record is inside a git work tree, commits
+  the file of the item alone, as `chore: start <id> in the record`; whatever
+  else is staged or changed stays as it was and out of the commit.
+- It then checks out the branch `wi/<id>-<slug>` at that commit in a new
+  worktree, `<parent>/<checkout name>.worktrees/<id>-<slug>`. The slug is
+  given with `--slug`, else it is the first four words of the title,
+  lower-cased and kept to their letters and digits.
+- Outside a git work tree the work item starts as before, and `fgraph` warns
+  that no branch was made. A start refused makes no commit and no branch.
+- A git step refused exits 2 naming the command: a commit refused puts the
+  file of the item back as it was, a worktree refused leaves the start
+  committed.
+- `fgraph` makes only the commits of the record; the commits of the
+  development and their messages stay the developer's. Whether the checkout
+  is on `main` is not checked yet.
 
 ## Left out
 

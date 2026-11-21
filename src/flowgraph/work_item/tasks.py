@@ -11,10 +11,12 @@ from flowgraph.task import (
     NotBlockedError,
     NotStartedError,
     TaskId,
+    task_id_text,
+)
+from flowgraph.task_list import (
     blocked_among,
     completed_among,
     started_among,
-    task_id_text,
     task_of,
     unblocked_among,
 )

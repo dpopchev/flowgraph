@@ -15,8 +15,8 @@ from flowgraph.task import (
     make_task_id,
     started,
     unblocked,
-    unblocked_among,
 )
+from flowgraph.task_list import unblocked_among
 
 pytestmark = pytest.mark.model
 

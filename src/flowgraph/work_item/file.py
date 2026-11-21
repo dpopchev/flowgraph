@@ -28,7 +28,8 @@ from flowgraph.item_file import (
 )
 from flowgraph.parent import FeatureIdError, parent_text, parent_written
 from flowgraph.record import ITEMS
-from flowgraph.task import TaskInProgressError, at_most_one_started
+from flowgraph.task import TaskInProgressError
+from flowgraph.task_list import at_most_one_started
 from flowgraph.work_item.model import (
     CompletedWorkItem,
     Kind,

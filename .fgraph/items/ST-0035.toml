@@ -12,11 +12,12 @@ then = "it lists the Story with 1/2 T under InProgress"
 
 [[tasks]]
 id = "T-0138"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_status_worktree.py, failing on the criterion of ST-0035"
 description = "Run through run() of src/flowgraph/cli.py on a git repository in tmp_path, on the file and git adapters of the package, as tests/functional/test_task_ids_across_worktrees.py does. Seen red, then marked a strict xfail naming ST-0035 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_status_worktree.py states that fgraph status, run in the checkout of main of a repository with a Story started and one of its two Tasks completed in its worktree, lists the Story as '  ST-0001  1/2 T  <title>' under InProgress"
 created = 2026-11-21 17:41:03+00:00
+started = 2026-11-21 18:00:35+00:00
 
 [[tasks]]
 id = "T-0139"

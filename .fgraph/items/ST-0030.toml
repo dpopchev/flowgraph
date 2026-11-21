@@ -1,9 +1,11 @@
 id = "ST-0030"
-state = "started"
+state = "completed"
 title = "Extend the order fgraph status lists InProgress in from kind and number to the last started first"
 description = "The developer's decision of 2026-11-21: the Backlog stays in the order of its queue, InProgress lists the work item started last on top, Completed the one completed last on top. The agent's readings, each a routine call: (1) the order is that of the started time the file of a work item already holds, so no file changes. (2) Work items started at one time are listed by kind and number, as before. (3) A blocked Task does not move its work item in the list. Completed is ST-0029. Amended on 2026-11-21 before its start: as first filed the criterion named ST-0002 started before ST-0001, which the order by number already lists as wanted; the expected output of T-0123 still names the ids that way, a Task not being amended yet, and its test states the criterion as amended."
 created = 2026-11-21 17:01:26+00:00
 started = 2026-11-21 17:08:32+00:00
+completed = 2026-11-21 17:12:30+00:00
+commit = "6df1c98"
 
 [criterion]
 given = "a record with two Stories started, ST-0001 before ST-0002"

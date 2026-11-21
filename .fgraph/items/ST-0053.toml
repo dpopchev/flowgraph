@@ -1,0 +1,11 @@
+id = "ST-0053"
+state = "backlog"
+title = "Raise the work items of a started Feature that the completion of the one before starts from none to every one"
+description = "Part of F-0002. The developer's words of 2026-11-21, in the agent's wording: a Feature is part of the Backlog and just holds a couple of work items; starting it, when git is used for the development as well, starts its work items one by one in separate branches; they are completed but all stay in progress; when all are completed the Feature moves to Completed; a Feature can be blocked, or gets blocked when its child work item is blocked. The principle the plan was shown under: a Feature is to its work items what a work item is to its Tasks. Filed on the developer's 'file' of 2026-11-21. Its Tasks are written when it is ordered. Reading of the agent, the one it is least sure of and said so: the Feature starts its work items, so the completion of one -- fgraph land with the development on, fgraph complete with it off -- starts the next, with its branch and its worktree when the development is on. The alternative shown and not taken: the developer starts each with fgraph start. A next work item without a Task is not started and the completion says so."
+parent = "F-0002"
+created = 2026-11-21 21:22:02+00:00
+
+[criterion]
+given = "a record with a started Feature whose first Story is started and whose second Story, with a Task, is in Backlog"
+when = "the first Story is completed"
+then = "fgraph status lists the second Story started under the Feature"

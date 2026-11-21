@@ -34,12 +34,14 @@ commit = "d6c93cb"
 
 [[tasks]]
 id = "T-0086"
-state = "started"
+state = "completed"
 title = "Add the criterion of a Bug to src/flowgraph/criterion.py and carry the criterion of its kind through src/flowgraph/work_item/ and src/flowgraph/item_file.py"
 description = "Pure but for the file adapter. The field scenario of a work item becomes criterion, since a Bug has no scenario. A blank observed or expected is refused through said(). A work item made with the criterion of another kind is refused, which the file reader names with its path."
 expected_output = "changed: src/flowgraph/criterion.py holds Defect, what is observed and what is expected, beside Scenario; a kind names the criterion it takes and a work item carries that criterion; the file of a work item keeps either in its criterion table and reads it back; an amend rewrites the parts of the criterion the work item has and refuses the others; the detail a view reads gains observed and expected; their tests are in tests/criterion/ and tests/work_item/"
 created = 2026-11-21 11:45:00+00:00
 started = 2026-11-21 11:47:00+00:00
+completed = 2026-11-21 11:50:53+00:00
+commit = "368e5f9"
 
 [[tasks]]
 id = "T-0087"

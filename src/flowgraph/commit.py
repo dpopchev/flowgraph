@@ -1,7 +1,8 @@
 """The commit of a write of the record: fgraph commits the files the write changed, alone.
 
 Every write shares this one step. The start of a work item also checks its branch out at that
-commit, in a worktree of its own. Outside a git work tree a write is left as its files.
+commit, in a worktree of its own. Outside a git work tree a write is left as its files, and so
+is the write of a record git ignores.
 """
 
 from collections.abc import Callable, Sequence
@@ -87,20 +88,31 @@ def open_git(directory: Path) -> WorkTree | None:
     )
 
 
+def kept_in(record: Path, open_git: OpenGit) -> WorkTree | None:
+    """The git work tree that keeps the record: None outside one, and None when git ignores it.
+
+    fgraph takes no git step for a record no work tree keeps.
+    """
+    work_tree = open_git(record)
+    if work_tree is None or work_tree.ignores(record):
+        return None
+    return work_tree
+
+
 def commit_written(written: Written, store: Store, record: Path, open_git: OpenGit) -> Said:
     """Commit the files the write changed under its message; what fgraph says of the write.
 
-    Outside a git work tree nothing is committed, and only the start of a work item warns, that
-    no branch was made. A write that changed no file makes no commit. Raises GitError naming the
-    git command when git refuses a step: a commit refused puts the files back as they were, a
-    worktree refused leaves the start committed.
+    Outside a git work tree, and for a record git ignores, nothing is committed, and only the
+    start of a work item warns, that no branch was made. A write that changed no file makes no
+    commit. Raises GitError naming the git command when git refuses a step: a commit refused
+    puts the files back as they were, a worktree refused leaves the start committed.
     """
     work_tree = open_git(record)
-    if work_tree is None:
+    if work_tree is None or work_tree.ignores(record):
         if written.branch is None:
             return Said(written.out)
-        warning = f"fgraph: warning: no branch made: {record} is not inside a git work tree\n"
-        return Said(written.out, warning)
+        why = "is not inside a git work tree" if work_tree is None else "is ignored by git"
+        return Said(written.out, f"fgraph: warning: no branch made: {record} {why}\n")
     top = work_tree.path.resolve()
     files = [file.resolve().relative_to(top) for file in store.find_changed_files()]
     if not files:

@@ -1,5 +1,6 @@
 """The scope of main: a Task write of a started work item is refused outside its worktree."""
 
+from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Never
@@ -131,3 +132,8 @@ def test_a_work_item_without_a_branch_has_no_worktree() -> None:
 
 def test_a_record_outside_a_git_work_tree_has_no_worktree_of_a_work_item() -> None:
     assert worktree_of_item(RECORD, lambda _: None, ONE) is None
+
+
+def test_a_record_git_ignores_has_no_worktree_of_a_work_item() -> None:
+    ignoring = replace(work_tree(["wi/ST-0001-a-slug"], WORKTREE), ignores=lambda _: True)
+    assert worktree_of_item(RECORD, lambda _: ignoring, ONE) is None

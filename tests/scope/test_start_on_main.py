@@ -1,5 +1,6 @@
 """The start of a work item on main alone: what the check lets pass and what it names."""
 
+from dataclasses import replace
 from pathlib import Path
 from typing import Never
 
@@ -74,3 +75,8 @@ def test_a_text_that_is_no_id_passes_to_the_start_that_refuses_it() -> None:
 
 def test_a_record_outside_a_git_work_tree_passes() -> None:
     assert check_start_on_main("ST-0002", RECORD, lambda _: None) is None
+
+
+def test_a_record_git_ignores_passes_off_main() -> None:
+    ignoring = replace(work_tree("a-feature"), ignores=lambda _: True)
+    assert check_start_on_main("ST-0002", RECORD, lambda _: ignoring) is None

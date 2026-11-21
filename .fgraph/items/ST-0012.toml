@@ -1,0 +1,10 @@
+id = "ST-0012"
+state = "backlog"
+title = "Raise the moves a blocked Task can take from 0 to 1: unblock"
+description = "Ordered after ST-0011: until this lands a blocked Task cannot move again. The unblock move is in docs/domain-model.md, Direction, and is not built. Its Tasks are written when it is ordered."
+created = 2026-11-21 08:06:51+00:00
+
+[criterion]
+given = "a started Story with a blocked Task"
+when = "the Task is unblocked"
+then = "fgraph show lists it started again, and it can be completed"

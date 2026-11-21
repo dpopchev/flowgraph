@@ -1,0 +1,10 @@
+id = "ST-0010"
+state = "backlog"
+title = "Cut the work item files a work item's branch can write from all to its own"
+description = "Gap found during U-0002: docs/domain-model.md, Persistence, says a Task is added on main, but the file of a started work item changes on its branch, so T-0034 was added on the branch (b58d277). The developer's rule of 2026-11-21: the branch a work item owns may change and append within its scope, through fgraph. So a Task of a started work item is added on its branch, and main refuses a write to a started work item the same way. It rewrites the table 'Who writes what' of docs/domain-model.md. Open: a Task added on a branch can take a number main hands out meanwhile, and a Task id held by two files is silent today; how the branch hands out its ids is decided when this is ordered. Ordered after ST-0009, which makes the branch. Its Tasks are written when it is ordered."
+created = 2026-11-21 08:06:51+00:00
+
+[criterion]
+given = "the branch of a started Story, and another Story in Backlog"
+when = "fgraph add task for the other Story is run on that branch"
+then = "it exits 2 and names the Story the branch owns"

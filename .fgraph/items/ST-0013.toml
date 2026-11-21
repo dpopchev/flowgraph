@@ -1,0 +1,10 @@
+id = "ST-0013"
+state = "backlog"
+title = "Cut the Tasks of one work item that can be started at once from any number to 1"
+description = "Gap found during U-0002: T-0031 and T-0032 were started at once, and fgraph start takes a second Task today. New rule, agreed by the developer on 2026-11-21: one work item holds at most one started Task; a blocked Task does not count. Ordered after ST-0011 and ST-0012, since without block the reorder of U-0002 (T-0032, T-0034, then T-0031) would have had no legal path. It adds the rule to docs/domain-model.md, Rules. Its Tasks are written when it is ordered."
+created = 2026-11-21 08:06:52+00:00
+
+[criterion]
+given = "a started Story with one started Task and one Task in Backlog"
+when = "fgraph start is run on the second Task"
+then = "it exits 2 and names the started Task"

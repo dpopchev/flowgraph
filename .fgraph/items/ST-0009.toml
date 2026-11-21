@@ -1,0 +1,10 @@
+id = "ST-0009"
+state = "backlog"
+title = "Cut the git commands a developer runs to branch a started work item from 1 to 0"
+description = "Gap found during U-0002: the branch of a work item is made by hand, so nothing ties it to the start. The developer's rule of 2026-11-21: no branch unless the work item has Tasks, and all of it goes through fgraph. start already refuses a work item without a Task, so such an item never gets a branch. Branches so far are named wi/<id>-<slug>. The first step of fgraph wrapping git (docs/domain-model.md, Rules). Its Tasks are written when it is ordered."
+created = 2026-11-21 08:06:51+00:00
+
+[criterion]
+given = "main, with a Story in Backlog that holds a Task"
+when = "fgraph start is run on it"
+then = "the Story is started and its branch, named by its id, exists at the commit that holds the start"

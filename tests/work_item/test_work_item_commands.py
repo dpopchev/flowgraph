@@ -131,7 +131,10 @@ def test_a_task_no_work_item_holds_is_refused_by_its_id() -> None:
 
 
 def test_a_work_item_is_the_row_a_view_reads() -> None:
-    assert work_item_row(ITEM) == WorkItemRow("CH-0001", "a title", "backlog", created=CREATED)
+    task = TaskRow("T-0004", "a task", "an output", "", "backlog")
+    assert work_item_row(ITEM) == WorkItemRow(
+        "CH-0001", "a title", "backlog", created=CREATED, tasks=[task]
+    )
 
 
 def test_a_work_item_is_the_detail_a_view_reads_with_its_tasks() -> None:

@@ -1,6 +1,8 @@
 """The views and the commands of a work item: each command loads it whole, moves it, saves it."""
 
 from collections.abc import Callable, Iterable
+from datetime import datetime
+from typing import assert_never
 
 from flowgraph.criterion import Commit, Criterion, criterion_parts
 from flowgraph.parent import STANDALONE, Parent, parent_text
@@ -15,11 +17,15 @@ from flowgraph.task import (
 )
 from flowgraph.work_item.amend import Amendment, amended_work_item
 from flowgraph.work_item.model import (
+    CompletedWorkItem,
     FindTaskIds,
     FindWorkItemRows,
     Kind,
     LoadWorkItem,
+    RemovedWorkItem,
     SaveWorkItem,
+    StartedWorkItem,
+    WorkItem,
     WorkItemDetail,
     WorkItemId,
     WorkItemRow,
@@ -42,8 +48,30 @@ from flowgraph.work_item.tasks import blocked_task, completed_task, started_task
 LoadHolder = Callable[[TaskId], WorkItemState]
 
 
+def _started_on(item: WorkItemState) -> datetime | None:
+    """The started time of a started work item; none in any other state, as its file reads."""
+    match item:
+        case StartedWorkItem():
+            return item.started
+        case WorkItem() | CompletedWorkItem() | RemovedWorkItem():
+            return None
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def _completed_on(item: WorkItemState) -> datetime | None:
+    """The completed time of a completed work item; none for one not completed."""
+    match item:
+        case CompletedWorkItem():
+            return item.completed
+        case WorkItem() | StartedWorkItem() | RemovedWorkItem():
+            return None
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
 def work_item_row(item: WorkItemState) -> WorkItemRow:
-    """The work item as the row a view reads."""
+    """The work item as the row a view reads, whole: the row its file is read as."""
     return WorkItemRow(
         work_item_id_text(item.id),
         item.title,
@@ -52,6 +80,9 @@ def work_item_row(item: WorkItemState) -> WorkItemRow:
         reason_of(item),
         parent_text(item.parent),
         created=item.created,
+        started=_started_on(item),
+        completed=_completed_on(item),
+        tasks=[row_of(task) for task in item.tasks],
     )
 
 

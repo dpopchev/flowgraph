@@ -27,16 +27,19 @@ STORY = append_task(BARE, make_task(make_task_id(1), "a task", "an output", "", 
 BEGUN = started_task(started_story(STORY, CREATED), make_task_id(1), CREATED)
 HALF = completed_task(BEGUN, make_task_id(1), CREATED, make_commit("abc1234"))
 WHOLE = completed_story(HALF, CREATED, make_commit("def5678"))
+DONE = [TaskRow("T-0001", "a task", "an output", "", "completed", "abc1234")]
 
 
 def test_a_completed_story_reads_as_a_completed_row_with_its_commit() -> None:
     assert story_row(WHOLE) == StoryRow(
-        "ST-0001", "a title", "completed", "def5678", created=CREATED
+        "ST-0001", "a title", "completed", "def5678", created=CREATED, completed=CREATED, tasks=DONE
     )
 
 
 def test_a_story_not_completed_reads_as_a_row_without_a_commit() -> None:
-    assert story_row(HALF) == StoryRow("ST-0001", "a title", "started", "", created=CREATED)
+    assert story_row(HALF) == StoryRow(
+        "ST-0001", "a title", "started", "", created=CREATED, started=CREATED, tasks=DONE
+    )
 
 
 def test_a_completed_story_reads_as_detail_with_the_commit_of_each() -> None:

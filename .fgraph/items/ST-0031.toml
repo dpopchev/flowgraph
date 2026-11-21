@@ -34,7 +34,8 @@ commit = "289f349"
 
 [[tasks]]
 id = "T-0128"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say fgraph status lists the top 5 of each heading"
 expected_output = "changed: README.md shows fgraph status listing five items and '... N more' and names --all; docs/domain-model.md, Order, says the same and names the developer's decision of 2026-11-21"
 created = 2026-11-21 17:40:33+00:00
+started = 2026-11-21 17:44:39+00:00

@@ -297,7 +297,8 @@ the same number:
 | amend a work item in Backlog | `main` |
 | start a work item | `main`: `fgraph` commits it and makes its branch |
 | start and complete its Tasks | its branch |
-| complete the work item | `main`, after the merge |
+| land the work item | `main`: `fgraph land` merges its branch and completes it |
+| complete the work item | `main`, after a merge made by hand |
 
 Until `fgraph` wraps git this is a convention; it cannot refuse an `add` made
 off `main`.
@@ -331,9 +332,22 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 - A git step refused exits 2 naming the command: a commit refused puts every
   file the write changed back as it was, a worktree refused leaves the start
   committed.
-- `fgraph` makes only the commits of the record; the commits of the
-  development and their messages stay the developer's. Whether the checkout
-  is on `main` is not checked yet.
+- `fgraph land` lands a started work item, run in the checkout of `main`. It
+  merges the branch `wi/<id>-*` into `main` as a merge of its own, held
+  uncommitted; commits it under the message the developer gives with
+  `--message`; completes the work item at the short sha of that commit, with
+  the commit of the record, `chore: complete <id> in the record`; then removes
+  the worktree of the branch and the branch.
+- A landing is refused, with nothing merged, when the record is outside a git
+  work tree, when the work tree it runs in is not on `main`, when no branch
+  `wi/<id>-*` or more than one is there, when git refuses the merge, and --
+  the merge held dropped again -- when a Task of the work item is not
+  completed or git refuses the merge commit. A step git refuses after the
+  merge commit exits 2 saying how far the landing came.
+- `fgraph` makes the commits of the record; the commits of the development
+  and their messages stay the developer's, the merge commit of a landing
+  among them: `fgraph` makes it, the developer words it. Whether the checkout
+  is on `main` is checked by a landing only, not yet by a start.
 
 ## Left out
 

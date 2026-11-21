@@ -24,7 +24,7 @@ worktree of its own.
 | the kinds of work item          | Story, Upkeep                                            |
 | the order of the Backlog        | a queue, reordered by `fgraph reorder`                   |
 | the wording of a work item      | rewritten by `fgraph amend` while in Backlog             |
-| git                             | every write committed; a start makes branch and worktree |
+| git                             | every write committed; start branches, `fgraph land` lands |
 | the ontology                    | not started                                              |
 | flowgraph tracking its own work | its Stories are in `.fgraph/` since 0.4.0                |
 
@@ -145,6 +145,23 @@ complete exits 2 and names why when the item is still in Backlog, when a
 Story has Tasks not completed, when the item is completed already, when the
 commit is no sha, or when the record does not hold it. A completed Story takes
 no new Task.
+
+In a git repository `fgraph land` does the landing in one step, run in the
+checkout of `main` once every Task of the Story is completed on its branch.
+The message of the merge commit is yours:
+
+```sh
+fgraph land ST-0001 --message "feat: land the Stories listed under Backlog"
+# landed ST-0001 at 677f9b0
+```
+
+It merges the branch `wi/ST-0001-*` into `main` as one merge commit under
+that message, completes the Story at that commit, commits the record as
+`chore: complete ST-0001 in the record`, and removes the worktree and the
+branch. A land exits 2 and names why, with nothing merged, when a Task of the
+Story is not completed, when the checkout it runs in is not on `main`, when
+the Story has no branch or several, when the record is outside a git work
+tree, or when git refuses the merge.
 
 An Upkeep is work that keeps a behavior and changes the inside, such as a
 split of a module. Its criterion is a Given / When / Then whose When already

@@ -1,0 +1,9 @@
+id = "B-0004"
+state = "backlog"
+title = "Raise the frames of fgraph watch that reach a pipe as they are written from none to every one"
+description = "Found during T-0151 of ST-0038 on 2026-11-21, under the burn of the Backlog; filed at the end of the queue and not burned. Its Tasks are written when it is ordered."
+created = 2026-11-21 22:00:02+00:00
+
+[criterion]
+observed = "fgraph watch | cat writes nothing until the buffer of stdout fills or watch ends: main() binds write to sys.stdout.write and no frame is flushed"
+expected = "each frame of fgraph watch reaches a pipe as it is written"

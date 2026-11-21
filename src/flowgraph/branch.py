@@ -114,3 +114,73 @@ def add_worktree(work_tree: Path, branch: str, path: Path, commit: str) -> None:
     Raises GitError when git refuses it, as when the branch or the path exists already.
     """
     _git(work_tree, "worktree", "add", "--quiet", "-b", branch, str(path), commit)
+
+
+def current_branch(work_tree: Path) -> str:
+    """Adapter: the branch the work tree is on; empty when it is on none."""
+    return _git(work_tree, "branch", "--show-current")
+
+
+def branches_like(work_tree: Path, pattern: str) -> list[str]:
+    """Adapter: the branches of the repository whose name matches the pattern, by name."""
+    return _git(work_tree, "branch", "--list", "--format=%(refname:short)", pattern).splitlines()
+
+
+def _merging(work_tree: Path) -> bool:
+    """True while a merge is held in the work tree, not yet committed."""
+    try:
+        _git(work_tree, "rev-parse", "--quiet", "--verify", "MERGE_HEAD")
+    except GitError:
+        return False
+    return True
+
+
+def abort_merge(work_tree: Path) -> None:
+    """Adapter: drop the merge held in the work tree; nothing changes when none is held."""
+    if _merging(work_tree):
+        _git(work_tree, "merge", "--abort")
+
+
+def merge_uncommitted(work_tree: Path, branch: str) -> None:
+    """Adapter: merge the branch into the work tree as a merge of its own, held uncommitted.
+
+    Raises GitError when git refuses the merge, as on a conflict; nothing is merged then.
+    """
+    try:
+        _git(work_tree, "merge", "--no-ff", "--no-commit", "--quiet", branch)
+    except GitError:
+        abort_merge(work_tree)
+        raise
+
+
+def commit_merge(work_tree: Path, message: str) -> str:
+    """Adapter: commit the merge held in the work tree under the message; its short sha.
+
+    Raises GitError when git refuses the commit; the merge is then still held.
+    """
+    _git(work_tree, "commit", "--quiet", "--message", message)
+    return _git(work_tree, "rev-parse", "--short", "HEAD")
+
+
+def worktree_of_branch(work_tree: Path, branch: str) -> Path | None:
+    """Adapter: the worktree the branch is checked out in, or None when it is in none."""
+    path = None
+    for line in _git(work_tree, "worktree", "list", "--porcelain").splitlines():
+        if line.startswith("worktree "):
+            path = Path(line.removeprefix("worktree "))
+        if line == f"branch refs/heads/{branch}":
+            return path
+    return None
+
+
+def remove_worktree(work_tree: Path, path: Path) -> None:
+    """Adapter: remove the worktree at the path.
+
+    Raises GitError when git refuses it, as when it holds a change or an untracked file.
+    """
+    _git(work_tree, "worktree", "remove", str(path))
+
+
+def delete_branch(work_tree: Path, branch: str) -> None:
+    """Adapter: delete the branch; raises GitError when it is not merged or is checked out."""
+    _git(work_tree, "branch", "--quiet", "-d", branch)

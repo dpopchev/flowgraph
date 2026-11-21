@@ -12,11 +12,12 @@ then = "fgraph status lists it under Removed with its reason"
 
 [[tasks]]
 id = "T-0080"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_remove_work_item.py, failing on the criterion of ST-0016"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, through the file adapters, as tests/functional/test_block_task.py does. Seen red, then marked a strict xfail naming ST-0016 until the Task that turns it green removes the mark. The description leaves no question open. The agent's readings, each a routine call: (1) the command is fgraph remove ID --reason TEXT, the reason required and not blank; a Task id is refused, since removing a Task is not part of this. (2) Only a work item in Backlog is removed: a started one is refused with 'is started already', which keeps removing a started work item out of this slice, a completed one with 'is completed already', a removed one with 'is removed already', each exit 2. (3) A RemovedWorkItem keeps its Tasks as written and adds the time it was removed, to the second, and its reason; its file has state 'removed'. Nothing is deleted. (4) Removed stands apart from the flow: fgraph status lists the heading 'Removed (n)' after Completed only when a work item is removed, each as '  <id>  <title>  -- <reason>'; fgraph show names the bucket Removed and the reason. (5) A removed work item takes no Task, no amend and no move, and a reorder refuses it as not in Backlog; it leaves the queue as a started one does. (6) It prints 'removed <id>' and its commit is 'chore: remove <id> in the record'."
 expected_output = "created: tests/functional/test_remove_work_item.py states that fgraph remove, run with a reason on a Story in Backlog, leaves fgraph status listing it under Removed with its reason"
 created = 2026-11-21 11:37:20+00:00
+started = 2026-11-21 11:37:42+00:00
 
 [[tasks]]
 id = "T-0081"

@@ -23,20 +23,23 @@ commit = "97af538"
 
 [[tasks]]
 id = "T-0046"
-state = "started"
+state = "completed"
 title = "Add the amend of a Backlog work item to src/flowgraph/work_item/model.py, each part through its constructor"
 description = "Pure, no I/O. The amended work item keeps its id, its created time and its Tasks. The title goes through said() and the criterion through make_scenario() of src/flowgraph/criterion.py, so nothing an add refuses can be amended in. A part not given is told apart from a blank one."
 expected_output = "changed: src/flowgraph/work_item/model.py amends a work item in Backlog -- its title, its description and each part of its criterion replaced alone, the rest as it was -- and refuses a blank title or criterion part, a started work item and a completed one; its tests are in tests/work_item/"
 created = 2026-11-21 09:00:36+00:00
 started = 2026-11-21 09:02:35+00:00
+completed = 2026-11-21 09:04:05+00:00
+commit = "bcf209c"
 
 [[tasks]]
 id = "T-0047"
-state = "backlog"
+state = "started"
 title = "Add the amend command to src/flowgraph/cli.py, src/flowgraph/item.py and src/flowgraph/work_item/commands.py"
 description = "The command of src/flowgraph/work_item/commands.py takes its load and its save as callables, as the others do. src/flowgraph/work_item/__init__.py exports what it adds. src/flowgraph/item.py is at 387 lines and stays at or below the 400 of U-0001. Removes the xfail mark of tests/functional/test_amend_work_item.py; tests/functional/test_help_menu.py changes if the menu it states lists the commands."
 expected_output = "changed: fgraph amend ID [--title TEXT] [--description TEXT] [--given STATE] [--when ACTION] [--then STATE] loads the work item whole, amends it, saves it whole and prints 'amended <id>'; it exits 2 naming why on a blank part, on no option, on a work item that has left Backlog, on a Task id and on an id the record does not hold"
 created = 2026-11-21 09:00:37+00:00
+started = 2026-11-21 09:04:05+00:00
 
 [[tasks]]
 id = "T-0048"

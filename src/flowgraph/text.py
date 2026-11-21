@@ -2,6 +2,7 @@
 
 from collections.abc import Collection, Iterable, Sequence
 
+from flowgraph.feature import FeatureDetail
 from flowgraph.story import StoryDetail, StoryRow
 from flowgraph.upkeep import UpkeepDetail, UpkeepRow
 
@@ -46,16 +47,39 @@ def _status_line(row: StoryRow | UpkeepRow) -> str:
     return f"  {row.id}  {row.title}\n"
 
 
+def feature_text(detail: FeatureDetail, rows: Iterable[StoryRow | UpkeepRow], bucket: str) -> str:
+    """The Feature with its bucket, its criteria, then its work items with their buckets.
+
+    The bucket of a Feature is derived, so it is given; a description is listed only when there
+    is one.
+    """
+    listed = list(rows)
+    described = [f"  description  {detail.description}\n"] if detail.description else []
+    lines = [
+        f"{detail.id}  {detail.title}\n",
+        f"  bucket       {bucket}\n",
+        *described,
+        f"Criteria ({len(detail.criteria)})\n",
+        *(f"  {criterion}\n" for criterion in detail.criteria),
+        f"Work items ({len(listed)})\n",
+    ]
+    for row in listed:
+        held_in = next(name for name, states in BUCKETS if row.state in states)
+        lines.append(f"  {row.id}  {row.title}  {held_in}\n")
+    return "".join(lines)
+
+
 def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     """The work item with its bucket and its criterion, then its Tasks, one fact per line.
 
     The criterion is listed by the parts its kind states: a Given / When / Then, what is
     observed and expected, or a hypothesis with, once it is answered, its decision under it.
-    A description, a commit and the reason of a removal are listed only when there is one, the
-    bucket of a Task only once it has left Backlog. A blocked Task is listed in InProgress as
-    blocked, with its reason and what it waits on.
+    A parent, a description, a commit and the reason of a removal are listed only when there is
+    one, the bucket of a Task only once it has left Backlog. A blocked Task is listed in
+    InProgress as blocked, with its reason and what it waits on.
     """
     bucket = next(name for name, states in BUCKETS if detail.state in states)
+    under = [f"  parent       {detail.parent}\n"] if detail.parent else []
     committed = [f"  commit       {detail.commit}\n"] if detail.commit else []
     removed = [f"  reason       {detail.reason}\n"] if detail.reason else []
     described = [f"  description  {detail.description}\n"] if detail.description else []
@@ -71,6 +95,7 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     lines = [
         f"{detail.id}  {detail.title}\n",
         f"  bucket       {bucket}\n",
+        *under,
         *committed,
         *removed,
         *described,

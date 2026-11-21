@@ -7,10 +7,23 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
+from typing import Never
 
 from flowgraph import work_item
 from flowgraph.bug import BUG
+from flowgraph.feature import (
+    Feature,
+    FeatureNotFoundError,
+    FindFeatureIds,
+    LoadFeature,
+    SaveFeature,
+    feature_file,
+    read_feature,
+    read_feature_ids,
+    write_feature,
+)
 from flowgraph.journal import Change, changed_files, noted, restore
+from flowgraph.parent import FeatureId
 from flowgraph.queue import QUEUE, LoadQueue, Queue, SaveQueue, read_queue, write_queue
 from flowgraph.record import ITEMS
 from flowgraph.spike import SPIKE
@@ -45,8 +58,38 @@ RestoreFiles = Callable[[], object]
 
 
 @dataclass(frozen=True)
+class FeatureStore:
+    """The reads and writes of the Features of one record."""
+
+    load_feature: LoadFeature
+    save_feature: SaveFeature
+    find_feature_ids: FindFeatureIds
+
+
+class NoFeatureStoreError(Exception):
+    """A Feature saved into a store that was built without the Features of its record."""
+
+
+def _hold_none(feature_id: FeatureId) -> Never:
+    """The load of a store that holds no Feature."""
+    raise FeatureNotFoundError(feature_id)
+
+
+def _take_none(feature: Feature) -> Never:
+    """The save of a store that takes no Feature."""
+    raise NoFeatureStoreError(f"this store keeps no Feature: {feature.title!r} is not saved")
+
+
+# The Features of a store built without them: it holds none and takes none.
+NO_FEATURES = FeatureStore(_hold_none, _take_none, list)
+
+
+@dataclass(frozen=True)
 class Store:
-    """The reads and writes of one record, each already bound to its directory."""
+    """The reads and writes of one record, each already bound to its directory.
+
+    A store built without its Features holds none.
+    """
 
     find_work_item_rows: FindKindRows
     load_work_item: LoadWorkItem
@@ -57,6 +100,7 @@ class Store:
     save_queue: SaveQueue
     find_changed_files: FindChangedFiles
     restore_files: RestoreFiles
+    features: FeatureStore = NO_FEATURES
 
 
 # The store of the record in that directory.
@@ -91,6 +135,14 @@ def open_files(record: Path) -> Store:
         journal = noted(journal, record / QUEUE)
         write_queue(record, KINDS, queue)
 
+    def save_feature(feature: Feature) -> None:
+        nonlocal journal
+        journal = noted(journal, feature_file(record, feature.id))
+        write_feature(record, feature)
+
+    features = FeatureStore(
+        partial(read_feature, record), save_feature, partial(read_feature_ids, record)
+    )
     return Store(
         find_work_item_rows=partial(work_item.read_work_item_rows, record),
         load_work_item=partial(work_item.read_work_item, record),
@@ -101,4 +153,5 @@ def open_files(record: Path) -> Store:
         save_queue=save_queue,
         find_changed_files=lambda: changed_files(journal),
         restore_files=lambda: restore(journal),
+        features=features,
     )

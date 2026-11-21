@@ -71,6 +71,25 @@ def build_parser() -> argparse.ArgumentParser:
     spike.add_argument("title", metavar="TITLE", help="what is settled once it is completed")
     spike.add_argument("--hypothesis", required=True, metavar="TEXT", help="a yes/no question")
     spike.add_argument("--description", default="", metavar="TEXT", help="free text, optional")
+    for kind in (story, upkeep, bug, spike):
+        kind.add_argument(
+            "--parent", metavar="ID", help="the Feature it is under; it stands alone without one"
+        )
+    feature = kinds.add_parser(
+        "feature",
+        help="a bigger outcome that groups work items, with its criteria",
+        add_help=False,
+        color=False,
+    )
+    feature.add_argument("title", metavar="TITLE", help="what is true once it is completed")
+    feature.add_argument(
+        "--criterion",
+        required=True,
+        action="append",
+        metavar="TEXT",
+        help="what the user experiences; give it once per criterion",
+    )
+    feature.add_argument("--description", default="", metavar="TEXT", help="free text, optional")
     amend = commands.add_parser(
         "amend", help="rewrite parts of a work item in Backlog", add_help=False, color=False
     )

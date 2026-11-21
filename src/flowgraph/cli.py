@@ -23,6 +23,13 @@ from flowgraph.criterion import (
     make_hypothesis,
     make_scenario,
 )
+from flowgraph.feature import FeatureNotFoundError, NoCriterionError
+from flowgraph.feature_item import (
+    add_feature_item,
+    is_feature_id,
+    parent_named,
+    show_feature_item,
+)
 from flowgraph.item import (
     ItemIdError,
     Written,
@@ -40,6 +47,7 @@ from flowgraph.item import (
     write_task,
 )
 from flowgraph.land import LandError, land_item
+from flowgraph.parent import FeatureIdError
 from flowgraph.parser import build_parser
 from flowgraph.queue import NotInBacklogError, SameItemError
 from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, Now, locate
@@ -84,6 +92,9 @@ Write = Callable[[str], object]
 REFUSED = (
     ItemIdError,
     WorkItemIdError,
+    FeatureIdError,
+    FeatureNotFoundError,
+    NoCriterionError,
     SlugError,
     GitError,
     LandError,
@@ -135,9 +146,13 @@ def _written(args: argparse.Namespace, store: Store, now: Now) -> Written | None
     match args.command:
         case "add" if args.kind == "task":
             return write_task(args.parent, args.title, args.output, args.description, store, now)
+        case "add" if args.kind == "feature":
+            return add_feature_item(args.title, args.criterion, args.description, store, now)
         case "add":
             kind = kind_named(args.kind)
-            return add_item(kind, args.title, _criterion(args), args.description, store, now)
+            under = parent_named(args.parent, store)
+            criterion = _criterion(args)
+            return add_item(kind, args.title, criterion, args.description, store, now, under)
         case "amend":
             parts = Amendment(
                 args.title,
@@ -182,6 +197,8 @@ def _said(
     match args.command:
         case "land":
             return land_item(args.id, args.message, store, now, record, open_git, args.decision)
+        case "show" if is_feature_id(args.id):
+            return Said(show_feature_item(args.id, store))
         case "show":
             return Said(show_item(args.id, store))
         case "status":

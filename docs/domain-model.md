@@ -440,6 +440,18 @@ agreed on 2026-11-21 that `fgraph` owns the record, its rituals and its rules:
   `main`.
 - A started work item whose branch is checked out in no worktree, and a
   record outside a git work tree, are written as before.
+- `fgraph status` on `main` reads a started work item where its Tasks are
+  written, the developer's decision of 2026-11-21: its row is the one the
+  worktree of its branch `wi/<id>-*` holds, the file at the same path inside
+  it, as it is, committed or not, as the Task ids are read. So the progress
+  and the Task being worked that status lists are current before the landing.
+  A started work item without such a worktree, a record outside a git work
+  tree and a record git ignores are read from the record itself. Run in a
+  work tree on the branch of a work item, status reads the record of that
+  work tree and no other. Every read of the rows goes this way, so the bucket
+  of a Feature does too.
+- Not built yet: `fgraph show` of a started work item on `main` reads the
+  record of `main`, so it shows its Tasks as they were at the start.
 
 The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 

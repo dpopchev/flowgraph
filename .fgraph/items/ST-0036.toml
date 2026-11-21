@@ -34,7 +34,8 @@ commit = "4cd8015"
 
 [[tasks]]
 id = "T-0143"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say fgraph status cuts its lines to the terminal"
 expected_output = "changed: README.md says fgraph status cuts a line to the width of the terminal and writes a pipe whole, and shows the commit of a completed work item before its title in every example; docs/domain-model.md says the same where it states what status lists, and names the developer's decision of 2026-11-21"
 created = 2026-11-21 17:41:05+00:00
+started = 2026-11-21 18:09:46+00:00

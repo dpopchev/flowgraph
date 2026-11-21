@@ -1,9 +1,11 @@
 id = "ST-0028"
-state = "started"
+state = "completed"
 title = "Raise the starts of a work item that make its branch on a record git ignores from none to every one"
 description = "Found by ST-0023 on 2026-11-21, whose slice the developer chose that day: on an ignored record a start makes no branch and warns, as outside a git work tree. The other way was left out as bigger: the start still makes the branch and its worktree at HEAD for the development, while the record stays in the checkout of main alone, since an ignored directory is in no worktree. Open: where the Tasks of the started work item are then written -- the checkout of main, which refuses them today -- and what fgraph land does without a commit of the record. Removed with that reason if the developer keeps the slice of ST-0023. Its Tasks are written when it is ordered."
 created = 2026-11-21 14:19:30+00:00
 started = 2026-11-21 14:40:41+00:00
+completed = 2026-11-21 14:45:14+00:00
+commit = "c0ae819"
 
 [criterion]
 given = "a record git ignores inside a git work tree on main, holding a Story with a Task"

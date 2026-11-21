@@ -23,12 +23,14 @@ commit = "fe41b68"
 
 [[tasks]]
 id = "T-0151"
-state = "started"
+state = "completed"
 title = "Add the watch command to src/flowgraph/parser.py and src/flowgraph/cli.py, redrawing the status every interval"
 description = "Removes the xfail mark of tests/functional/test_watch.py. The frames live in a module of their own when src/flowgraph/cli.py would pass 400 lines. A refusal of -n or --count that is no positive number exits 2."
 expected_output = "changed: fgraph watch is a command of src/flowgraph/parser.py run by src/flowgraph/cli.py: it writes what fgraph status writes as a frame, waits and writes the next, each frame read anew from the record and cut to the width of the terminal; -n SECS sets the seconds between frames, 5 by default; --count N ends it after N frames with exit 0; --all lists every item; Ctrl-C ends it with exit 0 and no traceback; on a terminal a frame replaces the one before it; the wait is an effect, given to run() as a callable and bound to time.sleep in main(); proved in tests/ beside the module that holds the frames"
 created = 2026-11-21 21:36:56+00:00
 started = 2026-11-21 21:52:01+00:00
+completed = 2026-11-21 21:56:54+00:00
+commit = "9b4699c"
 
 [[tasks]]
 id = "T-0152"

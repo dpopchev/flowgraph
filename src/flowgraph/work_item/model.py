@@ -123,8 +123,9 @@ WorkItemState = WorkItem | StartedWorkItem | CompletedWorkItem | RemovedWorkItem
 class WorkItemRow:
     """One work item as plain data, as a view reads it from the record.
 
-    A commit and a completed time once completed, a reason once removed. Its created time is
-    what orders the work items of the Backlog nobody placed, its completed time those of Completed.
+    A started time while started, a commit and a completed time once completed, a reason once
+    removed. Its created time is what orders the work items of the Backlog nobody placed, its
+    started time those of InProgress, its completed time those of Completed.
     """
 
     id: str
@@ -134,6 +135,7 @@ class WorkItemRow:
     reason: str = ""
     parent: str = ""
     created: datetime = field(kw_only=True)
+    started: datetime | None = field(default=None, kw_only=True)
     completed: datetime | None = field(default=None, kw_only=True)
 
 

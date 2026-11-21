@@ -189,7 +189,10 @@ of work item. The developer said so on 2026-11-21.
 - Completed is listed the last completed first, the developer's decision of
   2026-11-21: by the completed time each work item holds, so the newest
   landing is on top; those completed at one time, by kind and number.
-- InProgress and Removed are listed by kind and number.
+- InProgress is listed the last started first, by the same decision: by the
+  started time each work item holds; those started at one time, by kind and
+  number. A blocked Task does not move its work item in the list.
+- Removed is listed by kind and number.
 
 ## Amendment
 

@@ -79,7 +79,9 @@ def test_a_started_story_is_read_back_whole(tmp_path: Path) -> None:
 
 def test_a_started_story_is_read_as_a_started_row(tmp_path: Path) -> None:
     write_story(tmp_path, STARTED)
-    assert read_story_rows(tmp_path) == [StoryRow("ST-0001", "a title", "started", created=CREATED)]
+    assert read_story_rows(tmp_path) == [
+        StoryRow("ST-0001", "a title", "started", created=CREATED, started=ON)
+    ]
 
 
 def test_a_started_story_is_read_as_detail_with_the_state_of_each_task(tmp_path: Path) -> None:

@@ -23,7 +23,8 @@ commit = "6615806"
 
 [[tasks]]
 id = "T-0114"
-state = "backlog"
+state = "started"
 title = "Update README.md to say make check holds the modules of src/ to 400 lines"
 expected_output = "changed: README.md, Develop, says make check also fails on a module of src/ above 400 lines, names the make lines target and where the number is written"
 created = 2026-11-21 14:35:46+00:00
+started = 2026-11-21 14:37:31+00:00

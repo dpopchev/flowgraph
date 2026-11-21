@@ -12,12 +12,14 @@ then = "fgraph status lists it as Q-0001 under Backlog"
 
 [[tasks]]
 id = "T-0153"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_spike_prefix.py, failing on the criterion of ST-0048"
 description = "decided: ST-0048: fgraph reads Q alone -- a record of another project that holds SP files is neither read as Q nor renamed; its SP files are files of a prefix no kind knows, left alone as any such file, and the docs say so. Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_complete_spike.py does. Seen red, then marked a strict xfail naming ST-0048 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_spike_prefix.py states that fgraph add spike on a record with no items, then fgraph status, lists the Spike as Q-0001 under Backlog"
 created = 2026-11-21 21:37:14+00:00
 started = 2026-11-21 22:00:32+00:00
+completed = 2026-11-21 22:01:46+00:00
+commit = "03dbc08"
 
 [[tasks]]
 id = "T-0154"

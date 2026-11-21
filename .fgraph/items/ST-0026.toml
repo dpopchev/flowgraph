@@ -12,12 +12,14 @@ then = "it fails and names the module and its lines"
 
 [[tasks]]
 id = "T-0113"
-state = "started"
+state = "completed"
 title = "Add the lines target to mk/python.mk, a check of make check that fails on a module of src/ above MAX_LINES lines"
 description = "The developer ordered the Backlog on 2026-11-21 after the burn, which answers the question U-0004 left open: make check refuses a module above 400 lines. The agent's readings, each a routine call: (1) the limit counts the modules under src/ alone, as the title says; tests/ is not counted. (2) The number is written once, MAX_LINES of mk/python.mk, and a command line gives another: make check MAX_LINES=300. (3) The refusal is one line per module, '<path>: <n> lines', then the limit, and the recipe breaks; there is no log_error. No Python changes, so no test is added. Check, red today since it exits 0: make lines MAX_LINES=300 exits non-zero and names src/flowgraph/item.py: 383 lines."
 expected_output = "changed: mk/python.mk holds MAX_LINES, 400, written once, and the target lines, which names each module under src/ above it with its lines on the error output and breaks; lines is one of CHECKS, so make check fails with it and passes today"
 created = 2026-11-21 14:35:46+00:00
 started = 2026-11-21 14:35:52+00:00
+completed = 2026-11-21 14:37:30+00:00
+commit = "6615806"
 
 [[tasks]]
 id = "T-0114"

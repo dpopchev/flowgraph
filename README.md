@@ -126,6 +126,18 @@ fgraph add task "Add the show command" --parent ST-0002 --output "changed: cli.p
 # fgraph: error: ST-0002 is not written here: the branch wi/ST-0001-raise-the-stories-fgraph writes ST-0001 alone
 ```
 
+A Story starts on main alone. `fgraph start` of a Story exits 2 in a work
+tree on any other branch, with nothing written and no branch made, and names
+the work tree to start it in:
+
+```sh
+fgraph start ST-0002
+# fgraph: error: ST-0002 starts on main, in /src/project: /src/project.worktrees/ST-0001-raise-the-stories-fgraph is on wi/ST-0001-raise-the-stories-fgraph
+```
+
+The start of a Task is not checked against main: a Task starts on the branch
+of its Story.
+
 `fgraph show` then names the bucket of the Story and of each Task that has
 left Backlog (`    bucket           InProgress`). A start exits 2 and names
 why when the Story has no Task, when a Task's Story is still in Backlog, when

@@ -384,17 +384,23 @@ or when `--parent` names no Feature of the record. A Feature is kept as
 `items/F-0001.toml`.
 
 `fgraph status` lists the Features of the record first, by number, each with
-its derived bucket, and then the work items by bucket as before:
+its progress and its derived bucket before its title, and then the work items
+by bucket as before:
 
 ```sh
 fgraph status
 # Features (1)
-#   F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5  Backlog
+#   F-0001  0/1 W  Backlog  Raise the kinds of work a project tracks with fgraph from 1 to 5
 # Backlog (1)
 #   ST-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
 # InProgress (0)
 # Completed (0)
 ```
+
+The progress, `0/1 W`, is the work items of the Feature completed of all it
+holds: one of three completed reads `1/3 W`, so two are still to be done. A
+removed work item is counted in neither number, and a Feature without a work
+item reads `0/0 W`.
 
 The heading Features is listed only when the record holds a Feature. A work
 item under a Feature stays in its own bucket; `fgraph show F-0001` lists the

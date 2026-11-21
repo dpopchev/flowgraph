@@ -352,11 +352,18 @@ and its merge tool.
 - `fgraph status` lists the Features of a record in a block of their own
   above the buckets, the developer's decision of 2026-11-21: the heading
   `Features` with their count, then each Feature by number with its id, its
-  title and its derived bucket. The heading is listed only when the record
-  holds a Feature, as Removed is. The status stays flat: a work item under a
-  Feature is listed in its own bucket and not with its Feature, and the
-  buckets, their counts and the order of the Backlog are those of the work
-  items.
+  progress, its derived bucket and its title. The heading is listed only when
+  the record holds a Feature, as Removed is. The status stays flat: a work
+  item under a Feature is listed in its own bucket and not with its Feature,
+  and the buckets, their counts and the order of the Backlog are those of the
+  work items.
+- The progress of a Feature is derived as its bucket is, the developer's
+  decision of 2026-11-21: `<completed>/<all> W`, the work items under it that
+  are completed of all it holds, written as board 1's watch writes it. A
+  removed work item is counted in neither number, a started or a Backlog one
+  only in the second, and a Feature without a work item reads `0/0 W`. Every
+  Feature is listed with it, in any bucket: `F-0001  1/3 W  InProgress
+  <title>`.
 - Not built yet: amending or removing a Feature, and moving a work item to
   another Feature.
 - Each kind reads the files of its own prefix. A file with a prefix no kind

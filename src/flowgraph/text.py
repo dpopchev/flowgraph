@@ -30,12 +30,13 @@ def status_text(
 
     A completed item is listed with its commit, a removed one with its reason. Removed stands
     apart from the flow: its heading is listed only when an item is removed. The Features come
-    first, under a heading of their own, each with its derived bucket; that heading is listed
-    only when there is a Feature. Under a top a heading lists that many of its items, the first
-    ones given, then how many more it holds; its count stays that of all of them.
+    first, under a heading of their own, each with its work items completed of those it holds
+    and its derived bucket; that heading is listed only when there is a Feature. Under a top a
+    heading lists that many of its items, the first ones given, then how many more it holds;
+    its count stays that of all of them.
     """
     listed = list(rows)
-    grouping = [f"  {feature.id}  {feature.title}  {feature.bucket}\n" for feature in features]
+    grouping = [_feature_line(feature) for feature in features]
     lines = [f"Features ({len(grouping)})\n", *_top_of(grouping, top)] if grouping else []
     for bucket, states in BUCKETS:
         held = [_status_line(row) for row in listed if row.state in states]
@@ -44,6 +45,12 @@ def status_text(
         lines.append(f"{bucket} ({len(held)})\n")
         lines.extend(_top_of(held, top))
     return "".join(lines)
+
+
+def _feature_line(feature: FeatureRow) -> str:
+    """One Feature: its id, its work items completed of all, its bucket, then its title."""
+    progress = f"{feature.completed}/{feature.held} W"
+    return f"  {feature.id}  {progress}  {feature.bucket}  {feature.title}\n"
 
 
 def _top_of(lines: Sequence[str], top: int | None) -> list[str]:

@@ -35,12 +35,14 @@ commit = "18f8fa9"
 
 [[tasks]]
 id = "T-0161"
-state = "started"
+state = "completed"
 title = "Wire the Config of src/flowgraph/config.py into the start and the landing, the development off unless enabled"
 description = "Removes the xfail mark of tests/functional/test_development_off.py. The wiring touches src/flowgraph/cli.py, commit.py and land.py, and scope.py only if the scoping needs the key. With the development off the start is still held to main, and the rules that read a branch wi/<id>-* stay as they are: without the development no such branch is made. .fgraph/config.toml is written by hand in the commit of this Task, since no command of fgraph writes it until S-0045."
 expected_output = "changed: run() of src/flowgraph/cli.py reads the Config of the record through a callable given to it, bound to the adapter of src/flowgraph/config.py in main(); with the development off the start of a work item is committed as any write, makes no branch and no worktree and writes no warning, and fgraph land exits 2 naming the key development.enabled; with [development] enabled = true the start, the scoping of a branch and the landing are as they were; a config.toml that is refused exits 2 naming the key, whatever the command; .fgraph/config.toml of this repository holds [development] enabled = true, and the functional tests that start a branch or land write that key in their setup"
 created = 2026-11-21 22:17:56+00:00
 started = 2026-11-21 22:23:43+00:00
+completed = 2026-11-21 22:33:24+00:00
+commit = "41fda9e"
 
 [[tasks]]
 id = "T-0162"

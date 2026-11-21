@@ -47,7 +47,7 @@ def test_an_upkeep_in_any_state_is_read_back_whole(upkeep: UpkeepState, tmp_path
 def test_a_completed_upkeep_is_read_as_a_completed_row_with_its_commit(tmp_path: Path) -> None:
     write_upkeep(tmp_path, WHOLE)
     assert read_upkeep_rows(tmp_path) == [
-        UpkeepRow("U-0001", "a title", "completed", "def5678", created=CREATED)
+        UpkeepRow("U-0001", "a title", "completed", "def5678", created=CREATED, completed=ON)
     ]
 
 

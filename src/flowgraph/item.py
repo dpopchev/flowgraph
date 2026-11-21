@@ -32,6 +32,9 @@ from flowgraph.work_item import (
 # The state of a row in Backlog, as the record writes it.
 BACKLOG = "backlog"
 
+# The state of a completed row, as the record writes it.
+COMPLETED = "completed"
+
 # The id of an item of any kind.
 ItemId = WorkItemId | TaskId
 
@@ -116,6 +119,12 @@ def _backlog_as_added(rows: Mapping[WorkItemId, WorkItemRow]) -> list[WorkItemId
     return sorted(backlog, key=lambda item_id: rows[item_id].created)
 
 
+def _last_completed_first(rows: Mapping[WorkItemId, WorkItemRow]) -> list[WorkItemRow]:
+    """The completed work items, the last completed first; those of one time as the rows list."""
+    completed = [row for row in rows.values() if row.state == COMPLETED]
+    return sorted(completed, key=lambda row: row.completed or row.created, reverse=True)
+
+
 def _feature_rows(store: Store, rows: Collection[WorkItemRow]) -> list[FeatureRow]:
     """The Features of the record by number, each with the bucket its work items derive."""
     held = sorted(
@@ -135,12 +144,13 @@ def status_item(store: Store) -> str:
     """The text of the Features of the record, then its work items of every kind by bucket.
 
     The Features are listed by number, each with its derived bucket. The Backlog is listed in
-    the order of its queue; the other buckets by kind and number.
+    the order of its queue and Completed the last completed first; the other buckets by kind and
+    number.
     """
     rows = _rows_by_id(store)
     backlog = queued(store.load_queue(), _backlog_as_added(rows))
-    moved_on = [row for row in rows.values() if row.state != BACKLOG]
-    listed = [*(rows[item_id] for item_id in backlog), *moved_on]
+    moved_on = [row for row in rows.values() if row.state not in (BACKLOG, COMPLETED)]
+    listed = [*(rows[item_id] for item_id in backlog), *moved_on, *_last_completed_first(rows)]
     return status_text(listed, _feature_rows(store, rows.values()))
 
 

@@ -15,9 +15,6 @@ from flowgraph.cli import open_files, run
 
 pytestmark = pytest.mark.functional
 
-# What status lists once ST-0029 lands; what holds already has no mark.
-NOT_YET = pytest.mark.xfail(strict=True, reason="ST-0029: Completed is listed by number yet")
-
 START = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "a title", *CRITERION]
@@ -91,7 +88,6 @@ class TestTwoStoriesCompletedTheSecondBeforeTheFirst:
         )
 
 
-@NOT_YET
 def test_the_second_story_completed_after_the_first_is_listed_above_it(tmp_path: Path) -> None:
     listed = status_after(tmp_path, *ADDED, *COMPLETE_FIRST, *COMPLETE_SECOND)
     assert listed.out.splitlines()[2:] == [

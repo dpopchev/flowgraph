@@ -12,12 +12,14 @@ then = "it lists the five completed last under Completed (6), then a line that s
 
 [[tasks]]
 id = "T-0126"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_status_top.py, failing on the criterion of ST-0031"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_status_completed_order.py does, with a clock that moves on at every call. Seen red, then marked a strict xfail naming ST-0031 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_status_top.py states that fgraph status, run on a record with six Stories completed, lists the five completed last under Completed (6) and then '  ... 1 more'"
 created = 2026-11-21 17:40:32+00:00
 started = 2026-11-21 17:41:13+00:00
+completed = 2026-11-21 17:42:18+00:00
+commit = "ec9a44c"
 
 [[tasks]]
 id = "T-0127"

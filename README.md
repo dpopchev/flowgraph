@@ -427,13 +427,16 @@ A reorder exits 2 and names why when one of the two is not in Backlog, when
 a work item is put before itself, or when a text is no work item id. The
 order given is kept as `queue.toml` in the record, apart from the item files.
 
-Completed is listed the last completed first, so the work that landed last is
-on top; work items completed at one time are listed by kind and number:
+The buckets past the Backlog list the last one in on top: InProgress the work
+item started last, Completed the one completed last. Work items started or
+completed at one time are listed by kind and number:
 
 ```sh
 fgraph status
 # Backlog (0)
-# InProgress (0)
+# InProgress (2)
+#   B-0001  Cut the tracebacks fgraph --dir prints for a file from 1 to 0
+#   ST-0003  Raise the kinds of work item fgraph adds from 2 to 3
 # Completed (2)
 #   U-0002  Cut the lines one kind of work item holds from 885 to 250  757fbaf
 #   ST-0002  Raise the kinds of work item fgraph adds from 1 to 2  87c0307

@@ -15,8 +15,6 @@ from flowgraph.cli import open_files, run
 
 pytestmark = pytest.mark.functional
 
-NOT_YET = pytest.mark.xfail(strict=True, reason="ST-0034: status lists no Task yet")
-
 START = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "a title", *CRITERION]
@@ -68,7 +66,6 @@ class TestAStoryStartedWithATaskOfItStarted:
     def test_status_exits_with_zero(self, listed: Outcome) -> None:
         assert listed.status == 0
 
-    @NOT_YET
     def test_status_lists_the_started_task_under_its_story(self, listed: Outcome) -> None:
         assert listed.out == (
             "Backlog (0)\n"
@@ -79,7 +76,6 @@ class TestAStoryStartedWithATaskOfItStarted:
         )
 
 
-@NOT_YET
 def test_a_blocked_task_is_listed_with_what_it_waits_on(tmp_path: Path) -> None:
     listed = status_after(tmp_path, *STARTED, BLOCK)
     assert listed.out.splitlines()[3] == "    !  T-0001  a task title  -- waiting on the reviewer"

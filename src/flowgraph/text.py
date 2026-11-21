@@ -4,6 +4,7 @@ from collections.abc import Collection, Iterable, Sequence
 
 from flowgraph.feature import FeatureDetail, FeatureRow
 from flowgraph.story import StoryDetail, StoryRow
+from flowgraph.task import TaskRow
 from flowgraph.upkeep import UpkeepDetail, UpkeepRow
 
 # The buckets of the flow in their order, each with the states of an item shown in it.
@@ -20,7 +21,7 @@ APART = "Removed"
 # The state of a blocked Task: shown in InProgress, as blocked.
 BLOCKED = "blocked"
 
-# The states of a started work item and of a completed Task, as the record writes them.
+# The states of a started work item or Task and of a completed Task, as the record writes them.
 STARTED = "started"
 COMPLETED = "completed"
 
@@ -57,26 +58,43 @@ def _feature_line(feature: FeatureRow) -> str:
     return f"  {feature.id}  {progress}  {feature.bucket}  {feature.title}\n"
 
 
-def _top_of(lines: Sequence[str], top: int | None) -> list[str]:
-    """The first lines up to the top, then how many more there are; every line without a top."""
-    if top is None or len(lines) <= top:
-        return list(lines)
-    return [*lines[:top], f"  ... {len(lines) - top} more\n"]
+def _top_of(items: Sequence[str], top: int | None) -> list[str]:
+    """The first items up to the top, then how many more there are; every item without a top.
+
+    An item is counted once, whatever the lines it is written in.
+    """
+    if top is None or len(items) <= top:
+        return list(items)
+    return [*items[:top], f"  ... {len(items) - top} more\n"]
 
 
 def _status_line(row: StoryRow | UpkeepRow) -> str:
     """One item of a bucket: its id and title, then its commit or the reason it was removed.
 
-    A started one is listed with its Tasks completed of all, between its id and its title.
+    A started one is listed with its Tasks completed of all, between its id and its title, and
+    under it each Task of it being worked on a line of its own, in the order written.
     """
     if row.state == STARTED:
         completed = sum(task.state == COMPLETED for task in row.tasks)
-        return f"  {row.id}  {completed}/{len(row.tasks)} T  {row.title}\n"
+        worked = "".join(_task_line(task) for task in row.tasks)
+        return f"  {row.id}  {completed}/{len(row.tasks)} T  {row.title}\n{worked}"
     if row.commit:
         return f"  {row.id}  {row.title}  {row.commit}\n"
     if row.reason:
         return f"  {row.id}  {row.title}  -- {row.reason}\n"
     return f"  {row.id}  {row.title}\n"
+
+
+def _task_line(task: TaskRow) -> str:
+    """A Task being worked, under its work item; nothing for one in Backlog or completed.
+
+    A started Task is marked `=>`, a blocked one `!` and ends with what it waits on.
+    """
+    if task.state == STARTED:
+        return f"    => {task.id}  {task.title}\n"
+    if task.state == BLOCKED:
+        return f"    !  {task.id}  {task.title}  -- waiting on {task.waiting_on}\n"
+    return ""
 
 
 def feature_text(detail: FeatureDetail, rows: Iterable[StoryRow | UpkeepRow], bucket: str) -> str:

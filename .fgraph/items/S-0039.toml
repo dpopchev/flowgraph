@@ -46,8 +46,10 @@ commit = "41fda9e"
 
 [[tasks]]
 id = "T-0162"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say the development is turned on in .fgraph/config.toml"
 expected_output = "changed: README.md and docs/domain-model.md say a record is layered by .fgraph/config.toml, that the development -- the branch and the worktree of a start, the scoping, the landing -- is off unless [development] enabled = true, what a start and a landing do with it off, and that a config.toml fgraph refuses exits 2 naming the key; they name the developer's request of 2026-11-21 and the reading decided when S-0039 was ordered"
 created = 2026-11-21 22:17:56+00:00
 started = 2026-11-21 22:33:24+00:00
+completed = 2026-11-21 22:37:04+00:00
+commit = "70be864"

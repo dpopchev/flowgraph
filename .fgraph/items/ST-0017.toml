@@ -1,9 +1,11 @@
 id = "ST-0017"
-state = "started"
+state = "completed"
 title = "Cut the git commands a developer runs to land a work item from 4 to 0"
 description = "Found in the review of the Backlog on 2026-11-21: the developer's rule is that the record and its rituals go through fgraph, and ST-0009 covers only the start. Landing is done by hand today: one merge commit of the branch on main, fgraph complete at that commit, the commit of the record, then the worktree and the merged branch removed. fgraph land does those steps; the commit of the record is fgraph's. Open: who words the merge commit; the agent's reading is the developer, given with an option, since it is a commit of the development and the developer said on 2026-11-21 that fgraph does not take over those messages. Ordered after ST-0009 and ST-0010. Its Tasks are written when it is ordered."
 created = 2026-11-21 08:34:10+00:00
 started = 2026-11-21 10:59:11+00:00
+completed = 2026-11-21 11:04:21+00:00
+commit = "de6cc9b"
 
 [criterion]
 given = "a started Story on its worktree branch, every Task of it completed"

@@ -11,7 +11,7 @@ from collections.abc import Callable, Sequence
 from datetime import UTC, datetime
 from functools import partial
 from pathlib import Path
-from typing import assert_never
+from typing import Never, assert_never
 
 from flowgraph.branch import GitError, SlugError
 from flowgraph.commit import OpenGit, Said, commit_written, open_git
@@ -34,6 +34,7 @@ from flowgraph.feature_item import (
     parent_named,
     show_feature_item,
 )
+from flowgraph.gate import GateError, RunGate, run_gate
 from flowgraph.item import (
     ItemIdError,
     Written,
@@ -90,7 +91,7 @@ from flowgraph.work_item import (
 )
 from flowgraph.worktrees import across_worktrees
 
-__all__ = ["Store", "open_files", "open_git", "read_config", "run"]
+__all__ = ["Store", "open_files", "open_git", "read_config", "run", "run_gate"]
 
 # Write text to a stream; what it returns is ignored, so a stream's write and a list's append fit.
 Write = Callable[[str], object]
@@ -109,6 +110,7 @@ REFUSED = (
     SlugError,
     GitError,
     LandError,
+    GateError,
     NotOnMainError,
     ParallelError,
     OutOfScopeError,
@@ -210,6 +212,11 @@ def _no_config(record: Path) -> Config:
     return make_config("")
 
 
+def _no_gate(command: str, directory: Path) -> Never:
+    """The gate of a run given none to run it: a contract, such a run lands under no gate."""
+    raise AssertionError(f"run() was given no run_gate to run {command!r} in {directory}")
+
+
 def terminal_width() -> int | None:
     """Adapter: the columns of the terminal the output of the process is written to.
 
@@ -226,13 +233,14 @@ def _said(
     open_git: OpenGit,
     width: Width,
     config: Config,
+    run_gate: RunGate,
 ) -> Said | None:
     """Run the command the arguments name on the record; None when they name none.
 
     A write is committed once it is made. The lines of status are cut to the width, when there
     is one. The configuration says whether a start branches, how many work items are started at
-    once and whether a landing is taken. Raises the refusal of the command, a git step refused
-    among them.
+    once, whether a landing is taken and the gate it runs through run_gate. Raises the refusal
+    of the command, a git step refused among them.
     """
     if args.command == "start":
         check_start_on_main(args.id, record, open_git)
@@ -243,7 +251,7 @@ def _said(
     match args.command:
         case "land":
             return land_item(
-                args.id, args.message, store, now, record, open_git, config, args.decision
+                args.id, args.message, store, now, record, open_git, config, run_gate, args.decision
             )
         case "show" if is_feature_id(args.id):
             return Said(show_feature_item(args.id, store))
@@ -284,6 +292,7 @@ def run(
     width: Width = _no_terminal,
     wait: Wait = _no_wait,
     load_config: LoadConfig = _no_config,
+    run_gate: RunGate = _no_gate,
 ) -> int:
     """Read the arguments, locate the record in cwd, run the command and return the exit status.
 
@@ -294,7 +303,8 @@ def run(
     its frames as it goes and waits between two by wait, which by default returns at once; it
     exits with 0 once its count is written or Ctrl-C ends it. The configuration of the record is
     read through load_config before any command runs, the defaults by default; one that is
-    refused fails with 2, whatever the command.
+    refused fails with 2, whatever the command. A landing runs the gate of the configuration
+    through run_gate, which a run that lands under a gate is given: the default runs none.
     """
     command_line = build_command_line()
     parser = command_line.parser
@@ -315,7 +325,7 @@ def run(
                 if args.command == "watch":
                     _watch(args, store, write, wait, width)
                     return 0
-                said = _said(args, store, now, path, open_git, width, config)
+                said = _said(args, store, now, path, open_git, width, config, run_gate)
             except REFUSED as error:
                 write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
                 return 2
@@ -354,6 +364,7 @@ def main() -> None:
             width=terminal_width,
             wait=time.sleep,
             load_config=read_config,
+            run_gate=run_gate,
         )
     )
 

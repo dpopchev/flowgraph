@@ -10,6 +10,9 @@ merge commit of the branch under the developer's message; by `squash` one commit
 alone that holds the work of the branch, under the message too; by `fast-forward` main moves to
 the tip of the branch and no commit is made, so it takes no message. Each holds the merge
 uncommitted first, to complete the work item as the branch has it before main moves.
+
+`[development] gate` names one command a landing runs while that merge is held, once the work
+item is checked to complete: a gate that fails drops the merge, so main is where it was.
 """
 
 from collections.abc import Callable, Sequence
@@ -23,6 +26,7 @@ from flowgraph.branch import MAIN, GitError
 from flowgraph.commit import OpenGit, Said, WorkTree, commit_written
 from flowgraph.config import CONFIG, DEVELOPMENT_ENABLED, DEVELOPMENT_MERGE, Config, Merge
 from flowgraph.criterion import DecisionError, EmptyPartError, make_commit
+from flowgraph.gate import GateError, RunGate, check_gate
 from flowgraph.item import complete_item, parse_work_item_id_of_any_kind
 from flowgraph.record import Now
 from flowgraph.store import Store
@@ -37,7 +41,7 @@ from flowgraph.work_item import (
 # A commit that stands for the merge commit while the complete is only checked.
 UNMERGED = make_commit("0000000")
 
-# What stops a merge held from being committed: a refusal of the complete, or of git.
+# What stops a merge held from being committed: a refusal of the complete, of the gate or of git.
 NOT_COMMITTED = (
     WorkItemNotFoundError,
     NotStartedError,
@@ -46,6 +50,7 @@ NOT_COMMITTED = (
     RemovedAlreadyError,
     DecisionError,
     EmptyPartError,
+    GateError,
     GitError,
 )
 
@@ -81,7 +86,7 @@ class FastForward:
 # How a work item lands: the merge of the configuration, with the message of the commit it makes.
 Way = MergeCommit | Squash | FastForward
 
-# Check that the work item can complete as the merge held brought it; raises its refusal.
+# Check the merge held, as the tree main will have: raises the refusal of what it checks.
 Check = Callable[[], None]
 
 
@@ -132,6 +137,16 @@ def _check_completes(item_id: WorkItemId, decision: str | None, landing: Landing
     work_item.completed_work_item(merged, landing.now(), UNMERGED, decision)
 
 
+def _check_lands(completes: Check, passes: Check) -> None:
+    """Check the merge held: the work item completes as it is brought, then the gate passes.
+
+    The Tasks completed stay the first rule: a gate is not run for a work item that cannot
+    complete. Raises the refusal of the first that fails.
+    """
+    completes()
+    passes()
+
+
 def _committed(work_tree: WorkTree, branch: str, check: Check, commit: Callable[[], str]) -> str:
     """Hold the merge of the branch, check it, then commit it; the sha of that commit.
 
@@ -151,8 +166,8 @@ def _fast_forwarded(work_tree: WorkTree, branch: str, check: Check) -> str:
     """Hold the merge of the branch to check it, drop it, then move main to the tip; its sha.
 
     A fast-forward cannot be held, so the merge held is the one look at the record of the branch
-    before main moves. Raises the refusal of the check, or GitError when git refuses a step;
-    main is where it was then.
+    and at the tree the gate runs on before main moves. Raises the refusal of the check, or
+    GitError when git refuses a step; main is where it was then.
     """
     work_tree.merge(branch)
     try:
@@ -208,20 +223,23 @@ def land_item(
     record: Path,
     open_git: OpenGit,
     config: Config,
+    run_gate: RunGate,
     decision: str | None = None,
 ) -> Said:
     """Land the started work item of that id on main, by the merge of the configuration.
 
     The message words the commit a merge-commit or a squash makes. A Spike lands with the
-    decision that answers its hypothesis. Raises WorkItemIdError when the text is the id of no
-    kind of work item, LandError when the development is off in the configuration, naming the
-    key that turns it on, when the merge makes a commit and no message is given or makes none
-    and one is, when the record is outside a git work tree, when the work tree is not on main,
-    when the work item has no branch or several or when a fast-forward finds a commit on main
-    that the branch lacks, the refusal of the complete when a Task of it is not completed or its
-    decision is missing, and GitError when git refuses a step. Nothing is merged unless main is
-    moved; a step refused after it says how far the landing came. A record git ignores is
-    completed with no commit of the record.
+    decision that answers its hypothesis. The gate of the configuration, when it names one, is
+    run through run_gate at the top of the work tree while the merge is held. Raises
+    WorkItemIdError when the text is the id of no kind of work item, LandError when the
+    development is off in the configuration, naming the key that turns it on, when the merge
+    makes a commit and no message is given or makes none and one is, when the record is outside
+    a git work tree, when the work tree is not on main, when the work item has no branch or
+    several or when a fast-forward finds a commit on main that the branch lacks, the refusal of
+    the complete when a Task of it is not completed or its decision is missing, GateError when
+    the gate exits with another status than 0, and GitError when git refuses a step. Nothing is
+    merged unless main is moved; a step refused after it says how far the landing came. A record
+    git ignores is completed with no commit of the record.
     """
     item_id = parse_work_item_id_of_any_kind(item)
     text = work_item_id_text(item_id)
@@ -236,8 +254,9 @@ def land_item(
     if on != MAIN:
         raise LandError(f"{text} lands on {MAIN}: {work_tree.path} is on {on or 'no branch'}")
     branch = _branch_to_land(text, work_tree.find_branches(f"wi/{text}-*"))
-    check = partial(_check_completes, item_id, decision, Landing(store, now, work_tree))
-    sha = _merged(way, text, branch, work_tree, check)
+    completes = partial(_check_completes, item_id, decision, Landing(store, now, work_tree))
+    passes = partial(check_gate, text, config.development.gate, work_tree.path, run_gate)
+    sha = _merged(way, text, branch, work_tree, partial(_check_lands, completes, passes))
     written = complete_item(text, sha, store, now, config, decision)
     try:
         commit_written(written, store, record, lambda _: work_tree, config)

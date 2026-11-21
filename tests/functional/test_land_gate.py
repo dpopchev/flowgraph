@@ -13,12 +13,9 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph.cli import open_files, open_git, read_config, run
+from flowgraph.cli import open_files, open_git, read_config, run, run_gate
 
-pytestmark = [
-    pytest.mark.functional,
-    pytest.mark.xfail(strict=True, reason="S-0042: development.gate is no key yet"),
-]
+pytestmark = pytest.mark.functional
 
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
@@ -26,10 +23,20 @@ TITLE = "Raise the Stories fgraph lists from 0 to 1"
 ADD_STORY = ["add", "story", TITLE, *CRITERION]
 ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
 LAND = ["land", "S-0001", "--message", "feat: land the first Story"]
+LAND_UNWORDED = ["land", "S-0001"]
 BRANCH = "wi/S-0001-raise-the-stories-fgraph"
 WORKTREE = Path("project.worktrees") / "S-0001-raise-the-stories-fgraph"
 FAILING = '[development]\nenabled = true\ngate = "exit 3"\n'
 REFUSAL = 'S-0001 cannot land: development.gate = "exit 3" exited with status 3'
+# The work of the branch is in the tree of main only once it is merged there.
+SEES_THE_WORK = 'gate = "test -f work.txt"\n'
+LACKS_THE_WORK = 'gate = "test ! -f work.txt"\n'
+WAYS = [
+    ('[development]\nenabled = true\nmerge = "merge-commit"\n', LAND),
+    ('[development]\nenabled = true\nmerge = "squash"\n', LAND),
+    ('[development]\nenabled = true\nmerge = "fast-forward"\n', LAND_UNWORDED),
+]
+WAY_IDS = ["merge-commit", "squash", "fast-forward"]
 IDENTITY = {
     "GIT_AUTHOR_NAME": "a developer",
     "GIT_AUTHOR_EMAIL": "developer@example.com",
@@ -71,6 +78,7 @@ def fgraph(argv: Sequence[str], cwd: Path) -> Outcome:
         now=lambda: NOW,
         open_git=open_git,
         load_config=read_config,
+        run_gate=run_gate,
     )
     return Outcome(status, "".join(out), "".join(err))
 
@@ -160,3 +168,43 @@ class TestALandOfAStartedStoryUnderAGateThatFails:
         assert fgraph(["status"], gated).out == (
             f"Backlog (0)\nInProgress (1)\n  S-0001  1/1 T  {TITLE}\nCompleted (0)\n"
         )
+
+
+@pytest.mark.parametrize(("config", "argv"), WAYS, ids=WAY_IDS)
+def test_a_land_under_a_gate_that_fails_on_the_work_merged_leaves_main_and_the_branch(
+    config: str, argv: list[str], tmp_path: Path
+) -> None:
+    checkout = ready_to_land(tmp_path, f"{config}{LACKS_THE_WORK}")
+    refused = land(argv, checkout)
+    assert (
+        refused.outcome.status,
+        git(checkout, "rev-parse", "HEAD"),
+        git(checkout, "status", "--porcelain"),
+        git(checkout, "rev-parse", BRANCH),
+    ) == (2, refused.before, "", refused.tip)
+
+
+@pytest.mark.parametrize(("config", "argv"), WAYS, ids=WAY_IDS)
+def test_a_land_under_a_gate_that_passes_on_the_work_merged_exits_with_zero(
+    config: str, argv: list[str], tmp_path: Path
+) -> None:
+    checkout = ready_to_land(tmp_path, f"{config}{SEES_THE_WORK}")
+    assert fgraph(argv, checkout).status == 0
+
+
+def test_a_land_under_a_gate_that_passes_lists_the_story_under_completed(tmp_path: Path) -> None:
+    checkout = ready_to_land(tmp_path, f"{WAYS[0][0]}{SEES_THE_WORK}")
+    fgraph(LAND, checkout)
+    merge = git(checkout, "rev-parse", "--short", "HEAD~1")
+    assert fgraph(["status"], checkout).out == (
+        f"Backlog (0)\nInProgress (0)\nCompleted (1)\n  S-0001  {merge}  {TITLE}\n"
+    )
+
+
+def test_the_output_of_the_gate_is_written_as_the_gate_wrote_it(
+    tmp_path: Path, capfd: pytest.CaptureFixture[str]
+) -> None:
+    checkout = ready_to_land(tmp_path, '[development]\nenabled = true\ngate = "echo checked"\n')
+    capfd.readouterr()
+    fgraph(LAND, checkout)
+    assert capfd.readouterr().out == "checked\n"

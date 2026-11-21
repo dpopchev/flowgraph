@@ -17,3 +17,11 @@ title = "Add tests/functional/test_commit_off.py, failing on the criterion of S-
 description = "Built as tests/functional/test_commit_writes.py builds its repository. Seen red, then marked a strict xfail naming S-0040 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_commit_off.py states that fgraph add story, in a git repository whose record holds config.toml with [git] commit = false, writes the Story into the record and leaves git log without a new commit"
 created = 2026-11-21 22:18:52+00:00
+
+[[tasks]]
+id = "T-0164"
+state = "backlog"
+title = "Add git.commit to the Config of src/flowgraph/config.py and leave the writes of the record uncommitted when it is off"
+description = "decided: S-0040: the layers build on each other -- the development needs the commits of the record, since the branch of a work item carries its record; so the two keys together are refused, where a record git ignores keeps its own rule. Removes the xfail mark of tests/functional/test_commit_off.py."
+expected_output = "changed: the Config of src/flowgraph/config.py holds git.commit, on by default; under [git] commit = false no write of the record is committed -- add, amend, remove, reorder, start, block, unblock and complete leave their files changed in the work tree, with no warning, as the write of a record git ignores; a config.toml that sets [development] enabled = true with [git] commit = false is refused with exit 2 naming both keys; proved in tests/config/ and tests/commit/"
+created = 2026-11-21 22:18:52+00:00

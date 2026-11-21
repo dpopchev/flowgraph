@@ -1,6 +1,6 @@
-"""A work item of any kind, named by its id: the store of a record, and the commands by id.
+"""An item of any kind, named by its id: the store of a record, and the commands by id.
 
-Each command reads the id, finds the kind it names and runs that kind's command on the store;
+Each command reads the id, finds the kind it names and runs the work item command on the store;
 it returns the line fgraph writes, or raises the refusal of the move.
 """
 
@@ -10,59 +10,48 @@ from functools import partial
 from pathlib import Path
 from typing import assert_never
 
-from flowgraph import story, upkeep
+from flowgraph import work_item
 from flowgraph.criterion import make_commit
 from flowgraph.record import Now
-from flowgraph.story import (
-    FindStoryRows,
-    LoadStory,
-    SaveStory,
-    StoryDetail,
-    StoryId,
-    StoryIdError,
-    parse_story_id,
-    story_id_text,
-)
-from flowgraph.task import TaskId, TaskIdError, TaskNotFoundError, parse_task_id, task_id_text
-from flowgraph.text import show_text
-from flowgraph.upkeep import (
-    FindUpkeepRows,
-    LoadUpkeep,
-    SaveUpkeep,
-    UpkeepDetail,
-    UpkeepId,
-    UpkeepIdError,
-    parse_upkeep_id,
-    upkeep_id_text,
+from flowgraph.story import STORY
+from flowgraph.task import TaskId, TaskIdError, parse_task_id, task_id_text
+from flowgraph.text import show_text, status_text
+from flowgraph.upkeep import UPKEEP
+from flowgraph.work_item import (
+    FindTaskIds,
+    Kind,
+    LoadWorkItem,
+    SaveWorkItem,
+    WorkItemDetail,
+    WorkItemId,
+    WorkItemIdError,
+    WorkItemRow,
+    parse_work_item_id,
+    work_item_id_text,
 )
 
-# The ids of every Task of one kind in the record, as written; an empty list when it holds none.
-FindTaskIds = Callable[[], list[str]]
+# The kinds of work item a record holds, in the order fgraph reads them.
+KINDS: tuple[Kind, ...] = (STORY, UPKEEP)
 
-# The Story of that id as plain data; raises StoryNotFoundError when the record holds none.
-FindStoryDetail = Callable[[StoryId], StoryDetail]
+# The rows of the work items of that kind in the record; an empty list when it holds none.
+FindKindRows = Callable[[Kind], list[WorkItemRow]]
 
-# The Upkeep of that id as plain data; raises UpkeepNotFoundError when the record holds none.
-FindUpkeepDetail = Callable[[UpkeepId], UpkeepDetail]
+# The work item of that id as plain data; raises WorkItemNotFoundError when the record holds none.
+FindWorkItemDetail = Callable[[WorkItemId], WorkItemDetail]
 
 # The id of an item of any kind.
-ItemId = StoryId | UpkeepId | TaskId
+ItemId = WorkItemId | TaskId
 
 
 @dataclass(frozen=True)
 class Store:
     """The reads and writes of one record, each already bound to its directory."""
 
-    find_story_rows: FindStoryRows
-    load_story: LoadStory
-    find_story_detail: FindStoryDetail
+    find_work_item_rows: FindKindRows
+    load_work_item: LoadWorkItem
+    find_work_item_detail: FindWorkItemDetail
     find_task_ids: FindTaskIds
-    save_story: SaveStory
-    find_upkeep_rows: FindUpkeepRows
-    load_upkeep: LoadUpkeep
-    find_upkeep_detail: FindUpkeepDetail
-    find_upkeep_task_ids: FindTaskIds
-    save_upkeep: SaveUpkeep
+    save_work_item: SaveWorkItem
 
 
 # The store of the record in that directory.
@@ -73,199 +62,191 @@ class ItemIdError(ValueError):
     """A text that is the id of no kind of item."""
 
 
+def read_every_task_id(record: Path) -> list[str]:
+    """Adapter: the ids of every Task of every kind in the record, as written, in no order."""
+    return [task for kind in KINDS for task in work_item.read_task_ids(record, kind)]
+
+
 def open_files(record: Path) -> Store:
     """The store of the record in that directory, kept as its files."""
     return Store(
-        find_story_rows=partial(story.read_story_rows, record),
-        load_story=partial(story.read_story, record),
-        find_story_detail=partial(story.read_story_detail, record),
-        find_task_ids=partial(story.read_task_ids, record),
-        save_story=partial(story.write_story, record),
-        find_upkeep_rows=partial(upkeep.read_upkeep_rows, record),
-        load_upkeep=partial(upkeep.read_upkeep, record),
-        find_upkeep_detail=partial(upkeep.read_upkeep_detail, record),
-        find_upkeep_task_ids=partial(upkeep.read_task_ids, record),
-        save_upkeep=partial(upkeep.write_upkeep, record),
+        find_work_item_rows=partial(work_item.read_work_item_rows, record),
+        load_work_item=partial(work_item.read_work_item, record),
+        find_work_item_detail=partial(work_item.read_work_item_detail, record),
+        find_task_ids=partial(read_every_task_id, record),
+        save_work_item=partial(work_item.write_work_item, record),
     )
 
 
+def kind_named(name: str) -> Kind:
+    """The kind whose noun, in lower case, is the name; raises KeyError when none is."""
+    named = {kind.noun.lower(): kind for kind in KINDS}
+    return named[name]
+
+
+def parse_work_item_id_of_any_kind(text: str) -> WorkItemId:
+    """The id of a work item of any kind written as the text.
+
+    Raises WorkItemIdError as the first kind does when the text is the id of none of them.
+    """
+    first, *others = KINDS
+    for kind in others:
+        try:
+            return parse_work_item_id(kind, text)
+        except WorkItemIdError:
+            continue
+    return parse_work_item_id(first, text)
+
+
 def parse_item_id(text: str) -> ItemId:
-    """The Story id, Upkeep id or Task id written as the text.
+    """The id of a work item of any kind, or of a Task, written as the text.
 
     Raises ItemIdError when the text is none of them.
     """
-    parsers: list[tuple[Callable[[str], ItemId], type[ValueError]]] = [
-        (parse_story_id, StoryIdError),
-        (parse_upkeep_id, UpkeepIdError),
-        (parse_task_id, TaskIdError),
+    parsers: list[Callable[[str], ItemId]] = [
+        *(partial(parse_work_item_id, kind) for kind in KINDS),
+        parse_task_id,
     ]
-    for parse, refused in parsers:
+    for parse in parsers:
         try:
             return parse(text)
-        except refused:
+        except WorkItemIdError, TaskIdError:
             continue
-    raise ItemIdError(f"{text!r} is no Story, Upkeep or Task id")
+    nouns = ", ".join(kind.noun for kind in KINDS)
+    raise ItemIdError(f"{text!r} is no {nouns} or Task id")
+
+
+def status_item(store: Store) -> str:
+    """The text of the work items of every kind in the record, by bucket."""
+    return status_text([row for kind in KINDS for row in store.find_work_item_rows(kind)])
 
 
 def show_item(item: str, store: Store) -> str:
-    """The text of the Story or the Upkeep of that id.
+    """The text of the work item of that id.
 
-    Raises StoryIdError when the text is neither id, naming it as no Story id, and
-    StoryNotFoundError or UpkeepNotFoundError when the record holds no such item.
+    Raises WorkItemIdError when the text is the id of no kind and WorkItemNotFoundError when the
+    record holds no such item.
     """
-    try:
-        upkeep_id = parse_upkeep_id(item)
-    except UpkeepIdError:
-        return show_text(store.find_story_detail(parse_story_id(item)))
-    return show_text(store.find_upkeep_detail(upkeep_id))
+    return show_text(store.find_work_item_detail(parse_work_item_id_of_any_kind(item)))
+
+
+def add_item(
+    kind: Kind,
+    title: str,
+    criterion: tuple[str, str, str],
+    description: str,
+    store: Store,
+    now: Now,
+) -> str:
+    """Add a work item of that kind with its Given / When / Then; the line that says so.
+
+    Raises EmptyPartError when the title or a part of the criterion is blank; nothing is saved.
+    """
+    given, when, then = criterion
+    added = work_item.add_work_item(
+        kind=kind,
+        title=title,
+        given=given,
+        when=when,
+        then=then,
+        description=description,
+        find_work_item_rows=partial(store.find_work_item_rows, kind),
+        save_work_item=store.save_work_item,
+        now=now,
+    )
+    return f"added {work_item_id_text(added)}\n"
 
 
 def write_task(
     parent: str, title: str, expected_output: str, description: str, store: Store, now: Now
 ) -> str:
-    """Write a Task for the Story or the Upkeep named as parent; the line that says so.
+    """Write a Task for the work item named as parent; the line that says so.
 
-    Its id is the next free one across every kind. Raises StoryIdError when the parent is neither
-    id, naming it as no Story id, StoryNotFoundError or UpkeepNotFoundError when the record holds
-    no such parent, CompletedAlreadyError when it is completed and EmptyPartError when a part is
-    blank; nothing is saved.
+    Its id is the next free one across every kind. Raises WorkItemIdError when the parent is the
+    id of no kind, WorkItemNotFoundError when the record holds no such item,
+    CompletedAlreadyError when it is completed and EmptyPartError when a part is blank; nothing
+    is saved.
     """
-
-    def taken() -> list[str]:
-        return [*store.find_task_ids(), *store.find_upkeep_task_ids()]
-
-    try:
-        parse_upkeep_id(parent)
-    except UpkeepIdError:
-        written = story.add_task(
-            parent=parent,
-            title=title,
-            expected_output=expected_output,
-            description=description,
-            load_story=store.load_story,
-            find_task_ids=taken,
-            save_story=store.save_story,
-            now=now,
-        )
-        return f"added {task_id_text(written)} to {parent}\n"
-    written = upkeep.add_task(
-        parent=parent,
+    written = work_item.add_task(
+        parent=parse_work_item_id_of_any_kind(parent),
         title=title,
         expected_output=expected_output,
         description=description,
-        load_upkeep=store.load_upkeep,
-        find_task_ids=taken,
-        save_upkeep=store.save_upkeep,
+        load_work_item=store.load_work_item,
+        find_task_ids=store.find_task_ids,
+        save_work_item=store.save_work_item,
         now=now,
     )
     return f"added {task_id_text(written)} to {parent}\n"
 
 
-def _start_task(task_id: TaskId, store: Store, now: Now) -> str:
-    """Start the Task of that id in the Story or the Upkeep that holds it; the line that says so."""
-    task = task_id_text(task_id)
-    try:
-        holder = story.start_task(
-            task_id=task_id,
-            find_story_rows=store.find_story_rows,
-            load_story=store.load_story,
-            save_story=store.save_story,
-            now=now,
-        )
-    except TaskNotFoundError:
-        kept = upkeep.start_task(
-            task_id=task_id,
-            find_upkeep_rows=store.find_upkeep_rows,
-            load_upkeep=store.load_upkeep,
-            save_upkeep=store.save_upkeep,
-            now=now,
-        )
-        return f"started {task} of {upkeep_id_text(kept)}\n"
-    return f"started {task} of {story_id_text(holder)}\n"
+def _load_holder(store: Store) -> work_item.LoadHolder:
+    """The load of the work item that holds a Task, among the items of every kind."""
+
+    def holder(task_id: TaskId) -> work_item.WorkItemState:
+        ids = [
+            parse_work_item_id(kind, row.id)
+            for kind in KINDS
+            for row in store.find_work_item_rows(kind)
+        ]
+        return work_item.holder_of(task_id, ids, store.load_work_item)
+
+    return holder
 
 
 def start_item(item: str, store: Store, now: Now) -> str:
-    """Start the Story, the Upkeep or the Task of that id; the line that says so.
+    """Start the work item or the Task of that id; the line that says so.
 
     Raises ItemIdError when the text is no id, or the refusal of the start; nothing is saved.
     """
     match parse_item_id(item):
-        case StoryId() as story_id:
-            story.start_story(
-                story_id=story_id,
-                load_story=store.load_story,
-                save_story=store.save_story,
+        case WorkItemId() as item_id:
+            work_item.start_work_item(
+                item_id=item_id,
+                load_work_item=store.load_work_item,
+                save_work_item=store.save_work_item,
                 now=now,
             )
-            return f"started {story_id_text(story_id)}\n"
-        case UpkeepId() as upkeep_id:
-            upkeep.start_upkeep(
-                upkeep_id=upkeep_id,
-                load_upkeep=store.load_upkeep,
-                save_upkeep=store.save_upkeep,
-                now=now,
-            )
-            return f"started {upkeep_id_text(upkeep_id)}\n"
+            return f"started {work_item_id_text(item_id)}\n"
         case TaskId() as task_id:
-            return _start_task(task_id, store, now)
+            holder = work_item.start_task(
+                task_id=task_id,
+                load_holder=_load_holder(store),
+                save_work_item=store.save_work_item,
+                now=now,
+            )
+            return f"started {task_id_text(task_id)} of {work_item_id_text(holder)}\n"
         case _ as unreachable:
             assert_never(unreachable)
 
 
-def _complete_task(task_id: TaskId, sha: str, store: Store, now: Now) -> str:
-    """Complete the Task of that id in the commit of that sha; the line that says so."""
-    commit = make_commit(sha)
-    task = task_id_text(task_id)
-    try:
-        holder = story.complete_task(
-            task_id=task_id,
-            commit=commit,
-            find_story_rows=store.find_story_rows,
-            load_story=store.load_story,
-            save_story=store.save_story,
-            now=now,
-        )
-    except TaskNotFoundError:
-        kept = upkeep.complete_task(
-            task_id=task_id,
-            commit=commit,
-            find_upkeep_rows=store.find_upkeep_rows,
-            load_upkeep=store.load_upkeep,
-            save_upkeep=store.save_upkeep,
-            now=now,
-        )
-        return f"completed {task} of {upkeep_id_text(kept)} at {commit.sha}\n"
-    return f"completed {task} of {story_id_text(holder)} at {commit.sha}\n"
-
-
 def complete_item(item: str, sha: str, store: Store, now: Now) -> str:
-    """Complete the Story, the Upkeep or the Task of that id in that commit; the line that says so.
+    """Complete the work item or the Task of that id in that commit; the line that says so.
 
     Raises ItemIdError when the text is no id, CommitError when the sha is no commit, or the
     refusal of the complete; nothing is saved.
     """
     match parse_item_id(item):
-        case StoryId() as story_id:
+        case WorkItemId() as item_id:
             commit = make_commit(sha)
-            story.complete_story(
-                story_id=story_id,
+            work_item.complete_work_item(
+                item_id=item_id,
                 commit=commit,
-                load_story=store.load_story,
-                save_story=store.save_story,
+                load_work_item=store.load_work_item,
+                save_work_item=store.save_work_item,
                 now=now,
             )
-            return f"completed {story_id_text(story_id)} at {commit.sha}\n"
-        case UpkeepId() as upkeep_id:
-            commit = make_commit(sha)
-            upkeep.complete_upkeep(
-                upkeep_id=upkeep_id,
-                commit=commit,
-                load_upkeep=store.load_upkeep,
-                save_upkeep=store.save_upkeep,
-                now=now,
-            )
-            return f"completed {upkeep_id_text(upkeep_id)} at {commit.sha}\n"
+            return f"completed {work_item_id_text(item_id)} at {commit.sha}\n"
         case TaskId() as task_id:
-            return _complete_task(task_id, sha, store, now)
+            commit = make_commit(sha)
+            holder = work_item.complete_task(
+                task_id=task_id,
+                commit=commit,
+                load_holder=_load_holder(store),
+                save_work_item=store.save_work_item,
+                now=now,
+            )
+            task = task_id_text(task_id)
+            return f"completed {task} of {work_item_id_text(holder)} at {commit.sha}\n"
         case _ as unreachable:
             assert_never(unreachable)

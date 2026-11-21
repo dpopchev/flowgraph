@@ -19,7 +19,7 @@ from flowgraph.upkeep import (
     read_upkeep_rows,
     write_upkeep,
 )
-from flowgraph.upkeep import file as upkeep_file
+from flowgraph.work_item import file as upkeep_file
 
 pytestmark = pytest.mark.edge
 

@@ -141,6 +141,10 @@ needs. The same five exist for `Story`, `Bug`, `Spike`, `Upkeep` and `Task`;
 
 `CompletedSpike` also adds the decision, which answers its hypothesis.
 
+A kind whose criterion and payload match another's shares its state types and
+names them as its own: `Story` and `Upkeep` are both `WorkItem`, told apart
+by the kind on their id (Persistence).
+
 - A bucket is derived from the type; it is never a stored field.
 - Blocked is not a bucket: a blocked item stays in InProgress and shows as
   blocked.
@@ -229,9 +233,14 @@ and its merge tool.
 - An Upkeep is kept as `items/U-0001.toml`, in the shape of a Story file:
   the same fields in each state, `started`, `completed` and `commit` once it
   has moved, and its Tasks as `[[tasks]]` tables, read back through the
-  moves. Each kind keeps its own state types (`StartedUpkeep`,
-  `CompletedUpkeep`); the moves of one Task among a work item's Tasks and the
-  Task tables of a file are shared by every kind.
+  moves.
+- The Story and the Upkeep share one work item (`src/flowgraph/work_item/`):
+  its state types (`WorkItem`, `StartedWorkItem`, `CompletedWorkItem`), its
+  moves, its file and its commands. The kind -- its noun, the article before
+  it and the prefix of its ids -- is a value the id carries, so `Story` and
+  `StartedUpkeep` are names of those types and a Story tells itself from an
+  Upkeep by its id. Each kind keeps only its kind, its id functions and those
+  names; the kinds are listed once, in `src/flowgraph/item.py`.
 - Each kind reads the files of its own prefix. A file with a prefix no kind
   knows is left alone; nothing reports it yet.
 - A command loads a work item whole, changes it and saves it whole. The file

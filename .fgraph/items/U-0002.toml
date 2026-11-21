@@ -12,35 +12,61 @@ then = "it still passes"
 
 [[tasks]]
 id = "T-0029"
-state = "backlog"
+state = "completed"
 title = "Create src/flowgraph/work_item/model.py holding the Backlog, started and completed states of a work item of any kind and the moves between them"
 expected_output = "created: src/flowgraph/work_item/model.py with its tests in tests/work_item/, the kind of an item named by its id"
 created = 2026-11-21 07:18:44+00:00
+started = 2026-11-21 07:21:13+00:00
+completed = 2026-11-21 07:24:01+00:00
+commit = "4cafa20"
 
 [[tasks]]
 id = "T-0030"
-state = "backlog"
+state = "completed"
 title = "Create src/flowgraph/work_item/file.py and commands.py holding the item file in each state and the commands that load, move and save it"
 expected_output = "created: src/flowgraph/work_item/file.py and src/flowgraph/work_item/commands.py, one reader and one writer for the files of every prefix"
 created = 2026-11-21 07:18:44+00:00
+started = 2026-11-21 07:24:02+00:00
+completed = 2026-11-21 07:26:40+00:00
+commit = "5947500"
 
 [[tasks]]
 id = "T-0031"
-state = "backlog"
+state = "completed"
 title = "Rewire src/flowgraph/story/ and src/flowgraph/upkeep/ onto work_item, each keeping its public names"
 expected_output = "changed: src/flowgraph/story/ and src/flowgraph/upkeep/ each hold their id, their noun and their criterion in at most 250 lines"
 created = 2026-11-21 07:18:44+00:00
+started = 2026-11-21 07:26:40+00:00
+completed = 2026-11-21 07:54:16+00:00
+commit = "44d8992"
 
 [[tasks]]
 id = "T-0032"
-state = "backlog"
+state = "completed"
 title = "Cut the fields of Store in src/flowgraph/item.py from 10 to 5, one set of reads and writes for every kind"
 expected_output = "changed: src/flowgraph/item.py, where start_item, complete_item, write_task and show_item hold no branch per kind, and src/flowgraph/cli.py uses the five"
 created = 2026-11-21 07:18:44+00:00
+started = 2026-11-21 07:49:30+00:00
+completed = 2026-11-21 07:51:45+00:00
+commit = "a44c46e"
 
 [[tasks]]
 id = "T-0033"
-state = "backlog"
+state = "completed"
 title = "Update docs/domain-model.md, Persistence, to say what the kinds share and what each keeps"
 expected_output = "changed: docs/domain-model.md no longer says each kind keeps its own state types, and names the shared work item"
 created = 2026-11-21 07:18:45+00:00
+started = 2026-11-21 07:54:16+00:00
+completed = 2026-11-21 07:54:52+00:00
+commit = "7165444"
+
+[[tasks]]
+id = "T-0034"
+state = "completed"
+title = "Remove src/flowgraph/story/commands.py and src/flowgraph/upkeep/commands.py, moving their six tests onto the work item commands"
+description = "Written while T-0031 was started: the wrappers keep src/flowgraph/story/ at 381 and src/flowgraph/upkeep/ at 386 lines, over the 250 of T-0031, and once T-0032 lands only tests call them. The developer chose to reorder on 2026-11-21: T-0032, then T-0034, then T-0031 completes where its count holds. Added on the branch, not on main, since U-0002.toml is changed there."
+expected_output = "changed: no module of src/flowgraph wraps the work item commands for one kind; the six tests that called the wrappers call the work item commands with the kind"
+created = 2026-11-21 07:49:29+00:00
+started = 2026-11-21 07:51:45+00:00
+completed = 2026-11-21 07:54:16+00:00
+commit = "44d8992"

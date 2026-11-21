@@ -17,7 +17,7 @@ from flowgraph.story import (
     story_row,
     write_story,
 )
-from flowgraph.story import file as story_file
+from flowgraph.work_item import file as story_file
 
 pytestmark = pytest.mark.edge
 

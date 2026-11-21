@@ -7,20 +7,22 @@ import pytest
 from flowgraph.criterion import make_commit, make_scenario
 from flowgraph.task import CompletedAlreadyError, TaskNotFoundError, make_task, make_task_id
 from flowgraph.upkeep import (
-    UpkeepRow,
     UpkeepState,
-    add_task,
     append_task,
-    complete_task,
-    complete_upkeep,
     completed_task,
     completed_upkeep,
     make_upkeep,
     make_upkeep_id,
-    start_task,
-    start_upkeep,
     started_task,
     started_upkeep,
+)
+from flowgraph.work_item import (
+    add_task,
+    complete_task,
+    complete_work_item,
+    holder_of,
+    start_task,
+    start_work_item,
 )
 
 pytestmark = pytest.mark.command
@@ -37,13 +39,13 @@ BEGUN = started_task(started_upkeep(UPKEEP, CREATED), make_task_id(4), CREATED)
 def test_a_task_written_for_an_upkeep_takes_the_next_task_id_of_the_record() -> None:
     saved: list[UpkeepState] = []
     add_task(
-        parent="U-0001",
+        parent=make_upkeep_id(1),
         title="a task",
         expected_output="an output",
         description="",
-        load_upkeep=lambda _: BARE,
+        load_work_item=lambda _: BARE,
         find_task_ids=lambda: ["T-0003"],
-        save_upkeep=saved.append,
+        save_work_item=saved.append,
         now=lambda: CREATED,
     )
     assert saved == [UPKEEP]
@@ -53,37 +55,38 @@ def test_a_task_written_for_a_completed_upkeep_is_refused() -> None:
     done = completed_upkeep(completed_task(BEGUN, make_task_id(4), NOW, COMMIT), NOW, COMMIT)
     with pytest.raises(CompletedAlreadyError, match=r"^U-0001 is completed already$"):
         add_task(
-            parent="U-0001",
+            parent=make_upkeep_id(1),
             title="a task",
             expected_output="an output",
             description="",
-            load_upkeep=lambda _: done,
+            load_work_item=lambda _: done,
             find_task_ids=lambda: ["T-0004"],
-            save_upkeep=[].append,
+            save_work_item=[].append,
             now=lambda: NOW,
         )
 
 
 def test_a_started_upkeep_is_saved_whole_started_now() -> None:
     saved: list[UpkeepState] = []
-    start_upkeep(
-        upkeep_id=make_upkeep_id(1),
-        load_upkeep=lambda _: UPKEEP,
-        save_upkeep=saved.append,
+    start_work_item(
+        item_id=make_upkeep_id(1),
+        load_work_item=lambda _: UPKEEP,
+        save_work_item=saved.append,
         now=lambda: NOW,
     )
     assert saved == [started_upkeep(UPKEEP, NOW)]
 
 
-ROWS = [UpkeepRow("U-0001", "a title", "started")]
+IDS = [make_upkeep_id(1)]
 
 
 def test_a_started_task_returns_the_upkeep_that_holds_it() -> None:
     assert start_task(
         task_id=make_task_id(4),
-        find_upkeep_rows=lambda: ROWS,
-        load_upkeep=lambda _: started_upkeep(UPKEEP, CREATED),
-        save_upkeep=[].append,
+        load_holder=lambda task_id: holder_of(
+            task_id, IDS, lambda _: started_upkeep(UPKEEP, CREATED)
+        ),
+        save_work_item=[].append,
         now=lambda: NOW,
     ) == make_upkeep_id(1)
 
@@ -93,9 +96,8 @@ def test_a_task_no_upkeep_holds_is_refused_by_its_id() -> None:
         complete_task(
             task_id=make_task_id(9),
             commit=COMMIT,
-            find_upkeep_rows=lambda: ROWS,
-            load_upkeep=lambda _: BEGUN,
-            save_upkeep=[].append,
+            load_holder=lambda task_id: holder_of(task_id, IDS, lambda _: BEGUN),
+            save_work_item=[].append,
             now=lambda: NOW,
         )
 
@@ -103,11 +105,11 @@ def test_a_task_no_upkeep_holds_is_refused_by_its_id() -> None:
 def test_a_completed_upkeep_is_saved_whole_completed_now() -> None:
     half = completed_task(BEGUN, make_task_id(4), NOW, COMMIT)
     saved: list[UpkeepState] = []
-    complete_upkeep(
-        upkeep_id=make_upkeep_id(1),
+    complete_work_item(
+        item_id=make_upkeep_id(1),
         commit=COMMIT,
-        load_upkeep=lambda _: half,
-        save_upkeep=saved.append,
+        load_work_item=lambda _: half,
+        save_work_item=saved.append,
         now=lambda: NOW,
     )
     assert saved == [completed_upkeep(half, NOW, COMMIT)]

@@ -17,12 +17,10 @@ from flowgraph.task import (
     StartedTask,
     Task,
     TaskId,
-    TaskIdError,
     TaskRow,
     TaskState,
     all_completed,
     completed_among,
-    parse_task_id,
     started_among,
     task_id_text,
     task_of,
@@ -141,10 +139,6 @@ class StoryMismatchError(Exception):
     """A Story read back different from the one written; its file is as it was before."""
 
 
-class ItemIdError(ValueError):
-    """A text that is neither a Story id nor a Task id."""
-
-
 def make_story_id(number: int) -> StoryId:
     """The id of the Story with that number in the record.
 
@@ -185,21 +179,6 @@ def make_story(
     """
     to_the_second = created.replace(microsecond=0)
     return Story(story_id, said("title", title), scenario, description, to_the_second, ())
-
-
-def parse_item_id(text: str) -> StoryId | TaskId:
-    """The Story id or the Task id written as the text.
-
-    Raises ItemIdError when the text is neither.
-    """
-    try:
-        return parse_story_id(text)
-    except StoryIdError:
-        pass
-    try:
-        return parse_task_id(text)
-    except TaskIdError:
-        raise ItemIdError(f"{text!r} is no Story id or Task id") from None
 
 
 def append_task[S: OpenStory](story: S, task: Task) -> S:

@@ -32,8 +32,8 @@ def status_text(rows: Iterable[StoryRow | UpkeepRow]) -> str:
     return "".join(lines)
 
 
-def show_text(detail: StoryDetail) -> str:
-    """The Story with its bucket and its criterion, then its Tasks, one fact per line.
+def show_text(detail: StoryDetail | UpkeepDetail) -> str:
+    """The work item with its bucket and its criterion, then its Tasks, one fact per line.
 
     A description and a commit are listed only when there is one, the bucket of a Task only once
     it has left Backlog.
@@ -61,22 +61,4 @@ def show_text(detail: StoryDetail) -> str:
         lines.append(f"    expected output  {task.expected_output}\n")
         if task.description:
             lines.append(f"    description      {task.description}\n")
-    return "".join(lines)
-
-
-def show_upkeep_text(detail: UpkeepDetail) -> str:
-    """The Upkeep with its bucket and its criterion, one fact per line.
-
-    A description is listed only when there is one.
-    """
-    bucket = next(name for name, states in BUCKETS if detail.state in states)
-    described = [f"  description  {detail.description}\n"] if detail.description else []
-    lines = [
-        f"{detail.id}  {detail.title}\n",
-        f"  bucket       {bucket}\n",
-        *described,
-        f"  given        {detail.given}\n",
-        f"  when         {detail.when}\n",
-        f"  then         {detail.then}\n",
-    ]
     return "".join(lines)

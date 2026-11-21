@@ -8,3 +8,11 @@ created = 2026-11-21 17:01:25+00:00
 given = "a record with two Stories completed, ST-0002 before ST-0001"
 when = "fgraph status is run"
 then = "it lists ST-0001 above ST-0002 under Completed"
+
+[[tasks]]
+id = "T-0120"
+state = "backlog"
+title = "Add tests/functional/test_status_completed_order.py, failing on the criterion of ST-0029"
+description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_status_features.py does, with a clock that moves on at every call. Seen red, then marked a strict xfail naming ST-0029 until the Task that turns it green removes the mark."
+expected_output = "created: tests/functional/test_status_completed_order.py states that fgraph status, run on a record with two Stories completed, ST-0002 before ST-0001, lists ST-0001 above ST-0002 under Completed"
+created = 2026-11-21 17:01:25+00:00

@@ -79,8 +79,12 @@ def test_a_started_story_is_read_back_whole(tmp_path: Path) -> None:
 
 def test_a_started_story_is_read_as_a_started_row(tmp_path: Path) -> None:
     write_story(tmp_path, STARTED)
+    tasks = [
+        TaskRow("T-0001", "a task title", "an output", "", "started"),
+        TaskRow("T-0002", "another task title", "another output", "", "backlog"),
+    ]
     assert read_story_rows(tmp_path) == [
-        StoryRow("ST-0001", "a title", "started", created=CREATED, started=ON)
+        StoryRow("ST-0001", "a title", "started", created=CREATED, started=ON, tasks=tasks)
     ]
 
 

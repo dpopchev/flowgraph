@@ -12,23 +12,32 @@ then = "it lists the Story with 1/3 T, its Tasks completed of all, under InProgr
 
 [[tasks]]
 id = "T-0132"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_status_work_item_progress.py, failing on the criterion of ST-0033"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_status_completed_order.py does, with a clock that moves on at every call. Seen red, then marked a strict xfail naming ST-0033 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_status_work_item_progress.py states that fgraph status, run on a record with a Story started and one of its three Tasks completed, lists the Story as '  ST-0001  1/3 T  <title>' under InProgress"
 created = 2026-11-21 17:40:35+00:00
+started = 2026-11-21 17:50:15+00:00
+completed = 2026-11-21 17:50:31+00:00
+commit = "8194536"
 
 [[tasks]]
 id = "T-0133"
-state = "backlog"
+state = "completed"
 title = "Add the Tasks to WorkItemRow of src/flowgraph/work_item/model.py and write their progress in status_text of src/flowgraph/text.py"
 description = "Removes the xfail mark of tests/functional/test_status_work_item_progress.py. The tests of other Stories that state a line under InProgress are rewritten to the new line, named in the commit."
 expected_output = "changed: WorkItemRow of src/flowgraph/work_item/model.py holds the Tasks of its work item, each a TaskRow, read by read_work_item_rows of src/flowgraph/work_item/file.py; status_text of src/flowgraph/text.py writes a work item under InProgress as its id, '<completed>/<all> T' and its title; proved in tests/work_item/ and tests/text/"
 created = 2026-11-21 17:40:36+00:00
+started = 2026-11-21 17:50:31+00:00
+completed = 2026-11-21 17:55:37+00:00
+commit = "583a412"
 
 [[tasks]]
 id = "T-0134"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph status lists an InProgress work item with its progress"
 expected_output = "changed: README.md shows fgraph status listing a started work item with '<completed>/<all> T'; docs/domain-model.md says the same where it states what status lists, and names the developer's decision of 2026-11-21"
 created = 2026-11-21 17:40:36+00:00
+started = 2026-11-21 17:55:37+00:00
+completed = 2026-11-21 17:56:24+00:00
+commit = "6ce16ee"

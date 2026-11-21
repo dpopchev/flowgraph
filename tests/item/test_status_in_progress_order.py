@@ -48,15 +48,15 @@ def store() -> Store:
 
 def test_in_progress_is_listed_the_last_started_first() -> None:
     assert status_item(store()).splitlines()[2:6:2] == [
-        "  ST-0002  a last story",
-        "  ST-0001  a story",
+        "  ST-0002  0/0 T  a last story",
+        "  ST-0001  0/0 T  a story",
     ]
 
 
 def test_work_items_started_at_one_time_are_listed_by_kind_and_number() -> None:
     assert status_item(store()).splitlines()[2:6] == [
-        "  ST-0002  a last story",
-        "  U-0001  an upkeep",
-        "  ST-0001  a story",
-        "  ST-0003  a twin story",
+        "  ST-0002  0/0 T  a last story",
+        "  U-0001  0/0 T  an upkeep",
+        "  ST-0001  0/0 T  a story",
+        "  ST-0003  0/0 T  a twin story",
     ]

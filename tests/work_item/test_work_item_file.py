@@ -68,16 +68,28 @@ def test_the_work_items_of_a_kind_are_read_as_rows_by_id(tmp_path: Path) -> None
     later = make_work_item(make_work_item_id(CHORE, 10), "a later title", SCENARIO, "", CREATED)
     write_work_item(tmp_path, later)
     write_work_item(tmp_path, WHOLE)
+    done = TaskRow("T-0003", "a task title", "an output", "", "completed", "abc1234")
     assert read_work_item_rows(tmp_path, CHORE) == [
-        WorkItemRow("CH-0001", "a title", "completed", "abc1234", created=CREATED, completed=ON),
+        WorkItemRow(
+            "CH-0001",
+            "a title",
+            "completed",
+            "abc1234",
+            created=CREATED,
+            completed=ON,
+            tasks=[done],
+        ),
         WorkItemRow("CH-0010", "a later title", "backlog", created=CREATED),
     ]
 
 
-def test_a_started_work_item_is_read_as_a_row_with_its_started_time(tmp_path: Path) -> None:
+def test_a_started_work_item_is_read_as_a_row_with_its_started_time_and_its_tasks(
+    tmp_path: Path,
+) -> None:
     write_work_item(tmp_path, HALF)
+    begun = TaskRow("T-0003", "a task title", "an output", "", "started")
     assert read_work_item_rows(tmp_path, CHORE) == [
-        WorkItemRow("CH-0001", "a title", "started", created=CREATED, started=ON)
+        WorkItemRow("CH-0001", "a title", "started", created=CREATED, started=ON, tasks=[begun])
     ]
 
 

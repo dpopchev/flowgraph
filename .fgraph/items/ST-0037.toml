@@ -1,0 +1,10 @@
+id = "ST-0037"
+state = "backlog"
+title = "Raise the started work items fgraph show reads from their worktree on main from none to every one"
+description = "Found during ST-0035 on 2026-11-21, which left it out of its slice: fgraph status on main reads a started work item from its worktree, but fgraph show ST-nnnn on main reads the record of main and shows its Tasks as they were at the start. Its Tasks are written when it is ordered."
+created = 2026-11-21 18:04:38+00:00
+
+[criterion]
+given = "a repository with a Story started, and a Task of it completed in its worktree"
+when = "fgraph show of the Story is run in the checkout of main"
+then = "it lists the Task with its bucket Completed and its commit"

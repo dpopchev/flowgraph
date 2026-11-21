@@ -1,8 +1,9 @@
 id = "ST-0022"
-state = "backlog"
+state = "started"
 title = "Raise the commands of fgraph that print their own help from 0 to every one"
 description = "Found during ST-0009. A probe on 2026-11-21: fgraph --help prints the menu, but --help after a command is a usage error with exit 2: start, show, reorder, complete and add story say their arguments are required, status says the option is unrecognized. So what --slug of fgraph start means is read only in README.md. The help of a command needs no record, as the menu needs none. Its Tasks are written when it is ordered."
 created = 2026-11-21 08:57:17+00:00
+started = 2026-11-21 12:13:13+00:00
 
 [criterion]
 given = "any directory"

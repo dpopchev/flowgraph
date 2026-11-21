@@ -22,6 +22,7 @@ worktree of its own.
 | where the record lives          | located on every call but `--help`                       |
 | the record and its flow         | a work item with its Tasks, from Backlog to Completed    |
 | the kinds of work item          | Story, Upkeep, Bug, Spike                                |
+| the level above                 | a Feature groups work items; its bucket is derived       |
 | the order of the Backlog        | a queue, reordered by `fgraph reorder`                   |
 | the wording of a work item      | rewritten by `fgraph amend` while in Backlog             |
 | git                             | every write committed; start branches, `fgraph land` lands |
@@ -329,6 +330,38 @@ A Spike takes Tasks and moves as a Story does, and `fgraph land` takes
 decision exits 2, and so does a decision given for any other kind or for a
 Task. `fgraph amend SP-0001 --hypothesis "..."` rewrites the hypothesis while
 the Spike is in Backlog. A Spike is kept as `items/SP-0001.toml`.
+
+A Feature groups work items toward one bigger outcome. It states one or more
+criteria, what the user experiences, and holds no Task. A work item is added
+under it with `--parent`; without one it stands alone:
+
+```sh
+fgraph add feature "Raise the kinds of work a project tracks with fgraph from 1 to 5" \
+  --criterion "a developer sees every work item of the project by bucket" \
+  --criterion "a developer adds every kind of work"
+# added F-0001
+
+fgraph add story "Raise the Stories fgraph lists under Backlog from 0 to 1" \
+  --given "a record with no items" --when "a Story is added" \
+  --then "fgraph status lists it under Backlog" --parent F-0001
+# added ST-0001
+
+fgraph show F-0001
+# F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
+#   bucket       Backlog
+# Criteria (2)
+#   a developer sees every work item of the project by bucket
+#   a developer adds every kind of work
+# Work items (1)
+#   ST-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  Backlog
+```
+
+A Feature has no state of its own: its bucket is derived from its work items.
+It is InProgress once one of them is started or completed, and Completed when
+each is completed or removed. `fgraph show ST-0001` names the Feature as its
+`parent`. An add exits 2 and names why when a criterion or the title is blank
+or when `--parent` names no Feature of the record. A Feature is kept as
+`items/F-0001.toml`; `fgraph status` does not list Features yet.
 
 The Backlog is a queue: `fgraph status` lists it in the order the work is to
 be pulled. A work item joins the end of the queue when it is added, whatever

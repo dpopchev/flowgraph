@@ -3,6 +3,7 @@
 from collections.abc import Callable, Iterable
 
 from flowgraph.criterion import Commit, Criterion, criterion_parts
+from flowgraph.parent import STANDALONE, Parent, parent_text
 from flowgraph.record import Now
 from flowgraph.task import (
     TaskId,
@@ -49,6 +50,7 @@ def work_item_row(item: WorkItemState) -> WorkItemRow:
         state_name(item),
         commit_sha(item),
         reason_of(item),
+        parent_text(item.parent),
         created=item.created,
     )
 
@@ -63,6 +65,7 @@ def work_item_detail(item: WorkItemState) -> WorkItemDetail:
         tasks=[row_of(task) for task in item.tasks],
         commit=commit_sha(item),
         reason=reason_of(item),
+        parent=parent_text(item.parent),
         **criterion_parts(item.criterion),
     )
 
@@ -90,14 +93,17 @@ def add_work_item(
     find_work_item_rows: FindWorkItemRows,
     save_work_item: SaveWorkItem,
     now: Now,
+    parent: Parent = STANDALONE,
 ) -> WorkItemId:
     """Add a work item of that kind to Backlog under its next free id and return that id.
 
-    The rows found are those of the kind. Raises EmptyPartError when the title is blank and
-    CriterionError when the criterion is not of the form the kind takes; nothing is saved.
+    It stands alone unless a Feature is named as its parent. The rows found are those of the
+    kind. Raises EmptyPartError when the title is blank and CriterionError when the criterion is
+    not of the form the kind takes; nothing is saved.
     """
     taken = [parse_work_item_id(kind, row.id) for row in find_work_item_rows()]
-    item = make_work_item(next_work_item_id(kind, taken), title, criterion, description, now())
+    item_id = next_work_item_id(kind, taken)
+    item = make_work_item(item_id, title, criterion, description, now(), parent)
     save_work_item(item)
     return item.id
 

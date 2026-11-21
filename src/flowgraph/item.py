@@ -13,6 +13,7 @@ from typing import assert_never
 from flowgraph import work_item
 from flowgraph.branch import Slug, SlugError, make_slug, slug_of_title
 from flowgraph.criterion import Criterion, DecisionError, make_commit
+from flowgraph.parent import STANDALONE, Parent
 from flowgraph.queue import queued, reorder
 from flowgraph.record import Now
 from flowgraph.store import KINDS, Store
@@ -160,11 +161,13 @@ def add_item(
     description: str,
     store: Store,
     now: Now,
+    parent: Parent = STANDALONE,
 ) -> Written:
     """Add a work item of that kind with its criterion; what the write says.
 
-    Raises EmptyPartError when the title is blank and CriterionError when the criterion is not
-    of the form the kind takes; nothing is saved.
+    It stands alone unless a Feature is given as its parent. Raises EmptyPartError when the
+    title is blank and CriterionError when the criterion is not of the form the kind takes;
+    nothing is saved.
     """
     added = work_item.add_work_item(
         kind=kind,
@@ -174,6 +177,7 @@ def add_item(
         find_work_item_rows=partial(store.find_work_item_rows, kind),
         save_work_item=store.save_work_item,
         now=now,
+        parent=parent,
     )
     text = work_item_id_text(added)
     return Written(f"added {text}\n", MESSAGE.format(f"add {text}"))

@@ -19,6 +19,7 @@ from flowgraph.criterion import (
     said,
     settled,
 )
+from flowgraph.parent import STANDALONE, Parent
 from flowgraph.task import (
     BlockedTask,
     CompletedAlreadyError,
@@ -63,6 +64,7 @@ class WorkItem:
     description: str
     created: datetime
     tasks: tuple[Task, ...]
+    parent: Parent = STANDALONE
 
 
 @dataclass(frozen=True)
@@ -76,6 +78,7 @@ class StartedWorkItem:
     created: datetime
     started: datetime
     tasks: tuple[TaskState, ...]
+    parent: Parent = STANDALONE
 
 
 @dataclass(frozen=True)
@@ -91,6 +94,7 @@ class CompletedWorkItem:
     completed: datetime
     commit: Commit
     tasks: tuple[CompletedTask, ...]
+    parent: Parent = STANDALONE
 
 
 @dataclass(frozen=True)
@@ -105,6 +109,7 @@ class RemovedWorkItem:
     removed: datetime
     reason: str
     tasks: tuple[Task, ...]
+    parent: Parent = STANDALONE
 
 
 # A work item that still takes Tasks: in Backlog or started.
@@ -127,6 +132,7 @@ class WorkItemRow:
     state: str
     commit: str = ""
     reason: str = ""
+    parent: str = ""
     created: datetime = field(kw_only=True)
 
 
@@ -151,6 +157,7 @@ class WorkItemDetail:
     decision: str = ""
     commit: str = ""
     reason: str = ""
+    parent: str = ""
 
 
 # The rows of the work items in the record; an empty list when it holds none.
@@ -242,9 +249,15 @@ def next_work_item_id(kind: Kind, taken: Collection[WorkItemId]) -> WorkItemId:
 
 
 def make_work_item(
-    item_id: WorkItemId, title: str, criterion: Criterion, description: str, created: datetime
+    item_id: WorkItemId,
+    title: str,
+    criterion: Criterion,
+    description: str,
+    created: datetime,
+    parent: Parent = STANDALONE,
 ) -> WorkItem:
-    """A work item in Backlog, its created time kept to the second.
+    """A work item in Backlog, its created time kept to the second; it stands alone unless a
+    Feature is named as its parent.
 
     Raises EmptyPartError when the title is blank and CriterionError when the criterion is not
     of the form the kind of the item takes.
@@ -254,7 +267,8 @@ def make_work_item(
         stated = f"{STATES[kind.takes]}, not {STATES[type(criterion)]}"
         raise CriterionError(f"{kind.article} {kind.noun} states {stated}")
     to_the_second = created.replace(microsecond=0)
-    return WorkItem(item_id, said("title", title), criterion, description, to_the_second, ())
+    titled = said("title", title)
+    return WorkItem(item_id, titled, criterion, description, to_the_second, (), parent)
 
 
 def append_task[W: OpenWorkItem](item: W, task: Task) -> W:
@@ -294,6 +308,7 @@ def started_work_item(item: WorkItemState, on: datetime) -> StartedWorkItem:
                 item.created,
                 to_the_second,
                 item.tasks,
+                item.parent,
             )
         case StartedWorkItem():
             raise StartedAlreadyError(f"{work_item_id_text(item.id)} is started already")
@@ -330,6 +345,7 @@ def completed_work_item(
                 on.replace(microsecond=0),
                 commit,
                 done,
+                item.parent,
             )
         case CompletedWorkItem():
             raise CompletedAlreadyError(f"{work_item_id_text(item.id)} is completed already")

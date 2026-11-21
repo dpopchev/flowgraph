@@ -13,7 +13,9 @@ from typing import assert_never
 
 from flowgraph.branch import MAIN
 from flowgraph.commit import OpenGit
+from flowgraph.feature import Feature
 from flowgraph.item import ItemIdError, parse_item_id, parse_work_item_id_of_any_kind
+from flowgraph.parent import feature_id_text
 from flowgraph.queue import Queue
 from flowgraph.store import Store
 from flowgraph.task import TaskId
@@ -105,7 +107,7 @@ def _is_started(item: WorkItemState) -> bool:
 def within(store: Store, find_scope: FindScope, find_worktree: FindItemWorktree) -> Store:
     """The store that saves within the scope found when it saves; its reads are as they were.
 
-    On the branch of a work item a save of another work item, or of the queue, raises
+    On the branch of a work item a save of another work item, of the queue or of a Feature raises
     OutOfScopeError and writes nothing. On any other branch so does a Task write of a started
     work item that has a worktree: the save of a started work item that was started already.
     The scope and the worktree are asked for only at a save.
@@ -130,7 +132,15 @@ def within(store: Store, find_scope: FindScope, find_worktree: FindItemWorktree)
             raise OutOfScopeError(f"the Backlog is not reordered here: {_alone(scope)}")
         store.save_queue(queue)
 
-    return replace(store, save_work_item=save_work_item, save_queue=save_queue)
+    def save_feature(feature: Feature) -> None:
+        scope = find_scope()
+        if scope is not None:
+            named = feature_id_text(feature.id)
+            raise OutOfScopeError(f"{named} is not written here: {_alone(scope)}")
+        store.features.save_feature(feature)
+
+    features = replace(store.features, save_feature=save_feature)
+    return replace(store, save_work_item=save_work_item, save_queue=save_queue, features=features)
 
 
 def check_start_on_main(item: str, record: Path, open_git: OpenGit) -> None:

@@ -12,8 +12,11 @@ then = "git status --short prints nothing"
 
 [[tasks]]
 id = "T-0103"
-state = "backlog"
+state = "completed"
 title = "Add __pycache__/ to .gitignore, leaving nothing untracked after a bare uv run in a new worktree"
 description = "The description leaves the way open, a HOW. The agent's reading, a routine call: .gitignore names __pycache__/, since the other way is not there -- uv 0.13.6 reads the environment of a bare uv run only from --env-file or UV_ENV_FILE, both given by the caller, so nothing in the repository sets the bytecode prefix before the first run. The bytecode still lands in src/ of that worktree until make sync writes the prefix into its .venv; it is ignored and leaves with the worktree. No Python changes, so no test is added: the check is the criterion itself, red in the worktree as started -- uv run fgraph status, then test -z \"$(git status --short)\"."
 expected_output = "changed: .gitignore names __pycache__/ with the reason beside it, so in the worktree fgraph start made for a work item of flowgraph git status --short prints nothing after uv run fgraph status, before any make sync"
 created = 2026-11-21 13:59:53+00:00
+started = 2026-11-21 13:59:59+00:00
+completed = 2026-11-21 14:00:30+00:00
+commit = "ccc6227"

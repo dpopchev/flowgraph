@@ -1,0 +1,11 @@
+id = "ST-0059"
+state = "backlog"
+title = "Raise the work items in Backlog that fgraph puts under a Feature or takes out of one from none to every one"
+description = "Part of F-0002. The developer's words of 2026-11-21, in the agent's wording: a Feature is part of the Backlog and just holds a couple of work items; starting it, when git is used for the development as well, starts its work items one by one in separate branches; they are completed but all stay in progress; when all are completed the Feature moves to Completed; a Feature can be blocked, or gets blocked when its child work item is blocked. The principle the plan was shown under: a Feature is to its work items what a work item is to its Tasks. Filed on the developer's 'file' of 2026-11-21. Its Tasks are written when it is ordered. Named not built in docs/domain-model.md, Persistence: today --parent is given when a work item is added and never after, which is why ST-0046 and ST-0047 were refiled and not moved. Reading of the agent: fgraph amend of the work item takes --parent, the id of a Feature or none to stand alone, while the work item and the Feature are in Backlog."
+parent = "F-0002"
+created = 2026-11-21 21:22:04+00:00
+
+[criterion]
+given = "a record with a Feature and a Story standing alone, both in Backlog"
+when = "the Story is put under the Feature through fgraph"
+then = "fgraph show of the Feature lists the Story"

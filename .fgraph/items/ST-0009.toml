@@ -56,8 +56,10 @@ commit = "a0fe099"
 
 [[tasks]]
 id = "T-0044"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph start commits the start and adds the worktree branch"
 expected_output = "changed: README.md shows fgraph start naming the branch and its worktree; docs/domain-model.md, Rules and Persistence, says which commit and which git steps fgraph makes at a start and that the commits of the development stay the developer's"
 created = 2026-11-21 08:34:31+00:00
 started = 2026-11-21 08:49:02+00:00
+completed = 2026-11-21 08:50:14+00:00
+commit = "0b32201"

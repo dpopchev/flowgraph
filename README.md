@@ -13,8 +13,9 @@ with its own Tasks, and is listed beside the Stories. The Backlog is a queue
 that `fgraph reorder` reorders, and a work item still in it is rewritten
 with `fgraph amend`. In a git repository `fgraph` commits every write of the
 record itself. A record is layered by its configuration, `.fgraph/config.toml`:
-once it turns the development on, starting a work item also checks out its
-branch in a worktree of its own, and `fgraph land` lands it.
+it turns the commits of the record off, and once it turns the development on,
+starting a work item also checks out its branch in a worktree of its own, and
+`fgraph land` lands it.
 
 | Part                            | State                                                    |
 | ------------------------------- | -------------------------------------------------------- |
@@ -26,8 +27,8 @@ branch in a worktree of its own, and `fgraph land` lands it.
 | the level above                 | a Feature groups work items; status lists its bucket     |
 | the order of the Backlog        | a queue, reordered by `fgraph reorder`                   |
 | the wording of a work item      | rewritten by `fgraph amend` while in Backlog             |
-| git                             | every write of the record committed                      |
-| the layers of a record          | `.fgraph/config.toml`: the development, off by default   |
+| git                             | every write of the record committed, unless turned off   |
+| the layers of a record          | `.fgraph/config.toml`: commits on, development off       |
 | the development                 | once enabled: start branches, `fgraph land` lands        |
 | the ontology                    | not started                                              |
 | flowgraph tracking its own work | its Stories are in `.fgraph/` since 0.4.0                |
@@ -154,6 +155,41 @@ the record has the development on. The start of a Story is held to `main`
 either way, and it alone: no other write is, the reading decided when S-0039
 was ordered. No command writes the file yet; it is written by hand, and the
 record of flowgraph itself holds the key.
+
+The commits of the record are a layer the record turns off:
+
+```toml
+[git]
+commit = false
+```
+
+A record without the file, or without the key, has them on: inside a git work
+tree that does not ignore the record, fgraph commits every write of it, as
+shown further down. With `commit = false` no write of the record is
+committed: `add`, `amend`, `remove`, `reorder`, `start`, `block`, `unblock`
+and `complete` leave their files changed in the work tree, with no commit and
+no warning, as the write of a record git ignores. Committing them is then
+yours:
+
+```sh
+fgraph add story "Raise the Stories fgraph lists under Backlog from 0 to 1" \
+  --given "a record with no items" --when "a Story is added" \
+  --then "fgraph status lists it under Backlog"
+# added S-0001
+
+git status --short --untracked-files=all
+# ?? .fgraph/items/S-0001.toml
+```
+
+The layers build on each other: the branch of a Story carries its record, so
+the development needs the commits. A `config.toml` that sets `[development]
+enabled = true` with `[git] commit = false` exits 2 naming both keys, whatever
+the command:
+
+```sh
+fgraph status
+# fgraph: error: /src/project/.fgraph/config.toml: development.enabled is true while git.commit is false: the development needs the commits of the record
+```
 
 A `config.toml` fgraph refuses -- a table or a key the configuration does not
 have, a value of another type than the key takes, a text that is no TOML --
@@ -669,7 +705,8 @@ record does not hold it. A removed work item takes no Task, no amend and no
 move.
 
 When the record is inside a git work tree, `fgraph` commits every write of
-it: `add`, `amend`, `reorder`, `start` and `complete` each leave one commit
+it, unless `[git] commit = false` of its `config.toml` turns the commits off:
+`add`, `amend`, `reorder`, `start` and `complete` each leave one commit
 that holds the files of the record the write changed, alone, under a message
 `fgraph` words. Whatever else is staged or changed stays out of it:
 
@@ -690,9 +727,10 @@ record`, `chore: amend S-0001 in the record`, `chore: reorder S-0002 before
 S-0001 in the record`, `chore: start T-0001 of S-0001 in the record`,
 `chore: complete S-0001 in the record`. A write that leaves its file as it
 was makes no commit. Outside a git work tree a write is made as before, with
-no commit and no warning. A commit git refuses exits 2 and names the git
-command, and every file the write changed is put back as it was. The commits
-of the development and their messages stay yours.
+no commit and no warning, and so is every write of a record with the commits
+turned off. A commit git refuses exits 2 and names the git command, and every
+file the write changed is put back as it was. The commits of the development
+and their messages stay yours.
 
 A record git ignores is written without a commit. When a rule of `.gitignore`
 names the record, every write is made with no commit and no warning. With the

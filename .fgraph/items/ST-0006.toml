@@ -23,11 +23,12 @@ commit = "0e40d39"
 
 [[tasks]]
 id = "T-0085"
-state = "backlog"
+state = "started"
 title = "Move the amend of a work item from src/flowgraph/work_item/model.py to src/flowgraph/work_item/amend.py"
 description = "Room for the criterion of a kind: model.py is at 389 lines, against the 400 of U-0001. No behavior changes."
 expected_output = "changed: src/flowgraph/work_item/model.py holds the work item in at most 350 lines, Amendment, NoPartError and amended_work_item now in src/flowgraph/work_item/amend.py; src/flowgraph/work_item/__init__.py exports them as before and make check still passes"
 created = 2026-11-21 11:45:00+00:00
+started = 2026-11-21 11:45:42+00:00
 
 [[tasks]]
 id = "T-0086"

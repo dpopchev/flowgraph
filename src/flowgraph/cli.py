@@ -7,6 +7,7 @@ import argparse
 import sys
 from collections.abc import Callable, Sequence
 from datetime import UTC, datetime
+from functools import partial
 from pathlib import Path
 from typing import assert_never
 
@@ -32,6 +33,7 @@ from flowgraph.item import (
 from flowgraph.land import LandError, land_item
 from flowgraph.queue import NotInBacklogError, SameItemError
 from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, Now, locate
+from flowgraph.scope import OutOfScopeError, scope_in, within
 from flowgraph.task import (
     CompletedAlreadyError,
     ItemInBacklogError,
@@ -62,6 +64,7 @@ REFUSED = (
     SlugError,
     GitError,
     LandError,
+    OutOfScopeError,
     CommitError,
     EmptyPartError,
     NoPartError,
@@ -255,8 +258,9 @@ def run(
         return 0
     match locate(cwd, args.dir, is_dir):
         case Found(path) | Given(path):
+            store = within(open_store(path), partial(scope_in, path, open_git))
             try:
-                said = _said(args, open_store(path), now, path, open_git)
+                said = _said(args, store, now, path, open_git)
             except REFUSED as error:
                 write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
                 return 2

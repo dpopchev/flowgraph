@@ -116,6 +116,16 @@ tree the Story starts as before and fgraph warns that no branch was made. A
 git step refused exits 2 and names the git command: a commit refused puts the
 file back as it was, a worktree refused leaves the start committed.
 
+On the branch of a started Story, `wi/ST-0001-<slug>`, fgraph writes that
+Story alone: its Tasks are added, started and completed there. A Task for
+another Story, a new Story or a reorder of the Backlog exits 2 there and
+names the Story the branch owns:
+
+```sh
+fgraph add task "Add the show command" --parent ST-0002 --output "changed: cli.py"
+# fgraph: error: ST-0002 is not written here: the branch wi/ST-0001-raise-the-stories-fgraph writes ST-0001 alone
+```
+
 `fgraph show` then names the bucket of the Story and of each Task that has
 left Backlog (`    bucket           InProgress`). A start exits 2 and names
 why when the Story has no Task, when a Task's Story is still in Backlog, when

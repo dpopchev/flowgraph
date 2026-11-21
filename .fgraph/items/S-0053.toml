@@ -9,3 +9,11 @@ created = 2026-11-21 21:22:02+00:00
 given = "a record with a started Feature whose first Story is started and whose second Story, with a Task, is in Backlog"
 when = "the first Story is completed"
 then = "fgraph status lists the second Story started under the Feature"
+
+[[tasks]]
+id = "T-0196"
+state = "backlog"
+title = "Add tests/functional/test_start_next.py, failing on the criterion of S-0053"
+description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_start_feature.py does. Seen red, then marked a strict xfail naming S-0053 until the Task that turns it green removes the mark."
+expected_output = "created: tests/functional/test_start_next.py states that, on a record with a started Feature whose first Story is started and whose second Story, with a Task, is in Backlog, the completion of the first Story leaves fgraph status listing the second Story started under the Feature"
+created = 2026-11-21 23:43:09+00:00

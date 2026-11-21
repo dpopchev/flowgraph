@@ -23,11 +23,12 @@ commit = "a045ffa"
 
 [[tasks]]
 id = "T-0058"
-state = "backlog"
+state = "started"
 title = "Add the scope of a branch to src/flowgraph/scope.py and wire it into src/flowgraph/cli.py"
 description = "The owner is read from the branch name through the id parser of every kind. The store refuses at its save, the one place every write passes, and asks git for the branch only then, so a view runs no git. Removes the xfail mark of tests/functional/test_branch_scope.py."
 expected_output = "created: src/flowgraph/scope.py names the work item a branch owns and gives the store that saves that work item alone, proved in tests/scope/; changed: src/flowgraph/cli.py runs every command on that store, so a write outside the scope of the branch exits 2 naming the work item the branch owns"
 created = 2026-11-21 11:05:09+00:00
+started = 2026-11-21 11:06:07+00:00
 
 [[tasks]]
 id = "T-0059"

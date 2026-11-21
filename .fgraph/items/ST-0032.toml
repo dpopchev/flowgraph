@@ -1,9 +1,11 @@
 id = "ST-0032"
-state = "started"
+state = "completed"
 title = "Raise the Features fgraph status lists with their progress from none to every one"
 description = "The developer's request of 2026-11-21: 'when it is a feature shows also how many work items are to be done'. The readings the developer agreed with 'go' on 2026-11-21: (1) the progress is written as board watch of board 1 writes it, '<completed>/<all> W', after the id: '  F-0001  1/2 W  InProgress  <title>'. (2) Every Feature is listed with it, in any bucket; one without a work item reads 0/0 W. (3) A removed work item is counted in neither number. (4) The derived bucket moves before the title, so that the cut of ST-0036 keeps it."
 created = 2026-11-21 17:40:33+00:00
 started = 2026-11-21 17:46:07+00:00
+completed = 2026-11-21 17:49:36+00:00
+commit = "fc6e224"
 
 [criterion]
 given = "a record with a Feature and two Stories under it, one of them completed"

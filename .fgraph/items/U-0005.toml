@@ -12,9 +12,11 @@ then = "it still passes"
 
 [[tasks]]
 id = "T-0104"
-state = "started"
+state = "completed"
 title = "Format tests/branch/test_git.py with ruff format, leaving no file of flowgraph it would rewrite"
 description = "Written by uv run ruff format tests/branch/test_git.py, that file alone. Check, red today with exit 1 and '1 file would be reformatted': uv run ruff format --check . The question the description of U-0005 leaves open -- whether make check runs ruff format --check -- is the developer's and is not answered here: the agent's reading, a routine call, is that the count is cut without it, and the question is added at the end of the Backlog as a work item of its own."
 expected_output = "changed: tests/branch/test_git.py is as ruff format writes it -- a space after the comma in its four calls of commit_files -- so uv run ruff format --check . names no file and exits 0; make check still passes"
 created = 2026-11-21 14:00:45+00:00
 started = 2026-11-21 14:00:54+00:00
+completed = 2026-11-21 14:01:15+00:00
+commit = "9862cc2"

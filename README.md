@@ -21,7 +21,7 @@ worktree of its own.
 | the wheel                       | built by `make wheel`, ships `fgraph`                    |
 | where the record lives          | located on every call but `--help`                       |
 | the record and its flow         | a work item with its Tasks, from Backlog to Completed    |
-| the kinds of work item          | Story, Upkeep, Bug                                       |
+| the kinds of work item          | Story, Upkeep, Bug, Spike                                |
 | the order of the Backlog        | a queue, reordered by `fgraph reorder`                   |
 | the wording of a work item      | rewritten by `fgraph amend` while in Backlog             |
 | git                             | every write committed; start branches, `fgraph land` lands |
@@ -301,6 +301,34 @@ A Bug takes Tasks and moves as a Story does, by the same commands, and joins
 the queue of the Backlog. `fgraph amend B-0001 --expected "..."` rewrites its
 criterion; `--given` on a Bug, or `--observed` on a Story, exits 2. A Bug is
 kept as `items/B-0001.toml`.
+
+A Spike is a question to answer. Its criterion is a hypothesis, a yes/no
+question, and it is completed with the decision that answers it. Its id
+counts on its own, `SP-0001`:
+
+```sh
+fgraph add spike "Settle whether one file per item can hold the record" \
+  --hypothesis "Can one file per item hold the record?"
+# added SP-0001
+
+fgraph complete SP-0001 --commit 677f9b0 \
+  --decision "yes: one file per work item, its Tasks inside"
+# completed SP-0001 at 677f9b0
+
+fgraph show SP-0001
+# SP-0001  Settle whether one file per item can hold the record
+#   bucket       Completed
+#   commit       677f9b0
+#   hypothesis   Can one file per item hold the record?
+#   decision     yes: one file per work item, its Tasks inside
+# ...
+```
+
+A Spike takes Tasks and moves as a Story does, and `fgraph land` takes
+`--decision` as `fgraph complete` does. A Spike completed without its
+decision exits 2, and so does a decision given for any other kind or for a
+Task. `fgraph amend SP-0001 --hypothesis "..."` rewrites the hypothesis while
+the Spike is in Backlog. A Spike is kept as `items/SP-0001.toml`.
 
 The Backlog is a queue: `fgraph status` lists it in the order the work is to
 be pulled. A work item joins the end of the queue when it is added, whatever

@@ -1,0 +1,10 @@
+id = "ST-0033"
+state = "backlog"
+title = "Raise the InProgress work items fgraph status lists with their progress from none to every one"
+description = "The developer's request of 2026-11-21: 'when in progress show how many children are to be completed'. The readings the developer agreed with 'go' on 2026-11-21: (1) the progress is written as board watch of board 1 writes it, '<completed>/<all> T', after the id: '  ST-0001  1/3 T  <title>'. (2) Only a work item under InProgress is listed with it; the lines of Backlog, Completed and Removed stay as they are. (3) A started or a blocked Task is not completed. (4) The Tasks are those of the record status reads: on main, the Tasks of a work item started in a worktree are read from that worktree by ST-0035."
+created = 2026-11-21 17:40:35+00:00
+
+[criterion]
+given = "a record with a Story started, one of its three Tasks completed"
+when = "fgraph status is run"
+then = "it lists the Story with 1/3 T, its Tasks completed of all, under InProgress"

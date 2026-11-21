@@ -34,8 +34,10 @@ commit = "ecba133"
 
 [[tasks]]
 id = "T-0131"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph status lists a Feature with its progress"
 expected_output = "changed: README.md shows fgraph status listing a Feature with '<completed>/<all> W' and its bucket before its title; docs/domain-model.md, Persistence, says the same, what is counted, and names the developer's decision of 2026-11-21"
 created = 2026-11-21 17:40:34+00:00
 started = 2026-11-21 17:48:49+00:00
+completed = 2026-11-21 17:49:35+00:00
+commit = "842372a"

@@ -16,3 +16,11 @@ title = "Add tests/functional/test_status_feature_progress.py, failing on the cr
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_status_completed_order.py does, with a clock that moves on at every call. Seen red, then marked a strict xfail naming ST-0032 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_status_feature_progress.py states that fgraph status, run on a record with a Feature and two Stories under it, one completed, lists the Feature as '  F-0001  1/2 W  InProgress  <title>'"
 created = 2026-11-21 17:40:33+00:00
+
+[[tasks]]
+id = "T-0130"
+state = "backlog"
+title = "Add the work items completed and held to FeatureRow of src/flowgraph/feature.py and write them in status_text of src/flowgraph/text.py"
+description = "Removes the xfail mark of tests/functional/test_status_feature_progress.py. The tests that state the line of a Feature in status -- tests/text/test_status_features.py, tests/item/test_status_features.py and tests/functional/test_status_features.py -- are rewritten to the new line."
+expected_output = "changed: FeatureRow of src/flowgraph/feature.py holds the work items completed and those held, removed ones left out, counted by feature_row from the states it is given; status_text of src/flowgraph/text.py writes a Feature as its id, '<completed>/<held> W', its bucket and its title; proved in tests/feature/ and tests/text/"
+created = 2026-11-21 17:40:34+00:00

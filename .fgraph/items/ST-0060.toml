@@ -1,0 +1,10 @@
+id = "ST-0060"
+state = "backlog"
+title = "Cut the frames of fgraph watch taller than the terminal from every one to none"
+description = "Found during T-0151 of ST-0038 on 2026-11-21, under the burn of the Backlog; filed at the end of the queue and not burned. A frame taller than the terminal scrolls, so its top, the Features and the Backlog, leaves the screen; only the width is cut. Its Tasks are written when it is ordered."
+created = 2026-11-21 22:00:03+00:00
+
+[criterion]
+given = "a record whose status is taller than the terminal, and fgraph watch running on that terminal"
+when = "a frame is written"
+then = "the frame is as tall as the terminal at most and says how many lines it left out"

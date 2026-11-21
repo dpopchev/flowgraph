@@ -13,7 +13,14 @@ from typing import assert_never
 
 from flowgraph.branch import GitError, SlugError
 from flowgraph.commit import OpenGit, Said, commit_written, open_git
-from flowgraph.criterion import CommitError, EmptyPartError
+from flowgraph.criterion import (
+    CommitError,
+    Criterion,
+    CriterionError,
+    EmptyPartError,
+    make_defect,
+    make_scenario,
+)
 from flowgraph.item import (
     ItemIdError,
     Written,
@@ -58,6 +65,7 @@ from flowgraph.task import (
 from flowgraph.work_item import (
     Amendment,
     NoPartError,
+    NoSuchPartError,
     RemovedAlreadyError,
     WorkItemIdError,
     WorkItemNotFoundError,
@@ -82,7 +90,9 @@ REFUSED = (
     OutOfScopeError,
     CommitError,
     EmptyPartError,
+    CriterionError,
     NoPartError,
+    NoSuchPartError,
     RemovedAlreadyError,
     WorkItemNotFoundError,
     TaskIdError,
@@ -135,7 +145,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     task.add_argument("title", metavar="TITLE", help="a verb, the artifact and its target state")
     task.add_argument(
-        "--parent", required=True, metavar="ID", help="the Story or Upkeep it is written for"
+        "--parent", required=True, metavar="ID", help="the work item it is written for"
     )
     task.add_argument("--output", required=True, metavar="TEXT", help="the expected output")
     task.add_argument("--description", default="", metavar="TEXT", help="free text, optional")
@@ -150,6 +160,16 @@ def build_parser() -> argparse.ArgumentParser:
     upkeep.add_argument("--when", required=True, metavar="ACTION", help="the action that runs")
     upkeep.add_argument("--then", required=True, metavar="STATE", help="what still holds")
     upkeep.add_argument("--description", default="", metavar="TEXT", help="free text, optional")
+    bug = kinds.add_parser(
+        "bug",
+        help="a behavior that fails, with what is observed and what is expected",
+        add_help=False,
+        color=False,
+    )
+    bug.add_argument("title", metavar="TITLE", help="what is true once the Bug is completed")
+    bug.add_argument("--observed", required=True, metavar="TEXT", help="what happens")
+    bug.add_argument("--expected", required=True, metavar="TEXT", help="what we wish to see")
+    bug.add_argument("--description", default="", metavar="TEXT", help="free text, optional")
     amend = commands.add_parser(
         "amend", help="rewrite parts of a work item in Backlog", add_help=False, color=False
     )
@@ -159,6 +179,8 @@ def build_parser() -> argparse.ArgumentParser:
     amend.add_argument("--given", metavar="STATE", help="the initial state")
     amend.add_argument("--when", metavar="ACTION", help="the action")
     amend.add_argument("--then", metavar="STATE", help="the expected state")
+    amend.add_argument("--observed", metavar="TEXT", help="what happens, of a Bug")
+    amend.add_argument("--expected", metavar="TEXT", help="what we wish to see, of a Bug")
     show = commands.add_parser(
         "show", help="show a Story or an Upkeep with its Tasks", add_help=False, color=False
     )
@@ -228,6 +250,16 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _criterion(args: argparse.Namespace) -> Criterion:
+    """The criterion the arguments of an add state, in the form the kind added takes.
+
+    Raises EmptyPartError naming the first part that is blank.
+    """
+    if args.kind == "bug":
+        return make_defect(args.observed, args.expected)
+    return make_scenario(args.given, args.when, args.then)
+
+
 def _written(args: argparse.Namespace, store: Store, now: Now) -> Written | None:
     """Make the write the arguments name on the store; None when they name a view or no command.
 
@@ -237,11 +269,18 @@ def _written(args: argparse.Namespace, store: Store, now: Now) -> Written | None
         case "add" if args.kind == "task":
             return write_task(args.parent, args.title, args.output, args.description, store, now)
         case "add":
-            criterion = (args.given, args.when, args.then)
             kind = kind_named(args.kind)
-            return add_item(kind, args.title, criterion, args.description, store, now)
+            return add_item(kind, args.title, _criterion(args), args.description, store, now)
         case "amend":
-            parts = Amendment(args.title, args.description, args.given, args.when, args.then)
+            parts = Amendment(
+                args.title,
+                args.description,
+                args.given,
+                args.when,
+                args.then,
+                args.observed,
+                args.expected,
+            )
             return amend_item(args.id, parts, store)
         case "complete":
             return complete_item(args.id, args.commit, store, now)

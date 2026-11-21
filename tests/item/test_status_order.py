@@ -33,7 +33,7 @@ def never(*_: object) -> Never:
 def store(queue: Queue) -> Store:
     """The store of a record holding ROWS and that queue."""
     return Store(
-        find_work_item_rows=lambda kind: ROWS[kind],
+        find_work_item_rows=lambda kind: ROWS.get(kind, []),
         load_work_item=never,
         find_work_item_detail=never,
         find_task_ids=lambda: [],

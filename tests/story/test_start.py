@@ -37,7 +37,7 @@ def test_a_story_with_a_task_starts_on_the_second_with_its_task_in_backlog() -> 
     assert started_story(STORY, ON) == StartedStory(
         id=make_story_id(1),
         title="a title",
-        scenario=SCENARIO,
+        criterion=SCENARIO,
         description="why",
         created=CREATED,
         started=ON.replace(microsecond=0),

@@ -1,7 +1,9 @@
-"""What every kind of work item states and proves: its Given / When / Then and its commit."""
+"""What a work item states and proves: the criterion its kind takes, and its commit."""
 
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass
+from typing import assert_never
 
 
 @dataclass(frozen=True)
@@ -11,6 +13,24 @@ class Scenario:
     given: str
     when: str
     then: str
+
+
+@dataclass(frozen=True)
+class Defect:
+    """The one criterion of a Bug: what is observed, and what is expected instead."""
+
+    observed: str
+    expected: str
+
+
+# The criterion of a work item: the one its kind takes.
+Criterion = Scenario | Defect
+
+# What a criterion of each form states, as a refusal words it.
+STATES: Mapping[type[Criterion], str] = {
+    Scenario: "a Given / When / Then",
+    Defect: "what is observed and expected",
+}
 
 
 @dataclass(frozen=True)
@@ -26,6 +46,10 @@ class EmptyPartError(ValueError):
     def __init__(self, part: str) -> None:
         super().__init__(f"{part} is empty")
         self.part = part
+
+
+class CriterionError(ValueError):
+    """A criterion of another form than the one a kind of work item takes."""
 
 
 class CommitError(ValueError):
@@ -45,6 +69,25 @@ def make_scenario(given: str, when: str, then: str) -> Scenario:
     Raises EmptyPartError naming the first part that is blank.
     """
     return Scenario(said("given", given), said("when", when), said("then", then))
+
+
+def make_defect(observed: str, expected: str) -> Defect:
+    """The criterion of a Bug.
+
+    Raises EmptyPartError naming the first part that is blank.
+    """
+    return Defect(said("observed", observed), said("expected", expected))
+
+
+def criterion_parts(criterion: Criterion) -> dict[str, str]:
+    """The parts of the criterion by name, in the order they are stated."""
+    match criterion:
+        case Scenario():
+            return {"given": criterion.given, "when": criterion.when, "then": criterion.then}
+        case Defect():
+            return {"observed": criterion.observed, "expected": criterion.expected}
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 def make_commit(text: str) -> Commit:

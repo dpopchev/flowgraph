@@ -11,15 +11,15 @@ from typing import Annotated, Literal, assert_never
 
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
 
-from flowgraph.criterion import make_commit
+from flowgraph.criterion import CriterionError, make_commit
 from flowgraph.item_file import (
+    AnyCriterionFile,
     CompletedTaskFile,
-    CriterionFile,
     HeldTask,
     TaskFile,
     backlog_task,
+    criterion_held,
     criterion_primitives,
-    scenario_held,
     task_held,
     task_primitives,
     task_row,
@@ -61,7 +61,7 @@ class _ItemFile(BaseModel):
     title: str
     description: str = ""
     created: datetime
-    criterion: CriterionFile
+    criterion: AnyCriterionFile
     tasks: list[TaskFile] = []
 
 
@@ -76,7 +76,7 @@ class _StartedItemFile(BaseModel):
     description: str = ""
     created: datetime
     started: datetime
-    criterion: CriterionFile
+    criterion: AnyCriterionFile
     tasks: list[HeldTask] = []
 
 
@@ -93,7 +93,7 @@ class _CompletedItemFile(BaseModel):
     started: datetime
     completed: datetime
     commit: str
-    criterion: CriterionFile
+    criterion: AnyCriterionFile
     tasks: list[CompletedTaskFile] = []
 
 
@@ -109,7 +109,7 @@ class _RemovedItemFile(BaseModel):
     created: datetime
     removed: datetime
     reason: str
-    criterion: CriterionFile
+    criterion: AnyCriterionFile
     tasks: list[TaskFile] = []
 
 
@@ -188,13 +188,14 @@ def read_work_item(record: Path, item_id: WorkItemId) -> WorkItemState:
     """Adapter: the work item of that id in the record, whole.
 
     Raises WorkItemNotFoundError when the record holds no such item and WorkItemFileError when
-    its file does not hold one, as when it holds more than one started Task.
+    its file does not hold one, as when it holds more than one started Task or the criterion of
+    another kind.
     """
     path = _held_path(record, item_id)
     held = _read_file(path, item_id.kind)
     try:
         return _item_held(held, item_id.kind)
-    except TaskInProgressError as error:
+    except (TaskInProgressError, CriterionError) as error:
         raise WorkItemFileError(f"{path} holds no {item_id.kind.noun}: {error}") from error
 
 
@@ -210,12 +211,10 @@ def read_work_item_detail(record: Path, item_id: WorkItemId) -> WorkItemDetail:
         title=held.title,
         state=held.state,
         description=held.description,
-        given=held.criterion.given,
-        when=held.criterion.when,
-        then=held.criterion.then,
         tasks=[task_row(task) for task in held.tasks],
         commit=_commit_held(held),
         reason=_reason_held(held),
+        **held.criterion.model_dump(),
     )
 
 
@@ -253,7 +252,7 @@ def _item_primitives(item: WorkItemState) -> dict[str, object]:
         **described,
         "created": item.created,
         **_moves_primitives(item),
-        "criterion": criterion_primitives(item.scenario),
+        "criterion": criterion_primitives(item.criterion),
         **tasks,
     }
 
@@ -265,9 +264,9 @@ def _item_held(held: _HeldItemFile, kind: Kind) -> WorkItemState:
     holds no state those moves could not reach. Raises TaskInProgressError when it holds more
     than one started Task.
     """
-    scenario = scenario_held(held.criterion)
+    criterion = criterion_held(held.criterion)
     item_id = parse_work_item_id(kind, held.id)
-    item = make_work_item(item_id, held.title, scenario, held.description, held.created)
+    item = make_work_item(item_id, held.title, criterion, held.description, held.created)
     for task in held.tasks:
         item = append_task(item, backlog_task(task))
     match held:

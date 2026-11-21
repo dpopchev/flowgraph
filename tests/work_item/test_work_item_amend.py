@@ -48,15 +48,15 @@ WHOLE = completed_work_item(FINISHED, ON, COMMIT)
         (Amendment(description="why not"), replace(ITEM, description="why not")),
         (
             Amendment(given="a new state"),
-            replace(ITEM, scenario=make_scenario("a new state", "an action", "another state")),
+            replace(ITEM, criterion=make_scenario("a new state", "an action", "another state")),
         ),
         (
             Amendment(when="a new action"),
-            replace(ITEM, scenario=make_scenario("a state", "a new action", "another state")),
+            replace(ITEM, criterion=make_scenario("a state", "a new action", "another state")),
         ),
         (
             Amendment(then="a new state"),
-            replace(ITEM, scenario=make_scenario("a state", "an action", "a new state")),
+            replace(ITEM, criterion=make_scenario("a state", "an action", "a new state")),
         ),
     ],
     ids=["title", "description", "given", "when", "then"],
@@ -73,7 +73,7 @@ def test_several_parts_named_are_rewritten_together() -> None:
         ITEM,
         title="another title",
         description="why not",
-        scenario=make_scenario("a state", "a new action", "another state"),
+        criterion=make_scenario("a state", "a new action", "another state"),
     )
 
 

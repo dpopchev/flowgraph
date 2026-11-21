@@ -50,9 +50,7 @@ def test_a_work_item_is_added_under_the_next_id_of_its_kind() -> None:
     add_work_item(
         kind=CHORE,
         title="a title",
-        given="a",
-        when="b",
-        then="c",
+        criterion=SCENARIO,
         description="",
         find_work_item_rows=lambda: [
             WorkItemRow("CH-0002", "an earlier title", "backlog", created=CREATED)

@@ -8,7 +8,13 @@ from typing import Annotated, Literal, assert_never
 import tomli_w
 from pydantic import BaseModel, ConfigDict, Field
 
-from flowgraph.criterion import Scenario, make_commit, make_scenario
+from flowgraph.criterion import (
+    Criterion,
+    criterion_parts,
+    make_commit,
+    make_defect,
+    make_scenario,
+)
 from flowgraph.task import (
     BlockedTask,
     CompletedTask,
@@ -34,6 +40,19 @@ class CriterionFile(BaseModel):
     given: str
     when: str
     then: str
+
+
+class DefectFile(BaseModel):
+    """The criterion table of the file of a Bug: what is observed and what is expected."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    observed: str
+    expected: str
+
+
+# The criterion table of a work item file, in the form its kind takes.
+AnyCriterionFile = CriterionFile | DefectFile
 
 
 class TaskFile(BaseModel):
@@ -106,14 +125,20 @@ HeldTask = Annotated[
 AnyTaskFile = TaskFile | StartedTaskFile | BlockedTaskFile | CompletedTaskFile
 
 
-def criterion_primitives(scenario: Scenario) -> dict[str, object]:
+def criterion_primitives(criterion: Criterion) -> dict[str, object]:
     """The criterion as the primitives its table holds."""
-    return {"given": scenario.given, "when": scenario.when, "then": scenario.then}
+    return dict(criterion_parts(criterion))
 
 
-def scenario_held(held: CriterionFile) -> Scenario:
+def criterion_held(held: AnyCriterionFile) -> Criterion:
     """The criterion a validated table holds, built through its constructor."""
-    return make_scenario(held.given, held.when, held.then)
+    match held:
+        case CriterionFile():
+            return make_scenario(held.given, held.when, held.then)
+        case DefectFile():
+            return make_defect(held.observed, held.expected)
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 def task_primitives(task: TaskState) -> dict[str, object]:

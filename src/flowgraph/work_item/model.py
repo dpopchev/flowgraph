@@ -10,7 +10,7 @@ from dataclasses import dataclass, field, replace
 from datetime import datetime
 from typing import assert_never
 
-from flowgraph.criterion import Commit, Scenario, make_scenario, said
+from flowgraph.criterion import STATES, Commit, Criterion, CriterionError, Scenario, said
 from flowgraph.task import (
     BlockedTask,
     CompletedAlreadyError,
@@ -28,11 +28,13 @@ from flowgraph.task import (
 
 @dataclass(frozen=True)
 class Kind:
-    """A kind of work item: its noun, the article before the noun, and the prefix of its ids."""
+    """A kind of work item: its noun, the article before it, the prefix of its ids, and the
+    form of criterion a work item of the kind takes."""
 
     noun: str
     article: str
     prefix: str
+    takes: type[Criterion] = Scenario
 
 
 @dataclass(frozen=True)
@@ -49,7 +51,7 @@ class WorkItem:
 
     id: WorkItemId
     title: str
-    scenario: Scenario
+    criterion: Criterion
     description: str
     created: datetime
     tasks: tuple[Task, ...]
@@ -61,7 +63,7 @@ class StartedWorkItem:
 
     id: WorkItemId
     title: str
-    scenario: Scenario
+    criterion: Criterion
     description: str
     created: datetime
     started: datetime
@@ -74,7 +76,7 @@ class CompletedWorkItem:
 
     id: WorkItemId
     title: str
-    scenario: Scenario
+    criterion: Criterion
     description: str
     created: datetime
     started: datetime
@@ -89,23 +91,12 @@ class RemovedWorkItem:
 
     id: WorkItemId
     title: str
-    scenario: Scenario
+    criterion: Criterion
     description: str
     created: datetime
     removed: datetime
     reason: str
     tasks: tuple[Task, ...]
-
-
-@dataclass(frozen=True)
-class Amendment:
-    """The parts of a work item to rewrite: each its new text, or None where it stays as it was."""
-
-    title: str | None = None
-    description: str | None = None
-    given: str | None = None
-    when: str | None = None
-    then: str | None = None
 
 
 # A work item that still takes Tasks: in Backlog or started.
@@ -133,16 +124,21 @@ class WorkItemRow:
 
 @dataclass
 class WorkItemDetail:
-    """One work item with its criterion and its Tasks as plain data, as a view reads it whole."""
+    """One work item with its criterion and its Tasks as plain data, as a view reads it whole.
+
+    The parts of its criterion are those its kind states; the others are empty.
+    """
 
     id: str
     title: str
     state: str
     description: str
-    given: str
-    when: str
-    then: str
     tasks: list[TaskRow]
+    given: str = ""
+    when: str = ""
+    then: str = ""
+    observed: str = ""
+    expected: str = ""
     commit: str = ""
     reason: str = ""
 
@@ -168,10 +164,6 @@ class WorkItemIdError(ValueError):
     """A number or a text that is no id of the kind asked for."""
 
 
-class NoPartError(ValueError):
-    """An amendment that names no part of the work item to rewrite."""
-
-
 class WorkItemNotFoundError(Exception):
     """A record that holds no work item of the id asked for; `item_id` is that id."""
 
@@ -195,16 +187,17 @@ class WorkItemMismatchError(Exception):
     """A work item read back different from the one written; its file is as it was before."""
 
 
-def make_kind(noun: str, article: str, prefix: str) -> Kind:
+def make_kind(noun: str, article: str, prefix: str, takes: type[Criterion] = Scenario) -> Kind:
     """The kind of work item of that noun, written with that article and prefix.
 
-    Raises KindError when the noun is blank or the prefix is not capital letters.
+    It takes a Given / When / Then unless another form of criterion is named. Raises KindError
+    when the noun is blank or the prefix is not capital letters.
     """
     if not noun.strip():
         raise KindError("a kind names its noun")
     if re.fullmatch(r"[A-Z]+", prefix) is None:
         raise KindError(f"{prefix!r} is no prefix: it is capital letters")
-    return Kind(noun, article, prefix)
+    return Kind(noun, article, prefix, takes)
 
 
 def make_work_item_id(kind: Kind, number: int) -> WorkItemId:
@@ -239,14 +232,19 @@ def next_work_item_id(kind: Kind, taken: Collection[WorkItemId]) -> WorkItemId:
 
 
 def make_work_item(
-    item_id: WorkItemId, title: str, scenario: Scenario, description: str, created: datetime
+    item_id: WorkItemId, title: str, criterion: Criterion, description: str, created: datetime
 ) -> WorkItem:
     """A work item in Backlog, its created time kept to the second.
 
-    Raises EmptyPartError when the title is blank.
+    Raises EmptyPartError when the title is blank and CriterionError when the criterion is not
+    of the form the kind of the item takes.
     """
+    kind = item_id.kind
+    if not isinstance(criterion, kind.takes):
+        stated = f"{STATES[kind.takes]}, not {STATES[type(criterion)]}"
+        raise CriterionError(f"{kind.article} {kind.noun} states {stated}")
     to_the_second = created.replace(microsecond=0)
-    return WorkItem(item_id, said("title", title), scenario, description, to_the_second, ())
+    return WorkItem(item_id, said("title", title), criterion, description, to_the_second, ())
 
 
 def append_task[W: OpenWorkItem](item: W, task: Task) -> W:
@@ -267,38 +265,6 @@ def still_open(item: WorkItemState) -> OpenWorkItem:
             assert_never(unreachable)
 
 
-def amended_work_item(item: WorkItemState, amendment: Amendment) -> WorkItem:
-    """The work item in Backlog with the parts the amendment names rewritten, the rest as it was.
-
-    Raises NoPartError when it names none, EmptyPartError when its title or a part of its
-    criterion is blank, StartedAlreadyError when the item is started and CompletedAlreadyError
-    when it is completed.
-    """
-    named = work_item_id_text(item.id)
-    match item:
-        case WorkItem():
-            if amendment == Amendment():
-                raise NoPartError(f"amend rewrites no part of {named}: name one")
-            was = item.scenario
-            scenario = make_scenario(
-                was.given if amendment.given is None else amendment.given,
-                was.when if amendment.when is None else amendment.when,
-                was.then if amendment.then is None else amendment.then,
-            )
-            title = said("title", item.title if amendment.title is None else amendment.title)
-            kept = amendment.description is None
-            description = item.description if kept else amendment.description
-            return replace(item, title=title, scenario=scenario, description=description)
-        case StartedWorkItem():
-            raise StartedAlreadyError(f"{named} is started already")
-        case CompletedWorkItem():
-            raise CompletedAlreadyError(f"{named} is completed already")
-        case RemovedWorkItem():
-            raise RemovedAlreadyError(item.id)
-        case _ as unreachable:
-            assert_never(unreachable)
-
-
 def started_work_item(item: WorkItemState, on: datetime) -> StartedWorkItem:
     """The work item started on that time, kept to the second, its Tasks still in Backlog.
 
@@ -313,7 +279,7 @@ def started_work_item(item: WorkItemState, on: datetime) -> StartedWorkItem:
             return StartedWorkItem(
                 item.id,
                 item.title,
-                item.scenario,
+                item.criterion,
                 item.description,
                 item.created,
                 to_the_second,
@@ -343,7 +309,7 @@ def completed_work_item(item: WorkItemState, on: datetime, commit: Commit) -> Co
             return CompletedWorkItem(
                 item.id,
                 item.title,
-                item.scenario,
+                item.criterion,
                 item.description,
                 item.created,
                 item.started,

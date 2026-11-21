@@ -12,7 +12,7 @@ from typing import assert_never
 
 from flowgraph import work_item
 from flowgraph.branch import Slug, SlugError, make_slug, slug_of_title
-from flowgraph.criterion import make_commit
+from flowgraph.criterion import Criterion, make_commit
 from flowgraph.queue import queued, reorder
 from flowgraph.record import Now
 from flowgraph.store import KINDS, Store
@@ -156,22 +156,20 @@ def show_item(item: str, store: Store) -> str:
 def add_item(
     kind: Kind,
     title: str,
-    criterion: tuple[str, str, str],
+    criterion: Criterion,
     description: str,
     store: Store,
     now: Now,
 ) -> Written:
-    """Add a work item of that kind with its Given / When / Then; what the write says.
+    """Add a work item of that kind with its criterion; what the write says.
 
-    Raises EmptyPartError when the title or a part of the criterion is blank; nothing is saved.
+    Raises EmptyPartError when the title is blank and CriterionError when the criterion is not
+    of the form the kind takes; nothing is saved.
     """
-    given, when, then = criterion
     added = work_item.add_work_item(
         kind=kind,
         title=title,
-        given=given,
-        when=when,
-        then=then,
+        criterion=criterion,
         description=description,
         find_work_item_rows=partial(store.find_work_item_rows, kind),
         save_work_item=store.save_work_item,

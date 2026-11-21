@@ -32,3 +32,11 @@ title = "Add the BlockedTask and its block move to src/flowgraph/task.py, src/fl
 description = "Pure but for the file adapters. A blank reason or waiting on is refused through said() of src/flowgraph/criterion.py. The row a view reads gains the reason and what the Task waits on."
 expected_output = "changed: src/flowgraph/task.py holds BlockedTask and the move that blocks a started Task with its reason and what it waits on; src/flowgraph/work_item/tasks.py blocks a Task of a started work item; the file of a work item keeps a blocked Task as a table with state 'blocked' and reads it back through its moves; their tests are in tests/task/ and tests/work_item/"
 created = 2026-11-21 11:19:51+00:00
+
+[[tasks]]
+id = "T-0072"
+state = "backlog"
+title = "Add the block command to src/flowgraph/work_item/commands.py, src/flowgraph/item.py and src/flowgraph/cli.py, shown by src/flowgraph/text.py"
+description = "The command loads the work item that holds the Task whole, blocks the Task and saves it whole, as start and complete do. Removes the xfail mark of tests/functional/test_block_task.py; tests/functional/test_help_menu.py changes if the menu it states lists the commands."
+expected_output = "changed: fgraph block ID --reason TEXT --waiting-on TEXT blocks a started Task, prints 'blocked <task> of <work item>' and is committed as every write; fgraph show lists the Task in InProgress as blocked with its reason and what it waits on; it exits 2 naming why on each refusal of the first Task"
+created = 2026-11-21 11:19:52+00:00

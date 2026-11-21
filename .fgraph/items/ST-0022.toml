@@ -34,8 +34,10 @@ commit = "fabb7ca"
 
 [[tasks]]
 id = "T-0100"
-state = "started"
+state = "completed"
 title = "Update README.md to say every command prints its own help"
 expected_output = "changed: README.md shows fgraph start --help and says every command and every kind under add prints its usage and its options with --help, without a record"
 created = 2026-11-21 12:13:13+00:00
 started = 2026-11-21 12:16:28+00:00
+completed = 2026-11-21 12:16:59+00:00
+commit = "54892dc"

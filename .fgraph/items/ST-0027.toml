@@ -1,9 +1,11 @@
 id = "ST-0027"
-state = "started"
+state = "completed"
 title = "Cut the files ruff format would rewrite that make check passes from any to none"
 description = "Found by U-0005, landed at 4b3f285 on 2026-11-21: make lint runs ruff check and no ruff format --check, so tests/branch/test_git.py landed unformatted and stayed so until it was formatted by hand. The question U-0005 left open is carried here and is the developer's: whether make check should run ruff format --check; removed with that reason if the answer is no. Its Tasks are written when it is ordered."
 created = 2026-11-21 14:19:30+00:00
 started = 2026-11-21 14:38:43+00:00
+completed = 2026-11-21 14:39:53+00:00
+commit = "af54b52"
 
 [criterion]
 given = "a file of flowgraph that ruff format would rewrite"

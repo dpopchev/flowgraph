@@ -16,3 +16,11 @@ title = "Add tests/functional/test_status_features.py, failing on the criterion 
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_feature.py does. Seen red, then marked a strict xfail naming ST-0025 until the Task that turns it green removes the mark. The developer's decisions of 2026-11-21 for the whole Story, asked when it was ordered: status lists the Features in a block of their own above Backlog, under the heading 'Features (n)', each with its derived bucket, the heading listed only when the record holds a Feature, as Removed is; status stays flat, so a work item under a Feature is listed in its bucket as today and not with its Feature. The agent's readings, each a routine call: (1) the line of a Feature is its id, its title and its derived bucket, '  F-0001  <title>  InProgress'. (2) The Features are listed by number. (3) The buckets, their counts and the order of the Backlog are those of the work items, as today. (4) Amending and removing a Feature, and moving a work item to another Feature, stay not built."
 expected_output = "created: tests/functional/test_status_features.py states that fgraph status, run on a record with a Feature and a Story added under it, lists the Feature with its derived bucket"
 created = 2026-11-21 14:28:06+00:00
+
+[[tasks]]
+id = "T-0111"
+state = "backlog"
+title = "Add the Features to the status of src/flowgraph/item.py, each a row of src/flowgraph/feature.py written by src/flowgraph/text.py"
+description = "The work items are read once, for the buckets and for the Features. Removes the xfail mark of tests/functional/test_status_features.py."
+expected_output = "changed: src/flowgraph/feature.py holds FeatureRow and feature_row, a Feature as a line of a list with its derived bucket; status_text of src/flowgraph/text.py lists the Features it is given under 'Features (n)' above the buckets, and no heading without one; status_item of src/flowgraph/item.py gives it the Features of the record by number, each with the bucket its work items derive; proved in tests/feature/, tests/text/ and tests/item/"
+created = 2026-11-21 14:28:06+00:00

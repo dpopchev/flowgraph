@@ -1,9 +1,11 @@
 id = "ST-0038"
-state = "started"
+state = "completed"
 title = "Cut the commands a developer runs to follow the record live from two to one"
 description = "The developer's request of 2026-11-21: 'file a story for a fgraph watch command', after asking whether fgraph has a live view as board watch of board 1 is. Today the live view takes two commands, watch around fgraph status, and status then writes to a pipe, so fgraph cuts no line to the terminal. Readings of the agent, not agreed yet, decided when the Story is ordered: (1) fgraph watch redraws what fgraph status writes every 5 seconds, -n SECS giving another interval; (2) each line is cut to the width of the terminal, as status cuts it on a terminal; (3) --count N ends it after N frames and Ctrl-C exits 0; (4) --all lists every item, as on status. Its Tasks are written when it is ordered."
 created = 2026-11-21 20:19:40+00:00
 started = 2026-11-21 21:49:03+00:00
+completed = 2026-11-21 21:59:16+00:00
+commit = "5d4651d"
 
 [criterion]
 given = "a record with a Story in Backlog, and fgraph watch running on it"

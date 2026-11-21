@@ -17,3 +17,11 @@ title = "Add tests/functional/test_status_feature_blocked.py, failing on the cri
 description = "decided: S-0055: a started Task beside the blocked one does not lift the mark -- the Feature is marked while its started work item holds a blocked Task. Run through run() of src/flowgraph/cli.py on a record in tmp_path. Seen red, then marked a strict xfail naming S-0055 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_status_feature_blocked.py states that, on a record with a started Feature whose started Story holds a blocked Task, the line of the Feature in fgraph status starts with ! and ends with what the Task waits on"
 created = 2026-11-21 23:43:46+00:00
+
+[[tasks]]
+id = "T-0200"
+state = "backlog"
+title = "Mark a Feature blocked in the status while its started work item holds a blocked Task"
+description = "Removes the xfail mark of tests/functional/test_status_feature_blocked.py. The mark is cut with the line on a terminal as any line of the status."
+expected_output = "changed: fgraph status lists a started Feature whose started work item holds a blocked Task with ! before its id and -- waiting on <what> after its title, what the first blocked Task of that work item waits on; the mark is derived at each listing and kept in no file; the line of the work item under it and of its blocked Task stay as they are; a Feature without such a Task is listed as before; proved in tests/item/ or tests/text/, beside what lists the status"
+created = 2026-11-21 23:43:46+00:00

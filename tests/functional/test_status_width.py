@@ -13,10 +13,7 @@ import pytest
 
 from flowgraph.cli import open_files, run
 
-pytestmark = [
-    pytest.mark.functional,
-    pytest.mark.xfail(strict=True, reason="ST-0036: run() takes no width of a terminal yet"),
-]
+pytestmark = pytest.mark.functional
 
 START = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
@@ -59,7 +56,7 @@ def fgraph(argv: Sequence[str], cwd: Path, at: datetime, width: int | None = Non
         open_store=open_files,
         open_git=lambda _: None,
         now=lambda: at,
-        width=lambda: width,  # pyright: ignore[reportCallIssue] -- until ST-0036 adds it
+        width=lambda: width,
     )
     return Outcome(status, "".join(out), "".join(err))
 

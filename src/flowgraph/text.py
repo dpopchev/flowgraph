@@ -25,6 +25,9 @@ BLOCKED = "blocked"
 STARTED = "started"
 COMPLETED = "completed"
 
+# What ends a line cut to the width of the terminal.
+CUT = "..."
+
 
 def status_text(
     rows: Iterable[StoryRow | UpkeepRow],
@@ -52,6 +55,18 @@ def status_text(
     return "".join(lines)
 
 
+def cut_lines(text: str, width: int | None) -> str:
+    """The text with each line longer than the width cut to it, ending with `...`.
+
+    Without a width every line is whole. A width under that of the mark leaves the mark alone.
+    """
+    if width is None:
+        return text
+    keep = max(width - len(CUT), 0)
+    lines = (line if len(line) <= width else f"{line[:keep]}{CUT}" for line in text.splitlines())
+    return "".join(f"{line}\n" for line in lines)
+
+
 def _feature_line(feature: FeatureRow) -> str:
     """One Feature: its id, its work items completed of all, its bucket, then its title."""
     progress = f"{feature.completed}/{feature.held} W"
@@ -69,17 +84,18 @@ def _top_of(items: Sequence[str], top: int | None) -> list[str]:
 
 
 def _status_line(row: StoryRow | UpkeepRow) -> str:
-    """One item of a bucket: its id and title, then its commit or the reason it was removed.
+    """One item of a bucket: its id and title, with its commit or the reason it was removed.
 
     A started one is listed with its Tasks completed of all, between its id and its title, and
-    under it each Task of it being worked on a line of its own, in the order written.
+    under it each Task of it being worked on a line of its own, in the order written. A commit
+    stands before the title, so a line cut to a width keeps it; a reason ends the line.
     """
     if row.state == STARTED:
         completed = sum(task.state == COMPLETED for task in row.tasks)
         worked = "".join(_task_line(task) for task in row.tasks)
         return f"  {row.id}  {completed}/{len(row.tasks)} T  {row.title}\n{worked}"
     if row.commit:
-        return f"  {row.id}  {row.title}  {row.commit}\n"
+        return f"  {row.id}  {row.commit}  {row.title}\n"
     if row.reason:
         return f"  {row.id}  {row.title}  -- {row.reason}\n"
     return f"  {row.id}  {row.title}\n"

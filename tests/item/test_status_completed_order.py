@@ -54,15 +54,15 @@ def store() -> Store:
 
 def test_completed_is_listed_the_last_completed_first() -> None:
     assert status_item(store()).splitlines()[3::2] == [
-        "  ST-0002  a last story  abc1234",
-        "  ST-0001  a story  abc1234",
+        "  ST-0002  abc1234  a last story",
+        "  ST-0001  abc1234  a story",
     ]
 
 
 def test_work_items_completed_at_one_time_are_listed_by_kind_and_number() -> None:
     assert status_item(store()).splitlines()[3:] == [
-        "  ST-0002  a last story  abc1234",
-        "  U-0001  an upkeep  abc1234",
-        "  ST-0001  a story  abc1234",
-        "  ST-0003  a twin story  abc1234",
+        "  ST-0002  abc1234  a last story",
+        "  U-0001  abc1234  an upkeep",
+        "  ST-0001  abc1234  a story",
+        "  ST-0003  abc1234  a twin story",
     ]

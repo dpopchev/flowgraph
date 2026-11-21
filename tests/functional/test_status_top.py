@@ -83,15 +83,15 @@ class TestSixStoriesCompleted:
             "Backlog (0)\n"
             "InProgress (0)\n"
             "Completed (6)\n"
-            "  ST-0006  title 6  abc1236\n"
-            "  ST-0005  title 5  abc1235\n"
-            "  ST-0004  title 4  abc1234\n"
-            "  ST-0003  title 3  abc1233\n"
-            "  ST-0002  title 2  abc1232\n"
+            "  ST-0006  abc1236  title 6\n"
+            "  ST-0005  abc1235  title 5\n"
+            "  ST-0004  abc1234  title 4\n"
+            "  ST-0003  abc1233  title 3\n"
+            "  ST-0002  abc1232  title 2\n"
             "  ... 1 more\n"
         )
 
 
 def test_status_all_lists_every_one(tmp_path: Path) -> None:
     listed = after(tmp_path, SIX_COMPLETED, ["status", "--all"])
-    assert listed.out.splitlines()[-1] == "  ST-0001  title 1  abc1231"
+    assert listed.out.splitlines()[-1] == "  ST-0001  abc1231  title 1"

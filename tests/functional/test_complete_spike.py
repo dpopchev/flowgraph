@@ -91,7 +91,7 @@ class TestAStartedSpikeWhoseTaskIsCompletedCompletedWithACommitAndItsDecision:
         self, completed: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["status"], tmp_path).out == (
-            "Backlog (0)\nInProgress (0)\nCompleted (1)\n  SP-0001  a spike title  def5678\n"
+            "Backlog (0)\nInProgress (0)\nCompleted (1)\n  SP-0001  def5678  a spike title\n"
         )
 
 

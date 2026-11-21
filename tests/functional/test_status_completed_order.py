@@ -83,8 +83,8 @@ class TestTwoStoriesCompletedTheSecondBeforeTheFirst:
             "Backlog (0)\n"
             "InProgress (0)\n"
             "Completed (2)\n"
-            "  ST-0001  a title  abc1234\n"
-            "  ST-0002  another title  def5678\n"
+            "  ST-0001  abc1234  a title\n"
+            "  ST-0002  def5678  another title\n"
         )
 
 
@@ -92,6 +92,6 @@ def test_the_second_story_completed_after_the_first_is_listed_above_it(tmp_path:
     listed = status_after(tmp_path, *ADDED, *COMPLETE_FIRST, *COMPLETE_SECOND)
     assert listed.out.splitlines()[2:] == [
         "Completed (2)",
-        "  ST-0002  another title  def5678",
-        "  ST-0001  a title  abc1234",
+        "  ST-0002  def5678  another title",
+        "  ST-0001  abc1234  a title",
     ]

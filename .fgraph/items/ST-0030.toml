@@ -12,11 +12,12 @@ then = "it lists ST-0002 above ST-0001 under InProgress"
 
 [[tasks]]
 id = "T-0123"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_status_in_progress_order.py, failing on the criterion of ST-0030"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_status_completed_order.py does, with a clock that moves on at every call. Seen red, then marked a strict xfail naming ST-0030 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_status_in_progress_order.py states that fgraph status, run on a record with two Stories started, ST-0002 before ST-0001, lists ST-0001 above ST-0002 under InProgress"
 created = 2026-11-21 17:01:26+00:00
+started = 2026-11-21 17:08:33+00:00
 
 [[tasks]]
 id = "T-0124"

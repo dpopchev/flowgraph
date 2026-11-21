@@ -34,20 +34,23 @@ commit = "dd2b2c9"
 
 [[tasks]]
 id = "T-0042"
-state = "started"
+state = "completed"
 title = "Add the git adapters to src/flowgraph/branch.py: inside a work tree, commit one file, add a worktree on a new branch"
 description = "Each adapter is a named function over subprocess.run(..., check=True); a non-zero exit raises a specific error naming the command and its error output. Its tests are marked edge and run the real git in tmp_path with the identity from the environment. The commit holds only the file named, whatever else is staged or changed in the work tree."
 expected_output = "changed: src/flowgraph/branch.py tells whether a directory is inside a git work tree, commits one named file with a message, and adds a worktree on a new branch, each proved against the real git in tmp_path"
 created = 2026-11-21 08:34:30+00:00
 started = 2026-11-21 08:43:17+00:00
+completed = 2026-11-21 08:44:37+00:00
+commit = "d912730"
 
 [[tasks]]
 id = "T-0043"
-state = "backlog"
+state = "started"
 title = "Extend fgraph start in src/flowgraph/cli.py and src/flowgraph/item.py so a started work item is committed and gets its worktree branch"
 description = "The git effects are injected into run() as callables and wired in main(), as the store and the clock are. Starting a Task is unchanged. A work item without a Task is refused before anything is written, as today, so it gets no branch. When git fails after the start was saved, the file of the item is put back as it was and fgraph exits 2 naming the git command and its error. Whether the checkout is on main is not checked here: that is ST-0010. Every test that calls run() or builds a Store by hand changes with the port: the modules of tests/functional/ and tests/item/test_status_order.py. Removes the xfail mark of tests/functional/test_start_branch.py."
 expected_output = "changed: fgraph start ID [--slug TEXT] on a work item saves the start, commits its file as 'chore: start <id> in the record', adds the worktree of wi/<id>-<slug> at that commit and names the branch and its path; outside a git work tree it starts as today and warns that no branch was made"
 created = 2026-11-21 08:34:31+00:00
+started = 2026-11-21 08:44:37+00:00
 
 [[tasks]]
 id = "T-0044"

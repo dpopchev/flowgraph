@@ -9,3 +9,11 @@ created = 2026-11-21 21:22:01+00:00
 given = "a record with a Feature in Backlog and two Stories under it, each with a Task"
 when = "fgraph start of the Feature is run"
 then = "fgraph status lists the Feature under InProgress with its first Story started under it"
+
+[[tasks]]
+id = "T-0188"
+state = "backlog"
+title = "Add tests/functional/test_start_feature.py, failing on the criterion of S-0052"
+description = "decided: S-0052: the one at a time of a Feature and [development] parallel both hold -- a Feature starts one work item at a time, and parallel counts every started work item of the record, those of a Feature among them; a start parallel refuses is refused with nothing written. Run through run() of src/flowgraph/cli.py on a record in tmp_path. Seen red, then marked a strict xfail naming S-0052 until the Task that turns it green removes the mark."
+expected_output = "created: tests/functional/test_start_feature.py states that, on a record with a Feature in Backlog and two Stories under it, each with a Task, fgraph start of the Feature exits 0 and fgraph status lists the Feature under InProgress with its first Story started under it"
+created = 2026-11-21 23:22:06+00:00

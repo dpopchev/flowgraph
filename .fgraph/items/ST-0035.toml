@@ -23,12 +23,14 @@ commit = "dee83a7"
 
 [[tasks]]
 id = "T-0139"
-state = "started"
+state = "completed"
 title = "Add the rows of a started work item read from its worktree to src/flowgraph/worktrees.py, wired in run of src/flowgraph/cli.py"
 description = "Removes the xfail mark of tests/functional/test_status_worktree.py."
 expected_output = "changed: src/flowgraph/worktrees.py holds the store whose row of a started work item is the one the record of its worktree holds, and the row of the record itself without a worktree, outside a git work tree and on a record git ignores; run of src/flowgraph/cli.py opens the record through it; proved in tests/worktrees/"
 created = 2026-11-21 17:41:04+00:00
 started = 2026-11-21 18:01:03+00:00
+completed = 2026-11-21 18:03:12+00:00
+commit = "7ebfcb2"
 
 [[tasks]]
 id = "T-0140"

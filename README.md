@@ -86,7 +86,9 @@ fgraph show ST-0001
 part exits 2 and is named; so does a parent, or a Story to show, that the
 record does not hold. Each Story is one file, `items/ST-0001.toml`, in the
 record, with its Tasks inside it; a Task id, `T-0001`, counts across the
-record.
+record. In a git repository it counts across the worktrees too: the next Task
+id is one above the highest in the record of main and of every worktree, so a
+Task added on a branch never takes an id main hands out meanwhile.
 
 Start a Story once it has a Task, then start its Tasks one by one. `fgraph
 start` takes a Story id or a Task id:

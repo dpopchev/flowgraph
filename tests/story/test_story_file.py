@@ -7,7 +7,6 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph import story
 from flowgraph.criterion import make_scenario
 from flowgraph.story import (
     StoryFileError,
@@ -18,6 +17,7 @@ from flowgraph.story import (
     story_row,
     write_story,
 )
+from flowgraph.story import file as story_file
 
 pytestmark = pytest.mark.edge
 
@@ -87,7 +87,7 @@ class TestAWriteThatReadsBackDifferent:
             "created": CREATED,
             "criterion": {"given": "a state", "when": "an action", "then": "another state"},
         }
-        monkeypatch.setattr(story.tomllib, "loads", lambda _: another)
+        monkeypatch.setattr(story_file.tomllib, "loads", lambda _: another)
         with pytest.raises(StoryMismatchError) as error:
             write_story(tmp_path, STORY)
         return path, str(error.value)

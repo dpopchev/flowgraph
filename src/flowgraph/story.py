@@ -6,10 +6,10 @@ from collections.abc import Callable, Collection
 from dataclasses import dataclass, replace
 from datetime import datetime
 from pathlib import Path
-from typing import Literal, assert_never
+from typing import Annotated, Literal, assert_never
 
 import tomli_w
-from pydantic import BaseModel, ConfigDict, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
 
 # The directory of every item inside a record, one file per work item, named by its id.
 ITEMS = "items"
@@ -131,10 +131,10 @@ FindStoryRows = Callable[[], list[StoryRow]]
 FindTaskIds = Callable[[], list[str]]
 
 # The Story of that id, whole; raises StoryNotFoundError when the record holds none.
-LoadStory = Callable[[StoryId], Story]
+LoadStory = Callable[[StoryId], StoryState]
 
 # Save the Story whole.
-SaveStory = Callable[[Story], None]
+SaveStory = Callable[[StoryState], None]
 
 # The current time, with its zone.
 Now = Callable[[], datetime]
@@ -144,7 +144,7 @@ ReadStoryRows = Callable[[Path], list[StoryRow]]
 
 # The Story of that id in the record at the path, whole; raises StoryNotFoundError when the
 # record holds none.
-ReadStory = Callable[[Path, StoryId], Story]
+ReadStory = Callable[[Path, StoryId], StoryState]
 
 # The Story of that id in the record at the path, with its Tasks, as plain data; raises
 # StoryNotFoundError when the record holds none.
@@ -154,7 +154,7 @@ ReadStoryDetail = Callable[[Path, StoryId], StoryDetail]
 ReadTaskIds = Callable[[Path], list[str]]
 
 # Save the Story whole into the record at the path.
-WriteStory = Callable[[Path, Story], None]
+WriteStory = Callable[[Path, StoryState], None]
 
 
 class EmptyPartError(ValueError):
@@ -327,7 +327,7 @@ def parse_item_id(text: str) -> StoryId | TaskId:
         raise ItemIdError(f"{text!r} is no Story id or Task id") from None
 
 
-def append_task[S: (Story, StartedStory)](story: S, task: Task) -> S:
+def append_task[S: StoryState](story: S, task: Task) -> S:
     """The Story with the Task written for it, after the Tasks it already has."""
     return replace(story, tasks=(*story.tasks, task))
 
@@ -394,24 +394,39 @@ def started_task(story: StoryState, task_id: TaskId, on: datetime) -> StartedSto
             assert_never(unreachable)
 
 
-def story_row(story: Story) -> StoryRow:
+def _state_of(item: StoryState | Task | StartedTask) -> str:
+    """The state of a Story or a Task as the record writes it."""
+    match item:
+        case Story() | Task():
+            return "backlog"
+        case StartedStory() | StartedTask():
+            return "started"
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def story_row(story: StoryState) -> StoryRow:
     """The Story as the row a view reads."""
-    return StoryRow(story_id_text(story.id), story.title, "backlog")
+    return StoryRow(story_id_text(story.id), story.title, _state_of(story))
 
 
-def story_detail(story: Story) -> StoryDetail:
+def story_detail(story: StoryState) -> StoryDetail:
     """The Story with its criterion and its Tasks as the plain data a view reads."""
     return StoryDetail(
         id=story_id_text(story.id),
         title=story.title,
-        state="backlog",
+        state=_state_of(story),
         description=story.description,
         given=story.scenario.given,
         when=story.scenario.when,
         then=story.scenario.then,
         tasks=[
             TaskRow(
-                task_id_text(task.id), task.title, task.expected_output, task.description, "backlog"
+                task_id_text(task.id),
+                task.title,
+                task.expected_output,
+                task.description,
+                _state_of(task),
             )
             for task in story.tasks
         ],
@@ -465,6 +480,38 @@ def add_task(
     return task.id
 
 
+def start_story(
+    *, story_id: StoryId, load_story: LoadStory, save_story: SaveStory, now: Now
+) -> None:
+    """Start the Story of that id now and save it whole.
+
+    Raises StoryNotFoundError when the record holds no such Story, NoTaskError when it has no
+    Task and StartedAlreadyError when it is started; nothing is saved.
+    """
+    save_story(started_story(load_story(story_id), now()))
+
+
+def start_task(
+    *,
+    task_id: TaskId,
+    find_story_rows: FindStoryRows,
+    load_story: LoadStory,
+    save_story: SaveStory,
+    now: Now,
+) -> StoryId:
+    """Start the Task of that id now, save its Story whole and return the id of that Story.
+
+    Raises TaskNotFoundError when no Story holds the Task, StoryInBacklogError when its Story is
+    in Backlog and StartedAlreadyError when it is started; nothing is saved.
+    """
+    for row in find_story_rows():
+        story = load_story(parse_story_id(row.id))
+        if any(task.id == task_id for task in story.tasks):
+            save_story(started_task(story, task_id, now()))
+            return story.id
+    raise TaskNotFoundError(task_id)
+
+
 class _CriterionFile(BaseModel):
     """The criterion table of a Story file."""
 
@@ -476,7 +523,7 @@ class _CriterionFile(BaseModel):
 
 
 class _TaskFile(BaseModel):
-    """One table of the tasks of a Story file: a Task."""
+    """One table of the tasks of a Story file: a Task in Backlog."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -488,8 +535,22 @@ class _TaskFile(BaseModel):
     created: datetime
 
 
+class _StartedTaskFile(BaseModel):
+    """One table of the tasks of a started Story file: a started Task."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    state: Literal["started"]
+    title: str
+    description: str = ""
+    expected_output: str
+    created: datetime
+    started: datetime
+
+
 class _StoryFile(BaseModel):
-    """What the file of a Story holds, validated as it is read."""
+    """What the file of a Story in Backlog holds: its Tasks are all in Backlog."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -502,10 +563,31 @@ class _StoryFile(BaseModel):
     tasks: list[_TaskFile] = []
 
 
-def _read_story_file(path: Path) -> _StoryFile:
+class _StartedStoryFile(BaseModel):
+    """What the file of a started Story holds: its started time, its Tasks in either state."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    state: Literal["started"]
+    title: str
+    description: str = ""
+    created: datetime
+    started: datetime
+    criterion: _CriterionFile
+    tasks: list[Annotated[_TaskFile | _StartedTaskFile, Field(discriminator="state")]] = []
+
+
+# The file of a Story in any of its states, told apart by its state line.
+_HELD_STORY: TypeAdapter[_StoryFile | _StartedStoryFile] = TypeAdapter(
+    Annotated[_StoryFile | _StartedStoryFile, Field(discriminator="state")]
+)
+
+
+def _read_story_file(path: Path) -> _StoryFile | _StartedStoryFile:
     """The content of one Story file; raises StoryFileError naming the path."""
     try:
-        return _StoryFile.model_validate(tomllib.loads(path.read_text(encoding="utf-8")))
+        return _HELD_STORY.validate_python(tomllib.loads(path.read_text(encoding="utf-8")))
     except (tomllib.TOMLDecodeError, ValidationError) as error:
         raise StoryFileError(f"{path} holds no Story: {error}") from error
 
@@ -529,7 +611,7 @@ def _held_path(record: Path, story_id: StoryId) -> Path:
     return path
 
 
-def read_story(record: Path, story_id: StoryId) -> Story:
+def read_story(record: Path, story_id: StoryId) -> StoryState:
     """Adapter: the Story of that id in the record, whole.
 
     Raises StoryNotFoundError when the record holds no such Story and StoryFileError when its
@@ -569,29 +651,47 @@ def read_task_ids(record: Path) -> list[str]:
     return [task.id for story in held for task in story.tasks]
 
 
-def _task_primitives(task: Task) -> dict[str, object]:
+def _task_primitives(task: Task | StartedTask) -> dict[str, object]:
     """The Task as the primitives its table holds; a description only when there is one."""
     described = {"description": task.description} if task.description else {}
+    match task:
+        case Task():
+            state: dict[str, object] = {"state": "backlog"}
+            started: dict[str, object] = {}
+        case StartedTask():
+            state, started = {"state": "started"}, {"started": task.started}
+        case _ as unreachable:
+            assert_never(unreachable)
     return {
         "id": task_id_text(task.id),
-        "state": "backlog",
+        **state,
         "title": task.title,
         **described,
         "expected_output": task.expected_output,
         "created": task.created,
+        **started,
     }
 
 
-def _story_primitives(story: Story) -> dict[str, object]:
+def _story_primitives(story: StoryState) -> dict[str, object]:
     """The Story as the primitives its file holds; a description and tasks only when it has any."""
     described = {"description": story.description} if story.description else {}
     tasks = {"tasks": [_task_primitives(task) for task in story.tasks]} if story.tasks else {}
+    match story:
+        case Story():
+            state: dict[str, object] = {"state": "backlog"}
+            started: dict[str, object] = {}
+        case StartedStory():
+            state, started = {"state": "started"}, {"started": story.started}
+        case _ as unreachable:
+            assert_never(unreachable)
     return {
         "id": story_id_text(story.id),
-        "state": "backlog",
+        **state,
         "title": story.title,
         **described,
         "created": story.created,
+        **started,
         "criterion": {
             "given": story.scenario.given,
             "when": story.scenario.when,
@@ -601,15 +701,19 @@ def _story_primitives(story: Story) -> dict[str, object]:
     }
 
 
-def _task_held(held: _TaskFile) -> Task:
-    """The Task a validated table holds, built through its constructors."""
+def _task_held(held: _TaskFile | _StartedTaskFile) -> Task:
+    """The Task a validated table holds, in Backlog, built through its constructors."""
     return make_task(
         parse_task_id(held.id), held.title, held.expected_output, held.description, held.created
     )
 
 
-def _story_held(held: _StoryFile) -> Story:
-    """The Story a validated file holds, with its Tasks, built through its constructors."""
+def _story_held(held: _StoryFile | _StartedStoryFile) -> StoryState:
+    """The Story a validated file holds, with its Tasks, built through its constructors.
+
+    A started Story and its started Tasks are built by the moves that start them, so a file
+    holds no started state those moves could not reach.
+    """
     criterion = held.criterion
     scenario = make_scenario(criterion.given, criterion.when, criterion.then)
     story = make_story(
@@ -617,10 +721,25 @@ def _story_held(held: _StoryFile) -> Story:
     )
     for task in held.tasks:
         story = append_task(story, _task_held(task))
-    return story
+    match held:
+        case _StoryFile():
+            return story
+        case _StartedStoryFile():
+            begun = started_story(story, held.started)
+            for task in held.tasks:
+                match task:
+                    case _StartedTaskFile():
+                        begun = started_task(begun, parse_task_id(task.id), task.started)
+                    case _TaskFile():
+                        pass
+                    case _ as unreachable:
+                        assert_never(unreachable)
+            return begun
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
-def write_story(record: Path, story: Story) -> None:
+def write_story(record: Path, story: StoryState) -> None:
     """Adapter: write the Story as its one file in the record.
 
     The Story is written beside its file and read back before it replaces it. Raises

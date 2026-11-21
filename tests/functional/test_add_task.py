@@ -9,9 +9,9 @@ import pytest
 
 from flowgraph.cli import run
 from flowgraph.story import (
-    Story,
     StoryId,
     StoryNotFoundError,
+    StoryState,
     story_detail,
     story_id_text,
     story_row,
@@ -38,10 +38,10 @@ class Outcome:
     err: str
 
 
-def fgraph(argv: Sequence[str], saved: dict[str, Story]) -> Outcome:
+def fgraph(argv: Sequence[str], saved: dict[str, StoryState]) -> Outcome:
     """Run the command in CWD on a record whose stories are the ones saved so far, by id."""
 
-    def held(story_id: StoryId) -> Story:
+    def held(story_id: StoryId) -> StoryState:
         if story_id_text(story_id) not in saved:
             raise StoryNotFoundError(story_id)
         return saved[story_id_text(story_id)]
@@ -70,7 +70,7 @@ class TestATaskAddedToAStoryInBacklog:
     @pytest.fixture
     def added(self) -> tuple[Outcome, Outcome]:
         """The outcome of adding a Task to the one Story of a record, then of showing the Story."""
-        saved: dict[str, Story] = {}
+        saved: dict[str, StoryState] = {}
         fgraph(ADD_STORY, saved)
         return fgraph(ADD_TASK, saved), fgraph(["show", "ST-0001"], saved)
 
@@ -94,7 +94,7 @@ class TestATaskAddedToAStoryInBacklog:
 
 
 def test_show_lists_the_descriptions_of_a_story_and_its_task() -> None:
-    saved: dict[str, Story] = {}
+    saved: dict[str, StoryState] = {}
     fgraph([*ADD_STORY, "--description", "why"], saved)
     fgraph([*ADD_TASK, "--description", "how"], saved)
     assert fgraph(["show", "ST-0001"], saved).out == (
@@ -119,7 +119,7 @@ def changed(argv: Sequence[str], old: str, new: str) -> list[str]:
 class TestATaskAddedToAStoryTheRecordDoesNotHold:
     @pytest.fixture
     def outcome(self) -> Outcome:
-        saved: dict[str, Story] = {}
+        saved: dict[str, StoryState] = {}
         fgraph(ADD_STORY, saved)
         return fgraph(changed(ADD_TASK, "ST-0001", "ST-0002"), saved)
 
@@ -147,7 +147,7 @@ class TestATaskAddedToAParentThatIsNoStory:
 class TestATaskAddedWithABlankOutput:
     @pytest.fixture
     def outcome(self) -> Outcome:
-        saved: dict[str, Story] = {}
+        saved: dict[str, StoryState] = {}
         fgraph(ADD_STORY, saved)
         return fgraph(changed(ADD_TASK, "an output", " "), saved)
 

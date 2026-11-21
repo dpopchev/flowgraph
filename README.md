@@ -6,17 +6,18 @@ it builds the ontology of the project on the way: its terms and how they relate.
 
 ## Status
 
-Early: `fgraph` adds a Story to a record, writes its Tasks, shows it with
-them and lists the record by bucket; no item moves yet.
+Early: `fgraph` adds a Story to a record, writes its Tasks, starts them,
+shows a Story with its Tasks and lists the record by bucket; nothing is
+completed yet.
 
-| Part                            | State                                     |
-| ------------------------------- | ----------------------------------------- |
-| the `fgraph` command            | runs, prints its help menu                |
-| the wheel                       | built by `make wheel`, ships `fgraph`     |
-| where the record lives          | located on every call but `--help`        |
-| the record and its flow         | a Story with its Tasks, listed in Backlog |
-| the ontology                    | not started                               |
-| flowgraph tracking its own work | its Backlog is in `.fgraph/` since 0.4.0  |
+| Part                            | State                                             |
+| ------------------------------- | ------------------------------------------------- |
+| the `fgraph` command            | runs, prints its help menu                        |
+| the wheel                       | built by `make wheel`, ships `fgraph`             |
+| where the record lives          | located on every call but `--help`                |
+| the record and its flow         | a Story with its Tasks, in Backlog and InProgress |
+| the ontology                    | not started                                       |
+| flowgraph tracking its own work | its Backlog is in `.fgraph/` since 0.4.0          |
 
 The model of the record -- its item types, states and rules -- is
 `docs/domain-model.md`. flowgraph keeps its own work in `.fgraph/`: run
@@ -77,6 +78,28 @@ part exits 2 and is named; so does a parent, or a Story to show, that the
 record does not hold. Each Story is one file, `items/ST-0001.toml`, in the
 record, with its Tasks inside it; a Task id, `T-0001`, counts across the
 record.
+
+Start a Story once it has a Task, then start its Tasks one by one. `fgraph
+start` takes a Story id or a Task id:
+
+```sh
+fgraph start ST-0001
+# started ST-0001
+
+fgraph start T-0001
+# started T-0001 of ST-0001
+
+fgraph status
+# Backlog (0)
+# InProgress (1)
+#   ST-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
+# Completed (0)
+```
+
+`fgraph show` then names the bucket of the Story and of each Task that has
+left Backlog (`    bucket           InProgress`). A start exits 2 and names
+why when the Story has no Task, when a Task's Story is still in Backlog, when
+the item is started already, or when the record does not hold it.
 
 ## Develop
 

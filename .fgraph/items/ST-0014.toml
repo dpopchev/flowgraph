@@ -1,0 +1,45 @@
+id = "ST-0014"
+state = "backlog"
+title = "Extend the order fgraph lists the Backlog in from the order of the ids to any order the developer gives"
+description = "The Backlog is a queue, the developer's word of 2026-11-21: fgraph lists it by kind and id and nothing stores an order, so ST-0009 to ST-0013 cannot be put ahead of ST-0006. The queue is its own aggregate, kept as .fgraph/queue.toml, the ids in the order given, written on main; the developer chose it over a position field in each item file. An item never reordered follows the placed ones in the order it was added. An id that is unknown or not in Backlog is refused with exit 2. add, start and complete do not write the queue. Only --before in this slice."
+created = 2026-11-21 08:13:25+00:00
+
+[criterion]
+given = "a record with ST-0001 and ST-0002 in Backlog, listed in that order"
+when = "fgraph reorder ST-0002 --before ST-0001 is run"
+then = "fgraph status lists ST-0002 above ST-0001 under Backlog"
+
+[[tasks]]
+id = "T-0035"
+state = "backlog"
+title = "Add tests/functional/test_reorder_backlog.py, failing on the criterion of ST-0014"
+expected_output = "created: tests/functional/test_reorder_backlog.py states that fgraph status lists a Story above the one it was put before"
+created = 2026-11-21 08:13:26+00:00
+
+[[tasks]]
+id = "T-0036"
+state = "backlog"
+title = "Create src/flowgraph/queue.py holding the Backlog queue, its order over the Backlog items and the move of one id before another"
+expected_output = "created: src/flowgraph/queue.py with its tests in tests/queue/, the placed ids first in their order and the rest in the order added"
+created = 2026-11-21 08:13:26+00:00
+
+[[tasks]]
+id = "T-0037"
+state = "backlog"
+title = "Add the queue file and the reorder command to src/flowgraph/queue.py"
+expected_output = "changed: src/flowgraph/queue.py reads and writes .fgraph/queue.toml and holds the command that loads the queue whole, moves one id before another and saves it whole"
+created = 2026-11-21 08:13:26+00:00
+
+[[tasks]]
+id = "T-0038"
+state = "backlog"
+title = "Add the reorder command to src/flowgraph/cli.py and src/flowgraph/item.py, status listing the Backlog in queue order"
+expected_output = "changed: src/flowgraph/cli.py takes reorder ID --before ID and exits 2 on an id that is unknown or not in Backlog; src/flowgraph/item.py lists the Backlog of status in queue order; the row of src/flowgraph/work_item/ carries created"
+created = 2026-11-21 08:13:26+00:00
+
+[[tasks]]
+id = "T-0039"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say the Backlog is a queue reordered through fgraph"
+expected_output = "changed: README.md shows fgraph reorder, and docs/domain-model.md says the Backlog is a queue, how it is kept and that main reorders it"
+created = 2026-11-21 08:13:27+00:00

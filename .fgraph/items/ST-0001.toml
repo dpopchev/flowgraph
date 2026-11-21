@@ -1,10 +1,24 @@
 id = "ST-0001"
-state = "backlog"
+state = "completed"
 title = "Raise the Tasks a Story can hold from 0 to any number"
 description = "Feature: a developer takes a Story from Backlog to Completed with fgraph; its criterion 2: a developer writes the Tasks of a Story and sees them inside it."
 created = 2026-11-20 19:35:06+00:00
+started = 2026-11-21 06:10:29+00:00
+completed = 2026-11-21 06:10:30+00:00
+commit = "eeb394f"
 
 [criterion]
 given = "a Story in Backlog"
 when = "a Task is added to it with its title and expected output"
 then = "fgraph show lists the Task inside the Story"
+
+[[tasks]]
+id = "T-0011"
+state = "completed"
+title = "Add the add task and show commands to src/flowgraph/cli.py, writing and listing the Tasks of a Story"
+description = "Written after ST-0001 landed in eeb394f, so the record holds the Task its work had."
+expected_output = "changed: src/flowgraph/cli.py gains fgraph add task and fgraph show"
+created = 2026-11-21 06:10:29+00:00
+started = 2026-11-21 06:10:30+00:00
+completed = 2026-11-21 06:10:30+00:00
+commit = "7b8843d"

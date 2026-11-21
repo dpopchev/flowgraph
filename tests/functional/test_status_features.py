@@ -14,9 +14,6 @@ from flowgraph.cli import open_files, run
 
 pytestmark = pytest.mark.functional
 
-# What status lists once ST-0025 lands; what holds already has no mark.
-NOT_YET = pytest.mark.xfail(strict=True, reason="ST-0025: status lists no Feature yet")
-
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_FEATURE = ["add", "feature", "a feature title", "--criterion", "a criterion"]
@@ -68,7 +65,6 @@ class TestARecordWithAFeatureAndAStoryAddedUnderIt:
     def test_status_exits_with_zero(self, listed: Outcome) -> None:
         assert listed.status == 0
 
-    @NOT_YET
     def test_status_lists_the_feature_with_its_derived_bucket_above_the_buckets(
         self, listed: Outcome
     ) -> None:
@@ -83,13 +79,11 @@ class TestARecordWithAFeatureAndAStoryAddedUnderIt:
         )
 
 
-@NOT_YET
 def test_a_feature_with_a_started_story_is_listed_in_progress(tmp_path: Path) -> None:
     listed = status_after(tmp_path, ADD_FEATURE, ADD_STORY, ADD_TASK, ["start", "ST-0001"])
     assert listed.out.splitlines()[:2] == ["Features (1)", "  F-0001  a feature title  InProgress"]
 
 
-@NOT_YET
 def test_a_feature_whose_story_is_completed_is_listed_completed(tmp_path: Path) -> None:
     listed = status_after(
         tmp_path,
@@ -104,7 +98,6 @@ def test_a_feature_whose_story_is_completed_is_listed_completed(tmp_path: Path) 
     assert listed.out.splitlines()[:2] == ["Features (1)", "  F-0001  a feature title  Completed"]
 
 
-@NOT_YET
 def test_the_features_are_listed_by_number(tmp_path: Path) -> None:
     listed = status_after(tmp_path, ADD_FEATURE, ADD_OTHER_FEATURE, ADD_STORY)
     assert listed.out.splitlines()[:3] == [

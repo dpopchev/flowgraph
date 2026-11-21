@@ -2,7 +2,7 @@
 
 from collections.abc import Collection, Iterable, Sequence
 
-from flowgraph.feature import FeatureDetail
+from flowgraph.feature import FeatureDetail, FeatureRow
 from flowgraph.story import StoryDetail, StoryRow
 from flowgraph.upkeep import UpkeepDetail, UpkeepRow
 
@@ -21,14 +21,18 @@ APART = "Removed"
 BLOCKED = "blocked"
 
 
-def status_text(rows: Iterable[StoryRow | UpkeepRow]) -> str:
+def status_text(rows: Iterable[StoryRow | UpkeepRow], features: Iterable[FeatureRow] = ()) -> str:
     """The items by bucket, in the order of the flow: a heading with its count, then its items.
 
     A completed item is listed with its commit, a removed one with its reason. Removed stands
-    apart from the flow: its heading is listed only when an item is removed.
+    apart from the flow: its heading is listed only when an item is removed. The Features come
+    first, under a heading of their own, each with its derived bucket; that heading is listed
+    only when there is a Feature.
     """
     listed = list(rows)
-    lines: list[str] = []
+    grouping = list(features)
+    lines = [f"Features ({len(grouping)})\n"] if grouping else []
+    lines.extend(f"  {feature.id}  {feature.title}  {feature.bucket}\n" for feature in grouping)
     for bucket, states in BUCKETS:
         held = [row for row in listed if row.state in states]
         if bucket == APART and not held:

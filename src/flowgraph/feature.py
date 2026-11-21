@@ -45,6 +45,15 @@ class FeatureDetail:
     criteria: list[str]
 
 
+@dataclass
+class FeatureRow:
+    """One Feature as a line of a list reads it: its id, its title and its derived bucket."""
+
+    id: str
+    title: str
+    bucket: str
+
+
 # The Feature of that id, whole; raises FeatureNotFoundError when the record holds none.
 LoadFeature = Callable[[FeatureId], Feature]
 
@@ -112,6 +121,11 @@ def bucket_of(states: Collection[str]) -> str:
     if any(state in BEGUN for state in states):
         return "InProgress"
     return "Backlog"
+
+
+def feature_row(feature: Feature, states: Collection[str]) -> FeatureRow:
+    """The Feature as the row a list reads, its bucket derived from the states of its work items."""
+    return FeatureRow(feature_id_text(feature.id), feature.title, bucket_of(states))
 
 
 def add_feature(

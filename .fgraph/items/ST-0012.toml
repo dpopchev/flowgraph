@@ -23,12 +23,14 @@ commit = "7c57d92"
 
 [[tasks]]
 id = "T-0075"
-state = "started"
+state = "completed"
 title = "Add the unblock move and command to src/flowgraph/task.py, src/flowgraph/work_item/tasks.py, src/flowgraph/work_item/commands.py, src/flowgraph/item.py and src/flowgraph/cli.py"
 description = "The move is pure, in src/flowgraph/task.py; the command loads the work item that holds the Task whole, unblocks the Task and saves it whole, as block does. src/flowgraph/work_item/__init__.py exports what it adds. Removes the xfail mark of tests/functional/test_unblock_task.py."
 expected_output = "changed: fgraph unblock ID takes a blocked Task back to started with the started time it had, prints 'unblocked <task> of <work item>' and is committed as every write; it exits 2 naming why when the Task is not blocked, when the id is no Task's and when the record does not hold it; the move is proved in tests/task/ and tests/work_item/"
 created = 2026-11-21 11:29:30+00:00
 started = 2026-11-21 11:30:07+00:00
+completed = 2026-11-21 11:31:55+00:00
+commit = "8766ea4"
 
 [[tasks]]
 id = "T-0076"

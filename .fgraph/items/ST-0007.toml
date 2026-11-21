@@ -12,12 +12,14 @@ then = "fgraph show prints the decision under its hypothesis"
 
 [[tasks]]
 id = "T-0089"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_complete_spike.py, failing on the criterion of ST-0007"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, through the file adapters, as tests/functional/test_complete_bug.py does. Seen red, then marked a strict xfail naming ST-0007 until the Task that turns it green removes the mark. The description leaves no question open. The agent's readings, each a routine call: (1) the command is fgraph add spike TITLE --hypothesis TEXT [--description TEXT]; its ids are SP-0001, counted on their own. (2) A Spike takes Tasks and every move a Story takes; it is completed with fgraph complete ID --commit SHA --decision TEXT. The decision is required for a Spike and not blank, and refused with exit 2 on a Task and on every other kind; fgraph land takes --decision the same way. (3) fgraph show prints '  hypothesis   <text>' and, once the Spike is completed, '  decision     <text>' under it. (4) The decision answers the hypothesis, so it is kept with it: the criterion table of a completed Spike holds hypothesis and decision; a file that holds a decision before the Spike is completed is refused. (5) The hypothesis must say something; that it reads as a yes/no question is not checked, an open question of docs/domain-model.md. (6) fgraph amend rewrites it with --hypothesis."
 expected_output = "created: tests/functional/test_complete_spike.py states that a started Spike whose Task is completed, completed with a commit and its decision, is shown by fgraph show with the decision under its hypothesis"
 created = 2026-11-21 11:55:17+00:00
 started = 2026-11-21 11:55:43+00:00
+completed = 2026-11-21 11:56:01+00:00
+commit = "f325dcd"
 
 [[tasks]]
 id = "T-0090"

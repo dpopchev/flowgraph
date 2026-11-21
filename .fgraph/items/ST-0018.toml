@@ -8,3 +8,11 @@ created = 2026-11-21 08:37:15+00:00
 given = "a started Story with its worktree branch"
 when = "fgraph add task for that Story is run in the checkout of main"
 then = "it exits 2 and names the worktree of the Story"
+
+[[tasks]]
+id = "T-0063"
+state = "backlog"
+title = "Add tests/functional/test_main_scope.py, failing on the criterion of ST-0018"
+description = "Run through run() of src/flowgraph/cli.py on a real git repository in tmp_path, as tests/functional/test_branch_scope.py does. Seen red, then marked a strict xfail naming ST-0018 until the Task that turns it green removes the mark. The description leaves no question open. The agent's readings, each a routine call: (1) a Task write is a save of a started work item that was started already: a Task added, started or completed. (2) It is refused with exit 2, nothing written, in a work tree that is on no branch of a work item, when a branch wi/<id>-* of that work item is checked out in a worktree; in the worktree of another work item ST-0010 refuses it already. (3) The refusal reads '<id> is started: its Tasks are written in its worktree, <path>'. (4) The start, the complete and the landing of the work item itself, a started work item whose branch has no worktree, and a record outside a git work tree are written as today."
+expected_output = "created: tests/functional/test_main_scope.py states that fgraph add task for a started Story with its worktree branch, run in the checkout of main, exits 2 and names the worktree of the Story"
+created = 2026-11-21 11:12:28+00:00

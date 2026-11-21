@@ -55,7 +55,7 @@ from flowgraph.work_item.model import (
     still_open,
     work_item_id_text,
 )
-from flowgraph.work_item.tasks import completed_task, started_task
+from flowgraph.work_item.tasks import blocked_task, completed_task, started_task
 
 __all__ = [
     "Amendment",
@@ -84,6 +84,7 @@ __all__ = [
     "amend_work_item",
     "amended_work_item",
     "append_task",
+    "blocked_task",
     "commit_sha",
     "complete_task",
     "complete_work_item",

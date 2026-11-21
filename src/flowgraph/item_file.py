@@ -10,11 +10,13 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from flowgraph.criterion import Scenario, make_commit, make_scenario
 from flowgraph.task import (
+    BlockedTask,
     CompletedTask,
     StartedTask,
     Task,
     TaskRow,
     TaskState,
+    blocked,
     completed,
     make_task,
     parse_task_id,
@@ -61,6 +63,23 @@ class StartedTaskFile(BaseModel):
     started: datetime
 
 
+class BlockedTaskFile(BaseModel):
+    """One table of the tasks of a started work item file: a blocked Task, with its block."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    state: Literal["blocked"]
+    title: str
+    description: str = ""
+    expected_output: str
+    created: datetime
+    started: datetime
+    since: datetime
+    reason: str
+    waiting_on: str
+
+
 class CompletedTaskFile(BaseModel):
     """One table of the tasks of a work item file: a completed Task, with its commit."""
 
@@ -78,11 +97,13 @@ class CompletedTaskFile(BaseModel):
 
 
 # One table of the tasks of a work item file past Backlog, told apart by its state line.
-HeldTask = Annotated[TaskFile | StartedTaskFile | CompletedTaskFile, Field(discriminator="state")]
+HeldTask = Annotated[
+    TaskFile | StartedTaskFile | BlockedTaskFile | CompletedTaskFile, Field(discriminator="state")
+]
 
 
 # A Task table of a work item file, in any state.
-AnyTaskFile = TaskFile | StartedTaskFile | CompletedTaskFile
+AnyTaskFile = TaskFile | StartedTaskFile | BlockedTaskFile | CompletedTaskFile
 
 
 def criterion_primitives(scenario: Scenario) -> dict[str, object]:
@@ -103,6 +124,13 @@ def task_primitives(task: TaskState) -> dict[str, object]:
             moves: dict[str, object] = {}
         case StartedTask():
             moves = {"started": task.started}
+        case BlockedTask():
+            moves = {
+                "started": task.started,
+                "since": task.since,
+                "reason": task.reason,
+                "waiting_on": task.waiting_on,
+            }
         case CompletedTask():
             moves = {
                 "started": task.started,
@@ -137,6 +165,9 @@ def task_held(held: AnyTaskFile) -> TaskState:
             return task
         case StartedTaskFile():
             return started(task, held.started)
+        case BlockedTaskFile():
+            begun = started(task, held.started)
+            return blocked(begun, held.reason, held.waiting_on, held.since)
         case CompletedTaskFile():
             return completed(started(task, held.started), held.completed, make_commit(held.commit))
         case _ as unreachable:
@@ -144,9 +175,22 @@ def task_held(held: AnyTaskFile) -> TaskState:
 
 
 def task_row(held: AnyTaskFile) -> TaskRow:
-    """The Task a validated table holds, as the row a view reads, a commit once completed."""
-    commit = held.commit if isinstance(held, CompletedTaskFile) else ""
-    return TaskRow(held.id, held.title, held.expected_output, held.description, held.state, commit)
+    """The Task a validated table holds, as the row a view reads.
+
+    A commit once completed; its reason and what it waits on while blocked.
+    """
+    row = TaskRow(held.id, held.title, held.expected_output, held.description, held.state)
+    match held:
+        case TaskFile() | StartedTaskFile():
+            return row
+        case BlockedTaskFile():
+            row.reason, row.waiting_on = held.reason, held.waiting_on
+            return row
+        case CompletedTaskFile():
+            row.commit = held.commit
+            return row
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 def write_checked(

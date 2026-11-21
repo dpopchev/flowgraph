@@ -10,6 +10,7 @@ from flowgraph.task import (
     ItemInBacklogError,
     NotStartedError,
     TaskId,
+    blocked_among,
     completed_among,
     started_among,
     task_id_text,
@@ -40,6 +41,29 @@ def started_task(item: WorkItemState, task_id: TaskId, on: datetime) -> StartedW
             )
         case StartedWorkItem():
             return replace(item, tasks=started_among(item.tasks, task_id, on))
+        case CompletedWorkItem():
+            raise CompletedAlreadyError(f"{task} is completed already")
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def blocked_task(
+    item: WorkItemState, task_id: TaskId, reason: str, waiting_on: str, on: datetime
+) -> StartedWorkItem:
+    """The started work item with its started Task of that id blocked on that time.
+
+    Raises TaskNotFoundError when the item holds no such Task, NotStartedError when the Task is
+    in Backlog, BlockedError when it is blocked already, CompletedAlreadyError when it is
+    completed and EmptyPartError when the reason or what it waits on is blank.
+    """
+    task_of(item.tasks, task_id)
+    task = task_id_text(task_id)
+    match item:
+        case WorkItem():
+            raise NotStartedError(f"{task} is in Backlog: start it first")
+        case StartedWorkItem():
+            tasks = blocked_among(item.tasks, task_id, reason, waiting_on, on)
+            return replace(item, tasks=tasks)
         case CompletedWorkItem():
             raise CompletedAlreadyError(f"{task} is completed already")
         case _ as unreachable:

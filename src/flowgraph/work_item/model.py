@@ -12,6 +12,7 @@ from typing import assert_never
 
 from flowgraph.criterion import Commit, Scenario, make_scenario, said
 from flowgraph.task import (
+    BlockedTask,
     CompletedAlreadyError,
     CompletedTask,
     NoTaskError,
@@ -333,6 +334,8 @@ def state_name(item: WorkItemState | TaskState) -> str:
             return "backlog"
         case StartedWorkItem() | StartedTask():
             return "started"
+        case BlockedTask():
+            return "blocked"
         case CompletedWorkItem() | CompletedTask():
             return "completed"
         case _ as unreachable:
@@ -344,7 +347,7 @@ def commit_sha(item: WorkItemState | TaskState) -> str:
     match item:
         case CompletedWorkItem() | CompletedTask():
             return item.commit.sha
-        case WorkItem() | Task() | StartedWorkItem() | StartedTask():
+        case WorkItem() | Task() | StartedWorkItem() | StartedTask() | BlockedTask():
             return ""
         case _ as unreachable:
             assert_never(unreachable)

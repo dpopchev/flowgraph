@@ -7,11 +7,10 @@ from flowgraph.record import Now
 from flowgraph.task import (
     TaskId,
     TaskNotFoundError,
-    TaskRow,
     make_task,
     next_task_id,
     parse_task_id,
-    task_id_text,
+    row_of,
 )
 from flowgraph.work_item.model import (
     Amendment,
@@ -63,17 +62,7 @@ def work_item_detail(item: WorkItemState) -> WorkItemDetail:
         given=item.scenario.given,
         when=item.scenario.when,
         then=item.scenario.then,
-        tasks=[
-            TaskRow(
-                task_id_text(task.id),
-                task.title,
-                task.expected_output,
-                task.description,
-                state_name(task),
-                commit_sha(task),
-            )
-            for task in item.tasks
-        ],
+        tasks=[row_of(task) for task in item.tasks],
         commit=commit_sha(item),
     )
 

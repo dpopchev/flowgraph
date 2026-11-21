@@ -163,9 +163,17 @@ def _files_of(record: Path, kind: Kind) -> list[_HeldItemFile]:
     return [_read_file(path, kind) for path in (record / ITEMS).glob(f"{kind.prefix}-*.toml")]
 
 
+def work_item_path(record: Path, item_id: WorkItemId) -> Path:
+    """The path of the file of the work item of that id in the record, whether or not it exists.
+
+    The one place that says where a work item is kept: named by its id, under `items/`.
+    """
+    return record / ITEMS / f"{work_item_id_text(item_id)}.toml"
+
+
 def _held_path(record: Path, item_id: WorkItemId) -> Path:
     """The file of the work item of that id; raises WorkItemNotFoundError without one."""
-    path = record / ITEMS / f"{work_item_id_text(item_id)}.toml"
+    path = work_item_path(record, item_id)
     if not path.is_file():
         raise WorkItemNotFoundError(item_id)
     return path
@@ -316,7 +324,7 @@ def write_work_item(record: Path, item: WorkItemState) -> None:
     it was before.
     """
     kind = item.id.kind
-    path = record / ITEMS / f"{work_item_id_text(item.id)}.toml"
+    path = work_item_path(record, item.id)
     write_checked(
         path,
         _item_primitives(item),

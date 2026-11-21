@@ -12,8 +12,11 @@ then = "it still passes"
 
 [[tasks]]
 id = "T-0101"
-state = "backlog"
+state = "completed"
 title = "Move the path of a work item file to one function of src/flowgraph/work_item/file.py, used by src/flowgraph/store.py"
 description = "The three places of the description stand today as: work_item_file of src/flowgraph/store.py, moved there from src/flowgraph/item.py by ST-0011, and _held_path and write_work_item of src/flowgraph/work_item/file.py. The function is pure, so src/flowgraph/work_item/__init__.py exports it. The path of a Feature file, feature_file of src/flowgraph/feature.py, is another rule and stays. Check: the count of lines in src/flowgraph/store.py and src/flowgraph/work_item/ that build the path, 3 today, is 1."
 expected_output = "changed: src/flowgraph/work_item/file.py holds work_item_path, the one place in src/flowgraph that builds the path of a work item file; the read and the write of that module and the journal of src/flowgraph/store.py use it, and work_item_file of src/flowgraph/store.py is gone; its test is in tests/work_item/ and make check still passes"
 created = 2026-11-21 12:17:32+00:00
+started = 2026-11-21 12:17:42+00:00
+completed = 2026-11-21 12:18:37+00:00
+commit = "6f65ba4"

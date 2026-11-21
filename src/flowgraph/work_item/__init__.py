@@ -27,6 +27,7 @@ from flowgraph.work_item.file import (
     read_work_item,
     read_work_item_detail,
     read_work_item_rows,
+    work_item_path,
     write_work_item,
 )
 from flowgraph.work_item.model import (
@@ -130,6 +131,7 @@ __all__ = [
     "unblocked_task",
     "work_item_detail",
     "work_item_id_text",
+    "work_item_path",
     "work_item_row",
     "write_work_item",
 ]

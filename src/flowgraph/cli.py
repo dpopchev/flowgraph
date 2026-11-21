@@ -48,7 +48,7 @@ from flowgraph.item import (
 )
 from flowgraph.land import LandError, land_item
 from flowgraph.parent import FeatureIdError
-from flowgraph.parser import build_parser
+from flowgraph.parser import build_command_line, help_asked
 from flowgraph.queue import NotInBacklogError, SameItemError
 from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, Now, locate
 from flowgraph.scope import (
@@ -220,14 +220,17 @@ def run(
 ) -> int:
     """Read the arguments, locate the record in cwd, run the command and return the exit status.
 
-    The help option needs no record; every other call fails with 2 when there is none. A write
-    finds the git work tree of the record through open_git and is committed there.
+    The help option needs no record, after a command as alone: it prints the help of the command
+    the arguments name. Every other call fails with 2 when there is no record. A write finds the
+    git work tree of the record through open_git and is committed there.
     """
-    parser = build_parser()
-    args = parser.parse_args(argv)
-    if args.help:
-        write(parser.format_help())
+    command_line = build_command_line()
+    parser = command_line.parser
+    asked = help_asked(argv, command_line)
+    if asked is not None:
+        write(asked)
         return 0
+    args = parser.parse_args(argv)
     match locate(cwd, args.dir, is_dir):
         case Found(path) | Given(path):
             store = within(

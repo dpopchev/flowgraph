@@ -13,10 +13,7 @@ import pytest
 
 from flowgraph.cli import run
 
-pytestmark = [
-    pytest.mark.functional,
-    pytest.mark.xfail(strict=True, reason="ST-0022: a command prints no help of its own yet"),
-]
+pytestmark = pytest.mark.functional
 
 COMMANDS = [
     ("add",),
@@ -120,7 +117,8 @@ def test_the_help_of_a_command_is_printed_wherever_the_option_stands(argv: list[
 
 def test_the_help_of_add_lists_the_kinds() -> None:
     listed = fgraph(["add", "--help"]).out.splitlines()
-    assert [line.split()[0] for line in listed if line.startswith("    ")] == [
+    kinds = [line for line in listed if line.startswith("    ") and line[4] != " "]
+    assert [line.split()[0] for line in kinds] == [
         "story",
         "task",
         "upkeep",

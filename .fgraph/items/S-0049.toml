@@ -1,9 +1,11 @@
 id = "S-0049"
-state = "started"
+state = "completed"
 title = "Cut the letters of the prefix of a Story id from two to one, ST to S"
 description = "The developer asked on 2026-11-21 what the options are for every id to have a prefix of one letter. Today Feature is F, Bug is B, Upkeep is U and Task is T; Story is ST and Spike is SP, since both start with S. The options shown: Story takes S, and Spike takes Q (question), H (hypothesis), X (explore) or P or K (a letter of its name). The developer chose Q for the Spike on that day, which leaves S to the Story; the developer has not confirmed what becomes of the Stories a record already holds. Reading of the agent, the option it recommended: every ST file is renamed to S with its number kept, ST-0036 to S-0036 -- 47 files in the record of flowgraph on 2026-11-21 -- with the ids in queue.toml, the tests, README.md and docs; the commits already made keep ST in their messages, since history is not rewritten, and map to the new ids by the number. The options shown and not taken: ST kept for the Stories a record holds and S for the new ones, one kind then under two prefixes; or the Story left as ST. Its Tasks are written when it is ordered."
 created = 2026-11-21 21:06:35+00:00
 started = 2026-11-21 22:06:11+00:00
+completed = 2026-11-21 22:16:53+00:00
+commit = "3a670fa"
 
 [criterion]
 given = "a record with no items"

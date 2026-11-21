@@ -26,6 +26,7 @@ from flowgraph.item_file import (
     task_row,
     write_checked,
 )
+from flowgraph.parent import FeatureIdError, parent_text, parent_written
 from flowgraph.record import ITEMS
 from flowgraph.task import TaskInProgressError, at_most_one_started
 from flowgraph.work_item.model import (
@@ -61,6 +62,7 @@ class _ItemFile(BaseModel):
     state: Literal["backlog"]
     title: str
     description: str = ""
+    parent: str = ""
     created: datetime
     criterion: AnyCriterionFile
     tasks: list[TaskFile] = []
@@ -75,6 +77,7 @@ class _StartedItemFile(BaseModel):
     state: Literal["started"]
     title: str
     description: str = ""
+    parent: str = ""
     created: datetime
     started: datetime
     criterion: AnyCriterionFile
@@ -90,6 +93,7 @@ class _CompletedItemFile(BaseModel):
     state: Literal["completed"]
     title: str
     description: str = ""
+    parent: str = ""
     created: datetime
     started: datetime
     completed: datetime
@@ -107,6 +111,7 @@ class _RemovedItemFile(BaseModel):
     state: Literal["removed"]
     title: str
     description: str = ""
+    parent: str = ""
     created: datetime
     removed: datetime
     reason: str
@@ -178,6 +183,7 @@ def read_work_item_rows(record: Path, kind: Kind) -> list[WorkItemRow]:
             held.state,
             _commit_held(held),
             _reason_held(held),
+            held.parent,
             created=held.created,
         )
         for held in _files_of(record, kind)
@@ -196,7 +202,7 @@ def read_work_item(record: Path, item_id: WorkItemId) -> WorkItemState:
     held = _read_file(path, item_id.kind)
     try:
         return _item_held(held, item_id.kind)
-    except (TaskInProgressError, CriterionError, DecisionError) as error:
+    except (TaskInProgressError, CriterionError, DecisionError, FeatureIdError) as error:
         raise WorkItemFileError(f"{path} holds no {item_id.kind.noun}: {error}") from error
 
 
@@ -215,6 +221,7 @@ def read_work_item_detail(record: Path, item_id: WorkItemId) -> WorkItemDetail:
         tasks=[task_row(task) for task in held.tasks],
         commit=_commit_held(held),
         reason=_reason_held(held),
+        parent=held.parent,
         **held.criterion.model_dump(),
     )
 
@@ -243,14 +250,20 @@ def _moves_primitives(item: WorkItemState) -> dict[str, object]:
 
 
 def _item_primitives(item: WorkItemState) -> dict[str, object]:
-    """The work item as the primitives its file holds; a description and tasks only when any."""
+    """The work item as the primitives its file holds.
+
+    A description, a parent and tasks are held only when there is one: a work item that stands
+    alone is written without a parent.
+    """
     described = {"description": item.description} if item.description else {}
+    under = {"parent": parent_text(item.parent)} if parent_text(item.parent) else {}
     tasks = {"tasks": [task_primitives(task) for task in item.tasks]} if item.tasks else {}
     return {
         "id": work_item_id_text(item.id),
         "state": state_name(item),
         "title": item.title,
         **described,
+        **under,
         "created": item.created,
         **_moves_primitives(item),
         "criterion": criterion_primitives(item.criterion),
@@ -271,7 +284,8 @@ def _item_held(held: _HeldItemFile, kind: Kind) -> WorkItemState:
     if decision is not None and not isinstance(held, _CompletedItemFile):
         raise CriterionError(f"{kind.article} {kind.noun} holds its decision once it is completed")
     item_id = parse_work_item_id(kind, held.id)
-    item = make_work_item(item_id, held.title, criterion, held.description, held.created)
+    parent = parent_written(held.parent)
+    item = make_work_item(item_id, held.title, criterion, held.description, held.created, parent)
     for task in held.tasks:
         item = append_task(item, backlog_task(task))
     match held:

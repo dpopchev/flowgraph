@@ -527,12 +527,17 @@ Needs `uv`, `make` and Python 3.14 (`.python-version`).
 
 ```sh
 make sync       # create or refresh .venv from uv.lock
-make check      # lint, typecheck and test
+make check      # lint, the line limit, typecheck and test
 uv run fgraph   # run the command
 make wheel      # build the wheel into build/dist/
 ```
 
 `make help` lists every target.
+
+`make check` holds every module under `src/` to 400 lines: `make lines`, one
+of its checks, names each module above the limit with its lines and fails.
+The number is written once, `MAX_LINES` in `mk/python.mk`; the tests are not
+counted.
 
 | Path             | Holds                                                        |
 | ---------------- | ------------------------------------------------------------ |

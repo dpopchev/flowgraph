@@ -34,7 +34,8 @@ commit = "df78374"
 
 [[tasks]]
 id = "T-0122"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say fgraph status lists Completed the last completed first"
 expected_output = "changed: README.md says fgraph status lists Completed the last completed first; docs/domain-model.md says the same where it states the order of the buckets and names the developer's decision of 2026-11-21"
 created = 2026-11-21 17:01:26+00:00
+started = 2026-11-21 17:06:53+00:00

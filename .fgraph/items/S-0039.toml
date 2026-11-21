@@ -9,3 +9,11 @@ created = 2026-11-21 20:32:52+00:00
 given = "a git repository whose record holds no config.toml, and a Story with a Task"
 when = "fgraph start of the Story is run"
 then = "the Story is started in a commit on main, and git lists no branch wi/* and no new worktree"
+
+[[tasks]]
+id = "T-0159"
+state = "backlog"
+title = "Add tests/functional/test_development_off.py, failing on the criterion of S-0039"
+description = "decided: S-0039: the start alone is held to main, as today -- no other write of a tracked record is. Built as tests/functional/test_start_branch.py builds its repository. Seen red, then marked a strict xfail naming S-0039 until the Task that turns it green removes the mark."
+expected_output = "created: tests/functional/test_development_off.py states that fgraph start of a Story with a Task, in a git repository whose record holds no config.toml, starts it in a commit on main, that git lists no branch wi/* and no new worktree, and that nothing is written to the error output"
+created = 2026-11-21 22:17:55+00:00

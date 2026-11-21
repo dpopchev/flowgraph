@@ -56,8 +56,10 @@ commit = "146270b"
 
 [[tasks]]
 id = "T-0097"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph keeps a Feature above its work items"
 expected_output = "changed: README.md shows fgraph add feature, --parent and fgraph show on a Feature; docs/domain-model.md says how a Feature and the parent of a work item are kept, how the bucket of a Feature is derived, and closes the open question on the state of a Feature with the developer's decision"
 created = 2026-11-21 12:04:37+00:00
 started = 2026-11-21 12:11:37+00:00
+completed = 2026-11-21 12:12:22+00:00
+commit = "6782040"

@@ -51,6 +51,7 @@ from flowgraph.task import (
     OpenTaskError,
     StartedAlreadyError,
     TaskIdError,
+    TaskInProgressError,
     TaskNotFoundError,
 )
 from flowgraph.work_item import (
@@ -88,6 +89,7 @@ REFUSED = (
     StartedAlreadyError,
     BlockedError,
     NotBlockedError,
+    TaskInProgressError,
     ItemInBacklogError,
     OpenTaskError,
     CompletedAlreadyError,

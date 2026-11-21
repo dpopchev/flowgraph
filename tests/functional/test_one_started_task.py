@@ -14,9 +14,6 @@ from flowgraph.cli import open_files, run
 
 pytestmark = pytest.mark.functional
 
-# What a second start is refused for once ST-0013 lands; what still starts has no mark.
-NOT_YET = pytest.mark.xfail(strict=True, reason="ST-0013: a work item starts any number of Tasks")
-
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "a title", *CRITERION]
@@ -59,7 +56,6 @@ def runs(cwd: Path, *argvs: Sequence[str]) -> Outcome:
     return outcomes[-1]
 
 
-@NOT_YET
 class TestASecondTaskStartedBesideAStartedOne:
     @pytest.fixture
     def refused(self, tmp_path: Path) -> Outcome:
@@ -78,7 +74,6 @@ class TestASecondTaskStartedBesideAStartedOne:
         ]
 
 
-@NOT_YET
 def test_a_task_unblocked_beside_a_started_one_is_refused_naming_it(tmp_path: Path) -> None:
     outcome = runs(tmp_path, *ONE_STARTED, BLOCK, ["start", "T-0002"], ["unblock", "T-0001"])
     second = "T-0002 is started -- complete or block it first"

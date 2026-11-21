@@ -40,3 +40,10 @@ title = "Add the Feature commands to src/flowgraph/feature_item.py, src/flowgrap
 description = "The store of a record gains the reads and writes of a Feature, journaled as the others; a store built without them holds no Feature. The branch of a work item does not write a Feature. Removes the xfail mark of tests/functional/test_feature.py."
 expected_output = "changed: fgraph add feature TITLE --criterion TEXT adds F-0001 and is committed as every write; fgraph add story, upkeep, bug and spike take --parent ID; fgraph show F-0001 lists the criteria of the Feature and its work items with their buckets, under its derived bucket; fgraph show on a work item names its parent; each refusal exits 2 naming why"
 created = 2026-11-21 12:04:37+00:00
+
+[[tasks]]
+id = "T-0097"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say fgraph keeps a Feature above its work items"
+expected_output = "changed: README.md shows fgraph add feature, --parent and fgraph show on a Feature; docs/domain-model.md says how a Feature and the parent of a work item are kept, how the bucket of a Feature is derived, and closes the open question on the state of a Feature with the developer's decision"
+created = 2026-11-21 12:04:37+00:00

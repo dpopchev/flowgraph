@@ -24,3 +24,11 @@ title = "Add ignores to src/flowgraph/branch.py and to the git work tree of src/
 description = "The adapter runs git check-ignore --quiet --no-index, whose exit is 0 for an ignored path and 1 for one that is not; any other exit is the GitError. The step has a default so the tests that build a WorkTree by hand stay as they are."
 expected_output = "changed: ignores of src/flowgraph/branch.py is true when a rule git reads names the path, tracked or not, and raises GitError when git cannot tell; the WorkTree of src/flowgraph/commit.py carries it as a step bound by open_git, a work tree built without it ignoring nothing; proved in tests/branch/ against the real git"
 created = 2026-11-21 14:19:18+00:00
+
+[[tasks]]
+id = "T-0107"
+state = "backlog"
+title = "Add the write of a record git ignores to src/flowgraph/commit.py, src/flowgraph/scope.py, src/flowgraph/worktrees.py and src/flowgraph/land.py"
+description = "Removes the xfail mark of tests/functional/test_ignored_record.py, which gains the start of a work item and the landing on an ignored record."
+expected_output = "changed: commit_written of src/flowgraph/commit.py commits nothing for a record git ignores and warns of a start that no branch was made, naming that git ignores the record; kept_in of src/flowgraph/commit.py is the work tree that keeps a record, none outside one and none for an ignored record, and src/flowgraph/scope.py and src/flowgraph/worktrees.py ask it; land_item of src/flowgraph/land.py refuses an ignored record by name; proved in tests/commit/, tests/scope/, tests/worktrees/ and tests/land/"
+created = 2026-11-21 14:19:18+00:00

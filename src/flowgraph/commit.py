@@ -20,13 +20,27 @@ class WorkTree:
     """The git work tree a record is inside: its top and its steps, each bound to it.
 
     `commit_files` commits the files, relative to the top, alone with a message and returns the
-    sha; `add_worktree` checks out a new branch at a commit in a new worktree at a path. Each
-    raises GitError when git refuses it.
+    sha; `add_worktree` checks out a new branch at a commit in a new worktree at a path.
+
+    The steps of a landing: `current_branch` names the branch the work tree is on, empty on
+    none; `find_branches` lists the branches matching a pattern; `merge` merges a branch as a
+    merge of its own, held uncommitted, and merges nothing when git refuses; `abort_merge` drops
+    a merge held; `commit_merge` commits it under a message and returns its short sha;
+    `find_worktree` is the worktree of a branch, or None; `remove_worktree` and `delete_branch`
+    remove them. Each step raises GitError when git refuses it.
     """
 
     path: Path
     commit_files: Callable[[Sequence[Path], str], str]
     add_worktree: Callable[[str, Path, str], None]
+    current_branch: Callable[[], str]
+    find_branches: Callable[[str], list[str]]
+    merge: Callable[[str], None]
+    abort_merge: Callable[[], None]
+    commit_merge: Callable[[str], str]
+    find_worktree: Callable[[str], Path | None]
+    remove_worktree: Callable[[Path], None]
+    delete_branch: Callable[[str], None]
 
 
 # The git work tree the directory is inside, or None when it is inside none.
@@ -46,7 +60,19 @@ def open_git(directory: Path) -> WorkTree | None:
     top = branch.work_tree_of(directory)
     if top is None:
         return None
-    return WorkTree(top, partial(branch.commit_files, top), partial(branch.add_worktree, top))
+    return WorkTree(
+        path=top,
+        commit_files=partial(branch.commit_files, top),
+        add_worktree=partial(branch.add_worktree, top),
+        current_branch=partial(branch.current_branch, top),
+        find_branches=partial(branch.branches_like, top),
+        merge=partial(branch.merge_uncommitted, top),
+        abort_merge=partial(branch.abort_merge, top),
+        commit_merge=partial(branch.commit_merge, top),
+        find_worktree=partial(branch.worktree_of_branch, top),
+        remove_worktree=partial(branch.remove_worktree, top),
+        delete_branch=partial(branch.delete_branch, top),
+    )
 
 
 def commit_written(written: Written, store: Store, record: Path, open_git: OpenGit) -> Said:

@@ -1,6 +1,6 @@
 """The commit of a write: the files the write changed, committed under its message, with fakes."""
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Never
 
@@ -51,6 +51,26 @@ def store(files: Sequence[Path], restored: list[str] | None = None) -> Store:
     )
 
 
+def tree(
+    commit_files: Callable[[Sequence[Path], str], str],
+    add_worktree: Callable[[str, Path, str], None],
+) -> WorkTree:
+    """A work tree at TOP with those two steps; the commit of a write asks for no other."""
+    return WorkTree(
+        path=TOP,
+        commit_files=commit_files,
+        add_worktree=add_worktree,
+        current_branch=never,
+        find_branches=never,
+        merge=never,
+        abort_merge=never,
+        commit_merge=never,
+        find_worktree=never,
+        remove_worktree=never,
+        delete_branch=never,
+    )
+
+
 def work_tree(steps: list[object], sha: str = "3e9ae5c0000") -> WorkTree:
     """A work tree at TOP that notes each step it is asked for and commits at that sha."""
 
@@ -61,7 +81,7 @@ def work_tree(steps: list[object], sha: str = "3e9ae5c0000") -> WorkTree:
     def add_worktree(branch: str, path: Path, commit: str) -> None:
         steps.append((branch, path, commit))
 
-    return WorkTree(TOP, commit_files, add_worktree)
+    return tree(commit_files, add_worktree)
 
 
 def test_a_write_outside_a_work_tree_says_its_line_without_a_warning() -> None:
@@ -94,7 +114,7 @@ def test_a_write_that_changed_no_file_makes_no_commit() -> None:
 
 def test_a_commit_refused_puts_the_files_back() -> None:
     restored: list[str] = []
-    refusing = WorkTree(TOP, refuse, never)
+    refusing = tree(refuse, never)
     with pytest.raises(GitError):
         commit_written(ADDED, store([FILE], restored), RECORD, lambda _: refusing)
     assert restored == ["restored"]
@@ -114,7 +134,7 @@ def test_a_start_of_a_work_item_names_its_branch_and_its_worktree() -> None:
 
 
 def test_a_worktree_refused_says_the_start_stays_committed() -> None:
-    committing = WorkTree(TOP, lambda *_: "3e9ae5c0000", refuse)
+    committing = tree(lambda *_: "3e9ae5c0000", refuse)
     with pytest.raises(
         GitError,
         match=r"^git commit failed: refused -- ST-0001 is started at 3e9ae5c, its branch is not$",
@@ -124,7 +144,7 @@ def test_a_worktree_refused_says_the_start_stays_committed() -> None:
 
 def test_a_worktree_refused_leaves_the_files_as_committed() -> None:
     restored: list[str] = []
-    committing = WorkTree(TOP, lambda *_: "3e9ae5c0000", refuse)
+    committing = tree(lambda *_: "3e9ae5c0000", refuse)
     with pytest.raises(GitError):
         commit_written(STARTED, store([FILE], restored), RECORD, lambda _: committing)
     assert restored == []

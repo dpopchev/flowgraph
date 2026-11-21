@@ -22,18 +22,21 @@ commit = "cbafdbc"
 
 [[tasks]]
 id = "T-0036"
-state = "started"
+state = "completed"
 title = "Create src/flowgraph/queue.py holding the Backlog queue, its order over the Backlog items and the move of one id before another"
 expected_output = "created: src/flowgraph/queue.py with its tests in tests/queue/, the placed ids first in their order and the rest in the order added"
 created = 2026-11-21 08:13:26+00:00
 started = 2026-11-21 08:15:35+00:00
+completed = 2026-11-21 08:16:29+00:00
+commit = "cdcbf03"
 
 [[tasks]]
 id = "T-0037"
-state = "backlog"
+state = "started"
 title = "Add the queue file and the reorder command to src/flowgraph/queue.py"
 expected_output = "changed: src/flowgraph/queue.py reads and writes .fgraph/queue.toml and holds the command that loads the queue whole, moves one id before another and saves it whole"
 created = 2026-11-21 08:13:26+00:00
+started = 2026-11-21 08:16:30+00:00
 
 [[tasks]]
 id = "T-0038"

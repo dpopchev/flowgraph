@@ -1,7 +1,7 @@
 """A Task: one deliverable of a work item, with its expected output, its moves and its commit."""
 
 import re
-from collections.abc import Collection
+from collections.abc import Collection, Iterable
 from dataclasses import dataclass
 from datetime import datetime
 from typing import assert_never
@@ -93,6 +93,10 @@ class NotStartedError(ValueError):
     """A Story or a Task completed while it is still in Backlog."""
 
 
+class OpenTaskError(ValueError):
+    """A work item completed while some of its Tasks are not."""
+
+
 def make_task_id(number: int) -> TaskId:
     """The id of the Task with that number in the record.
 
@@ -181,3 +185,48 @@ def completed(task: TaskState, on: datetime, commit: Commit) -> CompletedTask:
             raise CompletedAlreadyError(f"{task_id_text(task.id)} is completed already")
         case _ as unreachable:
             assert_never(unreachable)
+
+
+def task_of(tasks: Iterable[TaskState], task_id: TaskId) -> TaskState:
+    """The Task of that id among the Tasks; raises TaskNotFoundError when none has it."""
+    held = [task for task in tasks if task.id == task_id]
+    if not held:
+        raise TaskNotFoundError(task_id)
+    return held[0]
+
+
+def started_among(
+    tasks: tuple[TaskState, ...], task_id: TaskId, on: datetime
+) -> tuple[TaskState, ...]:
+    """The Tasks with the one of that id started on that time, the rest as they are.
+
+    Raises TaskNotFoundError when none has the id, StartedAlreadyError when it is started and
+    CompletedAlreadyError when it is completed.
+    """
+    task_of(tasks, task_id)
+    return tuple(started(task, on) if task.id == task_id else task for task in tasks)
+
+
+def completed_among(
+    tasks: tuple[TaskState, ...], task_id: TaskId, on: datetime, commit: Commit
+) -> tuple[TaskState, ...]:
+    """The Tasks with the one of that id completed in that commit, the rest as they are.
+
+    Raises TaskNotFoundError when none has the id, NotStartedError when it is in Backlog and
+    CompletedAlreadyError when it is completed.
+    """
+    task_of(tasks, task_id)
+    return tuple(completed(task, on, commit) if task.id == task_id else task for task in tasks)
+
+
+def all_completed(tasks: Iterable[TaskState], holder: str) -> tuple[CompletedTask, ...]:
+    """The Tasks, every one of them completed.
+
+    Raises OpenTaskError naming the holder and the Tasks not completed.
+    """
+    listed = list(tasks)
+    done = tuple(task for task in listed if isinstance(task, CompletedTask))
+    left = [task_id_text(task.id) for task in listed if not isinstance(task, CompletedTask)]
+    if left:
+        raise OpenTaskError(f"{holder} has Tasks to complete first: {', '.join(left)}")
+    return done

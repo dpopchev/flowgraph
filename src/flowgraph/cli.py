@@ -21,7 +21,6 @@ from flowgraph.story import (
     ItemIdError,
     LoadStory,
     NoTaskError,
-    OpenTaskError,
     SaveStory,
     StoryDetail,
     StoryId,
@@ -41,6 +40,7 @@ from flowgraph.story import (
 from flowgraph.task import (
     CompletedAlreadyError,
     NotStartedError,
+    OpenTaskError,
     StartedAlreadyError,
     TaskId,
     TaskNotFoundError,

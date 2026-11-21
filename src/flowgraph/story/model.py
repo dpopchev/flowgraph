@@ -16,13 +16,14 @@ from flowgraph.task import (
     Task,
     TaskId,
     TaskIdError,
-    TaskNotFoundError,
     TaskRow,
     TaskState,
-    completed,
+    all_completed,
+    completed_among,
     parse_task_id,
-    started,
+    started_among,
     task_id_text,
+    task_of,
 )
 
 
@@ -150,10 +151,6 @@ class StoryInBacklogError(ValueError):
     """A Task started while its Story is still in Backlog."""
 
 
-class OpenTaskError(ValueError):
-    """A Story completed while some of its Tasks are not."""
-
-
 def make_story_id(number: int) -> StoryId:
     """The id of the Story with that number in the record.
 
@@ -227,14 +224,6 @@ def still_open(story: StoryState) -> OpenStory:
             assert_never(unreachable)
 
 
-def _task_of(story: StoryState, task_id: TaskId) -> TaskState:
-    """The Task of that id in the Story; raises TaskNotFoundError when it holds none."""
-    held = [task for task in story.tasks if task.id == task_id]
-    if not held:
-        raise TaskNotFoundError(task_id)
-    return held[0]
-
-
 def started_story(story: StoryState, on: datetime) -> StartedStory:
     """The Story started on that time, kept to the second, its Tasks still in Backlog.
 
@@ -270,7 +259,7 @@ def started_task(story: StoryState, task_id: TaskId, on: datetime) -> StartedSto
     Story is in Backlog, StartedAlreadyError when the Task is started and CompletedAlreadyError
     when it is completed.
     """
-    _task_of(story, task_id)
+    task_of(story.tasks, task_id)
     task = task_id_text(task_id)
     match story:
         case Story():
@@ -278,8 +267,7 @@ def started_task(story: StoryState, task_id: TaskId, on: datetime) -> StartedSto
                 f"{task} cannot start: {story_id_text(story.id)} is in Backlog"
             )
         case StartedStory():
-            tasks = tuple(started(t, on) if t.id == task_id else t for t in story.tasks)
-            return replace(story, tasks=tasks)
+            return replace(story, tasks=started_among(story.tasks, task_id, on))
         case CompletedStory():
             raise CompletedAlreadyError(f"{task} is completed already")
         case _ as unreachable:
@@ -294,14 +282,13 @@ def completed_task(
     Raises TaskNotFoundError when the Story holds no such Task, NotStartedError when the Task is
     in Backlog and CompletedAlreadyError when it is completed.
     """
-    _task_of(story, task_id)
+    task_of(story.tasks, task_id)
     task = task_id_text(task_id)
     match story:
         case Story():
             raise NotStartedError(f"{task} is in Backlog: start it first")
         case StartedStory():
-            done = tuple(completed(t, on, commit) if t.id == task_id else t for t in story.tasks)
-            return replace(story, tasks=done)
+            return replace(story, tasks=completed_among(story.tasks, task_id, on, commit))
         case CompletedStory():
             raise CompletedAlreadyError(f"{task} is completed already")
         case _ as unreachable:
@@ -318,11 +305,7 @@ def completed_story(story: StoryState, on: datetime, commit: Commit) -> Complete
         case Story():
             raise NotStartedError(f"{story_id_text(story.id)} is in Backlog: start it first")
         case StartedStory():
-            done = tuple(task for task in story.tasks if isinstance(task, CompletedTask))
-            left = [task_id_text(t.id) for t in story.tasks if not isinstance(t, CompletedTask)]
-            if left:
-                held = story_id_text(story.id)
-                raise OpenTaskError(f"{held} has Tasks to complete first: {', '.join(left)}")
+            done = all_completed(story.tasks, story_id_text(story.id))
             return CompletedStory(
                 story.id,
                 story.title,

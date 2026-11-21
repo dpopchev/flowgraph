@@ -12,12 +12,14 @@ then = "it lists the Task with its bucket Completed and its commit"
 
 [[tasks]]
 id = "T-0145"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_show_worktree.py, failing on the criterion of ST-0037"
 description = "Built as tests/functional/test_status_worktree.py builds its repository and its worktree. Seen red, then marked a strict xfail naming ST-0037 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_show_worktree.py states that fgraph show of a Story started, with a Task of it completed in its worktree, run in the checkout of main, lists that Task with its bucket Completed and its commit"
 created = 2026-11-21 21:35:26+00:00
 started = 2026-11-21 21:36:26+00:00
+completed = 2026-11-21 21:37:39+00:00
+commit = "95fa7a0"
 
 [[tasks]]
 id = "T-0146"

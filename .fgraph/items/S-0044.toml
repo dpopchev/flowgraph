@@ -13,23 +13,32 @@ then = "it exits 2 naming the started Story"
 
 [[tasks]]
 id = "T-0170"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_parallel.py, failing on the criterion of S-0044"
 description = "decided: S-0044: [development] parallel has no default -- left out, nothing limits the started work items, as today; it is a key of the development, so it limits nothing with the development off. Built as tests/functional/test_start_branch.py builds its repository. Seen red, then marked a strict xfail naming S-0044 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_parallel.py states that, in a repository whose record turns the development on with [development] parallel = 1 and holds a started Story, fgraph start of a second Story exits 2 naming the started Story, writes nothing and makes no branch"
 created = 2026-11-21 22:40:22+00:00
+started = 2026-11-21 23:11:12+00:00
+completed = 2026-11-21 23:13:02+00:00
+commit = "600376c"
 
 [[tasks]]
 id = "T-0171"
-state = "backlog"
+state = "completed"
 title = "Add development.parallel to the Config of src/flowgraph/config.py and refuse the start of a work item beyond it"
 description = "Removes the xfail mark of tests/functional/test_parallel.py. The started work items are those of every kind, read as fgraph status reads them."
 expected_output = "changed: the Config of src/flowgraph/config.py holds development.parallel, a whole number of 1 or more, or none when the key is left out; with the development on and parallel set, the start of a work item is refused with exit 2 when that many work items are started already, naming each of them, with nothing written and no branch made; the start of a Task is not counted; a parallel below 1 or no whole number is refused as a config.toml naming the key; proved in tests/config/ and in the tests of the start"
 created = 2026-11-21 22:40:23+00:00
+started = 2026-11-21 23:13:02+00:00
+completed = 2026-11-21 23:17:17+00:00
+commit = "151c8a0"
 
 [[tasks]]
 id = "T-0172"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say parallel limits the work items started at once"
 expected_output = "changed: README.md and docs/domain-model.md say [development] parallel of .fgraph/config.toml is how many work items are started at once, that left out nothing limits them, that it limits nothing with the development off, and what the refusal of a start beyond it names"
 created = 2026-11-21 22:40:23+00:00
+started = 2026-11-21 23:17:17+00:00
+completed = 2026-11-21 23:18:58+00:00
+commit = "215b573"

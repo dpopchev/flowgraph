@@ -495,6 +495,20 @@ development too.
 - The start of a work item is held to `main` with the development on or off,
   and it alone, the reading decided when S-0039 was ordered: no other write of
   a record is held to `main`.
+- `[development] parallel` is how many work items are started at once, a
+  whole number of 1 or more. It has no default, decided when S-0044 was
+  ordered: left out, nothing limits the started work items. It is a key of
+  the development, so it limits nothing with the development off, where it is
+  held as written.
+- With the development on and `parallel` set, the start of a work item in
+  Backlog is refused with exit 2, nothing written and no branch made, when
+  that many work items are started already. The refusal names the key,
+  `development.parallel`, its number and each started work item. The started
+  work items are those of every kind, read as `fgraph status` reads them: a
+  started work item is the one its worktree holds.
+- The start of a Task is neither counted nor limited by `parallel`: a work
+  item has one started Task at a time whatever the key. A work item that is
+  not in Backlog is left to the start, which refuses it for its own state.
 - `[git] commit` turns the commits of the record off. It is on by default,
   the reading of S-0040, off until set shown and not taken: inside a git work
   tree that does not ignore the record `fgraph` commits every write of it, as
@@ -512,16 +526,16 @@ development too.
   writes make no commit and, with the development on, its start still
   branches.
 - A `config.toml` that holds a table or a key the configuration does not
-  have, a value of another type than its key takes, or no TOML, is refused
-  with exit 2 naming the file and the key, whatever the command. The help
-  option needs no record and reads none.
+  have, a value of another type than its key takes, a `parallel` below 1 or
+  no whole number, or no TOML, is refused with exit 2 naming the file and the
+  key, whatever the command. The help option needs no record and reads none.
 - The configuration is read at the edge into a value of the model
   (`src/flowgraph/config.py`). Reading it is an effect: `run()` takes it as a
   callable, the defaults when none is given, and `main()` reads the file.
-- Only these two keys are built. Not built yet: the merge, the gate and the
-  parallel work items of the development, and a command that reads and sets
-  the configuration. Until then the file is written by hand; the record of
-  flowgraph holds `[development] enabled = true`.
+- Only these three keys are built. Not built yet: the merge and the gate of
+  the development, and a command that reads and sets the configuration. Until
+  then the file is written by hand; the record of flowgraph holds
+  `[development] enabled = true` and no `parallel`.
 
 Who writes what with the development on, so that two branches never change
 the same file or hand out the same number. With it off no work item has a

@@ -161,6 +161,32 @@ either way, and it alone: no other write is, the reading decided when S-0039
 was ordered. No command writes the file yet; it is written by hand, and the
 record of flowgraph itself holds the key.
 
+The development limits the work items started at once when the record says
+how many:
+
+```toml
+[development]
+enabled = true
+parallel = 1
+```
+
+`parallel` is how many work items are started at once, a whole number of 1 or
+more. The started work items are those of every kind -- Story, Upkeep, Bug,
+Spike -- that `fgraph status` lists under InProgress. With as many started
+already, the start of one more exits 2 naming the key, its number and each
+started work item; nothing is written and no branch is made:
+
+```sh
+fgraph start S-0002
+# fgraph: error: S-0002 cannot start: development.parallel = 1, started already: S-0001
+```
+
+It starts once one of them is completed or landed. The key has no default:
+left out, nothing limits the started work items. It is a key of the
+development, so it limits nothing with the development off. The start of a
+Task is neither counted nor limited by it: a Story has one started Task at a
+time whatever the key, as shown further down.
+
 The commits of the record are a layer the record turns off:
 
 ```toml
@@ -197,12 +223,15 @@ fgraph status
 ```
 
 A `config.toml` fgraph refuses -- a table or a key the configuration does not
-have, a value of another type than the key takes, a text that is no TOML --
-exits 2 naming the file and the key, whatever the command:
+have, a value of another type than the key takes, a `parallel` below 1, a text
+that is no TOML -- exits 2 naming the file and the key, whatever the command:
 
 ```sh
 fgraph status
 # fgraph: error: /src/project/.fgraph/config.toml: development.enable is no key of the configuration
+
+fgraph status
+# fgraph: error: /src/project/.fgraph/config.toml: development.parallel is 0: it takes a whole number of 1 or more
 ```
 
 Start a Story once it has a Task, then start its Tasks one by one. `fgraph

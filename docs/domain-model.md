@@ -292,16 +292,31 @@ the same number:
 
 | Write | Where |
 |---|---|
-| add a work item or a Task | `main` |
+| add a work item | `main` |
+| add a Task to a work item in Backlog | `main` |
 | reorder the Backlog | `main` |
 | amend a work item in Backlog | `main` |
 | start a work item | `main`: `fgraph` commits it and makes its branch |
+| add a Task to a started work item | its branch |
 | start and complete its Tasks | its branch |
 | land the work item | `main`: `fgraph land` merges its branch and completes it |
 | complete the work item | `main`, after a merge made by hand |
 
-Until `fgraph` wraps git this is a convention; it cannot refuse an `add` made
-off `main`.
+The branch a work item owns may change and append within its scope, through
+`fgraph`: the developer's rule of 2026-11-21. `fgraph` holds the side of the
+branch:
+
+- The branch of a work item is the one named `wi/<id>-<slug>`. In a work tree
+  on it `fgraph` writes the file of that work item alone.
+- Refused there with exit 2, nothing written: a Task added to another work
+  item, a Task of another work item started or completed, a work item added,
+  and a reorder of the Backlog, whose queue is no file of the work item. The
+  refusal names the work item the branch owns.
+- A work tree on any other branch, and a record outside a git work tree,
+  write as before.
+
+The side of `main` is still a convention: `fgraph` does not refuse there a
+Task write of a started work item, nor a start made off `main`.
 
 The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 

@@ -7,9 +7,7 @@ import pytest
 from flowgraph.criterion import make_scenario
 from flowgraph.story import (
     ItemIdError,
-    NoTaskError,
     StartedStory,
-    StoryInBacklogError,
     append_task,
     make_story,
     make_story_id,
@@ -18,6 +16,8 @@ from flowgraph.story import (
     started_task,
 )
 from flowgraph.task import (
+    ItemInBacklogError,
+    NoTaskError,
     StartedAlreadyError,
     StartedTask,
     TaskNotFoundError,
@@ -77,7 +77,7 @@ def test_a_task_starts_alone_among_the_tasks_of_its_story() -> None:
 
 
 def test_a_task_of_a_story_in_backlog_is_refused_naming_both() -> None:
-    with pytest.raises(StoryInBacklogError, match=r"^T-0001 cannot start: ST-0001 is in Backlog$"):
+    with pytest.raises(ItemInBacklogError, match=r"^T-0001 cannot start: ST-0001 is in Backlog$"):
         started_task(STORY, make_task_id(1), ON)
 
 

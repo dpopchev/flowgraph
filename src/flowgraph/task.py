@@ -93,6 +93,14 @@ class NotStartedError(ValueError):
     """A Story or a Task completed while it is still in Backlog."""
 
 
+class NoTaskError(ValueError):
+    """A work item started without a Task written for it."""
+
+
+class ItemInBacklogError(ValueError):
+    """A Task started while its work item is still in Backlog."""
+
+
 class OpenTaskError(ValueError):
     """A work item completed while some of its Tasks are not."""
 

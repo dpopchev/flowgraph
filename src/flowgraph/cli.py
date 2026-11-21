@@ -20,12 +20,10 @@ from flowgraph.story import (
     FindTaskIds,
     ItemIdError,
     LoadStory,
-    NoTaskError,
     SaveStory,
     StoryDetail,
     StoryId,
     StoryIdError,
-    StoryInBacklogError,
     StoryNotFoundError,
     add_story,
     add_task,
@@ -39,6 +37,8 @@ from flowgraph.story import (
 )
 from flowgraph.task import (
     CompletedAlreadyError,
+    ItemInBacklogError,
+    NoTaskError,
     NotStartedError,
     OpenTaskError,
     StartedAlreadyError,
@@ -110,7 +110,7 @@ START_REFUSED = (
     TaskNotFoundError,
     NoTaskError,
     StartedAlreadyError,
-    StoryInBacklogError,
+    ItemInBacklogError,
     CompletedAlreadyError,
 )
 

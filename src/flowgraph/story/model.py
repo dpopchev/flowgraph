@@ -10,6 +10,8 @@ from flowgraph.criterion import Commit, Scenario, said
 from flowgraph.task import (
     CompletedAlreadyError,
     CompletedTask,
+    ItemInBacklogError,
+    NoTaskError,
     NotStartedError,
     StartedAlreadyError,
     StartedTask,
@@ -143,14 +145,6 @@ class ItemIdError(ValueError):
     """A text that is neither a Story id nor a Task id."""
 
 
-class NoTaskError(ValueError):
-    """A Story started without a Task written for it."""
-
-
-class StoryInBacklogError(ValueError):
-    """A Task started while its Story is still in Backlog."""
-
-
 def make_story_id(number: int) -> StoryId:
     """The id of the Story with that number in the record.
 
@@ -255,7 +249,7 @@ def started_story(story: StoryState, on: datetime) -> StartedStory:
 def started_task(story: StoryState, task_id: TaskId, on: datetime) -> StartedStory:
     """The started Story with its Task of that id started on that time, kept to the second.
 
-    Raises TaskNotFoundError when the Story holds no such Task, StoryInBacklogError when the
+    Raises TaskNotFoundError when the Story holds no such Task, ItemInBacklogError when the
     Story is in Backlog, StartedAlreadyError when the Task is started and CompletedAlreadyError
     when it is completed.
     """
@@ -263,7 +257,7 @@ def started_task(story: StoryState, task_id: TaskId, on: datetime) -> StartedSto
     task = task_id_text(task_id)
     match story:
         case Story():
-            raise StoryInBacklogError(
+            raise ItemInBacklogError(
                 f"{task} cannot start: {story_id_text(story.id)} is in Backlog"
             )
         case StartedStory():

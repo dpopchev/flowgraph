@@ -35,8 +35,10 @@ commit = "fc82831"
 
 [[tasks]]
 id = "T-0175"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a landing merges by merge-commit, squash or fast-forward"
 expected_output = "changed: README.md and docs/domain-model.md say [development] merge of .fgraph/config.toml names how a landing merges -- merge-commit, the default, squash or fast-forward -- what main gains by each, when fast-forward is refused, and which of them --message words"
 created = 2026-11-21 22:40:42+00:00
 started = 2026-11-21 23:37:37+00:00
+completed = 2026-11-21 23:39:54+00:00
+commit = "8ccfae2"

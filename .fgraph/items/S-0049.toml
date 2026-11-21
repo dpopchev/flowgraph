@@ -34,8 +34,10 @@ commit = "6558237"
 
 [[tasks]]
 id = "T-0158"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/ to write the id of a Story as S-0001"
 expected_output = "changed: README.md and docs/ write the id of a Story as S-0001 in the table of Ids, in Persistence and in every example, name the developer's choice of 2026-11-21 that left S to the Story, say the Stories of flowgraph were renamed with their numbers kept while the commits made before keep ST, and say that an ST file of an older record is left alone as a file of a prefix no kind knows"
 created = 2026-11-21 22:00:41+00:00
 started = 2026-11-21 22:14:25+00:00
+completed = 2026-11-21 22:15:56+00:00
+commit = "df9eaf0"

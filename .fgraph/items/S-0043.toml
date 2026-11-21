@@ -9,3 +9,11 @@ created = 2026-11-21 20:32:54+00:00
 given = "a record with the development on and [development] merge = squash"
 when = "fgraph land of a started Story is run"
 then = "main gains one commit holding the work of the branch, with one parent"
+
+[[tasks]]
+id = "T-0173"
+state = "backlog"
+title = "Add tests/functional/test_land_merge.py, failing on the criterion of S-0043"
+description = "Built as tests/functional/test_land_work_item.py builds its repository. Seen red, then marked a strict xfail naming S-0043 until the Task that turns it green removes the mark."
+expected_output = "created: tests/functional/test_land_merge.py states that, in a repository whose record turns the development on with [development] merge = \"squash\", fgraph land of a started Story leaves main one commit ahead, that commit holding the work of the branch and having one parent"
+created = 2026-11-21 22:40:41+00:00

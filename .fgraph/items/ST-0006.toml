@@ -12,11 +12,12 @@ then = "fgraph status lists it under Completed with that commit"
 
 [[tasks]]
 id = "T-0084"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_complete_bug.py, failing on the criterion of ST-0006"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, through the file adapters, as tests/functional/test_complete_upkeep.py does. Seen red, then marked a strict xfail naming ST-0006 until the Task that turns it green removes the mark. The description leaves no question open; the criterion of a Bug is the one of docs/domain-model.md: what is observed and what is expected. The agent's readings, each a routine call: (1) the command is fgraph add bug TITLE --observed TEXT --expected TEXT [--description TEXT]; its ids are B-0001, counted on their own. (2) A Bug takes Tasks and every move a Story takes, by the same commands, and joins the queue of the Backlog. (3) fgraph show prints '  observed     <text>' and '  expected     <text>' where a Story has its Given / When / Then. (4) fgraph amend rewrites them with --observed and --expected; a part the criterion of the kind does not have -- --given on a Bug, --observed on a Story -- is refused with exit 2. (5) A file of a kind that holds the criterion of another kind is refused when it is read. (6) parent, the Feature above a Bug, comes with ST-0008."
 expected_output = "created: tests/functional/test_complete_bug.py states that a started Bug whose Task is completed, completed with a commit, is listed by fgraph status under Completed with that commit"
 created = 2026-11-21 11:44:59+00:00
+started = 2026-11-21 11:45:24+00:00
 
 [[tasks]]
 id = "T-0085"

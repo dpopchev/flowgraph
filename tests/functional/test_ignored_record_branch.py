@@ -16,9 +16,6 @@ from flowgraph.cli import open_files, open_git, run
 
 pytestmark = pytest.mark.functional
 
-# What an ignored record takes once ST-0028 lands; what holds already has no mark.
-NOT_YET = pytest.mark.xfail(strict=True, reason="ST-0028: a start there makes no branch yet")
-
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "Raise the Stories fgraph lists from 0 to 1", *CRITERION]
@@ -106,23 +103,19 @@ class TestAStoryStartedOnMainOnARecordGitIgnores:
     def test_start_exits_with_zero(self, started: Outcome) -> None:
         assert started.status == 0
 
-    @NOT_YET
     def test_start_names_the_branch_and_its_worktree(
         self, started: Outcome, worktree: Path
     ) -> None:
         assert started.out == f"started ST-0001\nbranch {BRANCH} in {worktree}\n"
 
-    @NOT_YET
     def test_start_warns_of_nothing(self, started: Outcome) -> None:
         assert started.err == ""
 
-    @NOT_YET
     def test_the_branch_is_checked_out_in_its_worktree(
         self, started: Outcome, worktree: Path
     ) -> None:
         assert git(worktree, "branch", "--show-current") == BRANCH
 
-    @NOT_YET
     def test_the_branch_is_at_the_head_of_main(
         self, started: Outcome, checkout: Path, worktree: Path
     ) -> None:
@@ -138,7 +131,6 @@ class TestAStoryStartedOnMainOnARecordGitIgnores:
         assert (outcome.status, outcome.out) == (0, "started T-0001 of ST-0001\n")
 
 
-@NOT_YET
 class TestAStoryLandedOnARecordGitIgnores:
     @pytest.fixture
     def landed(self, checkout: Path, worktree: Path) -> Outcome:
@@ -180,7 +172,6 @@ class TestAStoryLandedOnARecordGitIgnores:
         assert not worktree.exists()
 
 
-@NOT_YET
 def test_a_story_started_off_main_on_a_record_git_ignores_names_main(checkout: Path) -> None:
     git(checkout, "switch", "--quiet", "--create", "a-feature")
     outcome = fgraph(["start", "ST-0001"], checkout)

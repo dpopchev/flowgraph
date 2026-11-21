@@ -148,8 +148,9 @@ def check_start_on_main(item: str, record: Path, open_git: OpenGit) -> None:
 
     A work item starts on main alone: raises NotOnMainError naming the branch the work tree of
     the record is on and, when the repository has one, the work tree that is on main. A Task
-    starts anywhere, a record outside a git work tree or ignored by git is not checked, and a
-    text that is no id is left to the start, which refuses it.
+    starts anywhere, a record outside a git work tree is not checked, and a text that is no id
+    is left to the start, which refuses it. A record git ignores is checked as any other: its
+    start makes a branch too.
     """
     try:
         item_id = parse_item_id(item)
@@ -159,7 +160,7 @@ def check_start_on_main(item: str, record: Path, open_git: OpenGit) -> None:
         case TaskId():
             return
         case WorkItemId():
-            work_tree = kept_in(record, open_git)
+            work_tree = open_git(record)
             on = MAIN if work_tree is None else work_tree.current_branch()
             if work_tree is None or on == MAIN:
                 return

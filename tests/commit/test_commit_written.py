@@ -113,17 +113,26 @@ def test_a_write_on_a_record_git_ignores_says_its_line_without_a_warning() -> No
     assert said == Said("added ST-0001\n")
 
 
-def test_a_start_of_a_work_item_on_a_record_git_ignores_takes_no_git_step() -> None:
+def test_a_start_of_a_work_item_on_a_record_git_ignores_checks_its_branch_out_at_head() -> None:
     steps: list[object] = []
     commit_written(STARTED, store([FILE]), RECORD, lambda _: ignoring(steps))
-    assert steps == []
+    assert steps == [("wi/ST-0001-a-slug", Path("/src/project.worktrees/ST-0001-a-slug"), "HEAD")]
 
 
-def test_a_start_of_a_work_item_on_a_record_git_ignores_warns_that_no_branch_was_made() -> None:
-    assert commit_written(STARTED, store([FILE]), RECORD, lambda _: ignoring([])) == Said(
-        "started ST-0001\n",
-        "fgraph: warning: no branch made: /src/project/.fgraph is ignored by git\n",
-    )
+def test_a_start_of_a_work_item_on_a_record_git_ignores_names_its_branch_without_a_warning() -> (
+    None
+):
+    said = commit_written(STARTED, store([FILE]), RECORD, lambda _: ignoring([]))
+    assert said == Said(f"started ST-0001\n{BRANCHED}")
+
+
+def test_a_worktree_refused_on_a_record_git_ignores_says_the_start_stays_written() -> None:
+    refusing = replace(tree(never, refuse), ignores=lambda _: True)
+    with pytest.raises(
+        GitError,
+        match=r"^git commit failed: refused -- ST-0001 is started, its branch is not$",
+    ):
+        commit_written(STARTED, store([FILE]), RECORD, lambda _: refusing)
 
 
 def test_the_changed_files_are_committed_relative_to_the_top_under_the_message() -> None:

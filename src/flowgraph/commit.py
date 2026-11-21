@@ -2,7 +2,7 @@
 
 Every write shares this one step. The start of a work item also checks its branch out at that
 commit, in a worktree of its own. Outside a git work tree a write is left as its files, and so
-is the write of a record git ignores.
+is the write of a record git ignores, whose start branches at HEAD.
 """
 
 from collections.abc import Callable, Sequence
@@ -15,6 +15,9 @@ from flowgraph.branch import GitError, branch_of
 from flowgraph.item import Written
 from flowgraph.store import Store
 from flowgraph.work_item import work_item_id_text
+
+# Where the branch of a start is checked out when the write of the record made no commit.
+HEAD = "HEAD"
 
 
 def _ignores_nothing(path: Path) -> bool:
@@ -91,7 +94,7 @@ def open_git(directory: Path) -> WorkTree | None:
 def kept_in(record: Path, open_git: OpenGit) -> WorkTree | None:
     """The git work tree that keeps the record: None outside one, and None when git ignores it.
 
-    fgraph takes no git step for a record no work tree keeps.
+    No branch scopes the writes of a record no work tree keeps, and no worktree holds a copy.
     """
     work_tree = open_git(record)
     if work_tree is None or work_tree.ignores(record):
@@ -102,32 +105,37 @@ def kept_in(record: Path, open_git: OpenGit) -> WorkTree | None:
 def commit_written(written: Written, store: Store, record: Path, open_git: OpenGit) -> Said:
     """Commit the files the write changed under its message; what fgraph says of the write.
 
-    Outside a git work tree, and for a record git ignores, nothing is committed, and only the
-    start of a work item warns, that no branch was made. A write that changed no file makes no
-    commit. Raises GitError naming the git command when git refuses a step: a commit refused
-    puts the files back as they were, a worktree refused leaves the start committed.
+    Outside a git work tree nothing is committed, and only the start of a work item warns, that
+    no branch was made. For a record git ignores nothing is committed either, and the branch of
+    a start is checked out at HEAD. A write that changed no file makes no commit. Raises
+    GitError naming the git command when git refuses a step: a commit refused puts the files
+    back as they were, a worktree refused leaves the start as it is, committed or written.
     """
     work_tree = open_git(record)
-    if work_tree is None or work_tree.ignores(record):
+    if work_tree is None:
         if written.branch is None:
             return Said(written.out)
-        why = "is not inside a git work tree" if work_tree is None else "is ignored by git"
-        return Said(written.out, f"fgraph: warning: no branch made: {record} {why}\n")
+        warning = f"fgraph: warning: no branch made: {record} is not inside a git work tree\n"
+        return Said(written.out, warning)
     top = work_tree.path.resolve()
-    files = [file.resolve().relative_to(top) for file in store.find_changed_files()]
-    if not files:
-        return Said(written.out)
-    try:
-        sha = work_tree.commit_files(files, written.message)
-    except GitError:
-        store.restore_files()
-        raise
+    if work_tree.ignores(record):
+        at, where = HEAD, ""
+    else:
+        files = [file.resolve().relative_to(top) for file in store.find_changed_files()]
+        if not files:
+            return Said(written.out)
+        try:
+            at = work_tree.commit_files(files, written.message)
+        except GitError:
+            store.restore_files()
+            raise
+        where = f" at {at[:7]}"
     if written.branch is None:
         return Said(written.out)
     made = branch_of(written.branch.item, written.branch.slug, top)
     try:
-        work_tree.add_worktree(made.name, made.path, sha)
+        work_tree.add_worktree(made.name, made.path, at)
     except GitError as error:
-        started = f"{work_item_id_text(written.branch.item)} is started at {sha[:7]}"
+        started = f"{work_item_id_text(written.branch.item)} is started{where}"
         raise GitError(f"{error} -- {started}, its branch is not") from error
     return Said(f"{written.out}branch {made.name} in {made.path}\n")

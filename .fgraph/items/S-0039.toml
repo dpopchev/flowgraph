@@ -1,10 +1,12 @@
 id = "S-0039"
-state = "started"
+state = "completed"
 title = "Cut the branches fgraph makes at a start with the development off from one to none"
 description = "Part of the developer's request of 2026-11-21 to layer fgraph by a configuration, .fgraph/config.toml: (1) the items and their lifecycle, always; (2) their commits on main, optional; (3) the development beside the source code, turned on. The plan was shown and filed on the developer's 'file only' of 2026-11-21. Its Tasks are written when it is ordered. Readings of the agent, agreed with that word: the development is off by default, so a record without config.toml makes no branch, prints no warning and refuses fgraph land naming the key; [development] enabled = true keeps the start, the scoping and the landing as they are today, and the record of flowgraph itself gets the key in this Story, as does the setup of the functional tests that start a branch. A config.toml with an unknown key or a value of the wrong type exits 2 and names it. Open: whether every write of a tracked record is held to main, or the start alone as today. Sketch of its Tasks: a functional test failing on the criterion; src/flowgraph/config.py with the Config type and its constructor from the TOML text; the wiring in cli.py, commit.py, scope.py and land.py; .fgraph/config.toml of this record; README.md and docs/domain-model.md."
 parent = "F-0001"
 created = 2026-11-21 20:32:52+00:00
 started = 2026-11-21 22:17:57+00:00
+completed = 2026-11-21 22:38:09+00:00
+commit = "ec321ec"
 
 [criterion]
 given = "a git repository whose record holds no config.toml, and a Story with a Task"

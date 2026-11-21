@@ -6,6 +6,10 @@ build/
 # tracked, never cleaned.
 local/
 
+# --- bytecode beside the sources: `make sync` points it to local/cache/ (mk/python.mk),
+# but a bare `uv run` in a new worktree creates .venv without that prefix and writes it here.
+__pycache__/
+
 # --- env files at the repo root, if a launcher still uses one; the contract is .env.example
 .env
 .env.*

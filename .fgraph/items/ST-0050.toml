@@ -1,0 +1,11 @@
+id = "ST-0050"
+state = "backlog"
+title = "Raise the Features fgraph status lists inside their bucket, in place of their work items, from none to every one"
+description = "Part of F-0002. The developer's words of 2026-11-21, in the agent's wording: a Feature is part of the Backlog and just holds a couple of work items; starting it, when git is used for the development as well, starts its work items one by one in separate branches; they are completed but all stay in progress; when all are completed the Feature moves to Completed; a Feature can be blocked, or gets blocked when its child work item is blocked. The principle the plan was shown under: a Feature is to its work items what a work item is to its Tasks. Filed on the developer's 'file' of 2026-11-21. Its Tasks are written when it is ordered. Refiles ST-0046, which stood alone. It reverses the decision of 2026-11-21 that ST-0025 built: a block of their own above the buckets, the status flat. Readings of the agent, shown with the plan: (1) the heading Features is gone; a Feature is one line in its bucket, with its progress, counted once beside the heading and toward the top 5; (2) a Feature holds a place of its own in the queue and joins the end when it is added; (3) its work items in Backlog and its completed ones are listed on no line of their own, counted in n/m W, and fgraph show of the Feature lists them -- the alternative, each completed one listed under the Feature, was shown and not taken; (4) under InProgress the started work item of a Feature is listed under it, indented, with its progress and its Task being worked. Until a Feature is started through fgraph its bucket stays derived as today."
+parent = "F-0002"
+created = 2026-11-21 21:22:01+00:00
+
+[criterion]
+given = "a record with a Story standing alone and, added after it, a Feature with two Stories under it, all in Backlog"
+when = "fgraph status is run"
+then = "Backlog (2) lists the Story and then the Feature with its progress 0/2 W, and neither Story of the Feature"

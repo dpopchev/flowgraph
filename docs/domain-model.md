@@ -170,6 +170,22 @@ Removed: apart, reached by remove
 
 Completed and Removed are terminal, and no move goes backwards.
 
+## Order
+
+The Backlog is a queue: the order work is to be pulled in, across every kind
+of work item. The developer said so on 2026-11-21.
+
+- A work item joins the end of the queue when it is added.
+- `reorder` puts one work item of the Backlog right before another. It is not
+  a move: the type of the item stays, only its place changes.
+- The queue is its own aggregate, apart from the items: it places work items
+  by id, each once. A work item nobody placed follows the placed ones in the
+  order it was added; those added at one time, by kind and number.
+- A work item that leaves the Backlog leaves the queue with it: the other
+  buckets are listed by kind and number, not by the queue.
+- A reorder names two work items in Backlog; one that is not there, or the
+  same one twice, is refused.
+
 ## Evidence
 
 A completed item carries the proof that it is completed. For a work item,
@@ -246,6 +262,11 @@ and its merge tool.
 - A command loads a work item whole, changes it and saves it whole. The file
   is validated as it is read; a write is read back before it replaces the
   file.
+- The queue of the Backlog (Order) is one file beside `items/`, `queue.toml`:
+  a `backlog` list of the ids placed, in their order. A record without the
+  file holds the empty queue. A reorder writes the whole Backlog as it is then
+  listed, so an id that has left the Backlog drops out at the next reorder;
+  `add`, `start` and `complete` never write the file.
 
 Who writes what, so that two branches never change the same file or hand out
 the same number:
@@ -253,6 +274,7 @@ the same number:
 | Write | Where |
 |---|---|
 | add a work item or a Task | `main` |
+| reorder the Backlog | `main` |
 | start a work item | `main`, before its branch is made |
 | start and complete its Tasks | its branch |
 | complete the work item | `main`, after the merge |

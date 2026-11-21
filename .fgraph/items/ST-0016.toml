@@ -23,11 +23,12 @@ commit = "98592a8"
 
 [[tasks]]
 id = "T-0081"
-state = "backlog"
+state = "started"
 title = "Add the RemovedWorkItem and its remove move to src/flowgraph/work_item/model.py and src/flowgraph/work_item/removal.py, kept by src/flowgraph/work_item/file.py"
 description = "Pure but for the file adapter. The move sits in a module of its own so that src/flowgraph/work_item/model.py stays below the 400 lines of U-0001. Every exhaustive match over the states of a work item gains the removed case, in src/flowgraph/work_item/tasks.py, src/flowgraph/scope.py and src/flowgraph/land.py too."
 expected_output = "changed: src/flowgraph/work_item/model.py holds RemovedWorkItem among the states of a work item, refused by every other move; created: src/flowgraph/work_item/removal.py removes a work item in Backlog with its reason; src/flowgraph/work_item/file.py keeps it with state 'removed' and reads it back through the move; the rows a view reads gain the reason; their tests are in tests/work_item/"
 created = 2026-11-21 11:37:21+00:00
+started = 2026-11-21 11:38:16+00:00
 
 [[tasks]]
 id = "T-0082"

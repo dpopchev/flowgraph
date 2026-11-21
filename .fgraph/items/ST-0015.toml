@@ -1,9 +1,11 @@
 id = "ST-0015"
-state = "started"
+state = "completed"
 title = "Raise the parts of a Backlog work item a developer can rewrite through fgraph from 0 to 3: title, description, criterion"
 description = "Found in the review of the Backlog on 2026-11-21: fgraph cannot change a title, a description or a criterion, so a correction to an item cannot be written into the record. Known corrections that wait for it: ST-0010 says main refuses a write to a started work item, which would also refuse completing it on main after the merge; ST-0012 has a second clause in its Then; ST-0009 says its branch is named by its id, and the developer chose wi/<id>-<slug> in a worktree. This slice: the title, the description and the parts of the criterion of a work item in Backlog, each through its constructor, so a blank part is refused. Not part of it: a Task, and a work item that has left Backlog. Its Tasks are written when it is ordered."
 created = 2026-11-21 08:34:09+00:00
 started = 2026-11-21 09:00:43+00:00
+completed = 2026-11-21 09:08:34+00:00
+commit = "d06e68c"
 
 [criterion]
 given = "a Story in Backlog"

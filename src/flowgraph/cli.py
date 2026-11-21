@@ -29,6 +29,7 @@ from flowgraph.item import (
     status_item,
     write_task,
 )
+from flowgraph.land import LandError, land_item
 from flowgraph.queue import NotInBacklogError, SameItemError
 from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, Now, locate
 from flowgraph.task import (
@@ -60,6 +61,7 @@ REFUSED = (
     WorkItemIdError,
     SlugError,
     GitError,
+    LandError,
     CommitError,
     EmptyPartError,
     NoPartError,
@@ -157,6 +159,16 @@ def build_parser() -> argparse.ArgumentParser:
     complete.add_argument(
         "--commit", required=True, metavar="SHA", help="the commit that holds its work"
     )
+    land = commands.add_parser(
+        "land",
+        help="land a started work item on main: merge its branch and complete it",
+        add_help=False,
+        color=False,
+    )
+    land.add_argument("id", metavar="ID", help="the id of the Story or of the Upkeep")
+    land.add_argument(
+        "--message", required=True, metavar="TEXT", help="the message of the merge commit"
+    )
     reorder = commands.add_parser(
         "reorder",
         help="put a work item of the Backlog before another",
@@ -210,6 +222,8 @@ def _said(
     if written is not None:
         return commit_written(written, store, record, open_git)
     match args.command:
+        case "land":
+            return land_item(args.id, args.message, store, now, record, open_git)
         case "show":
             return Said(show_item(args.id, store))
         case "status":

@@ -252,6 +252,19 @@ def add_item(
     return f"added {work_item_id_text(added)}\n"
 
 
+def amend_item(item: str, parts: work_item.Amendment, store: Store) -> str:
+    """Rewrite the parts named of the work item in Backlog of that id; the line that says so.
+
+    Raises WorkItemIdError when the text is the id of no kind, or the refusal of the amend.
+    """
+    item_id = parse_work_item_id_of_any_kind(item)
+    load, save = store.load_work_item, store.save_work_item
+    work_item.amend_work_item(
+        item_id=item_id, amendment=parts, load_work_item=load, save_work_item=save
+    )
+    return f"amended {work_item_id_text(item_id)}\n"
+
+
 def write_task(
     parent: str, title: str, expected_output: str, description: str, store: Store, now: Now
 ) -> str:

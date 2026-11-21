@@ -186,6 +186,24 @@ of work item. The developer said so on 2026-11-21.
 - A reorder names two work items in Backlog; one that is not there, or the
   same one twice, is refused.
 
+## Amendment
+
+The wording of a work item can be corrected while it waits: a work item in
+Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
+
+- `amend` rewrites the title, the description and the parts of the criterion
+  -- Given, When, Then -- one alone or several together. A part it does not
+  name stays as it was.
+- It is not a move: the type of the item stays, and so do its id, its created
+  time, its Tasks and its place in the queue.
+- Each part goes through the constructor an `add` uses, so a blank title or a
+  blank part of the criterion is refused. The description is optional free
+  text: a blank one clears it.
+- An amendment that names no part is refused.
+- Only a work item in Backlog is amended: a started or a completed one is
+  refused, since its wording is what the work was started on. A Task is not
+  amended yet.
+
 ## Evidence
 
 A completed item carries the proof that it is completed. For a work item,
@@ -267,7 +285,7 @@ and its merge tool.
   a `backlog` list of the ids placed, in their order. A record without the
   file holds the empty queue. A reorder writes the whole Backlog as it is then
   listed, so an id that has left the Backlog drops out at the next reorder;
-  `add`, `start` and `complete` never write the file.
+  `add`, `amend`, `start` and `complete` never write the file.
 
 Who writes what, so that two branches never change the same file or hand out
 the same number:
@@ -276,6 +294,7 @@ the same number:
 |---|---|
 | add a work item or a Task | `main` |
 | reorder the Backlog | `main` |
+| amend a work item in Backlog | `main` |
 | start a work item | `main`: `fgraph` commits it and makes its branch |
 | start and complete its Tasks | its branch |
 | complete the work item | `main`, after the merge |

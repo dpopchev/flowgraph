@@ -10,8 +10,9 @@ Early: `fgraph` adds a Story to a record, writes its Tasks, takes them from
 Backlog through InProgress to Completed with their commits, shows a Story
 with its Tasks and lists the record by bucket. An Upkeep moves the same way,
 with its own Tasks, and is listed beside the Stories. The Backlog is a queue
-that `fgraph reorder` reorders. Starting a work item in a git repository
-commits the start and checks out its branch in a worktree of its own.
+that `fgraph reorder` reorders, and a work item still in it is rewritten
+with `fgraph amend`. Starting a work item in a git repository commits the
+start and checks out its branch in a worktree of its own.
 
 | Part                            | State                                                    |
 | ------------------------------- | -------------------------------------------------------- |
@@ -21,6 +22,7 @@ commits the start and checks out its branch in a worktree of its own.
 | the record and its flow         | a work item with its Tasks, from Backlog to Completed    |
 | the kinds of work item          | Story, Upkeep                                            |
 | the order of the Backlog        | a queue, reordered by `fgraph reorder`                   |
+| the wording of a work item      | rewritten by `fgraph amend` while in Backlog             |
 | git                             | the start of a work item: its commit, branch, worktree   |
 | the ontology                    | not started                                              |
 | flowgraph tracking its own work | its Stories are in `.fgraph/` since 0.4.0                |
@@ -211,6 +213,31 @@ fgraph status
 A reorder exits 2 and names why when one of the two is not in Backlog, when
 a work item is put before itself, or when a text is no work item id. The
 order given is kept as `queue.toml` in the record, apart from the item files.
+
+A work item still in Backlog is rewritten with `fgraph amend`: its title, its
+description and each part of its criterion, each by its own option. A part
+without its option stays as it was, and so do its Tasks and its place in the
+queue:
+
+```sh
+fgraph amend ST-0002 --then "fgraph status lists both kinds under Backlog"
+# amended ST-0002
+
+fgraph show ST-0002
+# ST-0002  Raise the kinds of work item fgraph adds from 1 to 2
+#   bucket       Backlog
+#   given        a record with a Story
+#   when         an Upkeep is added
+#   then         fgraph status lists both kinds under Backlog
+# Tasks (0)
+```
+
+`--title`, `--description`, `--given` and `--when` rewrite the other parts,
+several in one call when given together; `--description ""` clears the
+description. An amend exits 2 and names why when it names no part, when the
+title or a part of the criterion is blank, when the work item is started or
+completed already, when the id is a Task's, or when the record does not hold
+it. `fgraph amend` writes the file of the item and makes no commit.
 
 ## Develop
 

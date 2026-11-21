@@ -18,6 +18,7 @@ from flowgraph.item import (
     OpenStore,
     Store,
     add_item,
+    amend_item,
     complete_item,
     kind_named,
     open_files,
@@ -39,7 +40,12 @@ from flowgraph.task import (
     StartedAlreadyError,
     TaskNotFoundError,
 )
-from flowgraph.work_item import WorkItemIdError, WorkItemNotFoundError
+from flowgraph.work_item import (
+    Amendment,
+    NoPartError,
+    WorkItemIdError,
+    WorkItemNotFoundError,
+)
 
 __all__ = ["Store", "open_files", "open_git", "run"]
 
@@ -69,6 +75,16 @@ COMPLETE_REFUSED = (
     TaskNotFoundError,
     NotStartedError,
     OpenTaskError,
+    CompletedAlreadyError,
+)
+
+# The refusals of an amend, each written as a usage error.
+AMEND_REFUSED = (
+    WorkItemIdError,
+    WorkItemNotFoundError,
+    NoPartError,
+    EmptyPartError,
+    StartedAlreadyError,
     CompletedAlreadyError,
 )
 
@@ -125,6 +141,15 @@ def build_parser() -> argparse.ArgumentParser:
     upkeep.add_argument("--when", required=True, metavar="ACTION", help="the action that runs")
     upkeep.add_argument("--then", required=True, metavar="STATE", help="what still holds")
     upkeep.add_argument("--description", default="", metavar="TEXT", help="free text, optional")
+    amend = commands.add_parser(
+        "amend", help="rewrite parts of a work item in Backlog", add_help=False, color=False
+    )
+    amend.add_argument("id", metavar="ID", help="the id of the Story or of the Upkeep")
+    amend.add_argument("--title", metavar="TEXT", help="what is true once it is completed")
+    amend.add_argument("--description", metavar="TEXT", help="free text; a blank one clears it")
+    amend.add_argument("--given", metavar="STATE", help="the initial state")
+    amend.add_argument("--when", metavar="ACTION", help="the action")
+    amend.add_argument("--then", metavar="STATE", help="the expected state")
     show = commands.add_parser(
         "show", help="show a Story or an Upkeep with its Tasks", add_help=False, color=False
     )
@@ -202,6 +227,15 @@ def run(
                     write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
                     return 2
                 write(written)
+                return 0
+            if args.command == "amend":
+                parts = Amendment(args.title, args.description, args.given, args.when, args.then)
+                try:
+                    amended = amend_item(args.id, parts, store)
+                except AMEND_REFUSED as error:
+                    write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
+                    return 2
+                write(amended)
                 return 0
             if args.command == "complete":
                 try:

@@ -14,6 +14,7 @@ from flowgraph.task import (
     task_id_text,
 )
 from flowgraph.work_item.model import (
+    Amendment,
     FindTaskIds,
     FindWorkItemRows,
     Kind,
@@ -23,6 +24,7 @@ from flowgraph.work_item.model import (
     WorkItemId,
     WorkItemRow,
     WorkItemState,
+    amended_work_item,
     append_task,
     commit_sha,
     completed_task,
@@ -137,6 +139,23 @@ def add_task(
     task = make_task(next_task_id(taken), title, expected_output, description, now())
     save_work_item(append_task(item, task))
     return task.id
+
+
+def amend_work_item(
+    *,
+    item_id: WorkItemId,
+    amendment: Amendment,
+    load_work_item: LoadWorkItem,
+    save_work_item: SaveWorkItem,
+) -> None:
+    """Rewrite the parts the amendment names of the work item of that id and save it whole.
+
+    Raises WorkItemNotFoundError when the record holds no such item, NoPartError when the
+    amendment names no part, EmptyPartError when the title or a part of the criterion is blank,
+    StartedAlreadyError when the item is started and CompletedAlreadyError when it is completed;
+    nothing is saved.
+    """
+    save_work_item(amended_work_item(load_work_item(item_id), amendment))
 
 
 def start_work_item(

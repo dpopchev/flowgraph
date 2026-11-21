@@ -32,6 +32,8 @@ from flowgraph.work_item.model import (
     LoadWorkItem,
     NoPartError,
     OpenWorkItem,
+    RemovedAlreadyError,
+    RemovedWorkItem,
     SaveWorkItem,
     StartedWorkItem,
     WorkItem,
@@ -57,6 +59,7 @@ from flowgraph.work_item.model import (
     still_open,
     work_item_id_text,
 )
+from flowgraph.work_item.removal import removed_work_item
 from flowgraph.work_item.tasks import (
     blocked_task,
     completed_task,
@@ -75,6 +78,8 @@ __all__ = [
     "LoadWorkItem",
     "NoPartError",
     "OpenWorkItem",
+    "RemovedAlreadyError",
+    "RemovedWorkItem",
     "SaveWorkItem",
     "StartedWorkItem",
     "WorkItem",
@@ -108,6 +113,7 @@ __all__ = [
     "read_work_item",
     "read_work_item_detail",
     "read_work_item_rows",
+    "removed_work_item",
     "start_task",
     "start_work_item",
     "started_task",

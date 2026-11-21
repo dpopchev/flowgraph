@@ -35,6 +35,7 @@ from flowgraph.work_item.model import (
     still_open,
     work_item_id_text,
 )
+from flowgraph.work_item.removal import reason_of
 from flowgraph.work_item.tasks import blocked_task, completed_task, started_task, unblocked_task
 
 # The work item that holds the Task of that id, whole; raises TaskNotFoundError when none does.
@@ -48,6 +49,7 @@ def work_item_row(item: WorkItemState) -> WorkItemRow:
         item.title,
         state_name(item),
         commit_sha(item),
+        reason_of(item),
         created=item.created,
     )
 
@@ -64,6 +66,7 @@ def work_item_detail(item: WorkItemState) -> WorkItemDetail:
         then=item.scenario.then,
         tasks=[row_of(task) for task in item.tasks],
         commit=commit_sha(item),
+        reason=reason_of(item),
     )
 
 

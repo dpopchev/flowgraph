@@ -30,6 +30,7 @@ from flowgraph.task import TaskInProgressError, at_most_one_started
 from flowgraph.work_item.model import (
     CompletedWorkItem,
     Kind,
+    RemovedWorkItem,
     StartedWorkItem,
     WorkItem,
     WorkItemDetail,
@@ -47,6 +48,7 @@ from flowgraph.work_item.model import (
     state_name,
     work_item_id_text,
 )
+from flowgraph.work_item.removal import removed_work_item
 
 
 class _ItemFile(BaseModel):
@@ -95,8 +97,24 @@ class _CompletedItemFile(BaseModel):
     tasks: list[CompletedTaskFile] = []
 
 
+class _RemovedItemFile(BaseModel):
+    """What the file of a removed work item holds: its removal, its Tasks all in Backlog."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    state: Literal["removed"]
+    title: str
+    description: str = ""
+    created: datetime
+    removed: datetime
+    reason: str
+    criterion: CriterionFile
+    tasks: list[TaskFile] = []
+
+
 # The file of a work item in any of its states.
-_HeldItemFile = _ItemFile | _StartedItemFile | _CompletedItemFile
+_HeldItemFile = _ItemFile | _StartedItemFile | _CompletedItemFile | _RemovedItemFile
 
 # The validator of a work item file, which tells the states apart by the state line.
 _HELD_ITEM: TypeAdapter[_HeldItemFile] = TypeAdapter(
@@ -109,7 +127,18 @@ def _commit_held(held: _HeldItemFile) -> str:
     match held:
         case _CompletedItemFile():
             return held.commit
-        case _ItemFile() | _StartedItemFile():
+        case _ItemFile() | _StartedItemFile() | _RemovedItemFile():
+            return ""
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def _reason_held(held: _HeldItemFile) -> str:
+    """The reason a validated file holds; empty for an item not removed."""
+    match held:
+        case _RemovedItemFile():
+            return held.reason
+        case _ItemFile() | _StartedItemFile() | _CompletedItemFile():
             return ""
         case _ as unreachable:
             assert_never(unreachable)
@@ -142,7 +171,14 @@ def read_work_item_rows(record: Path, kind: Kind) -> list[WorkItemRow]:
     Raises WorkItemFileError naming the first file of the kind that does not hold one.
     """
     rows = [
-        WorkItemRow(held.id, held.title, held.state, _commit_held(held), created=held.created)
+        WorkItemRow(
+            held.id,
+            held.title,
+            held.state,
+            _commit_held(held),
+            _reason_held(held),
+            created=held.created,
+        )
         for held in _files_of(record, kind)
     ]
     return sorted(rows, key=lambda row: parse_work_item_id(kind, row.id).number)
@@ -179,6 +215,7 @@ def read_work_item_detail(record: Path, item_id: WorkItemId) -> WorkItemDetail:
         then=held.criterion.then,
         tasks=[task_row(task) for task in held.tasks],
         commit=_commit_held(held),
+        reason=_reason_held(held),
     )
 
 
@@ -199,6 +236,8 @@ def _moves_primitives(item: WorkItemState) -> dict[str, object]:
             return {"started": item.started}
         case CompletedWorkItem():
             return {"started": item.started, "completed": item.completed, "commit": item.commit.sha}
+        case RemovedWorkItem():
+            return {"removed": item.removed, "reason": item.reason}
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -234,6 +273,8 @@ def _item_held(held: _HeldItemFile, kind: Kind) -> WorkItemState:
     match held:
         case _ItemFile():
             return item
+        case _RemovedItemFile():
+            return removed_work_item(item, held.reason, held.removed)
         case _StartedItemFile() | _CompletedItemFile():
             tasks = at_most_one_started(tuple(task_held(task) for task in held.tasks))
             begun = replace(started_work_item(item, held.started), tasks=tasks)

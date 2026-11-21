@@ -20,6 +20,8 @@ from flowgraph.task import (
 )
 from flowgraph.work_item.model import (
     CompletedWorkItem,
+    RemovedAlreadyError,
+    RemovedWorkItem,
     StartedWorkItem,
     WorkItem,
     WorkItemState,
@@ -45,6 +47,8 @@ def started_task(item: WorkItemState, task_id: TaskId, on: datetime) -> StartedW
             return replace(item, tasks=started_among(item.tasks, task_id, on))
         case CompletedWorkItem():
             raise CompletedAlreadyError(f"{task} is completed already")
+        case RemovedWorkItem():
+            raise RemovedAlreadyError(item.id)
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -68,6 +72,8 @@ def blocked_task(
             return replace(item, tasks=tasks)
         case CompletedWorkItem():
             raise CompletedAlreadyError(f"{task} is completed already")
+        case RemovedWorkItem():
+            raise RemovedAlreadyError(item.id)
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -82,7 +88,7 @@ def unblocked_task(item: WorkItemState, task_id: TaskId) -> StartedWorkItem:
     match item:
         case StartedWorkItem():
             return replace(item, tasks=unblocked_among(item.tasks, task_id))
-        case WorkItem() | CompletedWorkItem():
+        case WorkItem() | CompletedWorkItem() | RemovedWorkItem():
             raise NotBlockedError(f"{task_id_text(task_id)} is not blocked")
         case _ as unreachable:
             assert_never(unreachable)
@@ -105,5 +111,7 @@ def completed_task(
             return replace(item, tasks=completed_among(item.tasks, task_id, on, commit))
         case CompletedWorkItem():
             raise CompletedAlreadyError(f"{task} is completed already")
+        case RemovedWorkItem():
+            raise RemovedAlreadyError(item.id)
         case _ as unreachable:
             assert_never(unreachable)

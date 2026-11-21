@@ -16,7 +16,12 @@ from flowgraph.item import complete_item, parse_work_item_id_of_any_kind
 from flowgraph.record import Now
 from flowgraph.store import Store
 from flowgraph.task import CompletedAlreadyError, NotStartedError, OpenTaskError
-from flowgraph.work_item import WorkItemId, WorkItemNotFoundError, work_item_id_text
+from flowgraph.work_item import (
+    RemovedAlreadyError,
+    WorkItemId,
+    WorkItemNotFoundError,
+    work_item_id_text,
+)
 
 # A commit that stands for the merge commit while the complete is only checked.
 UNMERGED = make_commit("0000000")
@@ -27,6 +32,7 @@ NOT_COMMITTED = (
     NotStartedError,
     OpenTaskError,
     CompletedAlreadyError,
+    RemovedAlreadyError,
     GitError,
 )
 

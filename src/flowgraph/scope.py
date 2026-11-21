@@ -19,6 +19,7 @@ from flowgraph.store import Store
 from flowgraph.task import TaskId
 from flowgraph.work_item import (
     CompletedWorkItem,
+    RemovedWorkItem,
     StartedWorkItem,
     WorkItem,
     WorkItemId,
@@ -95,7 +96,7 @@ def _is_started(item: WorkItemState) -> bool:
     match item:
         case StartedWorkItem():
             return True
-        case WorkItem() | CompletedWorkItem():
+        case WorkItem() | CompletedWorkItem() | RemovedWorkItem():
             return False
         case _ as unreachable:
             assert_never(unreachable)

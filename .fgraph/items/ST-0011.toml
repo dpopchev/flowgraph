@@ -45,12 +45,14 @@ commit = "0fdeed3"
 
 [[tasks]]
 id = "T-0072"
-state = "started"
+state = "completed"
 title = "Add the block command to src/flowgraph/work_item/commands.py, src/flowgraph/item.py and src/flowgraph/cli.py, shown by src/flowgraph/text.py"
 description = "The command loads the work item that holds the Task whole, blocks the Task and saves it whole, as start and complete do. Removes the xfail mark of tests/functional/test_block_task.py; tests/functional/test_help_menu.py changes if the menu it states lists the commands."
 expected_output = "changed: fgraph block ID --reason TEXT --waiting-on TEXT blocks a started Task, prints 'blocked <task> of <work item>' and is committed as every write; fgraph show lists the Task in InProgress as blocked with its reason and what it waits on; it exits 2 naming why on each refusal of the first Task"
 created = 2026-11-21 11:19:52+00:00
 started = 2026-11-21 11:26:46+00:00
+completed = 2026-11-21 11:28:13+00:00
+commit = "72133d3"
 
 [[tasks]]
 id = "T-0073"

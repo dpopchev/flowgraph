@@ -10,6 +10,7 @@ pytestmark = pytest.mark.edge
 
 FILE = "config.toml"
 ENABLED = "[development]\nenabled = true\n"
+UNCOMMITTED = "[git]\ncommit = false\n"
 
 
 @pytest.mark.parametrize(
@@ -23,6 +24,35 @@ def test_the_development_is_off_unless_enabled(text: str, enabled: bool) -> None
 
 def test_the_development_enabled_is_on() -> None:
     assert make_config(ENABLED).development.enabled is True
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["", "[git]\n", "[git]\ncommit = true\n", ENABLED, f"{ENABLED}[git]\ncommit = true\n"],
+    ids=["no-table", "no-key", "written-on", "development-on", "both-on"],
+)
+def test_the_commits_are_on_unless_turned_off(text: str) -> None:
+    assert make_config(text).git.commit is True
+
+
+def test_the_commits_turned_off_are_off() -> None:
+    assert make_config(UNCOMMITTED).git.commit is False
+
+
+@pytest.mark.parametrize(
+    "text",
+    [f"{ENABLED}{UNCOMMITTED}", f"{UNCOMMITTED}{ENABLED}"],
+    ids=["development-first", "git-first"],
+)
+def test_the_development_enabled_with_the_commits_off_is_refused_naming_both_keys(
+    text: str,
+) -> None:
+    with pytest.raises(ConfigError) as error:
+        make_config(text)
+    assert str(error.value) == (
+        "development.enabled is true while git.commit is false:"
+        " the development needs the commits of the record"
+    )
 
 
 @pytest.mark.parametrize(
@@ -40,8 +70,21 @@ def test_the_development_enabled_is_on() -> None:
         ),
         ("[development]\nenabled = 1\n", "development.enabled is 1: it takes true or false"),
         ("development = true\n", "development is true: it takes a table"),
+        ("[git]\ncommits = false\n", "git.commits is no key of the configuration"),
+        ('[git]\ncommit = "no"\n', 'git.commit is "no": it takes true or false'),
+        ("git = false\n", "git is false: it takes a table"),
     ],
-    ids=["table", "key-of-no-table", "key", "text-value", "number-value", "value-for-a-table"],
+    ids=[
+        "table",
+        "key-of-no-table",
+        "key",
+        "text-value",
+        "number-value",
+        "value-for-a-table",
+        "key-of-git",
+        "text-value-of-git",
+        "value-for-git",
+    ],
 )
 def test_a_text_refused_names_the_key(text: str, why: str) -> None:
     with pytest.raises(ConfigError) as error:

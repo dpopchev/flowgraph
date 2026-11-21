@@ -1,8 +1,10 @@
 """The configuration of a record: the layers it turns on, kept as `config.toml` in the record.
 
 The file holds a table per layer, each key with its default, so a record without the file holds
-the defaults. The development -- the branch and the worktree of a start, the scoping of a branch,
-the landing -- is off unless `[development] enabled = true`.
+the defaults. The commits fgraph makes of the writes of the record are on unless `[git] commit =
+false`. The development -- the branch and the worktree of a start, the scoping of a branch, the
+landing -- is off unless `[development] enabled = true`. The layers build on each other: the
+branch of a work item carries its record, so the development needs the commits.
 """
 
 import json
@@ -19,6 +21,16 @@ CONFIG = "config.toml"
 # The key that turns the development on, as a refusal names it.
 DEVELOPMENT_ENABLED = "development.enabled"
 
+# The key that turns the commits of the record off, as a refusal names it.
+GIT_COMMIT = "git.commit"
+
+
+@dataclass(frozen=True)
+class Git:
+    """The commits of the record: fgraph commits every write of it, or none."""
+
+    commit: bool
+
 
 @dataclass(frozen=True)
 class Development:
@@ -31,6 +43,7 @@ class Development:
 class Config:
     """The configuration of a record: one value per layer, each built from its table."""
 
+    git: Git
     development: Development
 
 
@@ -51,6 +64,12 @@ class _Table(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
 
 
+class _GitTable(_Table):
+    """What `[git]` holds; a key left out is its default."""
+
+    commit: bool = True
+
+
 class _DevelopmentTable(_Table):
     """What `[development]` holds; a key left out is its default."""
 
@@ -60,6 +79,7 @@ class _DevelopmentTable(_Table):
 class _ConfigFile(_Table):
     """What the file holds: a table per layer; a table left out holds its defaults."""
 
+    git: _GitTable = _GitTable()
     development: _DevelopmentTable = _DevelopmentTable()
 
 
@@ -82,7 +102,8 @@ def make_config(text: str) -> Config:
     """The configuration the text of a config.toml holds; a key it leaves out is its default.
 
     Raises ConfigError naming the first table or key the configuration does not have, or whose
-    value is of another type than the key takes, and when the text is no TOML.
+    value is of another type than the key takes, and when the text is no TOML; naming both keys
+    when it turns the development on with the commits off.
     """
     try:
         held = _ConfigFile.model_validate(tomllib.loads(text))
@@ -90,7 +111,15 @@ def make_config(text: str) -> Config:
         raise ConfigError(f"no TOML: {error}") from error
     except ValidationError as error:
         raise ConfigError(_refusal(error)) from error
-    return Config(development=Development(enabled=held.development.enabled))
+    if held.development.enabled and not held.git.commit:
+        raise ConfigError(
+            f"{DEVELOPMENT_ENABLED} is true while {GIT_COMMIT} is false:"
+            " the development needs the commits of the record"
+        )
+    return Config(
+        git=Git(commit=held.git.commit),
+        development=Development(enabled=held.development.enabled),
+    )
 
 
 def read_config(record: Path) -> Config:

@@ -460,6 +460,22 @@ development too.
 - The start of a work item is held to `main` with the development on or off,
   and it alone, the reading decided when S-0039 was ordered: no other write of
   a record is held to `main`.
+- `[git] commit` turns the commits of the record off. It is on by default,
+  the reading of S-0040, off until set shown and not taken: inside a git work
+  tree that does not ignore the record `fgraph` commits every write of it, as
+  the git steps below state.
+- With `commit = false` no write of the record is committed: `add`, `amend`,
+  `remove`, `reorder`, `start`, `block`, `unblock` and `complete` leave their
+  files changed in the work tree, without a commit and without a warning, as
+  the write of a record git ignores. Committing them is the developer's. The
+  start of a work item is still held to `main`.
+- The layers build on each other, decided with S-0040: the branch of a work
+  item carries its record, so the development needs the commits. A
+  `config.toml` that sets `[development] enabled = true` with `[git] commit =
+  false` is refused with exit 2 naming both keys, `development.enabled` and
+  `git.commit`. A record git ignores keeps its own rule, unchanged: its
+  writes make no commit and, with the development on, its start still
+  branches.
 - A `config.toml` that holds a table or a key the configuration does not
   have, a value of another type than its key takes, or no TOML, is refused
   with exit 2 naming the file and the key, whatever the command. The help
@@ -467,11 +483,10 @@ development too.
 - The configuration is read at the edge into a value of the model
   (`src/flowgraph/config.py`). Reading it is an effect: `run()` takes it as a
   callable, the defaults when none is given, and `main()` reads the file.
-- Only this key is built. Not built yet: turning the commits of the record
-  off, the merge, the gate and the parallel work items of the development,
-  and a command that reads and sets the configuration. Until then the file is
-  written by hand; the record of flowgraph holds `[development] enabled =
-  true`.
+- Only these two keys are built. Not built yet: the merge, the gate and the
+  parallel work items of the development, and a command that reads and sets
+  the configuration. Until then the file is written by hand; the record of
+  flowgraph holds `[development] enabled = true`.
 
 Who writes what with the development on, so that two branches never change
 the same file or hand out the same number. With it off no work item has a
@@ -547,8 +562,8 @@ agreed on 2026-11-21 that `fgraph` owns the record, its rituals and its rules:
 The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 
 - `fgraph` commits every write of the record, when the record is inside a git
-  work tree: `add`, `amend`, `remove`, `reorder`, `start`, `block`, `unblock` and
-  `complete`. The commit
+  work tree and its configuration leaves `[git] commit` on: `add`, `amend`,
+  `remove`, `reorder`, `start`, `block`, `unblock` and `complete`. The commit
   holds the files of the record the write changed, alone; whatever else is
   staged or changed stays as it was and out of the commit.
 - The commit is worded by `fgraph`, `chore: <write> <id> in the record`:
@@ -580,6 +595,10 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 - A record git ignores is written without a commit and without a warning, the
   developer's decision of 2026-11-21. The record is ignored when a rule git
   reads names its directory, whether or not git still tracks a file of it.
+- A record whose configuration holds `[git] commit = false` is written the
+  same way, without a commit and without a warning: every write takes the
+  path of a record git ignores. Its start makes no branch, since its
+  configuration cannot turn the development on.
 - With the development on, the start of a work item on an ignored record
   still makes its branch, as the developer ordered on 2026-11-21 after its
   first slice made none: the start is written with no commit, is held to

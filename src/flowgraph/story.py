@@ -6,7 +6,7 @@ from collections.abc import Callable, Collection
 from dataclasses import dataclass, replace
 from datetime import datetime
 from pathlib import Path
-from typing import Literal
+from typing import Literal, assert_never
 
 import tomli_w
 from pydantic import BaseModel, ConfigDict, ValidationError
@@ -59,6 +59,35 @@ class Story:
     description: str
     created: datetime
     tasks: tuple[Task, ...]
+
+
+@dataclass(frozen=True)
+class StartedTask:
+    """A Task in InProgress: started under its started Story, not yet completed."""
+
+    id: TaskId
+    title: str
+    expected_output: str
+    description: str
+    created: datetime
+    started: datetime
+
+
+@dataclass(frozen=True)
+class StartedStory:
+    """A Story in InProgress: started with at least one Task, each in Backlog or started."""
+
+    id: StoryId
+    title: str
+    scenario: Scenario
+    description: str
+    created: datetime
+    started: datetime
+    tasks: tuple[Task | StartedTask, ...]
+
+
+# A Story in any of its states, as the record keeps it.
+StoryState = Story | StartedStory
 
 
 @dataclass
@@ -160,6 +189,30 @@ class StoryMismatchError(Exception):
     """A Story read back different from the one written; its file is as it was before."""
 
 
+class ItemIdError(ValueError):
+    """A text that is neither a Story id nor a Task id."""
+
+
+class TaskNotFoundError(Exception):
+    """A Task id that no Story holds; `task_id` is that id."""
+
+    def __init__(self, task_id: TaskId) -> None:
+        super().__init__(f"no Task {task_id_text(task_id)} in the record")
+        self.task_id = task_id
+
+
+class NoTaskError(ValueError):
+    """A Story started without a Task written for it."""
+
+
+class StartedAlreadyError(ValueError):
+    """A Story or a Task started once more."""
+
+
+class StoryInBacklogError(ValueError):
+    """A Task started while its Story is still in Backlog."""
+
+
 def make_story_id(number: int) -> StoryId:
     """The id of the Story with that number in the record.
 
@@ -259,9 +312,86 @@ def make_task(
     return Task(task_id, *said, description, created.replace(microsecond=0))
 
 
-def append_task(story: Story, task: Task) -> Story:
+def parse_item_id(text: str) -> StoryId | TaskId:
+    """The Story id or the Task id written as the text.
+
+    Raises ItemIdError when the text is neither.
+    """
+    try:
+        return parse_story_id(text)
+    except StoryIdError:
+        pass
+    try:
+        return parse_task_id(text)
+    except TaskIdError:
+        raise ItemIdError(f"{text!r} is no Story id or Task id") from None
+
+
+def append_task[S: (Story, StartedStory)](story: S, task: Task) -> S:
     """The Story with the Task written for it, after the Tasks it already has."""
     return replace(story, tasks=(*story.tasks, task))
+
+
+def started_story(story: StoryState, on: datetime) -> StartedStory:
+    """The Story started on that time, kept to the second, its Tasks still in Backlog.
+
+    Raises NoTaskError when the Story has no Task and StartedAlreadyError when it is started.
+    """
+    match story:
+        case Story(tasks=()):
+            raise NoTaskError(f"{story_id_text(story.id)} has no Task to start with")
+        case Story():
+            to_the_second = on.replace(microsecond=0)
+            return StartedStory(
+                story.id,
+                story.title,
+                story.scenario,
+                story.description,
+                story.created,
+                to_the_second,
+                story.tasks,
+            )
+        case StartedStory():
+            raise StartedAlreadyError(f"{story_id_text(story.id)} is started already")
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def _started(task: Task | StartedTask, on: datetime) -> StartedTask:
+    """The Task started on that time; raises StartedAlreadyError when it is started."""
+    match task:
+        case Task():
+            return StartedTask(
+                task.id,
+                task.title,
+                task.expected_output,
+                task.description,
+                task.created,
+                on.replace(microsecond=0),
+            )
+        case StartedTask():
+            raise StartedAlreadyError(f"{task_id_text(task.id)} is started already")
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def started_task(story: StoryState, task_id: TaskId, on: datetime) -> StartedStory:
+    """The started Story with its Task of that id started on that time, kept to the second.
+
+    Raises StoryInBacklogError when the Story is in Backlog, TaskNotFoundError when it holds no
+    such Task, and StartedAlreadyError when the Task is started.
+    """
+    match story:
+        case Story():
+            task, held = task_id_text(task_id), story_id_text(story.id)
+            raise StoryInBacklogError(f"{task} cannot start: {held} is in Backlog")
+        case StartedStory():
+            if all(task.id != task_id for task in story.tasks):
+                raise TaskNotFoundError(task_id)
+            tasks = tuple(_started(t, on) if t.id == task_id else t for t in story.tasks)
+            return replace(story, tasks=tasks)
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 def story_row(story: Story) -> StoryRow:

@@ -23,11 +23,12 @@ commit = "6087822"
 
 [[tasks]]
 id = "T-0106"
-state = "backlog"
+state = "started"
 title = "Add ignores to src/flowgraph/branch.py and to the git work tree of src/flowgraph/commit.py, telling whether git ignores a path"
 description = "The adapter runs git check-ignore --quiet --no-index, whose exit is 0 for an ignored path and 1 for one that is not; any other exit is the GitError. The step has a default so the tests that build a WorkTree by hand stay as they are."
 expected_output = "changed: ignores of src/flowgraph/branch.py is true when a rule git reads names the path, tracked or not, and raises GitError when git cannot tell; the WorkTree of src/flowgraph/commit.py carries it as a step bound by open_git, a work tree built without it ignoring nothing; proved in tests/branch/ against the real git"
 created = 2026-11-21 14:19:18+00:00
+started = 2026-11-21 14:20:33+00:00
 
 [[tasks]]
 id = "T-0107"

@@ -17,3 +17,11 @@ title = "Add tests/functional/test_block_feature.py, failing on the criterion of
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_block_task.py does. Seen red, then marked a strict xfail naming S-0056 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_block_feature.py states that, on a record with a started Feature, fgraph block of the Feature with a reason and what it waits on exits 0 and fgraph status lists the Feature under InProgress with ! and what it waits on"
 created = 2026-11-21 23:43:47+00:00
+
+[[tasks]]
+id = "T-0203"
+state = "backlog"
+title = "Extend the Feature of src/flowgraph/feature.py to a blocked state kept in its file"
+description = "New code the next Task runs. As a blocked Task: the fields of the block leave the file at the unblock."
+expected_output = "changed: src/flowgraph/feature.py holds the BlockedFeature: its started time, the time it is blocked since, its reason and what it waits on; the block of a StartedFeature and the unblock back to it with the started time it had, each refused for a Feature in another state, a blank reason or a blank waiting on refused; its file holds the state line and those fields, read back whole; proved in tests/feature/"
+created = 2026-11-21 23:43:47+00:00

@@ -56,8 +56,10 @@ commit = "72133d3"
 
 [[tasks]]
 id = "T-0073"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a started Task is blocked with fgraph block"
 expected_output = "changed: README.md shows fgraph block, what fgraph show then lists and what a block refuses; docs/domain-model.md says the block move of a Task is built, what a BlockedTask carries in its file and that unblock is not built yet"
 created = 2026-11-21 11:19:52+00:00
 started = 2026-11-21 11:28:14+00:00
+completed = 2026-11-21 11:28:55+00:00
+commit = "6ac0c91"

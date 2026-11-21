@@ -2,7 +2,8 @@
 
 `fgraph land` takes the git steps a developer ran by hand: one merge commit of the branch on
 main under the developer's message, the complete of the work item at that commit with the
-commit of the record, then the worktree and the branch removed.
+commit of the record, then the worktree and the branch removed. It is part of the development:
+a record whose configuration leaves the development off has no landing.
 """
 
 from collections.abc import Sequence
@@ -12,6 +13,7 @@ from pathlib import Path
 from flowgraph import work_item
 from flowgraph.branch import MAIN, GitError
 from flowgraph.commit import OpenGit, Said, WorkTree, commit_written
+from flowgraph.config import CONFIG, DEVELOPMENT_ENABLED, Config
 from flowgraph.criterion import DecisionError, EmptyPartError, make_commit
 from flowgraph.item import complete_item, parse_work_item_id_of_any_kind
 from flowgraph.record import Now
@@ -89,13 +91,15 @@ def land_item(
     now: Now,
     record: Path,
     open_git: OpenGit,
+    config: Config,
     decision: str | None = None,
 ) -> Said:
     """Land the started work item of that id on main under the message; what fgraph says.
 
     A Spike lands with the decision that answers its hypothesis. Raises WorkItemIdError when the
-    text is the id of no kind of work item, LandError when the record is outside a git work
-    tree, when the work tree is not on main or when the work item has no branch or several, the
+    text is the id of no kind of work item, LandError when the development is off in the
+    configuration, naming the key that turns it on, when the record is outside a git work tree,
+    when the work tree is not on main or when the work item has no branch or several, the
     refusal of the complete when a Task of it is not completed or its decision is missing, and
     GitError when git refuses a step. Nothing is merged unless the merge is committed; a step
     refused after it says how far the landing came. A record git ignores is completed with no
@@ -103,6 +107,9 @@ def land_item(
     """
     item_id = parse_work_item_id_of_any_kind(item)
     text = work_item_id_text(item_id)
+    if not config.development.enabled:
+        turn_on = f"set {DEVELOPMENT_ENABLED} = true in {record / CONFIG}"
+        raise LandError(f"{text} cannot land: the development is off -- {turn_on}")
     work_tree = open_git(record)
     if work_tree is None:
         raise LandError(f"{text} cannot land: {record} is not inside a git work tree")
@@ -118,7 +125,7 @@ def land_item(
         raise
     written = complete_item(text, sha, store, now, decision)
     try:
-        commit_written(written, store, record, lambda _: work_tree)
+        commit_written(written, store, record, lambda _: work_tree, config)
     except GitError as error:
         raise GitError(f"{error} -- {text} is merged at {sha}, complete it there") from error
     try:

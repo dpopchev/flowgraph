@@ -13,12 +13,9 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph.cli import open_files, open_git, run
+from flowgraph.cli import open_files, open_git, read_config, run
 
-pytestmark = [
-    pytest.mark.functional,
-    pytest.mark.xfail(strict=True, reason="S-0039: a start makes its branch in every record yet"),
-]
+pytestmark = pytest.mark.functional
 
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 TITLE = "Raise the Stories fgraph lists from 0 to 1"
@@ -58,6 +55,7 @@ def fgraph(argv: Sequence[str], cwd: Path) -> Outcome:
         open_store=open_files,
         now=lambda: NOW,
         open_git=open_git,
+        load_config=read_config,
     )
     return Outcome(status, "".join(out), "".join(err))
 
@@ -115,3 +113,30 @@ class TestAStoryStartedInARecordWithNoConfig:
 
     def test_git_lists_no_new_worktree(self, started: Outcome, checkout: Path) -> None:
         assert git(checkout, "worktree", "list", "--porcelain").count("worktree ") == 1
+
+
+def test_a_start_outside_a_git_work_tree_warns_of_nothing(tmp_path: Path) -> None:
+    assert runs(tmp_path, ADD_STORY, ADD_TASK, ["start", "S-0001"]).err == ""
+
+
+class TestAStoryLandedInARecordWithNoConfig:
+    @pytest.fixture
+    def refused(self, checkout: Path) -> Outcome:
+        return runs(
+            checkout,
+            ["start", "S-0001"],
+            ["start", "T-0001"],
+            ["complete", "T-0001", "--commit", "abc1234"],
+            ["land", "S-0001", "--message", "feat: land the first Story"],
+        )
+
+    def test_land_exits_with_two(self, refused: Outcome) -> None:
+        assert refused.status == 2
+
+    def test_land_names_the_key_that_turns_the_development_on(
+        self, refused: Outcome, checkout: Path
+    ) -> None:
+        assert refused.err.splitlines()[-1] == (
+            "fgraph: error: S-0001 cannot land: the development is off"
+            f" -- set development.enabled = true in {checkout / '.fgraph' / 'config.toml'}"
+        )

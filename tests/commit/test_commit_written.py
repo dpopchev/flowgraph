@@ -9,11 +9,14 @@ import pytest
 
 from flowgraph.branch import GitError, make_slug
 from flowgraph.commit import Said, WorkTree, commit_written
+from flowgraph.config import make_config
 from flowgraph.item import Store, ToBranch, Written
 from flowgraph.story import make_story_id
 
 pytestmark = pytest.mark.command
 
+ON = make_config("[development]\nenabled = true\n")
+OFF = make_config("")
 TOP = Path("/src/project")
 RECORD = TOP / ".fgraph"
 FILE = RECORD / "items" / "S-0001.toml"
@@ -87,14 +90,31 @@ def work_tree(steps: list[object], sha: str = "3e9ae5c0000") -> WorkTree:
 
 
 def test_a_write_outside_a_work_tree_says_its_line_without_a_warning() -> None:
-    assert commit_written(ADDED, store([FILE]), RECORD, lambda _: None) == Said("added S-0001\n")
+    said = commit_written(ADDED, store([FILE]), RECORD, lambda _: None, ON)
+    assert said == Said("added S-0001\n")
 
 
 def test_a_start_of_a_work_item_outside_a_work_tree_warns_that_no_branch_was_made() -> None:
-    assert commit_written(STARTED, store([FILE]), RECORD, lambda _: None) == Said(
+    assert commit_written(STARTED, store([FILE]), RECORD, lambda _: None, ON) == Said(
         "started S-0001\n",
         "fgraph: warning: no branch made: /src/project/.fgraph is not inside a git work tree\n",
     )
+
+
+def test_a_start_with_the_development_off_outside_a_work_tree_warns_of_nothing() -> None:
+    said = commit_written(STARTED, store([FILE]), RECORD, lambda _: None, OFF)
+    assert said == Said("started S-0001\n")
+
+
+def test_a_start_with_the_development_off_is_committed_as_any_write() -> None:
+    steps: list[object] = []
+    commit_written(STARTED, store([FILE]), RECORD, lambda _: work_tree(steps), OFF)
+    assert steps == [([Path(".fgraph/items/S-0001.toml")], "chore: start S-0001 in the record")]
+
+
+def test_a_start_with_the_development_off_names_no_branch() -> None:
+    said = commit_written(STARTED, store([FILE]), RECORD, lambda _: work_tree([]), OFF)
+    assert said == Said("started S-0001\n")
 
 
 def ignoring(steps: list[object]) -> WorkTree:
@@ -104,26 +124,32 @@ def ignoring(steps: list[object]) -> WorkTree:
 
 def test_a_write_on_a_record_git_ignores_makes_no_commit() -> None:
     steps: list[object] = []
-    commit_written(ADDED, store([FILE]), RECORD, lambda _: ignoring(steps))
+    commit_written(ADDED, store([FILE]), RECORD, lambda _: ignoring(steps), ON)
     assert steps == []
 
 
 def test_a_write_on_a_record_git_ignores_says_its_line_without_a_warning() -> None:
-    said = commit_written(ADDED, store([FILE]), RECORD, lambda _: ignoring([]))
+    said = commit_written(ADDED, store([FILE]), RECORD, lambda _: ignoring([]), ON)
     assert said == Said("added S-0001\n")
 
 
 def test_a_start_of_a_work_item_on_a_record_git_ignores_checks_its_branch_out_at_head() -> None:
     steps: list[object] = []
-    commit_written(STARTED, store([FILE]), RECORD, lambda _: ignoring(steps))
+    commit_written(STARTED, store([FILE]), RECORD, lambda _: ignoring(steps), ON)
     assert steps == [("wi/S-0001-a-slug", Path("/src/project.worktrees/S-0001-a-slug"), "HEAD")]
 
 
 def test_a_start_of_a_work_item_on_a_record_git_ignores_names_its_branch_without_a_warning() -> (
     None
 ):
-    said = commit_written(STARTED, store([FILE]), RECORD, lambda _: ignoring([]))
+    said = commit_written(STARTED, store([FILE]), RECORD, lambda _: ignoring([]), ON)
     assert said == Said(f"started S-0001\n{BRANCHED}")
+
+
+def test_a_start_with_the_development_off_on_a_record_git_ignores_takes_no_git_step() -> None:
+    steps: list[object] = []
+    commit_written(STARTED, store([FILE]), RECORD, lambda _: ignoring(steps), OFF)
+    assert steps == []
 
 
 def test_a_worktree_refused_on_a_record_git_ignores_says_the_start_stays_written() -> None:
@@ -132,23 +158,23 @@ def test_a_worktree_refused_on_a_record_git_ignores_says_the_start_stays_written
         GitError,
         match=r"^git commit failed: refused -- S-0001 is started, its branch is not$",
     ):
-        commit_written(STARTED, store([FILE]), RECORD, lambda _: refusing)
+        commit_written(STARTED, store([FILE]), RECORD, lambda _: refusing, ON)
 
 
 def test_the_changed_files_are_committed_relative_to_the_top_under_the_message() -> None:
     steps: list[object] = []
-    commit_written(ADDED, store([FILE]), RECORD, lambda _: work_tree(steps))
+    commit_written(ADDED, store([FILE]), RECORD, lambda _: work_tree(steps), ON)
     assert steps == [([Path(".fgraph/items/S-0001.toml")], "chore: add S-0001 in the record")]
 
 
 def test_a_committed_write_says_its_line() -> None:
-    said = commit_written(ADDED, store([FILE]), RECORD, lambda _: work_tree([]))
+    said = commit_written(ADDED, store([FILE]), RECORD, lambda _: work_tree([]), ON)
     assert said == Said("added S-0001\n")
 
 
 def test_a_write_that_changed_no_file_makes_no_commit() -> None:
     steps: list[object] = []
-    commit_written(ADDED, store([]), RECORD, lambda _: work_tree(steps))
+    commit_written(ADDED, store([]), RECORD, lambda _: work_tree(steps), ON)
     assert steps == []
 
 
@@ -156,20 +182,20 @@ def test_a_commit_refused_puts_the_files_back() -> None:
     restored: list[str] = []
     refusing = tree(refuse, never)
     with pytest.raises(GitError):
-        commit_written(ADDED, store([FILE], restored), RECORD, lambda _: refusing)
+        commit_written(ADDED, store([FILE], restored), RECORD, lambda _: refusing, ON)
     assert restored == ["restored"]
 
 
 def test_a_start_of_a_work_item_checks_its_branch_out_at_the_commit() -> None:
     steps: list[object] = []
-    commit_written(STARTED, store([FILE]), RECORD, lambda _: work_tree(steps))
+    commit_written(STARTED, store([FILE]), RECORD, lambda _: work_tree(steps), ON)
     assert steps[1:] == [
         ("wi/S-0001-a-slug", Path("/src/project.worktrees/S-0001-a-slug"), "3e9ae5c0000")
     ]
 
 
 def test_a_start_of_a_work_item_names_its_branch_and_its_worktree() -> None:
-    said = commit_written(STARTED, store([FILE]), RECORD, lambda _: work_tree([]))
+    said = commit_written(STARTED, store([FILE]), RECORD, lambda _: work_tree([]), ON)
     assert said == Said(f"started S-0001\n{BRANCHED}")
 
 
@@ -179,12 +205,12 @@ def test_a_worktree_refused_says_the_start_stays_committed() -> None:
         GitError,
         match=r"^git commit failed: refused -- S-0001 is started at 3e9ae5c, its branch is not$",
     ):
-        commit_written(STARTED, store([FILE]), RECORD, lambda _: committing)
+        commit_written(STARTED, store([FILE]), RECORD, lambda _: committing, ON)
 
 
 def test_a_worktree_refused_leaves_the_files_as_committed() -> None:
     restored: list[str] = []
     committing = tree(lambda *_: "3e9ae5c0000", refuse)
     with pytest.raises(GitError):
-        commit_written(STARTED, store([FILE], restored), RECORD, lambda _: committing)
+        commit_written(STARTED, store([FILE], restored), RECORD, lambda _: committing, ON)
     assert restored == []

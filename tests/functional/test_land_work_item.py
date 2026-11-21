@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph.cli import open_files, open_git, run
+from flowgraph.cli import open_files, open_git, read_config, run
 
 pytestmark = pytest.mark.functional
 
@@ -57,6 +57,7 @@ def fgraph(argv: Sequence[str], cwd: Path) -> Outcome:
         open_store=open_files,
         now=lambda: NOW,
         open_git=open_git,
+        load_config=read_config,
     )
     return Outcome(status, "".join(out), "".join(err))
 
@@ -65,6 +66,13 @@ def git(cwd: Path, *args: str) -> str:
     """The output of the git command run in cwd, stripped; fails the test on a non-zero exit."""
     done = subprocess.run(["git", *args], cwd=cwd, check=True, capture_output=True, text=True)
     return done.stdout.strip()
+
+
+def enable_development(project: Path) -> None:
+    """Write `[development] enabled = true` as the config.toml of the record of the project."""
+    record = project / ".fgraph"
+    record.mkdir()
+    (record / "config.toml").write_text("[development]\nenabled = true\n", encoding="utf-8")
 
 
 @pytest.fixture(autouse=True)
@@ -87,6 +95,9 @@ def started(tmp_path: Path) -> Path:
     checkout = tmp_path / "project"
     checkout.mkdir()
     git(checkout, "init", "--quiet", "--initial-branch", "main")
+    enable_development(checkout)
+    git(checkout, "add", ".fgraph/config.toml")
+    git(checkout, "commit", "--quiet", "--message", "chore: turn the development on")
     for argv in (ADD_STORY, ADD_TASK, ["start", "S-0001"]):
         fgraph(argv, checkout)
     worktree = tmp_path / WORKTREE
@@ -199,6 +210,7 @@ def test_a_land_of_a_story_without_a_branch_exits_with_two_and_names_it(ready: P
 def test_a_land_outside_a_git_work_tree_exits_with_two_and_names_the_record(
     tmp_path: Path,
 ) -> None:
+    enable_development(tmp_path)
     fgraph(ADD_STORY, tmp_path)
     outcome = fgraph(LAND, tmp_path)
     record = tmp_path / ".fgraph"

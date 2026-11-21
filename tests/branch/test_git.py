@@ -111,3 +111,13 @@ def test_a_worktree_on_a_branch_that_exists_raises_naming_the_command(
     git(checkout, "branch", "wi/CH-0001-a-slug")
     with pytest.raises(GitError, match=r"^git worktree add .* failed: .*already exists"):
         add_worktree(checkout, "wi/CH-0001-a-slug", tmp_path / "elsewhere", "HEAD")
+
+
+def test_a_commit_git_refuses_leaves_the_file_unstaged(checkout: Path) -> None:
+    hook = checkout / ".git" / "hooks" / "pre-commit"
+    hook.write_text("#!/bin/sh\nexit 1\n", encoding="utf-8")
+    hook.chmod(0o755)
+    (checkout / "README").write_text("changed\n", encoding="utf-8")
+    with pytest.raises(GitError):
+        commit_file(checkout, Path("README"), "a message")
+    assert git(checkout, "status", "--porcelain") == " M README"

@@ -95,10 +95,14 @@ def commit_file(work_tree: Path, file: Path, message: str) -> str:
     """Adapter: commit the one file, relative to the work tree, with the message; its sha.
 
     Whatever else is staged or changed stays as it was and out of the commit. Raises GitError
-    when git refuses a step.
+    when git refuses a step; a commit refused leaves the file unstaged.
     """
     _git(work_tree, "add", "--", str(file))
-    _git(work_tree, "commit", "--quiet", "--only", "--message", message, "--", str(file))
+    try:
+        _git(work_tree, "commit", "--quiet", "--only", "--message", message, "--", str(file))
+    except GitError:
+        _git(work_tree, "reset", "--quiet", "--", str(file))
+        raise
     return _git(work_tree, "rev-parse", "HEAD")
 
 

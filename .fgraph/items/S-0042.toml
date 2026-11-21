@@ -9,3 +9,11 @@ created = 2026-11-21 20:32:54+00:00
 given = "a record with the development on and [development] gate set to a command that fails"
 when = "fgraph land of a started Story is run"
 then = "it exits 2 naming the command, with nothing merged"
+
+[[tasks]]
+id = "T-0176"
+state = "backlog"
+title = "Add tests/functional/test_land_gate.py, failing on the criterion of S-0042"
+description = "decided: S-0042: the reading its Then states -- one gate command of the record, run at a landing on top of the rule that every Task is completed; no check per Task at complete, and the Given / When / Then of the work item is neither run nor confirmed. Built as tests/functional/test_land_work_item.py builds its repository. Seen red, then marked a strict xfail naming S-0042 until the Task that turns it green removes the mark."
+expected_output = "created: tests/functional/test_land_gate.py states that, in a repository whose record turns the development on with [development] gate set to a command that fails, fgraph land of a started Story exits 2 naming the command, and main, the branch, the worktree and the Story are as they were"
+created = 2026-11-21 22:40:43+00:00

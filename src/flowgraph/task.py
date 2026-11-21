@@ -230,3 +230,16 @@ def all_completed(tasks: Iterable[TaskState], holder: str) -> tuple[CompletedTas
     if left:
         raise OpenTaskError(f"{holder} has Tasks to complete first: {', '.join(left)}")
     return done
+
+
+def task_state_name(task: TaskState) -> str:
+    """The state of the Task as the record writes it."""
+    match task:
+        case Task():
+            return "backlog"
+        case StartedTask():
+            return "started"
+        case CompletedTask():
+            return "completed"
+        case _ as unreachable:
+            assert_never(unreachable)

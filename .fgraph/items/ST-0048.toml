@@ -1,9 +1,11 @@
 id = "ST-0048"
-state = "started"
+state = "completed"
 title = "Cut the letters of the prefix of a Spike id from two to one, SP to Q"
 description = "The developer asked on 2026-11-21 what the options are for every id to have a prefix of one letter. Today Feature is F, Bug is B, Upkeep is U and Task is T; Story is ST and Spike is SP, since both start with S. The options shown: Story takes S, and Spike takes Q (question), H (hypothesis), X (explore) or P or K (a letter of its name). The developer's choice of that day: 'q is nice option'. Q stands for question: a Spike is a question to answer (docs/domain-model.md, Work item types). Readings of the agent: the file is items/Q-0001.toml and the branch wi/Q-0001-<slug>; the record of flowgraph holds no Spike, so no file of it is renamed. Open, decided when it is ordered: a record of another project that holds SP files -- today a file with a prefix no kind knows is left alone, so they would drop out of status unless fgraph reads SP as Q or renames them. Its Tasks are written when it is ordered."
 created = 2026-11-21 21:06:34+00:00
 started = 2026-11-21 22:00:03+00:00
+completed = 2026-11-21 22:05:38+00:00
+commit = "c9cd956"
 
 [criterion]
 given = "a record with no items"

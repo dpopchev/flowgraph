@@ -24,11 +24,12 @@ commit = "033e91f"
 
 [[tasks]]
 id = "T-0177"
-state = "backlog"
+state = "started"
 title = "Add development.gate to the Config of src/flowgraph/config.py and refuse a landing whose gate fails in src/flowgraph/land.py"
 description = "Removes the xfail mark of tests/functional/test_land_gate.py. The adapter is proved against a real command in tmp_path."
 expected_output = "changed: the Config of src/flowgraph/config.py holds development.gate, a command line, or none when the key is left out; fgraph land runs the gate through the shell at the top of the work tree of main once the work of the branch is merged there and before the landing is committed or the work item completed; a gate that exits with another status than 0 leaves main where it was, whatever the way of merging, and exits 2 naming the command and its status, its output written as the gate wrote it; a gate that passes lands as before; the run of the gate is an effect given to run() of src/flowgraph/cli.py as a callable and bound in main() to a named adapter; an empty gate is refused as a config.toml naming the key"
 created = 2026-11-21 22:40:43+00:00
+started = 2026-11-21 23:45:50+00:00
 
 [[tasks]]
 id = "T-0178"

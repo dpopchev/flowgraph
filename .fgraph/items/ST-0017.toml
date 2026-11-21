@@ -24,3 +24,11 @@ title = "Add the git adapters of a landing to src/flowgraph/branch.py: the branc
 description = "Each adapter raises GitError naming the git command when git refuses it. A merge git refuses leaves nothing merged."
 expected_output = "changed: src/flowgraph/branch.py names the branch a work tree is on and the branches matching a pattern, merges a branch without committing, aborts that merge, commits it under a message and returns its short sha, finds the worktree of a branch, removes a worktree and deletes a merged branch; each is proved against the real git in tests/branch/test_landing_git.py"
 created = 2026-11-21 10:59:10+00:00
+
+[[tasks]]
+id = "T-0055"
+state = "backlog"
+title = "Add the land command to src/flowgraph/land.py, src/flowgraph/commit.py and src/flowgraph/cli.py"
+description = "src/flowgraph/land.py holds the landing as one function over the store and the git steps, each a callable of the work tree of src/flowgraph/commit.py, proved with fakes in tests/land/. Removes the xfail mark of tests/functional/test_land_work_item.py; the fakes of tests/commit/ gain the new steps."
+expected_output = "changed: fgraph land ID --message TEXT merges the branch of the started work item into main under that message, completes the work item at the merge commit, commits the record, removes the worktree and the branch and prints 'landed <id> at <sha>'; it exits 2 naming why, nothing merged, on each refusal of the first Task"
+created = 2026-11-21 10:59:10+00:00

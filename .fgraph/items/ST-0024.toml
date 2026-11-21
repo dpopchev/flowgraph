@@ -1,0 +1,10 @@
+id = "ST-0024"
+state = "backlog"
+title = "Cut the bytecode files the first uv run leaves untracked in a new worktree of flowgraph from all to none"
+description = "Found during ST-0020. The worktree has no .venv; the first uv run creates one without the bytecode prefix that make sync writes, so __pycache__ lands in src/ and tests/, and .gitignore does not name it. git add src tests then swept 28 .pyc files into 232fd95 and fefa24c; 9246e68 removed them and no .pyc is tracked on main. Until this lands the agent runs make sync in a new worktree first and adds files by name. Ways, not chosen: .gitignore names __pycache__/; the bytecode prefix set where a bare uv run reads it. Its Tasks are written when it is ordered."
+created = 2026-11-21 10:58:56+00:00
+
+[criterion]
+given = "the worktree fgraph start made for a work item of flowgraph"
+when = "uv run fgraph status is run in it"
+then = "git status --short prints nothing"

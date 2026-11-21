@@ -1,9 +1,11 @@
 id = "U-0005"
-state = "started"
+state = "completed"
 title = "Cut the files of flowgraph that ruff format would rewrite from 1 to 0"
 description = "Found during ST-0011: make lint runs ruff check and no ruff format --check, so a file can land unformatted. At 26a48ea uv run ruff format --check . names 1 file of 127, tests/branch/test_git.py; the agent formatted the files it wrote and restored that one when a wider ruff format touched it. Open: whether make check should run ruff format --check. Its Tasks are written when it is ordered."
 created = 2026-11-21 12:19:20+00:00
 started = 2026-11-21 14:00:46+00:00
+completed = 2026-11-21 14:01:20+00:00
+commit = "4b3f285"
 
 [criterion]
 given = "main"

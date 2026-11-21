@@ -12,23 +12,32 @@ then = "it lists the Task with its bucket Completed and its commit"
 
 [[tasks]]
 id = "T-0145"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_show_worktree.py, failing on the criterion of ST-0037"
 description = "Built as tests/functional/test_status_worktree.py builds its repository and its worktree. Seen red, then marked a strict xfail naming ST-0037 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_show_worktree.py states that fgraph show of a Story started, with a Task of it completed in its worktree, run in the checkout of main, lists that Task with its bucket Completed and its commit"
 created = 2026-11-21 21:35:26+00:00
+started = 2026-11-21 21:36:26+00:00
+completed = 2026-11-21 21:37:39+00:00
+commit = "95fa7a0"
 
 [[tasks]]
 id = "T-0146"
-state = "backlog"
+state = "completed"
 title = "Extend across_worktrees of src/flowgraph/worktrees.py to the detail fgraph show reads of a started work item"
 description = "Removes the xfail mark of tests/functional/test_show_worktree.py. The show of a Feature lists its work items from the rows, which already read the worktree."
 expected_output = "changed: the store across_worktrees of src/flowgraph/worktrees.py gives reads the detail of a started work item from the worktree of its branch wi/<id>-*, the file at the same path inside it, committed or not, as its row is read; a work item not started, one without such a worktree, a record outside a git work tree, a record git ignores and a work tree on the branch of a work item read the record itself; proved in tests/worktrees/"
 created = 2026-11-21 21:35:27+00:00
+started = 2026-11-21 21:37:39+00:00
+completed = 2026-11-21 21:39:59+00:00
+commit = "3ae6e38"
 
 [[tasks]]
 id = "T-0147"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph show reads a started work item from its worktree"
 expected_output = "changed: README.md and docs/domain-model.md say fgraph show on main reads a started work item from the worktree of its branch, as status does; the line of docs/domain-model.md that names it not built yet is gone"
 created = 2026-11-21 21:35:27+00:00
+started = 2026-11-21 21:40:00+00:00
+completed = 2026-11-21 21:41:27+00:00
+commit = "0bb37d0"

@@ -458,8 +458,15 @@ agreed on 2026-11-21 that `fgraph` owns the record, its rituals and its rules:
   work tree on the branch of a work item, status reads the record of that
   work tree and no other. Every read of the rows goes this way, so the bucket
   of a Feature does too.
-- Not built yet: `fgraph show` of a started work item on `main` reads the
-  record of `main`, so it shows its Tasks as they were at the start.
+- `fgraph show` of a started work item on `main` reads it there too, as
+  status does: the work item it shows, with the bucket and the commit of each
+  Task, is the one the worktree of its branch `wi/<id>-*` holds, the same
+  file read the same way. A work item that is not started, a started one
+  without such a worktree, a record outside a git work tree and a record git
+  ignores are shown from the record itself. Run in a work tree on the branch
+  of a work item, show reads the record of that work tree and no other. The
+  show of a Feature lists its work items from the rows, so it reads them
+  there as status does.
 
 The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 

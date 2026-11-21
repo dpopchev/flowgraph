@@ -7,3 +7,11 @@ created = 2026-11-21 21:22:04+00:00
 [criterion]
 observed = "fgraph amend F-0001 --title x says 'F-0001' is no Story id: it is ST- and a number; so do remove, reorder and add task --parent, though each takes an Upkeep, a Bug and a Spike too"
 expected = "the refusal names every kind the command takes, as that of start does: no Story, Upkeep, Bug, Spike or Task id"
+
+[[tasks]]
+id = "T-0148"
+state = "backlog"
+title = "Add tests/functional/test_wrong_kind_id.py, failing on what B-0001 expects"
+description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_amend_work_item.py does. Seen red, then marked a strict xfail naming B-0001 until the Task that turns it green removes the mark."
+expected_output = "created: tests/functional/test_wrong_kind_id.py states that fgraph amend, fgraph remove, fgraph reorder and fgraph add task --parent, each given the id of a Feature, exit 2 and say it is no Story, Upkeep, Bug or Spike id"
+created = 2026-11-21 21:36:34+00:00

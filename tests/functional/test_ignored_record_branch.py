@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph.cli import open_files, open_git, run
+from flowgraph.cli import open_files, open_git, read_config, run
 
 pytestmark = pytest.mark.functional
 
@@ -54,6 +54,7 @@ def fgraph(argv: Sequence[str], cwd: Path) -> Outcome:
         open_store=open_files,
         now=lambda: NOW,
         open_git=open_git,
+        load_config=read_config,
     )
     return Outcome(status, "".join(out), "".join(err))
 
@@ -62,6 +63,13 @@ def git(cwd: Path, *args: str) -> str:
     """The output of the git command run in cwd, stripped; fails the test on a non-zero exit."""
     done = subprocess.run(["git", *args], cwd=cwd, check=True, capture_output=True, text=True)
     return done.stdout.strip()
+
+
+def enable_development(project: Path) -> None:
+    """Write `[development] enabled = true` as the config.toml of the record of the project."""
+    record = project / ".fgraph"
+    record.mkdir()
+    (record / "config.toml").write_text("[development]\nenabled = true\n", encoding="utf-8")
 
 
 @pytest.fixture(autouse=True)
@@ -77,13 +85,17 @@ def environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
 
 @pytest.fixture
 def checkout(tmp_path: Path) -> Path:
-    """A git repository on main whose `.gitignore` names the record, holding a Story with a Task."""
+    """A git repository on main whose `.gitignore` names the record, holding a Story with a Task.
+
+    The config.toml of the record turns the development on, ignored as the rest of it.
+    """
     path = tmp_path / "project"
     path.mkdir()
     git(path, "init", "--quiet", "--initial-branch", "main")
     (path / ".gitignore").write_text(".fgraph/\n", encoding="utf-8")
     git(path, "add", ".gitignore")
     git(path, "commit", "--quiet", "--message", "first")
+    enable_development(path)
     fgraph(ADD_STORY, path)
     fgraph(ADD_TASK, path)
     return path

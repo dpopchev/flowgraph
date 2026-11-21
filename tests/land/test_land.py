@@ -10,6 +10,7 @@ import pytest
 
 from flowgraph.branch import GitError
 from flowgraph.commit import Said, WorkTree
+from flowgraph.config import Config, make_config
 from flowgraph.criterion import make_commit, make_scenario
 from flowgraph.item import Store
 from flowgraph.land import LandError, land_item
@@ -26,6 +27,8 @@ from flowgraph.work_item import (
 
 pytestmark = pytest.mark.command
 
+ON = make_config("[development]\nenabled = true\n")
+OFF = make_config("")
 TOP = Path("/src/project")
 RECORD = TOP / ".fgraph"
 FILE = RECORD / "items" / "S-0001.toml"
@@ -94,10 +97,30 @@ def work_tree(steps: list[object]) -> WorkTree:
 
 
 def land(
-    item: WorkItemState, tree: WorkTree | None, saved: list[WorkItemState] | None = None
+    item: WorkItemState,
+    tree: WorkTree | None,
+    saved: list[WorkItemState] | None = None,
+    config: Config = ON,
 ) -> Said:
-    """Land S-0001 on the record holding that work item, in that work tree."""
-    return land_item("S-0001", MESSAGE, store(item, saved), lambda: NOW, RECORD, lambda _: tree)
+    """Land S-0001 on the record holding that work item, in that work tree, the development on."""
+    kept = store(item, saved)
+    return land_item("S-0001", MESSAGE, kept, lambda: NOW, RECORD, lambda _: tree, config)
+
+
+def test_a_landing_with_the_development_off_is_refused_naming_the_key() -> None:
+    with pytest.raises(LandError) as error:
+        land(READY, work_tree([]), config=OFF)
+    assert str(error.value) == (
+        "S-0001 cannot land: the development is off"
+        " -- set development.enabled = true in /src/project/.fgraph/config.toml"
+    )
+
+
+def test_a_landing_with_the_development_off_takes_no_git_step() -> None:
+    steps: list[object] = []
+    with pytest.raises(LandError):
+        land(READY, work_tree(steps), config=OFF)
+    assert steps == []
 
 
 def test_a_landing_takes_its_git_steps_in_order() -> None:

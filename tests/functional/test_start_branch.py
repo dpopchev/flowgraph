@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph.cli import open_files, open_git, run
+from flowgraph.cli import open_files, open_git, read_config, run
 
 pytestmark = pytest.mark.functional
 
@@ -56,6 +56,7 @@ def fgraph(argv: Sequence[str], cwd: Path) -> Outcome:
         open_store=open_files,
         now=lambda: NOW,
         open_git=open_git,
+        load_config=read_config,
     )
     return Outcome(status, "".join(out), "".join(err))
 
@@ -72,6 +73,13 @@ def git(cwd: Path, *args: str) -> str:
     return done.stdout.strip()
 
 
+def enable_development(project: Path) -> None:
+    """Write `[development] enabled = true` as the config.toml of the record of the project."""
+    record = project / ".fgraph"
+    record.mkdir()
+    (record / "config.toml").write_text("[development]\nenabled = true\n", encoding="utf-8")
+
+
 @pytest.fixture(autouse=True)
 def environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """The identity of every commit from the environment, and no git config of the machine."""
@@ -85,10 +93,16 @@ def environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
 
 @pytest.fixture
 def checkout(tmp_path: Path) -> Path:
-    """A git repository on main whose commits hold a Story in Backlog with one Task."""
+    """A git repository on main whose commits hold a Story in Backlog with one Task.
+
+    Its first commit holds the config.toml of the record, which turns the development on.
+    """
     path = tmp_path / "project"
     path.mkdir()
     git(path, "init", "--quiet", "--initial-branch", "main")
+    enable_development(path)
+    git(path, "add", ".fgraph/config.toml")
+    git(path, "commit", "--quiet", "--message", "chore: turn the development on")
     runs(path, ADD_STORY, ADD_TASK)
     return path
 
@@ -150,6 +164,7 @@ class TestAStoryStartedOutsideAGitWorkTree:
     def started(self, tmp_path: Path) -> Outcome:
         path = tmp_path / "project"
         path.mkdir()
+        enable_development(path)
         return runs(path, ADD_STORY, ADD_TASK, ["start", "S-0001"])
 
     def test_start_exits_with_zero(self, started: Outcome) -> None:

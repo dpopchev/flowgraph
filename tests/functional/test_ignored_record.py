@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph.cli import open_files, open_git, run
+from flowgraph.cli import open_files, open_git, read_config, run
 
 pytestmark = pytest.mark.functional
 
@@ -68,6 +68,7 @@ def fgraph(argv: Sequence[str], cwd: Path) -> Outcome:
         open_store=open_files,
         now=lambda: NOW,
         open_git=open_git,
+        load_config=read_config,
     )
     return Outcome(status, "".join(out), "".join(err))
 
@@ -91,13 +92,20 @@ def environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
 
 @pytest.fixture
 def checkout(tmp_path: Path) -> Path:
-    """A git repository on main with one commit, whose `.gitignore` names the record."""
+    """A git repository on main with one commit, whose `.gitignore` names the record.
+
+    The config.toml of the record turns the development on, ignored as the rest of it.
+    """
     path = tmp_path / "project"
     path.mkdir()
     git(path, "init", "--quiet", "--initial-branch", "main")
     (path / ".gitignore").write_text(".fgraph/\n", encoding="utf-8")
     git(path, "add", ".gitignore")
     git(path, "commit", "--quiet", "--message", "first")
+    (path / ".fgraph").mkdir()
+    (path / ".fgraph" / "config.toml").write_text(
+        "[development]\nenabled = true\n", encoding="utf-8"
+    )
     return path
 
 

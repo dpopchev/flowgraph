@@ -15,6 +15,7 @@ from typing import assert_never
 
 from flowgraph.branch import GitError, SlugError
 from flowgraph.commit import OpenGit, Said, commit_written, open_git
+from flowgraph.config import Config, ConfigError, LoadConfig, make_config, read_config
 from flowgraph.criterion import (
     CommitError,
     Criterion,
@@ -87,7 +88,7 @@ from flowgraph.work_item import (
 )
 from flowgraph.worktrees import across_worktrees
 
-__all__ = ["Store", "open_files", "open_git", "run"]
+__all__ = ["Store", "open_files", "open_git", "read_config", "run"]
 
 # Write text to a stream; what it returns is ignored, so a stream's write and a list's append fit.
 Write = Callable[[str], object]
@@ -97,6 +98,7 @@ Width = Callable[[], int | None]
 
 # The refusals of a command, each written as a usage error; a git step refused among them.
 REFUSED = (
+    ConfigError,
     ItemIdError,
     WorkItemIdError,
     FeatureIdError,
@@ -198,6 +200,11 @@ def _no_wait(seconds: float) -> None:
     """The wait of a run given none: the next frame of watch follows at once."""
 
 
+def _no_config(record: Path) -> Config:
+    """The configuration of a run given none to read: the defaults, whatever the record holds."""
+    return make_config("")
+
+
 def terminal_width() -> int | None:
     """Adapter: the columns of the terminal the output of the process is written to.
 
@@ -213,20 +220,24 @@ def _said(
     record: Path,
     open_git: OpenGit,
     width: Width,
+    config: Config,
 ) -> Said | None:
     """Run the command the arguments name on the record; None when they name none.
 
     A write is committed once it is made. The lines of status are cut to the width, when there
-    is one. Raises the refusal of the command, a git step refused among them.
+    is one. The configuration says whether a start branches and a landing is taken. Raises the
+    refusal of the command, a git step refused among them.
     """
     if args.command == "start":
         check_start_on_main(args.id, record, open_git)
     written = _written(args, store, now)
     if written is not None:
-        return commit_written(written, store, record, open_git)
+        return commit_written(written, store, record, open_git, config)
     match args.command:
         case "land":
-            return land_item(args.id, args.message, store, now, record, open_git, args.decision)
+            return land_item(
+                args.id, args.message, store, now, record, open_git, config, args.decision
+            )
         case "show" if is_feature_id(args.id):
             return Said(show_feature_item(args.id, store))
         case "show":
@@ -265,6 +276,7 @@ def run(
     now: Now,
     width: Width = _no_terminal,
     wait: Wait = _no_wait,
+    load_config: LoadConfig = _no_config,
 ) -> int:
     """Read the arguments, locate the record in cwd, run the command and return the exit status.
 
@@ -273,7 +285,9 @@ def run(
     git work tree of the record through open_git and is committed there. The lines of status are
     cut to the width of the terminal; without one, as by default, they are whole. Watch writes
     its frames as it goes and waits between two by wait, which by default returns at once; it
-    exits with 0 once its count is written or Ctrl-C ends it.
+    exits with 0 once its count is written or Ctrl-C ends it. The configuration of the record is
+    read through load_config before any command runs, the defaults by default; one that is
+    refused fails with 2, whatever the command.
     """
     command_line = build_command_line()
     parser = command_line.parser
@@ -290,10 +304,11 @@ def run(
                 partial(worktree_of_item, path, open_git),
             )
             try:
+                config = load_config(path)
                 if args.command == "watch":
                     _watch(args, store, write, wait, width)
                     return 0
-                said = _said(args, store, now, path, open_git, width)
+                said = _said(args, store, now, path, open_git, width, config)
             except REFUSED as error:
                 write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
                 return 2
@@ -331,6 +346,7 @@ def main() -> None:
             now=lambda: datetime.now(UTC),
             width=terminal_width,
             wait=time.sleep,
+            load_config=read_config,
         )
     )
 

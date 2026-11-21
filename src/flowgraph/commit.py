@@ -1,8 +1,9 @@
 """The commit of a write of the record: fgraph commits the files the write changed, alone.
 
-Every write shares this one step. The start of a work item also checks its branch out at that
-commit, in a worktree of its own. Outside a git work tree a write is left as its files, and so
-is the write of a record git ignores, whose start branches at HEAD.
+Every write shares this one step. With the development turned on in the configuration of the
+record, the start of a work item also checks its branch out at that commit, in a worktree of its
+own. Outside a git work tree a write is left as its files, and so is the write of a record git
+ignores, whose start branches at HEAD.
 """
 
 from collections.abc import Callable, Sequence
@@ -12,6 +13,7 @@ from pathlib import Path
 
 from flowgraph import branch
 from flowgraph.branch import GitError, branch_of
+from flowgraph.config import Config
 from flowgraph.item import Written
 from flowgraph.store import Store
 from flowgraph.work_item import work_item_id_text
@@ -102,18 +104,23 @@ def kept_in(record: Path, open_git: OpenGit) -> WorkTree | None:
     return work_tree
 
 
-def commit_written(written: Written, store: Store, record: Path, open_git: OpenGit) -> Said:
+def commit_written(
+    written: Written, store: Store, record: Path, open_git: OpenGit, config: Config
+) -> Said:
     """Commit the files the write changed under its message; what fgraph says of the write.
 
     Outside a git work tree nothing is committed, and only the start of a work item warns, that
     no branch was made. For a record git ignores nothing is committed either, and the branch of
-    a start is checked out at HEAD. A write that changed no file makes no commit. Raises
-    GitError naming the git command when git refuses a step: a commit refused puts the files
-    back as they were, a worktree refused leaves the start as it is, committed or written.
+    a start is checked out at HEAD. A write that changed no file makes no commit. With the
+    development off in the configuration the start of a work item is a write as any other: no
+    branch, no worktree and no warning. Raises GitError naming the git command when git refuses
+    a step: a commit refused puts the files back as they were, a worktree refused leaves the
+    start as it is, committed or written.
     """
+    to_branch = written.branch if config.development.enabled else None
     work_tree = open_git(record)
     if work_tree is None:
-        if written.branch is None:
+        if to_branch is None:
             return Said(written.out)
         warning = f"fgraph: warning: no branch made: {record} is not inside a git work tree\n"
         return Said(written.out, warning)
@@ -130,12 +137,12 @@ def commit_written(written: Written, store: Store, record: Path, open_git: OpenG
             store.restore_files()
             raise
         where = f" at {at[:7]}"
-    if written.branch is None:
+    if to_branch is None:
         return Said(written.out)
-    made = branch_of(written.branch.item, written.branch.slug, top)
+    made = branch_of(to_branch.item, to_branch.slug, top)
     try:
         work_tree.add_worktree(made.name, made.path, at)
     except GitError as error:
-        started = f"{work_item_id_text(written.branch.item)} is started{where}"
+        started = f"{work_item_id_text(to_branch.item)} is started{where}"
         raise GitError(f"{error} -- {started}, its branch is not") from error
     return Said(f"{written.out}branch {made.name} in {made.path}\n")

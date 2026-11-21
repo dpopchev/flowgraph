@@ -13,31 +13,43 @@ then = "the Story is started in a commit on main, and git lists no branch wi/* a
 
 [[tasks]]
 id = "T-0159"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_development_off.py, failing on the criterion of S-0039"
 description = "decided: S-0039: the start alone is held to main, as today -- no other write of a tracked record is. Built as tests/functional/test_start_branch.py builds its repository. Seen red, then marked a strict xfail naming S-0039 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_development_off.py states that fgraph start of a Story with a Task, in a git repository whose record holds no config.toml, starts it in a commit on main, that git lists no branch wi/* and no new worktree, and that nothing is written to the error output"
 created = 2026-11-21 22:17:55+00:00
+started = 2026-11-21 22:18:49+00:00
+completed = 2026-11-21 22:21:26+00:00
+commit = "e189631"
 
 [[tasks]]
 id = "T-0160"
-state = "backlog"
+state = "completed"
 title = "Create src/flowgraph/config.py holding the Config of a record and its constructor from the text of config.toml"
 description = "The file is .fgraph/config.toml, a table per layer: [development] enabled = true. Only the keys this Story needs; the Stories after it add theirs."
 expected_output = "created: src/flowgraph/config.py holds the Config of a record -- its development, enabled or not, off by default -- its constructor from the text of config.toml, and the adapter that reads .fgraph/config.toml of a record, the defaults when the record holds no such file; a table or a key it does not know, and a value of the wrong type, raise ConfigError naming the key; proved in tests/config/"
 created = 2026-11-21 22:17:56+00:00
+started = 2026-11-21 22:21:27+00:00
+completed = 2026-11-21 22:23:42+00:00
+commit = "18f8fa9"
 
 [[tasks]]
 id = "T-0161"
-state = "backlog"
+state = "completed"
 title = "Wire the Config of src/flowgraph/config.py into the start and the landing, the development off unless enabled"
 description = "Removes the xfail mark of tests/functional/test_development_off.py. The wiring touches src/flowgraph/cli.py, commit.py and land.py, and scope.py only if the scoping needs the key. With the development off the start is still held to main, and the rules that read a branch wi/<id>-* stay as they are: without the development no such branch is made. .fgraph/config.toml is written by hand in the commit of this Task, since no command of fgraph writes it until S-0045."
 expected_output = "changed: run() of src/flowgraph/cli.py reads the Config of the record through a callable given to it, bound to the adapter of src/flowgraph/config.py in main(); with the development off the start of a work item is committed as any write, makes no branch and no worktree and writes no warning, and fgraph land exits 2 naming the key development.enabled; with [development] enabled = true the start, the scoping of a branch and the landing are as they were; a config.toml that is refused exits 2 naming the key, whatever the command; .fgraph/config.toml of this repository holds [development] enabled = true, and the functional tests that start a branch or land write that key in their setup"
 created = 2026-11-21 22:17:56+00:00
+started = 2026-11-21 22:23:43+00:00
+completed = 2026-11-21 22:33:24+00:00
+commit = "41fda9e"
 
 [[tasks]]
 id = "T-0162"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say the development is turned on in .fgraph/config.toml"
 expected_output = "changed: README.md and docs/domain-model.md say a record is layered by .fgraph/config.toml, that the development -- the branch and the worktree of a start, the scoping, the landing -- is off unless [development] enabled = true, what a start and a landing do with it off, and that a config.toml fgraph refuses exits 2 naming the key; they name the developer's request of 2026-11-21 and the reading decided when S-0039 was ordered"
 created = 2026-11-21 22:17:56+00:00
+started = 2026-11-21 22:33:24+00:00
+completed = 2026-11-21 22:37:04+00:00
+commit = "70be864"

@@ -34,8 +34,10 @@ commit = "bbf19c2"
 
 [[tasks]]
 id = "T-0155"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to write the id of a Spike as Q-0001"
 expected_output = "changed: README.md and docs/domain-model.md write the id of a Spike as Q-0001 in the table of Ids, in Persistence and in every example, say Q stands for question and name the developer's choice of 2026-11-21, and say that an SP file of an older record is left alone as a file of a prefix no kind knows"
 created = 2026-11-21 21:37:15+00:00
 started = 2026-11-21 22:03:43+00:00
+completed = 2026-11-21 22:04:51+00:00
+commit = "9d6dd33"

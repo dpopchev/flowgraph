@@ -180,9 +180,10 @@ fgraph add task "Add the show command" --parent ST-0001 --output "changed: cli.p
 
 A started Story whose branch has no worktree is written on main as before.
 
-`fgraph status` on main reads a started Story where its Tasks are written: it
-lists the Tasks of the Story as its worktree holds them, committed or not, so
-the progress and the Task being worked are current before the landing:
+`fgraph status` and `fgraph show` on main read a started Story where its Tasks
+are written: they list the Tasks of the Story as its worktree holds them,
+committed or not, so the progress, the Task being worked and the bucket and
+the commit of each Task are current before the landing:
 
 ```sh
 cd /src/project.worktrees/ST-0001-raise-the-stories-fgraph
@@ -196,10 +197,17 @@ fgraph status
 #   ST-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
 #     => T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
 # Completed (0)
+
+fgraph show ST-0001
+# ...
+# Tasks (1)
+#   T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
+#     bucket           InProgress
+#     expected output  changed: src/flowgraph/cli.py gains the show command
 ```
 
-Run in the worktree of a Story, `fgraph status` reads the record of that
-worktree. `fgraph show ST-0001` on main still reads the record of main.
+Run in the worktree of a Story, `fgraph status` and `fgraph show` read the
+record of that worktree.
 
 `fgraph show` then names the bucket of the Story and of each Task that has
 left Backlog (`    bucket           InProgress`). A start exits 2 and names

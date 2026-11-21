@@ -1,10 +1,12 @@
 id = "S-0044"
-state = "started"
+state = "completed"
 title = "Cut the work items started beyond parallel from every one to none"
 description = "Part of the developer's request of 2026-11-21 to layer fgraph by a configuration, .fgraph/config.toml: (1) the items and their lifecycle, always; (2) their commits on main, optional; (3) the development beside the source code, turned on. The plan was shown and filed on the developer's 'file only' of 2026-11-21. Its Tasks are written when it is ordered. The developer asked for an option of parallel branches. Reading of the agent: [development] parallel is how many work items are started at once; today nothing limits them. Open: its default, and whether it holds with the development off too."
 parent = "F-0001"
 created = 2026-11-21 20:32:55+00:00
 started = 2026-11-21 23:09:41+00:00
+completed = 2026-11-21 23:20:08+00:00
+commit = "dbd00d4"
 
 [criterion]
 given = "a record with the development on, [development] parallel = 1 and a started Story"

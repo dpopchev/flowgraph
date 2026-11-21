@@ -138,6 +138,16 @@ fgraph start ST-0002
 The start of a Task is not checked against main: a Task starts on the branch
 of its Story.
 
+A Task of a started Story is written in its worktree: added, started and
+completed there. On main the same write exits 2 and names the worktree:
+
+```sh
+fgraph add task "Add the show command" --parent ST-0001 --output "changed: cli.py"
+# fgraph: error: ST-0001 is started: its Tasks are written in its worktree, /src/project.worktrees/ST-0001-raise-the-stories-fgraph
+```
+
+A started Story whose branch has no worktree is written on main as before.
+
 `fgraph show` then names the bucket of the Story and of each Task that has
 left Backlog (`    bucket           InProgress`). A start exits 2 and names
 why when the Story has no Task, when a Task's Story is still in Backlog, when

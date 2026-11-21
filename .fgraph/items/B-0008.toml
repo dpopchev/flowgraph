@@ -1,0 +1,9 @@
+id = "B-0008"
+state = "backlog"
+title = "Raise the files of a completed work item refused by naming the file from all but one with a wrong commit to every one"
+description = "Found during T-0167 of S-0041 on 2026-11-21, under the burn of the Backlog; filed at the end of the queue and not burned. Beside it: the docstrings of status_text and _status_line of src/flowgraph/text.py still say a completed item is listed with its commit, which it holds or not since S-0041. Its Tasks are written when it is ordered."
+created = 2026-11-21 23:09:41+00:00
+
+[criterion]
+observed = "a completed file whose commit is no sha is refused with the bare words of the commit, 'xyz' is no commit, and not as a file that holds no work item, naming the file: read_work_item of src/flowgraph/work_item/file.py does not catch CommitError"
+expected = "the refusal names the file, as every other file that holds no work item is refused"

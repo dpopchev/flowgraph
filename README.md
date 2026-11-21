@@ -156,6 +156,14 @@ why when the Story has no Task, when a Task's Story is still in Backlog, when
 the item is started or completed already, or when the record does not hold
 it.
 
+A Story holds at most one started Task. Starting a second one exits 2 and
+names the started Task, until that one is completed or blocked:
+
+```sh
+fgraph start T-0002
+# fgraph: error: T-0002 cannot start: T-0001 is started -- complete or block it first
+```
+
 Complete each Task with the commit that holds its work, then the Story with
 the commit on `main` that holds it. `--commit` is a sha of 7 to 40 hex digits;
 `fgraph` does not look it up in git yet:

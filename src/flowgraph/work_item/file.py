@@ -26,6 +26,7 @@ from flowgraph.item_file import (
     write_checked,
 )
 from flowgraph.record import ITEMS
+from flowgraph.task import TaskInProgressError, at_most_one_started
 from flowgraph.work_item.model import (
     CompletedWorkItem,
     Kind,
@@ -151,9 +152,14 @@ def read_work_item(record: Path, item_id: WorkItemId) -> WorkItemState:
     """Adapter: the work item of that id in the record, whole.
 
     Raises WorkItemNotFoundError when the record holds no such item and WorkItemFileError when
-    its file does not hold one.
+    its file does not hold one, as when it holds more than one started Task.
     """
-    return _item_held(_read_file(_held_path(record, item_id), item_id.kind), item_id.kind)
+    path = _held_path(record, item_id)
+    held = _read_file(path, item_id.kind)
+    try:
+        return _item_held(held, item_id.kind)
+    except TaskInProgressError as error:
+        raise WorkItemFileError(f"{path} holds no {item_id.kind.noun}: {error}") from error
 
 
 def read_work_item_detail(record: Path, item_id: WorkItemId) -> WorkItemDetail:
@@ -217,7 +223,8 @@ def _item_held(held: _HeldItemFile, kind: Kind) -> WorkItemState:
     """The work item of that kind a validated file holds, built through its constructors.
 
     An item and its Tasks past Backlog are built by the moves that took them there, so a file
-    holds no state those moves could not reach.
+    holds no state those moves could not reach. Raises TaskInProgressError when it holds more
+    than one started Task.
     """
     scenario = scenario_held(held.criterion)
     item_id = parse_work_item_id(kind, held.id)
@@ -228,7 +235,7 @@ def _item_held(held: _HeldItemFile, kind: Kind) -> WorkItemState:
         case _ItemFile():
             return item
         case _StartedItemFile() | _CompletedItemFile():
-            tasks = tuple(task_held(task) for task in held.tasks)
+            tasks = at_most_one_started(tuple(task_held(task) for task in held.tasks))
             begun = replace(started_work_item(item, held.started), tasks=tasks)
             match held:
                 case _CompletedItemFile():

@@ -34,12 +34,14 @@ commit = "232fd95"
 
 [[tasks]]
 id = "T-0051"
-state = "started"
+state = "completed"
 title = "Add the commit of every write to src/flowgraph/commit.py, src/flowgraph/item.py and src/flowgraph/cli.py"
 description = "The store of src/flowgraph/item.py names the files written since it was opened and puts them back, each a callable, bound to the journal by open_files. A command of src/flowgraph/item.py returns what it says and the message of its commit. src/flowgraph/commit.py holds the one step every write shares: commit the changed files, then, for the start of a work item, check its branch out at that commit. The git work tree and its steps move there from src/flowgraph/item.py, which stays at or below 400 lines. Removes the xfail mark of tests/functional/test_commit_writes.py; the functional tests that build a Store by hand gain its new callables."
 expected_output = "changed: fgraph add, amend, reorder, start and complete each commit the files of the record the write changed, alone, under the message of the write, when the record is inside a git work tree; outside one the write is made as today; a commit refused exits 2 naming the git command and leaves the files as they were"
 created = 2026-11-21 10:49:23+00:00
 started = 2026-11-21 10:52:17+00:00
+completed = 2026-11-21 10:56:05+00:00
+commit = "fefa24c"
 
 [[tasks]]
 id = "T-0052"

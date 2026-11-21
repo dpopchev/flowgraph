@@ -149,7 +149,8 @@ by the kind on their id (Persistence).
 - Blocked is not a bucket: a blocked item stays in InProgress and shows as
   blocked.
 - Removed stands apart from the flow and keeps what dropped out, with its
-  date and reason. Nothing is deleted.
+  date and reason. Nothing is deleted. `fgraph status` lists the heading
+  Removed after Completed only when an item is removed, each with its reason.
 - Cycle time and age are derived from the dates, never stored.
 
 ## Direction
@@ -285,6 +286,12 @@ and its merge tool.
   `completed` times and its `commit` sha. A started Story's file may hold
   completed Tasks; a completed Story's file holds only completed Tasks, since
   a Story completes once every Task of it has.
+- A removed work item is kept as `state = "removed"` with its `removed` time
+  and its `reason`, beside the fields and the Tasks it had in Backlog.
+  `fgraph remove` removes a work item in Backlog; a removed one takes no Task,
+  no amend and no move, and leaves the queue as a started one does. Removing
+  a Task, and removing a started work item, which has a branch and a
+  worktree, are not built.
 - An Upkeep is kept as `items/U-0001.toml`, in the shape of a Story file:
   the same fields in each state, `started`, `completed` and `commit` once it
   has moved, and its Tasks as `[[tasks]]` tables, read back through the
@@ -316,6 +323,7 @@ the same number:
 | add a Task to a work item in Backlog | `main` |
 | reorder the Backlog | `main` |
 | amend a work item in Backlog | `main` |
+| remove a work item in Backlog | `main` |
 | start a work item | `main`: `fgraph` commits it and makes its branch |
 | add a Task to a started work item | its branch |
 | start, block, unblock and complete its Tasks | its branch |
@@ -359,7 +367,8 @@ agreed on 2026-11-21 that `fgraph` owns the record, its rituals and its rules:
 The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 
 - `fgraph` commits every write of the record, when the record is inside a git
-  work tree: `add`, `amend`, `reorder`, `start`, `block`, `unblock` and `complete`. The commit
+  work tree: `add`, `amend`, `remove`, `reorder`, `start`, `block`, `unblock` and
+  `complete`. The commit
   holds the files of the record the write changed, alone; whatever else is
   staged or changed stays as it was and out of the commit.
 - The commit is worded by `fgraph`, `chore: <write> <id> in the record`:
@@ -373,6 +382,7 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   | start | `chore: start ST-0001 in the record`, `chore: start T-0001 of ST-0001 in the record` |
   | block | `chore: block T-0001 of ST-0001 in the record` |
   | unblock | `chore: unblock T-0001 of ST-0001 in the record` |
+  | remove | `chore: remove ST-0001 in the record` |
   | complete | `chore: complete ST-0001 in the record`, `chore: complete T-0001 of ST-0001 in the record` |
 
 - A write that leaves its file as it was makes no commit. Completing a Task

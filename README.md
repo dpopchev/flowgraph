@@ -332,6 +332,28 @@ title or a part of the criterion is blank, when the work item is started or
 completed already, when the id is a Task's, or when the record does not hold
 it.
 
+A work item filed by mistake or superseded is removed from the Backlog with
+the reason. Nothing is deleted: it is kept with its Tasks, apart from the
+flow, and `fgraph status` lists it under Removed:
+
+```sh
+fgraph remove ST-0002 --reason "superseded by ST-0003"
+# removed ST-0002
+
+fgraph status
+# Backlog (0)
+# InProgress (0)
+# Completed (0)
+# Removed (1)
+#   ST-0002  Raise the kinds of work item fgraph adds from 1 to 2  -- superseded by ST-0003
+```
+
+The heading Removed is listed only when a work item is removed. A remove
+exits 2 and names why when the reason is blank, when the work item is
+started, completed or removed already, when the id is a Task's, or when the
+record does not hold it. A removed work item takes no Task, no amend and no
+move.
+
 When the record is inside a git work tree, `fgraph` commits every write of
 it: `add`, `amend`, `reorder`, `start` and `complete` each leave one commit
 that holds the files of the record the write changed, alone, under a message

@@ -1,8 +1,9 @@
 id = "ST-0011"
-state = "backlog"
+state = "started"
 title = "Raise the moves a started Task can take from 1 to 2: complete, block"
 description = "Gap found during U-0002: with no block move, T-0031 stayed started while T-0032 and T-0034 were worked, so two Tasks were started at once. BlockedTask and the block move are in docs/domain-model.md, States are types and Direction, and are not built. Blocking a work item is not part of this. Its Tasks are written when it is ordered."
 created = 2026-11-21 08:06:51+00:00
+started = 2026-11-21 11:19:52+00:00
 
 [criterion]
 given = "a started Story with a started Task"

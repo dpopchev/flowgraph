@@ -1,0 +1,10 @@
+id = "ST-0005"
+state = "backlog"
+title = "Raise the kinds of work item fgraph takes from Backlog to Completed from 1 to 2: Story and Upkeep"
+description = "Feature: a project tracks every kind of its work with fgraph; its criterion 2: a developer writes the Tasks of an Upkeep and takes it from Backlog to Completed with their commits. Ordered after the Upkeep that splits src/flowgraph/story.py, so the moves are written once for both kinds."
+created = 2026-11-21 06:25:49+00:00
+
+[criterion]
+given = "a started Upkeep whose Task is completed"
+when = "the Upkeep is completed with a commit"
+then = "fgraph status lists it under Completed with that commit"

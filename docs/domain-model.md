@@ -202,7 +202,7 @@ of work item. The developer said so on 2026-11-21.
 - `fgraph status` lists a work item under InProgress with its progress, the
   developer's decision of 2026-11-21: `<completed>/<all> T`, its Tasks
   completed of all it holds, between its id and its title, written as board
-  1's watch writes it -- `ST-0001  1/3 T  <title>`. A started or a blocked
+  1's watch writes it -- `S-0001  1/3 T  <title>`. A started or a blocked
   Task is not completed. The lines of Backlog, Completed and Removed carry no
   progress. The Tasks are those the record status reads holds: the row of a
   work item is read with its Tasks, each with its state.
@@ -217,7 +217,7 @@ of work item. The developer said so on 2026-11-21.
   wide to that width, ending it with `...`, the developer's decision of
   2026-11-21, after board 1's watch; written to a pipe or a file every line
   is whole. So that the cut keeps it, a completed work item is listed with
-  its commit before its title, `ST-0001  677f9b0  <title>`; the reason of a
+  its commit before its title, `S-0001  677f9b0  <title>`; the reason of a
   removed one still ends its line. Only status is cut, and a frame of watch
   with it. The width is an effect: `run()` takes it as a callable, none when
   the output is no terminal, and `main()` reads it from the terminal.
@@ -297,7 +297,7 @@ with at least four digits. `fgraph` hands out the next free number.
 | Kind | Id |
 |---|---|
 | `Feature` | `F-0001` |
-| `Story` | `ST-0001` |
+| `Story` | `S-0001` |
 | `Bug` | `B-0001` |
 | `Spike` | `Q-0001` |
 | `Upkeep` | `U-0001` |
@@ -308,13 +308,21 @@ is the developer's choice of 2026-11-21, among the letters shown for a prefix
 of one letter; until then a Spike was written `SP-0001`. `fgraph` reads `Q`
 alone.
 
+The `S` of a Story follows from that choice: `Q` for the Spike left `S` to
+the Story, so the id of every kind has a prefix of one letter; until then a
+Story was written `ST-0001`. The Stories of the record of flowgraph were
+renamed with their numbers kept, `ST-0036` to `S-0036`, by hand, since no
+command renames an id. The commits made before keep `ST` in their messages,
+since history is not rewritten, and map to the new ids by the number.
+`fgraph` reads `S` alone.
+
 ## Persistence
 
 The record is plain TOML files tracked by git: git is its history, its backup
 and its merge tool.
 
 - One directory, `items/`, holds every item: one file per work item with its
-  Tasks inside it, named by its id, `items/ST-0001.toml`. The prefix of the id
+  Tasks inside it, named by its id, `items/S-0001.toml`. The prefix of the id
   is the one place that says the kind, so there is no directory per kind.
 - The file holds a `state` line naming the type it loads into and only the
   fields that state needs. The path follows from the id alone, so a file
@@ -416,7 +424,8 @@ and its merge tool.
   knows is left alone; nothing reports it yet. An `items/SP-0001.toml` of an
   older record, written while a Spike was `SP-0001`, is such a file: it is
   neither read as a Spike nor renamed, so no command lists it or takes its
-  id.
+  id. So is an `items/ST-0001.toml` of an older record, written while a Story
+  was `ST-0001`: it is neither read as a Story nor renamed.
 - A command loads a work item whole, changes it and saves it whole. The file
   is validated as it is read; a write is read back before it replaces the
   file.
@@ -506,15 +515,15 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 
   | Write | Message |
   |---|---|
-  | add a work item | `chore: add ST-0001 in the record` |
-  | add a Task | `chore: add T-0001 of ST-0001 in the record` |
-  | amend | `chore: amend ST-0001 in the record` |
-  | reorder | `chore: reorder ST-0002 before ST-0001 in the record` |
-  | start | `chore: start ST-0001 in the record`, `chore: start T-0001 of ST-0001 in the record` |
-  | block | `chore: block T-0001 of ST-0001 in the record` |
-  | unblock | `chore: unblock T-0001 of ST-0001 in the record` |
-  | remove | `chore: remove ST-0001 in the record` |
-  | complete | `chore: complete ST-0001 in the record`, `chore: complete T-0001 of ST-0001 in the record` |
+  | add a work item | `chore: add S-0001 in the record` |
+  | add a Task | `chore: add T-0001 of S-0001 in the record` |
+  | amend | `chore: amend S-0001 in the record` |
+  | reorder | `chore: reorder S-0002 before S-0001 in the record` |
+  | start | `chore: start S-0001 in the record`, `chore: start T-0001 of S-0001 in the record` |
+  | block | `chore: block T-0001 of S-0001 in the record` |
+  | unblock | `chore: unblock T-0001 of S-0001 in the record` |
+  | remove | `chore: remove S-0001 in the record` |
+  | complete | `chore: complete S-0001 in the record`, `chore: complete T-0001 of S-0001 in the record` |
 
 - A write that leaves its file as it was makes no commit. Completing a Task
   names the commit of its work, so the commit of the record follows it.

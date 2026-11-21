@@ -73,11 +73,11 @@ fgraph add story "Raise the Stories fgraph lists under Backlog from 0 to 1" \
   --given "a record with no items" \
   --when "a Story is added" \
   --then "fgraph status lists it under Backlog"
-# added ST-0001
+# added S-0001
 
 fgraph status
 # Backlog (1)
-#   ST-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
+#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
 # InProgress (0)
 # Completed (0)
 ```
@@ -88,12 +88,12 @@ constraint; `--output` says what is there once the Task is completed:
 
 ```sh
 fgraph add task "Add the show command to src/flowgraph/cli.py, listing a Story" \
-  --parent ST-0001 \
+  --parent S-0001 \
   --output "changed: src/flowgraph/cli.py gains the show command"
-# added T-0001 to ST-0001
+# added T-0001 to S-0001
 
-fgraph show ST-0001
-# ST-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
+fgraph show S-0001
+# S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
 #   bucket       Backlog
 #   given        a record with no items
 #   when         a Story is added
@@ -105,27 +105,36 @@ fgraph show ST-0001
 
 `--description "<text>"` adds free text to a Story or a Task. A blank title or
 part exits 2 and is named; so does a parent, or a Story to show, that the
-record does not hold. Each Story is one file, `items/ST-0001.toml`, in the
+record does not hold. Each Story is one file, `items/S-0001.toml`, in the
 record, with its Tasks inside it; a Task id, `T-0001`, counts across the
 record. In a git repository it counts across the worktrees too: the next Task
 id is one above the highest in the record of main and of every worktree, so a
 Task added on a branch never takes an id main hands out meanwhile.
 
+The prefix `S` of a Story is one letter, as that of every other kind, since
+the developer's choice of 2026-11-21: `Q` for the Spike left `S` to the
+Story, which until then was written `ST-0001`. The Stories of flowgraph
+itself were renamed with their numbers kept, `ST-0036` to `S-0036`; the
+commits made before keep `ST` in their messages and map to the new ids by
+the number. `fgraph` reads `S` alone: an `items/ST-0001.toml` of an older
+record is left alone as a file of a prefix no kind knows, neither read as a
+Story nor renamed.
+
 Start a Story once it has a Task, then start its Tasks one by one. `fgraph
 start` takes a Story id or a Task id:
 
 ```sh
-fgraph start ST-0001
-# started ST-0001
-# branch wi/ST-0001-raise-the-stories-fgraph in /src/project.worktrees/ST-0001-raise-the-stories-fgraph
+fgraph start S-0001
+# started S-0001
+# branch wi/S-0001-raise-the-stories-fgraph in /src/project.worktrees/S-0001-raise-the-stories-fgraph
 
 fgraph start T-0001
-# started T-0001 of ST-0001
+# started T-0001 of S-0001
 
 fgraph status
 # Backlog (0)
 # InProgress (1)
-#   ST-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
+#   S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
 #     => T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
 # Completed (0)
 ```
@@ -139,7 +148,7 @@ work item. A Task in Backlog or completed is not listed, and a Task line does
 not count toward the top 5 of a heading (below).
 
 When the record is inside a git work tree, starting a Story commits its file
-alone as `chore: start ST-0001 in the record`, as fgraph commits every write
+alone as `chore: start S-0001 in the record`, as fgraph commits every write
 (below), and checks out the branch `wi/<id>-<slug>` at that
 commit in a worktree beside the checkout, `<parent>/<checkout>.worktrees/`.
 The slug is the first four words of the title, lower-cased and kept to their
@@ -148,14 +157,14 @@ tree the Story starts as before and fgraph warns that no branch was made. A
 git step refused exits 2 and names the git command: a commit refused puts the
 file back as it was, a worktree refused leaves the start committed.
 
-On the branch of a started Story, `wi/ST-0001-<slug>`, fgraph writes that
+On the branch of a started Story, `wi/S-0001-<slug>`, fgraph writes that
 Story alone: its Tasks are added, started and completed there. A Task for
 another Story, a new Story or a reorder of the Backlog exits 2 there and
 names the Story the branch owns:
 
 ```sh
-fgraph add task "Add the show command" --parent ST-0002 --output "changed: cli.py"
-# fgraph: error: ST-0002 is not written here: the branch wi/ST-0001-raise-the-stories-fgraph writes ST-0001 alone
+fgraph add task "Add the show command" --parent S-0002 --output "changed: cli.py"
+# fgraph: error: S-0002 is not written here: the branch wi/S-0001-raise-the-stories-fgraph writes S-0001 alone
 ```
 
 A Story starts on main alone. `fgraph start` of a Story exits 2 in a work
@@ -163,8 +172,8 @@ tree on any other branch, with nothing written and no branch made, and names
 the work tree to start it in:
 
 ```sh
-fgraph start ST-0002
-# fgraph: error: ST-0002 starts on main, in /src/project: /src/project.worktrees/ST-0001-raise-the-stories-fgraph is on wi/ST-0001-raise-the-stories-fgraph
+fgraph start S-0002
+# fgraph: error: S-0002 starts on main, in /src/project: /src/project.worktrees/S-0001-raise-the-stories-fgraph is on wi/S-0001-raise-the-stories-fgraph
 ```
 
 The start of a Task is not checked against main: a Task starts on the branch
@@ -174,8 +183,8 @@ A Task of a started Story is written in its worktree: added, started and
 completed there. On main the same write exits 2 and names the worktree:
 
 ```sh
-fgraph add task "Add the show command" --parent ST-0001 --output "changed: cli.py"
-# fgraph: error: ST-0001 is started: its Tasks are written in its worktree, /src/project.worktrees/ST-0001-raise-the-stories-fgraph
+fgraph add task "Add the show command" --parent S-0001 --output "changed: cli.py"
+# fgraph: error: S-0001 is started: its Tasks are written in its worktree, /src/project.worktrees/S-0001-raise-the-stories-fgraph
 ```
 
 A started Story whose branch has no worktree is written on main as before.
@@ -186,19 +195,19 @@ committed or not, so the progress, the Task being worked and the bucket and
 the commit of each Task are current before the landing:
 
 ```sh
-cd /src/project.worktrees/ST-0001-raise-the-stories-fgraph
+cd /src/project.worktrees/S-0001-raise-the-stories-fgraph
 fgraph start T-0001
-# started T-0001 of ST-0001
+# started T-0001 of S-0001
 
 cd /src/project
 fgraph status
 # Backlog (0)
 # InProgress (1)
-#   ST-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
+#   S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
 #     => T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
 # Completed (0)
 
-fgraph show ST-0001
+fgraph show S-0001
 # ...
 # Tasks (1)
 #   T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
@@ -229,16 +238,16 @@ the commit on `main` that holds it. `--commit` is a sha of 7 to 40 hex digits;
 
 ```sh
 fgraph complete T-0001 --commit 3e9ae5c
-# completed T-0001 of ST-0001 at 3e9ae5c
+# completed T-0001 of S-0001 at 3e9ae5c
 
-fgraph complete ST-0001 --commit 677f9b0
-# completed ST-0001 at 677f9b0
+fgraph complete S-0001 --commit 677f9b0
+# completed S-0001 at 677f9b0
 
 fgraph status
 # Backlog (0)
 # InProgress (0)
 # Completed (1)
-#   ST-0001  677f9b0  Raise the Stories fgraph lists under Backlog from 0 to 1
+#   S-0001  677f9b0  Raise the Stories fgraph lists under Backlog from 0 to 1
 ```
 
 `fgraph show` names the commit of the Story and of each completed Task. A
@@ -252,9 +261,9 @@ it waits on. It stays in InProgress and `fgraph show` lists it as blocked:
 
 ```sh
 fgraph block T-0001 --reason "the review is not back" --waiting-on "the reviewer"
-# blocked T-0001 of ST-0001
+# blocked T-0001 of S-0001
 
-fgraph show ST-0001
+fgraph show S-0001
 # ...
 # Tasks (1)
 #   T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
@@ -271,7 +280,7 @@ ending with what it waits on:
 fgraph status
 # Backlog (0)
 # InProgress (1)
-#   ST-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
+#   S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
 #     !  T-0001  Add the show command to src/flowgraph/cli.py, listing a Story  -- waiting on the reviewer
 # Completed (0)
 ```
@@ -287,7 +296,7 @@ had, and can be completed or blocked once more:
 
 ```sh
 fgraph unblock T-0001
-# unblocked T-0001 of ST-0001
+# unblocked T-0001 of S-0001
 ```
 
 An unblock exits 2 and names why when the Task is not blocked, when the id is
@@ -298,13 +307,13 @@ checkout of `main` once every Task of the Story is completed on its branch.
 The message of the merge commit is yours:
 
 ```sh
-fgraph land ST-0001 --message "feat: land the Stories listed under Backlog"
-# landed ST-0001 at 677f9b0
+fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
+# landed S-0001 at 677f9b0
 ```
 
-It merges the branch `wi/ST-0001-*` into `main` as one merge commit under
+It merges the branch `wi/S-0001-*` into `main` as one merge commit under
 that message, completes the Story at that commit, commits the record as
-`chore: complete ST-0001 in the record`, and removes the worktree and the
+`chore: complete S-0001 in the record`, and removes the worktree and the
 branch. A land exits 2 and names why, with nothing merged, when a Task of the
 Story is not completed, when the checkout it runs in is not on `main`, when
 the Story has no branch or several, when the record is outside a git work
@@ -419,7 +428,7 @@ fgraph add feature "Raise the kinds of work a project tracks with fgraph from 1 
 fgraph add story "Raise the Stories fgraph lists under Backlog from 0 to 1" \
   --given "a record with no items" --when "a Story is added" \
   --then "fgraph status lists it under Backlog" --parent F-0001
-# added ST-0001
+# added S-0001
 
 fgraph show F-0001
 # F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
@@ -428,12 +437,12 @@ fgraph show F-0001
 #   a developer sees every work item of the project by bucket
 #   a developer adds every kind of work
 # Work items (1)
-#   ST-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  Backlog
+#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  Backlog
 ```
 
 A Feature has no state of its own: its bucket is derived from its work items.
 It is InProgress once one of them is started or completed, and Completed when
-each is completed or removed. `fgraph show ST-0001` names the Feature as its
+each is completed or removed. `fgraph show S-0001` names the Feature as its
 `parent`. An add exits 2 and names why when a criterion or the title is blank
 or when `--parent` names no Feature of the record. A Feature is kept as
 `items/F-0001.toml`.
@@ -447,7 +456,7 @@ fgraph status
 # Features (1)
 #   F-0001  0/1 W  Backlog  Raise the kinds of work a project tracks with fgraph from 1 to 5
 # Backlog (1)
-#   ST-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
+#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
 # InProgress (0)
 # Completed (0)
 ```
@@ -468,18 +477,18 @@ its kind; `fgraph reorder` puts one work item right before another:
 ```sh
 fgraph status
 # Backlog (2)
-#   ST-0002  Raise the kinds of work item fgraph adds from 1 to 2
+#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 #   U-0002  Cut the lines one kind of work item holds from 885 to 250
 # InProgress (0)
 # Completed (0)
 
-fgraph reorder U-0002 --before ST-0002
-# moved U-0002 before ST-0002
+fgraph reorder U-0002 --before S-0002
+# moved U-0002 before S-0002
 
 fgraph status
 # Backlog (2)
 #   U-0002  Cut the lines one kind of work item holds from 885 to 250
-#   ST-0002  Raise the kinds of work item fgraph adds from 1 to 2
+#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (0)
 # Completed (0)
 ```
@@ -497,10 +506,10 @@ fgraph status
 # Backlog (0)
 # InProgress (2)
 #   B-0001  0/2 T  Cut the tracebacks fgraph --dir prints for a file from 1 to 0
-#   ST-0003  1/3 T  Raise the kinds of work item fgraph adds from 2 to 3
+#   S-0003  1/3 T  Raise the kinds of work item fgraph adds from 2 to 3
 # Completed (2)
 #   U-0002  757fbaf  Cut the lines one kind of work item holds from 885 to 250
-#   ST-0002  87c0307  Raise the kinds of work item fgraph adds from 1 to 2
+#   S-0002  87c0307  Raise the kinds of work item fgraph adds from 1 to 2
 ```
 
 `fgraph status` lists the top 5 under each heading -- Features, Backlog,
@@ -513,11 +522,11 @@ fgraph status
 # Backlog (0)
 # InProgress (0)
 # Completed (7)
-#   ST-0007  e82af5a  Raise the kinds of work item fgraph takes to Completed from 3 to 4
-#   ST-0006  c29f1b7  Raise the kinds of work item fgraph takes to Completed from 2 to 3
-#   ST-0005  c399b40  Raise the kinds of work item fgraph takes to Completed from 1 to 2
-#   ST-0004  87c0307  Raise the kinds of work item fgraph adds and lists from 1 to 2
-#   ST-0003  4f1ae12  Raise the buckets a Story can reach from 2 to 3
+#   S-0007  e82af5a  Raise the kinds of work item fgraph takes to Completed from 3 to 4
+#   S-0006  c29f1b7  Raise the kinds of work item fgraph takes to Completed from 2 to 3
+#   S-0005  c399b40  Raise the kinds of work item fgraph takes to Completed from 1 to 2
+#   S-0004  87c0307  Raise the kinds of work item fgraph adds and lists from 1 to 2
+#   S-0003  4f1ae12  Raise the buckets a Story can reach from 2 to 3
 #   ... 2 more
 ```
 
@@ -532,8 +541,8 @@ fgraph status        # on a terminal 60 columns wide
 # Backlog (0)
 # InProgress (0)
 # Completed (7)
-#   ST-0007  e82af5a  Raise the kinds of work item fgraph t...
-#   ST-0006  c29f1b7  Raise the kinds of work item fgraph t...
+#   S-0007  e82af5a  Raise the kinds of work item fgraph ta...
+#   S-0006  c29f1b7  Raise the kinds of work item fgraph ta...
 #   ...
 ```
 
@@ -565,11 +574,11 @@ without its option stays as it was, and so do its Tasks and its place in the
 queue:
 
 ```sh
-fgraph amend ST-0002 --then "fgraph status lists both kinds under Backlog"
-# amended ST-0002
+fgraph amend S-0002 --then "fgraph status lists both kinds under Backlog"
+# amended S-0002
 
-fgraph show ST-0002
-# ST-0002  Raise the kinds of work item fgraph adds from 1 to 2
+fgraph show S-0002
+# S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 #   bucket       Backlog
 #   given        a record with a Story
 #   when         an Upkeep is added
@@ -589,15 +598,15 @@ the reason. Nothing is deleted: it is kept with its Tasks, apart from the
 flow, and `fgraph status` lists it under Removed:
 
 ```sh
-fgraph remove ST-0002 --reason "superseded by ST-0003"
-# removed ST-0002
+fgraph remove S-0002 --reason "superseded by S-0003"
+# removed S-0002
 
 fgraph status
 # Backlog (0)
 # InProgress (0)
 # Completed (0)
 # Removed (1)
-#   ST-0002  Raise the kinds of work item fgraph adds from 1 to 2  -- superseded by ST-0003
+#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2  -- superseded by S-0003
 ```
 
 The heading Removed is listed only when a work item is removed. A remove
@@ -615,18 +624,18 @@ that holds the files of the record the write changed, alone, under a message
 fgraph add story "Raise the Stories fgraph lists under Backlog from 0 to 1" \
   --given "a record with no items" --when "a Story is added" \
   --then "fgraph status lists it under Backlog"
-# added ST-0001
+# added S-0001
 
 git log -1 --format=%s --name-only
-# chore: add ST-0001 in the record
+# chore: add S-0001 in the record
 #
-# .fgraph/items/ST-0001.toml
+# .fgraph/items/S-0001.toml
 ```
 
-The other messages follow the write: `chore: add T-0001 of ST-0001 in the
-record`, `chore: amend ST-0001 in the record`, `chore: reorder ST-0002 before
-ST-0001 in the record`, `chore: start T-0001 of ST-0001 in the record`,
-`chore: complete ST-0001 in the record`. A write that leaves its file as it
+The other messages follow the write: `chore: add T-0001 of S-0001 in the
+record`, `chore: amend S-0001 in the record`, `chore: reorder S-0002 before
+S-0001 in the record`, `chore: start T-0001 of S-0001 in the record`,
+`chore: complete S-0001 in the record`. A write that leaves its file as it
 was makes no commit. Outside a git work tree a write is made as before, with
 no commit and no warning. A commit git refuses exits 2 and names the git
 command, and every file the write changed is put back as it was. The commits
@@ -642,17 +651,17 @@ echo ".fgraph/" >> .gitignore
 fgraph add story "Raise the Stories fgraph lists under Backlog from 0 to 1" \
   --given "a record with no items" --when "a Story is added" \
   --then "fgraph status lists it under Backlog"
-# added ST-0001
+# added S-0001
 
-fgraph start ST-0001
-# started ST-0001
-# branch wi/ST-0001-raise-the-stories-fgraph in /src/project.worktrees/ST-0001-raise-the-stories-fgraph
+fgraph start S-0001
+# started S-0001
+# branch wi/S-0001-raise-the-stories-fgraph in /src/project.worktrees/S-0001-raise-the-stories-fgraph
 ```
 
 Git checks an ignored directory out in no worktree, so the record stays in
 the checkout of `main` alone: the worktree holds the development, and the
 Tasks of the Story are added, started and completed in the checkout of
-`main`. `fgraph land ST-0001 --message "..."` merges the branch there,
+`main`. `fgraph land S-0001 --message "..."` merges the branch there,
 completes the Story at the merge commit with no commit of the record, and
 removes the worktree and the branch. The start is held to `main` as any other.
 

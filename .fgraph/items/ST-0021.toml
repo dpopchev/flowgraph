@@ -24,3 +24,10 @@ title = "Add the start of a work item on main alone to src/flowgraph/scope.py an
 description = "The check runs before the start is made, so nothing is written or committed. src/flowgraph/land.py takes the name of main from src/flowgraph/branch.py. Removes the xfail mark of tests/functional/test_start_on_main.py."
 expected_output = "changed: fgraph start of a work item exits 2 unless the work tree of the record is on main, naming the work tree that is and the branch this one is on; src/flowgraph/scope.py holds the check, proved in tests/scope/; main is named once, in src/flowgraph/branch.py, for the start and the landing"
 created = 2026-11-21 11:08:45+00:00
+
+[[tasks]]
+id = "T-0062"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say a work item starts on main alone"
+expected_output = "changed: README.md says fgraph start of a Story exits 2 off main and what it names; docs/domain-model.md, Persistence, says the start of a work item is checked against main and no longer says it is not"
+created = 2026-11-21 11:08:46+00:00

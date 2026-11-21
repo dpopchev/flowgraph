@@ -12,11 +12,12 @@ then = "fgraph show lists it started again, and it can be completed"
 
 [[tasks]]
 id = "T-0074"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_unblock_task.py, failing on the criterion of ST-0012"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, through the file adapters, as tests/functional/test_block_task.py does. Seen red, then marked a strict xfail naming ST-0012 until the Task that turns it green removes the mark. The description leaves no question open; the Then keeps its two clauses, and both are stated. The agent's readings, each a routine call: (1) the command is fgraph unblock ID, the id a Task's. (2) Only a blocked Task is unblocked: one in Backlog, a started one and a completed one are refused with '<id> is not blocked', exit 2. (3) The Task is a StartedTask again with the started time it had; its reason, since and what it waited on leave the file, which keeps only what a state needs -- git keeps the block. (4) It prints 'unblocked <task> of <work item>' and its commit is 'chore: unblock <task> of <work item> in the record'."
 expected_output = "created: tests/functional/test_unblock_task.py states that a blocked Task of a started Story, once unblocked, is listed by fgraph show as started again, and that it can then be completed"
 created = 2026-11-21 11:29:30+00:00
+started = 2026-11-21 11:29:51+00:00
 
 [[tasks]]
 id = "T-0075"

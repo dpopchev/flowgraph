@@ -90,7 +90,7 @@ def test_a_story_whose_tasks_are_completed_completes_on_the_second_with_its_comm
     assert completed_story(FINISHED, DONE, make_commit("def5678")) == CompletedStory(
         id=make_story_id(1),
         title="a title",
-        scenario=SCENARIO,
+        criterion=SCENARIO,
         description="why",
         created=CREATED,
         started=ON,

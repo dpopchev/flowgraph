@@ -24,9 +24,7 @@ def add(saved: list[UpkeepState], then: str = "it still holds") -> object:
     return add_work_item(
         kind=UPKEEP,
         title="a title",
-        given="a behavior",
-        when="it runs",
-        then=then,
+        criterion=make_scenario("a behavior", "it runs", then),
         description="why",
         find_work_item_rows=lambda: [
             UpkeepRow("U-0002", "another", "backlog", created=NOW),

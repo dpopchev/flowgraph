@@ -12,7 +12,7 @@ from typing import assert_never
 
 from flowgraph import work_item
 from flowgraph.branch import Slug, SlugError, make_slug, slug_of_title
-from flowgraph.criterion import make_commit
+from flowgraph.criterion import make_commit, make_scenario
 from flowgraph.queue import queued, reorder
 from flowgraph.record import Now
 from flowgraph.store import KINDS, Store
@@ -169,9 +169,7 @@ def add_item(
     added = work_item.add_work_item(
         kind=kind,
         title=title,
-        given=given,
-        when=when,
-        then=then,
+        criterion=make_scenario(given, when, then),
         description=description,
         find_work_item_rows=partial(store.find_work_item_rows, kind),
         save_work_item=store.save_work_item,

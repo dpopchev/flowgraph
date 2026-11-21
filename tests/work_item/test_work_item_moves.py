@@ -64,7 +64,7 @@ def test_a_work_item_with_a_task_starts_on_the_second_with_its_task_in_backlog()
     assert started_work_item(ITEM, ON) == StartedWorkItem(
         id=make_work_item_id(CHORE, 1),
         title="a title",
-        scenario=SCENARIO,
+        criterion=SCENARIO,
         description="why",
         created=CREATED.replace(microsecond=0),
         started=ON.replace(microsecond=0),
@@ -96,7 +96,7 @@ def test_a_work_item_with_every_task_completed_completes_in_its_commit() -> None
     assert completed_work_item(FINISHED, DONE, COMMIT) == CompletedWorkItem(
         id=make_work_item_id(CHORE, 1),
         title="a title",
-        scenario=SCENARIO,
+        criterion=SCENARIO,
         description="why",
         created=CREATED.replace(microsecond=0),
         started=ON.replace(microsecond=0),

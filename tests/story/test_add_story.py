@@ -19,9 +19,7 @@ def add(saved: list[StoryState]) -> object:
     return add_work_item(
         kind=STORY,
         title="a title",
-        given="a state",
-        when="an action",
-        then="another state",
+        criterion=make_scenario("a state", "an action", "another state"),
         description="",
         find_work_item_rows=lambda: TAKEN,
         save_work_item=saved.append,

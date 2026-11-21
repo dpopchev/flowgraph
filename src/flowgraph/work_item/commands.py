@@ -2,7 +2,7 @@
 
 from collections.abc import Callable, Iterable
 
-from flowgraph.criterion import Commit, make_scenario
+from flowgraph.criterion import Commit, Criterion, criterion_parts
 from flowgraph.record import Now
 from flowgraph.task import (
     TaskId,
@@ -60,12 +60,10 @@ def work_item_detail(item: WorkItemState) -> WorkItemDetail:
         title=item.title,
         state=state_name(item),
         description=item.description,
-        given=item.scenario.given,
-        when=item.scenario.when,
-        then=item.scenario.then,
         tasks=[row_of(task) for task in item.tasks],
         commit=commit_sha(item),
         reason=reason_of(item),
+        **criterion_parts(item.criterion),
     )
 
 
@@ -87,9 +85,7 @@ def add_work_item(
     *,
     kind: Kind,
     title: str,
-    given: str,
-    when: str,
-    then: str,
+    criterion: Criterion,
     description: str,
     find_work_item_rows: FindWorkItemRows,
     save_work_item: SaveWorkItem,
@@ -97,12 +93,11 @@ def add_work_item(
 ) -> WorkItemId:
     """Add a work item of that kind to Backlog under its next free id and return that id.
 
-    The rows found are those of the kind. Raises EmptyPartError when the title or a part of the
-    criterion is blank; nothing is saved.
+    The rows found are those of the kind. Raises EmptyPartError when the title is blank and
+    CriterionError when the criterion is not of the form the kind takes; nothing is saved.
     """
     taken = [parse_work_item_id(kind, row.id) for row in find_work_item_rows()]
-    scenario = make_scenario(given, when, then)
-    item = make_work_item(next_work_item_id(kind, taken), title, scenario, description, now())
+    item = make_work_item(next_work_item_id(kind, taken), title, criterion, description, now())
     save_work_item(item)
     return item.id
 

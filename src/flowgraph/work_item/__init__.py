@@ -1,6 +1,11 @@
 """A work item of any kind, kept in the record with its criterion and its Tasks."""
 
-from flowgraph.work_item.amend import Amendment, NoPartError, amended_work_item
+from flowgraph.work_item.amend import (
+    Amendment,
+    NoPartError,
+    NoSuchPartError,
+    amended_work_item,
+)
 from flowgraph.work_item.commands import (
     LoadHolder,
     add_task,
@@ -76,6 +81,7 @@ __all__ = [
     "LoadHolder",
     "LoadWorkItem",
     "NoPartError",
+    "NoSuchPartError",
     "OpenWorkItem",
     "RemovedAlreadyError",
     "RemovedWorkItem",

@@ -31,7 +31,7 @@ def removed_work_item(item: WorkItemState, reason: str, on: datetime) -> Removed
             return RemovedWorkItem(
                 item.id,
                 item.title,
-                item.scenario,
+                item.criterion,
                 item.description,
                 item.created,
                 on.replace(microsecond=0),

@@ -9,3 +9,11 @@ created = 2026-11-21 21:22:01+00:00
 given = "a record with a Story standing alone and, added after it, a Feature with two Stories under it, all in Backlog"
 when = "fgraph status is run"
 then = "Backlog (2) lists the Story and then the Feature with its progress 0/2 W, and neither Story of the Feature"
+
+[[tasks]]
+id = "T-0182"
+state = "backlog"
+title = "Add tests/functional/test_status_feature_bucket.py, failing on the criterion of S-0050"
+description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_status_features.py does. Seen red, then marked a strict xfail naming S-0050 until the Task that turns it green removes the mark."
+expected_output = "created: tests/functional/test_status_feature_bucket.py states that fgraph status, on a record with a Story standing alone and, added after it, a Feature with two Stories under it, all in Backlog, writes Backlog (2) with the line of the Story, then the line of the Feature with its progress 0/2 W, and no line of either Story of the Feature"
+created = 2026-11-21 22:51:26+00:00

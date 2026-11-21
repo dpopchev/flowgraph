@@ -17,3 +17,11 @@ title = "Add tests/functional/test_complete_without_commit.py, failing on the cr
 description = "The Tasks of the Story are completed without --commit too, as the reading of S-0041 says. Run through run() of src/flowgraph/cli.py on a record in tmp_path. Seen red, then marked a strict xfail naming S-0041 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_complete_without_commit.py states that, on a record with the development off, fgraph complete of a started Story whose Tasks are completed, run without --commit, exits 0 and fgraph status lists the Story under Completed"
 created = 2026-11-21 22:39:48+00:00
+
+[[tasks]]
+id = "T-0167"
+state = "backlog"
+title = "Extend the evidence of a completed work item and of a completed Task in src/flowgraph/ to a commit or none"
+description = "New code the next Task runs. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit. The evidence of a Spike stays its decision beside the commit or none."
+expected_output = "changed: a completed work item and a completed Task of src/flowgraph/work_item/ and src/flowgraph/task.py hold their commit or none; the file of one completed without a commit holds no commit key and reads back whole; its row and its detail carry no commit, so fgraph status lists it under Completed with its id and its title alone and fgraph show lists no commit line of it; proved in tests/work_item/ and tests/task/"
+created = 2026-11-21 22:39:48+00:00

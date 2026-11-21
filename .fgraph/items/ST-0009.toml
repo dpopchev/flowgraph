@@ -23,20 +23,23 @@ commit = "75dae43"
 
 [[tasks]]
 id = "T-0041"
-state = "started"
+state = "completed"
 title = "Create src/flowgraph/branch.py holding the slug, the branch name and the worktree path of a work item"
 description = "Pure, no I/O. The slug is given with --slug; without it, it is the first four words of the title, lower-cased and joined by hyphens, every character but a letter or a digit dropped. That fallback is the agent's choice: the developer said only that wi/<id>-<slug> is better than wi/<id>. A slug that is empty or holds another character is refused by its constructor."
 expected_output = "created: src/flowgraph/branch.py with its tests in tests/branch/: a slug of lower-case letters, digits and hyphens, the branch wi/<id>-<slug> and the worktree path <parent>/<checkout name>.worktrees/<id>-<slug>"
 created = 2026-11-21 08:34:30+00:00
 started = 2026-11-21 08:42:13+00:00
+completed = 2026-11-21 08:43:16+00:00
+commit = "dd2b2c9"
 
 [[tasks]]
 id = "T-0042"
-state = "backlog"
+state = "started"
 title = "Add the git adapters to src/flowgraph/branch.py: inside a work tree, commit one file, add a worktree on a new branch"
 description = "Each adapter is a named function over subprocess.run(..., check=True); a non-zero exit raises a specific error naming the command and its error output. Its tests are marked edge and run the real git in tmp_path with the identity from the environment. The commit holds only the file named, whatever else is staged or changed in the work tree."
 expected_output = "changed: src/flowgraph/branch.py tells whether a directory is inside a git work tree, commits one named file with a message, and adds a worktree on a new branch, each proved against the real git in tmp_path"
 created = 2026-11-21 08:34:30+00:00
+started = 2026-11-21 08:43:17+00:00
 
 [[tasks]]
 id = "T-0043"

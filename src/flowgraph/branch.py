@@ -5,6 +5,7 @@ The branch is `wi/<id>-<slug>`, checked out at `<parent>/<checkout name>.worktre
 
 import re
 import subprocess
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -91,17 +92,18 @@ def work_tree_of(directory: Path) -> Path | None:
         return None
 
 
-def commit_file(work_tree: Path, file: Path, message: str) -> str:
-    """Adapter: commit the one file, relative to the work tree, with the message; its sha.
+def commit_files(work_tree: Path, files: Sequence[Path], message: str) -> str:
+    """Adapter: commit the files, relative to the work tree, alone with the message; its sha.
 
     Whatever else is staged or changed stays as it was and out of the commit. Raises GitError
-    when git refuses a step; a commit refused leaves the file unstaged.
+    when git refuses a step; a commit refused leaves the files unstaged.
     """
-    _git(work_tree, "add", "--", str(file))
+    named = [str(file) for file in files]
+    _git(work_tree, "add", "--", *named)
     try:
-        _git(work_tree, "commit", "--quiet", "--only", "--message", message, "--", str(file))
+        _git(work_tree, "commit", "--quiet", "--only", "--message", message, "--", *named)
     except GitError:
-        _git(work_tree, "reset", "--quiet", "--", str(file))
+        _git(work_tree, "reset", "--quiet", "--", *named)
         raise
     return _git(work_tree, "rev-parse", "HEAD")
 

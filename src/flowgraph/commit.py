@@ -1,0 +1,83 @@
+"""The commit of a write of the record: fgraph commits the files the write changed, alone.
+
+Every write shares this one step. The start of a work item also checks its branch out at that
+commit, in a worktree of its own. Outside a git work tree a write is left as its files.
+"""
+
+from collections.abc import Callable, Sequence
+from dataclasses import dataclass
+from functools import partial
+from pathlib import Path
+
+from flowgraph import branch
+from flowgraph.branch import GitError, branch_of
+from flowgraph.item import Store, Written
+from flowgraph.work_item import work_item_id_text
+
+
+@dataclass(frozen=True)
+class WorkTree:
+    """The git work tree a record is inside: its top and its steps, each bound to it.
+
+    `commit_files` commits the files, relative to the top, alone with a message and returns the
+    sha; `add_worktree` checks out a new branch at a commit in a new worktree at a path. Each
+    raises GitError when git refuses it.
+    """
+
+    path: Path
+    commit_files: Callable[[Sequence[Path], str], str]
+    add_worktree: Callable[[str, Path, str], None]
+
+
+# The git work tree the directory is inside, or None when it is inside none.
+OpenGit = Callable[[Path], WorkTree | None]
+
+
+@dataclass(frozen=True)
+class Said:
+    """What fgraph says of a command: its lines on the output, a warning on the error output."""
+
+    out: str
+    warning: str = ""
+
+
+def open_git(directory: Path) -> WorkTree | None:
+    """The git work tree the directory is inside, its steps run by git; None when in none."""
+    top = branch.work_tree_of(directory)
+    if top is None:
+        return None
+    return WorkTree(top, partial(branch.commit_files, top), partial(branch.add_worktree, top))
+
+
+def commit_written(written: Written, store: Store, record: Path, open_git: OpenGit) -> Said:
+    """Commit the files the write changed under its message; what fgraph says of the write.
+
+    Outside a git work tree nothing is committed, and only the start of a work item warns, that
+    no branch was made. A write that changed no file makes no commit. Raises GitError naming the
+    git command when git refuses a step: a commit refused puts the files back as they were, a
+    worktree refused leaves the start committed.
+    """
+    work_tree = open_git(record)
+    if work_tree is None:
+        if written.branch is None:
+            return Said(written.out)
+        warning = f"fgraph: warning: no branch made: {record} is not inside a git work tree\n"
+        return Said(written.out, warning)
+    top = work_tree.path.resolve()
+    files = [file.resolve().relative_to(top) for file in store.find_changed_files()]
+    if not files:
+        return Said(written.out)
+    try:
+        sha = work_tree.commit_files(files, written.message)
+    except GitError:
+        store.restore_files()
+        raise
+    if written.branch is None:
+        return Said(written.out)
+    made = branch_of(written.branch.item, written.branch.slug, top)
+    try:
+        work_tree.add_worktree(made.name, made.path, sha)
+    except GitError as error:
+        started = f"{work_item_id_text(written.branch.item)} is started at {sha[:7]}"
+        raise GitError(f"{error} -- {started}, its branch is not") from error
+    return Said(f"{written.out}branch {made.name} in {made.path}\n")

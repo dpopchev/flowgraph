@@ -12,31 +12,43 @@ then = "git log shows one new commit, made by fgraph, holding only the file of t
 
 [[tasks]]
 id = "T-0049"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_commit_writes.py, failing on the criterion of ST-0020"
 description = "Run through run() of src/flowgraph/cli.py on a real git repository in tmp_path, as tests/functional/test_start_branch.py does: the identity of its commits from the environment, no git config read. Seen red, then marked a strict xfail naming ST-0020 until the Task that turns it green removes the mark. The developer's decision of 2026-11-21 for the whole Story: a write outside a git work tree is written as today, with no warning; the warning of a start that no branch was made stays. The agent's readings, each a routine call: (1) the messages are 'chore: add ST-0001 in the record', 'chore: add T-0001 of ST-0001 in the record', 'chore: amend ST-0001 in the record', 'chore: reorder ST-0001 before ST-0002 in the record', 'chore: start T-0001 of ST-0001 in the record', 'chore: complete T-0001 of ST-0001 in the record', 'chore: complete ST-0001 in the record', and the start of a work item as it is. (2) A write that leaves its file as it was makes no commit. (3) A commit git refuses exits 2 naming the git command and puts every file the write changed back as it was, as a start does today. (4) remove is not built yet: ST-0016 commits it when it builds it."
 expected_output = "created: tests/functional/test_commit_writes.py states that fgraph add story, run on a record inside a git repository, leaves git log with one new commit that holds only the file of that Story"
 created = 2026-11-21 10:49:22+00:00
+started = 2026-11-21 10:49:35+00:00
+completed = 2026-11-21 10:50:50+00:00
+commit = "c2180d8"
 
 [[tasks]]
 id = "T-0050"
-state = "backlog"
+state = "completed"
 title = "Add the journal of a store to src/flowgraph/journal.py and the commit of several files to src/flowgraph/branch.py"
 description = "The journal is the adapter side: it reads and writes files, proved on tmp_path. A file that was not there before is removed when it is put back. A file written twice keeps the content before its first write. commit_files keeps what commit_file holds today: whatever else is staged or changed stays out, and a commit refused leaves the files unstaged."
 expected_output = "created: src/flowgraph/journal.py keeps each file a store writes with its content before the write, names the files that changed and puts them back as they were; changed: commit_files of src/flowgraph/branch.py commits several files in one commit and replaces commit_file; their tests are in tests/journal/ and tests/branch/"
 created = 2026-11-21 10:49:23+00:00
+started = 2026-11-21 10:50:50+00:00
+completed = 2026-11-21 10:52:16+00:00
+commit = "232fd95"
 
 [[tasks]]
 id = "T-0051"
-state = "backlog"
+state = "completed"
 title = "Add the commit of every write to src/flowgraph/commit.py, src/flowgraph/item.py and src/flowgraph/cli.py"
 description = "The store of src/flowgraph/item.py names the files written since it was opened and puts them back, each a callable, bound to the journal by open_files. A command of src/flowgraph/item.py returns what it says and the message of its commit. src/flowgraph/commit.py holds the one step every write shares: commit the changed files, then, for the start of a work item, check its branch out at that commit. The git work tree and its steps move there from src/flowgraph/item.py, which stays at or below 400 lines. Removes the xfail mark of tests/functional/test_commit_writes.py; the functional tests that build a Store by hand gain its new callables."
 expected_output = "changed: fgraph add, amend, reorder, start and complete each commit the files of the record the write changed, alone, under the message of the write, when the record is inside a git work tree; outside one the write is made as today; a commit refused exits 2 naming the git command and leaves the files as they were"
 created = 2026-11-21 10:49:23+00:00
+started = 2026-11-21 10:52:17+00:00
+completed = 2026-11-21 10:56:05+00:00
+commit = "fefa24c"
 
 [[tasks]]
 id = "T-0052"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph commits every write of the record"
 expected_output = "changed: README.md says each write is committed by fgraph, with its message, and no longer says amend makes no commit; docs/domain-model.md, Persistence, lists the git step of every write and what a commit refused leaves"
 created = 2026-11-21 10:49:23+00:00
+started = 2026-11-21 10:56:05+00:00
+completed = 2026-11-21 10:57:09+00:00
+commit = "00d8e8e"

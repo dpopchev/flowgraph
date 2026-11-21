@@ -11,8 +11,9 @@ Backlog through InProgress to Completed with their commits, shows a Story
 with its Tasks and lists the record by bucket. An Upkeep moves the same way,
 with its own Tasks, and is listed beside the Stories. The Backlog is a queue
 that `fgraph reorder` reorders, and a work item still in it is rewritten
-with `fgraph amend`. Starting a work item in a git repository commits the
-start and checks out its branch in a worktree of its own.
+with `fgraph amend`. In a git repository `fgraph` commits every write of the
+record itself, and starting a work item also checks out its branch in a
+worktree of its own.
 
 | Part                            | State                                                    |
 | ------------------------------- | -------------------------------------------------------- |
@@ -23,7 +24,7 @@ start and checks out its branch in a worktree of its own.
 | the kinds of work item          | Story, Upkeep                                            |
 | the order of the Backlog        | a queue, reordered by `fgraph reorder`                   |
 | the wording of a work item      | rewritten by `fgraph amend` while in Backlog             |
-| git                             | the start of a work item: its commit, branch, worktree   |
+| git                             | every write committed; a start makes branch and worktree |
 | the ontology                    | not started                                              |
 | flowgraph tracking its own work | its Stories are in `.fgraph/` since 0.4.0                |
 
@@ -106,15 +107,14 @@ fgraph status
 ```
 
 When the record is inside a git work tree, starting a Story commits its file
-alone as `chore: start ST-0001 in the record` -- whatever else is staged or
-changed stays out -- and checks out the branch `wi/<id>-<slug>` at that
+alone as `chore: start ST-0001 in the record`, as fgraph commits every write
+(below), and checks out the branch `wi/<id>-<slug>` at that
 commit in a worktree beside the checkout, `<parent>/<checkout>.worktrees/`.
 The slug is the first four words of the title, lower-cased and kept to their
 letters and digits; `--slug branch-on-start` gives another. Outside a work
 tree the Story starts as before and fgraph warns that no branch was made. A
 git step refused exits 2 and names the git command: a commit refused puts the
-file back as it was, a worktree refused leaves the start committed. The
-commits of the development and their messages stay yours.
+file back as it was, a worktree refused leaves the start committed.
 
 `fgraph show` then names the bucket of the Story and of each Task that has
 left Backlog (`    bucket           InProgress`). A start exits 2 and names
@@ -237,7 +237,33 @@ several in one call when given together; `--description ""` clears the
 description. An amend exits 2 and names why when it names no part, when the
 title or a part of the criterion is blank, when the work item is started or
 completed already, when the id is a Task's, or when the record does not hold
-it. `fgraph amend` writes the file of the item and makes no commit.
+it.
+
+When the record is inside a git work tree, `fgraph` commits every write of
+it: `add`, `amend`, `reorder`, `start` and `complete` each leave one commit
+that holds the files of the record the write changed, alone, under a message
+`fgraph` words. Whatever else is staged or changed stays out of it:
+
+```sh
+fgraph add story "Raise the Stories fgraph lists under Backlog from 0 to 1" \
+  --given "a record with no items" --when "a Story is added" \
+  --then "fgraph status lists it under Backlog"
+# added ST-0001
+
+git log -1 --format=%s --name-only
+# chore: add ST-0001 in the record
+#
+# .fgraph/items/ST-0001.toml
+```
+
+The other messages follow the write: `chore: add T-0001 of ST-0001 in the
+record`, `chore: amend ST-0001 in the record`, `chore: reorder ST-0002 before
+ST-0001 in the record`, `chore: start T-0001 of ST-0001 in the record`,
+`chore: complete ST-0001 in the record`. A write that leaves its file as it
+was makes no commit. Outside a git work tree a write is made as before, with
+no commit and no warning. A commit git refuses exits 2 and names the git
+command, and every file the write changed is put back as it was. The commits
+of the development and their messages stay yours.
 
 ## Develop
 

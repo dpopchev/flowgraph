@@ -304,17 +304,32 @@ off `main`.
 
 The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 
-- A start of a work item, when the record is inside a git work tree, commits
-  the file of the item alone, as `chore: start <id> in the record`; whatever
-  else is staged or changed stays as it was and out of the commit.
-- It then checks out the branch `wi/<id>-<slug>` at that commit in a new
-  worktree, `<parent>/<checkout name>.worktrees/<id>-<slug>`. The slug is
-  given with `--slug`, else it is the first four words of the title,
-  lower-cased and kept to their letters and digits.
-- Outside a git work tree the work item starts as before, and `fgraph` warns
-  that no branch was made. A start refused makes no commit and no branch.
-- A git step refused exits 2 naming the command: a commit refused puts the
-  file of the item back as it was, a worktree refused leaves the start
+- `fgraph` commits every write of the record, when the record is inside a git
+  work tree: `add`, `amend`, `reorder`, `start` and `complete`. The commit
+  holds the files of the record the write changed, alone; whatever else is
+  staged or changed stays as it was and out of the commit.
+- The commit is worded by `fgraph`, `chore: <write> <id> in the record`:
+
+  | Write | Message |
+  |---|---|
+  | add a work item | `chore: add ST-0001 in the record` |
+  | add a Task | `chore: add T-0001 of ST-0001 in the record` |
+  | amend | `chore: amend ST-0001 in the record` |
+  | reorder | `chore: reorder ST-0002 before ST-0001 in the record` |
+  | start | `chore: start ST-0001 in the record`, `chore: start T-0001 of ST-0001 in the record` |
+  | complete | `chore: complete ST-0001 in the record`, `chore: complete T-0001 of ST-0001 in the record` |
+
+- A write that leaves its file as it was makes no commit. Completing a Task
+  names the commit of its work, so the commit of the record follows it.
+- A start of a work item then checks out the branch `wi/<id>-<slug>` at its
+  commit in a new worktree, `<parent>/<checkout name>.worktrees/<id>-<slug>`.
+  The slug is given with `--slug`, else it is the first four words of the
+  title, lower-cased and kept to their letters and digits.
+- Outside a git work tree a write is made as before, without a commit and
+  without a warning; only a start of a work item warns, that no branch was
+  made. A write refused makes no commit and no branch.
+- A git step refused exits 2 naming the command: a commit refused puts every
+  file the write changed back as it was, a worktree refused leaves the start
   committed.
 - `fgraph` makes only the commits of the record; the commits of the
   development and their messages stay the developer's. Whether the checkout

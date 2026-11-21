@@ -5,7 +5,7 @@ description = "Gap found during U-0002: the branch of a work item is made by han
 created = 2026-11-21 08:06:51+00:00
 started = 2026-11-21 08:38:58+00:00
 completed = 2026-11-21 08:50:40+00:00
-commit = "94cdbd8"
+commit = "d5c33a9"
 
 [criterion]
 given = "main, with a Story in Backlog that holds a Task"
@@ -21,7 +21,7 @@ expected_output = "created: tests/functional/test_start_branch.py states that fg
 created = 2026-11-21 08:34:30+00:00
 started = 2026-11-21 08:40:16+00:00
 completed = 2026-11-21 08:42:12+00:00
-commit = "75dae43"
+commit = "e4a9631"
 
 [[tasks]]
 id = "T-0041"
@@ -32,7 +32,7 @@ expected_output = "created: src/flowgraph/branch.py with its tests in tests/bran
 created = 2026-11-21 08:34:30+00:00
 started = 2026-11-21 08:42:13+00:00
 completed = 2026-11-21 08:43:16+00:00
-commit = "dd2b2c9"
+commit = "77cb6b0"
 
 [[tasks]]
 id = "T-0042"
@@ -43,7 +43,7 @@ expected_output = "changed: src/flowgraph/branch.py tells whether a directory is
 created = 2026-11-21 08:34:30+00:00
 started = 2026-11-21 08:43:17+00:00
 completed = 2026-11-21 08:44:37+00:00
-commit = "d912730"
+commit = "585d81c"
 
 [[tasks]]
 id = "T-0043"
@@ -54,7 +54,7 @@ expected_output = "changed: fgraph start ID [--slug TEXT] on a work item saves t
 created = 2026-11-21 08:34:31+00:00
 started = 2026-11-21 08:44:37+00:00
 completed = 2026-11-21 08:49:01+00:00
-commit = "a0fe099"
+commit = "3f00488"
 
 [[tasks]]
 id = "T-0044"
@@ -64,4 +64,4 @@ expected_output = "changed: README.md shows fgraph start naming the branch and i
 created = 2026-11-21 08:34:31+00:00
 started = 2026-11-21 08:49:02+00:00
 completed = 2026-11-21 08:50:14+00:00
-commit = "0b32201"
+commit = "c037dae"

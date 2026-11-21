@@ -74,8 +74,33 @@ class StartedTask:
 
 
 @dataclass(frozen=True)
+class Commit:
+    """The commit that holds the work of an item: its sha, 7 to 40 hex digits."""
+
+    sha: str
+
+
+@dataclass(frozen=True)
+class CompletedTask:
+    """A Task in Completed: its work is in its commit."""
+
+    id: TaskId
+    title: str
+    expected_output: str
+    description: str
+    created: datetime
+    started: datetime
+    completed: datetime
+    commit: Commit
+
+
+# A Task in any of its states, as the file of its Story keeps it.
+TaskState = Task | StartedTask | CompletedTask
+
+
+@dataclass(frozen=True)
 class StartedStory:
-    """A Story in InProgress: started with at least one Task, each in Backlog or started."""
+    """A Story in InProgress: started with at least one Task, each in any state of its own."""
 
     id: StoryId
     title: str
@@ -83,31 +108,51 @@ class StartedStory:
     description: str
     created: datetime
     started: datetime
-    tasks: tuple[Task | StartedTask, ...]
+    tasks: tuple[TaskState, ...]
 
+
+@dataclass(frozen=True)
+class CompletedStory:
+    """A Story in Completed: every Task of it completed, the Story in its commit on `main`."""
+
+    id: StoryId
+    title: str
+    scenario: Scenario
+    description: str
+    created: datetime
+    started: datetime
+    completed: datetime
+    commit: Commit
+    tasks: tuple[CompletedTask, ...]
+
+
+# A Story that still takes Tasks: in Backlog or started.
+OpenStory = Story | StartedStory
 
 # A Story in any of its states, as the record keeps it.
-StoryState = Story | StartedStory
+StoryState = Story | StartedStory | CompletedStory
 
 
 @dataclass
 class StoryRow:
-    """One Story as plain data, as a view reads it from the record."""
+    """One Story as plain data, as a view reads it from the record; a commit once completed."""
 
     id: str
     title: str
     state: str
+    commit: str = ""
 
 
 @dataclass
 class TaskRow:
-    """One Task as plain data, as a view reads it from the record."""
+    """One Task as plain data, as a view reads it from the record; a commit once completed."""
 
     id: str
     title: str
     expected_output: str
     description: str
     state: str
+    commit: str = ""
 
 
 @dataclass
@@ -122,6 +167,7 @@ class StoryDetail:
     when: str
     then: str
     tasks: list[TaskRow]
+    commit: str = ""
 
 
 # The rows of the stories in the record; an empty list when it holds none.
@@ -211,6 +257,22 @@ class StartedAlreadyError(ValueError):
 
 class StoryInBacklogError(ValueError):
     """A Task started while its Story is still in Backlog."""
+
+
+class CommitError(ValueError):
+    """A text that is no commit sha."""
+
+
+class CompletedAlreadyError(ValueError):
+    """A completed Story or Task moved once more, or a Task written for a completed Story."""
+
+
+class NotStartedError(ValueError):
+    """A Story or a Task completed while it is still in Backlog."""
+
+
+class OpenTaskError(ValueError):
+    """A Story completed while some of its Tasks are not."""
 
 
 def make_story_id(number: int) -> StoryId:
@@ -327,15 +389,45 @@ def parse_item_id(text: str) -> StoryId | TaskId:
         raise ItemIdError(f"{text!r} is no Story id or Task id") from None
 
 
-def append_task[S: StoryState](story: S, task: Task) -> S:
+def make_commit(text: str) -> Commit:
+    """The commit of that sha.
+
+    Raises CommitError when the text is not 7 to 40 lowercase hex digits.
+    """
+    if re.fullmatch(r"[0-9a-f]{7,40}", text) is None:
+        raise CommitError(f"{text!r} is no commit: it is 7 to 40 hex digits")
+    return Commit(text)
+
+
+def append_task[S: OpenStory](story: S, task: Task) -> S:
     """The Story with the Task written for it, after the Tasks it already has."""
     return replace(story, tasks=(*story.tasks, task))
+
+
+def still_open(story: StoryState) -> OpenStory:
+    """The Story, which still takes Tasks; raises CompletedAlreadyError when it is completed."""
+    match story:
+        case Story() | StartedStory():
+            return story
+        case CompletedStory():
+            raise CompletedAlreadyError(f"{story_id_text(story.id)} is completed already")
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def _task_of(story: StoryState, task_id: TaskId) -> TaskState:
+    """The Task of that id in the Story; raises TaskNotFoundError when it holds none."""
+    held = [task for task in story.tasks if task.id == task_id]
+    if not held:
+        raise TaskNotFoundError(task_id)
+    return held[0]
 
 
 def started_story(story: StoryState, on: datetime) -> StartedStory:
     """The Story started on that time, kept to the second, its Tasks still in Backlog.
 
-    Raises NoTaskError when the Story has no Task and StartedAlreadyError when it is started.
+    Raises NoTaskError when the Story has no Task, StartedAlreadyError when it is started and
+    CompletedAlreadyError when it is completed.
     """
     match story:
         case Story(tasks=()):
@@ -353,12 +445,17 @@ def started_story(story: StoryState, on: datetime) -> StartedStory:
             )
         case StartedStory():
             raise StartedAlreadyError(f"{story_id_text(story.id)} is started already")
+        case CompletedStory():
+            raise CompletedAlreadyError(f"{story_id_text(story.id)} is completed already")
         case _ as unreachable:
             assert_never(unreachable)
 
 
-def _started(task: Task | StartedTask, on: datetime) -> StartedTask:
-    """The Task started on that time; raises StartedAlreadyError when it is started."""
+def _started(task: TaskState, on: datetime) -> StartedTask:
+    """The Task started on that time.
+
+    Raises StartedAlreadyError when it is started and CompletedAlreadyError when it is completed.
+    """
     match task:
         case Task():
             return StartedTask(
@@ -371,6 +468,8 @@ def _started(task: Task | StartedTask, on: datetime) -> StartedTask:
             )
         case StartedTask():
             raise StartedAlreadyError(f"{task_id_text(task.id)} is started already")
+        case CompletedTask():
+            raise CompletedAlreadyError(f"{task_id_text(task.id)} is completed already")
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -378,36 +477,132 @@ def _started(task: Task | StartedTask, on: datetime) -> StartedTask:
 def started_task(story: StoryState, task_id: TaskId, on: datetime) -> StartedStory:
     """The started Story with its Task of that id started on that time, kept to the second.
 
-    Raises StoryInBacklogError when the Story is in Backlog, TaskNotFoundError when it holds no
-    such Task, and StartedAlreadyError when the Task is started.
+    Raises TaskNotFoundError when the Story holds no such Task, StoryInBacklogError when the
+    Story is in Backlog, StartedAlreadyError when the Task is started and CompletedAlreadyError
+    when it is completed.
     """
+    _task_of(story, task_id)
+    task = task_id_text(task_id)
     match story:
         case Story():
-            task, held = task_id_text(task_id), story_id_text(story.id)
-            raise StoryInBacklogError(f"{task} cannot start: {held} is in Backlog")
+            raise StoryInBacklogError(
+                f"{task} cannot start: {story_id_text(story.id)} is in Backlog"
+            )
         case StartedStory():
-            if all(task.id != task_id for task in story.tasks):
-                raise TaskNotFoundError(task_id)
             tasks = tuple(_started(t, on) if t.id == task_id else t for t in story.tasks)
             return replace(story, tasks=tasks)
+        case CompletedStory():
+            raise CompletedAlreadyError(f"{task} is completed already")
         case _ as unreachable:
             assert_never(unreachable)
 
 
-def _state_of(item: StoryState | Task | StartedTask) -> str:
+def _completed(task: TaskState, on: datetime, commit: Commit) -> CompletedTask:
+    """The Task completed on that time in that commit.
+
+    Raises NotStartedError when it is in Backlog and CompletedAlreadyError when it is completed.
+    """
+    match task:
+        case Task():
+            raise NotStartedError(f"{task_id_text(task.id)} is in Backlog: start it first")
+        case StartedTask():
+            return CompletedTask(
+                task.id,
+                task.title,
+                task.expected_output,
+                task.description,
+                task.created,
+                task.started,
+                on.replace(microsecond=0),
+                commit,
+            )
+        case CompletedTask():
+            raise CompletedAlreadyError(f"{task_id_text(task.id)} is completed already")
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def completed_task(
+    story: StoryState, task_id: TaskId, on: datetime, commit: Commit
+) -> StartedStory:
+    """The started Story with its Task of that id completed on that time, in that commit.
+
+    Raises TaskNotFoundError when the Story holds no such Task, NotStartedError when the Task is
+    in Backlog and CompletedAlreadyError when it is completed.
+    """
+    _task_of(story, task_id)
+    task = task_id_text(task_id)
+    match story:
+        case Story():
+            raise NotStartedError(f"{task} is in Backlog: start it first")
+        case StartedStory():
+            done = tuple(_completed(t, on, commit) if t.id == task_id else t for t in story.tasks)
+            return replace(story, tasks=done)
+        case CompletedStory():
+            raise CompletedAlreadyError(f"{task} is completed already")
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def completed_story(story: StoryState, on: datetime, commit: Commit) -> CompletedStory:
+    """The Story completed on that time, kept to the second, in that commit.
+
+    Raises NotStartedError when it is in Backlog, OpenTaskError naming the Tasks not completed,
+    and CompletedAlreadyError when it is completed.
+    """
+    match story:
+        case Story():
+            raise NotStartedError(f"{story_id_text(story.id)} is in Backlog: start it first")
+        case StartedStory():
+            done = tuple(task for task in story.tasks if isinstance(task, CompletedTask))
+            left = [task_id_text(t.id) for t in story.tasks if not isinstance(t, CompletedTask)]
+            if left:
+                held = story_id_text(story.id)
+                raise OpenTaskError(f"{held} has Tasks to complete first: {', '.join(left)}")
+            return CompletedStory(
+                story.id,
+                story.title,
+                story.scenario,
+                story.description,
+                story.created,
+                story.started,
+                on.replace(microsecond=0),
+                commit,
+                done,
+            )
+        case CompletedStory():
+            raise CompletedAlreadyError(f"{story_id_text(story.id)} is completed already")
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def _state_of(item: StoryState | TaskState) -> str:
     """The state of a Story or a Task as the record writes it."""
     match item:
         case Story() | Task():
             return "backlog"
         case StartedStory() | StartedTask():
             return "started"
+        case CompletedStory() | CompletedTask():
+            return "completed"
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def _commit_of(item: StoryState | TaskState) -> str:
+    """The sha of the commit of a completed Story or Task; empty for one not completed."""
+    match item:
+        case CompletedStory() | CompletedTask():
+            return item.commit.sha
+        case Story() | Task() | StartedStory() | StartedTask():
+            return ""
         case _ as unreachable:
             assert_never(unreachable)
 
 
 def story_row(story: StoryState) -> StoryRow:
     """The Story as the row a view reads."""
-    return StoryRow(story_id_text(story.id), story.title, _state_of(story))
+    return StoryRow(story_id_text(story.id), story.title, _state_of(story), _commit_of(story))
 
 
 def story_detail(story: StoryState) -> StoryDetail:
@@ -427,9 +622,11 @@ def story_detail(story: StoryState) -> StoryDetail:
                 task.expected_output,
                 task.description,
                 _state_of(task),
+                _commit_of(task),
             )
             for task in story.tasks
         ],
+        commit=_commit_of(story),
     )
 
 
@@ -470,10 +667,10 @@ def add_task(
     """Write a Task for the Story named as parent, under the next free id, and return that id.
 
     Raises StoryIdError when the parent is no Story id, StoryNotFoundError when the record holds
-    no such Story, and EmptyPartError when the title or the expected output is blank; nothing is
-    saved.
+    no such Story, CompletedAlreadyError when it is completed, and EmptyPartError when the title
+    or the expected output is blank; nothing is saved.
     """
-    story = load_story(parse_story_id(parent))
+    story = still_open(load_story(parse_story_id(parent)))
     taken = [parse_task_id(text) for text in find_task_ids()]
     task = make_task(next_task_id(taken), title, expected_output, description, now())
     save_story(append_task(story, task))
@@ -502,14 +699,52 @@ def start_task(
     """Start the Task of that id now, save its Story whole and return the id of that Story.
 
     Raises TaskNotFoundError when no Story holds the Task, StoryInBacklogError when its Story is
-    in Backlog and StartedAlreadyError when it is started; nothing is saved.
+    in Backlog, StartedAlreadyError when it is started and CompletedAlreadyError when it is
+    completed; nothing is saved.
     """
+    story = _holder(task_id, find_story_rows, load_story)
+    save_story(started_task(story, task_id, now()))
+    return story.id
+
+
+def _holder(task_id: TaskId, find_story_rows: FindStoryRows, load_story: LoadStory) -> StoryState:
+    """The Story that holds the Task of that id; raises TaskNotFoundError when none does."""
     for row in find_story_rows():
         story = load_story(parse_story_id(row.id))
         if any(task.id == task_id for task in story.tasks):
-            save_story(started_task(story, task_id, now()))
-            return story.id
+            return story
     raise TaskNotFoundError(task_id)
+
+
+def complete_story(
+    *, story_id: StoryId, commit: Commit, load_story: LoadStory, save_story: SaveStory, now: Now
+) -> None:
+    """Complete the Story of that id now in that commit and save it whole.
+
+    Raises StoryNotFoundError when the record holds no such Story, NotStartedError when it is in
+    Backlog, OpenTaskError when a Task of it is not completed and CompletedAlreadyError when it
+    is completed; nothing is saved.
+    """
+    save_story(completed_story(load_story(story_id), now(), commit))
+
+
+def complete_task(
+    *,
+    task_id: TaskId,
+    commit: Commit,
+    find_story_rows: FindStoryRows,
+    load_story: LoadStory,
+    save_story: SaveStory,
+    now: Now,
+) -> StoryId:
+    """Complete the Task of that id now in that commit, save its Story whole and return its id.
+
+    Raises TaskNotFoundError when no Story holds the Task, NotStartedError when it is in Backlog
+    and CompletedAlreadyError when it is completed; nothing is saved.
+    """
+    story = _holder(task_id, find_story_rows, load_story)
+    save_story(completed_task(story, task_id, now(), commit))
+    return story.id
 
 
 class _CriterionFile(BaseModel):
@@ -549,6 +784,28 @@ class _StartedTaskFile(BaseModel):
     started: datetime
 
 
+class _CompletedTaskFile(BaseModel):
+    """One table of the tasks of a Story file: a completed Task, with its commit."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    state: Literal["completed"]
+    title: str
+    description: str = ""
+    expected_output: str
+    created: datetime
+    started: datetime
+    completed: datetime
+    commit: str
+
+
+# One table of the tasks of a started Story file, told apart by its state line.
+_HeldTask = Annotated[
+    _TaskFile | _StartedTaskFile | _CompletedTaskFile, Field(discriminator="state")
+]
+
+
 class _StoryFile(BaseModel):
     """What the file of a Story in Backlog holds: its Tasks are all in Backlog."""
 
@@ -564,7 +821,7 @@ class _StoryFile(BaseModel):
 
 
 class _StartedStoryFile(BaseModel):
-    """What the file of a started Story holds: its started time, its Tasks in either state."""
+    """What the file of a started Story holds: its started time, its Tasks in any state."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -575,16 +832,49 @@ class _StartedStoryFile(BaseModel):
     created: datetime
     started: datetime
     criterion: _CriterionFile
-    tasks: list[Annotated[_TaskFile | _StartedTaskFile, Field(discriminator="state")]] = []
+    tasks: list[_HeldTask] = []
 
 
-# The file of a Story in any of its states, told apart by its state line.
-_HELD_STORY: TypeAdapter[_StoryFile | _StartedStoryFile] = TypeAdapter(
-    Annotated[_StoryFile | _StartedStoryFile, Field(discriminator="state")]
+class _CompletedStoryFile(BaseModel):
+    """What the file of a completed Story holds: its commit, its Tasks all completed."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    state: Literal["completed"]
+    title: str
+    description: str = ""
+    created: datetime
+    started: datetime
+    completed: datetime
+    commit: str
+    criterion: _CriterionFile
+    tasks: list[_CompletedTaskFile] = []
+
+
+# The file of a Story in any of its states.
+_HeldStoryFile = _StoryFile | _StartedStoryFile | _CompletedStoryFile
+
+# The validator of a Story file, which tells the states apart by the state line.
+_HELD_STORY: TypeAdapter[_HeldStoryFile] = TypeAdapter(
+    Annotated[_HeldStoryFile, Field(discriminator="state")]
 )
 
 
-def _read_story_file(path: Path) -> _StoryFile | _StartedStoryFile:
+def _commit_held(
+    held: _HeldStoryFile | _TaskFile | _StartedTaskFile | _CompletedTaskFile,
+) -> str:
+    """The commit a validated file or table holds; empty for an item not completed."""
+    match held:
+        case _CompletedStoryFile() | _CompletedTaskFile():
+            return held.commit
+        case _StoryFile() | _StartedStoryFile() | _TaskFile() | _StartedTaskFile():
+            return ""
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def _read_story_file(path: Path) -> _HeldStoryFile:
     """The content of one Story file; raises StoryFileError naming the path."""
     try:
         return _HELD_STORY.validate_python(tomllib.loads(path.read_text(encoding="utf-8")))
@@ -599,7 +889,7 @@ def read_story_rows(record: Path) -> list[StoryRow]:
     StoryFileError naming the first such file that does not hold a Story.
     """
     held = [_read_story_file(path) for path in (record / ITEMS).glob("ST-*.toml")]
-    rows = [StoryRow(story.id, story.title, story.state) for story in held]
+    rows = [StoryRow(story.id, story.title, story.state, _commit_held(story)) for story in held]
     return sorted(rows, key=lambda row: parse_story_id(row.id).number)
 
 
@@ -636,9 +926,17 @@ def read_story_detail(record: Path, story_id: StoryId) -> StoryDetail:
         when=held.criterion.when,
         then=held.criterion.then,
         tasks=[
-            TaskRow(task.id, task.title, task.expected_output, task.description, task.state)
+            TaskRow(
+                task.id,
+                task.title,
+                task.expected_output,
+                task.description,
+                task.state,
+                _commit_held(task),
+            )
             for task in held.tasks
         ],
+        commit=_commit_held(held),
     )
 
 
@@ -651,25 +949,30 @@ def read_task_ids(record: Path) -> list[str]:
     return [task.id for story in held for task in story.tasks]
 
 
-def _task_primitives(task: Task | StartedTask) -> dict[str, object]:
-    """The Task as the primitives its table holds; a description only when there is one."""
-    described = {"description": task.description} if task.description else {}
-    match task:
-        case Task():
-            state: dict[str, object] = {"state": "backlog"}
-            started: dict[str, object] = {}
-        case StartedTask():
-            state, started = {"state": "started"}, {"started": task.started}
+def _moves_primitives(item: StoryState | TaskState) -> dict[str, object]:
+    """The times and the commit of the moves an item has made, as its file holds them."""
+    match item:
+        case Story() | Task():
+            return {}
+        case StartedStory() | StartedTask():
+            return {"started": item.started}
+        case CompletedStory() | CompletedTask():
+            return {"started": item.started, "completed": item.completed, "commit": item.commit.sha}
         case _ as unreachable:
             assert_never(unreachable)
+
+
+def _task_primitives(task: TaskState) -> dict[str, object]:
+    """The Task as the primitives its table holds; a description only when there is one."""
+    described = {"description": task.description} if task.description else {}
     return {
         "id": task_id_text(task.id),
-        **state,
+        "state": _state_of(task),
         "title": task.title,
         **described,
         "expected_output": task.expected_output,
         "created": task.created,
-        **started,
+        **_moves_primitives(task),
     }
 
 
@@ -677,21 +980,13 @@ def _story_primitives(story: StoryState) -> dict[str, object]:
     """The Story as the primitives its file holds; a description and tasks only when it has any."""
     described = {"description": story.description} if story.description else {}
     tasks = {"tasks": [_task_primitives(task) for task in story.tasks]} if story.tasks else {}
-    match story:
-        case Story():
-            state: dict[str, object] = {"state": "backlog"}
-            started: dict[str, object] = {}
-        case StartedStory():
-            state, started = {"state": "started"}, {"started": story.started}
-        case _ as unreachable:
-            assert_never(unreachable)
     return {
         "id": story_id_text(story.id),
-        **state,
+        "state": _state_of(story),
         "title": story.title,
         **described,
         "created": story.created,
-        **started,
+        **_moves_primitives(story),
         "criterion": {
             "given": story.scenario.given,
             "when": story.scenario.when,
@@ -701,18 +996,35 @@ def _story_primitives(story: StoryState) -> dict[str, object]:
     }
 
 
-def _task_held(held: _TaskFile | _StartedTaskFile) -> Task:
+def _task_held(held: _TaskFile | _StartedTaskFile | _CompletedTaskFile) -> Task:
     """The Task a validated table holds, in Backlog, built through its constructors."""
     return make_task(
         parse_task_id(held.id), held.title, held.expected_output, held.description, held.created
     )
 
 
-def _story_held(held: _StoryFile | _StartedStoryFile) -> StoryState:
+def _task_moved(
+    story: StartedStory, held: _TaskFile | _StartedTaskFile | _CompletedTaskFile
+) -> StartedStory:
+    """The started Story with the Task of the table moved as far as the table says."""
+    task_id = parse_task_id(held.id)
+    match held:
+        case _TaskFile():
+            return story
+        case _StartedTaskFile():
+            return started_task(story, task_id, held.started)
+        case _CompletedTaskFile():
+            begun = started_task(story, task_id, held.started)
+            return completed_task(begun, task_id, held.completed, make_commit(held.commit))
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def _story_held(held: _HeldStoryFile) -> StoryState:
     """The Story a validated file holds, with its Tasks, built through its constructors.
 
-    A started Story and its started Tasks are built by the moves that start them, so a file
-    holds no started state those moves could not reach.
+    A Story and its Tasks past Backlog are built by the moves that took them there, so a file
+    holds no state those moves could not reach.
     """
     criterion = held.criterion
     scenario = make_scenario(criterion.given, criterion.when, criterion.then)
@@ -724,17 +1036,17 @@ def _story_held(held: _StoryFile | _StartedStoryFile) -> StoryState:
     match held:
         case _StoryFile():
             return story
-        case _StartedStoryFile():
+        case _StartedStoryFile() | _CompletedStoryFile():
             begun = started_story(story, held.started)
             for task in held.tasks:
-                match task:
-                    case _StartedTaskFile():
-                        begun = started_task(begun, parse_task_id(task.id), task.started)
-                    case _TaskFile():
-                        pass
-                    case _ as unreachable:
-                        assert_never(unreachable)
-            return begun
+                begun = _task_moved(begun, task)
+            match held:
+                case _CompletedStoryFile():
+                    return completed_story(begun, held.completed, make_commit(held.commit))
+                case _StartedStoryFile():
+                    return begun
+                case _ as unreachable:
+                    assert_never(unreachable)
         case _ as unreachable:
             assert_never(unreachable)
 

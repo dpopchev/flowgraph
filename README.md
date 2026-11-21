@@ -6,18 +6,18 @@ it builds the ontology of the project on the way: its terms and how they relate.
 
 ## Status
 
-Early: `fgraph` adds a Story to a record, writes its Tasks, starts them,
-shows a Story with its Tasks and lists the record by bucket; nothing is
-completed yet.
+Early: `fgraph` adds a Story to a record, writes its Tasks, takes them from
+Backlog through InProgress to Completed with their commits, shows a Story
+with its Tasks and lists the record by bucket. Only the Story kind exists.
 
-| Part                            | State                                             |
-| ------------------------------- | ------------------------------------------------- |
-| the `fgraph` command            | runs, prints its help menu                        |
-| the wheel                       | built by `make wheel`, ships `fgraph`             |
-| where the record lives          | located on every call but `--help`                |
-| the record and its flow         | a Story with its Tasks, in Backlog and InProgress |
-| the ontology                    | not started                                       |
-| flowgraph tracking its own work | its Backlog is in `.fgraph/` since 0.4.0          |
+| Part                            | State                                                    |
+| ------------------------------- | -------------------------------------------------------- |
+| the `fgraph` command            | runs, prints its help menu                               |
+| the wheel                       | built by `make wheel`, ships `fgraph`                    |
+| where the record lives          | located on every call but `--help`                       |
+| the record and its flow         | a Story with its Tasks, from Backlog to Completed        |
+| the ontology                    | not started                                              |
+| flowgraph tracking its own work | its Stories are in `.fgraph/` since 0.4.0                |
 
 The model of the record -- its item types, states and rules -- is
 `docs/domain-model.md`. flowgraph keeps its own work in `.fgraph/`: run
@@ -99,7 +99,32 @@ fgraph status
 `fgraph show` then names the bucket of the Story and of each Task that has
 left Backlog (`    bucket           InProgress`). A start exits 2 and names
 why when the Story has no Task, when a Task's Story is still in Backlog, when
-the item is started already, or when the record does not hold it.
+the item is started or completed already, or when the record does not hold
+it.
+
+Complete each Task with the commit that holds its work, then the Story with
+the commit on `main` that holds it. `--commit` is a sha of 7 to 40 hex digits;
+`fgraph` does not look it up in git yet:
+
+```sh
+fgraph complete T-0001 --commit 3e9ae5c
+# completed T-0001 of ST-0001 at 3e9ae5c
+
+fgraph complete ST-0001 --commit 677f9b0
+# completed ST-0001 at 677f9b0
+
+fgraph status
+# Backlog (0)
+# InProgress (0)
+# Completed (1)
+#   ST-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  677f9b0
+```
+
+`fgraph show` names the commit of the Story and of each completed Task. A
+complete exits 2 and names why when the item is still in Backlog, when a
+Story has Tasks not completed, when the item is completed already, when the
+commit is no sha, or when the record does not hold it. A completed Story takes
+no new Task.
 
 ## Develop
 

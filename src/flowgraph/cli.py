@@ -13,14 +13,21 @@ from typing import assert_never
 from flowgraph import story
 from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, locate
 from flowgraph.story import (
+    CommitError,
+    CompletedAlreadyError,
     EmptyPartError,
+    FindStoryRows,
     ItemIdError,
+    LoadStory,
     NoTaskError,
+    NotStartedError,
     Now,
+    OpenTaskError,
     ReadStory,
     ReadStoryDetail,
     ReadStoryRows,
     ReadTaskIds,
+    SaveStory,
     StartedAlreadyError,
     StoryDetail,
     StoryId,
@@ -33,6 +40,9 @@ from flowgraph.story import (
     WriteStory,
     add_story,
     add_task,
+    complete_story,
+    complete_task,
+    make_commit,
     parse_item_id,
     parse_story_id,
     start_story,
@@ -46,12 +56,11 @@ DESCRIPTION = "flowgraph keeps the record of a project's work."
 # Write text to a stream; what it returns is ignored, so a stream's write and a list's append fit.
 Write = Callable[[str], object]
 
-# The buckets of the flow in their order, each with the states of an item shown in it. No state
-# leads to Completed yet.
+# The buckets of the flow in their order, each with the states of an item shown in it.
 BUCKETS: Sequence[tuple[str, Collection[str]]] = (
     ("Backlog", frozenset({"backlog"})),
     ("InProgress", frozenset({"started"})),
-    ("Completed", frozenset()),
+    ("Completed", frozenset({"completed"})),
 )
 
 # The refusals of a start, each written as a usage error.
@@ -62,6 +71,18 @@ START_REFUSED = (
     NoTaskError,
     StartedAlreadyError,
     StoryInBacklogError,
+    CompletedAlreadyError,
+)
+
+# The refusals of a complete, each written as a usage error.
+COMPLETE_REFUSED = (
+    ItemIdError,
+    CommitError,
+    StoryNotFoundError,
+    TaskNotFoundError,
+    NotStartedError,
+    OpenTaskError,
+    CompletedAlreadyError,
 )
 
 
@@ -109,6 +130,13 @@ def build_parser() -> argparse.ArgumentParser:
         "start", help="start a Story or a Task of it", add_help=False, color=False
     )
     start.add_argument("id", metavar="ID", help="the id of the Story or of the Task")
+    complete = commands.add_parser(
+        "complete", help="complete a Story or a Task of it in a commit", add_help=False, color=False
+    )
+    complete.add_argument("id", metavar="ID", help="the id of the Story or of the Task")
+    complete.add_argument(
+        "--commit", required=True, metavar="SHA", help="the commit that holds its work"
+    )
     commands.add_parser(
         "status", help="list the items of the record by bucket", add_help=False, color=False
     )
@@ -116,27 +144,37 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def status_text(rows: Iterable[StoryRow]) -> str:
-    """The items by bucket, in the order of the flow: a heading with its count, then its items."""
+    """The items by bucket, in the order of the flow: a heading with its count, then its items.
+
+    A completed item is listed with its commit.
+    """
     listed = list(rows)
     lines: list[str] = []
     for bucket, states in BUCKETS:
         held = [row for row in listed if row.state in states]
         lines.append(f"{bucket} ({len(held)})\n")
-        lines.extend(f"  {row.id}  {row.title}\n" for row in held)
+        lines.extend(
+            f"  {row.id}  {row.title}  {row.commit}\n"
+            if row.commit
+            else f"  {row.id}  {row.title}\n"
+            for row in held
+        )
     return "".join(lines)
 
 
 def show_text(detail: StoryDetail) -> str:
     """The Story with its bucket and its criterion, then its Tasks, one fact per line.
 
-    A description is listed only when there is one, the bucket of a Task only once it has left
-    Backlog.
+    A description and a commit are listed only when there is one, the bucket of a Task only once
+    it has left Backlog.
     """
     bucket = next(name for name, states in BUCKETS if detail.state in states)
+    committed = [f"  commit       {detail.commit}\n"] if detail.commit else []
     described = [f"  description  {detail.description}\n"] if detail.description else []
     lines = [
         f"{detail.id}  {detail.title}\n",
         f"  bucket       {bucket}\n",
+        *committed,
         *described,
         f"  given        {detail.given}\n",
         f"  when         {detail.when}\n",
@@ -148,10 +186,50 @@ def show_text(detail: StoryDetail) -> str:
         task_bucket = next(name for name, states in BUCKETS if task.state in states)
         if task_bucket != "Backlog":
             lines.append(f"    bucket           {task_bucket}\n")
+        if task.commit:
+            lines.append(f"    commit           {task.commit}\n")
         lines.append(f"    expected output  {task.expected_output}\n")
         if task.description:
             lines.append(f"    description      {task.description}\n")
     return "".join(lines)
+
+
+def _complete(
+    item: str,
+    sha: str,
+    *,
+    find_story_rows: FindStoryRows,
+    load_story: LoadStory,
+    save_story: SaveStory,
+    now: Now,
+) -> str:
+    """Complete the Story or the Task of that id in the commit of that sha; the line that says so.
+
+    Raises ItemIdError, CommitError, or a refusal of the move (COMPLETE_REFUSED); nothing is saved.
+    """
+    commit = make_commit(sha)
+    match parse_item_id(item):
+        case StoryId() as story_id:
+            complete_story(
+                story_id=story_id,
+                commit=commit,
+                load_story=load_story,
+                save_story=save_story,
+                now=now,
+            )
+            return f"completed {story_id_text(story_id)} at {commit.sha}\n"
+        case TaskId() as task_id:
+            holder = complete_task(
+                task_id=task_id,
+                commit=commit,
+                find_story_rows=find_story_rows,
+                load_story=load_story,
+                save_story=save_story,
+                now=now,
+            )
+            return f"completed {task_id_text(task_id)} of {story_id_text(holder)} at {commit.sha}\n"
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 def run(
@@ -191,10 +269,30 @@ def run(
                         save_story=lambda changed: write_story(path, changed),
                         now=now,
                     )
-                except (StoryNotFoundError, StoryIdError, EmptyPartError) as error:
+                except (
+                    StoryNotFoundError,
+                    StoryIdError,
+                    EmptyPartError,
+                    CompletedAlreadyError,
+                ) as error:
                     write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
                     return 2
                 write(f"added {task_id_text(written)} to {args.parent}\n")
+                return 0
+            if args.command == "complete":
+                try:
+                    done = _complete(
+                        args.id,
+                        args.commit,
+                        find_story_rows=lambda: read_story_rows(path),
+                        load_story=lambda wanted: read_story(path, wanted),
+                        save_story=lambda changed: write_story(path, changed),
+                        now=now,
+                    )
+                except COMPLETE_REFUSED as error:
+                    write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
+                    return 2
+                write(done)
                 return 0
             if args.command == "show":
                 try:

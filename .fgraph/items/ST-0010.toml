@@ -12,12 +12,14 @@ then = "it exits 2 and names the Story the branch owns"
 
 [[tasks]]
 id = "T-0057"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_branch_scope.py, failing on the criterion of ST-0010"
 description = "Run through run() of src/flowgraph/cli.py on a real git repository in tmp_path, as tests/functional/test_land_work_item.py does. Seen red, then marked a strict xfail naming ST-0010 until the Task that turns it green removes the mark. The open question of the description, how a branch hands out its Task ids, went to ST-0019 when it was split off. The agent's readings, each a routine call: (1) the branch of a work item is the branch named wi/<id>-<slug>; in a work tree on it fgraph writes the file of that work item alone. (2) Refused there with exit 2, nothing written: a Task added to another work item, a Task of another work item started or completed, a work item added, and a reorder of the Backlog, whose queue is no file of the work item. (3) The refusal reads '<other id> is not written here: the branch <branch> writes <id> alone', and for a reorder 'the Backlog is not reordered here: the branch <branch> writes <id> alone'. (4) A work tree on any other branch, and a record outside a git work tree, write as today. (5) The work item completed on its own branch is not refused by this Story: ST-0018 holds what main keeps."
 expected_output = "created: tests/functional/test_branch_scope.py states that fgraph add task for another Story, run on the branch of a started Story, exits 2 and names the Story the branch owns"
 created = 2026-11-21 11:05:09+00:00
 started = 2026-11-21 11:05:36+00:00
+completed = 2026-11-21 11:06:07+00:00
+commit = "a045ffa"
 
 [[tasks]]
 id = "T-0058"

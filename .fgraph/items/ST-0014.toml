@@ -32,18 +32,21 @@ commit = "cdcbf03"
 
 [[tasks]]
 id = "T-0037"
-state = "started"
+state = "completed"
 title = "Add the queue file and the reorder command to src/flowgraph/queue.py"
 expected_output = "changed: src/flowgraph/queue.py reads and writes .fgraph/queue.toml and holds the command that loads the queue whole, moves one id before another and saves it whole"
 created = 2026-11-21 08:13:26+00:00
 started = 2026-11-21 08:16:30+00:00
+completed = 2026-11-21 08:18:02+00:00
+commit = "5e67f29"
 
 [[tasks]]
 id = "T-0038"
-state = "backlog"
+state = "started"
 title = "Add the reorder command to src/flowgraph/cli.py and src/flowgraph/item.py, status listing the Backlog in queue order"
 expected_output = "changed: src/flowgraph/cli.py takes reorder ID --before ID and exits 2 on an id that is unknown or not in Backlog; src/flowgraph/item.py lists the Backlog of status in queue order; the row of src/flowgraph/work_item/ carries created"
 created = 2026-11-21 08:13:26+00:00
+started = 2026-11-21 08:18:02+00:00
 
 [[tasks]]
 id = "T-0039"

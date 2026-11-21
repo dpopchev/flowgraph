@@ -17,10 +17,6 @@ from flowgraph.cli import open_files, open_git, run
 
 pytestmark = pytest.mark.functional
 
-NOT_YET = pytest.mark.xfail(
-    strict=True, reason="ST-0037: show on main reads the record of main alone yet"
-)
-
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 TITLE = "Raise the Stories fgraph lists from 0 to 1"
@@ -100,7 +96,6 @@ class TestAStoryWithItsTaskCompletedInItsWorktree:
     def test_show_on_main_exits_with_zero(self, shown: Outcome) -> None:
         assert shown.status == 0
 
-    @NOT_YET
     def test_show_on_main_lists_the_task_with_its_bucket_completed_and_its_commit(
         self, shown: Outcome
     ) -> None:

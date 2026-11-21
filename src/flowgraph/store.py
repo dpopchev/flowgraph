@@ -9,6 +9,7 @@ from functools import partial
 from pathlib import Path
 
 from flowgraph import work_item
+from flowgraph.bug import BUG
 from flowgraph.journal import Change, changed_files, noted, restore
 from flowgraph.queue import QUEUE, LoadQueue, Queue, SaveQueue, read_queue, write_queue
 from flowgraph.record import ITEMS
@@ -27,7 +28,7 @@ from flowgraph.work_item import (
 )
 
 # The kinds of work item a record holds, in the order fgraph reads them.
-KINDS: tuple[Kind, ...] = (STORY, UPKEEP)
+KINDS: tuple[Kind, ...] = (STORY, UPKEEP, BUG)
 
 # The rows of the work items of that kind in the record; an empty list when it holds none.
 FindKindRows = Callable[[Kind], list[WorkItemRow]]

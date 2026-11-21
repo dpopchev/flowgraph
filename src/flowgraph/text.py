@@ -49,6 +49,8 @@ def _status_line(row: StoryRow | UpkeepRow) -> str:
 def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     """The work item with its bucket and its criterion, then its Tasks, one fact per line.
 
+    The criterion is listed by the parts its kind states: a Given / When / Then, or what is
+    observed and expected.
     A description, a commit and the reason of a removal are listed only when there is one, the
     bucket of a Task only once it has left Backlog. A blocked Task is listed in InProgress as
     blocked, with its reason and what it waits on.
@@ -57,15 +59,20 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     committed = [f"  commit       {detail.commit}\n"] if detail.commit else []
     removed = [f"  reason       {detail.reason}\n"] if detail.reason else []
     described = [f"  description  {detail.description}\n"] if detail.description else []
+    stated = {
+        "given": detail.given,
+        "when": detail.when,
+        "then": detail.then,
+        "observed": detail.observed,
+        "expected": detail.expected,
+    }
     lines = [
         f"{detail.id}  {detail.title}\n",
         f"  bucket       {bucket}\n",
         *committed,
         *removed,
         *described,
-        f"  given        {detail.given}\n",
-        f"  when         {detail.when}\n",
-        f"  then         {detail.then}\n",
+        *(f"  {part:<13}{text}\n" for part, text in stated.items() if text),
         f"Tasks ({len(detail.tasks)})\n",
     ]
     for task in detail.tasks:

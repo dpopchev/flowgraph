@@ -143,14 +143,14 @@ class TestATaskAddedToAStoryTheRecordDoesNotHold:
 class TestATaskAddedToAParentThatIsNoStory:
     @pytest.fixture
     def outcome(self) -> Outcome:
-        return fgraph(changed(ADD_TASK, "ST-0001", "B-0001"), {})
+        return fgraph(changed(ADD_TASK, "ST-0001", "X-0001"), {})
 
     def test_exits_with_two(self, outcome: Outcome) -> None:
         assert outcome.status == 2
 
     def test_names_the_parent(self, outcome: Outcome) -> None:
         assert outcome.err.endswith(
-            "fgraph: error: 'B-0001' is no Story id: it is ST- and a number\n"
+            "fgraph: error: 'X-0001' is no Story id: it is ST- and a number\n"
         )
 
 

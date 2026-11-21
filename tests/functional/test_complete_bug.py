@@ -12,10 +12,7 @@ import pytest
 
 from flowgraph.cli import open_files, run
 
-pytestmark = [
-    pytest.mark.functional,
-    pytest.mark.xfail(strict=True, reason="ST-0006: fgraph tracks no Bug yet"),
-]
+pytestmark = pytest.mark.functional
 
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 ADD_STORY = [

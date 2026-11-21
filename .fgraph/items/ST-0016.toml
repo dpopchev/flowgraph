@@ -1,8 +1,9 @@
 id = "ST-0016"
-state = "backlog"
+state = "started"
 title = "Raise the buckets a work item can reach from 3 to 4: Removed, with its reason"
 description = "Found in the review of the Backlog on 2026-11-21: remove and the Removed types are in docs/domain-model.md, States are types and Direction, and are not built, so an item filed by mistake or superseded stays in Backlog. Removed stands apart from the flow and keeps the item with its date and reason; nothing is deleted. A removed work item leaves the queue of the Backlog. This slice: a work item in Backlog. Not part of it: removing a Task, and removing a started work item, which has a branch and a worktree once ST-0009 lands. Its Tasks are written when it is ordered."
 created = 2026-11-21 08:34:10+00:00
+started = 2026-11-21 11:37:21+00:00
 
 [criterion]
 given = "a Story in Backlog"

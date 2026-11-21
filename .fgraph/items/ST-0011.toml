@@ -24,3 +24,11 @@ title = "Move the store of a record to src/flowgraph/store.py and the Task moves
 description = "Room for the block move: item.py is at 399 lines and model.py at 399, against the 400 of U-0001. No behavior changes. The modules of src/flowgraph import the store from src/flowgraph/store.py; src/flowgraph/work_item/__init__.py exports the two moves as before."
 expected_output = "changed: src/flowgraph/item.py holds the commands by id in at most 320 lines and src/flowgraph/work_item/model.py the work item in at most 360, the store with its file adapters now in src/flowgraph/store.py and started_task and completed_task in src/flowgraph/work_item/tasks.py; every name is imported from where it was and make check still passes"
 created = 2026-11-21 11:19:51+00:00
+
+[[tasks]]
+id = "T-0071"
+state = "backlog"
+title = "Add the BlockedTask and its block move to src/flowgraph/task.py, src/flowgraph/work_item/tasks.py and the files of src/flowgraph/item_file.py and src/flowgraph/work_item/file.py"
+description = "Pure but for the file adapters. A blank reason or waiting on is refused through said() of src/flowgraph/criterion.py. The row a view reads gains the reason and what the Task waits on."
+expected_output = "changed: src/flowgraph/task.py holds BlockedTask and the move that blocks a started Task with its reason and what it waits on; src/flowgraph/work_item/tasks.py blocks a Task of a started work item; the file of a work item keeps a blocked Task as a table with state 'blocked' and reads it back through its moves; their tests are in tests/task/ and tests/work_item/"
+created = 2026-11-21 11:19:51+00:00

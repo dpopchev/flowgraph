@@ -24,3 +24,10 @@ title = "Add the branch of a start and the landing on a record git ignores to sr
 description = "Removes the xfail mark of tests/functional/test_ignored_record_branch.py. It changes outputs of T-0107 of ST-0023: the warning of a start, the start off main and the refusal of a landing on an ignored record, each with its test."
 expected_output = "changed: commit_written of src/flowgraph/commit.py checks the branch of a start out at HEAD for a record git ignores, with no commit and no warning; check_start_on_main of src/flowgraph/scope.py holds that start to main; land_item of src/flowgraph/land.py lands there, the work item completed with no commit of the record; proved in tests/commit/, tests/scope/ and tests/land/; tests/functional/test_ignored_record.py states the start and the landing as they are now"
 created = 2026-11-21 14:40:41+00:00
+
+[[tasks]]
+id = "T-0119"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say a start on a record git ignores makes its branch"
+expected_output = "changed: README.md shows fgraph start on an ignored record naming its branch, says where its Tasks are written and that fgraph land lands it with no commit of the record; docs/domain-model.md, Persistence, says the same and no longer says the branch of a work item on an ignored record is not built"
+created = 2026-11-21 14:40:41+00:00

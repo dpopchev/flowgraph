@@ -23,9 +23,9 @@ from flowgraph.story.file import (
     write_story,
 )
 from flowgraph.story.model import (
+    STORY,
     CompletedStory,
     FindStoryRows,
-    FindTaskIds,
     LoadStory,
     OpenStory,
     SaveStory,
@@ -39,22 +39,26 @@ from flowgraph.story.model import (
     StoryNotFoundError,
     StoryRow,
     StoryState,
-    append_task,
-    commit_sha,
     completed_story,
-    completed_task,
     make_story,
     make_story_id,
     next_story_id,
     parse_story_id,
     started_story,
+    story_id_text,
+)
+from flowgraph.work_item import (
+    FindTaskIds,
+    append_task,
+    commit_sha,
+    completed_task,
     started_task,
     state_name,
     still_open,
-    story_id_text,
 )
 
 __all__ = [
+    "STORY",
     "CompletedStory",
     "FindStoryRows",
     "FindTaskIds",

@@ -23,8 +23,8 @@ from flowgraph.upkeep.file import (
     write_upkeep,
 )
 from flowgraph.upkeep.model import (
+    UPKEEP,
     CompletedUpkeep,
-    FindTaskIds,
     FindUpkeepRows,
     LoadUpkeep,
     OpenUpkeep,
@@ -39,22 +39,26 @@ from flowgraph.upkeep.model import (
     UpkeepNotFoundError,
     UpkeepRow,
     UpkeepState,
-    append_task,
-    commit_sha,
-    completed_task,
     completed_upkeep,
     make_upkeep,
     make_upkeep_id,
     next_upkeep_id,
     parse_upkeep_id,
-    started_task,
     started_upkeep,
+    upkeep_id_text,
+)
+from flowgraph.work_item import (
+    FindTaskIds,
+    append_task,
+    commit_sha,
+    completed_task,
+    started_task,
     state_name,
     still_open,
-    upkeep_id_text,
 )
 
 __all__ = [
+    "UPKEEP",
     "CompletedUpkeep",
     "FindTaskIds",
     "FindUpkeepRows",

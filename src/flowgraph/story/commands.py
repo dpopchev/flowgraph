@@ -1,68 +1,20 @@
-"""The views and the commands of a Story: each command loads it whole, moves it and saves it."""
+"""The views and the commands of a Story: the work item commands, on the stories of the record."""
 
-from flowgraph.criterion import Commit, make_scenario
+from flowgraph import work_item
+from flowgraph.criterion import Commit
 from flowgraph.record import Now
 from flowgraph.story.model import (
+    STORY,
     FindStoryRows,
-    FindTaskIds,
     LoadStory,
     SaveStory,
-    StoryDetail,
     StoryId,
-    StoryRow,
-    StoryState,
-    append_task,
-    commit_sha,
-    completed_story,
-    completed_task,
-    make_story,
-    next_story_id,
     parse_story_id,
-    started_story,
-    started_task,
-    state_name,
-    still_open,
-    story_id_text,
 )
-from flowgraph.task import (
-    TaskId,
-    TaskNotFoundError,
-    TaskRow,
-    make_task,
-    next_task_id,
-    parse_task_id,
-    task_id_text,
-)
+from flowgraph.task import TaskId
 
-
-def story_row(story: StoryState) -> StoryRow:
-    """The Story as the row a view reads."""
-    return StoryRow(story_id_text(story.id), story.title, state_name(story), commit_sha(story))
-
-
-def story_detail(story: StoryState) -> StoryDetail:
-    """The Story with its criterion and its Tasks as the plain data a view reads."""
-    return StoryDetail(
-        id=story_id_text(story.id),
-        title=story.title,
-        state=state_name(story),
-        description=story.description,
-        given=story.scenario.given,
-        when=story.scenario.when,
-        then=story.scenario.then,
-        tasks=[
-            TaskRow(
-                task_id_text(task.id),
-                task.title,
-                task.expected_output,
-                task.description,
-                state_name(task),
-                commit_sha(task),
-            )
-            for task in story.tasks
-        ],
-        commit=commit_sha(story),
-    )
+story_row = work_item.work_item_row
+story_detail = work_item.work_item_detail
 
 
 def add_story(
@@ -80,12 +32,17 @@ def add_story(
 
     Raises EmptyPartError when the title or a part of the criterion is blank; nothing is saved.
     """
-    taken = [parse_story_id(row.id) for row in find_story_rows()]
-    story = make_story(
-        next_story_id(taken), title, make_scenario(given, when, then), description, now()
+    return work_item.add_work_item(
+        kind=STORY,
+        title=title,
+        given=given,
+        when=when,
+        then=then,
+        description=description,
+        find_work_item_rows=find_story_rows,
+        save_work_item=save_story,
+        now=now,
     )
-    save_story(story)
-    return story.id
 
 
 def add_task(
@@ -95,7 +52,7 @@ def add_task(
     expected_output: str,
     description: str,
     load_story: LoadStory,
-    find_task_ids: FindTaskIds,
+    find_task_ids: work_item.FindTaskIds,
     save_story: SaveStory,
     now: Now,
 ) -> TaskId:
@@ -105,11 +62,16 @@ def add_task(
     no such Story, CompletedAlreadyError when it is completed, and EmptyPartError when the title
     or the expected output is blank; nothing is saved.
     """
-    story = still_open(load_story(parse_story_id(parent)))
-    taken = [parse_task_id(text) for text in find_task_ids()]
-    task = make_task(next_task_id(taken), title, expected_output, description, now())
-    save_story(append_task(story, task))
-    return task.id
+    return work_item.add_task(
+        parent=parse_story_id(parent),
+        title=title,
+        expected_output=expected_output,
+        description=description,
+        load_work_item=load_story,
+        find_task_ids=find_task_ids,
+        save_work_item=save_story,
+        now=now,
+    )
 
 
 def start_story(
@@ -120,7 +82,16 @@ def start_story(
     Raises StoryNotFoundError when the record holds no such Story, NoTaskError when it has no
     Task and StartedAlreadyError when it is started; nothing is saved.
     """
-    save_story(started_story(load_story(story_id), now()))
+    work_item.start_work_item(
+        item_id=story_id, load_work_item=load_story, save_work_item=save_story, now=now
+    )
+
+
+def _load_holder(find_story_rows: FindStoryRows, load_story: LoadStory) -> work_item.LoadHolder:
+    """The load of the Story that holds a Task, among the stories of the record."""
+    return lambda task_id: work_item.holder_of(
+        task_id, [parse_story_id(row.id) for row in find_story_rows()], load_story
+    )
 
 
 def start_task(
@@ -137,18 +108,12 @@ def start_task(
     in Backlog, StartedAlreadyError when it is started and CompletedAlreadyError when it is
     completed; nothing is saved.
     """
-    story = _holder(task_id, find_story_rows, load_story)
-    save_story(started_task(story, task_id, now()))
-    return story.id
-
-
-def _holder(task_id: TaskId, find_story_rows: FindStoryRows, load_story: LoadStory) -> StoryState:
-    """The Story that holds the Task of that id; raises TaskNotFoundError when none does."""
-    for row in find_story_rows():
-        story = load_story(parse_story_id(row.id))
-        if any(task.id == task_id for task in story.tasks):
-            return story
-    raise TaskNotFoundError(task_id)
+    return work_item.start_task(
+        task_id=task_id,
+        load_holder=_load_holder(find_story_rows, load_story),
+        save_work_item=save_story,
+        now=now,
+    )
 
 
 def complete_story(
@@ -160,7 +125,13 @@ def complete_story(
     Backlog, OpenTaskError when a Task of it is not completed and CompletedAlreadyError when it
     is completed; nothing is saved.
     """
-    save_story(completed_story(load_story(story_id), now(), commit))
+    work_item.complete_work_item(
+        item_id=story_id,
+        commit=commit,
+        load_work_item=load_story,
+        save_work_item=save_story,
+        now=now,
+    )
 
 
 def complete_task(
@@ -177,6 +148,10 @@ def complete_task(
     Raises TaskNotFoundError when no Story holds the Task, NotStartedError when it is in Backlog
     and CompletedAlreadyError when it is completed; nothing is saved.
     """
-    story = _holder(task_id, find_story_rows, load_story)
-    save_story(completed_task(story, task_id, now(), commit))
-    return story.id
+    return work_item.complete_task(
+        task_id=task_id,
+        commit=commit,
+        load_holder=_load_holder(find_story_rows, load_story),
+        save_work_item=save_story,
+        now=now,
+    )

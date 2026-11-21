@@ -25,3 +25,10 @@ title = "Add development.parallel to the Config of src/flowgraph/config.py and r
 description = "Removes the xfail mark of tests/functional/test_parallel.py. The started work items are those of every kind, read as fgraph status reads them."
 expected_output = "changed: the Config of src/flowgraph/config.py holds development.parallel, a whole number of 1 or more, or none when the key is left out; with the development on and parallel set, the start of a work item is refused with exit 2 when that many work items are started already, naming each of them, with nothing written and no branch made; the start of a Task is not counted; a parallel below 1 or no whole number is refused as a config.toml naming the key; proved in tests/config/ and in the tests of the start"
 created = 2026-11-21 22:40:23+00:00
+
+[[tasks]]
+id = "T-0172"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say parallel limits the work items started at once"
+expected_output = "changed: README.md and docs/domain-model.md say [development] parallel of .fgraph/config.toml is how many work items are started at once, that left out nothing limits them, that it limits nothing with the development off, and what the refusal of a start beyond it names"
+created = 2026-11-21 22:40:23+00:00

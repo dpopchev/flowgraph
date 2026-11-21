@@ -24,3 +24,10 @@ title = "Add the unblock move and command to src/flowgraph/task.py, src/flowgrap
 description = "The move is pure, in src/flowgraph/task.py; the command loads the work item that holds the Task whole, unblocks the Task and saves it whole, as block does. src/flowgraph/work_item/__init__.py exports what it adds. Removes the xfail mark of tests/functional/test_unblock_task.py."
 expected_output = "changed: fgraph unblock ID takes a blocked Task back to started with the started time it had, prints 'unblocked <task> of <work item>' and is committed as every write; it exits 2 naming why when the Task is not blocked, when the id is no Task's and when the record does not hold it; the move is proved in tests/task/ and tests/work_item/"
 created = 2026-11-21 11:29:30+00:00
+
+[[tasks]]
+id = "T-0076"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say a blocked Task is unblocked with fgraph unblock"
+expected_output = "changed: README.md shows fgraph unblock and what it refuses, and no longer says unblock is not built; docs/domain-model.md says the unblock move of a Task is built and what it leaves in the file"
+created = 2026-11-21 11:29:30+00:00

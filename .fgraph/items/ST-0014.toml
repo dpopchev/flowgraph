@@ -12,17 +12,21 @@ then = "fgraph status lists ST-0002 above ST-0001 under Backlog"
 
 [[tasks]]
 id = "T-0035"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_reorder_backlog.py, failing on the criterion of ST-0014"
 expected_output = "created: tests/functional/test_reorder_backlog.py states that fgraph status lists a Story above the one it was put before"
 created = 2026-11-21 08:13:26+00:00
+started = 2026-11-21 08:13:36+00:00
+completed = 2026-11-21 08:15:35+00:00
+commit = "cbafdbc"
 
 [[tasks]]
 id = "T-0036"
-state = "backlog"
+state = "started"
 title = "Create src/flowgraph/queue.py holding the Backlog queue, its order over the Backlog items and the move of one id before another"
 expected_output = "created: src/flowgraph/queue.py with its tests in tests/queue/, the placed ids first in their order and the rest in the order added"
 created = 2026-11-21 08:13:26+00:00
+started = 2026-11-21 08:15:35+00:00
 
 [[tasks]]
 id = "T-0037"

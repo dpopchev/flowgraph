@@ -52,10 +52,13 @@ commit = "a44c46e"
 
 [[tasks]]
 id = "T-0033"
-state = "backlog"
+state = "completed"
 title = "Update docs/domain-model.md, Persistence, to say what the kinds share and what each keeps"
 expected_output = "changed: docs/domain-model.md no longer says each kind keeps its own state types, and names the shared work item"
 created = 2026-11-21 07:18:45+00:00
+started = 2026-11-21 07:54:16+00:00
+completed = 2026-11-21 07:54:52+00:00
+commit = "7165444"
 
 [[tasks]]
 id = "T-0034"

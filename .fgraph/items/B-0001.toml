@@ -15,3 +15,11 @@ title = "Add tests/functional/test_wrong_kind_id.py, failing on what B-0001 expe
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_amend_work_item.py does. Seen red, then marked a strict xfail naming B-0001 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_wrong_kind_id.py states that fgraph amend, fgraph remove, fgraph reorder and fgraph add task --parent, each given the id of a Feature, exit 2 and say it is no Story, Upkeep, Bug or Spike id"
 created = 2026-11-21 21:36:34+00:00
+
+[[tasks]]
+id = "T-0149"
+state = "backlog"
+title = "Change parse_work_item_id_of_any_kind of src/flowgraph/item.py to name every kind in its refusal"
+description = "Removes the xfail mark of tests/functional/test_wrong_kind_id.py. The tests of other work items that state the old wording are rewritten to the new one, named in the commit. README.md and docs/domain-model.md change only where they quote the old wording. fgraph show takes a Feature too: its refusal is reported in the hand-back when its wording is off, not changed here."
+expected_output = "changed: parse_work_item_id_of_any_kind of src/flowgraph/item.py refuses a text that is the id of no kind by naming every kind, as parse_item_id does without the Task: 'F-0001' is no Story, Upkeep, Bug or Spike id; proved in tests/item/"
+created = 2026-11-21 21:36:34+00:00

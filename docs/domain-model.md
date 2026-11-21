@@ -323,6 +323,21 @@ and its merge tool.
 - An amend rewrites the parts of the criterion the work item has: `--given`,
   `--when` and `--then`, `--observed` and `--expected`, or `--hypothesis`. A
   part of another form is refused.
+- A Feature is kept as `items/F-0001.toml`: its id, its title, its
+  description, its created time and its `criteria`, a list of one or more. It
+  has no state line and no Task, the developer's decision of 2026-11-21: its
+  bucket is derived from the states of its work items -- Completed when each
+  is completed or removed; InProgress once one is started or completed while
+  another is not; Backlog otherwise, as with no work item. `fgraph add
+  feature` adds one, on `main` as a work item is added, and `fgraph show`
+  lists its criteria and its work items with their buckets.
+- A work item under a Feature holds `parent = "F-0001"` in its file, and
+  carries it through every move. A file without the key holds a work item
+  that stands alone: standing alone is a value of `parent` in the model, and
+  the files written before the Feature read as they are. `--parent` is given
+  when the work item is added and names a Feature the record holds.
+- Not built yet: Features in `fgraph status`, amending or removing a Feature,
+  and moving a work item to another Feature.
 - Each kind reads the files of its own prefix. A file with a prefix no kind
   knows is left alone; nothing reports it yet.
 - A command loads a work item whole, changes it and saves it whole. The file
@@ -457,9 +472,6 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 
 ## Open questions
 
-- Does a Feature have a stored state? The reading: no, its bucket is derived
-  from the items it groups, and it is complete when each is Completed or
-  Removed, with no evidence of its own.
 - Does a Task also carry a check command that `fgraph` runs at `complete`?
   The reading: no, its expected output and its commit are enough.
 - Must a Story under a Feature name the Feature criterion it realizes? The

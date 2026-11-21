@@ -4,6 +4,7 @@ from flowgraph.work_item.commands import (
     LoadHolder,
     add_task,
     add_work_item,
+    amend_work_item,
     complete_task,
     complete_work_item,
     holder_of,
@@ -20,12 +21,14 @@ from flowgraph.work_item.file import (
     write_work_item,
 )
 from flowgraph.work_item.model import (
+    Amendment,
     CompletedWorkItem,
     FindTaskIds,
     FindWorkItemRows,
     Kind,
     KindError,
     LoadWorkItem,
+    NoPartError,
     OpenWorkItem,
     SaveWorkItem,
     StartedWorkItem,
@@ -38,6 +41,7 @@ from flowgraph.work_item.model import (
     WorkItemNotFoundError,
     WorkItemRow,
     WorkItemState,
+    amended_work_item,
     append_task,
     commit_sha,
     completed_task,
@@ -55,6 +59,7 @@ from flowgraph.work_item.model import (
 )
 
 __all__ = [
+    "Amendment",
     "CompletedWorkItem",
     "FindTaskIds",
     "FindWorkItemRows",
@@ -62,6 +67,7 @@ __all__ = [
     "KindError",
     "LoadHolder",
     "LoadWorkItem",
+    "NoPartError",
     "OpenWorkItem",
     "SaveWorkItem",
     "StartedWorkItem",
@@ -76,6 +82,8 @@ __all__ = [
     "WorkItemState",
     "add_task",
     "add_work_item",
+    "amend_work_item",
+    "amended_work_item",
     "append_task",
     "commit_sha",
     "complete_task",

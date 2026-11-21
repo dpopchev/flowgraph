@@ -25,7 +25,13 @@ export PYTHONPYCACHEPREFIX := $(PYCACHE)
 # recreated .venv loses it until the next make sync.
 PYCACHE_PTH := pycache_prefix.pth
 
-CHECKS += lint typecheck test
+# No module of the package grows past MAX_LINES unseen: `lines` names each one
+# above it and breaks. The number is written here, once; a command line gives
+# another (`make check MAX_LINES=300`). The tests are not counted.
+LINES_IN  := src
+MAX_LINES := 400
+
+CHECKS += lint lines typecheck test
 CLEANS += clean-python
 
 .PHONY: sync
@@ -39,6 +45,17 @@ sync: .python-version pyproject.toml | $(LOCAL) ## Create or refresh .venv and u
 lint: ## Ruff check without fixes
 	@$(RUN) ruff check .
 	$(call log_done,ruff check clean)
+
+.PHONY: lines
+lines: ## Fail on a module of src/ above MAX_LINES lines, naming it
+	@over="$$(find $(LINES_IN) -name '*.py' -exec wc -l {} + \
+	  | awk -v max=$(MAX_LINES) '$$2 != "total" && $$1 > max { printf "%s: %d lines\n", $$2, $$1 }' \
+	  | sort)"; \
+	if [ -n "$$over" ]; then \
+	  printf '%s\nabove $(MAX_LINES) lines -- split the module\n' "$$over" >&2; \
+	  exit 1; \
+	fi
+	$(call log_done,no module of $(LINES_IN)/ above $(MAX_LINES) lines)
 
 .PHONY: format
 format: ## Ruff format and import ordering

@@ -24,11 +24,12 @@ commit = "e189631"
 
 [[tasks]]
 id = "T-0160"
-state = "backlog"
+state = "started"
 title = "Create src/flowgraph/config.py holding the Config of a record and its constructor from the text of config.toml"
 description = "The file is .fgraph/config.toml, a table per layer: [development] enabled = true. Only the keys this Story needs; the Stories after it add theirs."
 expected_output = "created: src/flowgraph/config.py holds the Config of a record -- its development, enabled or not, off by default -- its constructor from the text of config.toml, and the adapter that reads .fgraph/config.toml of a record, the defaults when the record holds no such file; a table or a key it does not know, and a value of the wrong type, raise ConfigError naming the key; proved in tests/config/"
 created = 2026-11-21 22:17:56+00:00
+started = 2026-11-21 22:21:27+00:00
 
 [[tasks]]
 id = "T-0161"

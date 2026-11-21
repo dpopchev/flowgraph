@@ -9,9 +9,12 @@ import tomli_w
 from pydantic import BaseModel, ConfigDict, Field
 
 from flowgraph.criterion import (
+    Commit,
     Criterion,
+    Evidence,
+    NoCommit,
     criterion_parts,
-    make_commit,
+    evidence_written,
     make_defect,
     make_hypothesis,
     make_scenario,
@@ -118,7 +121,7 @@ class BlockedTaskFile(BaseModel):
 
 
 class CompletedTaskFile(BaseModel):
-    """One table of the tasks of a work item file: a completed Task, with its commit."""
+    """One table of the tasks of a work item file: a completed Task, with the commit it has."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -130,7 +133,7 @@ class CompletedTaskFile(BaseModel):
     created: datetime
     started: datetime
     completed: datetime
-    commit: str
+    commit: str = ""
 
 
 # One table of the tasks of a work item file past Backlog, told apart by its state line.
@@ -176,6 +179,17 @@ def decision_held(held: AnyCriterionFile) -> str | None:
             assert_never(unreachable)
 
 
+def evidence_primitives(evidence: Evidence) -> dict[str, object]:
+    """The evidence as the primitives a completed item holds: its commit, or no key for none."""
+    match evidence:
+        case Commit():
+            return {"commit": evidence.sha}
+        case NoCommit():
+            return {}
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
 def task_primitives(task: TaskState) -> dict[str, object]:
     """The Task as the primitives its table holds; a description only when there is one."""
     described = {"description": task.description} if task.description else {}
@@ -195,7 +209,7 @@ def task_primitives(task: TaskState) -> dict[str, object]:
             moves = {
                 "started": task.started,
                 "completed": task.completed,
-                "commit": task.commit.sha,
+                **evidence_primitives(task.commit),
             }
         case _ as unreachable:
             assert_never(unreachable)
@@ -229,7 +243,8 @@ def task_held(held: AnyTaskFile) -> TaskState:
             begun = started(task, held.started)
             return blocked(begun, held.reason, held.waiting_on, held.since)
         case CompletedTaskFile():
-            return completed(started(task, held.started), held.completed, make_commit(held.commit))
+            evidence = evidence_written(held.commit)
+            return completed(started(task, held.started), held.completed, evidence)
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -237,7 +252,7 @@ def task_held(held: AnyTaskFile) -> TaskState:
 def task_row(held: AnyTaskFile) -> TaskRow:
     """The Task a validated table holds, as the row a view reads.
 
-    A commit once completed; its reason and what it waits on while blocked.
+    The commit it has once completed; its reason and what it waits on while blocked.
     """
     row = TaskRow(held.id, held.title, held.expected_output, held.description, held.state)
     match held:

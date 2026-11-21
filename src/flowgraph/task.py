@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import assert_never
 
-from flowgraph.criterion import Commit, said
+from flowgraph.criterion import Evidence, evidence_text, said
 
 
 @dataclass(frozen=True)
@@ -56,7 +56,7 @@ class BlockedTask:
 
 @dataclass(frozen=True)
 class CompletedTask:
-    """A Task in Completed: its work is in its commit."""
+    """A Task in Completed: its work is in its commit, or it is completed without one."""
 
     id: TaskId
     title: str
@@ -65,7 +65,7 @@ class CompletedTask:
     created: datetime
     started: datetime
     completed: datetime
-    commit: Commit
+    commit: Evidence
 
 
 # A Task in any of its states, as the file of its Story keeps it.
@@ -76,7 +76,7 @@ TaskState = Task | StartedTask | BlockedTask | CompletedTask
 class TaskRow:
     """One Task as plain data, as a view reads it from the record.
 
-    A commit once completed; a reason and what it waits on while blocked.
+    A commit once completed in one; a reason and what it waits on while blocked.
     """
 
     id: str
@@ -256,8 +256,8 @@ def unblocked(task: TaskState) -> StartedTask:
             assert_never(unreachable)
 
 
-def completed(task: TaskState, on: datetime, commit: Commit) -> CompletedTask:
-    """The Task completed on that time in that commit.
+def completed(task: TaskState, on: datetime, commit: Evidence) -> CompletedTask:
+    """The Task completed on that time in that commit, or without one.
 
     Raises NotStartedError when it is in Backlog, BlockedError when it is blocked and
     CompletedAlreadyError when it is completed.
@@ -300,7 +300,10 @@ def task_state_name(task: TaskState) -> str:
 
 
 def row_of(task: TaskState) -> TaskRow:
-    """The Task as the row a view reads: its commit once completed, its block while blocked."""
+    """The Task as the row a view reads: its commit once completed, its block while blocked.
+
+    A Task completed without a commit reads with none.
+    """
     row = TaskRow(
         task_id_text(task.id),
         task.title,
@@ -315,7 +318,7 @@ def row_of(task: TaskState) -> TaskRow:
             row.reason, row.waiting_on = task.reason, task.waiting_on
             return row
         case CompletedTask():
-            row.commit = task.commit.sha
+            row.commit = evidence_text(task.commit)
             return row
         case _ as unreachable:
             assert_never(unreachable)

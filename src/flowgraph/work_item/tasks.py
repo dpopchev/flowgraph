@@ -4,7 +4,7 @@ from dataclasses import replace
 from datetime import datetime
 from typing import assert_never
 
-from flowgraph.criterion import Commit
+from flowgraph.criterion import Evidence
 from flowgraph.task import (
     CompletedAlreadyError,
     ItemInBacklogError,
@@ -97,9 +97,9 @@ def unblocked_task(item: WorkItemState, task_id: TaskId) -> StartedWorkItem:
 
 
 def completed_task(
-    item: WorkItemState, task_id: TaskId, on: datetime, commit: Commit
+    item: WorkItemState, task_id: TaskId, on: datetime, commit: Evidence
 ) -> StartedWorkItem:
-    """The started work item with its Task of that id completed on that time, in that commit.
+    """The started work item with its Task of that id completed on that time, in a commit or none.
 
     Raises TaskNotFoundError when the item holds no such Task, NotStartedError when the Task is
     in Backlog and CompletedAlreadyError when it is completed.

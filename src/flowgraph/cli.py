@@ -18,6 +18,7 @@ from flowgraph.commit import OpenGit, Said, commit_written, open_git
 from flowgraph.config import Config, ConfigError, LoadConfig, make_config, read_config
 from flowgraph.criterion import (
     CommitError,
+    CommitNeededError,
     Criterion,
     CriterionError,
     DecisionError,
@@ -110,6 +111,7 @@ REFUSED = (
     NotOnMainError,
     OutOfScopeError,
     CommitError,
+    CommitNeededError,
     EmptyPartError,
     CriterionError,
     DecisionError,
@@ -148,10 +150,11 @@ def _criterion(args: argparse.Namespace) -> Criterion:
             return make_scenario(args.given, args.when, args.then)
 
 
-def _written(args: argparse.Namespace, store: Store, now: Now) -> Written | None:
+def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -> Written | None:
     """Make the write the arguments name on the store; None when they name a view or no command.
 
-    Raises the refusal of the write; nothing is saved then.
+    The configuration says whether a complete needs its commit. Raises the refusal of the write;
+    nothing is saved then.
     """
     match args.command:
         case "add" if args.kind == "task":
@@ -176,7 +179,7 @@ def _written(args: argparse.Namespace, store: Store, now: Now) -> Written | None
             )
             return amend_item(args.id, parts, store)
         case "complete":
-            return complete_item(args.id, args.commit, store, now, args.decision)
+            return complete_item(args.id, args.commit, store, now, config, args.decision)
         case "start":
             return start_item(args.id, args.slug, store, now)
         case "block":
@@ -230,7 +233,7 @@ def _said(
     """
     if args.command == "start":
         check_start_on_main(args.id, record, open_git)
-    written = _written(args, store, now)
+    written = _written(args, store, now, config)
     if written is not None:
         return commit_written(written, store, record, open_git, config)
     match args.command:

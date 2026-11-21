@@ -1,4 +1,4 @@
-"""What a work item states and proves: the criterion its kind takes, and its commit."""
+"""What a work item states and proves: the criterion its kind takes, and its commit or none."""
 
 import re
 from collections.abc import Mapping
@@ -57,6 +57,18 @@ class Commit:
     sha: str
 
 
+@dataclass(frozen=True)
+class NoCommit:
+    """An item completed without a commit: none is a value of its evidence, not a missing one."""
+
+
+# The one value of no commit.
+NO_COMMIT = NoCommit()
+
+# What proves an item completed: the commit that holds its work, or none.
+Evidence = Commit | NoCommit
+
+
 class EmptyPartError(ValueError):
     """A part of an item that must say something is blank; `part` names it."""
 
@@ -75,6 +87,10 @@ class DecisionError(ValueError):
 
 class CommitError(ValueError):
     """A text that is no commit sha."""
+
+
+class CommitNeededError(ValueError):
+    """An item completed without a commit while the development, whose evidence it is, is on."""
 
 
 def said(part: str, text: str) -> str:
@@ -151,3 +167,22 @@ def make_commit(text: str) -> Commit:
     if re.fullmatch(r"[0-9a-f]{7,40}", text) is None:
         raise CommitError(f"{text!r} is no commit: it is 7 to 40 hex digits")
     return Commit(text)
+
+
+def evidence_text(evidence: Evidence) -> str:
+    """The evidence as it is written: the sha of its commit, or nothing for none."""
+    match evidence:
+        case Commit():
+            return evidence.sha
+        case NoCommit():
+            return ""
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def evidence_written(text: str) -> Evidence:
+    """The evidence written as the text: none for nothing, else the commit of that sha.
+
+    Raises CommitError when the text is neither.
+    """
+    return make_commit(text) if text else NO_COMMIT

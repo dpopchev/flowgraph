@@ -12,10 +12,11 @@ from typing import assert_never
 
 from flowgraph.criterion import (
     STATES,
-    Commit,
     Criterion,
     CriterionError,
+    Evidence,
     Scenario,
+    evidence_text,
     said,
     settled,
 )
@@ -83,7 +84,7 @@ class StartedWorkItem:
 
 @dataclass(frozen=True)
 class CompletedWorkItem:
-    """A work item in Completed: every Task of it completed, the item in its commit on `main`."""
+    """A work item in Completed: every Task of it completed, its commit on `main` or none named."""
 
     id: WorkItemId
     title: str
@@ -92,7 +93,7 @@ class CompletedWorkItem:
     created: datetime
     started: datetime
     completed: datetime
-    commit: Commit
+    commit: Evidence
     tasks: tuple[CompletedTask, ...]
     parent: Parent = STANDALONE
 
@@ -123,8 +124,8 @@ WorkItemState = WorkItem | StartedWorkItem | CompletedWorkItem | RemovedWorkItem
 class WorkItemRow:
     """One work item as plain data, as a view reads it from the record.
 
-    A started time while started, a commit and a completed time once completed, a reason once
-    removed. Its created time is what orders the work items of the Backlog nobody placed, its
+    A started time while started, a completed time and the commit it has once completed, a reason
+    once removed. Its created time orders the work items of the Backlog nobody placed, its
     started time those of InProgress, its completed time those of Completed. Its Tasks are in
     the order written, each with its own state.
     """
@@ -326,9 +327,9 @@ def started_work_item(item: WorkItemState, on: datetime) -> StartedWorkItem:
 
 
 def completed_work_item(
-    item: WorkItemState, on: datetime, commit: Commit, decision: str | None = None
+    item: WorkItemState, on: datetime, commit: Evidence, decision: str | None = None
 ) -> CompletedWorkItem:
-    """The work item completed on that time, kept to the second, in that commit.
+    """The work item completed on that time, kept to the second, in that commit or without one.
 
     A work item that states a hypothesis is completed with the decision that answers it. Raises
     NotStartedError when it is in Backlog, OpenTaskError naming the Tasks not completed,
@@ -378,10 +379,10 @@ def state_name(item: WorkItemState | TaskState) -> str:
 
 
 def commit_sha(item: WorkItemState | TaskState) -> str:
-    """The sha of the commit of a completed work item or Task; empty for one not completed."""
+    """The sha of the commit of a completed work item or Task; empty for one that has none."""
     match item:
         case CompletedWorkItem() | CompletedTask():
-            return item.commit.sha
+            return evidence_text(item.commit)
         case WorkItem() | StartedWorkItem() | RemovedWorkItem():
             return ""
         case Task() | StartedTask() | BlockedTask():

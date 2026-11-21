@@ -11,7 +11,7 @@ from typing import Annotated, Literal, assert_never
 
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
 
-from flowgraph.criterion import CriterionError, DecisionError, make_commit
+from flowgraph.criterion import CriterionError, DecisionError, evidence_written
 from flowgraph.item_file import (
     AnyCriterionFile,
     CompletedTaskFile,
@@ -21,6 +21,7 @@ from flowgraph.item_file import (
     criterion_held,
     criterion_primitives,
     decision_held,
+    evidence_primitives,
     task_held,
     task_primitives,
     task_row,
@@ -86,7 +87,7 @@ class _StartedItemFile(BaseModel):
 
 
 class _CompletedItemFile(BaseModel):
-    """What the file of a completed work item holds: its commit, its Tasks all completed."""
+    """What the file of a completed work item holds: the commit it has, its Tasks all completed."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -98,7 +99,7 @@ class _CompletedItemFile(BaseModel):
     created: datetime
     started: datetime
     completed: datetime
-    commit: str
+    commit: str = ""
     criterion: AnyCriterionFile
     tasks: list[CompletedTaskFile] = []
 
@@ -130,7 +131,7 @@ _HELD_ITEM: TypeAdapter[_HeldItemFile] = TypeAdapter(
 
 
 def _commit_held(held: _HeldItemFile) -> str:
-    """The commit a validated file holds; empty for an item not completed."""
+    """The commit a validated file holds; empty for an item that has none."""
     match held:
         case _CompletedItemFile():
             return held.commit
@@ -276,7 +277,8 @@ def _moves_primitives(item: WorkItemState) -> dict[str, object]:
         case StartedWorkItem():
             return {"started": item.started}
         case CompletedWorkItem():
-            return {"started": item.started, "completed": item.completed, "commit": item.commit.sha}
+            times = {"started": item.started, "completed": item.completed}
+            return {**times, **evidence_primitives(item.commit)}
         case RemovedWorkItem():
             return {"removed": item.removed, "reason": item.reason}
         case _ as unreachable:
@@ -286,8 +288,8 @@ def _moves_primitives(item: WorkItemState) -> dict[str, object]:
 def _item_primitives(item: WorkItemState) -> dict[str, object]:
     """The work item as the primitives its file holds.
 
-    A description, a parent and tasks are held only when there is one: a work item that stands
-    alone is written without a parent.
+    A description, a parent, a commit and tasks are held only when there is one: a work item
+    that stands alone is written without a parent, one completed without a commit without one.
     """
     described = {"description": item.description} if item.description else {}
     under = {"parent": parent_text(item.parent)} if parent_text(item.parent) else {}
@@ -332,7 +334,7 @@ def _item_held(held: _HeldItemFile, kind: Kind) -> WorkItemState:
             begun = replace(started_work_item(item, held.started), tasks=tasks)
             match held:
                 case _CompletedItemFile():
-                    commit = make_commit(held.commit)
+                    commit = evidence_written(held.commit)
                     return completed_work_item(begun, held.completed, commit, decision)
                 case _StartedItemFile():
                     return begun

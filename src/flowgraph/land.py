@@ -123,7 +123,7 @@ def land_item(
     except NOT_COMMITTED:
         work_tree.abort_merge()
         raise
-    written = complete_item(text, sha, store, now, decision)
+    written = complete_item(text, sha, store, now, config, decision)
     try:
         commit_written(written, store, record, lambda _: work_tree, config)
     except GitError as error:

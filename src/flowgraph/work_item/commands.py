@@ -4,7 +4,7 @@ from collections.abc import Callable, Iterable
 from datetime import datetime
 from typing import assert_never
 
-from flowgraph.criterion import Commit, Criterion, criterion_parts
+from flowgraph.criterion import Criterion, Evidence, criterion_parts
 from flowgraph.parent import STANDALONE, Parent, parent_text
 from flowgraph.record import Now
 from flowgraph.task import (
@@ -259,13 +259,13 @@ def unblock_task(
 def complete_work_item(
     *,
     item_id: WorkItemId,
-    commit: Commit,
+    commit: Evidence,
     load_work_item: LoadWorkItem,
     save_work_item: SaveWorkItem,
     now: Now,
     decision: str | None = None,
 ) -> None:
-    """Complete the work item of that id now in that commit and save it whole.
+    """Complete the work item of that id now, in that commit or none, and save it whole.
 
     A work item that states a hypothesis takes the decision that answers it. Raises
     WorkItemNotFoundError when the record holds no such item, NotStartedError when it is in
@@ -279,12 +279,12 @@ def complete_work_item(
 def complete_task(
     *,
     task_id: TaskId,
-    commit: Commit,
+    commit: Evidence,
     load_holder: LoadHolder,
     save_work_item: SaveWorkItem,
     now: Now,
 ) -> WorkItemId:
-    """Complete the Task of that id now in that commit, save its work item and return its id.
+    """Complete the Task of that id now, in that commit or none, save its item and return its id.
 
     Raises TaskNotFoundError when no item holds the Task, NotStartedError when it is in Backlog
     and CompletedAlreadyError when it is completed; nothing is saved.

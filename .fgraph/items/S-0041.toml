@@ -13,31 +13,43 @@ then = "fgraph status lists the Story under Completed"
 
 [[tasks]]
 id = "T-0166"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_complete_without_commit.py, failing on the criterion of S-0041"
 description = "The Tasks of the Story are completed without --commit too, as the reading of S-0041 says. Run through run() of src/flowgraph/cli.py on a record in tmp_path. Seen red, then marked a strict xfail naming S-0041 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_complete_without_commit.py states that, on a record with the development off, fgraph complete of a started Story whose Tasks are completed, run without --commit, exits 0 and fgraph status lists the Story under Completed"
 created = 2026-11-21 22:39:48+00:00
+started = 2026-11-21 22:53:38+00:00
+completed = 2026-11-21 22:55:32+00:00
+commit = "9642854"
 
 [[tasks]]
 id = "T-0167"
-state = "backlog"
+state = "completed"
 title = "Extend the evidence of a completed work item and of a completed Task in src/flowgraph/ to a commit or none"
 description = "New code the next Task runs. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit. The evidence of a Spike stays its decision beside the commit or none."
 expected_output = "changed: a completed work item and a completed Task of src/flowgraph/work_item/ and src/flowgraph/task.py hold their commit or none; the file of one completed without a commit holds no commit key and reads back whole; its row and its detail carry no commit, so fgraph status lists it under Completed with its id and its title alone and fgraph show lists no commit line of it; proved in tests/work_item/ and tests/task/"
 created = 2026-11-21 22:39:48+00:00
+started = 2026-11-21 22:55:32+00:00
+completed = 2026-11-21 23:00:23+00:00
+commit = "66bbb85"
 
 [[tasks]]
 id = "T-0168"
-state = "backlog"
+state = "completed"
 title = "Change the complete command of src/flowgraph/parser.py and src/flowgraph/cli.py to need --commit with the development on alone"
 description = "Removes the xfail mark of tests/functional/test_complete_without_commit.py. The tests of other work items that complete with the development on keep their --commit."
 expected_output = "changed: --commit of fgraph complete is optional in src/flowgraph/parser.py; with the development on, a complete of a Task or of a work item without --commit exits 2 naming --commit and the key development.enabled; with it off both are completed without one, and a --commit given is still kept as the evidence; fgraph complete --help says when the commit is needed"
 created = 2026-11-21 22:39:49+00:00
+started = 2026-11-21 23:00:23+00:00
+completed = 2026-11-21 23:05:02+00:00
+commit = "0892a2b"
 
 [[tasks]]
 id = "T-0169"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a work item completes without a commit with the development off"
 expected_output = "changed: README.md and docs/domain-model.md say the commit is the evidence of the development: fgraph complete needs --commit with the development on and takes none with it off, of a Task as of a work item; Evidence and Persistence say what a completed item holds without one, and how status and show list it"
 created = 2026-11-21 22:39:49+00:00
+started = 2026-11-21 23:05:03+00:00
+completed = 2026-11-21 23:07:37+00:00
+commit = "c696c4c"

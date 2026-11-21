@@ -7,15 +7,16 @@ it builds the ontology of the project on the way: its terms and how they relate.
 ## Status
 
 Early: `fgraph` adds a Story to a record, writes its Tasks, takes them from
-Backlog through InProgress to Completed with their commits, shows a Story
-with its Tasks and lists the record by bucket. An Upkeep moves the same way,
-with its own Tasks, and is listed beside the Stories. The Backlog is a queue
-that `fgraph reorder` reorders, and a work item still in it is rewritten
-with `fgraph amend`. In a git repository `fgraph` commits every write of the
-record itself. A record is layered by its configuration, `.fgraph/config.toml`:
-it turns the commits of the record off, and once it turns the development on,
-starting a work item also checks out its branch in a worktree of its own, and
-`fgraph land` lands it.
+Backlog through InProgress to Completed, shows a Story with its Tasks and
+lists the record by bucket. An Upkeep moves the same way, with its own Tasks,
+and is listed beside the Stories. The Backlog is a queue that `fgraph
+reorder` reorders, and a work item still in it is rewritten with `fgraph
+amend`. In a git repository `fgraph` commits every write of the record
+itself. A record is layered by its configuration, `.fgraph/config.toml`: it
+turns the commits of the record off, and once it turns the development on,
+starting a work item also checks out its branch in a worktree of its own,
+completing an item names the commit that holds its work, and `fgraph land`
+lands it.
 
 | Part                            | State                                                    |
 | ------------------------------- | -------------------------------------------------------- |
@@ -148,6 +149,10 @@ fgraph start S-0001
 fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
 # fgraph: error: S-0001 cannot land: the development is off -- set development.enabled = true in /src/project/.fgraph/config.toml
 ```
+
+The commit is the evidence of the development, so with the development off
+`fgraph complete` takes none, of a Task as of a Story, as shown further down
+with the complete.
 
 With `enabled = true` the start, the scoping and the landing are as the rest
 of this page shows them: wherever it names a branch, a worktree or a landing,
@@ -344,6 +349,50 @@ Story has Tasks not completed, when the item is completed already, when the
 commit is no sha, or when the record does not hold it. A completed Story takes
 no new Task.
 
+The commit is the evidence of the development: the work beside the record
+that the item is completed with. So `fgraph complete` needs `--commit` with
+the development on, of a Task as of a Story, and without it exits 2 naming
+the option and the key:
+
+```sh
+fgraph complete T-0001
+# fgraph: error: T-0001 is completed with --commit: the development is on, development.enabled = true
+```
+
+With the development off there is no such work to name, and `fgraph complete`
+takes no commit, of a Task as of a Story. The item is completed without one:
+`fgraph status` lists the Story under Completed with its id and its title
+alone, and `fgraph show` lists no commit line of it nor of its Task:
+
+```sh
+fgraph complete T-0001
+# completed T-0001 of S-0001
+
+fgraph complete S-0001
+# completed S-0001
+
+fgraph status
+# Backlog (0)
+# InProgress (0)
+# Completed (1)
+#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
+
+fgraph show S-0001
+# S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
+#   bucket       Completed
+#   given        a record with no items
+#   when         a Story is added
+#   then         fgraph status lists it under Backlog
+# Tasks (1)
+#   T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
+#     bucket           Completed
+#     expected output  changed: src/flowgraph/cli.py gains the show command
+```
+
+A `--commit` given with the development off is still kept as the evidence,
+and status and show list it. The file of an item completed without a commit
+holds no `commit` key.
+
 A started Task that cannot go on is blocked, with the reason and who or what
 it waits on. It stays in InProgress and `fgraph show` lists it as blocked:
 
@@ -496,7 +545,8 @@ fgraph show Q-0001
 A Spike takes Tasks and moves as a Story does, and `fgraph land` takes
 `--decision` as `fgraph complete` does. A Spike completed without its
 decision exits 2, and so does a decision given for any other kind or for a
-Task. `fgraph amend Q-0001 --hypothesis "..."` rewrites the hypothesis while
+Task. With the development off a Spike is completed with its decision and no
+commit, as any other kind is. `fgraph amend Q-0001 --hypothesis "..."` rewrites the hypothesis while
 the Spike is in Backlog. A Spike is kept as `items/Q-0001.toml`.
 
 The prefix `Q` is the developer's choice of 2026-11-21; until then a Spike
@@ -623,7 +673,8 @@ fgraph status
 
 On a terminal `fgraph status` cuts each line to the width of the terminal and
 ends a line it cut with `...`, so every item stays on one line. The commit of
-a completed work item stands before its title, where a cut keeps it:
+a completed work item, when it has one, stands before its title, where a cut
+keeps it:
 
 ```sh
 fgraph status        # on a terminal 60 columns wide

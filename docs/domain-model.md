@@ -218,6 +218,10 @@ and its merge tool.
   order written, with its own `state` line. Its parent is the file that holds
   it, so no `parent` field is stored. The next Task id is one above the
   highest in any file of the record.
+- A started item is kept as `state = "started"` with its `started` time,
+  beside the fields it had in Backlog. Only a started Story's file may hold a
+  started Task; it is read back through the moves that start them, so a file
+  holds no state those moves could not reach.
 - Each kind reads the files of its own prefix. A file with a prefix no kind
   knows is left alone; nothing reports it yet.
 - A command loads a work item whole, changes it and saves it whole. The file

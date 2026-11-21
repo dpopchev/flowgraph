@@ -14,19 +14,29 @@ from flowgraph import story
 from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, locate
 from flowgraph.story import (
     EmptyPartError,
+    ItemIdError,
+    NoTaskError,
     Now,
     ReadStory,
     ReadStoryDetail,
     ReadStoryRows,
     ReadTaskIds,
+    StartedAlreadyError,
     StoryDetail,
+    StoryId,
     StoryIdError,
+    StoryInBacklogError,
     StoryNotFoundError,
     StoryRow,
+    TaskId,
+    TaskNotFoundError,
     WriteStory,
     add_story,
     add_task,
+    parse_item_id,
     parse_story_id,
+    start_story,
+    start_task,
     story_id_text,
     task_id_text,
 )
@@ -37,11 +47,21 @@ DESCRIPTION = "flowgraph keeps the record of a project's work."
 Write = Callable[[str], object]
 
 # The buckets of the flow in their order, each with the states of an item shown in it. No state
-# leads to InProgress or Completed yet.
+# leads to Completed yet.
 BUCKETS: Sequence[tuple[str, Collection[str]]] = (
     ("Backlog", frozenset({"backlog"})),
-    ("InProgress", frozenset()),
+    ("InProgress", frozenset({"started"})),
     ("Completed", frozenset()),
+)
+
+# The refusals of a start, each written as a usage error.
+START_REFUSED = (
+    ItemIdError,
+    StoryNotFoundError,
+    TaskNotFoundError,
+    NoTaskError,
+    StartedAlreadyError,
+    StoryInBacklogError,
 )
 
 
@@ -85,6 +105,10 @@ def build_parser() -> argparse.ArgumentParser:
         "show", help="show a Story with its Tasks", add_help=False, color=False
     )
     show.add_argument("id", metavar="ID", help="the id of the Story")
+    start = commands.add_parser(
+        "start", help="start a Story or a Task of it", add_help=False, color=False
+    )
+    start.add_argument("id", metavar="ID", help="the id of the Story or of the Task")
     commands.add_parser(
         "status", help="list the items of the record by bucket", add_help=False, color=False
     )
@@ -105,7 +129,8 @@ def status_text(rows: Iterable[StoryRow]) -> str:
 def show_text(detail: StoryDetail) -> str:
     """The Story with its bucket and its criterion, then its Tasks, one fact per line.
 
-    A description is listed only when there is one.
+    A description is listed only when there is one, the bucket of a Task only once it has left
+    Backlog.
     """
     bucket = next(name for name, states in BUCKETS if detail.state in states)
     described = [f"  description  {detail.description}\n"] if detail.description else []
@@ -120,6 +145,9 @@ def show_text(detail: StoryDetail) -> str:
     ]
     for task in detail.tasks:
         lines.append(f"  {task.id}  {task.title}\n")
+        task_bucket = next(name for name, states in BUCKETS if task.state in states)
+        if task_bucket != "Backlog":
+            lines.append(f"    bucket           {task_bucket}\n")
         lines.append(f"    expected output  {task.expected_output}\n")
         if task.description:
             lines.append(f"    description      {task.description}\n")
@@ -175,6 +203,32 @@ def run(
                     write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
                     return 2
                 write(show_text(detail))
+                return 0
+            if args.command == "start":
+                try:
+                    match parse_item_id(args.id):
+                        case StoryId() as story_id:
+                            start_story(
+                                story_id=story_id,
+                                load_story=lambda wanted: read_story(path, wanted),
+                                save_story=lambda changed: write_story(path, changed),
+                                now=now,
+                            )
+                            write(f"started {story_id_text(story_id)}\n")
+                        case TaskId() as task_id:
+                            holder = start_task(
+                                task_id=task_id,
+                                find_story_rows=lambda: read_story_rows(path),
+                                load_story=lambda wanted: read_story(path, wanted),
+                                save_story=lambda changed: write_story(path, changed),
+                                now=now,
+                            )
+                            write(f"started {task_id_text(task_id)} of {story_id_text(holder)}\n")
+                        case _ as unreachable:
+                            assert_never(unreachable)
+                except START_REFUSED as error:
+                    write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
+                    return 2
                 return 0
             if args.command == "add":
                 try:

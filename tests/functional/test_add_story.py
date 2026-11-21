@@ -9,7 +9,7 @@ from typing import Never
 import pytest
 
 from flowgraph.cli import run
-from flowgraph.story import Story, story_row
+from flowgraph.story import StoryState, story_row
 
 pytestmark = pytest.mark.functional
 
@@ -32,7 +32,7 @@ def never_read(*_: object) -> Never:
     raise AssertionError("no Story is read one by one here")
 
 
-def fgraph(argv: Sequence[str], saved: list[Story]) -> Outcome:
+def fgraph(argv: Sequence[str], saved: list[StoryState]) -> Outcome:
     """Run the command in CWD on a record whose stories are the ones saved so far."""
     out: list[str] = []
     err: list[str] = []
@@ -56,7 +56,7 @@ class TestAStoryAddedToARecordWithNoItems:
     @pytest.fixture
     def added(self) -> tuple[Outcome, Outcome]:
         """The outcome of the add, then of the status after it."""
-        saved: list[Story] = []
+        saved: list[StoryState] = []
         return fgraph(ADD, saved), fgraph(["status"], saved)
 
     def test_add_exits_with_zero(self, added: tuple[Outcome, Outcome]) -> None:

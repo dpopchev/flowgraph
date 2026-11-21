@@ -1,0 +1,10 @@
+id = "U-0006"
+state = "backlog"
+title = "Cut the rows of a work item that work_item_row and its file read build apart from two to one"
+description = "Found during T-0133 of ST-0033 on 2026-11-21: work_item_row of src/flowgraph/work_item/commands.py builds a WorkItemRow from a work item without its started and completed times and without its Tasks, while read_work_item_rows of src/flowgraph/work_item/file.py reads the same row with them. Nothing in src/ calls work_item_row beyond its aliases story_row and upkeep_row; the tests compare the two and patch the difference. Open: make the projection whole, or drop it and state the rows in the tests. Its Tasks are written when it is ordered."
+created = 2026-11-21 17:55:37+00:00
+
+[criterion]
+given = "main"
+when = "make check runs"
+then = "it still passes"

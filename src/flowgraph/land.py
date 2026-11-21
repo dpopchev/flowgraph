@@ -9,16 +9,13 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from flowgraph import work_item
-from flowgraph.branch import GitError
+from flowgraph.branch import MAIN, GitError
 from flowgraph.commit import OpenGit, Said, WorkTree, commit_written
 from flowgraph.criterion import make_commit
 from flowgraph.item import Store, complete_item, parse_work_item_id_of_any_kind
 from flowgraph.record import Now
 from flowgraph.task import CompletedAlreadyError, NotStartedError, OpenTaskError
 from flowgraph.work_item import WorkItemId, WorkItemNotFoundError, work_item_id_text
-
-# The branch a work item lands on.
-MAIN = "main"
 
 # A commit that stands for the merge commit while the complete is only checked.
 UNMERGED = make_commit("0000000")

@@ -315,8 +315,17 @@ branch:
 - A work tree on any other branch, and a record outside a git work tree,
   write as before.
 
-The side of `main` is still a convention: `fgraph` does not refuse there a
-Task write of a started work item, nor a start made off `main`.
+A work item starts on `main` alone, the developer's decision of 2026-11-21:
+
+- The start of a work item is refused with exit 2, nothing written and no
+  branch made, unless the work tree it runs in is on `main`. The refusal
+  names the branch that work tree is on and, when the repository has one, the
+  work tree that is on `main`, where the start is made.
+- The start of a Task is not checked against `main`, and neither is a record
+  outside a git work tree.
+
+The rest of the side of `main` is still a convention: `fgraph` does not
+refuse there a Task write of a started work item.
 
 The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 
@@ -361,8 +370,8 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   merge commit exits 2 saying how far the landing came.
 - `fgraph` makes the commits of the record; the commits of the development
   and their messages stay the developer's, the merge commit of a landing
-  among them: `fgraph` makes it, the developer words it. Whether the checkout
-  is on `main` is checked by a landing only, not yet by a start.
+  among them: `fgraph` makes it, the developer words it. Whether the work
+  tree is on `main` is checked by a landing and by the start of a work item.
 
 ## Left out
 

@@ -33,7 +33,13 @@ from flowgraph.item import (
 from flowgraph.land import LandError, land_item
 from flowgraph.queue import NotInBacklogError, SameItemError
 from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, Now, locate
-from flowgraph.scope import OutOfScopeError, scope_in, within
+from flowgraph.scope import (
+    NotOnMainError,
+    OutOfScopeError,
+    check_start_on_main,
+    scope_in,
+    within,
+)
 from flowgraph.task import (
     CompletedAlreadyError,
     ItemInBacklogError,
@@ -64,6 +70,7 @@ REFUSED = (
     SlugError,
     GitError,
     LandError,
+    NotOnMainError,
     OutOfScopeError,
     CommitError,
     EmptyPartError,
@@ -221,6 +228,8 @@ def _said(
     A write is committed once it is made. Raises the refusal of the command, a git step refused
     among them.
     """
+    if args.command == "start":
+        check_start_on_main(args.id, record, open_git)
     written = _written(args, store, now)
     if written is not None:
         return commit_written(written, store, record, open_git)

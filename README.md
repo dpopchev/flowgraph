@@ -375,19 +375,19 @@ kept as `items/B-0001.toml`.
 
 A Spike is a question to answer. Its criterion is a hypothesis, a yes/no
 question, and it is completed with the decision that answers it. Its id
-counts on its own, `SP-0001`:
+counts on its own, `Q-0001`, Q for question:
 
 ```sh
 fgraph add spike "Settle whether one file per item can hold the record" \
   --hypothesis "Can one file per item hold the record?"
-# added SP-0001
+# added Q-0001
 
-fgraph complete SP-0001 --commit 677f9b0 \
+fgraph complete Q-0001 --commit 677f9b0 \
   --decision "yes: one file per work item, its Tasks inside"
-# completed SP-0001 at 677f9b0
+# completed Q-0001 at 677f9b0
 
-fgraph show SP-0001
-# SP-0001  Settle whether one file per item can hold the record
+fgraph show Q-0001
+# Q-0001  Settle whether one file per item can hold the record
 #   bucket       Completed
 #   commit       677f9b0
 #   hypothesis   Can one file per item hold the record?
@@ -398,8 +398,13 @@ fgraph show SP-0001
 A Spike takes Tasks and moves as a Story does, and `fgraph land` takes
 `--decision` as `fgraph complete` does. A Spike completed without its
 decision exits 2, and so does a decision given for any other kind or for a
-Task. `fgraph amend SP-0001 --hypothesis "..."` rewrites the hypothesis while
-the Spike is in Backlog. A Spike is kept as `items/SP-0001.toml`.
+Task. `fgraph amend Q-0001 --hypothesis "..."` rewrites the hypothesis while
+the Spike is in Backlog. A Spike is kept as `items/Q-0001.toml`.
+
+The prefix `Q` is the developer's choice of 2026-11-21; until then a Spike
+was written `SP-0001`. `fgraph` reads `Q` alone: an `items/SP-0001.toml` of
+an older record is left alone as a file of a prefix no kind knows, neither
+read as a Spike nor renamed.
 
 A Feature groups work items toward one bigger outcome. It states one or more
 criteria, what the user experiences, and holds no Task. A work item is added

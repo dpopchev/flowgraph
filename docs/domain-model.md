@@ -299,9 +299,14 @@ with at least four digits. `fgraph` hands out the next free number.
 | `Feature` | `F-0001` |
 | `Story` | `ST-0001` |
 | `Bug` | `B-0001` |
-| `Spike` | `SP-0001` |
+| `Spike` | `Q-0001` |
 | `Upkeep` | `U-0001` |
 | `Task` | `T-0001`, unique across the record and the worktrees of its repository |
+
+The `Q` of a Spike stands for question: a Spike is a question to answer. It
+is the developer's choice of 2026-11-21, among the letters shown for a prefix
+of one letter; until then a Spike was written `SP-0001`. `fgraph` reads `Q`
+alone.
 
 ## Persistence
 
@@ -354,9 +359,9 @@ and its merge tool.
   criterion table: `observed` and `expected` where a Story has `given`,
   `when` and `then`. A file that holds the criterion of another kind is
   refused when it is read.
-- A Spike is kept as `items/SP-0001.toml`, its criterion table holding its
+- A Spike is kept as `items/Q-0001.toml`, its criterion table holding its
   `hypothesis`. It is completed with the decision that answers it,
-  `fgraph complete SP-0001 --commit SHA --decision TEXT`, and `fgraph land`
+  `fgraph complete Q-0001 --commit SHA --decision TEXT`, and `fgraph land`
   takes `--decision` the same way; the decision is kept beside the hypothesis
   it answers, as `decision` in the criterion table. A Spike is not completed
   without its decision, no other kind and no Task takes one, and a file that
@@ -408,7 +413,10 @@ and its merge tool.
 - Not built yet: amending or removing a Feature, and moving a work item to
   another Feature.
 - Each kind reads the files of its own prefix. A file with a prefix no kind
-  knows is left alone; nothing reports it yet.
+  knows is left alone; nothing reports it yet. An `items/SP-0001.toml` of an
+  older record, written while a Spike was `SP-0001`, is such a file: it is
+  neither read as a Spike nor renamed, so no command lists it or takes its
+  id.
 - A command loads a work item whole, changes it and saves it whole. The file
   is validated as it is read; a write is read back before it replaces the
   file.

@@ -77,6 +77,7 @@ def test_a_record_outside_a_git_work_tree_passes() -> None:
     assert check_start_on_main("ST-0002", RECORD, lambda _: None) is None
 
 
-def test_a_record_git_ignores_passes_off_main() -> None:
-    ignoring = replace(work_tree("a-feature"), ignores=lambda _: True)
-    assert check_start_on_main("ST-0002", RECORD, lambda _: ignoring) is None
+def test_a_work_item_started_off_main_on_a_record_git_ignores_is_refused() -> None:
+    ignoring = replace(work_tree("a-feature", None), ignores=lambda _: True)
+    with pytest.raises(NotOnMainError, match=r"^ST-0002 starts on main: .* is on a-feature$"):
+        check_start_on_main("ST-0002", RECORD, lambda _: ignoring)

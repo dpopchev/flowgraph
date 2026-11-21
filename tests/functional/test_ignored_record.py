@@ -119,39 +119,6 @@ class TestAStoryAddedOnARecordGitIgnores:
         assert git(checkout, "rev-list", "--count", "HEAD") == "1"
 
 
-class TestAStoryStartedOnARecordGitIgnores:
-    @pytest.fixture
-    def started(self, checkout: Path) -> Outcome:
-        fgraph(ADD_STORY, checkout)
-        fgraph(ADD_TASK, checkout)
-        return fgraph(["start", "ST-0001"], checkout)
-
-    def test_start_exits_with_zero(self, started: Outcome) -> None:
-        assert started.status == 0
-
-    def test_start_says_the_story_is_started_and_names_no_branch(self, started: Outcome) -> None:
-        assert started.out == "started ST-0001\n"
-
-    def test_start_warns_that_no_branch_was_made(self, started: Outcome, checkout: Path) -> None:
-        record = checkout / ".fgraph"
-        assert started.err == f"fgraph: warning: no branch made: {record} is ignored by git\n"
-
-    def test_no_branch_is_made(self, started: Outcome, checkout: Path) -> None:
-        assert git(checkout, "branch", "--list", "wi/*") == ""
-
-    def test_no_commit_is_made(self, started: Outcome, checkout: Path) -> None:
-        assert git(checkout, "rev-list", "--count", "HEAD") == "1"
-
-    def test_a_landing_is_refused_naming_that_git_ignores_the_record(
-        self, started: Outcome, checkout: Path
-    ) -> None:
-        outcome = fgraph(["land", "ST-0001", "--message", "feat: land the Story"], checkout)
-        assert (outcome.status, outcome.err.splitlines()[-1:]) == (
-            2,
-            [f"fgraph: error: ST-0001 cannot land: {checkout / '.fgraph'} is ignored by git"],
-        )
-
-
 def test_every_write_on_a_record_git_ignores_exits_with_zero(checkout: Path) -> None:
     assert [fgraph(argv, checkout).status for argv in WRITES] == [0] * len(WRITES)
 
@@ -160,10 +127,3 @@ def test_every_write_on_a_record_git_ignores_leaves_no_commit(checkout: Path) ->
     for argv in WRITES:
         fgraph(argv, checkout)
     assert git(checkout, "rev-list", "--count", "HEAD") == "1"
-
-
-def test_a_story_started_off_main_on_a_record_git_ignores_is_started(checkout: Path) -> None:
-    fgraph(ADD_STORY, checkout)
-    fgraph(ADD_TASK, checkout)
-    git(checkout, "switch", "--quiet", "--create", "a-feature")
-    assert fgraph(["start", "ST-0001"], checkout).status == 0

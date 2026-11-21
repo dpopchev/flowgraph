@@ -162,19 +162,25 @@ def test_a_landing_outside_a_git_work_tree_is_refused() -> None:
         land(READY, None)
 
 
-def test_a_landing_on_a_record_git_ignores_is_refused() -> None:
-    ignoring = replace(work_tree([]), ignores=lambda path: path == RECORD)
-    with pytest.raises(
-        LandError, match=r"^ST-0001 cannot land: /src/project/.fgraph is ignored by git$"
-    ):
-        land(READY, ignoring)
-
-
-def test_a_landing_on_a_record_git_ignores_merges_nothing() -> None:
+def test_a_landing_on_a_record_git_ignores_takes_its_git_steps_but_the_commit_of_the_record() -> (
+    None
+):
     steps: list[object] = []
-    with pytest.raises(LandError):
-        land(READY, replace(work_tree(steps), ignores=lambda _: True))
-    assert steps == []
+    land(READY, replace(work_tree(steps), ignores=lambda path: path == RECORD))
+    assert steps == [
+        ("merge", BRANCH),
+        ("commit merge", MESSAGE),
+        ("remove worktree", WORKTREE),
+        ("delete branch", BRANCH),
+    ]
+
+
+def test_a_landing_on_a_record_git_ignores_completes_the_work_item_at_the_merge_commit() -> None:
+    saved: list[WorkItemState] = []
+    land(READY, replace(work_tree([]), ignores=lambda _: True), saved)
+    assert [item.commit for item in saved if isinstance(item, CompletedWorkItem)] == [
+        make_commit("3e9ae5c")
+    ]
 
 
 def test_a_landing_in_a_work_tree_that_is_not_on_main_is_refused() -> None:

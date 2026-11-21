@@ -1,8 +1,9 @@
 id = "ST-0014"
-state = "backlog"
+state = "started"
 title = "Extend the order fgraph lists the Backlog in from the order of the ids to any order the developer gives"
 description = "The Backlog is a queue, the developer's word of 2026-11-21: fgraph lists it by kind and id and nothing stores an order, so ST-0009 to ST-0013 cannot be put ahead of ST-0006. The queue is its own aggregate, kept as .fgraph/queue.toml, the ids in the order given, written on main; the developer chose it over a position field in each item file. An item never reordered follows the placed ones in the order it was added. An id that is unknown or not in Backlog is refused with exit 2. add, start and complete do not write the queue. Only --before in this slice."
 created = 2026-11-21 08:13:25+00:00
+started = 2026-11-21 08:13:27+00:00
 
 [criterion]
 given = "a record with ST-0001 and ST-0002 in Backlog, listed in that order"

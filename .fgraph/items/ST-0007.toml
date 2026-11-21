@@ -1,8 +1,9 @@
 id = "ST-0007"
-state = "backlog"
+state = "started"
 title = "Raise the kinds of work item fgraph takes from Backlog to Completed from 3 to 4: Spike"
 description = "Feature: a project tracks every kind of its work with fgraph; its criterion 4: a developer adds a Spike with its hypothesis, a yes/no question, and completes it with the decision that answers it. Ordered after ST-0006. Its Tasks are written when it is ordered."
 created = 2026-11-21 07:18:43+00:00
+started = 2026-11-21 11:55:18+00:00
 
 [criterion]
 given = "a started Spike whose Task is completed"

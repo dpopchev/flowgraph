@@ -8,3 +8,11 @@ created = 2026-11-21 08:34:10+00:00
 given = "a started Story on its worktree branch, every Task of it completed"
 when = "fgraph land is run on it in the checkout of main"
 then = "fgraph status lists it under Completed with the merge commit of its branch"
+
+[[tasks]]
+id = "T-0053"
+state = "backlog"
+title = "Add tests/functional/test_land_work_item.py, failing on the criterion of ST-0017"
+description = "Run through run() of src/flowgraph/cli.py on a real git repository in tmp_path, as tests/functional/test_commit_writes.py does. Seen red, then marked a strict xfail naming ST-0017 until the Task that turns it green removes the mark. The developer's decision of 2026-11-21 for the whole Story: the developer words the merge commit, given with an option of fgraph land. The agent's readings, each a routine call: (1) the command is fgraph land ID --message TEXT, the option required; a Task id is refused. (2) Its steps in order: merge the branch wi/<id>-* into main with --no-ff and without committing; refuse as fgraph complete would, the merge aborted, when a Task of the item is not completed; commit the merge under the message; complete the work item at the short sha of that commit, committed as 'chore: complete <id> in the record'; remove the worktree of the branch, then the branch. (3) It prints 'landed <id> at <sha>'. (4) It exits 2 naming why, nothing merged, when the record is outside a git work tree, when the checkout it runs in is not on main -- the rule the developer gave for a start in ST-0021 -- when no branch wi/<id>-* or more than one is there, and when git refuses the merge. (5) A worktree or a branch git refuses to remove exits 2 naming the git command and saying the work item is landed."
+expected_output = "created: tests/functional/test_land_work_item.py states that fgraph land, run in the checkout of main on a started Story whose Tasks are completed on its worktree branch, leaves fgraph status listing it under Completed with the merge commit of its branch"
+created = 2026-11-21 10:59:10+00:00

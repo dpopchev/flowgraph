@@ -23,12 +23,14 @@ commit = "aa03b87"
 
 [[tasks]]
 id = "T-0054"
-state = "started"
+state = "completed"
 title = "Add the git adapters of a landing to src/flowgraph/branch.py: the branch of a checkout, a merge held and committed, a worktree and a branch removed"
 description = "Each adapter raises GitError naming the git command when git refuses it. A merge git refuses leaves nothing merged."
 expected_output = "changed: src/flowgraph/branch.py names the branch a work tree is on and the branches matching a pattern, merges a branch without committing, aborts that merge, commits it under a message and returns its short sha, finds the worktree of a branch, removes a worktree and deletes a merged branch; each is proved against the real git in tests/branch/test_landing_git.py"
 created = 2026-11-21 10:59:10+00:00
 started = 2026-11-21 11:00:15+00:00
+completed = 2026-11-21 11:01:43+00:00
+commit = "3420654"
 
 [[tasks]]
 id = "T-0055"

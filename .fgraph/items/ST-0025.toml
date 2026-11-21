@@ -23,12 +23,14 @@ commit = "72aec74"
 
 [[tasks]]
 id = "T-0111"
-state = "started"
+state = "completed"
 title = "Add the Features to the status of src/flowgraph/item.py, each a row of src/flowgraph/feature.py written by src/flowgraph/text.py"
 description = "The work items are read once, for the buckets and for the Features. Removes the xfail mark of tests/functional/test_status_features.py."
 expected_output = "changed: src/flowgraph/feature.py holds FeatureRow and feature_row, a Feature as a line of a list with its derived bucket; status_text of src/flowgraph/text.py lists the Features it is given under 'Features (n)' above the buckets, and no heading without one; status_item of src/flowgraph/item.py gives it the Features of the record by number, each with the bucket its work items derive; proved in tests/feature/, tests/text/ and tests/item/"
 created = 2026-11-21 14:28:06+00:00
 started = 2026-11-21 14:29:02+00:00
+completed = 2026-11-21 14:31:24+00:00
+commit = "b9c6617"
 
 [[tasks]]
 id = "T-0112"

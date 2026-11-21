@@ -8,3 +8,42 @@ created = 2026-11-21 08:06:51+00:00
 given = "main, with a Story in Backlog that holds a Task"
 when = "fgraph start is run on it"
 then = "the Story is started and its branch, named by its id, exists at the commit that holds the start"
+
+[[tasks]]
+id = "T-0040"
+state = "backlog"
+title = "Add tests/functional/test_start_branch.py, failing on the criterion of ST-0009"
+description = "Run through run() of src/flowgraph/cli.py on a real git repository made in tmp_path, never a faked git; the identity of its commits comes from GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL, GIT_COMMITTER_NAME and GIT_COMMITTER_EMAIL set with monkeypatch, never from git config. Seen red, then marked a strict xfail naming ST-0009 until the Task that turns it green removes the mark. The developer's decisions of 2026-11-21 for the whole Story: (1) fgraph makes the commits of the record, here the start, worded by fgraph as 'chore: start <id> in the record' and holding only the file of the item; the commits of the development and their messages stay the developer's. (2) The branch is wi/<id>-<slug>, not wi/<id> as the criterion reads. (3) The branch is checked out in a worktree at <parent>/<checkout name>.worktrees/<id>-<slug>. (4) A record that is not inside a git work tree starts as today, and fgraph warns on its error output that no branch was made, exit 0."
+expected_output = "created: tests/functional/test_start_branch.py states that fgraph start on a Story of a record inside a git repository leaves the start committed and the branch wi/<id>-<slug> at that commit, checked out in its worktree"
+created = 2026-11-21 08:34:30+00:00
+
+[[tasks]]
+id = "T-0041"
+state = "backlog"
+title = "Create src/flowgraph/branch.py holding the slug, the branch name and the worktree path of a work item"
+description = "Pure, no I/O. The slug is given with --slug; without it, it is the first four words of the title, lower-cased and joined by hyphens, every character but a letter or a digit dropped. That fallback is the agent's choice: the developer said only that wi/<id>-<slug> is better than wi/<id>. A slug that is empty or holds another character is refused by its constructor."
+expected_output = "created: src/flowgraph/branch.py with its tests in tests/branch/: a slug of lower-case letters, digits and hyphens, the branch wi/<id>-<slug> and the worktree path <parent>/<checkout name>.worktrees/<id>-<slug>"
+created = 2026-11-21 08:34:30+00:00
+
+[[tasks]]
+id = "T-0042"
+state = "backlog"
+title = "Add the git adapters to src/flowgraph/branch.py: inside a work tree, commit one file, add a worktree on a new branch"
+description = "Each adapter is a named function over subprocess.run(..., check=True); a non-zero exit raises a specific error naming the command and its error output. Its tests are marked edge and run the real git in tmp_path with the identity from the environment. The commit holds only the file named, whatever else is staged or changed in the work tree."
+expected_output = "changed: src/flowgraph/branch.py tells whether a directory is inside a git work tree, commits one named file with a message, and adds a worktree on a new branch, each proved against the real git in tmp_path"
+created = 2026-11-21 08:34:30+00:00
+
+[[tasks]]
+id = "T-0043"
+state = "backlog"
+title = "Extend fgraph start in src/flowgraph/cli.py and src/flowgraph/item.py so a started work item is committed and gets its worktree branch"
+description = "The git effects are injected into run() as callables and wired in main(), as the store and the clock are. Starting a Task is unchanged. A work item without a Task is refused before anything is written, as today, so it gets no branch. When git fails after the start was saved, the file of the item is put back as it was and fgraph exits 2 naming the git command and its error. Whether the checkout is on main is not checked here: that is ST-0010. Every test that calls run() or builds a Store by hand changes with the port: the modules of tests/functional/ and tests/item/test_status_order.py. Removes the xfail mark of tests/functional/test_start_branch.py."
+expected_output = "changed: fgraph start ID [--slug TEXT] on a work item saves the start, commits its file as 'chore: start <id> in the record', adds the worktree of wi/<id>-<slug> at that commit and names the branch and its path; outside a git work tree it starts as today and warns that no branch was made"
+created = 2026-11-21 08:34:31+00:00
+
+[[tasks]]
+id = "T-0044"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say fgraph start commits the start and adds the worktree branch"
+expected_output = "changed: README.md shows fgraph start naming the branch and its worktree; docs/domain-model.md, Rules and Persistence, says which commit and which git steps fgraph makes at a start and that the commits of the development stay the developer's"
+created = 2026-11-21 08:34:31+00:00

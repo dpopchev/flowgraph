@@ -6,6 +6,7 @@ Without a command it shows the help menu and names the record.
 import argparse
 import shutil
 import sys
+import time
 from collections.abc import Callable, Sequence
 from datetime import UTC, datetime
 from functools import partial
@@ -75,6 +76,7 @@ from flowgraph.task import (
     TaskNotFoundError,
 )
 from flowgraph.text import cut_lines
+from flowgraph.watch import PaceError, Wait, framed, make_pace, watch
 from flowgraph.work_item import (
     Amendment,
     NoPartError,
@@ -126,6 +128,7 @@ REFUSED = (
     CompletedAlreadyError,
     NotInBacklogError,
     SameItemError,
+    PaceError,
 )
 
 
@@ -191,6 +194,10 @@ def _no_terminal() -> None:
     return None
 
 
+def _no_wait(seconds: float) -> None:
+    """The wait of a run given none: the next frame of watch follows at once."""
+
+
 def terminal_width() -> int | None:
     """Adapter: the columns of the terminal the output of the process is written to.
 
@@ -230,6 +237,22 @@ def _said(
             return None
 
 
+def _watch(args: argparse.Namespace, store: Store, write: Write, wait: Wait, width: Width) -> None:
+    """Write the frames of watch on the record: each what status writes then, read anew.
+
+    A frame is cut to the width the terminal has then and replaces the one before it; without
+    a width it is whole and follows it. Raises PaceError when the seconds or the count asked
+    for are no positive number; no frame is written then.
+    """
+    pace = make_pace(args.seconds, args.count)
+    top = None if args.all else TOP
+
+    def read_frame() -> str:
+        return framed(status_item(store, top), width())
+
+    watch(read_frame, write, wait, pace)
+
+
 def run(
     argv: Sequence[str],
     cwd: Path,
@@ -241,13 +264,16 @@ def run(
     open_git: OpenGit,
     now: Now,
     width: Width = _no_terminal,
+    wait: Wait = _no_wait,
 ) -> int:
     """Read the arguments, locate the record in cwd, run the command and return the exit status.
 
     The help option needs no record, after a command as alone: it prints the help of the command
     the arguments name. Every other call fails with 2 when there is no record. A write finds the
     git work tree of the record through open_git and is committed there. The lines of status are
-    cut to the width of the terminal; without one, as by default, they are whole.
+    cut to the width of the terminal; without one, as by default, they are whole. Watch writes
+    its frames as it goes and waits between two by wait, which by default returns at once; it
+    exits with 0 once its count is written or Ctrl-C ends it.
     """
     command_line = build_command_line()
     parser = command_line.parser
@@ -264,6 +290,9 @@ def run(
                 partial(worktree_of_item, path, open_git),
             )
             try:
+                if args.command == "watch":
+                    _watch(args, store, write, wait, width)
+                    return 0
                 said = _said(args, store, now, path, open_git, width)
             except REFUSED as error:
                 write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
@@ -301,6 +330,7 @@ def main() -> None:
             open_git=open_git,
             now=lambda: datetime.now(UTC),
             width=terminal_width,
+            wait=time.sleep,
         )
     )
 

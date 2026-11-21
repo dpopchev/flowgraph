@@ -21,6 +21,9 @@ DIR = ("-d", "--dir")
 # The items status lists under one heading, unless every one is asked for.
 TOP = 5
 
+# The seconds watch waits between two frames, unless others are given.
+EVERY = 5
+
 # The path of a command among the commands: `()` the command line, `("add", "story")` a kind.
 CommandPath = tuple[str, ...]
 
@@ -169,6 +172,23 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         action="store_true",
         help=f"list every item, instead of the top {TOP} under each heading",
     )
+    watch = _command(commands, "watch", "follow the record live: redraw its status every interval")
+    watch.add_argument(
+        "-n",
+        dest="seconds",
+        type=float,
+        default=EVERY,
+        metavar="SECS",
+        help=f"the seconds between two frames, instead of {EVERY}",
+    )
+    watch.add_argument(
+        "--count", type=int, metavar="N", help="end after that many frames, instead of at Ctrl-C"
+    )
+    watch.add_argument(
+        "--all",
+        action="store_true",
+        help=f"list every item, instead of the top {TOP} under each heading",
+    )
     return {
         "amend": amend,
         "show": show,
@@ -180,6 +200,7 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         "remove": remove,
         "reorder": reorder,
         "status": status,
+        "watch": watch,
     }
 
 

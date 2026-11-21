@@ -81,5 +81,6 @@ def test_every_command_and_every_kind_under_add_has_its_help() -> None:
             ("start",),
             ("status",),
             ("unblock",),
+            ("watch",),
         ]
     )

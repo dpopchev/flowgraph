@@ -187,6 +187,36 @@ development, so it limits nothing with the development off. The start of a
 Task is neither counted nor limited by it: a Story has one started Task at a
 time whatever the key, as shown further down.
 
+The development says how a landing merges when the record names a way:
+
+```toml
+[development]
+enabled = true
+merge = "squash"
+```
+
+`merge` is one of three words. Each is a way `fgraph land` puts the work of
+the branch on `main`:
+
+| `merge`                     | `main` gains                                               | `--message`                 |
+| --------------------------- | ---------------------------------------------------------- | --------------------------- |
+| `merge-commit`, the default | one merge commit of the branch, with two parents           | needed: it words the commit |
+| `squash`                    | one commit of its own that holds the work, with one parent | needed: it words the commit |
+| `fast-forward`              | no new commit: `main` moves to the tip of the branch       | refused: no commit to word  |
+
+Left out, the key is `merge-commit`, the one merge a landing made before the
+key. Whatever the way, the Story is completed at the commit `main` is then
+on, the record is committed, and the worktree and the branch are removed, as
+shown further down with the landing. A landing by `fast-forward` exits 2,
+with nothing merged, when `main` holds a commit the branch lacks. It is a key
+of the development, so it says nothing with the development off. Any other
+word exits 2 naming the key, whatever the command:
+
+```sh
+fgraph status
+# fgraph: error: /src/project/.fgraph/config.toml: development.merge is "rebase": it takes merge-commit, squash or fast-forward
+```
+
 The commits of the record are a layer the record turns off:
 
 ```toml
@@ -223,8 +253,9 @@ fgraph status
 ```
 
 A `config.toml` fgraph refuses -- a table or a key the configuration does not
-have, a value of another type than the key takes, a `parallel` below 1, a text
-that is no TOML -- exits 2 naming the file and the key, whatever the command:
+have, a value of another type than the key takes, a `parallel` below 1, a
+`merge` that is none of its three words, a text that is no TOML -- exits 2
+naming the file and the key, whatever the command:
 
 ```sh
 fgraph status
@@ -485,6 +516,42 @@ development is off, when a Task of the Story is not completed, when the
 checkout it runs in is not on `main`, when the Story has no branch or
 several, when the record is outside a git work tree, or when git refuses the
 merge.
+
+That is a landing by `merge-commit`, the way of a record whose `config.toml`
+names no `[development] merge`. With `merge = "squash"` the same command puts
+the work of the branch on `main` as one commit of its own under the message,
+with one parent: `main` holds none of the commits of the branch, and the
+Story is completed at that one commit. With `merge = "fast-forward"` `main`
+moves to the tip of the branch and no commit is made, so the landing takes no
+message, and the Story is completed at the tip:
+
+```sh
+fgraph land S-0001
+# landed S-0001 at 2c41d07
+```
+
+The message goes with the commit a landing makes. A landing by `merge-commit`
+or `squash` exits 2 without `--message`, and one by `fast-forward` exits 2
+with it, each naming the key:
+
+```sh
+fgraph land S-0001
+# fgraph: error: S-0001 cannot land without --message: development.merge = squash makes a commit to word
+
+fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
+# fgraph: error: S-0001 cannot land with --message: development.merge = fast-forward makes no commit to word
+```
+
+A fast-forward needs a branch that holds every commit of `main`. When `main`
+holds a commit the branch lacks, the landing exits 2 with nothing merged:
+
+```sh
+fgraph land S-0001
+# fgraph: error: S-0001 cannot land by fast-forward: main holds a commit wi/S-0001-raise-the-stories-fgraph lacks -- rebase wi/S-0001-raise-the-stories-fgraph on main or merge main into it
+```
+
+Every other rule of a landing holds for each way: what it refuses, that
+nothing is merged then, and the commit of the record after it.
 
 An Upkeep is work that keeps a behavior and changes the inside, such as a
 split of a module. Its criterion is a Given / When / Then whose When already

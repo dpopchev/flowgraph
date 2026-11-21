@@ -539,6 +539,9 @@ of its checks, names each module above the limit with its lines and fails.
 The number is written once, `MAX_LINES` in `mk/python.mk`; the tests are not
 counted.
 
+Its lint, `make lint`, runs `ruff check` and `ruff format --check`, so a file
+ruff would rewrite fails `make check` by name; `make format` rewrites it.
+
 | Path             | Holds                                                        |
 | ---------------- | ------------------------------------------------------------ |
 | `.fgraph/`       | the record of flowgraph's own work, written by `fgraph`      |

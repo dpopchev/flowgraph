@@ -13,23 +13,32 @@ then = "it exits 2 naming the command, with nothing merged"
 
 [[tasks]]
 id = "T-0176"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_land_gate.py, failing on the criterion of S-0042"
 description = "decided: S-0042: the reading its Then states -- one gate command of the record, run at a landing on top of the rule that every Task is completed; no check per Task at complete, and the Given / When / Then of the work item is neither run nor confirmed. Built as tests/functional/test_land_work_item.py builds its repository. Seen red, then marked a strict xfail naming S-0042 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_land_gate.py states that, in a repository whose record turns the development on with [development] gate set to a command that fails, fgraph land of a started Story exits 2 naming the command, and main, the branch, the worktree and the Story are as they were"
 created = 2026-11-21 22:40:43+00:00
+started = 2026-11-21 23:44:24+00:00
+completed = 2026-11-21 23:45:50+00:00
+commit = "033e91f"
 
 [[tasks]]
 id = "T-0177"
-state = "backlog"
+state = "completed"
 title = "Add development.gate to the Config of src/flowgraph/config.py and refuse a landing whose gate fails in src/flowgraph/land.py"
 description = "Removes the xfail mark of tests/functional/test_land_gate.py. The adapter is proved against a real command in tmp_path."
 expected_output = "changed: the Config of src/flowgraph/config.py holds development.gate, a command line, or none when the key is left out; fgraph land runs the gate through the shell at the top of the work tree of main once the work of the branch is merged there and before the landing is committed or the work item completed; a gate that exits with another status than 0 leaves main where it was, whatever the way of merging, and exits 2 naming the command and its status, its output written as the gate wrote it; a gate that passes lands as before; the run of the gate is an effect given to run() of src/flowgraph/cli.py as a callable and bound in main() to a named adapter; an empty gate is refused as a config.toml naming the key"
 created = 2026-11-21 22:40:43+00:00
+started = 2026-11-21 23:45:50+00:00
+completed = 2026-11-21 23:51:54+00:00
+commit = "17c88d9"
 
 [[tasks]]
 id = "T-0178"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a landing is refused while the gate of the record fails"
 expected_output = "changed: README.md and docs/domain-model.md say [development] gate of .fgraph/config.toml is one command of the record run at a landing, where and when it runs, what a failing gate leaves and says, and that the Tasks completed stay the first rule of a landing; they name the developer's words of 2026-11-21 and the reading decided when S-0042 was ordered"
 created = 2026-11-21 22:40:44+00:00
+started = 2026-11-21 23:51:54+00:00
+completed = 2026-11-21 23:55:09+00:00
+commit = "7e67533"

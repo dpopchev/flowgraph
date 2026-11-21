@@ -531,6 +531,33 @@ development too.
   as one of three values -- `MergeCommit` and `Squash`, each with the
   message, and `FastForward`, with none (`src/flowgraph/land.py`) -- so a
   fast-forward with a message and a commit without one cannot be built.
+- `[development] gate` names one command of the record, a command line run
+  at a landing. It is the reading, decided when S-0042 was ordered, of the
+  developer's words of 2026-11-21 on starting a work item, "checks if
+  criteria are met before closing": one gate of the record, on top of the
+  rule that every Task is completed. It is no check per Task run at a
+  complete, and the Given / When / Then of the work item is neither run nor
+  confirmed. It has no default: left out, a landing runs no gate. It is a
+  key of the development, so it gates nothing with the development off,
+  where it is held as written.
+- `fgraph land` runs the gate through the shell at the top of the work tree
+  of `main`, once the work of the branch is merged there, the merge held
+  uncommitted, and before the landing is committed or the work item
+  completed: the gate checks the tree `main` will have. The Tasks completed
+  stay the first rule of a landing: the work item is checked to complete
+  first, and a gate is not run for one that cannot. The output of the gate
+  is written as the gate wrote it, never captured.
+- A gate that exits with another status than 0 leaves `main` where it was,
+  whatever the way of merging: the merge held is dropped, and the work item,
+  its branch and its worktree are as they were. The landing is refused with
+  exit 2 naming the key, `development.gate`, the command as the file writes
+  it and its status. A gate that passes lands as a landing without one.
+- The gate is a value or none in the model (`Gate`, a `Gated` command or
+  `Ungated`, `src/flowgraph/config.py`), never an empty text with a meaning.
+  Running it is an effect (`src/flowgraph/gate.py`): `run()` takes it as a
+  callable, `RunGate`, and `main()` binds the adapter `run_gate`, which runs
+  the command line through the shell. The default of `run()` runs no gate: a
+  run that lands under one is given its runner.
 - `[git] commit` turns the commits of the record off. It is on by default,
   the reading of S-0040, off until set shown and not taken: inside a git work
   tree that does not ignore the record `fgraph` commits every write of it, as
@@ -549,16 +576,17 @@ development too.
   branches.
 - A `config.toml` that holds a table or a key the configuration does not
   have, a value of another type than its key takes, a `parallel` below 1 or
-  no whole number, a `merge` that is none of its three words, or no TOML, is
-  refused with exit 2 naming the file and the key, whatever the command. The
-  help option needs no record and reads none.
+  no whole number, a `merge` that is none of its three words, a `gate` that
+  is empty, blank or no text, or no TOML, is refused with exit 2 naming the
+  file and the key, whatever the command. The help option needs no record
+  and reads none.
 - The configuration is read at the edge into a value of the model
   (`src/flowgraph/config.py`). Reading it is an effect: `run()` takes it as a
   callable, the defaults when none is given, and `main()` reads the file.
-- Only these four keys are built. Not built yet: the gate of the
-  development, and a command that reads and sets the configuration. Until
-  then the file is written by hand; the record of flowgraph holds
-  `[development] enabled = true`, no `parallel` and no `merge`.
+- Only these five keys are built. Not built yet: a command that reads and
+  sets the configuration. Until then the file is written by hand; the record
+  of flowgraph holds `[development] enabled = true`, no `parallel`, no
+  `merge` and no `gate`.
 
 Who writes what with the development on, so that two branches never change
 the same file or hand out the same number. With it off no work item has a
@@ -701,6 +729,11 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   checked, then `main` is moved to the tip of the branch, and the branch is
   removed as a merged one. Either completes the work item at the short sha
   of the commit `main` is then on, with the commit of the record.
+- The gate of the record, when `[development] gate` names one, is a step of
+  every way, run on the merge held once the work item is checked to
+  complete: before the commit of a `merge-commit` or a `squash`, and before
+  a `fast-forward` drops the merge and moves `main`. A gate that fails drops
+  the merge held, and no later step is taken.
 - A squash is not made by `git merge --squash`: that takes a change staged
   in the checkout into the commit and drops it with the squash. The merge of
   its own refuses such a checkout, and committed with one parent it holds
@@ -711,9 +744,10 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   is not on `main`, when no branch `wi/<id>-*` or more than one is there,
   when a `fast-forward` finds a commit on `main` that the branch lacks, when
   git refuses the merge, and -- the merge held dropped again -- when a Task
-  of the work item is not completed or git refuses the commit or the
-  fast-forward. A step git refuses after `main` moved exits 2 saying how far
-  the landing came.
+  of the work item is not completed, when the gate of the record exits with
+  another status than 0, or git refuses the commit or the fast-forward. A
+  step git refuses after `main` moved exits 2 saying how far the landing
+  came.
 - `fgraph` makes the commits of the record; the commits of the development
   and their messages stay the developer's, the merge commit and the squash
   commit of a landing among them: `fgraph` makes it, the developer words it.

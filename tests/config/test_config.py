@@ -4,7 +4,16 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph.config import UNLIMITED, ConfigError, Merge, Parallel, make_config, read_config
+from flowgraph.config import (
+    UNGATED,
+    UNLIMITED,
+    ConfigError,
+    Gated,
+    Merge,
+    Parallel,
+    make_config,
+    read_config,
+)
 
 pytestmark = pytest.mark.edge
 
@@ -13,6 +22,7 @@ ENABLED = "[development]\nenabled = true\n"
 UNCOMMITTED = "[git]\ncommit = false\n"
 TAKES_A_COUNT = "it takes a whole number of 1 or more"
 TAKES_A_WAY = "it takes merge-commit, squash or fast-forward"
+TAKES_A_COMMAND = "it takes a command line"
 
 
 @pytest.mark.parametrize(
@@ -97,6 +107,36 @@ def test_a_merge_that_is_no_way_of_merging_is_refused_naming_the_key(value: str)
     with pytest.raises(ConfigError) as error:
         make_config(f"[development]\nmerge = {value}\n")
     assert str(error.value) == f"development.merge is {value}: {TAKES_A_WAY}"
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["", "[development]\n", ENABLED],
+    ids=["no-table", "no-key", "development-on"],
+)
+def test_a_landing_is_ungated_unless_gate_is_set(text: str) -> None:
+    assert make_config(text).development.gate == UNGATED
+
+
+def test_gate_set_is_the_command_line_a_landing_runs() -> None:
+    assert make_config(f'{ENABLED}gate = "make check"\n').development.gate == Gated("make check")
+
+
+def test_gate_is_held_as_written_with_the_development_off() -> None:
+    assert make_config('[development]\ngate = "make check"\n').development.gate == Gated(
+        "make check"
+    )
+
+
+@pytest.mark.parametrize(
+    "value",
+    ['""', '"  "', "1", "true", '["make", "check"]'],
+    ids=["empty", "blank", "number", "true", "words"],
+)
+def test_a_gate_that_is_no_command_line_is_refused_naming_the_key(value: str) -> None:
+    with pytest.raises(ConfigError) as error:
+        make_config(f"[development]\ngate = {value}\n")
+    assert str(error.value) == f"development.gate is {value}: {TAKES_A_COMMAND}"
 
 
 @pytest.mark.parametrize(

@@ -12,6 +12,7 @@ from flowgraph.branch import GitError
 from flowgraph.commit import Said, WorkTree
 from flowgraph.config import Config, make_config
 from flowgraph.criterion import make_commit, make_scenario
+from flowgraph.gate import GateError, RunGate
 from flowgraph.item import Store
 from flowgraph.land import LandError, land_item
 from flowgraph.story import make_story, make_story_id
@@ -31,6 +32,11 @@ ON = make_config("[development]\nenabled = true\n")
 OFF = make_config("")
 SQUASH = make_config('[development]\nenabled = true\nmerge = "squash"\n')
 FAST_FORWARD = make_config('[development]\nenabled = true\nmerge = "fast-forward"\n')
+GATE = 'gate = "make check"\n'
+GATED = make_config(f"[development]\nenabled = true\n{GATE}")
+GATED_SQUASH = make_config(f'[development]\nenabled = true\nmerge = "squash"\n{GATE}')
+GATED_FAST_FORWARD = make_config(f'[development]\nenabled = true\nmerge = "fast-forward"\n{GATE}')
+WAYS = ["merge-commit", "squash", "fast-forward"]
 RECORD_COMMIT = ("commit", [".fgraph/items/S-0001.toml"], "chore: complete S-0001 in the record")
 TOP = Path("/src/project")
 RECORD = TOP / ".fgraph"
@@ -44,6 +50,7 @@ STORY = make_story(make_story_id(1), "a title", make_scenario("a", "b", "c"), ""
 OPEN = started_task(started_work_item(append_task(STORY, TASK), NOW), make_task_id(1), NOW)
 READY = completed_task(OPEN, make_task_id(1), NOW, make_commit("abc1234"))
 MESSAGE = "feat: land the first Story"
+GATE_RUN = ("gate", "make check", TOP)
 
 
 def never(*_: object) -> Never:
@@ -111,16 +118,32 @@ def work_tree(steps: list[object]) -> WorkTree:
     )
 
 
+def no_gate(*_: object) -> Never:
+    """The gate of a record that names none: a landing never runs it."""
+    raise AssertionError("a landing under no gate runs none")
+
+
+def gate(steps: list[object], status: int = 0) -> RunGate:
+    """A gate that exits with that status; it notes the command it runs and where."""
+
+    def run(command: str, directory: Path) -> int:
+        steps.append(("gate", command, directory))
+        return status
+
+    return run
+
+
 def land(
     item: WorkItemState,
     tree: WorkTree | None,
     saved: list[WorkItemState] | None = None,
     config: Config = ON,
     message: str | None = MESSAGE,
+    run_gate: RunGate = no_gate,
 ) -> Said:
     """Land S-0001 on the record holding that work item, in that work tree, the development on."""
     kept = store(item, saved)
-    return land_item("S-0001", message, kept, lambda: NOW, RECORD, lambda _: tree, config)
+    return land_item("S-0001", message, kept, lambda: NOW, RECORD, lambda _: tree, config, run_gate)
 
 
 def test_a_landing_with_the_development_off_is_refused_naming_the_key() -> None:
@@ -385,4 +408,62 @@ def test_a_fast_forward_git_refuses_takes_no_step_of_the_record() -> None:
             config=FAST_FORWARD,
             message=None,
         )
+    assert steps == [("merge", BRANCH), "abort merge"]
+
+
+@pytest.mark.parametrize(
+    ("config", "message", "moves"),
+    [
+        (GATED, MESSAGE, [("commit merge", MESSAGE)]),
+        (GATED_SQUASH, MESSAGE, [("commit squash", MESSAGE)]),
+        (GATED_FAST_FORWARD, None, ["abort merge", ("fast-forward", BRANCH)]),
+    ],
+    ids=WAYS,
+)
+def test_a_landing_runs_its_gate_at_the_top_of_the_work_tree_while_the_merge_is_held(
+    config: Config, message: str | None, moves: list[object]
+) -> None:
+    steps: list[object] = []
+    land(READY, work_tree(steps), config=config, message=message, run_gate=gate(steps))
+    assert steps[:-3] == [("merge", BRANCH), GATE_RUN, *moves]
+
+
+def test_a_landing_whose_gate_passes_names_the_work_item_and_the_merge_commit() -> None:
+    landed = land(READY, work_tree([]), config=GATED, run_gate=gate([]))
+    assert landed == Said("landed S-0001 at 3e9ae5c\n")
+
+
+def test_a_landing_whose_gate_fails_is_refused_naming_the_command_and_its_status() -> None:
+    with pytest.raises(GateError) as error:
+        land(READY, work_tree([]), config=GATED, run_gate=gate([], 2))
+    assert str(error.value) == (
+        'S-0001 cannot land: development.gate = "make check" exited with status 2'
+    )
+
+
+@pytest.mark.parametrize(
+    ("config", "message"),
+    [(GATED, MESSAGE), (GATED_SQUASH, MESSAGE), (GATED_FAST_FORWARD, None)],
+    ids=WAYS,
+)
+def test_a_landing_whose_gate_fails_drops_the_merge_held_and_moves_main_nowhere(
+    config: Config, message: str | None
+) -> None:
+    steps: list[object] = []
+    with pytest.raises(GateError):
+        land(READY, work_tree(steps), config=config, message=message, run_gate=gate(steps, 1))
+    assert steps == [("merge", BRANCH), GATE_RUN, "abort merge"]
+
+
+def test_a_landing_whose_gate_fails_saves_nothing() -> None:
+    saved: list[WorkItemState] = []
+    with pytest.raises(GateError):
+        land(READY, work_tree([]), saved, GATED, run_gate=gate([], 1))
+    assert saved == []
+
+
+def test_a_landing_with_a_task_not_completed_runs_no_gate() -> None:
+    steps: list[object] = []
+    with pytest.raises(OpenTaskError):
+        land(OPEN, work_tree(steps), config=GATED, run_gate=gate(steps))
     assert steps == [("merge", BRANCH), "abort merge"]

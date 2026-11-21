@@ -7,7 +7,8 @@ landing -- is off unless `[development] enabled = true`. The layers build on eac
 branch of a work item carries its record, so the development needs the commits. `[development]
 parallel` is the most work items started at once; it has no default, so left out nothing limits
 them. `[development] merge` is how a landing merges: `merge-commit` unless it names `squash` or
-`fast-forward`.
+`fast-forward`. `[development] gate` is the one command line a landing runs before main moves;
+it has no default either, so left out a landing runs none.
 """
 
 import json
@@ -24,6 +25,9 @@ CONFIG = "config.toml"
 
 # The key that turns the development on, as a refusal names it.
 DEVELOPMENT_ENABLED = "development.enabled"
+
+# The key that names the command a landing runs before main moves, as a refusal names it.
+DEVELOPMENT_GATE = "development.gate"
 
 # The key that says how a landing merges, as a refusal names it.
 DEVELOPMENT_MERGE = "development.merge"
@@ -70,15 +74,36 @@ class Merge(Enum):
 
 
 @dataclass(frozen=True)
+class Gated:
+    """The gate of a landing: one command line, run through the shell, never a blank one."""
+
+    command: str
+
+
+@dataclass(frozen=True)
+class Ungated:
+    """No gate of a landing: a value of the gate, not a missing one."""
+
+
+# The one value of no gate.
+UNGATED = Ungated()
+
+# What a landing runs before main moves: that command, or nothing.
+Gate = Gated | Ungated
+
+
+@dataclass(frozen=True)
 class Development:
     """The development beside the source code: turned on, or off, and its keys as written.
 
-    The limit and the merge are keys of the development: neither says anything while it is off.
+    The limit, the merge and the gate are keys of the development: none says anything while it
+    is off.
     """
 
     enabled: bool
     parallel: Limit
     merge: Merge
+    gate: Gate
 
 
 @dataclass(frozen=True)
@@ -119,6 +144,8 @@ class _DevelopmentTable(_Table):
     parallel: int | None = Field(default=None, ge=1)
     # Not strict, so that the word of the file is read as the way of merging it names.
     merge: Merge = Field(default=Merge.MERGE_COMMIT, strict=False)
+    # A text that holds a character other than a blank: an empty command line runs nothing.
+    gate: str | None = Field(default=None, pattern=r"\S")
 
 
 class _ConfigFile(_Table):
@@ -135,6 +162,9 @@ _COUNT = "a whole number of 1 or more"
 _WORDS = [merge.value for merge in Merge]
 _WAY = f"{', '.join(_WORDS[:-1])} or {_WORDS[-1]}"
 
+# What a gate takes, whether its value is no text or a blank one.
+_COMMAND = "a command line"
+
 # What the value of a key takes, by the type of the error pydantic reports of it.
 _TAKES = {
     "bool_type": "true or false",
@@ -142,6 +172,8 @@ _TAKES = {
     "int_type": _COUNT,
     "greater_than_equal": _COUNT,
     "enum": _WAY,
+    "string_type": _COMMAND,
+    "string_pattern_mismatch": _COMMAND,
 }
 
 
@@ -160,8 +192,9 @@ def make_config(text: str) -> Config:
     """The configuration the text of a config.toml holds; a key it leaves out is its default.
 
     Raises ConfigError naming the first table or key the configuration does not have, or whose
-    value is of another type than the key takes, a count below 1 or no way of merging, and when
-    the text is no TOML; naming both keys when it turns the development on with the commits off.
+    value is of another type than the key takes, a count below 1, no way of merging or a blank
+    gate, and when the text is no TOML; naming both keys when it turns the development on with
+    the commits off.
     """
     try:
         held = _ConfigFile.model_validate(tomllib.loads(text))
@@ -175,9 +208,12 @@ def make_config(text: str) -> Config:
             " the development needs the commits of the record"
         )
     most = held.development.parallel
-    parallel = UNLIMITED if most is None else Parallel(most)
+    command = held.development.gate
     development = Development(
-        enabled=held.development.enabled, parallel=parallel, merge=held.development.merge
+        enabled=held.development.enabled,
+        parallel=UNLIMITED if most is None else Parallel(most),
+        merge=held.development.merge,
+        gate=UNGATED if command is None else Gated(command),
     )
     return Config(git=Git(commit=held.git.commit), development=development)
 

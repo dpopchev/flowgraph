@@ -4,14 +4,8 @@ from datetime import UTC, datetime
 
 import pytest
 
-from flowgraph.story import (
-    StoryRow,
-    StoryState,
-    add_story,
-    make_scenario,
-    make_story,
-    make_story_id,
-)
+from flowgraph.criterion import make_scenario
+from flowgraph.story import StoryRow, StoryState, add_story, make_story, make_story_id
 
 pytestmark = pytest.mark.command
 

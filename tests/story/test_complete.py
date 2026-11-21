@@ -4,26 +4,26 @@ from datetime import UTC, datetime
 
 import pytest
 
-from flowgraph.criterion import CommitError
+from flowgraph.criterion import CommitError, make_commit, make_scenario
 from flowgraph.story import (
-    CompletedAlreadyError,
     CompletedStory,
-    CompletedTask,
-    NotStartedError,
     OpenTaskError,
-    TaskNotFoundError,
     append_task,
     completed_story,
     completed_task,
-    make_commit,
-    make_scenario,
     make_story,
     make_story_id,
-    make_task,
-    make_task_id,
     started_story,
     started_task,
     still_open,
+)
+from flowgraph.task import (
+    CompletedAlreadyError,
+    CompletedTask,
+    NotStartedError,
+    TaskNotFoundError,
+    make_task,
+    make_task_id,
 )
 
 pytestmark = pytest.mark.model

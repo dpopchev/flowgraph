@@ -6,20 +6,16 @@ from pathlib import Path
 
 import pytest
 
+from flowgraph.criterion import make_commit, make_scenario
 from flowgraph.story import (
     StoryFileError,
     StoryRow,
     StoryState,
-    TaskRow,
     append_task,
     completed_story,
     completed_task,
-    make_commit,
-    make_scenario,
     make_story,
     make_story_id,
-    make_task,
-    make_task_id,
     read_story,
     read_story_detail,
     read_story_rows,
@@ -27,6 +23,7 @@ from flowgraph.story import (
     started_task,
     write_story,
 )
+from flowgraph.task import TaskRow, make_task, make_task_id
 
 pytestmark = pytest.mark.edge
 

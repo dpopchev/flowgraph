@@ -2,13 +2,7 @@
 
 import pytest
 
-from flowgraph.story import (
-    TaskIdError,
-    make_task_id,
-    next_task_id,
-    parse_task_id,
-    task_id_text,
-)
+from flowgraph.task import TaskIdError, make_task_id, next_task_id, parse_task_id, task_id_text
 
 pytestmark = pytest.mark.model
 

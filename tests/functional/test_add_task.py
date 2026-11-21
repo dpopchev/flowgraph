@@ -16,8 +16,8 @@ from flowgraph.story import (
     story_detail,
     story_id_text,
     story_row,
-    task_id_text,
 )
+from flowgraph.task import task_id_text
 from flowgraph.upkeep import UpkeepId, UpkeepNotFoundError
 
 pytestmark = pytest.mark.functional

@@ -8,10 +8,10 @@ from pathlib import Path
 import pytest
 
 from flowgraph import story
+from flowgraph.criterion import make_scenario
 from flowgraph.story import (
     StoryFileError,
     StoryMismatchError,
-    make_scenario,
     make_story,
     make_story_id,
     read_story_rows,

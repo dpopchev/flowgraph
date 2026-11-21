@@ -16,3 +16,11 @@ title = "Add tests/functional/test_status_in_progress_order.py, failing on the c
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_status_completed_order.py does, with a clock that moves on at every call. Seen red, then marked a strict xfail naming ST-0030 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_status_in_progress_order.py states that fgraph status, run on a record with two Stories started, ST-0002 before ST-0001, lists ST-0001 above ST-0002 under InProgress"
 created = 2026-11-21 17:01:26+00:00
+
+[[tasks]]
+id = "T-0124"
+state = "backlog"
+title = "Add the started time to the row of src/flowgraph/work_item/model.py and order InProgress by it in src/flowgraph/item.py, the last started first"
+description = "Removes the xfail mark of tests/functional/test_status_in_progress_order.py."
+expected_output = "changed: WorkItemRow of src/flowgraph/work_item/model.py holds the started time of a started work item, read by read_work_item_rows of src/flowgraph/work_item/file.py; status_item of src/flowgraph/item.py lists InProgress the last started first, those started at one time by kind and number; proved in tests/work_item/ and tests/item/"
+created = 2026-11-21 17:01:27+00:00

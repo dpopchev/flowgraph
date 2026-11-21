@@ -24,3 +24,10 @@ title = "Add the started and the blocked Tasks of a work item under InProgress t
 description = "Removes the xfail mark of tests/functional/test_status_started_task.py. The tests of other Stories that state the lines under InProgress with a started Task are rewritten to hold its line, named in the commit."
 expected_output = "changed: status_text of src/flowgraph/text.py writes under a work item of InProgress its started Task as '    => <id>  <title>' and each blocked one as '    !  <id>  <title>  -- waiting on <what>', in the order of the file, none of them counted toward the top; proved in tests/text/"
 created = 2026-11-21 17:41:02+00:00
+
+[[tasks]]
+id = "T-0137"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say fgraph status lists the started Task of an InProgress work item"
+expected_output = "changed: README.md shows fgraph status listing the started Task under its work item, and a blocked one with what it waits on; docs/domain-model.md says the same where it states what status lists, and names the developer's decision of 2026-11-21"
+created = 2026-11-21 17:41:02+00:00

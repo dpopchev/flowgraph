@@ -25,3 +25,10 @@ title = "Add --parent to fgraph amend of a work item in Backlog, a Feature or no
 description = "The reading of S-0059 as written. Removes the xfail mark of tests/functional/test_amend_parent.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph amend of a work item in Backlog takes --parent, the id of a Feature to put it under or the word none to stand alone, alone or beside the other parts; the Feature it is put under and the one it is taken out of are in Backlog, never started: another one is refused naming it, as is a Feature the record does not hold; the work item keeps its id, its Tasks and its place in the queue; proved in tests/work_item/"
 created = 2026-11-21 23:44:11+00:00
+
+[[tasks]]
+id = "T-0208"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say fgraph amend moves a work item under a Feature or out of one"
+expected_output = "changed: README.md and docs/domain-model.md say fgraph amend puts a work item in Backlog under a Feature or takes it out with --parent, while both are in Backlog, and what is refused; the line that names moving a work item to another Feature not built is gone"
+created = 2026-11-21 23:44:11+00:00

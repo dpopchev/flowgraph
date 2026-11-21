@@ -1,10 +1,79 @@
 id = "U-0001"
-state = "backlog"
+state = "completed"
 title = "Cut the lines of the largest module in src/flowgraph from 1068 to at most 400"
 description = "Split src/flowgraph/story.py by the parts of its aggregate; share the id, criterion and file code that src/flowgraph/upkeep.py repeats; bundle the adapters run() takes into one record port, so a new kind no longer rewires every functional test helper. Found while working ST-0004 (87c0307). Its Tasks are planned when it is ordered: an Upkeep holds no Task until ST-0005."
 created = 2026-11-21 06:33:40+00:00
+started = 2026-11-21 07:12:50+00:00
+completed = 2026-11-21 07:12:53+00:00
+commit = "6db7fac"
 
 [criterion]
 given = "main, with src/flowgraph/story.py at 1068 lines"
 when = "make check runs"
 then = "it still passes"
+
+[[tasks]]
+id = "T-0023"
+state = "completed"
+title = "Bundle the reads and writes run() takes into one store port in src/flowgraph/cli.py"
+description = "Written after U-0001 landed in 6db7fac, so the record holds the Task its work had."
+expected_output = "changed: src/flowgraph/cli.py takes open_store(path) -> Store"
+created = 2026-11-21 07:12:48+00:00
+started = 2026-11-21 07:12:50+00:00
+completed = 2026-11-21 07:12:50+00:00
+commit = "342b8d2"
+
+[[tasks]]
+id = "T-0024"
+state = "completed"
+title = "Create src/flowgraph/criterion.py holding the criterion, the commit and the blank-part check"
+description = "Written after U-0001 landed in 6db7fac, so the record holds the Task its work had."
+expected_output = "created: src/flowgraph/criterion.py, which story.py and upkeep.py import"
+created = 2026-11-21 07:12:48+00:00
+started = 2026-11-21 07:12:50+00:00
+completed = 2026-11-21 07:12:51+00:00
+commit = "493571c"
+
+[[tasks]]
+id = "T-0025"
+state = "completed"
+title = "Create src/flowgraph/task.py holding the Task, its id and its moves"
+description = "Written after U-0001 landed in 6db7fac, so the record holds the Task its work had."
+expected_output = "created: src/flowgraph/task.py, and story.py no longer defines the Task"
+created = 2026-11-21 07:12:48+00:00
+started = 2026-11-21 07:12:51+00:00
+completed = 2026-11-21 07:12:51+00:00
+commit = "d84a785"
+
+[[tasks]]
+id = "T-0026"
+state = "completed"
+title = "Turn src/flowgraph/story.py into the package src/flowgraph/story/ of model, commands and file"
+description = "Written after U-0001 landed in 6db7fac, so the record holds the Task its work had."
+expected_output = "created: src/flowgraph/story/ with no module above 400 lines, flowgraph.story keeping its public names"
+created = 2026-11-21 07:12:49+00:00
+started = 2026-11-21 07:12:51+00:00
+completed = 2026-11-21 07:12:52+00:00
+commit = "0636c92"
+
+[[tasks]]
+id = "T-0027"
+state = "completed"
+title = "Create src/flowgraph/item_file.py holding the criterion table and the checked write of an item file"
+description = "Written after U-0001 landed in 6db7fac, so the record holds the Task its work had."
+expected_output = "created: src/flowgraph/item_file.py, used by the Story file and the Upkeep file"
+created = 2026-11-21 07:12:49+00:00
+started = 2026-11-21 07:12:52+00:00
+completed = 2026-11-21 07:12:52+00:00
+commit = "e6319a7"
+
+[[tasks]]
+id = "T-0028"
+state = "completed"
+title = "Create src/flowgraph/text.py holding the text of status and show, so cli.py is below 400 lines"
+description = "Written after U-0001 landed in 6db7fac, so the record holds the Task its work had."
+expected_output = "created: src/flowgraph/text.py, and src/flowgraph/cli.py at 394 lines"
+created = 2026-11-21 07:12:49+00:00
+started = 2026-11-21 07:12:52+00:00
+completed = 2026-11-21 07:12:53+00:00
+commit = "1abc3b6"

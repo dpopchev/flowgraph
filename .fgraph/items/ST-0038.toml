@@ -8,3 +8,11 @@ created = 2026-11-21 20:19:40+00:00
 given = "a record with a Story in Backlog, and fgraph watch running on it"
 when = "the Story is started"
 then = "the next frame of fgraph watch lists the Story under InProgress"
+
+[[tasks]]
+id = "T-0150"
+state = "backlog"
+title = "Add tests/functional/test_watch.py, failing on the criterion of ST-0038"
+description = "decided: ST-0038: the four readings of its description as written -- a frame is what fgraph status writes, redrawn every 5 seconds or every -n SECS; each line cut to the width of the terminal; --count N ends it after N frames and Ctrl-C exits 0; --all lists every item. Run through run() of src/flowgraph/cli.py on a record in tmp_path with a fake wait that starts the Story, so no test sleeps. Seen red, then marked a strict xfail naming ST-0038 until the Task that turns it green removes the mark."
+expected_output = "created: tests/functional/test_watch.py states that fgraph watch --count 2, run on a record with a Story in Backlog that is started between its two frames, writes a second frame that lists the Story under InProgress"
+created = 2026-11-21 21:36:56+00:00

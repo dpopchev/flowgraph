@@ -1,0 +1,9 @@
+id = "B-0001"
+state = "backlog"
+title = "Raise the kinds the refusal of amend, remove and reorder names for a wrong id from one to every one"
+description = "Found on 2026-11-21 in a run of each work item command on a Feature id, in a scratch record. The refusal is right, its wording is not. Filed on the developer's 'file' of 2026-11-21. Its Tasks are written when it is ordered."
+created = 2026-11-21 21:22:04+00:00
+
+[criterion]
+observed = "fgraph amend F-0001 --title x says 'F-0001' is no Story id: it is ST- and a number; so do remove, reorder and add task --parent, though each takes an Upkeep, a Bug and a Spike too"
+expected = "the refusal names every kind the command takes, as that of start does: no Story, Upkeep, Bug, Spike or Task id"

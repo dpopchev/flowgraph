@@ -27,17 +27,16 @@ from flowgraph.work_item.model import (
     amended_work_item,
     append_task,
     commit_sha,
-    completed_task,
     completed_work_item,
     make_work_item,
     next_work_item_id,
     parse_work_item_id,
-    started_task,
     started_work_item,
     state_name,
     still_open,
     work_item_id_text,
 )
+from flowgraph.work_item.tasks import completed_task, started_task
 
 # The work item that holds the Task of that id, whole; raises TaskNotFoundError when none does.
 LoadHolder = Callable[[TaskId], WorkItemState]

@@ -16,14 +16,11 @@ from flowgraph.commit import OpenGit, Said, commit_written, open_git
 from flowgraph.criterion import CommitError, EmptyPartError
 from flowgraph.item import (
     ItemIdError,
-    OpenStore,
-    Store,
     Written,
     add_item,
     amend_item,
     complete_item,
     kind_named,
-    open_files,
     reorder_item,
     show_item,
     start_item,
@@ -41,6 +38,7 @@ from flowgraph.scope import (
     within,
     worktree_of_item,
 )
+from flowgraph.store import OpenStore, Store, open_files
 from flowgraph.task import (
     CompletedAlreadyError,
     ItemInBacklogError,

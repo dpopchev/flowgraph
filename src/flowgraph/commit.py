@@ -11,7 +11,8 @@ from pathlib import Path
 
 from flowgraph import branch
 from flowgraph.branch import GitError, branch_of
-from flowgraph.item import Store, Written
+from flowgraph.item import Written
+from flowgraph.store import Store
 from flowgraph.work_item import work_item_id_text
 
 

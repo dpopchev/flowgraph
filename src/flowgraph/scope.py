@@ -13,8 +13,9 @@ from typing import assert_never
 
 from flowgraph.branch import MAIN
 from flowgraph.commit import OpenGit
-from flowgraph.item import ItemIdError, Store, parse_item_id, parse_work_item_id_of_any_kind
+from flowgraph.item import ItemIdError, parse_item_id, parse_work_item_id_of_any_kind
 from flowgraph.queue import Queue
+from flowgraph.store import Store
 from flowgraph.task import TaskId
 from flowgraph.work_item import (
     CompletedWorkItem,

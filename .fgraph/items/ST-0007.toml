@@ -32,3 +32,10 @@ title = "Add the Spike kind to src/flowgraph/spike.py, src/flowgraph/store.py, s
 description = "The kinds are listed once, in src/flowgraph/store.py. Removes the xfail mark of tests/functional/test_complete_spike.py."
 expected_output = "changed: fgraph add spike TITLE --hypothesis TEXT adds SP-0001 to Backlog; fgraph complete and fgraph land take --decision for a Spike; fgraph show prints the hypothesis and, once completed, the decision under it; fgraph amend takes --hypothesis; created: src/flowgraph/spike.py with the kind, its id functions and its names"
 created = 2026-11-21 11:55:17+00:00
+
+[[tasks]]
+id = "T-0092"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say fgraph tracks a Spike and its decision"
+expected_output = "changed: README.md shows fgraph add spike and its complete with --decision and lists Spike among the kinds; docs/domain-model.md, Persistence, says how the file of a Spike keeps its hypothesis and its decision"
+created = 2026-11-21 11:55:17+00:00

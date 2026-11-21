@@ -12,9 +12,11 @@ then = "it still passes"
 
 [[tasks]]
 id = "T-0102"
-state = "started"
+state = "completed"
 title = "Move the Tasks of one work item from src/flowgraph/task.py to src/flowgraph/task_list.py, leaving task.py at or below 400 lines"
 description = "Nothing is rewritten: the seven functions and the private _none_started_beside move as they are, so no test changes but its imports. Check, red at 409 today: test $(wc -l < src/flowgraph/task.py) -le 400. The question the description of U-0004 leaves open -- whether make check refuses a module above 400 lines -- is the developer's and is not answered here: the agent's reading, a routine call, is that the cut stands without it, and the question is added at the end of the Backlog as a work item of its own."
 expected_output = "created: src/flowgraph/task_list.py holds what is asked of the Tasks of one work item -- task_of, at_most_one_started, started_among, blocked_among, unblocked_among, completed_among and all_completed -- as they stand today; changed: src/flowgraph/task.py holds one Task, its id, its states, its moves and its row in about 320 lines, at most 400; src/flowgraph/work_item/ imports the seven from task_list; the tests of the seven import them from there, tests/task/test_one_started.py and tests/task/test_task_moves.py moved to tests/task_list/; make check still passes"
 created = 2026-11-21 13:57:10+00:00
 started = 2026-11-21 13:57:16+00:00
+completed = 2026-11-21 13:58:51+00:00
+commit = "f528e9b"

@@ -45,10 +45,11 @@ commit = "0de162d"
 
 [[tasks]]
 id = "T-0108"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say a record git ignores is written without a commit"
 expected_output = "changed: README.md says a write on a record .gitignore names is made with no commit and no warning, that a start there makes no branch and warns, and that fgraph land is refused there; docs/domain-model.md, Persistence, says the same of the git steps and names the developer's decision of 2026-11-21"
 created = 2026-11-21 14:19:19+00:00
+started = 2026-11-21 14:26:04+00:00
 
 [[tasks]]
 id = "T-0109"

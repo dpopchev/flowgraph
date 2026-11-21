@@ -1,13 +1,20 @@
 """The remove of a work item: one in Backlog is removed with its reason, and kept in its file."""
 
 import tomllib
+from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
 
 from flowgraph.criterion import EmptyPartError, make_commit, make_scenario
-from flowgraph.task import CompletedAlreadyError, StartedAlreadyError, make_task, make_task_id
+from flowgraph.task import (
+    CompletedAlreadyError,
+    StartedAlreadyError,
+    TaskRow,
+    make_task,
+    make_task_id,
+)
 from flowgraph.work_item import (
     Amendment,
     RemovedAlreadyError,
@@ -148,4 +155,5 @@ def test_the_row_read_from_the_file_of_a_removed_work_item_names_its_reason(
     tmp_path: Path,
 ) -> None:
     write_work_item(tmp_path, GONE)
-    assert read_work_item_rows(tmp_path, CHORE) == [work_item_row(GONE)]
+    tasks = [TaskRow("T-0003", "a task title", "an output", "", "backlog")]
+    assert read_work_item_rows(tmp_path, CHORE) == [replace(work_item_row(GONE), tasks=tasks)]

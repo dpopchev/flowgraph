@@ -25,7 +25,7 @@ def test_the_features_are_listed_above_the_buckets_each_with_its_progress_and_bu
         "  F-0002  0/0 W  Backlog  another feature title\n"
         "Backlog (0)\n"
         "InProgress (1)\n"
-        "  ST-0001  a title\n"
+        "  ST-0001  0/0 T  a title\n"
         "Completed (0)\n"
     )
 

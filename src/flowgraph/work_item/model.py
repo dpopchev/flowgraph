@@ -125,7 +125,8 @@ class WorkItemRow:
 
     A started time while started, a commit and a completed time once completed, a reason once
     removed. Its created time is what orders the work items of the Backlog nobody placed, its
-    started time those of InProgress, its completed time those of Completed.
+    started time those of InProgress, its completed time those of Completed. Its Tasks are in
+    the order written, each with its own state.
     """
 
     id: str
@@ -137,6 +138,7 @@ class WorkItemRow:
     created: datetime = field(kw_only=True)
     started: datetime | None = field(default=None, kw_only=True)
     completed: datetime | None = field(default=None, kw_only=True)
+    tasks: list[TaskRow] = field(default_factory=list[TaskRow], kw_only=True)
 
 
 @dataclass

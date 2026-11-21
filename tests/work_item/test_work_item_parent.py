@@ -1,6 +1,7 @@
 """The parent of a work item: a Feature or standing alone, kept through every move and its file."""
 
 import tomllib
+from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -122,9 +123,10 @@ def test_a_work_item_reads_back_with_its_parent(tmp_path: Path, item: WorkItemSt
 @pytest.mark.edge
 def test_the_row_and_the_detail_read_from_the_file_name_the_parent(tmp_path: Path) -> None:
     write_work_item(tmp_path, ITEM)
+    detail = work_item_detail(ITEM)
     assert (read_work_item_rows(tmp_path, CHORE), read_work_item_detail(tmp_path, ONE)) == (
-        [work_item_row(ITEM)],
-        work_item_detail(ITEM),
+        [replace(work_item_row(ITEM), tasks=detail.tasks)],
+        detail,
     )
 
 

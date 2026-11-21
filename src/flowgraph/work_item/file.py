@@ -203,7 +203,7 @@ def _held_path(record: Path, item_id: WorkItemId) -> Path:
 
 
 def read_work_item_rows(record: Path, kind: Kind) -> list[WorkItemRow]:
-    """Adapter: the rows of the work items of that kind in the record, by id.
+    """Adapter: the rows of the work items of that kind in the record, by id, each with its Tasks.
 
     Raises WorkItemFileError naming the first file of the kind that does not hold one.
     """
@@ -218,6 +218,7 @@ def read_work_item_rows(record: Path, kind: Kind) -> list[WorkItemRow]:
             created=held.created,
             started=_started_held(held),
             completed=_completed_held(held),
+            tasks=[task_row(task) for task in held.tasks],
         )
         for held in _files_of(record, kind)
     ]

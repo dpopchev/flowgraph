@@ -20,6 +20,10 @@ APART = "Removed"
 # The state of a blocked Task: shown in InProgress, as blocked.
 BLOCKED = "blocked"
 
+# The states of a started work item and of a completed Task, as the record writes them.
+STARTED = "started"
+COMPLETED = "completed"
+
 
 def status_text(
     rows: Iterable[StoryRow | UpkeepRow],
@@ -61,7 +65,13 @@ def _top_of(lines: Sequence[str], top: int | None) -> list[str]:
 
 
 def _status_line(row: StoryRow | UpkeepRow) -> str:
-    """One item of a bucket: its id and title, then its commit or the reason it was removed."""
+    """One item of a bucket: its id and title, then its commit or the reason it was removed.
+
+    A started one is listed with its Tasks completed of all, between its id and its title.
+    """
+    if row.state == STARTED:
+        completed = sum(task.state == COMPLETED for task in row.tasks)
+        return f"  {row.id}  {completed}/{len(row.tasks)} T  {row.title}\n"
     if row.commit:
         return f"  {row.id}  {row.title}  {row.commit}\n"
     if row.reason:

@@ -113,7 +113,7 @@ def test_a_task_id_counts_across_stories_and_upkeeps(tmp_path: Path) -> None:
 
 def test_an_upkeep_in_progress_is_listed_under_in_progress(tmp_path: Path) -> None:
     assert runs(tmp_path, *STARTED, ["status"]).out == (
-        "Backlog (0)\nInProgress (1)\n  U-0001  an upkeep title\nCompleted (0)\n"
+        "Backlog (0)\nInProgress (1)\n  U-0001  0/1 T  an upkeep title\nCompleted (0)\n"
     )
 
 

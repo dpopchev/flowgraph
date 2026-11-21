@@ -89,6 +89,10 @@ class CommitError(ValueError):
     """A text that is no commit sha."""
 
 
+class CommitNeededError(ValueError):
+    """An item completed without a commit while the development, whose evidence it is, is on."""
+
+
 def said(part: str, text: str) -> str:
     """The text of the part, which must say something; raises EmptyPartError naming it."""
     if not text.strip():

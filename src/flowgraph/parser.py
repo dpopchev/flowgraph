@@ -142,10 +142,12 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     )
     unblock = _command(commands, "unblock", "take a blocked Task back to started")
     unblock.add_argument("id", metavar="ID", help="the id of the Task")
-    complete = _command(commands, "complete", "complete a work item or a Task of it in a commit")
+    complete = _command(commands, "complete", "complete a work item or a Task of it")
     complete.add_argument("id", metavar="ID", help="the id of the work item or of the Task")
     complete.add_argument(
-        "--commit", required=True, metavar="SHA", help="the commit that holds its work"
+        "--commit",
+        metavar="SHA",
+        help="the commit that holds its work: needed with the development on, optional with it off",
     )
     complete.add_argument(
         "--decision", metavar="TEXT", help="what answers the hypothesis, of a Spike"

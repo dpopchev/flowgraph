@@ -5,29 +5,48 @@ a view returns the text fgraph writes, a write what it says and the message of i
 each raises the refusal of the move.
 """
 
-from collections.abc import Callable, Collection, Mapping
+from collections.abc import Collection, Mapping
 from dataclasses import dataclass
 from functools import partial
 from typing import assert_never
 
 from flowgraph import work_item
 from flowgraph.branch import Slug, SlugError, make_slug, slug_of_title
-from flowgraph.criterion import Criterion, DecisionError, make_commit
+from flowgraph.config import DEVELOPMENT_ENABLED, Config
+from flowgraph.criterion import (
+    NO_COMMIT,
+    Commit,
+    CommitNeededError,
+    Criterion,
+    DecisionError,
+    Evidence,
+    NoCommit,
+    make_commit,
+)
 from flowgraph.feature import FeatureRow, feature_row
+from flowgraph.item_id import (
+    ItemId,
+    ItemIdError,
+    kind_named,
+    parse_item_id,
+    parse_work_item_id_of_any_kind,
+)
 from flowgraph.parent import STANDALONE, Parent, feature_id_text, parse_feature_id
 from flowgraph.queue import queued, reorder
 from flowgraph.record import Now
 from flowgraph.store import KINDS, Store
-from flowgraph.task import TaskId, TaskIdError, parse_task_id, task_id_text
+from flowgraph.task import TaskId, parse_task_id, task_id_text
 from flowgraph.text import show_text, status_text
 from flowgraph.work_item import (
     Kind,
     WorkItemId,
-    WorkItemIdError,
     WorkItemRow,
     parse_work_item_id,
     work_item_id_text,
 )
+
+# The ids of an item live in item_id.py and stay importable from here.
+__all__ = ["ItemId", "ItemIdError", "kind_named", "parse_item_id", "parse_work_item_id_of_any_kind"]
 
 # The state of a row in Backlog, as the record writes it.
 BACKLOG = "backlog"
@@ -35,9 +54,6 @@ BACKLOG = "backlog"
 # The states of a started and of a completed row, as the record writes them.
 STARTED = "started"
 COMPLETED = "completed"
-
-# The id of an item of any kind.
-ItemId = WorkItemId | TaskId
 
 # The message of the commit that holds a write, for what was written.
 MESSAGE = "chore: {} in the record"
@@ -61,48 +77,6 @@ class Written:
     out: str
     message: str
     branch: ToBranch | None = None
-
-
-class ItemIdError(ValueError):
-    """A text that is the id of no kind of item."""
-
-
-def kind_named(name: str) -> Kind:
-    """The kind whose noun, in lower case, is the name; raises KeyError when none is."""
-    named = {kind.noun.lower(): kind for kind in KINDS}
-    return named[name]
-
-
-def parse_work_item_id_of_any_kind(text: str) -> WorkItemId:
-    """The id of a work item of any kind written as the text.
-
-    Raises WorkItemIdError naming every kind when the text is the id of none of them.
-    """
-    for kind in KINDS:
-        try:
-            return parse_work_item_id(kind, text)
-        except WorkItemIdError:
-            continue
-    *nouns, last = (kind.noun for kind in KINDS)
-    raise WorkItemIdError(f"{text!r} is no {', '.join(nouns)} or {last} id")
-
-
-def parse_item_id(text: str) -> ItemId:
-    """The id of a work item of any kind, or of a Task, written as the text.
-
-    Raises ItemIdError when the text is none of them.
-    """
-    parsers: list[Callable[[str], ItemId]] = [
-        *(partial(parse_work_item_id, kind) for kind in KINDS),
-        parse_task_id,
-    ]
-    for parse in parsers:
-        try:
-            return parse(text)
-        except WorkItemIdError, TaskIdError:
-            continue
-    nouns = ", ".join(kind.noun for kind in KINDS)
-    raise ItemIdError(f"{text!r} is no {nouns} or Task id")
 
 
 def _rows_by_id(store: Store) -> dict[WorkItemId, WorkItemRow]:
@@ -352,47 +326,71 @@ def unblock_item(task: str, store: Store) -> Written:
     return Written(f"unblocked {unblocked}\n", MESSAGE.format(f"unblock {unblocked}"))
 
 
-def complete_item(
-    item: str, sha: str, store: Store, now: Now, decision: str | None = None
-) -> Written:
-    """Complete the work item or the Task of that id in that commit; what the write says.
+def _evidence_given(named: str, sha: str | None, config: Config) -> Evidence:
+    """The evidence a complete of the item of that name gives: the commit of the sha, or none.
 
-    A Spike is completed with the decision that answers its hypothesis. Raises ItemIdError when
-    the text is no id, CommitError when the sha is no commit, DecisionError when a Spike has no
-    decision or another item is given one, or the refusal of the complete; nothing is saved.
+    The commit is the evidence of the development, so a complete needs one with it on alone.
+    Raises CommitNeededError naming the option and the key when none is given then, and
+    CommitError when the sha is no commit.
+    """
+    if sha is not None:
+        return make_commit(sha)
+    if config.development.enabled:
+        needed = f"the development is on, {DEVELOPMENT_ENABLED} = true"
+        raise CommitNeededError(f"{named} is completed with --commit: {needed}")
+    return NO_COMMIT
+
+
+def _completed(named: str, evidence: Evidence) -> Written:
+    """What the complete of the item of that name says: the commit it is completed at, if any."""
+    match evidence:
+        case Commit():
+            out = f"completed {named} at {evidence.sha}\n"
+        case NoCommit():
+            out = f"completed {named}\n"
+        case _ as unreachable:
+            assert_never(unreachable)
+    return Written(out, MESSAGE.format(f"complete {named}"))
+
+
+def complete_item(
+    item: str, sha: str | None, store: Store, now: Now, config: Config, decision: str | None = None
+) -> Written:
+    """Complete the work item or the Task of that id, in the commit given; what the write says.
+
+    With the development on a commit is needed; with it off none is, and one given is kept. A
+    Spike is completed with the decision that answers its hypothesis. Raises ItemIdError when
+    the text is no id, CommitError when the sha is no commit, CommitNeededError when the
+    development needs one, DecisionError when a Spike has no decision or another item is given
+    one, or the refusal of the complete; nothing is saved.
     """
     match parse_item_id(item):
         case WorkItemId() as item_id:
-            commit = make_commit(sha)
+            text = work_item_id_text(item_id)
+            evidence = _evidence_given(text, sha, config)
             work_item.complete_work_item(
                 item_id=item_id,
-                commit=commit,
+                commit=evidence,
                 load_work_item=store.load_work_item,
                 save_work_item=store.save_work_item,
                 now=now,
                 decision=decision,
             )
-            text = work_item_id_text(item_id)
-            return Written(
-                f"completed {text} at {commit.sha}\n", MESSAGE.format(f"complete {text}")
-            )
+            return _completed(text, evidence)
         case TaskId() as task_id:
+            named = task_id_text(task_id)
             if decision is not None:
-                named = task_id_text(task_id)
                 raise DecisionError(
                     f"{named} takes no decision: only a Spike is completed with one"
                 )
-            commit = make_commit(sha)
+            evidence = _evidence_given(named, sha, config)
             holder = work_item.complete_task(
                 task_id=task_id,
-                commit=commit,
+                commit=evidence,
                 load_holder=_load_holder(store),
                 save_work_item=store.save_work_item,
                 now=now,
             )
-            task = f"{task_id_text(task_id)} of {work_item_id_text(holder)}"
-            return Written(
-                f"completed {task} at {commit.sha}\n", MESSAGE.format(f"complete {task}")
-            )
+            return _completed(f"{named} of {work_item_id_text(holder)}", evidence)
         case _ as unreachable:
             assert_never(unreachable)

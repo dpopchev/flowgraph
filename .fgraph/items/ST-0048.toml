@@ -16,3 +16,11 @@ title = "Add tests/functional/test_spike_prefix.py, failing on the criterion of 
 description = "decided: ST-0048: fgraph reads Q alone -- a record of another project that holds SP files is neither read as Q nor renamed; its SP files are files of a prefix no kind knows, left alone as any such file, and the docs say so. Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_complete_spike.py does. Seen red, then marked a strict xfail naming ST-0048 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_spike_prefix.py states that fgraph add spike on a record with no items, then fgraph status, lists the Spike as Q-0001 under Backlog"
 created = 2026-11-21 21:37:14+00:00
+
+[[tasks]]
+id = "T-0154"
+state = "backlog"
+title = "Change the prefix of the Spike kind in src/flowgraph/spike.py from SP to Q"
+description = "Removes the xfail mark of tests/functional/test_spike_prefix.py. A prefix is capital letters, so one letter needs no change of make_kind."
+expected_output = "changed: SPIKE of src/flowgraph/spike.py is the kind of prefix Q, so a Spike is Q-0001, its file items/Q-0001.toml and its branch wi/Q-0001-<slug>; the docstrings and the help texts of src/ that name SP name Q; the tests that state SP ids state Q ids, named in the commit; proved in tests/spike/"
+created = 2026-11-21 21:37:15+00:00

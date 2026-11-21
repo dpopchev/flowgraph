@@ -34,11 +34,12 @@ commit = "56de8a3"
 
 [[tasks]]
 id = "T-0107"
-state = "backlog"
+state = "started"
 title = "Add the write of a record git ignores to src/flowgraph/commit.py, src/flowgraph/scope.py, src/flowgraph/worktrees.py and src/flowgraph/land.py"
 description = "Removes the xfail mark of tests/functional/test_ignored_record.py, which gains the start of a work item and the landing on an ignored record."
 expected_output = "changed: commit_written of src/flowgraph/commit.py commits nothing for a record git ignores and warns of a start that no branch was made, naming that git ignores the record; kept_in of src/flowgraph/commit.py is the work tree that keeps a record, none outside one and none for an ignored record, and src/flowgraph/scope.py and src/flowgraph/worktrees.py ask it; land_item of src/flowgraph/land.py refuses an ignored record by name; proved in tests/commit/, tests/scope/, tests/worktrees/ and tests/land/"
 created = 2026-11-21 14:19:18+00:00
+started = 2026-11-21 14:21:51+00:00
 
 [[tasks]]
 id = "T-0108"

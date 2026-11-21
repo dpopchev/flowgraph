@@ -11,12 +11,14 @@ expected = "the refusal names every kind the command takes, as that of start doe
 
 [[tasks]]
 id = "T-0148"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_wrong_kind_id.py, failing on what B-0001 expects"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_amend_work_item.py does. Seen red, then marked a strict xfail naming B-0001 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_wrong_kind_id.py states that fgraph amend, fgraph remove, fgraph reorder and fgraph add task --parent, each given the id of a Feature, exit 2 and say it is no Story, Upkeep, Bug or Spike id"
 created = 2026-11-21 21:36:34+00:00
 started = 2026-11-21 21:44:13+00:00
+completed = 2026-11-21 21:45:13+00:00
+commit = "39cb6a8"
 
 [[tasks]]
 id = "T-0149"

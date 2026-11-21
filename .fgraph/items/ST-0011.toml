@@ -34,12 +34,14 @@ commit = "b341205"
 
 [[tasks]]
 id = "T-0071"
-state = "started"
+state = "completed"
 title = "Add the BlockedTask and its block move to src/flowgraph/task.py, src/flowgraph/work_item/tasks.py and the files of src/flowgraph/item_file.py and src/flowgraph/work_item/file.py"
 description = "Pure but for the file adapters. A blank reason or waiting on is refused through said() of src/flowgraph/criterion.py. The row a view reads gains the reason and what the Task waits on."
 expected_output = "changed: src/flowgraph/task.py holds BlockedTask and the move that blocks a started Task with its reason and what it waits on; src/flowgraph/work_item/tasks.py blocks a Task of a started work item; the file of a work item keeps a blocked Task as a table with state 'blocked' and reads it back through its moves; their tests are in tests/task/ and tests/work_item/"
 created = 2026-11-21 11:19:51+00:00
 started = 2026-11-21 11:23:14+00:00
+completed = 2026-11-21 11:26:46+00:00
+commit = "0fdeed3"
 
 [[tasks]]
 id = "T-0072"

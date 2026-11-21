@@ -213,6 +213,14 @@ of work item. The developer said so on 2026-11-21.
   them. A Task in Backlog or completed is not listed. A Task line belongs to
   its work item: it does not count toward the top 5 of the heading, nor in
   the count beside it.
+- On a terminal `fgraph status` cuts each line longer than the terminal is
+  wide to that width, ending it with `...`, the developer's decision of
+  2026-11-21, after board 1's watch; written to a pipe or a file every line
+  is whole. So that the cut keeps it, a completed work item is listed with
+  its commit before its title, `ST-0001  677f9b0  <title>`; the reason of a
+  removed one still ends its line. Only status is cut. The width is an
+  effect: `run()` takes it as a callable, none when the output is no
+  terminal, and `main()` reads it from the terminal.
 
 ## Amendment
 

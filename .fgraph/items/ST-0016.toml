@@ -32,3 +32,10 @@ title = "Add the remove command to src/flowgraph/work_item/commands.py, src/flow
 description = "The command loads the work item whole, removes it and saves it whole. Removes the xfail mark of tests/functional/test_remove_work_item.py."
 expected_output = "changed: fgraph remove ID --reason TEXT removes a work item in Backlog, prints 'removed <id>' and is committed as every write; fgraph status lists it under Removed with its reason and fgraph show names the bucket and the reason; it exits 2 naming why on each refusal of the first Task"
 created = 2026-11-21 11:37:21+00:00
+
+[[tasks]]
+id = "T-0083"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say a work item in Backlog is removed with fgraph remove"
+expected_output = "changed: README.md shows fgraph remove, what fgraph status then lists and what a remove refuses; docs/domain-model.md says the remove move is built for a work item in Backlog, what its file keeps, when status lists Removed and that removing a Task or a started work item is not built"
+created = 2026-11-21 11:37:21+00:00

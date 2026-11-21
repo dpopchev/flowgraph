@@ -12,11 +12,12 @@ then = "it lists the Feature with its derived bucket"
 
 [[tasks]]
 id = "T-0110"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_status_features.py, failing on the criterion of ST-0025"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_feature.py does. Seen red, then marked a strict xfail naming ST-0025 until the Task that turns it green removes the mark. The developer's decisions of 2026-11-21 for the whole Story, asked when it was ordered: status lists the Features in a block of their own above Backlog, under the heading 'Features (n)', each with its derived bucket, the heading listed only when the record holds a Feature, as Removed is; status stays flat, so a work item under a Feature is listed in its bucket as today and not with its Feature. The agent's readings, each a routine call: (1) the line of a Feature is its id, its title and its derived bucket, '  F-0001  <title>  InProgress'. (2) The Features are listed by number. (3) The buckets, their counts and the order of the Backlog are those of the work items, as today. (4) Amending and removing a Feature, and moving a work item to another Feature, stay not built."
 expected_output = "created: tests/functional/test_status_features.py states that fgraph status, run on a record with a Feature and a Story added under it, lists the Feature with its derived bucket"
 created = 2026-11-21 14:28:06+00:00
+started = 2026-11-21 14:28:23+00:00
 
 [[tasks]]
 id = "T-0111"

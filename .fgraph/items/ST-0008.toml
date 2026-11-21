@@ -1,9 +1,11 @@
 id = "ST-0008"
-state = "started"
+state = "completed"
 title = "Raise the levels fgraph keeps from 2 to 3: a Feature above its work items"
 description = "Feature: a project tracks every kind of its work with fgraph; its criterion 5: a developer adds a Feature with its criteria, adds a work item under it and sees the work items of the Feature with their buckets. Ordered after ST-0007, so the parent is added once for every kind. Open before it is ordered: docs/domain-model.md, Open questions, reads a Feature as having no stored state, its bucket derived from its items; the developer has not confirmed that reading. Its Tasks are written when it is ordered."
 created = 2026-11-21 07:18:44+00:00
 started = 2026-11-21 12:04:37+00:00
+completed = 2026-11-21 12:12:22+00:00
+commit = "a78704b"
 
 [criterion]
 given = "a record with a Feature and a Story added under it"

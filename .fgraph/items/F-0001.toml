@@ -1,0 +1,13 @@
+id = "F-0001"
+title = "Extend the layers a record turns on from one fixed set to three: its items, their commits, the development"
+description = "The developer's request of 2026-11-21: flowgraph maintains .fgraph/items and their lifecycle; this can optionally be tracked in git on the main branch -- adding, reordering, starting and completing; the work beside the source code -- a branch and a worktree at a start, checks before closing, merge strategies, parallel branches -- is an additional feature that needs to be turned on. The record is meant to be used without the development too, and synced with an external board at a later point. The layers, each a table of .fgraph/config.toml: [git] commit, on by default when the record is in a git work tree git does not ignore; [development] enabled, off by default, with merge, parallel and gate. External sync is not part of this Feature (docs/board-review.md, group 8)."
+created = 2026-11-21 20:32:52+00:00
+criteria = [
+    "a developer starts a work item in a git repository and no branch is made, until the development is turned on",
+    "a developer keeps a record that fgraph never commits",
+    "a developer completes a work item without naming a commit while the development is off",
+    "a developer's landing is refused while the gate of the record fails",
+    "a developer chooses how a landing merges",
+    "a developer limits how many work items are started at once",
+    "a developer reads and sets the configuration through fgraph",
+]

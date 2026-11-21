@@ -4,6 +4,7 @@ The branch is `wi/<id>-<slug>`, checked out at `<parent>/<checkout name>.worktre
 """
 
 import re
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -61,3 +62,49 @@ def branch_of(item: WorkItemId, slug: Slug, checkout: Path) -> Branch:
     """The branch of the work item and its worktree, beside the checkout it is made from."""
     leaf = f"{work_item_id_text(item)}-{slug.text}"
     return Branch(f"wi/{leaf}", checkout.parent / f"{checkout.name}.worktrees" / leaf)
+
+
+class GitError(Exception):
+    """A git command that exited non-zero; the message names the command and its error output."""
+
+
+def _git(work_tree: Path, *args: str) -> str:
+    """Adapter: the output of the git command run in the work tree, stripped.
+
+    Raises GitError naming the command and its error output when it exits non-zero.
+    """
+    try:
+        done = subprocess.run(
+            ["git", *args], cwd=work_tree, check=True, capture_output=True, text=True
+        )
+    except subprocess.CalledProcessError as error:
+        command = " ".join(["git", *args])
+        raise GitError(f"{command} failed: {error.stderr.strip()}") from error
+    return done.stdout.strip()
+
+
+def work_tree_of(directory: Path) -> Path | None:
+    """Adapter: the top of the git work tree the directory is inside, or None when it is in none."""
+    try:
+        return Path(_git(directory, "rev-parse", "--show-toplevel"))
+    except GitError:
+        return None
+
+
+def commit_file(work_tree: Path, file: Path, message: str) -> str:
+    """Adapter: commit the one file, relative to the work tree, with the message; its sha.
+
+    Whatever else is staged or changed stays as it was and out of the commit. Raises GitError
+    when git refuses a step.
+    """
+    _git(work_tree, "add", "--", str(file))
+    _git(work_tree, "commit", "--quiet", "--only", "--message", message, "--", str(file))
+    return _git(work_tree, "rev-parse", "HEAD")
+
+
+def add_worktree(work_tree: Path, branch: str, path: Path, commit: str) -> None:
+    """Adapter: check out a new branch at the commit in a new worktree at the path.
+
+    Raises GitError when git refuses it, as when the branch or the path exists already.
+    """
+    _git(work_tree, "worktree", "add", "--quiet", "-b", branch, str(path), commit)

@@ -1,0 +1,10 @@
+id = "U-0004"
+state = "backlog"
+title = "Cut the lines of src/flowgraph/task.py from 409 to at most 400"
+description = "Found at the end of the burn of 2026-11-21, at 26a48ea: src/flowgraph/task.py is at 409 lines, above the 400 of U-0001. It was 253 before ST-0011; the block, the unblock and the rule of one started Task added to it, and ST-0013 took it across the limit unseen. The limit was held by hand for model.py, item.py and cli.py, each moved in time (store.py and tasks.py in ST-0011, amend.py in ST-0006, parser.py in ST-0007), and nothing in make check holds it. Open: whether make check should refuse a module above 400 lines. Its Tasks are written when it is ordered."
+created = 2026-11-21 12:19:20+00:00
+
+[criterion]
+given = "main"
+when = "make check runs"
+then = "it still passes"

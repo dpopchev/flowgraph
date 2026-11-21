@@ -35,7 +35,8 @@ commit = "17c88d9"
 
 [[tasks]]
 id = "T-0178"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say a landing is refused while the gate of the record fails"
 expected_output = "changed: README.md and docs/domain-model.md say [development] gate of .fgraph/config.toml is one command of the record run at a landing, where and when it runs, what a failing gate leaves and says, and that the Tasks completed stay the first rule of a landing; they name the developer's words of 2026-11-21 and the reading decided when S-0042 was ordered"
 created = 2026-11-21 22:40:44+00:00
+started = 2026-11-21 23:51:54+00:00

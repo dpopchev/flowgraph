@@ -24,3 +24,10 @@ title = "Add the scope of a branch to src/flowgraph/scope.py and wire it into sr
 description = "The owner is read from the branch name through the id parser of every kind. The store refuses at its save, the one place every write passes, and asks git for the branch only then, so a view runs no git. Removes the xfail mark of tests/functional/test_branch_scope.py."
 expected_output = "created: src/flowgraph/scope.py names the work item a branch owns and gives the store that saves that work item alone, proved in tests/scope/; changed: src/flowgraph/cli.py runs every command on that store, so a write outside the scope of the branch exits 2 naming the work item the branch owns"
 created = 2026-11-21 11:05:09+00:00
+
+[[tasks]]
+id = "T-0059"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say the branch of a work item writes its own file alone"
+expected_output = "changed: docs/domain-model.md, Persistence, rewrites the table 'Who writes what' with a Task of a started work item added on its branch and says fgraph refuses another write there; README.md says what a write on the branch of a work item is refused for"
+created = 2026-11-21 11:05:10+00:00

@@ -29,7 +29,13 @@ STARTED = started_task(started_story(STORY, CREATED), make_task_id(1), CREATED)
 
 
 def test_a_started_story_reads_as_a_started_row() -> None:
-    assert story_row(STARTED) == StoryRow("ST-0001", "a title", "started", created=CREATED)
+    tasks = [
+        TaskRow("T-0001", "a task", "an output", "", "started"),
+        TaskRow("T-0002", "another task", "another output", "", "backlog"),
+    ]
+    assert story_row(STARTED) == StoryRow(
+        "ST-0001", "a title", "started", created=CREATED, started=CREATED, tasks=tasks
+    )
 
 
 def test_a_started_story_reads_as_detail_with_the_state_of_each_task() -> None:

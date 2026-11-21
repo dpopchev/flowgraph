@@ -1,7 +1,6 @@
 """The remove of a work item: one in Backlog is removed with its reason, and kept in its file."""
 
 import tomllib
-from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -123,8 +122,9 @@ def test_a_removed_work_item_is_named_removed_and_has_no_commit() -> None:
 
 @pytest.mark.view
 def test_the_row_of_a_removed_work_item_names_its_reason() -> None:
+    tasks = [TaskRow("T-0003", "a task title", "an output", "", "backlog")]
     assert work_item_row(GONE) == WorkItemRow(
-        "CH-0001", "a title", "removed", reason="filed by mistake", created=CREATED
+        "CH-0001", "a title", "removed", reason="filed by mistake", created=CREATED, tasks=tasks
     )
 
 
@@ -155,5 +155,4 @@ def test_the_row_read_from_the_file_of_a_removed_work_item_names_its_reason(
     tmp_path: Path,
 ) -> None:
     write_work_item(tmp_path, GONE)
-    tasks = [TaskRow("T-0003", "a task title", "an output", "", "backlog")]
-    assert read_work_item_rows(tmp_path, CHORE) == [replace(work_item_row(GONE), tasks=tasks)]
+    assert read_work_item_rows(tmp_path, CHORE) == [work_item_row(GONE)]

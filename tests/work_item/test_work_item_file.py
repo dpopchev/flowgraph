@@ -27,6 +27,7 @@ from flowgraph.work_item import (
     read_work_item_rows,
     started_task,
     started_work_item,
+    work_item_row,
     write_work_item,
 )
 from flowgraph.work_item import file as work_item_file
@@ -91,6 +92,14 @@ def test_a_started_work_item_is_read_as_a_row_with_its_started_time_and_its_task
     assert read_work_item_rows(tmp_path, CHORE) == [
         WorkItemRow("CH-0001", "a title", "started", created=CREATED, started=ON, tasks=[begun])
     ]
+
+
+@pytest.mark.parametrize("item", [ITEM, HALF, WHOLE], ids=["with-a-task", "started", "completed"])
+def test_the_row_read_from_the_file_is_the_row_of_the_work_item(
+    tmp_path: Path, item: WorkItemState
+) -> None:
+    write_work_item(tmp_path, item)
+    assert read_work_item_rows(tmp_path, CHORE) == [work_item_row(item)]
 
 
 def test_a_file_of_another_kind_is_left_alone(tmp_path: Path) -> None:

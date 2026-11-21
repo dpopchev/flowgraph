@@ -104,23 +104,23 @@ def test_a_story_with_tasks_not_completed_is_refused_naming_them() -> None:
     second = make_task(make_task_id(2), "another task title", "another output", "", CREATED)
     begun = started_story(append_task(STORY, second), ON)
     with pytest.raises(
-        OpenTaskError, match=r"^ST-0001 has Tasks to complete first: T-0001, T-0002$"
+        OpenTaskError, match=r"^S-0001 has Tasks to complete first: T-0001, T-0002$"
     ):
         completed_story(begun, DONE, COMMIT)
 
 
 def test_a_story_in_backlog_is_refused_by_its_id() -> None:
-    with pytest.raises(NotStartedError, match=r"^ST-0001 is in Backlog: start it first$"):
+    with pytest.raises(NotStartedError, match=r"^S-0001 is in Backlog: start it first$"):
         completed_story(STORY, DONE, COMMIT)
 
 
 def test_a_completed_story_is_refused_by_its_id() -> None:
-    with pytest.raises(CompletedAlreadyError, match=r"^ST-0001 is completed already$"):
+    with pytest.raises(CompletedAlreadyError, match=r"^S-0001 is completed already$"):
         completed_story(completed_story(FINISHED, DONE, COMMIT), DONE, COMMIT)
 
 
 def test_a_completed_story_does_not_start_again() -> None:
-    with pytest.raises(CompletedAlreadyError, match=r"^ST-0001 is completed already$"):
+    with pytest.raises(CompletedAlreadyError, match=r"^S-0001 is completed already$"):
         started_story(completed_story(FINISHED, DONE, COMMIT), DONE)
 
 
@@ -134,5 +134,5 @@ def test_a_started_story_is_still_open() -> None:
 
 
 def test_a_completed_story_is_open_no_more() -> None:
-    with pytest.raises(CompletedAlreadyError, match=r"^ST-0001 is completed already$"):
+    with pytest.raises(CompletedAlreadyError, match=r"^S-0001 is completed already$"):
         still_open(completed_story(FINISHED, DONE, COMMIT))

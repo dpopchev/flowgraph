@@ -13,7 +13,7 @@ from flowgraph.worktrees import across_worktrees
 pytestmark = pytest.mark.command
 
 HOME = Path("/src/project")
-OTHER = Path("/src/project.worktrees/ST-0001-a-slug")
+OTHER = Path("/src/project.worktrees/S-0001-a-slug")
 RECORD = HOME / ".fgraph"
 IDS = {RECORD: ["T-0001", "T-0002"], OTHER / ".fgraph": ["T-0001", "T-0003"]}
 

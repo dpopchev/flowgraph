@@ -1,0 +1,45 @@
+id = "S-0018"
+state = "completed"
+title = "Cut the Task writes of a started work item fgraph takes in the checkout of main from all to none"
+description = "The mirror of S-0010, split from it on 2026-11-21. The table fgraph holds, agreed by the developer on 2026-11-21 under the principle that fgraph owns .fgraph and its rituals and rules: adding, amending, reordering or removing a work item and adding a Task to a Backlog item are taken in the checkout of main; starting a work item on main, with its commit, branch and worktree; adding, starting, blocking, unblocking and completing a Task of a started item in the worktree of that item; landing a work item on main. This Story holds the third row from the side of main: a Task write of a started work item is refused there. Completing or landing the work item itself stays on main. A started work item without a worktree, or a record outside a git work tree, is written as today. Ordered after S-0010. Its Tasks are written when it is ordered."
+created = 2026-11-21 08:37:15+00:00
+started = 2026-11-21 11:12:29+00:00
+completed = 2026-11-21 11:15:01+00:00
+commit = "806ee31"
+
+[criterion]
+given = "a started Story with its worktree branch"
+when = "fgraph add task for that Story is run in the checkout of main"
+then = "it exits 2 and names the worktree of the Story"
+
+[[tasks]]
+id = "T-0063"
+state = "completed"
+title = "Add tests/functional/test_main_scope.py, failing on the criterion of S-0018"
+description = "Run through run() of src/flowgraph/cli.py on a real git repository in tmp_path, as tests/functional/test_branch_scope.py does. Seen red, then marked a strict xfail naming S-0018 until the Task that turns it green removes the mark. The description leaves no question open. The agent's readings, each a routine call: (1) a Task write is a save of a started work item that was started already: a Task added, started or completed. (2) It is refused with exit 2, nothing written, in a work tree that is on no branch of a work item, when a branch wi/<id>-* of that work item is checked out in a worktree; in the worktree of another work item S-0010 refuses it already. (3) The refusal reads '<id> is started: its Tasks are written in its worktree, <path>'. (4) The start, the complete and the landing of the work item itself, a started work item whose branch has no worktree, and a record outside a git work tree are written as today."
+expected_output = "created: tests/functional/test_main_scope.py states that fgraph add task for a started Story with its worktree branch, run in the checkout of main, exits 2 and names the worktree of the Story"
+created = 2026-11-21 11:12:28+00:00
+started = 2026-11-21 11:12:52+00:00
+completed = 2026-11-21 11:13:13+00:00
+commit = "da99b45"
+
+[[tasks]]
+id = "T-0064"
+state = "completed"
+title = "Add the refusal of a Task write of a started work item outside its worktree to src/flowgraph/scope.py and src/flowgraph/cli.py"
+description = "The worktree of a work item is the one a branch wi/<id>-* is checked out in, found through the steps of the work tree of src/flowgraph/commit.py. Removes the xfail mark of tests/functional/test_main_scope.py."
+expected_output = "changed: the store of src/flowgraph/scope.py refuses, outside the branch of a work item, the save of a started work item that was started already when that work item has a worktree, naming the worktree; src/flowgraph/cli.py gives it the worktree of a work item; proved in tests/scope/"
+created = 2026-11-21 11:12:29+00:00
+started = 2026-11-21 11:13:13+00:00
+completed = 2026-11-21 11:14:32+00:00
+commit = "c4c34cf"
+
+[[tasks]]
+id = "T-0065"
+state = "completed"
+title = "Update README.md and docs/domain-model.md to say main takes no Task write of a started work item"
+expected_output = "changed: docs/domain-model.md, Persistence, says fgraph holds the side of main too and what it refuses there; README.md says a Task of a started Story is written in its worktree and what main answers"
+created = 2026-11-21 11:12:29+00:00
+started = 2026-11-21 11:14:33+00:00
+completed = 2026-11-21 11:15:01+00:00
+commit = "e5686df"

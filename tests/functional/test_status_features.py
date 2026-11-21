@@ -20,7 +20,7 @@ ADD_FEATURE = ["add", "feature", "a feature title", "--criterion", "a criterion"
 ADD_OTHER_FEATURE = ["add", "feature", "another feature title", "--criterion", "a criterion"]
 ADD_STORY = ["add", "story", "a title", *CRITERION, "--parent", "F-0001"]
 ADD_ALONE = ["add", "story", "a title that stands alone", *CRITERION]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
 
 
 @dataclass(frozen=True)
@@ -72,15 +72,15 @@ class TestARecordWithAFeatureAndAStoryAddedUnderIt:
             "Features (1)\n"
             "  F-0001  0/1 W  Backlog  a feature title\n"
             "Backlog (2)\n"
-            "  ST-0001  a title\n"
-            "  ST-0002  a title that stands alone\n"
+            "  S-0001  a title\n"
+            "  S-0002  a title that stands alone\n"
             "InProgress (0)\n"
             "Completed (0)\n"
         )
 
 
 def test_a_feature_with_a_started_story_is_listed_in_progress(tmp_path: Path) -> None:
-    listed = status_after(tmp_path, ADD_FEATURE, ADD_STORY, ADD_TASK, ["start", "ST-0001"])
+    listed = status_after(tmp_path, ADD_FEATURE, ADD_STORY, ADD_TASK, ["start", "S-0001"])
     assert listed.out.splitlines()[:2] == [
         "Features (1)",
         "  F-0001  0/1 W  InProgress  a feature title",
@@ -93,10 +93,10 @@ def test_a_feature_whose_story_is_completed_is_listed_completed(tmp_path: Path) 
         ADD_FEATURE,
         ADD_STORY,
         ADD_TASK,
-        ["start", "ST-0001"],
+        ["start", "S-0001"],
         ["start", "T-0001"],
         ["complete", "T-0001", "--commit", "abc1234"],
-        ["complete", "ST-0001", "--commit", "def5678"],
+        ["complete", "S-0001", "--commit", "def5678"],
     )
     assert listed.out.splitlines()[:2] == [
         "Features (1)",

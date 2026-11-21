@@ -28,7 +28,7 @@ def test_a_written_id_is_read_back() -> None:
     assert parse_task_id("T-0012") == make_task_id(12)
 
 
-@pytest.mark.parametrize("text", ["ST-0001", "T-", "T-one", "0001"])
+@pytest.mark.parametrize("text", ["S-0001", "T-", "T-one", "0001"])
 def test_a_text_of_another_form_is_no_id(text: str) -> None:
     with pytest.raises(TaskIdError, match=f"{text!r} is no Task id"):
         parse_task_id(text)

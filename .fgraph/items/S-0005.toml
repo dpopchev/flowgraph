@@ -1,0 +1,73 @@
+id = "S-0005"
+state = "completed"
+title = "Raise the kinds of work item fgraph takes from Backlog to Completed from 1 to 2: Story and Upkeep"
+description = "Feature: a project tracks every kind of its work with fgraph; its criterion 2: a developer writes the Tasks of an Upkeep and takes it from Backlog to Completed with their commits. Ordered after the Upkeep that splits src/flowgraph/story.py, so the moves are written once for both kinds."
+created = 2026-11-21 06:25:49+00:00
+started = 2026-11-21 07:12:43+00:00
+completed = 2026-11-21 07:12:47+00:00
+commit = "c399b40"
+
+[criterion]
+given = "a started Upkeep whose Task is completed"
+when = "the Upkeep is completed with a commit"
+then = "fgraph status lists it under Completed with that commit"
+
+[[tasks]]
+id = "T-0017"
+state = "completed"
+title = "Add tests/functional/test_complete_upkeep.py, failing on the criterion of S-0005"
+expected_output = "created: tests/functional/test_complete_upkeep.py states that fgraph status lists a completed Upkeep under Completed with its commit"
+created = 2026-11-21 06:59:19+00:00
+started = 2026-11-21 07:12:44+00:00
+completed = 2026-11-21 07:12:44+00:00
+commit = "5aecd4d"
+
+[[tasks]]
+id = "T-0018"
+state = "completed"
+title = "Add the Task-tuple moves to src/flowgraph/task.py and rewire src/flowgraph/story/model.py onto them, the suite unchanged"
+expected_output = "changed: src/flowgraph/task.py starts or completes one Task among a work item's Tasks and names the ones not completed; src/flowgraph/story/model.py moves its Tasks through them"
+created = 2026-11-21 06:59:19+00:00
+started = 2026-11-21 07:12:44+00:00
+completed = 2026-11-21 07:12:45+00:00
+commit = "7e14dae"
+
+[[tasks]]
+id = "T-0019"
+state = "completed"
+title = "Move the Task tables of a work item file from src/flowgraph/story/file.py to src/flowgraph/item_file.py"
+expected_output = "changed: src/flowgraph/item_file.py holds the Task tables in each state and builds them back, and src/flowgraph/story/file.py uses them"
+created = 2026-11-21 06:59:19+00:00
+started = 2026-11-21 07:12:45+00:00
+completed = 2026-11-21 07:12:45+00:00
+commit = "b6f643c"
+
+[[tasks]]
+id = "T-0020"
+state = "completed"
+title = "Turn src/flowgraph/upkeep.py into the package src/flowgraph/upkeep/, holding Tasks and moving through StartedUpkeep and CompletedUpkeep"
+expected_output = "created: src/flowgraph/upkeep/ with the Upkeep states, its moves over its Tasks, its commands and its file in each state"
+created = 2026-11-21 06:59:20+00:00
+started = 2026-11-21 07:12:45+00:00
+completed = 2026-11-21 07:12:46+00:00
+commit = "859cfb9"
+
+[[tasks]]
+id = "T-0021"
+state = "completed"
+title = "Extend src/flowgraph/cli.py so add task, start and complete take an Upkeep and its Tasks, and show lists them"
+expected_output = "changed: src/flowgraph/cli.py writes, starts and completes the Tasks of an Upkeep and the Upkeep itself, counts a Task id across both kinds, and fgraph show lists an Upkeep's Tasks"
+created = 2026-11-21 06:59:20+00:00
+started = 2026-11-21 07:12:46+00:00
+completed = 2026-11-21 07:12:46+00:00
+commit = "5ec888b"
+
+[[tasks]]
+id = "T-0022"
+state = "completed"
+title = "Update README.md and docs/domain-model.md to show an Upkeep moving with its Tasks"
+expected_output = "changed: README.md shows an Upkeep's Tasks, start and complete, and docs/domain-model.md says how a started and a completed Upkeep is kept"
+created = 2026-11-21 06:59:20+00:00
+started = 2026-11-21 07:12:47+00:00
+completed = 2026-11-21 07:12:47+00:00
+commit = "559fd60"

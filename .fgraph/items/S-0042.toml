@@ -1,0 +1,11 @@
+id = "S-0042"
+state = "backlog"
+title = "Raise the landings fgraph refuses on a failing gate from none to every one"
+description = "Part of the developer's request of 2026-11-21 to layer fgraph by a configuration, .fgraph/config.toml: (1) the items and their lifecycle, always; (2) their commits on main, optional; (3) the development beside the source code, turned on. The plan was shown and filed on the developer's 'file only' of 2026-11-21. Its Tasks are written when it is ordered. The developer's words: starting a work item 'checks if criteria are met before closing'. Reading of the agent, the one it is least sure of: one gate command of the record, as make check, run at a landing on top of the rule that every Task is completed. Open, decided when it is ordered: whether it is a check command per Task run at complete instead, or the Given / When / Then of the work item run or confirmed."
+parent = "F-0001"
+created = 2026-11-21 20:32:54+00:00
+
+[criterion]
+given = "a record with the development on and [development] gate set to a command that fails"
+when = "fgraph land of a started Story is run"
+then = "it exits 2 naming the command, with nothing merged"

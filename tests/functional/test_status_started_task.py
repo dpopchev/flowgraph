@@ -18,9 +18,9 @@ pytestmark = pytest.mark.functional
 START = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "a title", *CRITERION]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
-ADD_OTHER_TASK = ["add", "task", "another task", "--parent", "ST-0001", "--output", "an output"]
-STARTED = [ADD_STORY, ADD_TASK, ADD_OTHER_TASK, ["start", "ST-0001"], ["start", "T-0001"]]
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+ADD_OTHER_TASK = ["add", "task", "another task", "--parent", "S-0001", "--output", "an output"]
+STARTED = [ADD_STORY, ADD_TASK, ADD_OTHER_TASK, ["start", "S-0001"], ["start", "T-0001"]]
 BLOCK = ["block", "T-0001", "--reason", "a reason", "--waiting-on", "the reviewer"]
 
 
@@ -70,7 +70,7 @@ class TestAStoryStartedWithATaskOfItStarted:
         assert listed.out == (
             "Backlog (0)\n"
             "InProgress (1)\n"
-            "  ST-0001  0/2 T  a title\n"
+            "  S-0001  0/2 T  a title\n"
             "    => T-0001  a task title\n"
             "Completed (0)\n"
         )

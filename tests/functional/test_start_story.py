@@ -19,7 +19,7 @@ ADD_STORY = [
     *("add", "story", "a title"),
     *("--given", "a state", "--when", "an action", "--then", "another"),
 ]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
 
 
 @dataclass(frozen=True)
@@ -58,33 +58,33 @@ def runs(cwd: Path, *argvs: Sequence[str]) -> Outcome:
 class TestAStoryInBacklogWithOneTaskStarted:
     @pytest.fixture
     def started(self, tmp_path: Path) -> Outcome:
-        return runs(tmp_path, ADD_STORY, ADD_TASK, ["start", "ST-0001"])
+        return runs(tmp_path, ADD_STORY, ADD_TASK, ["start", "S-0001"])
 
     def test_start_exits_with_zero(self, started: Outcome) -> None:
         assert started.status == 0
 
     def test_start_names_the_story(self, started: Outcome) -> None:
-        assert started.out == "started ST-0001\n"
+        assert started.out == "started S-0001\n"
 
     def test_status_lists_it_under_in_progress(self, started: Outcome, tmp_path: Path) -> None:
         assert fgraph(["status"], tmp_path).out == (
-            "Backlog (0)\nInProgress (1)\n  ST-0001  0/1 T  a title\nCompleted (0)\n"
+            "Backlog (0)\nInProgress (1)\n  S-0001  0/1 T  a title\nCompleted (0)\n"
         )
 
     def test_show_names_its_bucket(self, started: Outcome, tmp_path: Path) -> None:
-        assert "  bucket       InProgress\n" in fgraph(["show", "ST-0001"], tmp_path).out
+        assert "  bucket       InProgress\n" in fgraph(["show", "S-0001"], tmp_path).out
 
 
 class TestATaskOfAStartedStoryStarted:
     @pytest.fixture
     def started(self, tmp_path: Path) -> Outcome:
-        return runs(tmp_path, ADD_STORY, ADD_TASK, ["start", "ST-0001"], ["start", "T-0001"])
+        return runs(tmp_path, ADD_STORY, ADD_TASK, ["start", "S-0001"], ["start", "T-0001"])
 
     def test_start_names_the_task_and_its_story(self, started: Outcome) -> None:
-        assert started.out == "started T-0001 of ST-0001\n"
+        assert started.out == "started T-0001 of S-0001\n"
 
     def test_show_lists_the_task_in_progress(self, started: Outcome, tmp_path: Path) -> None:
-        assert fgraph(["show", "ST-0001"], tmp_path).out.endswith(
+        assert fgraph(["show", "S-0001"], tmp_path).out.endswith(
             "Tasks (1)\n"
             "  T-0001  a task title\n"
             "    bucket           InProgress\n"
@@ -95,17 +95,17 @@ class TestATaskOfAStartedStoryStarted:
 @pytest.mark.parametrize(
     ("argvs", "error"),
     [
-        ([ADD_STORY, ["start", "ST-0001"]], "ST-0001 has no Task to start with"),
-        ([ADD_STORY, ADD_TASK, ["start", "T-0001"]], "T-0001 cannot start: ST-0001 is in Backlog"),
+        ([ADD_STORY, ["start", "S-0001"]], "S-0001 has no Task to start with"),
+        ([ADD_STORY, ADD_TASK, ["start", "T-0001"]], "T-0001 cannot start: S-0001 is in Backlog"),
         (
-            [ADD_STORY, ADD_TASK, ["start", "ST-0001"], ["start", "ST-0001"]],
-            "ST-0001 is started already",
+            [ADD_STORY, ADD_TASK, ["start", "S-0001"], ["start", "S-0001"]],
+            "S-0001 is started already",
         ),
         (
-            [ADD_STORY, ADD_TASK, ["start", "ST-0001"], ["start", "T-0001"], ["start", "T-0001"]],
+            [ADD_STORY, ADD_TASK, ["start", "S-0001"], ["start", "T-0001"], ["start", "T-0001"]],
             "T-0001 is started already",
         ),
-        ([["start", "ST-0002"]], "no Story ST-0002 in the record"),
+        ([["start", "S-0002"]], "no Story S-0002 in the record"),
         ([ADD_STORY, ADD_TASK, ["start", "T-0002"]], "no Task T-0002 in the record"),
         ([["start", "X-0001"]], "'X-0001' is no Story, Upkeep, Bug, Spike or Task id"),
     ],

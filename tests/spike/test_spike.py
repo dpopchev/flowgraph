@@ -38,8 +38,8 @@ def test_a_spike_id_is_read_from_its_text() -> None:
 
 
 def test_a_text_that_is_no_spike_id_is_refused_by_itself() -> None:
-    with pytest.raises(SpikeIdError, match=r"^'ST-0001' is no Spike id: it is Q- and a number$"):
-        parse_spike_id("ST-0001")
+    with pytest.raises(SpikeIdError, match=r"^'S-0001' is no Spike id: it is Q- and a number$"):
+        parse_spike_id("S-0001")
 
 
 def test_a_text_written_sp_and_a_number_is_no_spike_id() -> None:

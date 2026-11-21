@@ -23,8 +23,8 @@ ADD_STORY = [
     *("add", "story", TITLE),
     *("--given", "a state", "--when", "an action", "--then", "another"),
 ]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
-BRANCH = "wi/ST-0001-raise-the-stories-fgraph"
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+BRANCH = "wi/S-0001-raise-the-stories-fgraph"
 IDENTITY = {
     "GIT_AUTHOR_NAME": "a developer",
     "GIT_AUTHOR_EMAIL": "developer@example.com",
@@ -96,7 +96,7 @@ def checkout(tmp_path: Path) -> Path:
 class TestAStoryStartedOnMain:
     @pytest.fixture
     def started(self, checkout: Path) -> Outcome:
-        return fgraph(["start", "ST-0001"], checkout)
+        return fgraph(["start", "S-0001"], checkout)
 
     def test_start_exits_with_zero(self, started: Outcome) -> None:
         assert started.status == 0
@@ -104,20 +104,19 @@ class TestAStoryStartedOnMain:
     def test_start_names_the_branch_and_its_worktree(
         self, started: Outcome, tmp_path: Path
     ) -> None:
-        worktree = tmp_path / "project.worktrees" / "ST-0001-raise-the-stories-fgraph"
-        assert started.out == f"started ST-0001\nbranch {BRANCH} in {worktree}\n"
+        worktree = tmp_path / "project.worktrees" / "S-0001-raise-the-stories-fgraph"
+        assert started.out == f"started S-0001\nbranch {BRANCH} in {worktree}\n"
 
     def test_the_start_is_committed_on_main(self, started: Outcome, checkout: Path) -> None:
         assert (
-            git(checkout, "log", "-1", "--format=%s", "main")
-            == "chore: start ST-0001 in the record"
+            git(checkout, "log", "-1", "--format=%s", "main") == "chore: start S-0001 in the record"
         )
 
     def test_the_commit_holds_only_the_file_of_the_story(
         self, started: Outcome, checkout: Path
     ) -> None:
         assert git(checkout, "show", "--name-only", "--format=", "main") == (
-            ".fgraph/items/ST-0001.toml"
+            ".fgraph/items/S-0001.toml"
         )
 
     def test_the_branch_is_at_the_commit_of_the_start(
@@ -128,21 +127,21 @@ class TestAStoryStartedOnMain:
     def test_the_branch_is_checked_out_in_its_worktree(
         self, started: Outcome, tmp_path: Path
     ) -> None:
-        worktree = tmp_path / "project.worktrees" / "ST-0001-raise-the-stories-fgraph"
+        worktree = tmp_path / "project.worktrees" / "S-0001-raise-the-stories-fgraph"
         assert git(worktree, "branch", "--show-current") == BRANCH
 
 
 def test_a_slug_given_names_the_branch(checkout: Path) -> None:
-    fgraph(["start", "ST-0001", "--slug", "branch-on-start"], checkout)
+    fgraph(["start", "S-0001", "--slug", "branch-on-start"], checkout)
     assert git(checkout, "branch", "--list", "--format=%(refname:short)", "wi/*") == (
-        "wi/ST-0001-branch-on-start"
+        "wi/S-0001-branch-on-start"
     )
 
 
 def test_a_change_beside_the_record_stays_out_of_the_commit(checkout: Path) -> None:
     (checkout / "notes.txt").write_text("a change of the development\n", encoding="utf-8")
     git(checkout, "add", "notes.txt")
-    fgraph(["start", "ST-0001"], checkout)
+    fgraph(["start", "S-0001"], checkout)
     assert git(checkout, "status", "--porcelain") == "A  notes.txt"
 
 
@@ -151,13 +150,13 @@ class TestAStoryStartedOutsideAGitWorkTree:
     def started(self, tmp_path: Path) -> Outcome:
         path = tmp_path / "project"
         path.mkdir()
-        return runs(path, ADD_STORY, ADD_TASK, ["start", "ST-0001"])
+        return runs(path, ADD_STORY, ADD_TASK, ["start", "S-0001"])
 
     def test_start_exits_with_zero(self, started: Outcome) -> None:
         assert started.status == 0
 
     def test_start_names_the_story_alone(self, started: Outcome) -> None:
-        assert started.out == "started ST-0001\n"
+        assert started.out == "started S-0001\n"
 
     def test_start_warns_that_no_branch_was_made(self, started: Outcome, tmp_path: Path) -> None:
         assert started.err == (
@@ -172,15 +171,15 @@ class TestAStartWhoseCommitGitRefuses:
         hook = checkout / ".git" / "hooks" / "pre-commit"
         hook.write_text("#!/bin/sh\necho refused by the hook >&2\nexit 1\n", encoding="utf-8")
         hook.chmod(0o755)
-        return fgraph(["start", "ST-0001"], checkout)
+        return fgraph(["start", "S-0001"], checkout)
 
     def test_start_exits_with_two(self, refused: Outcome) -> None:
         assert refused.status == 2
 
     def test_start_names_the_git_command_and_its_error(self, refused: Outcome) -> None:
         assert refused.err.splitlines()[-1] == (
-            "fgraph: error: git commit --quiet --only --message chore: start ST-0001 in the record"
-            " -- .fgraph/items/ST-0001.toml failed: refused by the hook"
+            "fgraph: error: git commit --quiet --only --message chore: start S-0001 in the record"
+            " -- .fgraph/items/S-0001.toml failed: refused by the hook"
         )
 
     def test_the_file_of_the_story_is_put_back_as_it_was(
@@ -193,7 +192,7 @@ class TestAStartWhoseWorktreeGitRefuses:
     @pytest.fixture
     def refused(self, checkout: Path) -> Outcome:
         git(checkout, "branch", BRANCH)
-        return fgraph(["start", "ST-0001"], checkout)
+        return fgraph(["start", "S-0001"], checkout)
 
     def test_start_exits_with_two(self, refused: Outcome) -> None:
         assert refused.status == 2
@@ -201,13 +200,13 @@ class TestAStartWhoseWorktreeGitRefuses:
     def test_start_names_the_git_error_and_that_the_start_stays(self, refused: Outcome) -> None:
         assert re.fullmatch(
             rf"fgraph: error: git worktree add .* failed: fatal: a branch named '{BRANCH}'"
-            r" already exists -- ST-0001 is started at [0-9a-f]{7}, its branch is not",
+            r" already exists -- S-0001 is started at [0-9a-f]{7}, its branch is not",
             refused.err.splitlines()[-1],
         )
 
     def test_the_start_stays_committed_on_main(self, refused: Outcome, checkout: Path) -> None:
         assert git(checkout, "log", "-1", "--format=%s", "main") == (
-            "chore: start ST-0001 in the record"
+            "chore: start S-0001 in the record"
         )
 
 
@@ -215,11 +214,11 @@ class TestAStartWhoseWorktreeGitRefuses:
     ("argvs", "error"),
     [
         (
-            [["start", "ST-0001", "--slug", "Bad Slug"]],
+            [["start", "S-0001", "--slug", "Bad Slug"]],
             "'Bad Slug' is no slug: it is lower-case letters and digits joined by hyphens",
         ),
         (
-            [["start", "ST-0001"], ["start", "T-0001", "--slug", "a-slug"]],
+            [["start", "S-0001"], ["start", "T-0001", "--slug", "a-slug"]],
             "--slug names the branch of a work item: T-0001 is a Task",
         ),
     ],

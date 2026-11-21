@@ -73,10 +73,10 @@ class TestAStoryAddedToARecordWithNoItems:
         assert added[0].status == 0
 
     def test_add_names_the_new_id(self, added: tuple[Outcome, Outcome]) -> None:
-        assert added[0].out == "added ST-0001\n"
+        assert added[0].out == "added S-0001\n"
 
     def test_status_lists_it_under_backlog(self, added: tuple[Outcome, Outcome]) -> None:
-        assert added[1].out == ("Backlog (1)\n  ST-0001  a title\nInProgress (0)\nCompleted (0)\n")
+        assert added[1].out == ("Backlog (1)\n  S-0001  a title\nInProgress (0)\nCompleted (0)\n")
 
 
 class TestAStoryAddedWithABlankPart:

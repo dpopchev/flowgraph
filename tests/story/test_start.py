@@ -46,12 +46,12 @@ def test_a_story_with_a_task_starts_on_the_second_with_its_task_in_backlog() -> 
 
 
 def test_a_story_without_a_task_is_refused_by_its_id() -> None:
-    with pytest.raises(NoTaskError, match=r"^ST-0001 has no Task to start with$"):
+    with pytest.raises(NoTaskError, match=r"^S-0001 has no Task to start with$"):
         started_story(BARE, ON)
 
 
 def test_a_started_story_is_refused_by_its_id() -> None:
-    with pytest.raises(StartedAlreadyError, match=r"^ST-0001 is started already$"):
+    with pytest.raises(StartedAlreadyError, match=r"^S-0001 is started already$"):
         started_story(started_story(STORY, ON), ON)
 
 
@@ -75,7 +75,7 @@ def test_a_task_starts_alone_among_the_tasks_of_its_story() -> None:
 
 
 def test_a_task_of_a_story_in_backlog_is_refused_naming_both() -> None:
-    with pytest.raises(ItemInBacklogError, match=r"^T-0001 cannot start: ST-0001 is in Backlog$"):
+    with pytest.raises(ItemInBacklogError, match=r"^T-0001 cannot start: S-0001 is in Backlog$"):
         started_task(STORY, make_task_id(1), ON)
 
 

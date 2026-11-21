@@ -1,4 +1,4 @@
-"""The file of a Story in the record: the work item file, read by the `ST-` prefix."""
+"""The file of a Story in the record: the work item file, read by the `S-` prefix."""
 
 from collections.abc import Callable
 from pathlib import Path

@@ -25,7 +25,7 @@ from flowgraph.work_item import (
 pytestmark = pytest.mark.command
 
 RECORD = Path("/src/project/.fgraph")
-WORKTREE = Path("/src/project.worktrees/ST-0001-a-slug")
+WORKTREE = Path("/src/project.worktrees/S-0001-a-slug")
 CREATED = datetime(2026, 1, 1, tzinfo=UTC)
 NOW = datetime(2026, 1, 3, tzinfo=UTC)
 ONE = make_story_id(1)
@@ -64,7 +64,7 @@ def work_tree(branches: list[str], worktree: Path | None) -> WorkTree:
         commit_files=never,
         add_worktree=never,
         current_branch=never,
-        find_branches=lambda pattern: branches if pattern == "wi/ST-0001-*" else [],
+        find_branches=lambda pattern: branches if pattern == "wi/S-0001-*" else [],
         merge=never,
         abort_merge=never,
         commit_merge=never,
@@ -78,8 +78,8 @@ def work_tree(branches: list[str], worktree: Path | None) -> WorkTree:
 def test_a_task_write_of_a_started_work_item_with_a_worktree_is_refused_naming_it() -> None:
     with pytest.raises(
         OutOfScopeError,
-        match=r"^ST-0001 is started: its Tasks are written in its worktree,"
-        r" /src/project.worktrees/ST-0001-a-slug$",
+        match=r"^S-0001 is started: its Tasks are written in its worktree,"
+        r" /src/project.worktrees/S-0001-a-slug$",
     ):
         within(store(BEGUN, []), lambda: None, lambda _: WORKTREE).save_work_item(MOVED)
 
@@ -111,18 +111,18 @@ def test_the_complete_of_a_work_item_is_saved() -> None:
 
 def test_a_task_write_on_the_branch_of_the_work_item_is_saved() -> None:
     saved: list[WorkItemState] = []
-    own = Scope("wi/ST-0001-a-slug", ONE)
+    own = Scope("wi/S-0001-a-slug", ONE)
     within(store(BEGUN, saved), lambda: own, never).save_work_item(MOVED)
     assert saved == [MOVED]
 
 
 def test_the_worktree_of_a_work_item_is_the_one_its_branch_is_checked_out_in() -> None:
-    tree = work_tree(["wi/ST-0001-a-slug"], WORKTREE)
+    tree = work_tree(["wi/S-0001-a-slug"], WORKTREE)
     assert worktree_of_item(RECORD, lambda _: tree, ONE) == WORKTREE
 
 
 def test_a_work_item_whose_branch_is_in_no_worktree_has_none() -> None:
-    tree = work_tree(["wi/ST-0001-a-slug"], None)
+    tree = work_tree(["wi/S-0001-a-slug"], None)
     assert worktree_of_item(RECORD, lambda _: tree, ONE) is None
 
 
@@ -135,5 +135,5 @@ def test_a_record_outside_a_git_work_tree_has_no_worktree_of_a_work_item() -> No
 
 
 def test_a_record_git_ignores_has_no_worktree_of_a_work_item() -> None:
-    ignoring = replace(work_tree(["wi/ST-0001-a-slug"], WORKTREE), ignores=lambda _: True)
+    ignoring = replace(work_tree(["wi/S-0001-a-slug"], WORKTREE), ignores=lambda _: True)
     assert worktree_of_item(RECORD, lambda _: ignoring, ONE) is None

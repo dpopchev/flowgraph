@@ -23,12 +23,10 @@ FEATURES = {
     for number, title in [(1, "a feature title"), (2, "another feature title")]
 }
 ROWS = [
-    WorkItemRow("ST-0001", "a story", "started", parent="F-0001", created=CREATED),
-    WorkItemRow("ST-0002", "another story", "backlog", parent="F-0001", created=CREATED),
-    WorkItemRow(
-        "ST-0003", "a done story", "completed", "abc1234", parent="F-0002", created=CREATED
-    ),
-    WorkItemRow("ST-0004", "a story that stands alone", "started", created=CREATED),
+    WorkItemRow("S-0001", "a story", "started", parent="F-0001", created=CREATED),
+    WorkItemRow("S-0002", "another story", "backlog", parent="F-0001", created=CREATED),
+    WorkItemRow("S-0003", "a done story", "completed", "abc1234", parent="F-0002", created=CREATED),
+    WorkItemRow("S-0004", "a story that stands alone", "started", created=CREATED),
 ]
 
 

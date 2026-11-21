@@ -1,7 +1,7 @@
 id = "B-0003"
 state = "backlog"
 title = "Raise the kinds the refusal of fgraph show names for a wrong id from four to every one it takes"
-description = "Found during T-0149 of B-0001 on 2026-11-21, under the burn of the Backlog; filed at the end of the queue and not burned. Since B-0001 a work item id below 1, ST-0000, is refused in the every-kind words as well, as parse_item_id refuses it. Its Tasks are written when it is ordered."
+description = "Found during T-0149 of B-0001 on 2026-11-21, under the burn of the Backlog; filed at the end of the queue and not burned. Since B-0001 a work item id below 1, S-0000, is refused in the every-kind words as well, as parse_item_id refuses it. Its Tasks are written when it is ordered."
 created = 2026-11-21 21:49:02+00:00
 
 [criterion]

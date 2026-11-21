@@ -1,0 +1,11 @@
+id = "S-0052"
+state = "backlog"
+title = "Raise the Features fgraph start takes to InProgress from none to every one"
+description = "Part of F-0002. The developer's words of 2026-11-21, in the agent's wording: a Feature is part of the Backlog and just holds a couple of work items; starting it, when git is used for the development as well, starts its work items one by one in separate branches; they are completed but all stay in progress; when all are completed the Feature moves to Completed; a Feature can be blocked, or gets blocked when its child work item is blocked. The principle the plan was shown under: a Feature is to its work items what a work item is to its Tasks. Filed on the developer's 'file' of 2026-11-21. Its Tasks are written when it is ordered. Readings of the agent, shown with the plan: the Feature gets a state of its own, kept in its file with its started time; its start starts its first work item, with its branch and its worktree when the development is on, as any start; one work item of a Feature is started at a time. Refused with exit 2: a Feature without a work item, a Feature whose first work item has no Task, and the start of a work item whose Feature is still in Backlog, which names the Feature -- the alternative, that the start of a child starts its Feature, was shown and not taken. Open: how the one at a time of a Feature meets [development] parallel of S-0044."
+parent = "F-0002"
+created = 2026-11-21 21:22:01+00:00
+
+[criterion]
+given = "a record with a Feature in Backlog and two Stories under it, each with a Task"
+when = "fgraph start of the Feature is run"
+then = "fgraph status lists the Feature under InProgress with its first Story started under it"

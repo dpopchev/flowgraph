@@ -19,20 +19,20 @@ START = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "a title", *CRITERION]
 ADD_OTHER = ["add", "story", "another title", *CRITERION]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
-ADD_OTHER_TASK = ["add", "task", "a task title", "--parent", "ST-0002", "--output", "an output"]
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+ADD_OTHER_TASK = ["add", "task", "a task title", "--parent", "S-0002", "--output", "an output"]
 ADDED = [ADD_STORY, ADD_OTHER, ADD_TASK, ADD_OTHER_TASK]
 COMPLETE_FIRST = [
-    ["start", "ST-0001"],
+    ["start", "S-0001"],
     ["start", "T-0001"],
     ["complete", "T-0001", "--commit", "abc1234"],
-    ["complete", "ST-0001", "--commit", "abc1234"],
+    ["complete", "S-0001", "--commit", "abc1234"],
 ]
 COMPLETE_SECOND = [
-    ["start", "ST-0002"],
+    ["start", "S-0002"],
     ["start", "T-0002"],
     ["complete", "T-0002", "--commit", "def5678"],
-    ["complete", "ST-0002", "--commit", "def5678"],
+    ["complete", "S-0002", "--commit", "def5678"],
 ]
 
 
@@ -83,8 +83,8 @@ class TestTwoStoriesCompletedTheSecondBeforeTheFirst:
             "Backlog (0)\n"
             "InProgress (0)\n"
             "Completed (2)\n"
-            "  ST-0001  abc1234  a title\n"
-            "  ST-0002  def5678  another title\n"
+            "  S-0001  abc1234  a title\n"
+            "  S-0002  def5678  another title\n"
         )
 
 
@@ -92,6 +92,6 @@ def test_the_second_story_completed_after_the_first_is_listed_above_it(tmp_path:
     listed = status_after(tmp_path, *ADDED, *COMPLETE_FIRST, *COMPLETE_SECOND)
     assert listed.out.splitlines()[2:] == [
         "Completed (2)",
-        "  ST-0002  def5678  another title",
-        "  ST-0001  abc1234  a title",
+        "  S-0002  def5678  another title",
+        "  S-0001  abc1234  a title",
     ]

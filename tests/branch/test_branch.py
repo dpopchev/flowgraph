@@ -34,7 +34,7 @@ def test_the_slug_of_a_title_is_its_first_four_words_lower_cased() -> None:
 
 
 def test_the_slug_of_a_title_drops_every_character_but_a_letter_or_a_digit() -> None:
-    assert slug_of_title("Raise ST-0001's parts: 3") == make_slug("raise-st0001s-parts-3")
+    assert slug_of_title("Raise S-0001's parts: 3") == make_slug("raise-s0001s-parts-3")
 
 
 def test_the_slug_of_a_title_skips_a_word_with_no_letter_or_digit() -> None:

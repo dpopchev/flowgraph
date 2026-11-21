@@ -20,13 +20,13 @@ LATER = TaskRow("T-0004", "a later task", "an output", "", "backlog")
 def started(number: int, *tasks: TaskRow) -> WorkItemRow:
     """A started Story of that number holding the Tasks."""
     return WorkItemRow(
-        f"ST-000{number}", f"title {number}", "started", created=CREATED, tasks=list(tasks)
+        f"S-000{number}", f"title {number}", "started", created=CREATED, tasks=list(tasks)
     )
 
 
 def test_the_started_task_is_listed_under_its_work_item_marked_as_the_one_worked() -> None:
     assert status_text([started(1, DONE, BEGUN, LATER)]).splitlines()[2:4] == [
-        "  ST-0001  1/3 T  title 1",
+        "  S-0001  1/3 T  title 1",
         "    => T-0003  a begun task",
     ]
 
@@ -49,7 +49,7 @@ def test_a_task_line_does_not_count_toward_the_top() -> None:
     rows = [started(1, BEGUN), started(2, BEGUN)]
     assert status_text(rows, top=1).splitlines()[1:] == [
         "InProgress (2)",
-        "  ST-0001  0/1 T  title 1",
+        "  S-0001  0/1 T  title 1",
         "    => T-0003  a begun task",
         "  ... 1 more",
         "Completed (0)",

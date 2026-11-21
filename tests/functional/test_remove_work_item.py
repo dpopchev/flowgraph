@@ -18,9 +18,9 @@ NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "a title", *CRITERION]
 ADD_OTHER = ["add", "story", "another title", *CRITERION]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
-REMOVE = ["remove", "ST-0001", "--reason", "filed by mistake"]
-START = ["start", "ST-0001"]
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+REMOVE = ["remove", "S-0001", "--reason", "filed by mistake"]
+START = ["start", "S-0001"]
 
 
 @dataclass(frozen=True)
@@ -65,25 +65,25 @@ class TestAStoryInBacklogRemovedWithAReason:
         assert removed.status == 0
 
     def test_remove_names_the_story(self, removed: Outcome) -> None:
-        assert removed.out == "removed ST-0001\n"
+        assert removed.out == "removed S-0001\n"
 
     def test_status_lists_it_under_removed_with_its_reason(
         self, removed: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["status"], tmp_path).out == (
             "Backlog (1)\n"
-            "  ST-0002  another title\n"
+            "  S-0002  another title\n"
             "InProgress (0)\n"
             "Completed (0)\n"
             "Removed (1)\n"
-            "  ST-0001  a title  -- filed by mistake\n"
+            "  S-0001  a title  -- filed by mistake\n"
         )
 
     def test_show_names_the_bucket_and_the_reason_and_keeps_its_task(
         self, removed: Outcome, tmp_path: Path
     ) -> None:
-        assert fgraph(["show", "ST-0001"], tmp_path).out == (
-            "ST-0001  a title\n"
+        assert fgraph(["show", "S-0001"], tmp_path).out == (
+            "S-0001  a title\n"
             "  bucket       Removed\n"
             "  reason       filed by mistake\n"
             "  given        a state\n"
@@ -98,26 +98,26 @@ class TestAStoryInBacklogRemovedWithAReason:
 @pytest.mark.parametrize(
     ("argvs", "error"),
     [
-        ([ADD_STORY, ADD_TASK, START, REMOVE], "ST-0001 is started already"),
-        ([ADD_STORY, REMOVE, REMOVE], "ST-0001 is removed already"),
-        ([ADD_STORY, ["remove", "ST-0001", "--reason", " "]], "reason is empty"),
+        ([ADD_STORY, ADD_TASK, START, REMOVE], "S-0001 is started already"),
+        ([ADD_STORY, REMOVE, REMOVE], "S-0001 is removed already"),
+        ([ADD_STORY, ["remove", "S-0001", "--reason", " "]], "reason is empty"),
         (
-            [ADD_STORY, ["remove", "ST-0009", "--reason", "a reason"]],
-            "no Story ST-0009 in the record",
+            [ADD_STORY, ["remove", "S-0009", "--reason", "a reason"]],
+            "no Story S-0009 in the record",
         ),
         (
             [ADD_STORY, ADD_TASK, ["remove", "T-0001", "--reason", "a reason"]],
             "'T-0001' is no Story, Upkeep, Bug or Spike id",
         ),
-        ([ADD_STORY, REMOVE, ADD_TASK], "ST-0001 is removed already"),
-        ([ADD_STORY, ADD_TASK, REMOVE, START], "ST-0001 is removed already"),
+        ([ADD_STORY, REMOVE, ADD_TASK], "S-0001 is removed already"),
+        ([ADD_STORY, ADD_TASK, REMOVE, START], "S-0001 is removed already"),
         (
-            [ADD_STORY, REMOVE, ["amend", "ST-0001", "--title", "one more"]],
-            "ST-0001 is removed already",
+            [ADD_STORY, REMOVE, ["amend", "S-0001", "--title", "one more"]],
+            "S-0001 is removed already",
         ),
         (
-            [ADD_STORY, ADD_OTHER, REMOVE, ["reorder", "ST-0002", "--before", "ST-0001"]],
-            "ST-0001 is not in Backlog",
+            [ADD_STORY, ADD_OTHER, REMOVE, ["reorder", "S-0002", "--before", "S-0001"]],
+            "S-0001 is not in Backlog",
         ),
     ],
     ids=[

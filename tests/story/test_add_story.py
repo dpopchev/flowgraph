@@ -11,11 +11,11 @@ from flowgraph.work_item import add_work_item
 pytestmark = pytest.mark.command
 
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
-TAKEN = [StoryRow("ST-0001", "an earlier title", "backlog", created=NOW)]
+TAKEN = [StoryRow("S-0001", "an earlier title", "backlog", created=NOW)]
 
 
 def add(saved: list[StoryState]) -> object:
-    """Add one Story to a record that holds ST-0001, saving into the list."""
+    """Add one Story to a record that holds S-0001, saving into the list."""
     return add_work_item(
         kind=STORY,
         title="a title",

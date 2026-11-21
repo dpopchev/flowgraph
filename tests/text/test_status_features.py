@@ -11,7 +11,7 @@ from flowgraph.work_item import WorkItemRow
 pytestmark = pytest.mark.view
 
 CREATED = datetime(2026, 1, 1, tzinfo=UTC)
-ROWS = [WorkItemRow("ST-0001", "a title", "started", parent="F-0001", created=CREATED)]
+ROWS = [WorkItemRow("S-0001", "a title", "started", parent="F-0001", created=CREATED)]
 FEATURES = [
     FeatureRow("F-0001", "a feature title", "InProgress", completed=1, held=3),
     FeatureRow("F-0002", "another feature title", "Backlog", completed=0, held=0),
@@ -25,7 +25,7 @@ def test_the_features_are_listed_above_the_buckets_each_with_its_progress_and_bu
         "  F-0002  0/0 W  Backlog  another feature title\n"
         "Backlog (0)\n"
         "InProgress (1)\n"
-        "  ST-0001  0/0 T  a title\n"
+        "  S-0001  0/0 T  a title\n"
         "Completed (0)\n"
     )
 

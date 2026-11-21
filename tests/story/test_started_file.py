@@ -35,11 +35,11 @@ STORY = append_task(
     append_task(make_story(make_story_id(1), "a title", SCENARIO, "", CREATED), TASKS[0]), TASKS[1]
 )
 STARTED = started_task(started_story(STORY, ON), make_task_id(1), ON)
-FILE = Path("items") / "ST-0001.toml"
+FILE = Path("items") / "S-0001.toml"
 
 
 def written(record: Path) -> dict[str, object]:
-    """The file of ST-0001 in the record, as its primitives."""
+    """The file of S-0001 in the record, as its primitives."""
     return tomllib.loads((record / FILE).read_text("utf-8"))
 
 
@@ -84,7 +84,7 @@ def test_a_started_story_is_read_as_a_started_row(tmp_path: Path) -> None:
         TaskRow("T-0002", "another task title", "another output", "", "backlog"),
     ]
     assert read_story_rows(tmp_path) == [
-        StoryRow("ST-0001", "a title", "started", created=CREATED, started=ON, tasks=tasks)
+        StoryRow("S-0001", "a title", "started", created=CREATED, started=ON, tasks=tasks)
     ]
 
 
@@ -114,9 +114,9 @@ STARTED_TASK = (
 def test_a_state_without_the_fields_it_needs_is_refused_naming_the_file(
     state: str, tasks: str, tmp_path: Path
 ) -> None:
-    head = 'id = "ST-0001"\ntitle = "a title"\ncreated = 2026-01-01T12:30:15Z\n'
+    head = 'id = "S-0001"\ntitle = "a title"\ncreated = 2026-01-01T12:30:15Z\n'
     criterion = '[criterion]\ngiven = "a"\nwhen = "b"\nthen = "c"\n'
     (tmp_path / "items").mkdir()
     (tmp_path / FILE).write_text(head + state + criterion + tasks, encoding="utf-8")
-    with pytest.raises(StoryFileError, match=r"ST-0001\.toml holds no Story"):
+    with pytest.raises(StoryFileError, match=r"S-0001\.toml holds no Story"):
         read_story(tmp_path, make_story_id(1))

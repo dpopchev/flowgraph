@@ -18,8 +18,8 @@ NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "a title", *CRITERION]
 ADD_OTHER = ["add", "story", "another title", *CRITERION]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
-REORDER = ["reorder", "ST-0002", "--before", "ST-0001"]
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+REORDER = ["reorder", "S-0002", "--before", "S-0001"]
 
 
 @dataclass(frozen=True)
@@ -64,13 +64,13 @@ class TestAStoryPutBeforeAnotherInBacklog:
         assert reordered.status == 0
 
     def test_reorder_names_both_stories(self, reordered: Outcome) -> None:
-        assert reordered.out == "moved ST-0002 before ST-0001\n"
+        assert reordered.out == "moved S-0002 before S-0001\n"
 
     def test_status_lists_it_above_the_other(self, reordered: Outcome, tmp_path: Path) -> None:
         assert fgraph(["status"], tmp_path).out == (
             "Backlog (2)\n"
-            "  ST-0002  another title\n"
-            "  ST-0001  a title\n"
+            "  S-0002  another title\n"
+            "  S-0001  a title\n"
             "InProgress (0)\n"
             "Completed (0)\n"
         )
@@ -79,30 +79,30 @@ class TestAStoryPutBeforeAnotherInBacklog:
         self, reordered: Outcome, tmp_path: Path
     ) -> None:
         assert runs(tmp_path, ADD_STORY, ["status"]).out.splitlines()[1:4] == [
-            "  ST-0002  another title",
-            "  ST-0001  a title",
-            "  ST-0003  a title",
+            "  S-0002  another title",
+            "  S-0001  a title",
+            "  S-0003  a title",
         ]
 
 
 @pytest.mark.parametrize(
     ("argvs", "error"),
     [
-        ([ADD_STORY, REORDER], "ST-0002 is not in Backlog"),
+        ([ADD_STORY, REORDER], "S-0002 is not in Backlog"),
         (
-            [ADD_STORY, ADD_OTHER, ["reorder", "ST-0002", "--before", "ST-0003"]],
-            "ST-0003 is not in Backlog",
+            [ADD_STORY, ADD_OTHER, ["reorder", "S-0002", "--before", "S-0003"]],
+            "S-0003 is not in Backlog",
         ),
         (
-            [ADD_STORY, ADD_OTHER, ADD_TASK, ["start", "ST-0001"], REORDER],
-            "ST-0001 is not in Backlog",
+            [ADD_STORY, ADD_OTHER, ADD_TASK, ["start", "S-0001"], REORDER],
+            "S-0001 is not in Backlog",
         ),
         (
-            [ADD_STORY, ["reorder", "ST-0001", "--before", "ST-0001"]],
-            "ST-0001 cannot be put before itself",
+            [ADD_STORY, ["reorder", "S-0001", "--before", "S-0001"]],
+            "S-0001 cannot be put before itself",
         ),
         (
-            [ADD_STORY, ["reorder", "T-0001", "--before", "ST-0001"]],
+            [ADD_STORY, ["reorder", "T-0001", "--before", "S-0001"]],
             "'T-0001' is no Story, Upkeep, Bug or Spike id",
         ),
     ],

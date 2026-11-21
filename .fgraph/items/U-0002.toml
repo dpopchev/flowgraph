@@ -1,7 +1,7 @@
 id = "U-0002"
 state = "completed"
 title = "Cut the lines one kind of work item holds in src/flowgraph from 885 to at most 250"
-description = "src/flowgraph/upkeep/ repeats src/flowgraph/story/: after renaming, model.py differs only in its docstrings, and Store in src/flowgraph/item.py holds five reads and writes per kind. Share the states, the moves, the file and the commands of a work item, so that Bug and Spike each add their id, their noun and their criterion and not another 885 lines. Ordered before ST-0006 for that reason. The target of 250 lines is an estimate. It rewrites the sentence 'Each kind keeps its own state types' of docs/domain-model.md, Persistence."
+description = "src/flowgraph/upkeep/ repeats src/flowgraph/story/: after renaming, model.py differs only in its docstrings, and Store in src/flowgraph/item.py holds five reads and writes per kind. Share the states, the moves, the file and the commands of a work item, so that Bug and Spike each add their id, their noun and their criterion and not another 885 lines. Ordered before S-0006 for that reason. The target of 250 lines is an estimate. It rewrites the sentence 'Each kind keeps its own state types' of docs/domain-model.md, Persistence."
 created = 2026-11-21 07:18:43+00:00
 started = 2026-11-21 07:21:11+00:00
 completed = 2026-11-21 07:55:22+00:00

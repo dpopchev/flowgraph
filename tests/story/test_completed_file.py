@@ -47,11 +47,11 @@ WHOLE = completed_story(
     DONE,
     make_commit("def5678"),
 )
-FILE = Path("items") / "ST-0001.toml"
+FILE = Path("items") / "S-0001.toml"
 
 
 def written(record: Path) -> dict[str, object]:
-    """The file of ST-0001 in the record, as its primitives."""
+    """The file of S-0001 in the record, as its primitives."""
     return tomllib.loads((record / FILE).read_text("utf-8"))
 
 
@@ -103,7 +103,7 @@ def test_a_completed_story_is_read_as_a_completed_row_with_its_commit(tmp_path: 
     ]
     assert read_story_rows(tmp_path) == [
         StoryRow(
-            "ST-0001",
+            "S-0001",
             "a title",
             "completed",
             "def5678",
@@ -136,5 +136,5 @@ def test_a_completed_story_file_with_a_task_not_completed_is_refused(tmp_path: P
         ),
         encoding="utf-8",
     )
-    with pytest.raises(StoryFileError, match=r"ST-0001\.toml holds no Story"):
+    with pytest.raises(StoryFileError, match=r"S-0001\.toml holds no Story"):
         read_story(tmp_path, make_story_id(1))

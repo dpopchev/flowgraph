@@ -18,12 +18,12 @@ EARLY = datetime(2026, 1, 2, tzinfo=UTC)
 LATE = datetime(2026, 1, 3, tzinfo=UTC)
 ROWS = {
     STORY: [
-        WorkItemRow("ST-0001", "a story", "completed", "abc1234", created=CREATED, completed=EARLY),
+        WorkItemRow("S-0001", "a story", "completed", "abc1234", created=CREATED, completed=EARLY),
         WorkItemRow(
-            "ST-0002", "a last story", "completed", "abc1234", created=CREATED, completed=LATE
+            "S-0002", "a last story", "completed", "abc1234", created=CREATED, completed=LATE
         ),
         WorkItemRow(
-            "ST-0003", "a twin story", "completed", "abc1234", created=CREATED, completed=EARLY
+            "S-0003", "a twin story", "completed", "abc1234", created=CREATED, completed=EARLY
         ),
     ],
     UPKEEP: [
@@ -54,15 +54,15 @@ def store() -> Store:
 
 def test_completed_is_listed_the_last_completed_first() -> None:
     assert status_item(store()).splitlines()[3::2] == [
-        "  ST-0002  abc1234  a last story",
-        "  ST-0001  abc1234  a story",
+        "  S-0002  abc1234  a last story",
+        "  S-0001  abc1234  a story",
     ]
 
 
 def test_work_items_completed_at_one_time_are_listed_by_kind_and_number() -> None:
     assert status_item(store()).splitlines()[3:] == [
-        "  ST-0002  abc1234  a last story",
+        "  S-0002  abc1234  a last story",
         "  U-0001  abc1234  an upkeep",
-        "  ST-0001  abc1234  a story",
-        "  ST-0003  abc1234  a twin story",
+        "  S-0001  abc1234  a story",
+        "  S-0003  abc1234  a twin story",
     ]

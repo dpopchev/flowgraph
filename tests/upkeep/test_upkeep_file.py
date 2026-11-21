@@ -60,7 +60,7 @@ def test_a_record_without_items_has_no_upkeep_rows(tmp_path: Path) -> None:
 
 def test_a_file_of_another_kind_is_left_alone(tmp_path: Path) -> None:
     write_upkeep(tmp_path, UPKEEP)
-    (tmp_path / "items" / "ST-0001.toml").write_text("not an upkeep", encoding="utf-8")
+    (tmp_path / "items" / "S-0001.toml").write_text("not an upkeep", encoding="utf-8")
     assert [row.id for row in read_upkeep_rows(tmp_path)] == ["U-0001"]
 
 

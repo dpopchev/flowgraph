@@ -29,5 +29,5 @@ def test_every_line_is_whole_without_a_width() -> None:
 
 
 def test_a_completed_work_item_is_listed_with_its_commit_before_its_title() -> None:
-    rows = [WorkItemRow("ST-0001", "a title", "completed", "abc1234", created=CREATED)]
-    assert status_text(rows).splitlines()[3] == "  ST-0001  abc1234  a title"
+    rows = [WorkItemRow("S-0001", "a title", "completed", "abc1234", created=CREATED)]
+    assert status_text(rows).splitlines()[3] == "  S-0001  abc1234  a title"

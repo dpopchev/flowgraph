@@ -20,10 +20,10 @@ TASKS = [
 
 
 def test_a_started_work_item_is_listed_with_its_tasks_completed_of_all() -> None:
-    rows = [WorkItemRow("ST-0001", "a title", "started", created=CREATED, tasks=TASKS)]
-    assert status_text(rows).splitlines()[2] == "  ST-0001  1/4 T  a title"
+    rows = [WorkItemRow("S-0001", "a title", "started", created=CREATED, tasks=TASKS)]
+    assert status_text(rows).splitlines()[2] == "  S-0001  1/4 T  a title"
 
 
 def test_a_started_work_item_without_a_task_read_is_listed_with_none_of_none() -> None:
-    rows = [WorkItemRow("ST-0001", "a title", "started", created=CREATED)]
-    assert status_text(rows).splitlines()[2] == "  ST-0001  0/0 T  a title"
+    rows = [WorkItemRow("S-0001", "a title", "started", created=CREATED)]
+    assert status_text(rows).splitlines()[2] == "  S-0001  0/0 T  a title"

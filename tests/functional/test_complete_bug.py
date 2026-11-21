@@ -103,7 +103,7 @@ def test_a_bug_joins_the_backlog_after_the_work_items_added_before_it(tmp_path: 
     runs(tmp_path, ADD_STORY, ADD_BUG)
     assert fgraph(["status"], tmp_path).out.splitlines()[:3] == [
         "Backlog (2)",
-        "  ST-0001  a title",
+        "  S-0001  a title",
         "  B-0001  a bug title",
     ]
 
@@ -132,8 +132,8 @@ def test_what_is_expected_of_a_bug_is_amended(tmp_path: Path) -> None:
             "B-0001 has no given, when or then: it states what is observed and expected",
         ),
         (
-            [ADD_STORY, ["amend", "ST-0001", "--observed", "a traceback"]],
-            "ST-0001 has no observed or expected: it states a Given / When / Then",
+            [ADD_STORY, ["amend", "S-0001", "--observed", "a traceback"]],
+            "S-0001 has no observed or expected: it states a Given / When / Then",
         ),
     ],
     ids=["blank-observed", "blank-expected", "given-on-a-bug", "observed-on-a-story"],

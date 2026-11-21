@@ -27,7 +27,7 @@ ADD_STORY = [
     *("add", "story", "a title"),
     *("--given", "a state", "--when", "an action", "--then", "another"),
 ]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
 
 
 @dataclass(frozen=True)
@@ -82,17 +82,17 @@ class TestATaskAddedToAStoryInBacklog:
         """The outcome of adding a Task to the one Story of a record, then of showing the Story."""
         saved: dict[str, StoryState] = {}
         fgraph(ADD_STORY, saved)
-        return fgraph(ADD_TASK, saved), fgraph(["show", "ST-0001"], saved)
+        return fgraph(ADD_TASK, saved), fgraph(["show", "S-0001"], saved)
 
     def test_add_exits_with_zero(self, added: tuple[Outcome, Outcome]) -> None:
         assert added[0].status == 0
 
     def test_add_names_the_task_and_its_story(self, added: tuple[Outcome, Outcome]) -> None:
-        assert added[0].out == "added T-0001 to ST-0001\n"
+        assert added[0].out == "added T-0001 to S-0001\n"
 
     def test_show_lists_the_task_inside_the_story(self, added: tuple[Outcome, Outcome]) -> None:
         assert added[1].out == (
-            "ST-0001  a title\n"
+            "S-0001  a title\n"
             "  bucket       Backlog\n"
             "  given        a state\n"
             "  when         an action\n"
@@ -107,8 +107,8 @@ def test_show_lists_the_descriptions_of_a_story_and_its_task() -> None:
     saved: dict[str, StoryState] = {}
     fgraph([*ADD_STORY, "--description", "why"], saved)
     fgraph([*ADD_TASK, "--description", "how"], saved)
-    assert fgraph(["show", "ST-0001"], saved).out == (
-        "ST-0001  a title\n"
+    assert fgraph(["show", "S-0001"], saved).out == (
+        "S-0001  a title\n"
         "  bucket       Backlog\n"
         "  description  why\n"
         "  given        a state\n"
@@ -131,19 +131,19 @@ class TestATaskAddedToAStoryTheRecordDoesNotHold:
     def outcome(self) -> Outcome:
         saved: dict[str, StoryState] = {}
         fgraph(ADD_STORY, saved)
-        return fgraph(changed(ADD_TASK, "ST-0001", "ST-0002"), saved)
+        return fgraph(changed(ADD_TASK, "S-0001", "S-0002"), saved)
 
     def test_exits_with_two(self, outcome: Outcome) -> None:
         assert outcome.status == 2
 
     def test_names_the_story(self, outcome: Outcome) -> None:
-        assert outcome.err.endswith("fgraph: error: no Story ST-0002 in the record\n")
+        assert outcome.err.endswith("fgraph: error: no Story S-0002 in the record\n")
 
 
 class TestATaskAddedToAParentThatIsNoStory:
     @pytest.fixture
     def outcome(self) -> Outcome:
-        return fgraph(changed(ADD_TASK, "ST-0001", "X-0001"), {})
+        return fgraph(changed(ADD_TASK, "S-0001", "X-0001"), {})
 
     def test_exits_with_two(self, outcome: Outcome) -> None:
         assert outcome.status == 2
@@ -171,13 +171,13 @@ class TestATaskAddedWithABlankOutput:
 class TestAStoryShownThatTheRecordDoesNotHold:
     @pytest.fixture
     def outcome(self) -> Outcome:
-        return fgraph(["show", "ST-0002"], {})
+        return fgraph(["show", "S-0002"], {})
 
     def test_exits_with_two(self, outcome: Outcome) -> None:
         assert outcome.status == 2
 
     def test_names_the_story(self, outcome: Outcome) -> None:
-        assert outcome.err.endswith("fgraph: error: no Story ST-0002 in the record\n")
+        assert outcome.err.endswith("fgraph: error: no Story S-0002 in the record\n")
 
 
 class TestAnIdShownThatIsNoStoryId:

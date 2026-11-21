@@ -16,7 +16,7 @@ CREATED = datetime(2026, 1, 1, tzinfo=UTC)
 DAYS = {number: datetime(2026, 1, 1 + number, tzinfo=UTC) for number in (1, 2, 3)}
 ROWS = [
     WorkItemRow(
-        f"ST-000{number}", f"title {number}", "completed", "abc1234", created=CREATED, completed=day
+        f"S-000{number}", f"title {number}", "completed", "abc1234", created=CREATED, completed=day
     )
     for number, day in DAYS.items()
 ]
@@ -45,7 +45,7 @@ def store() -> Store:
 def test_the_top_of_completed_is_the_last_completed() -> None:
     assert status_item(store(), 2).splitlines()[2:] == [
         "Completed (3)",
-        "  ST-0003  abc1234  title 3",
-        "  ST-0002  abc1234  title 2",
+        "  S-0003  abc1234  title 3",
+        "  S-0002  abc1234  title 2",
         "  ... 1 more",
     ]

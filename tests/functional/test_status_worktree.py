@@ -21,8 +21,8 @@ NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 TITLE = "Raise the Stories fgraph lists from 0 to 1"
 ADD_STORY = ["add", "story", TITLE, *CRITERION]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
-WORKTREE = Path("project.worktrees") / "ST-0001-raise-the-stories-fgraph"
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+WORKTREE = Path("project.worktrees") / "S-0001-raise-the-stories-fgraph"
 IDENTITY = {
     "GIT_AUTHOR_NAME": "a developer",
     "GIT_AUTHOR_EMAIL": "developer@example.com",
@@ -77,11 +77,11 @@ def environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
 
 @pytest.fixture
 def checkout(tmp_path: Path) -> Path:
-    """The checkout of main of a repository with ST-0001 started, its two Tasks in Backlog."""
+    """The checkout of main of a repository with S-0001 started, its two Tasks in Backlog."""
     path = tmp_path / "project"
     path.mkdir()
     git(path, "init", "--quiet", "--initial-branch", "main")
-    for argv in (ADD_STORY, ADD_TASK, ADD_TASK, ["start", "ST-0001"]):
+    for argv in (ADD_STORY, ADD_TASK, ADD_TASK, ["start", "S-0001"]):
         fgraph(argv, path)
     return path
 
@@ -100,7 +100,7 @@ class TestAStoryWithOneOfItsTwoTasksCompletedInItsWorktree:
         self, listed: Outcome
     ) -> None:
         assert listed.out == (
-            f"Backlog (0)\nInProgress (1)\n  ST-0001  1/2 T  {TITLE}\nCompleted (0)\n"
+            f"Backlog (0)\nInProgress (1)\n  S-0001  1/2 T  {TITLE}\nCompleted (0)\n"
         )
 
 

@@ -74,7 +74,7 @@ def test_a_completed_task_does_not_complete_again() -> None:
 
 def test_tasks_all_completed_are_returned_as_completed() -> None:
     done = completed(started(FIRST, ON), ON, COMMIT)
-    assert all_completed((done,), "ST-0001") == (done,)
+    assert all_completed((done,), "S-0001") == (done,)
 
 
 def test_tasks_not_all_completed_are_refused_naming_the_holder_and_the_rest() -> None:

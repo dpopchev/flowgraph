@@ -15,7 +15,7 @@ COMMAND_LINE = build_command_line()
         ([], ()),
         (["--help"], ()),
         (["start", "--help"], ("start",)),
-        (["start", "ST-0001"], ("start",)),
+        (["start", "S-0001"], ("start",)),
         (["add", "story", "--help"], ("add", "story")),
         (["add", "--help"], ("add",)),
         (["--dir", "elsewhere", "start"], ("start",)),
@@ -39,7 +39,7 @@ def test_the_arguments_name_the_command_by_its_path(argv: list[str], path: tuple
 
 
 def test_arguments_without_the_help_option_ask_for_no_help() -> None:
-    assert help_asked(["start", "ST-0001"], COMMAND_LINE) is None
+    assert help_asked(["start", "S-0001"], COMMAND_LINE) is None
 
 
 def test_the_help_option_alone_asks_for_the_menu() -> None:
@@ -47,7 +47,7 @@ def test_the_help_option_alone_asks_for_the_menu() -> None:
 
 
 def test_the_help_option_after_a_command_asks_for_the_help_of_that_command() -> None:
-    asked = help_asked(["start", "ST-0001", "-h"], COMMAND_LINE)
+    asked = help_asked(["start", "S-0001", "-h"], COMMAND_LINE)
     assert asked == COMMAND_LINE.commands["start",].format_help()
 
 

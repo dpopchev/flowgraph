@@ -16,7 +16,7 @@ STORY = make_story(make_story_id(1), "a title", make_scenario("a", "b", "c"), ""
 
 
 def add(saved: list[StoryState]) -> object:
-    """Write one Task for ST-0001 in a record whose highest Task id is T-0003."""
+    """Write one Task for S-0001 in a record whose highest Task id is T-0003."""
     return add_task(
         parent=make_story_id(1),
         title="a task title",

@@ -22,7 +22,7 @@ SIX = range(1, 7)
 
 def completed(number: int) -> list[list[str]]:
     """The commands that add the Story of that number with one Task and complete both."""
-    story, task, commit = f"ST-{number:04}", f"T-{number:04}", f"abc123{number}"
+    story, task, commit = f"S-{number:04}", f"T-{number:04}", f"abc123{number}"
     return [
         ["add", "story", f"title {number}", *CRITERION],
         ["add", "task", "a task title", "--parent", story, "--output", "an output"],
@@ -83,15 +83,15 @@ class TestSixStoriesCompleted:
             "Backlog (0)\n"
             "InProgress (0)\n"
             "Completed (6)\n"
-            "  ST-0006  abc1236  title 6\n"
-            "  ST-0005  abc1235  title 5\n"
-            "  ST-0004  abc1234  title 4\n"
-            "  ST-0003  abc1233  title 3\n"
-            "  ST-0002  abc1232  title 2\n"
+            "  S-0006  abc1236  title 6\n"
+            "  S-0005  abc1235  title 5\n"
+            "  S-0004  abc1234  title 4\n"
+            "  S-0003  abc1233  title 3\n"
+            "  S-0002  abc1232  title 2\n"
             "  ... 1 more\n"
         )
 
 
 def test_status_all_lists_every_one(tmp_path: Path) -> None:
     listed = after(tmp_path, SIX_COMPLETED, ["status", "--all"])
-    assert listed.out.splitlines()[-1] == "  ST-0001  abc1231  title 1"
+    assert listed.out.splitlines()[-1] == "  S-0001  abc1231  title 1"

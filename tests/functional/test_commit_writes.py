@@ -20,11 +20,11 @@ NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "Raise the Stories fgraph lists from 0 to 1", *CRITERION]
 ADD_OTHER = ["add", "story", "another title", *CRITERION]
-ADD_TASK = ["add", "task", "a task title", "--parent", "ST-0001", "--output", "an output"]
-BRANCH = "wi/ST-0001-raise-the-stories-fgraph"
-WORKTREE = Path("project.worktrees") / "ST-0001-raise-the-stories-fgraph"
-STORY_FILE = ".fgraph/items/ST-0001.toml"
-OTHER_FILE = ".fgraph/items/ST-0002.toml"
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+BRANCH = "wi/S-0001-raise-the-stories-fgraph"
+WORKTREE = Path("project.worktrees") / "S-0001-raise-the-stories-fgraph"
+STORY_FILE = ".fgraph/items/S-0001.toml"
+OTHER_FILE = ".fgraph/items/S-0002.toml"
 IDENTITY = {
     "GIT_AUTHOR_NAME": "a developer",
     "GIT_AUTHOR_EMAIL": "developer@example.com",
@@ -54,29 +54,27 @@ class Step:
 
 # The writes of one Story from its add to its start, then the moves of its Task in its worktree.
 STEPS = (
-    Step(Path("project"), tuple(ADD_STORY), "chore: add ST-0001 in the record", STORY_FILE),
-    Step(Path("project"), tuple(ADD_OTHER), "chore: add ST-0002 in the record", OTHER_FILE),
-    Step(
-        Path("project"), tuple(ADD_TASK), "chore: add T-0001 of ST-0001 in the record", STORY_FILE
-    ),
+    Step(Path("project"), tuple(ADD_STORY), "chore: add S-0001 in the record", STORY_FILE),
+    Step(Path("project"), tuple(ADD_OTHER), "chore: add S-0002 in the record", OTHER_FILE),
+    Step(Path("project"), tuple(ADD_TASK), "chore: add T-0001 of S-0001 in the record", STORY_FILE),
     Step(
         Path("project"),
-        ("amend", "ST-0002", "--then", "one more"),
-        "chore: amend ST-0002 in the record",
+        ("amend", "S-0002", "--then", "one more"),
+        "chore: amend S-0002 in the record",
         OTHER_FILE,
     ),
     Step(
         Path("project"),
-        ("reorder", "ST-0002", "--before", "ST-0001"),
-        "chore: reorder ST-0002 before ST-0001 in the record",
+        ("reorder", "S-0002", "--before", "S-0001"),
+        "chore: reorder S-0002 before S-0001 in the record",
         ".fgraph/queue.toml",
     ),
-    Step(Path("project"), ("start", "ST-0001"), "chore: start ST-0001 in the record", STORY_FILE),
-    Step(WORKTREE, ("start", "T-0001"), "chore: start T-0001 of ST-0001 in the record", STORY_FILE),
+    Step(Path("project"), ("start", "S-0001"), "chore: start S-0001 in the record", STORY_FILE),
+    Step(WORKTREE, ("start", "T-0001"), "chore: start T-0001 of S-0001 in the record", STORY_FILE),
     Step(
         WORKTREE,
         ("complete", "T-0001", "--commit", "3e9ae5c"),
-        "chore: complete T-0001 of ST-0001 in the record",
+        "chore: complete T-0001 of S-0001 in the record",
         STORY_FILE,
     ),
 )
@@ -146,7 +144,7 @@ class TestAStoryAddedInsideAGitRepository:
         assert git(checkout, "rev-list", "--count", "HEAD") == "2"
 
     def test_the_commit_is_worded_by_fgraph(self, added: Outcome, checkout: Path) -> None:
-        assert git(checkout, "log", "-1", "--format=%s") == "chore: add ST-0001 in the record"
+        assert git(checkout, "log", "-1", "--format=%s") == "chore: add S-0001 in the record"
 
     def test_the_commit_holds_only_the_file_of_the_story(
         self, added: Outcome, checkout: Path
@@ -169,9 +167,9 @@ def test_a_write_leaves_its_commit_holding_only_its_file(
 def test_a_story_completed_on_main_leaves_its_commit(checkout: Path, tmp_path: Path) -> None:
     for step in STEPS:
         fgraph(step.argv, tmp_path / step.where)
-    git(checkout, "merge", "--quiet", "--no-ff", "--message", "feat: land ST-0001", BRANCH)
-    fgraph(["complete", "ST-0001", "--commit", git(checkout, "rev-parse", "HEAD")], checkout)
-    assert last_commit(checkout) == ("chore: complete ST-0001 in the record", STORY_FILE)
+    git(checkout, "merge", "--quiet", "--no-ff", "--message", "feat: land S-0001", BRANCH)
+    fgraph(["complete", "S-0001", "--commit", git(checkout, "rev-parse", "HEAD")], checkout)
+    assert last_commit(checkout) == ("chore: complete S-0001 in the record", STORY_FILE)
 
 
 def test_a_change_beside_the_record_stays_out_of_the_commit(checkout: Path) -> None:
@@ -186,13 +184,13 @@ def test_a_change_beside_the_record_stays_out_of_the_commit(checkout: Path) -> N
 
 def test_a_write_that_leaves_its_file_as_it_was_makes_no_commit(checkout: Path) -> None:
     fgraph(ADD_STORY, checkout)
-    fgraph(["amend", "ST-0001", "--then", "another"], checkout)
-    assert git(checkout, "log", "-1", "--format=%s") == "chore: add ST-0001 in the record"
+    fgraph(["amend", "S-0001", "--then", "another"], checkout)
+    assert git(checkout, "log", "-1", "--format=%s") == "chore: add S-0001 in the record"
 
 
 def test_a_write_outside_a_git_work_tree_is_made_without_a_warning(tmp_path: Path) -> None:
     outcome = fgraph(ADD_STORY, tmp_path)
-    assert (outcome.status, outcome.out, outcome.err) == (0, "added ST-0001\n", "")
+    assert (outcome.status, outcome.out, outcome.err) == (0, "added S-0001\n", "")
 
 
 class TestAnAddWhoseCommitGitRefuses:
@@ -208,7 +206,7 @@ class TestAnAddWhoseCommitGitRefuses:
 
     def test_add_names_the_git_command_and_its_error(self, refused: Outcome) -> None:
         assert refused.err.splitlines()[-1:] == [
-            "fgraph: error: git commit --quiet --only --message chore: add ST-0001 in the record"
+            "fgraph: error: git commit --quiet --only --message chore: add S-0001 in the record"
             f" -- {STORY_FILE} failed: refused by the hook"
         ]
 

@@ -34,7 +34,8 @@ commit = "d90cb24"
 
 [[tasks]]
 id = "T-0119"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say a start on a record git ignores makes its branch"
 expected_output = "changed: README.md shows fgraph start on an ignored record naming its branch, says where its Tasks are written and that fgraph land lands it with no commit of the record; docs/domain-model.md, Persistence, says the same and no longer says the branch of a work item on an ignored record is not built"
 created = 2026-11-21 14:40:41+00:00
+started = 2026-11-21 14:44:14+00:00

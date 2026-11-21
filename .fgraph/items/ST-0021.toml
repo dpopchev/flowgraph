@@ -1,9 +1,11 @@
 id = "ST-0021"
-state = "started"
+state = "completed"
 title = "Cut the checkouts fgraph starts a work item in from every worktree to the checkout of main"
 description = "Found during ST-0009, whose T-0043 left it out: whether the checkout is on main is not checked. A probe on 2026-11-21: fgraph start ST-0002 run in the worktree of ST-0001 exits 0, commits the start of ST-0002 on the branch of ST-0001 and nests its worktree at <worktree of ST-0001>.worktrees/ST-0002-<slug>. The table of ST-0018 has starting a work item on main; no criterion holds its refusal elsewhere, and the criterion of ST-0010 is about fgraph add task. Open: whether a start in the checkout is also refused when it is on another branch than main. Ordered after ST-0010. Its Tasks are written when it is ordered."
 created = 2026-11-21 08:57:17+00:00
 started = 2026-11-21 11:08:46+00:00
+completed = 2026-11-21 11:11:45+00:00
+commit = "e9e8bd2"
 
 [criterion]
 given = "the worktree of a started Story, and another Story in Backlog that holds a Task"

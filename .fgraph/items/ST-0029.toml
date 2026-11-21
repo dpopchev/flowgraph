@@ -23,11 +23,12 @@ commit = "7c4a267"
 
 [[tasks]]
 id = "T-0121"
-state = "backlog"
+state = "started"
 title = "Add the completed time to the row of src/flowgraph/work_item/model.py and order Completed by it in src/flowgraph/item.py, the last completed first"
 description = "Removes the xfail mark of tests/functional/test_status_completed_order.py. Tests that state the old order of Completed are restated."
 expected_output = "changed: WorkItemRow of src/flowgraph/work_item/model.py holds the completed time of a completed work item, read by read_work_item_rows of src/flowgraph/work_item/file.py; status_item of src/flowgraph/item.py lists Completed the last completed first, those completed at one time by kind and number; proved in tests/work_item/ and tests/item/"
 created = 2026-11-21 17:01:25+00:00
+started = 2026-11-21 17:03:58+00:00
 
 [[tasks]]
 id = "T-0122"

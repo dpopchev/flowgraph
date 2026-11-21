@@ -1,8 +1,9 @@
 id = "ST-0031"
-state = "backlog"
+state = "started"
 title = "Cut the items fgraph status lists under one heading from every one to the top 5"
 description = "The developer's request of 2026-11-21: 'make the status show only the top most 5 of each', then 'make the status showing more compact', with board watch of board 1 as the inspiration. The readings the developer agreed with 'go' on 2026-11-21: (1) each is every heading status lists: Features, Backlog, InProgress, Completed and Removed. (2) The heading keeps the count of all its items. (3) The line under the fifth is '  ... N more', N the items not listed; there is no such line at five or fewer. (4) fgraph status --all lists every one, as before. (5) The top is the order status already lists: the queue for the Backlog, the last started and the last completed first, the Features and Removed by number. The other Stories of the request are ST-0032 to ST-0036."
 created = 2026-11-21 17:40:31+00:00
+started = 2026-11-21 17:41:12+00:00
 
 [criterion]
 given = "a record with six Stories completed"

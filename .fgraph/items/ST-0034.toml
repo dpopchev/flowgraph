@@ -1,0 +1,10 @@
+id = "ST-0034"
+state = "backlog"
+title = "Raise the InProgress work items fgraph status lists with their started Task from none to every one"
+description = "The developer's request of 2026-11-21: 'In progress can which is the item', with board watch of board 1 as the inspiration. The readings the developer agreed with 'go' on 2026-11-21: (1) the item is the Task being worked: the started Task of a work item under InProgress is listed on a line of its own under it, '    => T-0001  <title>'. (2) A blocked Task is listed the same way, marked '!' and ending with what it waits on: '    !  T-0002  <title>  -- waiting on <what>'. (3) The Tasks are listed in the order of the file; a Task in Backlog or completed is not listed. (4) A Task line does not count toward the top 5 of ST-0031."
+created = 2026-11-21 17:41:01+00:00
+
+[criterion]
+given = "a record with a Story started and a Task of it started"
+when = "fgraph status is run"
+then = "it lists the Task under its Story, marked =>"

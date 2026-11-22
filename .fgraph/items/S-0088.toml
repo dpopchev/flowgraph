@@ -1,0 +1,11 @@
+id = "S-0088"
+state = "backlog"
+title = "Raise the Tasks a developer adds with the command that checks them, with the development on, from none to every one"
+description = "The words of the note: fgraph add task --check, needed with the development on; with the development off a Task takes none."
+parent = "F-0009"
+created = 2026-11-22 21:02:30+00:00
+
+[criterion]
+given = "a record with the development on and a Story in Backlog"
+when = "fgraph add task is run with --check and a command"
+then = "fgraph show of the Story lists the command under the Task as its check"

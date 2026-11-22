@@ -1,0 +1,14 @@
+id = "S-0106"
+state = "backlog"
+title = "Raise the items of a record that keep the id they held in another record from none to every one converted"
+description = "The words of the note: the old ids kept as a reference. Its Tasks are written when it is ordered."
+parent = "F-0015"
+created = 2026-11-22 21:04:13+00:00
+depends_on = [
+    "Q-0001",
+]
+
+[criterion]
+given = "a record of fgraph"
+when = "an item is added with the id it held in a .board/, as W-0123"
+then = "fgraph show of the item lists W-0123 as its reference"

@@ -1,0 +1,10 @@
+id = "F-0005"
+state = "backlog"
+title = "Raise the terms of a project fgraph keeps, with how they relate, from none to every one a developer adds"
+description = "Asked by the developer on 2026-11-22; the plan was shown and filed on the developer word: file all. Row 4 of the plan, and the answer to the open question of docs/board-review.md: a term is a node of its own, not a tag on a knowledge line, since only a node holds a relation to another term. Readings of the agent shown with the plan: the id of a term is its name; terms relate by a closed set of two kinds to start, is-a and part-of. Open: whether a term is written on main alone and read from a worktree, as Task ids are."
+created = 2026-11-22 10:41:34+00:00
+criteria = [
+    "a developer adds a term with its meaning and sees every term of the record",
+    "a developer relates one term to another by a kind of a closed set",
+    "a developer says which terms an item or a knowledge line is about, and sees them from the term",
+]

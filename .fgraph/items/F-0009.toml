@@ -7,3 +7,8 @@ criteria = [
     "a developer adds a Task with the command that checks it, needed with the development on and refused with it off",
     "a developer is refused the completion of a Task while its check fails, with the command and its exit status named",
 ]
+
+[[knowledge]]
+kind = "decision"
+text = "Relayed by the note of the ~/.claude session of 2026-11-22, as the word of the developer of that day: a Task carries a check only with the development on."
+noted = 2026-11-22 21:04:26+00:00

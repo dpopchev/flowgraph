@@ -1,11 +1,13 @@
 """The text fgraph writes for the record: its items by bucket, and one item whole."""
 
 from collections.abc import Collection, Iterable, Sequence
+from typing import assert_never
 
 from flowgraph.feature import FeatureDetail, FeatureRow
 from flowgraph.story import StoryDetail, StoryRow
 from flowgraph.task import TaskRow
 from flowgraph.upkeep import UpkeepDetail, UpkeepRow
+from flowgraph.work_item import WorkItemRow
 
 # The buckets of the flow in their order, each with the states of an item shown in it.
 BUCKETS: Sequence[tuple[str, Collection[str]]] = (
@@ -29,25 +31,19 @@ COMPLETED = "completed"
 CUT = "..."
 
 
-def status_text(
-    rows: Iterable[StoryRow | UpkeepRow],
-    features: Iterable[FeatureRow] = (),
-    top: int | None = None,
-) -> str:
+def status_text(rows: Iterable[WorkItemRow | FeatureRow], top: int | None = None) -> str:
     """The items by bucket, in the order of the flow: a heading with its count, then its items.
 
     A completed item is listed with its commit, a removed one with its reason. Removed stands
-    apart from the flow: its heading is listed only when an item is removed. The Features come
-    first, under a heading of their own, each with its work items completed of those it holds
-    and its derived bucket; that heading is listed only when there is a Feature. Under a top a
+    apart from the flow: its heading is listed only when an item is removed. A Feature is one
+    item of its derived bucket, listed among the work items in the order given. Under a top a
     heading lists that many of its items, the first ones given, then how many more it holds;
     its count stays that of all of them.
     """
     listed = list(rows)
-    grouping = [_feature_line(feature) for feature in features]
-    lines = [f"Features ({len(grouping)})\n", *_top_of(grouping, top)] if grouping else []
+    lines: list[str] = []
     for bucket, states in BUCKETS:
-        held = [_status_line(row) for row in listed if row.state in states]
+        held = [_item_lines(row) for row in listed if _is_listed_in(row, bucket, states)]
         if bucket == APART and not held:
             continue
         lines.append(f"{bucket} ({len(held)})\n")
@@ -67,16 +63,45 @@ def cut_lines(text: str, width: int | None) -> str:
     return "".join(f"{line}\n" for line in lines)
 
 
-def _feature_line(feature: FeatureRow) -> str:
-    """One Feature: its id, its work items completed of all, its bucket, then its title."""
+def _is_listed_in(row: WorkItemRow | FeatureRow, bucket: str, states: Collection[str]) -> bool:
+    """True when the bucket of those states lists the row: a Feature by its derived bucket."""
+    match row:
+        case FeatureRow():
+            return row.bucket == bucket
+        case WorkItemRow():
+            return row.state in states
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def _item_lines(row: WorkItemRow | FeatureRow) -> str:
+    """One item of a bucket in the lines it is written in: a work item, or a Feature."""
+    match row:
+        case FeatureRow():
+            return _feature_lines(row)
+        case WorkItemRow():
+            return _status_line(row)
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def _feature_lines(feature: FeatureRow) -> str:
+    """One Feature: its id, its work items completed of all, then its title.
+
+    Under it each started work item of it, written as one of a bucket is with its Tasks being
+    worked, two columns further in.
+    """
     progress = f"{feature.completed}/{feature.held} W"
-    return f"  {feature.id}  {progress}  {feature.bucket}  {feature.title}\n"
+    started = (line for row in feature.started for line in _status_line(row).splitlines())
+    under = "".join(f"  {line}\n" for line in started)
+    return f"  {feature.id}  {progress}  {feature.title}\n{under}"
 
 
 def _top_of(items: Sequence[str], top: int | None) -> list[str]:
     """The first items up to the top, then how many more there are; every item without a top.
 
-    An item is counted once, whatever the lines it is written in.
+    An item is counted once, whatever the lines it is written in: a work item with its Tasks
+    being worked, a Feature with its started work items.
     """
     if top is None or len(items) <= top:
         return list(items)

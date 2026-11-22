@@ -6,7 +6,7 @@ from the states of its work items. It is kept as one file of the record, `items/
 
 import tomllib
 from collections.abc import Callable, Collection, Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
@@ -16,6 +16,7 @@ from flowgraph.criterion import said
 from flowgraph.item_file import write_checked
 from flowgraph.parent import FeatureId, feature_id_text, make_feature_id, parse_feature_id
 from flowgraph.record import ITEMS, Now
+from flowgraph.work_item import WorkItemRow
 
 # The states of a completed and of a removed work item, as the record writes them.
 COMPLETED = "completed"
@@ -53,7 +54,8 @@ class FeatureDetail:
 class FeatureRow:
     """One Feature as a line of a list reads it: its id, its title and its derived bucket.
 
-    Its progress is the work items completed of those it holds; a removed one is not held.
+    Its progress is the work items completed of those it holds; a removed one is not held. Its
+    started work items are the rows a list writes under it, in the order given.
     """
 
     id: str
@@ -61,6 +63,7 @@ class FeatureRow:
     bucket: str
     completed: int
     held: int
+    started: list[WorkItemRow] = field(default_factory=list[WorkItemRow], kw_only=True)
 
 
 # The Feature of that id, whole; raises FeatureNotFoundError when the record holds none.

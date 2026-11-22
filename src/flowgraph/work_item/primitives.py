@@ -4,7 +4,13 @@ from collections.abc import Sequence
 from dataclasses import replace
 from typing import assert_never
 
-from flowgraph.criterion import Answer, CriterionError, evidence_written
+from flowgraph.criterion import (
+    Answer,
+    CriterionError,
+    Hypothesis,
+    answered_before,
+    evidence_written,
+)
 from flowgraph.item import (
     backlog_task,
     criterion_held,
@@ -147,6 +153,11 @@ def item_held(held: HeldItemFile, kind: Kind, kinds: Sequence[Kind] = ()) -> Wor
             match held:
                 case CompletedItemFile():
                     commit = evidence_written(held.commit)
+                    question = begun.criterion
+                    if decision and decision.answer is None and isinstance(question, Hypothesis):
+                        earlier = answered_before(question.question, decision.text)
+                        begun = replace(begun, criterion=earlier)
+                        decision = None
                     done = completed_work_item(begun, held.completed, commit, decision)
                     return _verified(done, held)
                 case StartedItemFile():

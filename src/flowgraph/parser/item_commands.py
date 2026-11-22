@@ -12,6 +12,9 @@ TOP = 5
 # The seconds watch waits between two frames, unless others are given.
 EVERY = 5
 
+# The answers to a hypothesis a Spike is completed with.
+ANSWERS = ("yes", "no")
+
 
 def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     """The parser of each command that reads or moves an item of the record, under its name."""
@@ -90,6 +93,9 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     complete.add_argument(
         "--decision", metavar="TEXT", help="what answers the hypothesis, of a Spike"
     )
+    complete.add_argument(
+        "--answer", choices=ANSWERS, help="the yes or no of the hypothesis, of a Spike"
+    )
     land = new_command(
         commands,
         "land",
@@ -102,6 +108,9 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         help="the message of the commit the landing makes: needed unless it lands by fast-forward",
     )
     land.add_argument("--decision", metavar="TEXT", help="what answers the hypothesis, of a Spike")
+    land.add_argument(
+        "--answer", choices=ANSWERS, help="the yes or no of the hypothesis, of a Spike"
+    )
     remove = new_command(
         commands, "remove", "remove a work item or a Feature in Backlog, kept with its reason"
     )

@@ -59,7 +59,6 @@ def runs(cwd: Path, *argvs: Sequence[str]) -> Outcome:
     return outcomes[-1]
 
 
-@pytest.mark.xfail(strict=True, reason="S-0095: the answer of a Spike is not taken yet")
 class TestAStartedSpikeCompletedWithItsDecisionAndTheAnswerNo:
     @pytest.fixture
     def completed(self, tmp_path: Path) -> Outcome:
@@ -83,7 +82,6 @@ class TestAStartedSpikeCompletedWithItsDecisionAndTheAnswerNo:
         ]
 
 
-@pytest.mark.xfail(strict=True, reason="S-0095: the answer of a Spike is not taken yet")
 def test_a_spike_completed_without_its_answer_is_refused_naming_it(tmp_path: Path) -> None:
     outcome = runs(tmp_path, *STARTED, TASK_DONE, SPIKE_DONE)
     assert (outcome.status, outcome.err.splitlines()[-1:]) == (

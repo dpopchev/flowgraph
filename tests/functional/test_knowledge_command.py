@@ -13,6 +13,9 @@ from flowgraph.cli import open_files, run
 
 pytestmark = pytest.mark.functional
 
+# What a Spike is completed with: its decision and its answer.
+DECIDED = ["--decision", "yes: one file per item", "--answer", "yes"]
+
 # Each command with the day of January 2026 it is run on: the lines are noted on different days.
 SCRIPT = [
     (1, ["add", "story", "a title", "--given", "a", "--when", "b", "--then", "c"]),
@@ -25,7 +28,7 @@ SCRIPT = [
     (5, ["start", "Q-0001"]),
     (5, ["start", "T-0001"]),
     (5, ["complete", "T-0001", "--commit", "abc1234"]),
-    (5, ["complete", "Q-0001", "--commit", "def5678", "--decision", "yes: one file per item"]),
+    (5, ["complete", "Q-0001", "--commit", "def5678", *DECIDED]),
     (6, ["note", "S-0001", "--deviation", "a task was dropped"]),
 ]
 
@@ -72,7 +75,7 @@ class TestARecordWithKnowledgeOnSeveralItemsAndACompletedSpike:
         self, listed: Outcome
     ) -> None:
         assert listed.out == (
-            "2026-01-05  decision  Q-0001  yes: one file per item\n"
+            "2026-01-05  decision  Q-0001  yes: one file per item (answer yes)\n"
             "2026-01-04  decision  F-0001  ship in two steps\n"
             "2026-01-03  decision  S-0001  keep one store\n"
         )
@@ -83,7 +86,7 @@ def test_knowledge_without_a_kind_lists_every_line_of_every_kind_newest_first(
 ) -> None:
     assert fgraph(["knowledge"], tmp_path, 7).out == (
         "2026-01-06  deviation  S-0001  a task was dropped\n"
-        "2026-01-05  decision  Q-0001  yes: one file per item\n"
+        "2026-01-05  decision  Q-0001  yes: one file per item (answer yes)\n"
         "2026-01-04  decision  F-0001  ship in two steps\n"
         "2026-01-03  decision  S-0001  keep one store\n"
         "2026-01-02  finding  S-0001  the store is plain files\n"

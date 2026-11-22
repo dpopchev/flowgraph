@@ -8,12 +8,6 @@ import argparse
 from pathlib import Path
 
 from flowgraph.about import about_item
-from flowgraph.criterion import (
-    Criterion,
-    make_defect,
-    make_hypothesis,
-    make_scenario,
-)
 from flowgraph.development import RunGate, check_slug_branched
 from flowgraph.development.commit import OpenGit, Said, commit_written
 from flowgraph.development.land import land_item
@@ -53,6 +47,7 @@ from flowgraph.knowledge.governed import governs_asked
 from flowgraph.knowledge.list import show_knowledge
 from flowgraph.parent import parent_asked
 from flowgraph.parser.item_commands import TOP
+from flowgraph.parser.stated import criterion_added, decision_given
 from flowgraph.record import CONFIG, Config, Now
 from flowgraph.record.setting import set_setting, show_config, unset_setting
 from flowgraph.record.store import Store
@@ -69,20 +64,6 @@ from flowgraph.term.item import add_term_item, relate_term_item, terms_text
 from flowgraph.work_item import (
     Amendment,
 )
-
-
-def _criterion(args: argparse.Namespace) -> Criterion:
-    """The criterion the arguments of an add state, in the form the kind added takes.
-
-    Raises EmptyPartError naming the first part that is blank.
-    """
-    match args.kind:
-        case "bug":
-            return make_defect(args.observed, args.expected)
-        case "spike":
-            return make_hypothesis(args.hypothesis)
-        case _:
-            return make_scenario(args.given, args.when, args.then)
 
 
 def _written(
@@ -109,7 +90,7 @@ def _written(
         case "add":
             kind = kind_named(args.kind)
             under = parent_named(args.parent, store)
-            criterion = _criterion(args)
+            criterion = criterion_added(args)
             depends_on = depends_asked(args.depends_on, None, store) or ()
             filed_during = filed_during_asked(args.filed_during, store)
             amends = amends_asked(args.amends, store)
@@ -146,7 +127,8 @@ def _written(
         case "complete" if is_feature_id(args.id):
             return complete_feature_item(args.id, args.commit, store, now)
         case "complete":
-            return complete_and_start_next(args.id, args.commit, store, now, config, args.decision)
+            decision = decision_given(args)
+            return complete_and_start_next(args.id, args.commit, store, now, config, decision)
         case "start" if is_feature_id(args.id):
             return start_feature_item(args.id, args.slug, store, now, config)
         case "start":
@@ -227,8 +209,9 @@ def command_said(
         case "config":
             return Said(show_config(config))
         case "land":
+            decision = decision_given(args)
             return land_item(
-                args.id, args.message, store, now, record, open_git, config, run_gate, args.decision
+                args.id, args.message, store, now, record, open_git, config, run_gate, decision
             )
         case "knowledge":
             return Said(show_knowledge(args.kind, args.about, store))

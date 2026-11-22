@@ -77,6 +77,7 @@ class WorkItemDetail:
     expected: str = ""
     hypothesis: str = ""
     decision: str = ""
+    answer: str = ""
     commit: str = ""
     reason: str = ""
     parent: str = ""

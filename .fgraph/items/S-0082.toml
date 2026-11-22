@@ -44,3 +44,8 @@ created = 2026-11-22 21:01:42+00:00
 started = 2026-11-22 22:26:24+00:00
 completed = 2026-11-22 22:29:10+00:00
 commit = "95586b6"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: yes -- at f737b8e on main, in a scratch directory with no record: fgraph status exit 2 naming fgraph init beside --dir; fgraph init exit 0 printed record: <dir>/.fgraph, which holds config.toml; fgraph add story exit 0 printed added S-0001; fgraph status exit 0 listed S-0001 under Backlog (1); a second fgraph init exit 2 with <dir>/.fgraph holds a record already; make check: 2398 passed, all checks passed"
+noted = 2026-11-22 22:32:21+00:00

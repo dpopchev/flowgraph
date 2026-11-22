@@ -736,10 +736,16 @@ and its merge tool.
   of it in Backlog or started leaves the Feature started -- it starts the
   next one in Backlog (above) -- and so does the
   removal of its last work item in Backlog: that Feature stays in InProgress
-  with every work item it holds completed, `F-0001  1/1 W  <title>`, until a
-  work item added under it is completed. A removed work item holds nothing
-  back and counts in neither number of the progress. No command completes a
-  Feature by itself.
+  with every work item it holds completed, `F-0001  1/1 W  <title>`. A
+  removed work item holds nothing back and counts in neither number of the
+  progress. `fgraph complete F-0001` is the way to Completed of such a
+  Feature (B-0013): it completes a started or blocked Feature once each work
+  item of it is completed or removed, now, in the commit of its last completed
+  work item, none when none is. It is refused naming the first work item
+  neither completed nor removed, for a Feature in Backlog, completed or
+  removed, and when given `--commit`. A landing reads the Feature of its work
+  item while the merge is held, so a Feature the record does not hold refuses
+  it before `main` moves.
 - The Feature is saved before the work item, and on `main`: the file of a
   Feature is no file of the branch of a work item (below), so `fgraph complete`
   of the last work item run on that branch is refused with exit 2 and nothing

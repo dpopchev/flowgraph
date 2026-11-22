@@ -6,7 +6,15 @@ Each runs on the store of a record, as the commands of a work item do (`flowgrap
 from collections.abc import Iterable
 from typing import assert_never
 
+from flowgraph.criterion import (
+    NO_COMMIT,
+    CommitError,
+    Evidence,
+    evidence_text,
+    evidence_written,
+)
 from flowgraph.feature import (
+    DONE,
     BlockedFeature,
     CompletedFeature,
     Feature,
@@ -14,6 +22,7 @@ from flowgraph.feature import (
     RemovedFeature,
     StartedFeature,
     add_feature,
+    completed_feature,
     feature_bucket,
     feature_detail,
 )
@@ -29,11 +38,15 @@ from flowgraph.parent import (
 )
 from flowgraph.queue import queued
 from flowgraph.record import Now
-from flowgraph.status import BACKLOG, backlog_as_added, rows_by_id
+from flowgraph.status import BACKLOG, backlog_as_added, rows_under
 from flowgraph.store import Store
 from flowgraph.task import CompletedAlreadyError
 from flowgraph.text import feature_text
-from flowgraph.work_item import WorkItemId
+from flowgraph.work_item import WorkItemId, WorkItemRow
+
+
+class OpenWorkItemError(ValueError):
+    """A Feature to complete that holds a work item neither completed nor removed."""
 
 
 def is_feature_id(text: str) -> bool:
@@ -73,9 +86,10 @@ def show_feature_item(feature: str, store: Store) -> str:
     gives: the one they start in. Raises FeatureIdError when the text is no Feature id and
     FeatureNotFoundError when the record holds no such Feature.
     """
-    shown = store.features.load_feature(parse_feature_id(feature))
+    feature_id = parse_feature_id(feature)
+    shown = store.features.load_feature(feature_id)
     detail = feature_detail(shown)
-    held = {item_id: row for item_id, row in rows_by_id(store).items() if row.parent == detail.id}
+    held = rows_under(feature_id, store)
     in_backlog = backlog_as_added(held)
     start_order = queued(store.load_queue(), in_backlog)
     next_started = iter(sorted(in_backlog, key=start_order.index))
@@ -96,6 +110,40 @@ def show_any_item(item: str, store: Store) -> str:
             return show_item(item, store)
         case _ as unreachable:
             assert_never(unreachable)
+
+
+def _last_commit(rows: Iterable[WorkItemRow]) -> Evidence:
+    """The commit of the work item completed last among the rows; none when none is completed."""
+    completed = [(row.completed, row.commit) for row in rows if row.completed is not None]
+    return evidence_written(max(completed)[1]) if completed else NO_COMMIT
+
+
+def complete_feature_item(feature: str, commit: str | None, store: Store, now: Now) -> Written:
+    """Complete the started Feature of that id, each work item of it completed or removed.
+
+    It is completed now, in the commit of its last completed work item, none when none is: the
+    way to Completed of a Feature whose last work item was removed, which no completion of a
+    work item completes. Raises FeatureIdError when the text is no Feature id, CommitError when
+    a commit is given, FeatureNotFoundError when the record holds no such Feature, the refusal
+    of its completion when it is in Backlog, completed or removed, and OpenWorkItemError naming
+    the first work item of it neither completed nor removed. Nothing is saved then.
+    """
+    feature_id = parse_feature_id(feature)
+    named = feature_id_text(feature_id)
+    if commit is not None:
+        last = "it is completed at the commit of its last completed work item"
+        raise CommitError(f"{named} takes no --commit: {last}")
+    held = store.features.load_feature(feature_id)
+    rows = list(rows_under(feature_id, store).values())
+    done = completed_feature(held, now(), _last_commit(rows))
+    open_rows = [row for row in rows if row.state not in DONE]
+    if open_rows:
+        where = "in Backlog" if open_rows[0].state == BACKLOG else open_rows[0].state
+        raise OpenWorkItemError(f"{named} cannot complete: {open_rows[0].id} is {where}")
+    store.features.save_feature(done)
+    sha = evidence_text(done.commit)
+    at = f" at {sha}" if sha else ""
+    return Written(f"completed {named}{at}\n", MESSAGE.format(f"complete {named}"))
 
 
 def parent_named(parent: str | None, store: Store) -> Parent:

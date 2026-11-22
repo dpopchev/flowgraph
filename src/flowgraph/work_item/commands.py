@@ -32,7 +32,6 @@ from flowgraph.work_item.model import (
     WorkItemState,
     append_task,
     commit_sha,
-    completed_work_item,
     make_work_item,
     next_work_item_id,
     parse_work_item_id,
@@ -260,26 +259,6 @@ def unblock_task(
     item = load_holder(task_id)
     save_work_item(unblocked_task(item, task_id))
     return item.id
-
-
-def complete_work_item(
-    *,
-    item_id: WorkItemId,
-    commit: Evidence,
-    load_work_item: LoadWorkItem,
-    save_work_item: SaveWorkItem,
-    now: Now,
-    decision: str | None = None,
-) -> None:
-    """Complete the work item of that id now, in that commit or none, and save it whole.
-
-    A work item that states a hypothesis takes the decision that answers it. Raises
-    WorkItemNotFoundError when the record holds no such item, NotStartedError when it is in
-    Backlog, OpenTaskError when a Task of it is not completed, DecisionError when a hypothesis
-    has no decision or another criterion is given one, and CompletedAlreadyError when it is
-    completed; nothing is saved.
-    """
-    save_work_item(completed_work_item(load_work_item(item_id), now(), commit, decision))
 
 
 def complete_task(

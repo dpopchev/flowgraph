@@ -14,9 +14,7 @@ from flowgraph.work_item import (
     add_work_item,
     append_task,
     complete_task,
-    complete_work_item,
     completed_task,
-    completed_work_item,
     holder_of,
     make_kind,
     make_work_item,
@@ -105,18 +103,6 @@ def test_a_task_is_completed_in_the_work_item_that_holds_it() -> None:
         now=lambda: NOW,
     )
     assert saved == [FINISHED]
-
-
-def test_a_work_item_is_completed_in_its_commit() -> None:
-    saved: list[WorkItemState] = []
-    complete_work_item(
-        item_id=ONE,
-        commit=COMMIT,
-        load_work_item=lambda _: FINISHED,
-        save_work_item=saved.append,
-        now=lambda: NOW,
-    )
-    assert saved == [completed_work_item(FINISHED, NOW, COMMIT)]
 
 
 def test_the_holder_of_a_task_is_the_work_item_that_has_it() -> None:

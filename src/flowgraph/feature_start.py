@@ -25,7 +25,7 @@ from flowgraph.parallel import check_feature_parallel
 from flowgraph.parent import FeatureId, Standalone, feature_id_text, parse_feature_id
 from flowgraph.queue import queued
 from flowgraph.record import Now
-from flowgraph.status import STARTED, backlog_as_added, rows_by_id
+from flowgraph.status import STARTED, backlog_as_added, rows_under
 from flowgraph.store import Store
 from flowgraph.task import BlockedError, CompletedAlreadyError, NoTaskError, TaskId
 from flowgraph.work_item import (
@@ -34,7 +34,6 @@ from flowgraph.work_item import (
     StartedWorkItem,
     WorkItem,
     WorkItemId,
-    WorkItemRow,
     WorkItemState,
     work_item_id_text,
 )
@@ -52,19 +51,13 @@ class WorkItemInProgressError(ValueError):
     """A second work item of one Feature started: a Feature holds at most one started."""
 
 
-def _under(feature: FeatureId, store: Store) -> dict[WorkItemId, WorkItemRow]:
-    """The row of every work item under the Feature, by kind and then by number."""
-    named = feature_id_text(feature)
-    return {item_id: row for item_id, row in rows_by_id(store).items() if row.parent == named}
-
-
 def first_in_backlog(feature: FeatureId, store: Store) -> WorkItemId | None:
     """The work item the Feature starts next; None when it has none in Backlog.
 
     It is the first of its work items in Backlog in the order of the queue, so a Feature that
     holds completed work items starts with the one after them.
     """
-    in_backlog = backlog_as_added(_under(feature, store))
+    in_backlog = backlog_as_added(rows_under(feature, store))
     start_order = queued(store.load_queue(), in_backlog)
     return min(in_backlog, key=start_order.index, default=None)
 
@@ -151,7 +144,7 @@ def check_start_under_feature(item: str, store: Store) -> None:
                 f"{named} cannot start: {feature} is not started, start it first"
             )
         case StartedFeature():
-            rows = _under(feature_id, store).values()
+            rows = rows_under(feature_id, store).values()
             already = ", ".join(row.id for row in rows if row.state == STARTED)
             if already:
                 one = f"{feature} starts one work item at a time"

@@ -23,7 +23,6 @@ from flowgraph.work_item import (
     WorkItemState,
     amended_work_item,
     append_task,
-    complete_work_item,
     completed_task,
     completed_work_item,
     make_kind,
@@ -133,18 +132,9 @@ def test_the_detail_of_a_settled_work_item_names_its_hypothesis_and_its_decision
     )
 
 
-@pytest.mark.command
+@pytest.mark.model
 def test_a_work_item_is_completed_with_the_decision_given() -> None:
-    saved: list[WorkItemState] = []
-    complete_work_item(
-        item_id=ONE,
-        commit=COMMIT,
-        decision="yes, one file",
-        load_work_item=lambda _: READY,
-        save_work_item=saved.append,
-        now=lambda: ON,
-    )
-    assert saved == [SETTLED]
+    assert completed_work_item(READY, ON, COMMIT, "yes, one file") == SETTLED
 
 
 @pytest.mark.edge

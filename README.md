@@ -1100,10 +1100,32 @@ fgraph complete S-0001 --commit 677f9b0
 Only a completion completes a Feature. A completion that leaves a work item
 of it in Backlog leaves the Feature started, and starts that work item
 (above). `fgraph remove` of its last work item in Backlog leaves the Feature
-started too: that Feature stays under InProgress,
-`F-0001  1/1 W  <title>`, until a work item added under it is completed. A
-removed work item holds nothing back and is counted in neither number. No
-command completes a Feature by itself.
+started too: that Feature stays under InProgress, `F-0001  1/1 W  <title>`. A
+removed work item holds nothing back and is counted in neither number.
+`fgraph complete F-0001` then completes it, now, at the commit of its last
+completed work item, none when none is, committed as `chore: complete F-0001
+in the record`:
+
+```sh
+fgraph complete F-0001
+# completed F-0001 at 677f9b0
+```
+
+It exits 2 with nothing written while a work item of the Feature is neither
+completed nor removed, naming it, for a Feature in Backlog, completed or
+removed, and when given `--commit`:
+
+```sh
+fgraph complete F-0001
+# fgraph: error: F-0001 cannot complete: S-0002 is in Backlog
+
+fgraph complete F-0001 --commit 677f9b0
+# fgraph: error: F-0001 takes no --commit: it is completed at the commit of its last completed work item
+```
+
+A landing reads the Feature of its work item with its other checks, while the
+merge is held: a Feature the record does not hold refuses the landing before
+`main` moves.
 
 A started Feature that cannot go on is blocked, with the reason and who or
 what it waits on, as a Task is: `fgraph block` takes the id of a Feature. It

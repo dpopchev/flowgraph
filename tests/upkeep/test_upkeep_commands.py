@@ -19,7 +19,6 @@ from flowgraph.upkeep import (
 from flowgraph.work_item import (
     add_task,
     complete_task,
-    complete_work_item,
     holder_of,
     start_task,
     start_work_item,
@@ -100,16 +99,3 @@ def test_a_task_no_upkeep_holds_is_refused_by_its_id() -> None:
             save_work_item=[].append,
             now=lambda: NOW,
         )
-
-
-def test_a_completed_upkeep_is_saved_whole_completed_now() -> None:
-    half = completed_task(BEGUN, make_task_id(4), NOW, COMMIT)
-    saved: list[UpkeepState] = []
-    complete_work_item(
-        item_id=make_upkeep_id(1),
-        commit=COMMIT,
-        load_work_item=lambda _: half,
-        save_work_item=saved.append,
-        now=lambda: NOW,
-    )
-    assert saved == [completed_upkeep(half, NOW, COMMIT)]

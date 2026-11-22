@@ -11,28 +11,40 @@ expected = "a started Feature left with every work item completed or removed has
 
 [[tasks]]
 id = "T-0246"
-state = "backlog"
+state = "completed"
 title = "Complete with fgraph complete a started Feature whose every work item is completed or removed, at the commit of its last completed one, in src/flowgraph/feature_complete.py and src/flowgraph/cli.py"
 expected_output = "changed: complete_feature_item of src/flowgraph/feature_complete.py and its dispatch in src/flowgraph/cli.py; tests/functional/test_complete_feature.py states the completion and its refusals"
 created = 2026-11-22 07:42:11+00:00
+started = 2026-11-22 07:42:15+00:00
+completed = 2026-11-22 07:46:04+00:00
+commit = "241d615"
 
 [[tasks]]
 id = "T-0247"
-state = "backlog"
+state = "completed"
 title = "Check the Feature of the work item while the merge of a landing is held, before main moves, in src/flowgraph/land.py"
 expected_output = "changed: _check_completes of src/flowgraph/land.py; tests/land/test_land.py states a landing whose Feature the record does not hold refused with the merge dropped"
 created = 2026-11-22 07:42:11+00:00
+started = 2026-11-22 07:46:05+00:00
+completed = 2026-11-22 07:48:24+00:00
+commit = "0c13233"
 
 [[tasks]]
 id = "T-0248"
-state = "backlog"
+state = "completed"
 title = "Name the rows under a Feature once, in place of the filter written in feature_start.py, feature_item.py and feature_complete.py, and drop complete_work_item of src/flowgraph/work_item/commands.py, which tests alone call"
 expected_output = "changed: src/flowgraph/status.py holds the rows under a Feature, read by the three; src/flowgraph/work_item/commands.py and its tests hold no complete_work_item"
 created = 2026-11-22 07:42:12+00:00
+started = 2026-11-22 07:48:25+00:00
+completed = 2026-11-22 07:52:20+00:00
+commit = "388f2c2"
 
 [[tasks]]
 id = "T-0249"
-state = "backlog"
+state = "completed"
 title = "Say in README.md that fgraph complete completes a started Feature left with every work item completed or removed, and what it refuses"
 expected_output = "changed: README.md names fgraph complete of a Feature"
 created = 2026-11-22 07:42:13+00:00
+started = 2026-11-22 07:52:20+00:00
+completed = 2026-11-22 07:54:19+00:00
+commit = "c2f1da4"

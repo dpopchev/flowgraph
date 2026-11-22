@@ -25,3 +25,10 @@ title = "Add the note of a Feature to fgraph note, kept in the file of the Featu
 description = "Removes the xfail mark of tests/functional/test_note_feature.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph note takes the id of a Feature in any state with any of the three kinds, as one write and one commit on main, chore: note F-0001 in the record; the file of the Feature holds its lines as the file of a work item does, read back whole in every state; fgraph show of the Feature lists them under Knowledge (n) after its work items; on the branch of a work item the note of a Feature is refused naming the work item the branch owns, as the write of another item is there"
 created = 2026-11-22 10:47:31+00:00
+
+[[tasks]]
+id = "T-0273"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say a Feature takes a knowledge line too"
+expected_output = "changed: README.md shows a decision noted on a Feature and the show that lists it; docs/domain-model.md says a Feature keeps knowledge lines as a work item does, where its note is written and what is refused, and that a Task takes none"
+created = 2026-11-22 10:47:32+00:00

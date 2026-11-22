@@ -29,6 +29,7 @@ from flowgraph.task import (
     TaskState,
 )
 from flowgraph.work_item.id import WorkItemId, work_item_id_text
+from flowgraph.work_item.verification import Verification
 from flowgraph.work_item.views import WorkItemRow
 
 # The relations of a work item that names none.
@@ -70,7 +71,10 @@ class StartedWorkItem:
 
 @dataclass(frozen=True)
 class CompletedWorkItem:
-    """A work item in Completed: every Task of it completed, its commit on `main` or none named."""
+    """A work item in Completed: every Task of it completed, its commit on `main` or none named.
+
+    It holds the answer of its closing once verified, none before.
+    """
 
     id: WorkItemId
     title: str
@@ -85,6 +89,7 @@ class CompletedWorkItem:
     knowledge: tuple[KnowledgeLine, ...] = ()
     relations: Relations[WorkItemId] = NO_RELATIONS
     about: tuple[str, ...] = ()
+    verified: Verification | None = None
 
 
 @dataclass(frozen=True)

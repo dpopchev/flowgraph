@@ -13,10 +13,7 @@ import pytest
 from flowgraph.cli import open_files, run
 from tests.functional.completed_story import ADD_STORY, ADD_TASK, STANDING_ALONE
 
-pytestmark = [
-    pytest.mark.functional,
-    pytest.mark.xfail(strict=True, reason="S-0093: fgraph verify is not added yet"),
-]
+pytestmark = pytest.mark.functional
 
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 TEXT = "make check: all checks passed"

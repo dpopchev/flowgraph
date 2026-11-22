@@ -64,8 +64,9 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     observed and expected, or a hypothesis with, once it is answered, its decision under it.
     A parent, the work items it depends on each with its bucket, the work item it was filed
     during, the work items filed during it, the work items it supersedes, the completed one it
-    amends, the work items that amend it, a description, a commit, the work item that supersedes
-    a removed one and the reason of a removal are listed only when there is one, the bucket of a
+    amends, the work items that amend it, a description, a commit, the answer of its closing
+    with its day and the text the run printed, the work item that supersedes a removed one and
+    the reason of a removal are listed only when there is one, the bucket of a
     Task only once it has left Backlog. A blocked Task is listed in InProgress as blocked, with
     its reason and what it waits on. The knowledge lines follow, in the order noted, each with
     its kind, its date and its text, then the terms it is about; there is no heading without one.
@@ -82,6 +83,9 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     amending = ", ".join(detail.amended_by)
     amended = [f"  amended by   {amending}\n"] if amending else []
     committed = [f"  commit       {detail.commit}\n"] if detail.commit else []
+    answer = detail.verified
+    day = None if answer is None else answer.on.date().isoformat()
+    verified = [] if answer is None else [f"  verified     {answer.answer}  {day}  {answer.text}\n"]
     removed = [f"  reason       {detail.reason}\n"] if detail.reason else []
     superseded = [f"  superseded by {detail.superseded_by}\n"] if detail.superseded_by else []
     supersedes = ", ".join(detail.supersedes)
@@ -108,6 +112,7 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
         *amends,
         *amended,
         *committed,
+        *verified,
         *superseded,
         *removed,
         *described,

@@ -44,7 +44,9 @@ from flowgraph.term.item import TermExistsError
 from flowgraph.work_item import (
     NoPartError,
     NoSuchPartError,
+    NotVerifiableError,
     RemovedAlreadyError,
+    VerifiedAlreadyError,
     WorkItemFileError,
     WorkItemIdError,
     WorkItemNotFoundError,
@@ -84,6 +86,8 @@ REFUSED = (
     NoPartError,
     NoSuchPartError,
     RemovedAlreadyError,
+    NotVerifiableError,
+    VerifiedAlreadyError,
     WorkItemNotFoundError,
     TaskIdError,
     TaskNotFoundError,

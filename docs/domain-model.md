@@ -179,22 +179,42 @@ of work item. The developer said so on 2026-11-21.
 - A work item joins the end of the queue when it is added.
 - A Feature holds a place of its own in the Backlog and joins the end when it
   is added, the developer's words of 2026-11-21: a Feature is part of the
-  Backlog, ordered as the others and not riding on its work items. It is
-  listed after the work items the queue places, among those nobody placed by
-  its created time; added at one time with a work item it follows it, and
-  Features added at one time are listed by number. The queue places no
-  Feature yet: `reorder` takes work items alone.
+  Backlog, ordered as the others and not riding on its work items. Until it
+  is placed it is listed after what the queue places, among the work items
+  nobody placed by its created time; added at one time with a work item it
+  follows it, and Features added at one time are listed by number.
+- `reorder` puts one item of the Backlog right before another, and the queue
+  places a Feature as it places a work item: `reorder` takes the id of a
+  Feature on either side, `fgraph reorder F-0001 --before S-0001` as `fgraph
+  reorder S-0001 --before F-0001`. It is not a move: the type of the item
+  stays, only its place changes.
 - A work item under a Feature is listed on no line of the Backlog (below), so
-  a place the queue gives it shows nowhere.
-- `reorder` puts one work item of the Backlog right before another. It is not
-  a move: the type of the item stays, only its place changes.
+  it holds no place among the lines. It is reordered among the work items of
+  its Feature alone, the reading decided when S-0051 was ordered: `reorder`
+  puts it right before another work item of the same Feature, both in
+  Backlog, whatever the bucket of the Feature. That order is the one the work
+  items of the Feature start in. `fgraph show` of the Feature lists its work
+  items in Backlog in it, in the places they hold by kind and number among
+  the others; no other view shows it.
 - The queue is its own aggregate, apart from the items: it places work items
-  by id, each once. A work item nobody placed follows the placed ones in the
-  order it was added; those added at one time, by kind and number.
-- A work item that leaves the Backlog leaves the queue with it: the other
-  buckets are not listed by the queue.
-- A reorder names two work items in Backlog; one that is not there, or the
-  same one twice, is refused.
+  and Features by id, each once. One nobody placed follows the placed ones in
+  the order it was added; those added at one time, a work item by kind and
+  number, then a Feature by number.
+- A work item that leaves the Backlog leaves the queue with it, and so does a
+  Feature: the other buckets are not listed by the queue.
+- A reorder names two items in Backlog; one that is not there, or the same
+  one twice, is refused. A Feature in progress or completed is not in
+  Backlog, and is refused as a started work item is:
+  `F-0001 is not in Backlog`.
+- A reorder across a Feature is refused, naming the work item under a Feature
+  and that Feature: a work item under a Feature put before an item outside it
+  -- a work item standing alone, a Feature, its own among them, a work item
+  of another Feature -- or such an item put before it:
+  `S-0002 is under F-0001: it is reordered among the work items of F-0001
+  alone`. When each of the two is under another Feature it names the one
+  moved.
+- A text that is neither a work item id nor a Feature id is refused naming
+  both: `'T-0001' is no Story, Upkeep, Bug, Spike or Feature id`.
 - Completed is listed the last completed first, the developer's decision of
   2026-11-21: by the completed time each work item holds, so the newest
   landing is on top; those completed at one time, by kind and number.
@@ -474,10 +494,11 @@ and its merge tool.
   item of that bucket: counted once beside the heading and once toward the
   top 5. Its work items in Backlog and its completed ones are listed on no
   line of their own and counted beside no heading; they are counted in its
-  progress, and `fgraph show` of the Feature lists them with their buckets as
-  before. A started one is listed under the line of its Feature (Order), and
-  a removed one keeps its line under Removed. The bucket stays derived: no
-  command starts, completes or removes a Feature yet.
+  progress, and `fgraph show` of the Feature lists them with their buckets,
+  those in Backlog in the order they start in (Order). A started one is
+  listed under the line of its Feature (Order), and a removed one keeps its
+  line under Removed. The bucket stays derived: no command starts, completes
+  or removes a Feature yet.
 - This reverses the developer's decision of 2026-11-21 that listed the
   Features of a record in a block of their own above the buckets: the heading
   `Features` with their count, listed only when the record held a Feature,
@@ -493,8 +514,8 @@ and its merge tool.
   removed work item is counted in neither number, a started or a Backlog one
   only in the second, and a Feature without a work item reads `0/0 W`. Every
   Feature is listed with it, in any bucket: `F-0001  1/3 W  <title>`.
-- Not built yet: reordering, starting, amending or removing a Feature, and
-  moving a work item to another Feature.
+- Not built yet: starting, amending or removing a Feature, and moving a work
+  item to another Feature. Reordering one is built (Order).
 - Each kind reads the files of its own prefix. A file with a prefix no kind
   knows is left alone; nothing reports it yet. An `items/SP-0001.toml` of an
   older record, written while a Spike was `SP-0001`, is such a file: it is
@@ -505,10 +526,26 @@ and its merge tool.
   is validated as it is read; a write is read back before it replaces the
   file.
 - The queue of the Backlog (Order) is one file beside `items/`, `queue.toml`:
-  a `backlog` list of the ids placed, in their order. A record without the
-  file holds the empty queue. A reorder writes the whole Backlog as it is then
-  listed, so an id that has left the Backlog drops out at the next reorder;
-  `add`, `amend`, `start` and `complete` never write the file.
+  a `backlog` list of the ids placed, in their order -- the ids of work items
+  and of Features, `F-0001` beside `S-0001`. A record without the file holds
+  the empty queue. A reorder writes the whole Backlog as it is then listed,
+  so an id that has left the Backlog drops out at the next reorder; `add`,
+  `amend`, `start` and `complete` never write the file.
+- That one list holds the lines of the Backlog -- the work items standing
+  alone and the Features -- and the work items in Backlog under a Feature,
+  those of a Feature that has left the Backlog too. Two orders are read from
+  it and no other: the order of the lines, from the ids of the work items
+  standing alone and of the Features; and inside each Feature the order its
+  work items start in, from the ids of the work items under it. Where the id
+  of a work item under a Feature stands among the ids outside its Feature
+  says nothing. The whole Backlog a reorder writes is that list as it then
+  reads -- the ids placed, then the ids nobody placed: the lines as added,
+  then the work items under a Feature as added -- with the one id moved right
+  before the other and every other id where it was. So the order of the lines
+  and the order inside each Feature both survive a rewrite, whichever of the
+  two the reorder changes, and a file written before the queue placed a
+  Feature, whose work items under a Feature were placed among those of their
+  Feature, reads as it did.
 
 A record is layered by its configuration, the developer's request of
 2026-11-21, which names three layers: the items and their lifecycle, kept
@@ -768,7 +805,7 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   | add a work item | `chore: add S-0001 in the record` |
   | add a Task | `chore: add T-0001 of S-0001 in the record` |
   | amend | `chore: amend S-0001 in the record` |
-  | reorder | `chore: reorder S-0002 before S-0001 in the record` |
+  | reorder | `chore: reorder S-0002 before S-0001 in the record`, `chore: reorder F-0001 before S-0001 in the record` |
   | start | `chore: start S-0001 in the record`, `chore: start T-0001 of S-0001 in the record` |
   | block | `chore: block T-0001 of S-0001 in the record` |
   | unblock | `chore: unblock T-0001 of S-0001 in the record` |

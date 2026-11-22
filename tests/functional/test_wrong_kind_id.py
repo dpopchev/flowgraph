@@ -1,8 +1,8 @@
 """The criterion of a work item command given the id of a Feature: it names every kind it takes.
 
-`fgraph amend`, `fgraph remove`, `fgraph reorder` and `fgraph add task --parent` each take a
-Story, an Upkeep, a Bug and a Spike. Run end to end on a record in a temporary directory, through
-the file adapters of the package.
+`fgraph amend`, `fgraph remove` and `fgraph add task --parent` each take a Story, an Upkeep, a
+Bug and a Spike; `fgraph reorder` takes a Feature too (tests/functional/test_reorder_feature.py).
+Run end to end on a record in a temporary directory, through the file adapters of the package.
 """
 
 from collections.abc import Sequence
@@ -61,11 +61,9 @@ def runs(cwd: Path, *argvs: Sequence[str]) -> Outcome:
     [
         ["amend", "F-0001", "--title", "another title"],
         ["remove", "F-0001", "--reason", "a reason"],
-        ["reorder", "F-0001", "--before", "S-0001"],
-        ["reorder", "S-0001", "--before", "F-0001"],
         ["add", "task", "a task title", "--parent", "F-0001", "--output", "an output"],
     ],
-    ids=["amend", "remove", "reorder", "reorder-before", "add-task-parent"],
+    ids=["amend", "remove", "add-task-parent"],
 )
 def test_a_work_item_command_given_a_feature_id_exits_with_two_and_names_every_kind_it_takes(
     argv: list[str], tmp_path: Path

@@ -97,13 +97,46 @@ def test_a_feature_in_backlog_is_listed_after_what_was_added_before_it_and_not_i
     )
 
 
-def test_a_feature_is_listed_after_the_work_items_placed_in_the_queue() -> None:
+def test_a_feature_never_placed_is_listed_after_the_work_items_placed_in_the_queue() -> None:
     placed = make_queue([make_story_id(3)])
     assert status_item(store(IN_BACKLOG, [feature(1, DAY[2])], placed)).splitlines()[1:4] == [
         "  S-0003  title 3",
         "  S-0001  title 1",
         "  F-0001  0/1 W  feature 1",
     ]
+
+
+def test_a_feature_placed_in_the_queue_is_listed_at_its_place_among_the_placed_work_items() -> None:
+    placed = make_queue([make_feature_id(1), make_story_id(3)])
+    assert status_item(store(IN_BACKLOG, [feature(1, DAY[2])], placed)).splitlines()[1:4] == [
+        "  F-0001  0/1 W  feature 1",
+        "  S-0003  title 3",
+        "  S-0001  title 1",
+    ]
+
+
+def test_a_work_item_under_a_feature_placed_in_the_queue_is_listed_on_no_line() -> None:
+    placed = make_queue([make_story_id(2), make_story_id(3)])
+    assert status_item(store(IN_BACKLOG, [feature(1, DAY[2])], placed)).splitlines()[1:4] == [
+        "  S-0003  title 3",
+        "  S-0001  title 1",
+        "  F-0001  0/1 W  feature 1",
+    ]
+
+
+def test_a_feature_placed_in_the_queue_that_left_the_backlog_is_listed_once_under_its_bucket() -> (
+    None
+):
+    rows = [story(1, "backlog"), story(2, "started", "F-0001", started=DAY[2])]
+    placed = make_queue([make_feature_id(1), make_story_id(1)])
+    assert status_item(store(rows, [feature(1)], placed)) == (
+        "Backlog (1)\n"
+        "  S-0001  title 1\n"
+        "InProgress (1)\n"
+        "  F-0001  0/1 W  feature 1\n"
+        "    S-0002  0/0 T  title 2\n"
+        "Completed (0)\n"
+    )
 
 
 def test_a_feature_added_at_the_time_of_a_work_item_is_listed_after_it() -> None:

@@ -26,7 +26,7 @@ lands it. `fgraph config` shows the configuration and sets a key of it.
 | the record and its flow         | a work item with its Tasks, from Backlog to Completed    |
 | the kinds of work item          | Story, Upkeep, Bug, Spike                                |
 | the level above                 | a Feature groups work items, one line in its bucket      |
-| the order of the Backlog        | a queue, reordered by `fgraph reorder`                   |
+| the order of the Backlog        | a queue, reordered by `fgraph reorder`, Features too     |
 | the wording of a work item      | rewritten by `fgraph amend` while in Backlog             |
 | git                             | every write of the record committed, unless turned off   |
 | the layers of a record          | `.fgraph/config.toml`: commits on, development off       |
@@ -842,8 +842,9 @@ removed work item is counted in neither number, and a Feature without a work
 item reads `0/0 W`.
 
 A Feature holds a place of its own in the Backlog: it joins the end when it
-is added, after the work items `fgraph reorder` placed and those added before
-it. It is counted once, beside the heading and toward the top 5 (below). Its
+is added, after the work items and the Features `fgraph reorder` placed and
+those added before it, and `fgraph reorder` places it as a work item (below).
+It is counted once, beside the heading and toward the top 5 (below). Its
 work items in Backlog and its completed ones are listed on no line and
 counted beside no heading: they are counted in its progress, and `fgraph show
 F-0001` lists each with its bucket. A removed one keeps its line under
@@ -877,8 +878,8 @@ is part of the Backlog and just holds its work items, so no heading
 
 The Backlog is a queue: `fgraph status` lists it in the order the work is to
 be pulled. A work item joins the end of the queue when it is added, whatever
-its kind, and so does a Feature; `fgraph reorder` puts one work item right
-before another, and takes no Feature yet:
+its kind, and so does a Feature; `fgraph reorder` puts one right before
+another:
 
 ```sh
 fgraph status
@@ -899,9 +900,93 @@ fgraph status
 # Completed (0)
 ```
 
-A reorder exits 2 and names why when one of the two is not in Backlog, when
-a work item is put before itself, or when a text is no work item id. The
-order given is kept as `queue.toml` in the record, apart from the item files.
+A Feature is placed in the queue as a work item is: `fgraph reorder` takes
+its id on either side. Here a second Story, S-0003, was added under the
+Feature; the Story that stands alone is put before the Feature, then the
+Feature before it again:
+
+```sh
+fgraph reorder S-0002 --before F-0001
+# moved S-0002 before F-0001
+
+fgraph status
+# Backlog (2)
+#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+#   F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
+# InProgress (0)
+# Completed (0)
+
+fgraph reorder F-0001 --before S-0002
+# moved F-0001 before S-0002
+
+fgraph status
+# Backlog (2)
+#   F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
+#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# InProgress (0)
+# Completed (0)
+```
+
+A work item under a Feature is on no line of the Backlog, so it is reordered
+among the work items of its Feature alone: `fgraph reorder` puts it right
+before another work item of the same Feature, whatever the bucket of the
+Feature. That order is the one the work items of the Feature start in, and
+`fgraph show` of the Feature lists its work items in Backlog in it; the
+others stay where their kind and number put them:
+
+```sh
+fgraph reorder S-0003 --before S-0001
+# moved S-0003 before S-0001
+
+fgraph show F-0001
+# F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
+#   bucket       Backlog
+# Criteria (2)
+#   a developer sees every work item of the project by bucket
+#   a developer adds every kind of work
+# Work items (2)
+#   S-0003  Raise the Upkeeps fgraph lists under Backlog from 0 to 1  Backlog
+#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  Backlog
+```
+
+A reorder exits 2 and names why:
+
+- when one of the two is not in Backlog: a Feature that is in progress or
+  completed is refused as a started work item is, and so is an id the record
+  does not hold;
+- when an item is put before itself;
+- when a text is neither a work item id nor a Feature id;
+- when a work item under a Feature is put before an item outside its Feature
+  -- a work item standing alone, a Feature, a work item of another Feature --
+  or such an item is put before it. The refusal names the Feature:
+
+```sh
+fgraph reorder S-0003 --before S-0002
+# fgraph: error: S-0003 is under F-0001: it is reordered among the work items of F-0001 alone
+```
+
+The order given is kept as `queue.toml` in the record, apart from the item
+files: one list, `backlog`, of the ids of the work items and of the Features
+placed.
+
+```toml
+backlog = [
+    "F-0001",
+    "S-0002",
+    "S-0003",
+    "S-0001",
+]
+```
+
+Two orders are read from that list and no other. The ids of the work items
+standing alone and of the Features give the order of the lines of the
+Backlog: F-0001, then S-0002. The ids of the work items under one Feature
+give the order they start in: S-0003, then S-0001. Where a work item under a
+Feature stands among the others says nothing. A reorder writes the whole
+Backlog as it is then listed and moves one id in it, leaving every other
+where it was, so each of the two orders is kept when the other changes. An
+id never placed follows the placed ones: the lines of the Backlog as they
+were added, then the work items under a Feature as they were added.
 
 The buckets past the Backlog list the last one in on top: InProgress the work
 item started last, Completed the one completed last. Work items started or
@@ -1045,7 +1130,8 @@ git log -1 --format=%s --name-only
 
 The other messages follow the write: `chore: add T-0001 of S-0001 in the
 record`, `chore: amend S-0001 in the record`, `chore: reorder S-0002 before
-S-0001 in the record`, `chore: start T-0001 of S-0001 in the record`,
+S-0001 in the record` -- a Feature by its id, `chore: reorder F-0001 before
+S-0001 in the record` --, `chore: start T-0001 of S-0001 in the record`,
 `chore: complete S-0001 in the record`, `chore: set development.enabled in
 the record`. A write that leaves its file as it was makes no commit. Outside
 a git work tree a write is made as before, with no commit and no warning, and

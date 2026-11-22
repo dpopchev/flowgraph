@@ -55,7 +55,7 @@ from flowgraph.land import LandError, land_item
 from flowgraph.parallel import ParallelError, check_parallel
 from flowgraph.parent import FeatureIdError
 from flowgraph.parser import TOP, build_command_line, help_asked
-from flowgraph.queue import NotInBacklogError, SameItemError
+from flowgraph.queue import NotInBacklogError, SameItemError, UnderFeatureError
 from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, Now, locate
 from flowgraph.scope import (
     NotOnMainError,
@@ -137,6 +137,7 @@ REFUSED = (
     CompletedAlreadyError,
     NotInBacklogError,
     SameItemError,
+    UnderFeatureError,
     PaceError,
 )
 

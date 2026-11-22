@@ -24,12 +24,14 @@ commit = "7290e3e"
 
 [[tasks]]
 id = "T-0200"
-state = "started"
+state = "completed"
 title = "Mark a Feature blocked in the status while its started work item holds a blocked Task"
 description = "Removes the xfail mark of tests/functional/test_status_feature_blocked.py. The mark is cut with the line on a terminal as any line of the status."
 expected_output = "changed: fgraph status lists a started Feature whose started work item holds a blocked Task with ! before its id and -- waiting on <what> after its title, what the first blocked Task of that work item waits on; the mark is derived at each listing and kept in no file; the line of the work item under it and of its blocked Task stay as they are; a Feature without such a Task is listed as before; proved in tests/item/ or tests/text/, beside what lists the status"
 created = 2026-11-21 23:43:46+00:00
 started = 2026-11-22 02:53:26+00:00
+completed = 2026-11-22 02:56:11+00:00
+commit = "263d5d5"
 
 [[tasks]]
 id = "T-0201"

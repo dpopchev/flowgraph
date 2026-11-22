@@ -18,6 +18,10 @@ def test_the_last_key_of_a_table_taken_back_leaves_no_table() -> None:
     assert without_setting({"git": {"commit": False}}, "git.commit") == {}
 
 
+def test_the_push_of_a_landing_taken_back_leaves_no_delivery_table() -> None:
+    assert without_setting({**GATED, "delivery": {"push": True}}, "delivery.push") == GATED
+
+
 def test_a_key_the_settings_do_not_hold_is_taken_back_to_the_settings_as_they_were() -> None:
     assert without_setting(GATED, "development.parallel") == GATED
 

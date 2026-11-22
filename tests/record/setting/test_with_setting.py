@@ -22,6 +22,7 @@ TAKES_A_COUNT = "it takes a whole number of 1 or more"
         ("development.gate", "make check", {"development": {"gate": "make check"}}),
         ("development.gate", "true", {"development": {"gate": "true"}}),
         ("development.gate", "1", {"development": {"gate": "1"}}),
+        ("delivery.push", "true", {"delivery": {"push": True}}),
     ],
     ids=[
         "false",
@@ -32,6 +33,7 @@ TAKES_A_COUNT = "it takes a whole number of 1 or more"
         "a-command-line",
         "a-command-named-true",
         "a-command-named-one",
+        "a-push",
     ],
 )
 def test_the_text_of_a_value_is_read_as_the_value_its_key_takes(
@@ -94,6 +96,7 @@ def test_a_key_the_configuration_does_not_have_is_refused_naming_it(key: str) ->
         ),
         ("development.gate", "", 'development.gate is "": it takes a command line'),
         ("development.gate", "  ", 'development.gate is "  ": it takes a command line'),
+        ("delivery.push", "yes", 'delivery.push is "yes": it takes true or false'),
     ],
     ids=[
         "another-word-for-false",
@@ -107,6 +110,7 @@ def test_a_key_the_configuration_does_not_have_is_refused_naming_it(key: str) ->
         "no-way-of-merging",
         "an-empty-gate",
         "a-blank-gate",
+        "another-word-for-a-push",
     ],
 )
 def test_a_value_its_key_does_not_take_is_refused_naming_the_key(

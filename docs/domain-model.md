@@ -1438,6 +1438,15 @@ development too.
   callable, `RunGate`, and `main()` binds the adapter `run_gate`, which runs
   the command line through the shell. The default of `run()` runs no gate: a
   run that lands under one is given its runner.
+- `[delivery] push` pushes `main` at a landing, `true` or `false`. It is
+  `false` by default, as S-0090 states it: a record that names
+  none pushes nothing, as a landing did before the key. It is a step of a
+  landing, so it pushes nothing with the development off, where it is held as
+  written and the landing is refused naming `development.enabled`. In the
+  model it is a value of its own layer (`Delivery`,
+  `src/flowgraph/record/layers.py`); the push is an effect, one more step of
+  the git adapter (`push`, `src/flowgraph/development/git.py`), bound by
+  `open_git`, so the core decides when it runs and never calls git itself.
 - `[git] commit` turns the commits of the record off. It is on by default,
   the reading of S-0040, off until set shown and not taken: inside a git work
   tree that does not ignore the record `fgraph` commits every write of it, as
@@ -1690,6 +1699,19 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   complete: before the commit of a `merge-commit` or a `squash`, and before
   a `fast-forward` drops the merge and moves `main`. A gate that fails drops
   the merge held, and no later step is taken.
+- With `[delivery] push = true` the push of `main` is the last step of every
+  way, once the landing is whole: after the commit of the record that
+  completes the work item, the removal of the worktree and the branch landed,
+  and the branch of the next work item of a Feature. `main` is pushed to the
+  branch it tracks on its remote, and the landing says `pushed main to
+  <remote>` on a line of its own. A step refused before it takes no push.
+- A push git refuses -- a remote it cannot reach, a `main` that tracks no
+  branch of a remote -- leaves the landing as it is, the reading of the agent
+  for S-0090: `main` merged, the work item completed and committed, the
+  worktree and the branch removed, the next work item started with its
+  branch; nothing is undone, since history only moves forward. The landing
+  exits 2 naming the git command and its error, then `-- <id> is landed at
+  <sha>, main is not pushed`; the push is left to the developer.
 - A squash is not made by `git merge --squash`: that takes a change staged
   in the checkout into the commit and drops it with the squash. The merge of
   its own refuses such a checkout, and committed with one parent it holds

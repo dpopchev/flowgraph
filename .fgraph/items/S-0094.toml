@@ -20,3 +20,11 @@ title = "Add tests/functional/test_verify_no.py, failing on the criterion of S-0
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_amends.py does. Seen red, then marked a strict xfail naming S-0094 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_verify_no.py states that on a record with a completed Story fgraph verify S-0001 --no with a text exits 0 and prints the id of a new Bug; fgraph show of the Bug lists amends S-0001 and the text as its observed; and fgraph show S-0001 lists it Completed and verified, no"
 created = 2026-11-22 21:03:24+00:00
+
+[[tasks]]
+id = "T-0365"
+state = "backlog"
+title = "File a Bug that amends the work item at a no of fgraph verify"
+description = "Removes the xfail mark of tests/functional/test_verify_no.py. Written on 2026-11-22 against the modules of that day, before U-0010 moves them: they are taken again when the Task starts. A module of src/ that would pass the line limit of mk/python.mk is split by one cohesive part, named in the commit."
+expected_output = "changed: fgraph verify ID --no TEXT keeps the answer no on the completed work item and adds, in the same write, a Bug in Backlog that amends it: its observed the text, its expected the Then of a Story or an Upkeep or the expected of a Bug, its title given by --title or built from that of the work item, as the Task chooses; it prints both ids; the work item stays Completed and no move goes backwards; under a Feature the Bug joins the Feature of the work item when that Feature is not completed, else it stands alone"
+created = 2026-11-22 21:03:27+00:00

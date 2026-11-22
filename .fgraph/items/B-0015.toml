@@ -21,8 +21,10 @@ commit = "f085fc6"
 
 [[tasks]]
 id = "T-0254"
-state = "started"
+state = "completed"
 title = "Refuse a Feature file whose parts its constructor or its moves refuse, as a blank reason, as a file that holds no Feature naming it, in src/flowgraph/feature_file.py"
 expected_output = "changed: _read_file of src/flowgraph/feature_file.py; tests/feature/test_feature_blocked.py states the refusal naming the file"
 created = 2026-11-22 08:02:32+00:00
 started = 2026-11-22 08:06:12+00:00
+completed = 2026-11-22 08:08:45+00:00
+commit = "71a19a4"

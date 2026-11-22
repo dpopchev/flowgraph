@@ -28,3 +28,10 @@ state = "backlog"
 title = "Name the gate in the help of fgraph land in src/flowgraph/parser.py"
 expected_output = "changed: src/flowgraph/parser.py; tests/functional/test_command_help.py states the help of land naming the gate"
 created = 2026-11-22 07:11:37+00:00
+
+[[tasks]]
+id = "T-0238"
+state = "backlog"
+title = "Say in README.md what a gate may touch: the merge it runs on is dropped when it fails or is interrupted, and the files it writes stay uncommitted in the checkout"
+expected_output = "changed: README.md names what a gate may touch"
+created = 2026-11-22 07:11:38+00:00

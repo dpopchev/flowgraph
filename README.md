@@ -897,6 +897,37 @@ fgraph status
 The lines under a Feature belong to it: they count neither beside the heading
 nor toward the top 5.
 
+A blocked Task marks its Feature: while the started work item of a Feature
+holds a blocked Task, `fgraph status` lists the Feature with `!` before its
+id, in the first column of its line, and ends the line with what that Task
+waits on, as the line of the Task does:
+
+```sh
+fgraph block T-0001 --reason "the review is not back" --waiting-on "the reviewer"
+# blocked T-0001 of S-0001
+
+fgraph status
+# Backlog (1)
+#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# InProgress (1)
+# ! F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5  -- waiting on the reviewer
+#     S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
+#       !  T-0001  Add the show command to src/flowgraph/cli.py, listing a Story  -- waiting on the reviewer
+# Completed (0)
+```
+
+The mark is derived at each listing, from the Tasks of the started work item,
+and kept in no file: the file of the Feature and the file of the work item
+hold nothing of it, and `fgraph unblock T-0001` takes it away. A started Task
+beside the blocked one does not lift it: the Feature is marked as long as its
+started work item holds a blocked Task, and names what the first of them
+waits on, in the order the file of the work item holds them. The id of the
+Feature stays in its column, and the lines of the work item and of the Task
+under it are written as under any Feature. On a terminal the line is cut to
+the width as any line of the status, so the mark is kept and what is waited
+on is what the cut takes first. Blocking a Feature itself, and blocking a
+work item, are not built.
+
 The completion of a work item of a started Feature starts the next one, in
 the same write: a Feature starts its work items one by one. The next one is
 the first of its work items in Backlog in the order they start in, the one

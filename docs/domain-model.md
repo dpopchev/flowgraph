@@ -288,6 +288,27 @@ of work item. The developer said so on 2026-11-21.
   `      => T-0001  <title>` -- the last started first. Those lines belong to
   the Feature: they count neither toward the top 5 of the heading nor in the
   count beside it.
+- `fgraph status` marks a Feature blocked while a started work item of it
+  holds a blocked Task (S-0055), the developer's words of 2026-11-21, "a
+  Feature can be blocked, or gets blocked when its child work item is
+  blocked": `!` in the first column of its line, before its id, which stays
+  in its column, and `-- waiting on <what>` after its title, as the line of
+  a blocked Task ends -- `! F-0001  1/3 W  <title>  -- waiting on <what>`.
+  What is waited on is that of the first blocked Task of its started work
+  items, in the order they are listed under it and the file of each holds
+  its Tasks. The mark is derived at each listing from the rows status reads
+  and kept in no file: no state of the Feature or of the work item holds it,
+  and it is gone with the unblock of the Task. A started Task beside the
+  blocked one does not lift it, decided when S-0055 was ordered: the Feature
+  is marked as long as such a work item holds a blocked Task. The lines of
+  the work item and of its blocked Task under it stay as they are, a Feature
+  without such a Task is listed as before, and the line is cut to the width
+  as any other (below). A child work item is blocked when it holds a blocked
+  Task: the alternative, a block of a work item itself, was shown and not
+  taken, and is not built. A Feature never started whose work item was
+  started before a Feature had a state (Persistence) is marked the same way,
+  since the mark reads the started work items listed under the Feature and
+  not its state.
 - On a terminal `fgraph status` cuts each line longer than the terminal is
   wide to that width, ending it with `...`, the developer's decision of
   2026-11-21, after board 1's watch; written to a pipe or a file every line
@@ -708,7 +729,9 @@ and its merge tool.
 - Not built yet: blocking, amending or removing a Feature, and moving a work
   item to another Feature. Starting one is built (above), so is starting its
   next work item with the completion of the one before, so is completing one
-  with its last work item, and so is reordering one (Order).
+  with its last work item, so is reordering one, and so is the mark a blocked
+  Task of its work item gives it in the status, derived and kept in no file
+  (Order).
 - Each kind reads the files of its own prefix. A file with a prefix no kind
   knows is left alone; nothing reports it yet. An `items/SP-0001.toml` of an
   older record, written while a Spike was `SP-0001`, is such a file: it is

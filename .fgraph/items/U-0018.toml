@@ -1,0 +1,10 @@
+id = "U-0018"
+state = "backlog"
+title = "Cut the reads of the files of the work items the check of the relations at the read makes from one per work item to none beyond the rows"
+description = "Found during T-0317 of S-0078 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. The check calls find_work_item_detail once per work item to get its about terms, since WorkItemRow carries none; the fake store of tests/functional/test_add_story.py had to be given a detail reader. Its Tasks are written when it is ordered."
+created = 2026-11-22 19:42:38+00:00
+
+[criterion]
+given = "a record of many work items"
+when = "any fgraph command runs"
+then = "the check of the relations reads the terms an item is about from the rows of the record, reading no file of a work item again, and make check passes"

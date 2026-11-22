@@ -34,6 +34,7 @@ from flowgraph.feature_item import (
     parent_named,
     show_feature_item,
 )
+from flowgraph.feature_next import complete_and_start_next
 from flowgraph.feature_start import (
     FeatureNotStartedError,
     NoWorkItemError,
@@ -48,7 +49,6 @@ from flowgraph.item import (
     add_item,
     amend_item,
     block_item,
-    complete_item,
     kind_named,
     remove_item,
     reorder_item,
@@ -195,7 +195,7 @@ def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -
             )
             return amend_item(args.id, parts, store)
         case "complete":
-            return complete_item(args.id, args.commit, store, now, config, args.decision)
+            return complete_and_start_next(args.id, args.commit, store, now, config, args.decision)
         case "start" if is_feature_id(args.id):
             return start_feature_item(args.id, args.slug, store, now, config)
         case "start":

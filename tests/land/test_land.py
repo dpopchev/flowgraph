@@ -17,6 +17,7 @@ from flowgraph.gate import GateError, RunGate
 from flowgraph.item import Store
 from flowgraph.land import LandError, land_item
 from flowgraph.parent import make_feature_id
+from flowgraph.queue import make_queue
 from flowgraph.store import FeatureStore
 from flowgraph.story import STORY as STORY_KIND
 from flowgraph.story import make_story, make_story_id
@@ -48,6 +49,8 @@ RECORD = TOP / ".fgraph"
 FILE = RECORD / "items" / "S-0001.toml"
 BRANCH = "wi/S-0001-a-slug"
 WORKTREE = Path("/src/project.worktrees/S-0001-a-slug")
+NEXT_BRANCH = "wi/S-0002-another-title"
+NEXT_WORKTREE = Path("/src/project.worktrees/S-0002-another-title")
 CREATED = datetime(2026, 1, 1, tzinfo=UTC)
 NOW = datetime(2026, 1, 3, tzinfo=UTC)
 TASK = make_task(make_task_id(1), "a task", "an output", "", CREATED)
@@ -199,6 +202,7 @@ def last_of_a_started_feature() -> Store:
     return replace(
         store(last),
         find_work_item_rows=lambda kind: [work_item_row(last)] if kind == STORY_KIND else [],
+        load_queue=lambda: make_queue([]),
         features=FeatureStore(lambda _: started, lambda _: None, lambda: ["F-0001"]),
     )
 
@@ -220,6 +224,88 @@ def test_a_landing_that_completes_the_feature_commits_the_record_once_naming_bot
         [".fgraph/items/S-0001.toml"],
         "chore: complete S-0001 and F-0001 in the record",
     )
+
+
+def first_of_a_started_feature() -> Store:
+    """The store of a record whose started Feature F-0001 holds S-0001 ready and S-0002 in Backlog.
+
+    S-0002 has one Task; the store reads back the work items it saves.
+    """
+    under = make_feature_id(1)
+    second = make_story(make_story_id(2), "another title", make_scenario("a", "b", "c"), "", NOW)
+    task = make_task(make_task_id(2), "a task", "an output", "", NOW)
+    items = [replace(READY, parent=under), replace(append_task(second, task), parent=under)]
+    held = {item.id: item for item in items}
+    feature = make_feature(under, "a feature title", ["a criterion"], "", CREATED)
+    started = started_feature(feature, CREATED)
+    return replace(
+        store(READY),
+        find_work_item_rows=lambda kind: (
+            [work_item_row(item) for item in held.values()] if kind == STORY_KIND else []
+        ),
+        load_work_item=held.__getitem__,
+        save_work_item=lambda item: held.update({item.id: item}),
+        load_queue=lambda: make_queue([]),
+        features=FeatureStore(lambda _: started, lambda _: None, lambda: ["F-0001"]),
+    )
+
+
+def branching(steps: list[object]) -> WorkTree:
+    """The work tree of `work_tree` that also notes the worktree it adds for a branch."""
+
+    def add_worktree(name: str, path: Path, at: str) -> None:
+        steps.append(("add worktree", name, path, at))
+
+    return replace(work_tree(steps), add_worktree=add_worktree)
+
+
+def land_first(tree: WorkTree) -> Said:
+    """Land S-0001, the first work item of the started Feature of `first_of_a_started_feature`."""
+    kept = first_of_a_started_feature()
+    return land_item("S-0001", MESSAGE, kept, lambda: NOW, RECORD, lambda _: tree, ON, no_gate)
+
+
+def test_a_landing_that_starts_the_next_work_item_names_it_and_its_branch_after_the_work_item() -> (
+    None
+):
+    assert land_first(branching([])) == Said(
+        f"landed S-0001 at 3e9ae5c\nstarted S-0002\nbranch {NEXT_BRANCH} in {NEXT_WORKTREE}\n"
+    )
+
+
+def test_a_landing_branches_the_next_work_item_at_the_commit_of_the_record_once_it_is_done() -> (
+    None
+):
+    steps: list[object] = []
+    land_first(branching(steps))
+    assert steps[2:] == [
+        (
+            "commit",
+            [".fgraph/items/S-0001.toml"],
+            "chore: complete S-0001 and start S-0002 in the record",
+        ),
+        ("remove worktree", WORKTREE),
+        ("delete branch", BRANCH),
+        ("add worktree", NEXT_BRANCH, NEXT_WORKTREE, "HEAD"),
+    ]
+
+
+def test_a_worktree_git_refuses_to_add_says_the_next_work_item_is_started_without_its_branch() -> (
+    None
+):
+    with pytest.raises(
+        GitError, match=r"^git failed: refused -- S-0002 is started, its branch is not$"
+    ):
+        land_first(replace(work_tree([]), add_worktree=refuse))
+
+
+def test_a_worktree_git_refuses_to_remove_says_the_next_work_item_has_no_branch_either() -> None:
+    with pytest.raises(
+        GitError,
+        match=r"^git failed: refused -- S-0001 is landed at 3e9ae5c, its worktree and its branch"
+        r" are not removed; S-0002 is started, its branch is not$",
+    ):
+        land_first(replace(branching([]), remove_worktree=refuse))
 
 
 def test_a_branch_without_a_worktree_is_deleted_alone() -> None:

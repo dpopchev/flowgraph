@@ -8,3 +8,8 @@ criteria = [
     "a developer sees a no move nothing backwards: it files a Bug that amends the work item",
     "a developer answers the hypothesis of a Spike yes or no beside its decision",
 ]
+
+[[knowledge]]
+kind = "decision"
+text = "Relayed by the note of the ~/.claude session of 2026-11-22: the hypothesis stays on a Spike alone, the word of the developer of that day; a no at the closing of a Story, a Bug or an Upkeep moves nothing backwards and files a Bug with --amends; a no on a Spike is a completion."
+noted = 2026-11-22 21:04:34+00:00

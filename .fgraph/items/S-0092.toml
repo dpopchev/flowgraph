@@ -16,11 +16,12 @@ then = "main holds the next v* tag, as fgraph release makes it"
 
 [[tasks]]
 id = "T-0358"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_release_feature_close.py, failing on the criterion of S-0092"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_complete_feature_branch.py does. Seen red, then marked a strict xfail naming S-0092 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_release_feature_close.py states that with delivery.tag set to feature-close, the landing of the last work item of a Feature exits 0 and main holds the next v* tag at the commit that completes the Feature; and that with delivery.tag none no tag is made"
 created = 2026-11-22 21:03:06+00:00
+started = 2026-11-22 23:41:57+00:00
 
 [[tasks]]
 id = "T-0359"

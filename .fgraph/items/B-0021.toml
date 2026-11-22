@@ -16,3 +16,11 @@ title = "Add tests/functional/test_graph_task_state.py, failing on the expected 
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_graph_json.py does. Seen red, then marked a strict xfail naming B-0021 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_graph_task_state.py states that on a record with a Story holding a started, a blocked, a completed Task and one in Backlog, fgraph graph exits 0 and each Task node carries its own state"
 created = 2026-11-22 21:02:23+00:00
+
+[[tasks]]
+id = "T-0344"
+state = "backlog"
+title = "Carry the state of a Task on its node in fgraph graph"
+description = "Removes the xfail mark of tests/functional/test_graph_task_state.py. Written on 2026-11-22 against the modules of that day, before U-0010 moves them: they are taken again when the Task starts. A module of src/ that would pass the line limit of mk/python.mk is split by one cohesive part, named in the commit."
+expected_output = "changed: the node of a Task in fgraph graph carries its state in place of bucket null: its bucket, and whether an InProgress one is started or blocked, under keys chosen in the Task; the node of a work item, of a Feature and of a term is what it was; two runs print the same bytes"
+created = 2026-11-22 21:02:25+00:00

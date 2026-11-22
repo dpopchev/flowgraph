@@ -581,6 +581,16 @@ its count and each linked item is one line, its id, its bucket and its title.
   line one of its kind, its day and its text.
 - A Feature lists `work items`, `terms` and `knowledge`.
 - An id that `fgraph show` refuses is refused in the same words, exit 2.
+- A term name is taken as `fgraph show` takes it, and the term lists its meaning and
+  relations as `show` does, then the items and the knowledge lines about it and about
+  every term under it. The walk follows both relations, `is-a` and `part-of`, from the
+  term to the terms that name it: the parts of it and the kinds of it, and those under
+  them, to any depth, nearest first. It ends on a term already reached, so a cycle ends
+  it. A line or an item reached through another term is marked with that term, `(via
+  lane)`; each is listed once, under the nearest term, so one about the named term
+  itself is never marked. A word that is no id and no term of the record is refused,
+  exit 2, naming both. This is what a term as a node answers and a tag could not: a
+  tag is matched by its own name, a relation to the whole is not followed.
 
 ## Terms
 

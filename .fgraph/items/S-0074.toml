@@ -13,23 +13,32 @@ then = "it lists the line about the part, marked with the term it came through, 
 
 [[tasks]]
 id = "T-0303"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_about_term.py, failing on the criterion of S-0074"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_about_item.py does. Seen red, then marked a strict xfail naming S-0074 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_about_term.py states that, on a record where one term is part of another and a knowledge line is about the part, fgraph about with the name of the whole exits 0 and lists the line about the part, marked with the term it came through"
 created = 2026-11-22 10:48:07+00:00
+started = 2026-11-22 17:30:58+00:00
+completed = 2026-11-22 17:31:07+00:00
+commit = "3360b4a"
 
 [[tasks]]
 id = "T-0304"
-state = "backlog"
+state = "completed"
 title = "Extend fgraph about to a term, walking the terms under it"
 description = "Removes the xfail mark of tests/functional/test_about_term.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph about NAME lists the term with its meaning and its relations, then the items and the knowledge lines about it and about every term under it -- each term that is part of it or is one, and those under them, to any depth; a line or an item reached through another term is marked with that term, via gate; each is listed once, under the nearest term; the walk is a pure function of src/flowgraph/about.py over the terms as plain data, and it ends on terms that close a cycle; a word that is no id and no term is refused naming both"
 created = 2026-11-22 10:48:09+00:00
+started = 2026-11-22 17:31:07+00:00
+completed = 2026-11-22 17:37:58+00:00
+commit = "b3c203a"
 
 [[tasks]]
 id = "T-0305"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph about walks the terms under a term"
 expected_output = "changed: README.md shows fgraph about on a term with a part, the line reached through the part marked; docs/domain-model.md says which relations the walk follows and in which direction, how a line reached through another term is marked, and that this is what a term as a node answers and a tag could not"
 created = 2026-11-22 10:48:09+00:00
+started = 2026-11-22 17:37:59+00:00
+completed = 2026-11-22 17:38:05+00:00
+commit = "0dde4d8"

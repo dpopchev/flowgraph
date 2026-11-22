@@ -44,3 +44,8 @@ created = 2026-11-22 21:03:37+00:00
 started = 2026-11-22 23:40:47+00:00
 completed = 2026-11-22 23:44:07+00:00
 commit = "4c30f0f"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: yes -- at c5840c1 on main, on a scratch record with a started Spike whose Task is completed: fgraph complete Q-0001 --decision alone exit 2 with Q-0001 is completed with its answer: yes or no; with --decision too big --answer no exit 0 printed completed Q-0001; fgraph show Q-0001 listed bucket Completed, decision too big and answer no; fgraph knowledge --kind decision listed too big (answer no); fgraph show Q-0001 of the record of flowgraph, in Backlog, exit 0; make check on the tree of the landing, the branch merged into main at 46366d1 in a scratch clone before it landed: 2665 passed, all checks passed. The land of a Spike with its answer has a test of the parser alone: filed as U-0024."
+noted = 2026-11-22 23:48:05+00:00

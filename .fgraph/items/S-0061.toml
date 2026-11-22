@@ -8,3 +8,10 @@ created = 2026-11-22 00:15:10+00:00
 given = "a record whose config.toml sets development.gate"
 when = "the key is taken back through fgraph config"
 then = "fgraph config show lists development.gate as none"
+
+[[tasks]]
+id = "T-0239"
+state = "backlog"
+title = "Take a key of the configuration back to its default with fgraph config unset, none for a key that has no default, in src/flowgraph/setting.py, src/flowgraph/parser.py and src/flowgraph/cli.py"
+expected_output = "changed: unset_setting of src/flowgraph/setting.py, the unset action of src/flowgraph/parser.py and its dispatch in src/flowgraph/cli.py; tests/functional/test_config_command.py states the criterion and tests/setting states the unset"
+created = 2026-11-22 07:20:07+00:00

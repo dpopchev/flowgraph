@@ -13,12 +13,14 @@ then = "fgraph show of the Story lists each text under Knowledge with its kind"
 
 [[tasks]]
 id = "T-0268"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_note_kinds.py, failing on the criterion of S-0063"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_note_finding.py does. Seen red, then marked a strict xfail naming S-0063 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_note_kinds.py states that, on a record with a started Story, fgraph note of the Story with --decision and a text, then with --deviation and a text, each exits 0 and fgraph show of the Story lists each text under Knowledge with its kind"
 created = 2026-11-22 10:47:26+00:00
 started = 2026-11-22 11:08:37+00:00
+completed = 2026-11-22 11:08:54+00:00
+commit = "d09ba16"
 
 [[tasks]]
 id = "T-0269"

@@ -13,31 +13,43 @@ then = "the start exits 2 naming the first and its bucket, and fgraph show of th
 
 [[tasks]]
 id = "T-0277"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_depends_on.py, failing on the criterion of S-0066"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_amend_work_item.py does. Seen red, then marked a strict xfail naming S-0066 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_depends_on.py states that, on a record with two Stories in Backlog, each with a Task, fgraph amend of the second with --depends-on and the id of the first exits 0, fgraph start of the second exits 2 naming the first and its bucket, and fgraph show of the second lists that it depends on the first"
 created = 2026-11-22 10:47:37+00:00
+started = 2026-11-22 11:44:25+00:00
+completed = 2026-11-22 11:48:06+00:00
+commit = "aec20cc"
 
 [[tasks]]
 id = "T-0278"
-state = "backlog"
+state = "completed"
 title = "Create src/flowgraph/relation.py holding the relations a work item names to other work items, depends on first"
 description = "New code the next Task runs. A relation is stored on the item that names it; the other side is derived by a view, so a write stays one file and the scope of a branch holds."
 expected_output = "created: src/flowgraph/relation.py holds the relations of a work item -- the ids of the work items it depends on, none by default -- and two views over the record given as plain data: the work items a start still waits for, each with its bucket, and whether a new dependency would close a cycle; a work item that names itself is refused; tests/relation/ states each"
 created = 2026-11-22 10:47:38+00:00
+started = 2026-11-22 11:48:07+00:00
+completed = 2026-11-22 11:52:00+00:00
+commit = "c183fd2"
 
 [[tasks]]
 id = "T-0279"
-state = "backlog"
+state = "completed"
 title = "Add --depends-on to fgraph add and fgraph amend, and its refusal to fgraph start"
 description = "Removes the xfail mark of tests/functional/test_depends_on.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph add of every kind of work item and fgraph amend of one in Backlog take --depends-on ID, once per work item depended on, and --depends-on none of amend takes them all away; the file of the work item keeps the ids as depends_on, read back in every state; an id that is no work item of the record, the work item itself, a removed one and one that would close a cycle are refused, exit 2, nothing written; fgraph start of a work item is refused while one it depends on is not completed, naming each with its bucket -- S-0002 cannot start: it depends on S-0001, in Backlog -- and the start of a Feature, and the next work item a completion starts, hold to the same refusal and say so; fgraph show lists depends on with each id and its bucket"
 created = 2026-11-22 10:47:39+00:00
+started = 2026-11-22 11:52:02+00:00
+completed = 2026-11-22 11:57:57+00:00
+commit = "d0f26a6"
 
 [[tasks]]
 id = "T-0280"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a work item depends on another and waits for it"
 expected_output = "changed: README.md shows --depends-on, the refused start and the show that lists it; docs/domain-model.md says a relation is a typed reference stored on the item that names it, what depends on refuses and when it stops refusing, and what is refused at the write"
 created = 2026-11-22 10:47:41+00:00
+started = 2026-11-22 11:57:59+00:00
+completed = 2026-11-22 11:58:33+00:00
+commit = "8b37128"

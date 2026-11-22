@@ -140,7 +140,7 @@ def open_files(record: Path) -> Store:
     def save_work_item(item: WorkItemState) -> None:
         nonlocal journal
         journal = noted(journal, work_item.work_item_path(record, item.id))
-        work_item.write_work_item(record, item)
+        work_item.write_work_item(record, item, KINDS)
 
     def save_queue(queue: Queue) -> None:
         nonlocal journal
@@ -162,7 +162,7 @@ def open_files(record: Path) -> Store:
     )
     return Store(
         find_work_item_rows=partial(work_item.read_work_item_rows, record),
-        load_work_item=partial(work_item.read_work_item, record),
+        load_work_item=partial(work_item.read_work_item, record, kinds=KINDS),
         find_work_item_detail=partial(work_item.read_work_item_detail, record),
         find_task_ids=partial(read_every_task_id, record),
         save_work_item=save_work_item,

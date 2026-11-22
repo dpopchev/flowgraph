@@ -24,6 +24,7 @@ from flowgraph.criterion import (
 )
 from flowgraph.feature_complete import complete_with_feature
 from flowgraph.feature_move import check_move
+from flowgraph.item_depends import bucketed
 from flowgraph.item_id import (
     ItemId,
     ItemIdError,
@@ -108,7 +109,8 @@ def show_item(item: str, store: Store) -> str:
     Raises WorkItemIdError when the text is the id of no kind and WorkItemNotFoundError when the
     record holds no such item.
     """
-    return show_text(store.find_work_item_detail(parse_work_item_id_of_any_kind(item)))
+    detail = store.find_work_item_detail(parse_work_item_id_of_any_kind(item))
+    return show_text(bucketed(detail, store))
 
 
 def add_item(
@@ -119,10 +121,12 @@ def add_item(
     store: Store,
     now: Now,
     parent: Parent = STANDALONE,
+    depends_on: tuple[WorkItemId, ...] = (),
 ) -> Written:
     """Add a work item of that kind with its criterion; what the write says.
 
-    It stands alone unless a Feature is given as its parent. Raises EmptyPartError when the
+    It stands alone unless a Feature is given as its parent, and depends on the work items given.
+    Raises EmptyPartError when the
     title is blank and CriterionError when the criterion is not of the form the kind takes;
     nothing is saved.
     """
@@ -135,6 +139,7 @@ def add_item(
         save_work_item=store.save_work_item,
         now=now,
         parent=parent,
+        depends_on=depends_on,
     )
     text = work_item_id_text(added)
     return Written(f"added {text}\n", MESSAGE.format(f"add {text}"))

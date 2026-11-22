@@ -47,6 +47,7 @@ from flowgraph.item import (
     status_item,
     write_task,
 )
+from flowgraph.item_depends import check_start_waits, depends_asked
 from flowgraph.knowledge import DECISION, DEVIATION, FINDING
 from flowgraph.knowledge_list import show_knowledge
 from flowgraph.land import land_item
@@ -107,8 +108,12 @@ def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -
             kind = kind_named(args.kind)
             under = parent_named(args.parent, store)
             criterion = _criterion(args)
-            return add_item(kind, args.title, criterion, args.description, store, now, under)
+            depends_on = depends_asked(args.depends_on, None, store) or ()
+            return add_item(
+                kind, args.title, criterion, args.description, store, now, under, depends_on
+            )
         case "amend":
+            amended = None if is_feature_id(args.id) else args.id
             parts = Amendment(
                 args.title,
                 args.description,
@@ -119,6 +124,7 @@ def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -
                 args.expected,
                 args.hypothesis,
                 None if args.parent is None else parent_asked(args.parent),
+                depends_asked(args.depends_on, amended, store),
             )
             return amend_named(args.id, parts, args.criterion, store)
         case "complete" if is_feature_id(args.id):
@@ -190,6 +196,7 @@ def _said(
         check_slug_branched(args.id, args.slug, config.development.enabled, record / CONFIG)
         check_start_on_main(args.id, record, open_git)
         check_start_under_feature(args.id, store)
+        check_start_waits(args.id, store)
         check_parallel(args.id, store.find_work_item_rows, config)
     written = _written(args, store, now, config)
     if written is not None:

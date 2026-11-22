@@ -31,7 +31,8 @@ commit = "fce90db"
 
 [[tasks]]
 id = "T-0257"
-state = "backlog"
+state = "started"
 title = "Say in README.md and docs/domain-model.md the one rule by which add and amend put a work item under a Feature, and the refusal naming none"
 expected_output = "changed: README.md, docs/domain-model.md and the docstring of src/flowgraph/feature_move.py"
 created = 2026-11-22 08:10:50+00:00
+started = 2026-11-22 08:17:46+00:00

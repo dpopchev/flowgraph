@@ -1,0 +1,14 @@
+id = "S-0089"
+state = "backlog"
+title = "Cut the Tasks fgraph completes while their check fails from every one to none"
+description = "The example of the note, its words not decided."
+parent = "F-0009"
+created = 2026-11-22 21:02:38+00:00
+depends_on = [
+    "S-0088",
+]
+
+[criterion]
+given = "a started Task whose check is make test, which exits 2"
+when = "fgraph complete T-0001 --commit 677f9b0 is run"
+then = "it exits 2 with a line as T-0001 cannot complete: its check \"make test\" exited with status 2, and the Task stays started"

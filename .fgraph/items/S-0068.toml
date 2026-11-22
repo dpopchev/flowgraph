@@ -25,3 +25,10 @@ title = "Add --superseded-by to fgraph remove, shown from both sides"
 description = "Removes the xfail mark of tests/functional/test_superseded_by.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph remove of a work item in Backlog takes --superseded-by ID in place of --reason, or beside it; the file of the removed work item keeps it as superseded_by with its removed time; fgraph status lists it under Removed with superseded by S-0003, before a reason given beside it, and fgraph show of it lists the same; fgraph show of the other lists, as what it supersedes, the id of each work item that names it, read from the record; a remove with neither --reason nor --superseded-by is refused naming both; an id that is no work item of the record, the work item itself and a removed one are refused, exit 2, nothing written; the remove of a Feature takes --reason alone, as before"
 created = 2026-11-22 10:47:46+00:00
+
+[[tasks]]
+id = "T-0286"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say a removed work item names the one that supersedes it"
+expected_output = "changed: README.md shows --superseded-by, the status that lists it under Removed and the show of each side; docs/domain-model.md says superseded by stands in place of the reason or beside it, which side is stored, and what is refused"
+created = 2026-11-22 10:47:47+00:00

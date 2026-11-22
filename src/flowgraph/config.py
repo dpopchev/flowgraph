@@ -13,11 +13,12 @@ it has no default either, so left out a landing runs none.
 
 import json
 import tomllib
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 
+import tomli_w
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 # The file of the configuration inside a record.
@@ -116,6 +117,16 @@ class Config:
 
 # The configuration of the record in that directory; the defaults when it holds no config.toml.
 LoadConfig = Callable[[Path], Config]
+
+# The settings of a record: the keys its config.toml writes, each with its value, by table.
+# Plain data: a key the file leaves out is left out, where the configuration holds its default.
+Settings = Mapping[str, Mapping[str, object]]
+
+# The settings of the record, whole; none when it holds no config.toml.
+LoadSettings = Callable[[], Settings]
+
+# Save the settings whole.
+SaveSettings = Callable[[Settings], None]
 
 
 class ConfigError(ValueError):
@@ -218,15 +229,63 @@ def make_config(text: str) -> Config:
     return Config(git=Git(commit=held.git.commit), development=development)
 
 
-def read_config(record: Path) -> Config:
-    """Adapter: the configuration of the record, the defaults when it holds no config.toml.
+def make_settings(text: str) -> dict[str, dict[str, object]]:
+    """The settings the text of a config.toml writes; a key it leaves out is left out.
+
+    Raises ConfigError as make_config does: the settings are those of a configuration.
+    """
+    make_config(text)
+    return tomllib.loads(text)
+
+
+def settings_text(settings: Settings) -> str:
+    """The text of the config.toml that writes the settings."""
+    return tomli_w.dumps(settings)
+
+
+def _read[Held](record: Path, make: Callable[[str], Held]) -> Held:
+    """What make builds of the config.toml of the record, of no text when it holds no file.
 
     Raises ConfigError naming the file and the key when the file holds no configuration.
     """
     path = record / CONFIG
     if not path.is_file():
-        return make_config("")
+        return make("")
     try:
-        return make_config(path.read_text(encoding="utf-8"))
+        return make(path.read_text(encoding="utf-8"))
     except ConfigError as error:
         raise ConfigError(f"{path}: {error}") from error
+
+
+def read_config(record: Path) -> Config:
+    """Adapter: the configuration of the record, the defaults when it holds no config.toml.
+
+    Raises ConfigError naming the file and the key when the file holds no configuration.
+    """
+    return _read(record, make_config)
+
+
+def read_settings(record: Path) -> dict[str, dict[str, object]]:
+    """Adapter: the settings the config.toml of the record writes, none when it holds no file.
+
+    Raises ConfigError naming the file and the key when the file holds no configuration.
+    """
+    return _read(record, make_settings)
+
+
+def write_settings(record: Path, settings: Settings) -> None:
+    """Adapter: write the settings as the config.toml of the record.
+
+    The file is written beside its path and read back through make_config before it replaces
+    it. Raises ConfigError naming the key when the settings hold no configuration; the file is
+    then as it was, and a record without one is left without.
+    """
+    path = record / CONFIG
+    beside = path.with_name(f"{path.name}.tmp")
+    beside.write_text(settings_text(settings), encoding="utf-8")
+    try:
+        make_config(beside.read_text(encoding="utf-8"))
+    except ConfigError:
+        beside.unlink()
+        raise
+    beside.replace(path)

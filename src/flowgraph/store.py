@@ -11,6 +11,14 @@ from typing import Never
 
 from flowgraph import work_item
 from flowgraph.bug import BUG
+from flowgraph.config import (
+    CONFIG,
+    LoadSettings,
+    SaveSettings,
+    Settings,
+    read_settings,
+    write_settings,
+)
 from flowgraph.feature import (
     Feature,
     FeatureNotFoundError,
@@ -82,11 +90,20 @@ def _take_none(feature: Feature) -> Never:
 NO_FEATURES = FeatureStore(_hold_none, _take_none, list)
 
 
+class NoSettingsStoreError(Exception):
+    """Settings saved into a store that was built without the settings of its record."""
+
+
+def _take_no_settings(settings: Settings) -> Never:
+    """The save of a store that takes no settings."""
+    raise NoSettingsStoreError("this store keeps no settings")
+
+
 @dataclass(frozen=True)
 class Store:
     """The reads and writes of one record, each already bound to its directory.
 
-    A store built without its Features holds none.
+    A store built without its Features holds none, and so does one built without its settings.
     """
 
     find_work_item_rows: FindKindRows
@@ -99,6 +116,8 @@ class Store:
     find_changed_files: FindChangedFiles
     restore_files: RestoreFiles
     features: FeatureStore = NO_FEATURES
+    load_settings: LoadSettings = dict
+    save_settings: SaveSettings = _take_no_settings
 
 
 # The store of the record in that directory.
@@ -133,6 +152,11 @@ def open_files(record: Path) -> Store:
         journal = noted(journal, feature_file(record, feature.id))
         write_feature(record, feature)
 
+    def save_settings(settings: Settings) -> None:
+        nonlocal journal
+        journal = noted(journal, record / CONFIG)
+        write_settings(record, settings)
+
     features = FeatureStore(
         partial(read_feature, record), save_feature, partial(read_feature_ids, record)
     )
@@ -147,4 +171,6 @@ def open_files(record: Path) -> Store:
         find_changed_files=lambda: changed_files(journal),
         restore_files=lambda: restore(journal),
         features=features,
+        load_settings=partial(read_settings, record),
+        save_settings=save_settings,
     )

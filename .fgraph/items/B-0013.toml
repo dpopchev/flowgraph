@@ -14,3 +14,10 @@ state = "backlog"
 title = "Complete with fgraph complete a started Feature whose every work item is completed or removed, at the commit of its last completed one, in src/flowgraph/feature_complete.py and src/flowgraph/cli.py"
 expected_output = "changed: complete_feature_item of src/flowgraph/feature_complete.py and its dispatch in src/flowgraph/cli.py; tests/functional/test_complete_feature.py states the completion and its refusals"
 created = 2026-11-22 07:42:11+00:00
+
+[[tasks]]
+id = "T-0247"
+state = "backlog"
+title = "Check the Feature of the work item while the merge of a landing is held, before main moves, in src/flowgraph/land.py"
+expected_output = "changed: _check_completes of src/flowgraph/land.py; tests/land/test_land.py states a landing whose Feature the record does not hold refused with the merge dropped"
+created = 2026-11-22 07:42:11+00:00

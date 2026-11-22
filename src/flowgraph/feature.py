@@ -1,8 +1,9 @@
 """A Feature: a bigger outcome that groups work items, with the criteria the user experiences.
 
-It is not worked on directly, so it holds no Task. Its state is its own, in Backlog or started,
-as that of a work item is; a started one is in InProgress, and every other bucket a list shows
-it in is still derived from the states of its work items. It is kept as one file of the record,
+It is not worked on directly, so it holds no Task. Its state is its own, in Backlog, started or
+completed, as that of a work item is (`flowgraph.feature_state`); a started one is in
+InProgress and a completed one in Completed, and every other bucket a list shows it in is still
+derived from the states of its work items. It is kept as one file of the record,
 `items/F-0001.toml`.
 """
 
@@ -15,16 +16,35 @@ from typing import Annotated, Literal, assert_never
 
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
 
-from flowgraph.criterion import said
-from flowgraph.item_file import write_checked
+from flowgraph.criterion import CommitError, evidence_written
+from flowgraph.feature_state import (
+    IN_BACKLOG,
+    CompletedFeature,
+    Feature,
+    FeatureState,
+    NoCriterionError,
+    StartedFeature,
+    completed_feature,
+    make_feature,
+    started_feature,
+    state_name,
+)
+from flowgraph.item_file import evidence_primitives, write_checked
 from flowgraph.parent import FeatureId, feature_id_text, make_feature_id, parse_feature_id
 from flowgraph.record import ITEMS, Now
-from flowgraph.task import StartedAlreadyError
 from flowgraph.work_item import WorkItemRow
 
-# The states of a Feature as the record writes them; a file without the line reads as in Backlog.
-IN_BACKLOG = "backlog"
-STARTED = "started"
+# The states of a Feature and its moves live in feature_state.py; they stay importable from here.
+__all__ = [
+    "CompletedFeature",
+    "Feature",
+    "FeatureState",
+    "NoCriterionError",
+    "StartedFeature",
+    "completed_feature",
+    "make_feature",
+    "started_feature",
+]
 
 # The states of a completed and of a removed work item, as the record writes them.
 COMPLETED = "completed"
@@ -35,33 +55,6 @@ DONE = frozenset({COMPLETED, REMOVED})
 
 # The states of a work item that say work on it has begun.
 BEGUN = frozenset({"started", COMPLETED})
-
-
-@dataclass(frozen=True)
-class Feature:
-    """A Feature in Backlog: its outcome title, its description and its criteria, one or more."""
-
-    id: FeatureId
-    title: str
-    description: str
-    criteria: tuple[str, ...]
-    created: datetime
-
-
-@dataclass(frozen=True)
-class StartedFeature:
-    """A Feature in InProgress: started, its work items started one at a time."""
-
-    id: FeatureId
-    title: str
-    description: str
-    criteria: tuple[str, ...]
-    created: datetime
-    started: datetime
-
-
-# A Feature in any of its states, as the record keeps it.
-FeatureState = Feature | StartedFeature
 
 
 @dataclass
@@ -100,10 +93,6 @@ SaveFeature = Callable[[FeatureState], None]
 FindFeatureIds = Callable[[], list[str]]
 
 
-class NoCriterionError(ValueError):
-    """A Feature without a criterion."""
-
-
 class FeatureNotFoundError(Exception):
     """A record that holds no Feature of the id asked for."""
 
@@ -117,53 +106,6 @@ class FeatureFileError(Exception):
 
 class FeatureMismatchError(Exception):
     """A Feature read back different from the one written; its file is as it was before."""
-
-
-def make_feature(
-    feature_id: FeatureId, title: str, criteria: Iterable[str], description: str, created: datetime
-) -> Feature:
-    """A Feature with its criteria, its created time kept to the second.
-
-    Raises EmptyPartError when the title or a criterion is blank and NoCriterionError when it
-    states none.
-    """
-    stated = tuple(said("criterion", criterion) for criterion in criteria)
-    if not stated:
-        raise NoCriterionError("a Feature states at least one criterion")
-    to_the_second = created.replace(microsecond=0)
-    return Feature(feature_id, said("title", title), description, stated, to_the_second)
-
-
-def started_feature(feature: FeatureState, on: datetime) -> StartedFeature:
-    """The Feature started on that time, kept to the second, holding what it held.
-
-    Raises StartedAlreadyError when it is started.
-    """
-    match feature:
-        case Feature():
-            return StartedFeature(
-                feature.id,
-                feature.title,
-                feature.description,
-                feature.criteria,
-                feature.created,
-                on.replace(microsecond=0),
-            )
-        case StartedFeature():
-            raise StartedAlreadyError(f"{feature_id_text(feature.id)} is started already")
-        case _ as unreachable:
-            assert_never(unreachable)
-
-
-def _state_name(feature: FeatureState) -> str:
-    """The state of a Feature as the record writes it."""
-    match feature:
-        case Feature():
-            return IN_BACKLOG
-        case StartedFeature():
-            return STARTED
-        case _ as unreachable:
-            assert_never(unreachable)
 
 
 def next_feature_id(taken: Collection[FeatureId]) -> FeatureId:
@@ -194,9 +136,9 @@ def bucket_of(states: Collection[str]) -> str:
 def feature_bucket(feature: FeatureState, states: Collection[str]) -> str:
     """The bucket a list shows the Feature in, given the states of its work items.
 
-    A started Feature is in InProgress by its own state. Completed has no state yet, so it stays
-    derived, and so does every bucket of a Feature never started, as one whose work items were
-    started before a Feature had a state.
+    A started Feature is in InProgress by its own state, unless its work items derive Completed,
+    and a completed one in Completed by its own. Every bucket of a Feature never started stays
+    derived, as that of one whose work items were started before a Feature had a state.
     """
     derived = bucket_of(states)
     match feature:
@@ -204,6 +146,8 @@ def feature_bucket(feature: FeatureState, states: Collection[str]) -> str:
             return derived
         case StartedFeature():
             return derived if derived == "Completed" else "InProgress"
+        case CompletedFeature():
+            return "Completed"
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -267,8 +211,24 @@ class _StartedFeatureFile(BaseModel):
     criteria: list[str]
 
 
+class _CompletedFeatureFile(BaseModel):
+    """What the file of a completed Feature holds: its completed time too, and its commit."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    state: Literal["completed"]
+    title: str
+    description: str = ""
+    created: datetime
+    started: datetime
+    completed: datetime
+    commit: str = ""
+    criteria: list[str]
+
+
 # The file of a Feature in any of its states.
-_HeldFeatureFile = _FeatureFile | _StartedFeatureFile
+_HeldFeatureFile = _FeatureFile | _StartedFeatureFile | _CompletedFeatureFile
 
 # The validator of a Feature file, which tells the states apart by the state line.
 _HELD_FEATURE: TypeAdapter[_HeldFeatureFile] = TypeAdapter(
@@ -285,12 +245,13 @@ def _read_file(path: Path) -> FeatureState:
     """The Feature one file holds, built through its constructor and its moves.
 
     A file without a state line, as every one written before a Feature had a state, holds a
-    Feature in Backlog. Raises FeatureFileError.
+    Feature in Backlog. Raises FeatureFileError, for a commit that is no sha too.
     """
     try:
         written = tomllib.loads(path.read_text(encoding="utf-8"))
         held = _HELD_FEATURE.validate_python({"state": IN_BACKLOG, **written})
-    except (tomllib.TOMLDecodeError, ValidationError) as error:
+        commit = evidence_written(held.commit if isinstance(held, _CompletedFeatureFile) else "")
+    except (tomllib.TOMLDecodeError, ValidationError, CommitError) as error:
         raise FeatureFileError(f"{path} holds no Feature: {error}") from error
     feature = make_feature(
         parse_feature_id(held.id), held.title, held.criteria, held.description, held.created
@@ -300,17 +261,22 @@ def _read_file(path: Path) -> FeatureState:
             return feature
         case _StartedFeatureFile():
             return started_feature(feature, held.started)
+        case _CompletedFeatureFile():
+            return completed_feature(started_feature(feature, held.started), held.completed, commit)
         case _ as unreachable:
             assert_never(unreachable)
 
 
 def _moves_primitives(feature: FeatureState) -> dict[str, object]:
-    """The times of the moves a Feature has made, as its file holds them."""
+    """The times and the commit of the moves a Feature has made, as its file holds them."""
     match feature:
         case Feature():
             return {}
         case StartedFeature():
             return {"started": feature.started}
+        case CompletedFeature():
+            times = {"started": feature.started, "completed": feature.completed}
+            return {**times, **evidence_primitives(feature.commit)}
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -343,7 +309,7 @@ def write_feature(record: Path, feature: FeatureState) -> None:
     described = {"description": feature.description} if feature.description else {}
     primitives = {
         "id": feature_id_text(feature.id),
-        "state": _state_name(feature),
+        "state": state_name(feature),
         "title": feature.title,
         **described,
         "created": feature.created,

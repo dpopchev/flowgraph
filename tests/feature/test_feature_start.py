@@ -13,6 +13,7 @@ from flowgraph.criterion import NO_COMMIT, make_scenario
 from flowgraph.feature import (
     FeatureNotFoundError,
     FeatureState,
+    completed_feature,
     make_feature,
     started_feature,
 )
@@ -29,7 +30,13 @@ from flowgraph.parent import STANDALONE, FeatureId, Parent, make_feature_id
 from flowgraph.queue import Queue, make_queue
 from flowgraph.store import FeatureStore, Store
 from flowgraph.story import STORY, make_story_id
-from flowgraph.task import NoTaskError, StartedAlreadyError, make_task, make_task_id
+from flowgraph.task import (
+    CompletedAlreadyError,
+    NoTaskError,
+    StartedAlreadyError,
+    make_task,
+    make_task_id,
+)
 from flowgraph.work_item import (
     WorkItem,
     WorkItemState,
@@ -50,6 +57,7 @@ F1 = make_feature_id(1)
 S1, S2, S3 = (make_story_id(number) for number in range(1, 4))
 FEATURE = make_feature(F1, "a feature title", ["a criterion"], "", DAY[1])
 STARTED = started_feature(FEATURE, DAY[5])
+COMPLETED = completed_feature(STARTED, DAY[6], NO_COMMIT)
 NO_QUEUE = make_queue([])
 UNLIMITED = make_config("")
 ONE_AT_ONCE = make_config("[development]\nenabled = true\nparallel = 1\n")
@@ -202,6 +210,7 @@ REFUSED = [
         "F-0001 cannot start: S-0001 has no Task to start with",
     ),
     ([story(1)], STARTED, UNLIMITED, StartedAlreadyError, "F-0001 is started already"),
+    ([story(1)], COMPLETED, UNLIMITED, CompletedAlreadyError, "F-0001 is completed already"),
     (
         [story(1), started(2, STANDALONE)],
         FEATURE,
@@ -215,6 +224,7 @@ REFUSALS = [
     "no-work-item-in-backlog",
     "first-work-item-without-a-task",
     "started-already",
+    "completed-already",
     "beside-as-many-started-as-parallel",
 ]
 
@@ -267,6 +277,13 @@ def test_a_work_item_started_beside_a_started_one_of_its_feature_is_refused_nami
         r" started already: S-0001$",
     ):
         check_start_under_feature("S-0002", store([started(1), story(2)], STARTED))
+
+
+def test_a_work_item_started_under_a_completed_feature_is_refused_naming_the_feature() -> None:
+    with pytest.raises(
+        CompletedAlreadyError, match=r"^S-0002 cannot start: F-0001 is completed already$"
+    ):
+        check_start_under_feature("S-0002", store([completed(1), story(2)], COMPLETED))
 
 
 def test_a_work_item_of_a_started_feature_with_none_started_passes() -> None:

@@ -11,7 +11,7 @@ from typing import assert_never
 from flowgraph import work_item
 from flowgraph.branch import make_slug, slug_of_title
 from flowgraph.config import Config
-from flowgraph.feature import Feature, StartedFeature, started_feature
+from flowgraph.feature import CompletedFeature, Feature, StartedFeature, started_feature
 from flowgraph.item import MESSAGE, ItemIdError, ToBranch, Written, parse_item_id
 from flowgraph.parallel import check_feature_parallel
 from flowgraph.parent import FeatureId, Standalone, feature_id_text, parse_feature_id
@@ -19,7 +19,7 @@ from flowgraph.queue import queued
 from flowgraph.record import Now
 from flowgraph.status import STARTED, backlog_as_added, rows_by_id
 from flowgraph.store import Store
-from flowgraph.task import NoTaskError, TaskId
+from flowgraph.task import CompletedAlreadyError, NoTaskError, TaskId
 from flowgraph.work_item import (
     CompletedWorkItem,
     RemovedWorkItem,
@@ -69,10 +69,10 @@ def start_feature_item(
     The work item names the branch to check out at the commit of the start: its slug is the one
     given, else the slug of its title. Raises FeatureIdError when the text is no Feature id,
     FeatureNotFoundError when the record holds no such Feature, StartedAlreadyError when it is
-    started, NoWorkItemError when it has no work item in Backlog, ParallelError when as many
-    work items are started as the configuration starts at once, SlugError when the slug given
-    is no slug, and NoTaskError naming the Feature when its first work item has no Task;
-    nothing is saved.
+    started, CompletedAlreadyError when it is completed, NoWorkItemError when it has no work
+    item in Backlog, ParallelError when as many work items are started as the configuration
+    starts at once, SlugError when the slug given is no slug, and NoTaskError naming the
+    Feature when its first work item has no Task; nothing is saved.
     """
     feature_id = parse_feature_id(feature)
     named = feature_id_text(feature_id)
@@ -114,11 +114,12 @@ def _awaited_feature(item: WorkItemState) -> FeatureId | None:
 def check_start_under_feature(item: str, store: Store) -> None:
     """Check that the start of the work item of that id is one its Feature takes.
 
-    Raises FeatureNotStartedError naming the Feature when it is not started, and
-    WorkItemInProgressError naming each started work item of it when one is. A work item
-    standing alone passes, and so does one that is not in Backlog, which the start refuses; a
-    Task, a Feature and a text that is no id are not read. Raises WorkItemNotFoundError when
-    the record holds no such work item, as its start does.
+    Raises FeatureNotStartedError naming the Feature when it is not started,
+    WorkItemInProgressError naming each started work item of it when one is, and
+    CompletedAlreadyError naming it when it is completed. A work item standing alone passes,
+    and so does one that is not in Backlog, which the start refuses; a Task, a Feature and a
+    text that is no id are not read. Raises WorkItemNotFoundError when the record holds no such
+    work item, as its start does.
     """
     try:
         item_id = parse_item_id(item)
@@ -147,5 +148,7 @@ def check_start_under_feature(item: str, store: Store) -> None:
                 raise WorkItemInProgressError(
                     f"{named} cannot start: {one}, started already: {already}"
                 )
+        case CompletedFeature():
+            raise CompletedAlreadyError(f"{named} cannot start: {feature} is completed already")
         case _ as unreachable:
             assert_never(unreachable)

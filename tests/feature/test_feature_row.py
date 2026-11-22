@@ -4,7 +4,14 @@ from datetime import UTC, datetime
 
 import pytest
 
-from flowgraph.feature import FeatureRow, feature_row, make_feature, started_feature
+from flowgraph.criterion import NO_COMMIT
+from flowgraph.feature import (
+    FeatureRow,
+    completed_feature,
+    feature_row,
+    make_feature,
+    started_feature,
+)
 from flowgraph.parent import make_feature_id
 
 pytestmark = pytest.mark.view
@@ -12,6 +19,7 @@ pytestmark = pytest.mark.view
 CREATED = datetime(2026, 1, 1, tzinfo=UTC)
 FEATURE = make_feature(make_feature_id(1), "a title", ["a criterion"], "", CREATED)
 STARTED = started_feature(FEATURE, CREATED)
+COMPLETED = completed_feature(STARTED, CREATED, NO_COMMIT)
 
 
 def test_the_row_of_a_feature_names_its_id_its_title_and_its_derived_bucket() -> None:
@@ -45,3 +53,7 @@ def test_the_row_of_a_started_feature_is_in_progress_whatever_its_work_items_not
 
 def test_the_row_of_a_started_feature_whose_work_items_are_all_done_is_derived_completed() -> None:
     assert feature_row(STARTED, ["completed", "removed"]).bucket == "Completed"
+
+
+def test_the_row_of_a_completed_feature_is_in_completed_by_its_own_state() -> None:
+    assert feature_row(COMPLETED, ["completed", "backlog"]).bucket == "Completed"

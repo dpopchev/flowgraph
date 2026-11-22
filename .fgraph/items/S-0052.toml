@@ -35,11 +35,12 @@ commit = "da104d3"
 
 [[tasks]]
 id = "T-0190"
-state = "backlog"
+state = "started"
 title = "Add the start of a Feature to fgraph start, starting its first work item with it"
 description = "Removes the xfail mark of tests/functional/test_start_feature.py. The tests of other work items that start a work item under a Feature start the Feature first, named in the commit. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph start takes the id of a Feature: it starts the Feature and its first work item in one write and one commit, chore: start F-0001 in the record, with the branch and the worktree of that work item when the development is on, as any start, and on main alone; the first work item is the first of its work items in Backlog in the order of the queue, so a Feature that holds completed work items starts with the next; refused with exit 2 and nothing written: a Feature with no work item in Backlog, one whose first work item has no Task, one started already, and a start [development] parallel refuses; the start of a work item whose Feature is not started is refused naming the Feature, and the start of a work item of a started Feature beside another started work item of it is refused naming that one; fgraph status lists a started Feature under InProgress with its started work item under it, a Feature never started keeps its derived bucket, and Completed stays derived until S-0054 gives it a state"
 created = 2026-11-21 23:22:06+00:00
+started = 2026-11-22 01:37:02+00:00
 
 [[tasks]]
 id = "T-0191"

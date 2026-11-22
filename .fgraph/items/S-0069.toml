@@ -25,3 +25,10 @@ title = "Add --amends to fgraph add, shown from both sides"
 description = "Removes the xfail mark of tests/functional/test_amends.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph add of every kind of work item takes --amends ID once, a completed work item whose landed behavior the new one changes; the file keeps it as amends, read back in every state; an id that is no work item of the record and one that is not completed are refused, exit 2, nothing written; fgraph show of the new work item lists amends with the id, and fgraph show of the completed one lists, as amended by, the id of each work item that names it, read from the record"
 created = 2026-11-22 10:47:50+00:00
+
+[[tasks]]
+id = "T-0289"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to list the five typed relations of a work item"
+expected_output = "changed: README.md shows --amends and the show of each side; docs/domain-model.md lists the five typed relations of a work item in one table -- parent, depends on, filed during, superseded by, amends -- with where each is stored, which side is derived and which move reads it"
+created = 2026-11-22 10:47:51+00:00

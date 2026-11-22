@@ -33,3 +33,10 @@ title = "Add the note command to fgraph, keeping a finding in the file of its wo
 description = "Removes the xfail mark of tests/functional/test_note_finding.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph note ID --finding TEXT appends the line to a work item of any kind in any state, Completed and Removed included, as one write and one commit, chore: note S-0001 in the record, and says noted S-0001; the file of the work item holds its lines as [[knowledge]] tables in the order noted, read back whole in every state; fgraph show lists them under Knowledge (n) after the Tasks, each with its kind, its date and its text, and no heading when there is none; a line is never amended or removed; with the development on, a started work item is noted in its worktree, as its Tasks are written, and every other one on main; the id of a Task, a wrong id and a blank text are refused, exit 2, nothing written; fgraph note --help prints its menu"
 created = 2026-11-22 10:47:24+00:00
+
+[[tasks]]
+id = "T-0267"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say a work item keeps the findings noted with fgraph note"
+expected_output = "changed: README.md shows fgraph note with a finding and the show that lists it, and its Status table names the knowledge lines; docs/domain-model.md says what a knowledge line holds, that it is noted in any state and never amended or removed, where it is written with the development on, how the file keeps it and what is refused"
+created = 2026-11-22 10:47:25+00:00

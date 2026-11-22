@@ -17,3 +17,11 @@ title = "Add tests/functional/test_relation_refused.py, failing on the criterion
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_file_refused.py does. Seen red, then marked a strict xfail naming S-0078 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_relation_refused.py states that, on a record whose file names under depends_on an id that is not in the record, fgraph status exits 2 with one line naming the file and the id, and no traceback"
 created = 2026-11-22 10:48:22+00:00
+
+[[tasks]]
+id = "T-0317"
+state = "backlog"
+title = "Refuse at the read a record whose relation names nothing or closes a cycle, in every command of fgraph"
+description = "Removes the xfail mark of tests/functional/test_relation_refused.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
+expected_output = "changed: every relation the record keeps is checked when the record is read -- the parent, depends on, filed during, superseded by and amends of a work item, the kinds between two terms, the terms an item or a knowledge line is about: an id or a name that is not in the record, and a cycle of depends on or of one kind between terms, make every command exit 2 with one line, fgraph: error: <path>: <relation> names <id>, which is not in the record, or naming the cycle, without a traceback, and nothing is written; the errors are among the REFUSED of src/flowgraph/cli.py; tests/functional/test_relation_refused.py states one case per relation"
+created = 2026-11-22 10:48:23+00:00

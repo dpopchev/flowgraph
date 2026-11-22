@@ -4,20 +4,25 @@ A view: it reads the record as plain data and changes nothing. A work item lists
 work items it depends on and those that depend on it, the one it was filed during and those filed
 during it, what it supersedes and what supersedes it, what it amends and what amends it, its terms
 and its knowledge lines; a Feature lists its work items, its terms and its knowledge lines. Every
-other side of a relation is derived from the record, as `fgraph show` derives it.
+other side of a relation is derived from the record, as `fgraph show` derives it. A term lists its
+meaning and relations as `fgraph show` does, then what is about it and about every term under it:
+each term that is part of it or is a kind of it, and those under them, to any depth.
 """
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from typing import assert_never
 
 from flowgraph.feature import FeatureDetail, feature_bucket, feature_detail
 from flowgraph.item_depends import bucketed, record_standing
-from flowgraph.item_id import parse_shown_id
+from flowgraph.item_id import ItemIdError, parse_shown_id
 from flowgraph.knowledge import KnowledgeRow, about_text
+from flowgraph.knowledge_list import collected, newest_first
 from flowgraph.parent import FeatureId, feature_id_text, parse_feature_id
 from flowgraph.relation import Standing, depended_on_by
 from flowgraph.status import rows_by_id, rows_under
 from flowgraph.store import Store
+from flowgraph.term import TermNotFoundError, is_term_name
+from flowgraph.term_item import items_about, term_head
 from flowgraph.work_item import WorkItemDetail, WorkItemId
 
 # A heading with the lines under it, the lines already worded.
@@ -96,12 +101,67 @@ def _text(head: str, sections: Sequence[Section]) -> str:
     )
 
 
-def about_item(item: str, store: Store) -> str:
-    """The text fgraph about gives of the work item or Feature of that id: its links by relation.
+def terms_under(name: str, over: Mapping[str, tuple[str, ...]]) -> list[str]:
+    """The terms under that term, nearest first: each that names it, then those that name those.
 
-    Raises FeatureIdError for a Feature id below 1, ItemIdError for a text that is neither id, and
-    the refusal of `fgraph show` for an id the record holds no item of. Nothing is written.
+    `over` gives each term the names it is part of or a kind of. A term is listed once, and the
+    walk ends on a term already reached, so a cycle ends it.
     """
+    reached = [name]
+    for each in reached:
+        reached.extend(
+            under for under, names in over.items() if each in names and under not in reached
+        )
+    return reached[1:]
+
+
+def _term_text(name: str, store: Store) -> str:
+    """The text of a term: its head, then the items and knowledge lines about it and under it."""
+    head = term_head(name, store)
+    held = {each: store.terms.load_term(each) for each in store.terms.find_term_names()}
+    under = terms_under(name, {each: (*term.is_a, *term.part_of) for each, term in held.items()})
+    lines = collected(store)
+    seen_items: set[str] = set()
+    seen_lines: set[int] = set()
+    items: list[str] = []
+    knowledge: list[str] = []
+    for each in [name, *under]:
+        mark = "" if each == name else f"  (via {each})"
+        for id_ in items_about(each, store):
+            if id_ not in seen_items:
+                seen_items.add(id_)
+                items.append(f"{id_}{mark}")
+        for line in newest_first(lines, None, each):
+            if id(line) not in seen_lines:
+                seen_lines.add(id(line))
+                noted = line.noted.date().isoformat()
+                knowledge.append(f"    {line.item}  {line.kind}  {noted}  {line.text}{mark}\n")
+    return head + _term_about(items, knowledge)
+
+
+def _term_about(items: Sequence[str], knowledge: Sequence[str]) -> str:
+    """The items line and the knowledge lines of a term, each left out for none."""
+    return (
+        (f"  items  {', '.join(items)}\n" if items else "")
+        + ("  knowledge\n" if knowledge else "")
+        + "".join(knowledge)
+    )
+
+
+def about_item(item: str, store: Store) -> str:
+    """The text fgraph about gives of the term, work item or Feature named: its links by relation.
+
+    Raises FeatureIdError for a Feature id below 1, ItemIdError for a text that is no term name
+    and no id, or a term name the record holds no term of, and the refusal of `fgraph show` for an
+    id the record holds no item of. Nothing is written.
+    """
+    if is_term_name(item):
+        try:
+            return _term_text(item, store)
+        except TermNotFoundError as error:
+            raise ItemIdError(
+                f"{item!r} is no Story, Upkeep, Bug, Spike or Feature id and no term in the record"
+            ) from error
     match parse_shown_id(item):
         case FeatureId() as feature:
             detail = feature_detail(store.features.load_feature(feature))

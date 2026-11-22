@@ -20,7 +20,7 @@ STEPS = [
     ["add", "term", "gate", "--means", "a check before a landing"],
     ["add", "term", "lane", "--means", "a gate of one work item"],
     ["relate", "lane", "part-of", "gate"],
-    STORY,
+    [*STORY, "--about", "lane"],
     ["note", "S-0001", "--finding", "a thing learned about the whole", "--about", "gate"],
     ["note", "S-0001", "--finding", "a thing learned about the part", "--about", "lane"],
 ]
@@ -53,7 +53,6 @@ def fgraph(argv: list[str], cwd: Path) -> Outcome:
     return Outcome(status, "".join(out), "".join(err))
 
 
-@pytest.mark.xfail(strict=True, reason="S-0074: fgraph about does not take a term yet")
 class TestATermWithAPartAboutWhichALineWasNoted:
     @pytest.fixture
     def about(self, tmp_path: Path) -> Outcome:
@@ -69,3 +68,27 @@ class TestATermWithAPartAboutWhichALineWasNoted:
 
     def test_about_lists_the_line_about_the_part_marked_with_the_part(self, about: Outcome) -> None:
         assert "a thing learned about the part  (via lane)\n" in about.out
+
+    def test_about_lists_the_story_about_the_part_marked_with_the_part(
+        self, about: Outcome
+    ) -> None:
+        assert "  items  S-0001  (via lane)\n" in about.out
+
+    def test_about_lists_the_meaning_of_the_term(self, about: Outcome) -> None:
+        assert "  means  a check before a landing\n" in about.out
+
+    def test_about_lists_the_part_of_the_term_in_its_relations(self, about: Outcome) -> None:
+        assert "  parts  lane\n" in about.out
+
+
+class TestAWordThatIsNoIdAndNoTerm:
+    @pytest.fixture
+    def about(self, tmp_path: Path) -> Outcome:
+        return fgraph(["about", "nope"], tmp_path)
+
+    def test_about_exits_with_two(self, about: Outcome) -> None:
+        assert about.status == 2
+
+    def test_about_names_the_ids_and_the_term_it_is_neither(self, about: Outcome) -> None:
+        said = "'nope' is no Story, Upkeep, Bug, Spike or Feature id and no term in the record\n"
+        assert about.err.endswith(said)

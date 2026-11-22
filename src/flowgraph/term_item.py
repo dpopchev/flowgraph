@@ -97,10 +97,9 @@ def _about_lines(name: str, store: Store) -> str:
     )
 
 
-def show_term(name: str, store: Store) -> str:
-    """The text of the term of that name: its meaning and the day it was added.
+def term_head(name: str, store: Store) -> str:
+    """The head of the text of the term of that name: its meaning, its relations, its day added.
 
-    The items and the knowledge lines about it follow its relations, read from the record.
     Raises TermNotFoundError when the record holds no such term.
     """
     term = store.terms.load_term(name)
@@ -113,5 +112,13 @@ def show_term(name: str, store: Store) -> str:
     ]
     lines = "".join(f"  {label}  {named}\n" for label, named in relations if named)
     added = term.added.date().isoformat()
-    head = f"{term.name}\n  means  {term.meaning}\n{lines}  added  {added}\n"
-    return head + _about_lines(name, store)
+    return f"{term.name}\n  means  {term.meaning}\n{lines}  added  {added}\n"
+
+
+def show_term(name: str, store: Store) -> str:
+    """The text of the term of that name: its meaning and the day it was added.
+
+    The items and the knowledge lines about it follow its relations, read from the record.
+    Raises TermNotFoundError when the record holds no such term.
+    """
+    return term_head(name, store) + _about_lines(name, store)

@@ -21,7 +21,8 @@ commit = "98272ad"
 
 [[tasks]]
 id = "T-0224"
-state = "backlog"
+state = "started"
 title = "Say in README.md that a --slug given to fgraph start with the development off is refused"
 expected_output = "changed: README.md names the refusal of --slug with the development off"
 created = 2026-11-22 06:35:31+00:00
+started = 2026-11-22 06:39:08+00:00

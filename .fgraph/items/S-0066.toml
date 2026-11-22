@@ -17,3 +17,11 @@ title = "Add tests/functional/test_depends_on.py, failing on the criterion of S-
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_amend_work_item.py does. Seen red, then marked a strict xfail naming S-0066 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_depends_on.py states that, on a record with two Stories in Backlog, each with a Task, fgraph amend of the second with --depends-on and the id of the first exits 0, fgraph start of the second exits 2 naming the first and its bucket, and fgraph show of the second lists that it depends on the first"
 created = 2026-11-22 10:47:37+00:00
+
+[[tasks]]
+id = "T-0278"
+state = "backlog"
+title = "Create src/flowgraph/relation.py holding the relations a work item names to other work items, depends on first"
+description = "New code the next Task runs. A relation is stored on the item that names it; the other side is derived by a view, so a write stays one file and the scope of a branch holds."
+expected_output = "created: src/flowgraph/relation.py holds the relations of a work item -- the ids of the work items it depends on, none by default -- and two views over the record given as plain data: the work items a start still waits for, each with its bucket, and whether a new dependency would close a cycle; a work item that names itself is refused; tests/relation/ states each"
+created = 2026-11-22 10:47:38+00:00

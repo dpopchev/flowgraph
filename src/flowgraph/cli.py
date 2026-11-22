@@ -12,6 +12,7 @@ from functools import partial
 from pathlib import Path
 from typing import Never, assert_never
 
+from flowgraph.about import about_item
 from flowgraph.about_terms import about_asked
 from flowgraph.branch import check_slug_branched
 from flowgraph.commit import OpenGit, Said, commit_written, open_git
@@ -244,6 +245,8 @@ def _said(
             return Said(show_knowledge(args.kind, args.about, store))
         case "terms":
             return Said(terms_text(store))
+        case "about":
+            return Said(about_item(args.id, store))
         case "show":
             return Said(show_any_item(args.id, store))
         case "status":

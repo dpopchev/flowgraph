@@ -178,6 +178,8 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         metavar="ID",
         help="the id of the work item or of the Feature, or the name of the term",
     )
+    about = _command(commands, "about", "list the links of a work item or a Feature, by relation")
+    about.add_argument("id", metavar="ID", help="the id of the work item or of the Feature")
     start = _command(commands, "start", "start a work item or a Task of it, or a Feature")
     start.add_argument(
         "id", metavar="ID", help="the id of the work item, of the Task or of the Feature"
@@ -299,6 +301,7 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     return {
         "amend": amend,
         "show": show,
+        "about": about,
         "start": start,
         "block": block,
         "unblock": unblock,

@@ -9,6 +9,7 @@ from flowgraph.relation import (
     Waited,
     amended_by,
     closes_cycle,
+    depended_on_by,
     make_relations,
     superseding,
     waiting_for,
@@ -138,3 +139,13 @@ def test_a_work_item_amends_none_by_default() -> None:
 def test_a_work_item_that_amends_itself_is_refused() -> None:
     with pytest.raises(RelationError, match="S-2 cannot amend itself"):
         make_relations("S-2", amends="S-2")
+
+
+def test_the_work_items_that_depend_on_an_item_are_read_from_the_record_in_its_order() -> None:
+    record = {
+        "S-1": Standing("Completed", True),
+        "S-2": Standing("Backlog", False, ("S-1",)),
+        "S-3": Standing("Backlog", False, ("S-4", "S-1")),
+        "S-4": Standing("Backlog", False),
+    }
+    assert depended_on_by("S-1", record) == ["S-2", "S-3"]

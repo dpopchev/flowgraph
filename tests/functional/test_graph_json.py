@@ -12,10 +12,7 @@ import pytest
 
 from flowgraph.cli import open_files, run
 
-pytestmark = [
-    pytest.mark.functional,
-    pytest.mark.xfail(strict=True, reason="S-0077: fgraph graph is not yet there"),
-]
+pytestmark = pytest.mark.functional
 
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
@@ -64,7 +61,7 @@ def fgraph(argv: list[str], cwd: Path) -> Outcome:
 class TestARecordWithAFeatureAWorkItemATaskTwoTermsAndADependency:
     @pytest.fixture
     def graph(self, tmp_path: Path) -> Outcome:
-        for argv in (FEATURE, FIRST, SECOND, TASK, *TERMS, NOTE):
+        for argv in (*TERMS, FEATURE, FIRST, SECOND, TASK, NOTE):
             fgraph(argv, tmp_path)
         return fgraph(["graph", "--format", "json"], tmp_path)
 
@@ -97,6 +94,10 @@ class TestARecordWithAFeatureAWorkItemATaskTwoTermsAndADependency:
         assert [(line["item"], line["kind"], line["text"], line["about"]) for line in lines] == [
             ("S-0002", "finding", "a thing learned", ["gate"])
         ]
+
+    def test_graph_prints_the_bucket_of_a_work_item(self, graph: Outcome) -> None:
+        nodes = json.loads(graph.out)["nodes"]
+        assert [node["bucket"] for node in nodes if node["id"] == "S-0002"] == ["Backlog"]
 
     def test_graph_prints_the_same_bytes_twice(self, graph: Outcome, tmp_path: Path) -> None:
         assert fgraph(["graph"], tmp_path).out == graph.out

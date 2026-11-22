@@ -13,6 +13,7 @@ from flowgraph.feature import FeatureFileError, FeatureNotFoundError, NoCriterio
 from flowgraph.feature_item import OpenWorkItemError
 from flowgraph.feature_start import FeatureNotStartedError, NoWorkItemError, WorkItemInProgressError
 from flowgraph.gate import GateError
+from flowgraph.graph import FormatError
 from flowgraph.item import ItemIdError
 from flowgraph.item_depends import StartWaitsError
 from flowgraph.knowledge_list import KindListedError
@@ -97,6 +98,7 @@ REFUSED = (
     StartWaitsError,
     PaceError,
     KindListedError,
+    FormatError,
     TermError,
     TermFileError,
     TermNotFoundError,

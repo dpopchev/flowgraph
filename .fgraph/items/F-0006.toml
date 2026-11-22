@@ -1,0 +1,12 @@
+id = "F-0006"
+state = "backlog"
+title = "Raise the questions fgraph answers by walking the record from none to three: about an item, about a term and about a file"
+description = "Asked by the developer on 2026-11-22; the plan was shown and filed on the developer word: file all. Rows 5, 6 and 7 of the plan. It reads what the Features of the knowledge lines, the relations and the terms keep. A file is a derived node: nothing is stored for it but the paths a knowledge line names and the commits of the items."
+created = 2026-11-22 10:41:39+00:00
+criteria = [
+    "a developer asks about an item and sees its relations, knowledge and terms in one view",
+    "a developer asks about a term and sees what is about it and about the terms under it",
+    "a developer asks about a file and sees the items that touched it and the knowledge that governs it",
+    "a developer exports the graph for another tool to query",
+    "a developer is refused, with the file named, on a record whose relation names nothing or closes a cycle",
+]

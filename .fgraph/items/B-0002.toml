@@ -1,9 +1,11 @@
 id = "B-0002"
-state = "started"
+state = "completed"
 title = "Raise the reads of a started work item that fall back to main when its worktree lacks its file from one, status, to both"
 description = "Found during T-0146 of S-0037 on 2026-11-21, under the burn of the Backlog; filed at the end of the queue and not burned. The fallback of the row, where_written of src/flowgraph/worktrees.py, has no test either. Its Tasks are written when it is ordered."
 created = 2026-11-21 21:43:25+00:00
 started = 2026-11-22 06:10:50+00:00
+completed = 2026-11-22 06:14:49+00:00
+commit = "0fbf603"
 
 [criterion]
 observed = "with a started work item whose worktree holds no file of it, fgraph status on main falls back to the row of main, while fgraph show of it exits 2 saying the record holds no such item"

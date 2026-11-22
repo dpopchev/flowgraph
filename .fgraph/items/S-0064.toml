@@ -35,7 +35,8 @@ commit = "3c1626a"
 
 [[tasks]]
 id = "T-0273"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say a Feature takes a knowledge line too"
 expected_output = "changed: README.md shows a decision noted on a Feature and the show that lists it; docs/domain-model.md says a Feature keeps knowledge lines as a work item does, where its note is written and what is refused, and that a Task takes none"
 created = 2026-11-22 10:47:32+00:00
+started = 2026-11-22 11:27:51+00:00

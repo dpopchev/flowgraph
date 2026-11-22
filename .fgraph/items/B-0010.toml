@@ -31,10 +31,11 @@ commit = "4b797eb"
 
 [[tasks]]
 id = "T-0237"
-state = "backlog"
+state = "started"
 title = "Name the gate in the help of fgraph land in src/flowgraph/parser.py"
 expected_output = "changed: src/flowgraph/parser.py; tests/functional/test_command_help.py states the help of land naming the gate"
 created = 2026-11-22 07:11:37+00:00
+started = 2026-11-22 07:15:00+00:00
 
 [[tasks]]
 id = "T-0238"

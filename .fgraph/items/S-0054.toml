@@ -35,12 +35,14 @@ commit = "76ba6c3"
 
 [[tasks]]
 id = "T-0194"
-state = "started"
+state = "completed"
 title = "Complete a started Feature with the completion of its last work item, in fgraph complete and fgraph land"
 description = "Removes the xfail mark of tests/functional/test_complete_feature.py. The removal of the last work item in Backlog of a started Feature completes nothing: only a completion does, and the docs say so. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: the completion of a work item under a started Feature, by fgraph complete or by fgraph land, that leaves every work item of the Feature completed or removed completes the Feature in the same write and the same commit of the record, at the commit of that completion, none with the development off; fgraph status lists a completed Feature under Completed with its progress n/m W and that commit, placed by its completed time, its work items on no line of their own, and fgraph show of it lists its state and its commit; a completed Feature takes no start and no work item added under it; a Feature never started through fgraph keeps its derived bucket, listed without a commit; a removed work item counts in neither number, as today"
 created = 2026-11-21 23:43:08+00:00
 started = 2026-11-22 02:10:18+00:00
+completed = 2026-11-22 02:21:18+00:00
+commit = "289d5d1"
 
 [[tasks]]
 id = "T-0195"

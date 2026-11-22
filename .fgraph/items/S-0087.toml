@@ -18,12 +18,14 @@ then = "it prints one JSON document with the count of each bucket and every item
 
 [[tasks]]
 id = "T-0340"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_status_json.py, failing on the criterion of S-0087"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_graph_json.py does. Seen red, then marked a strict xfail naming S-0087 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_status_json.py states that on a record with items in every bucket, a blocked Task and a waiting Story, fgraph status --format json exits 0 and prints one JSON document that holds the count of each bucket, the blocked Task with its reason and what it waits on, the waiting Story with the id it waits for and the next to start; two runs print the same bytes; --format xml exits 2"
 created = 2026-11-22 21:02:16+00:00
 started = 2026-11-22 23:44:45+00:00
+completed = 2026-11-22 23:48:33+00:00
+commit = "5efd612"
 
 [[tasks]]
 id = "T-0341"

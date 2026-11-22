@@ -11,10 +11,11 @@ expected = "the refusal of each names every kind it takes, the Feature among the
 
 [[tasks]]
 id = "T-0259"
-state = "backlog"
+state = "started"
 title = "Refuse a Feature id below 1 given to fgraph start, complete, amend and remove as a Feature id, by its shape F- and a number, in src/flowgraph/feature_item.py"
 expected_output = "changed: is_feature_id of src/flowgraph/feature_item.py reads the shape F- and a number, so F-0000 is refused as fgraph show refuses it, a Feature id counts from 1: 0 is below 1; tests/functional/test_wrong_feature_id.py states it for each of the four commands, seen red"
 created = 2026-11-22 09:26:33+00:00
+started = 2026-11-22 09:26:44+00:00
 
 [[tasks]]
 id = "T-0260"

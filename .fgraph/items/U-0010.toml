@@ -45,12 +45,14 @@ commit = "5c4efcf"
 
 [[tasks]]
 id = "T-0322"
-state = "started"
+state = "completed"
 title = "Move the remaining modules of src/flowgraph into the subpackage of their aggregate, leaving __init__.py and cli.py"
 description = "Written on 2026-11-22 against the modules of that day; the list is taken again when the Task starts. A move alone: no behavior changes."
 expected_output = "changed: src/flowgraph holds two modules outside a subpackage, __init__.py and cli.py, and fgraph = flowgraph.cli:main of pyproject.toml still runs; the item and its ids, the Task, the criterion, the Bug, the Spike, the parent, the views -- status, text, terminal, watch -- the parser, and the modules the knowledge base added -- knowledge, relation, term, about, graph -- each sit in the subpackage of their aggregate or their view, named after its domain term and never after a layer; the imports between subpackages are acyclic and go through public names; make check passes, and make wheel builds a wheel that ships every subpackage"
 created = 2026-11-22 10:48:30+00:00
 started = 2026-11-22 21:25:55+00:00
+completed = 2026-11-22 21:33:18+00:00
+commit = "85a631b"
 
 [[tasks]]
 id = "T-0323"

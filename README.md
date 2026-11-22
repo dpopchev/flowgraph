@@ -346,6 +346,17 @@ nothing is written. The start of a Feature starts its first work item, and the
 next work item a completion starts is that of its Feature: both are refused as
 the start of that work item is, and say so.
 
+A record whose file was edited by hand or merged to name what is not there is
+refused when it is read, by every command, with exit 2 and nothing written: a
+parent, a dependency, a filed during, a superseded by, an amends or a term
+that the record does not hold, and a cycle of dependencies or of one kind
+between terms.
+
+```sh
+fgraph status
+# fgraph: error: /src/project/.fgraph/items/S-0002.toml: depends on names S-0099, which is not in the record
+```
+
 A work item can name the one it was found during: `--filed-during ID` of
 `fgraph add`, of every kind of work item, once. The other work item has no
 say in it, and `fgraph show` lists it from both sides, the second read from the

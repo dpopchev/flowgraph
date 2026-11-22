@@ -568,6 +568,19 @@ names it stores, the other side derived from the record:
 | `superseded by` | the removed work item, as `superseded_by` | `supersedes` in the show of the other | none |
 | `amends` | the work item, as `amends` | `amended by` in the show of the other | none |
 
+Every relation is checked twice: at the write, by the command that makes it, and again at the
+read, by every command, on the record as the worktrees compose it, so a work item that a
+worktree of a started work item holds is no missing id. The read checks each relation the
+record keeps: the `parent`, `depends on`, `filed during`, `superseded by` and `amends` of a
+work item, the `is-a` and `part-of` between two terms, and the terms a work item, a Feature
+or a knowledge line is about. Each must name a Feature, a work item or a term that the
+record holds. A cycle is a chain of one relation that comes back to where it started, of
+`depends on` between work items or of `is-a` or `part-of` between terms. A relation that
+fails is refused with exit 2, nothing written and no traceback, in one line that names the
+file that holds it:
+`fgraph: error: <path>: <relation> names <id>, which is not in the record`, or
+`fgraph: error: <path>: <relation> closes a cycle: S-0001 -> S-0002 -> S-0001`.
+
 ## About
 
 `fgraph about ID` is a view of the links of an item: it reads the record as plain data

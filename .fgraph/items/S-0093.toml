@@ -1,10 +1,12 @@
 id = "S-0093"
-state = "started"
+state = "completed"
 title = "Raise the completed work items fgraph keeps the yes of their closing on, with what the run printed, from none to every Story, Bug and Upkeep"
 description = "The words of the note: verify <id>, the yes or no of the closing, with what the run printed. The run of the criterion is the agent's; fgraph keeps its answer."
 parent = "F-0011"
 created = 2026-11-22 21:03:14+00:00
 started = 2026-11-22 22:43:16+00:00
+completed = 2026-11-22 23:00:54+00:00
+commit = "a7b20e4"
 
 [criterion]
 given = "a completed Story"

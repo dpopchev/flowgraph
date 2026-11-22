@@ -16,3 +16,11 @@ title = "Move the eleven modules of the Feature of src/flowgraph into the subpac
 description = "Written on 2026-11-22 against the modules of that day; the list is taken again when the Task starts. A move alone: no behavior changes."
 expected_output = "changed: feature.py and the ten feature_*.py modules of src/flowgraph are the modules of src/flowgraph/feature, named without the prefix; its __init__.py names what the other modules import, and no module outside it imports an underscore name of it; the tests of those modules state what they stated, moved only with their module; make check passes"
 created = 2026-11-22 10:48:26+00:00
+
+[[tasks]]
+id = "T-0320"
+state = "backlog"
+title = "Move the seven modules of the development of src/flowgraph into the subpackage src/flowgraph/development"
+description = "Written on 2026-11-22 against the modules of that day; the list is taken again when the Task starts. A move alone: no behavior changes."
+expected_output = "changed: branch.py, commit.py, gate.py, land.py, parallel.py, scope.py and worktrees.py of src/flowgraph are the modules of src/flowgraph/development; its __init__.py names what the other modules import; the tests of those modules state what they stated; make check passes"
+created = 2026-11-22 10:48:27+00:00

@@ -1,0 +1,11 @@
+id = "S-0097"
+state = "backlog"
+title = "Raise the ways a landing merges from three to four: a pull request"
+description = "Open: what opens the pull request, and which run writes the completion. Its Tasks are written when it is ordered."
+parent = "F-0012"
+created = 2026-11-22 21:03:43+00:00
+
+[criterion]
+given = "a repository with an origin, development.merge set to pull-request and a started work item whose Tasks are completed"
+when = "fgraph land of the work item is run"
+then = "its branch is pushed with a pull request opened, and the work item is completed once that is merged"

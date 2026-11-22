@@ -1,4 +1,4 @@
-"""The criterion of S-0077: fgraph graph --format json prints the nodes and typed edges of the record.
+"""The criterion of S-0077: fgraph graph --format json prints the nodes and edges of the record.
 
 Run end to end on a record in a temporary directory, through the file adapters of the package.
 """

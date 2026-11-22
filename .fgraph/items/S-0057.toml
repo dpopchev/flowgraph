@@ -24,11 +24,12 @@ commit = "2989969"
 
 [[tasks]]
 id = "T-0210"
-state = "backlog"
+state = "started"
 title = "Add the amend of a Feature in Backlog to fgraph amend: its title, its description and its criteria"
 description = "The readings of S-0057 as written. Removes the xfail mark of tests/functional/test_amend_feature.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph amend takes the id of a Feature in Backlog with --title, --description and --criterion, which given once or more replaces its criteria; a part without its option stays; each part goes through the constructor an add uses, so a blank title or criterion is refused and a blank description clears it; an amendment that names no part, an option of a work item given to a Feature, and a Feature that is started, blocked or completed are refused; its id, its created time and its place in the queue stay; the commit reads chore: amend F-0001 in the record; proved in tests/feature/"
 created = 2026-11-21 23:44:12+00:00
+started = 2026-11-22 03:42:16+00:00
 
 [[tasks]]
 id = "T-0211"

@@ -190,5 +190,5 @@ class TestAnIdShownThatIsNoStoryId:
 
     def test_names_the_id(self, outcome: Outcome) -> None:
         assert outcome.err.endswith(
-            "fgraph: error: 'T-0001' is no Story, Upkeep, Bug or Spike id\n"
+            "fgraph: error: 'T-0001' is no Story, Upkeep, Bug, Spike or Feature id\n"
         )

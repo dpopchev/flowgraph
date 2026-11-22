@@ -17,9 +17,11 @@ from flowgraph.feature import (
     feature_bucket,
     feature_detail,
 )
-from flowgraph.item import MESSAGE, Written
+from flowgraph.item import MESSAGE, Written, show_item
+from flowgraph.item_id import parse_shown_id
 from flowgraph.parent import (
     STANDALONE,
+    FeatureId,
     FeatureIdError,
     Parent,
     feature_id_text,
@@ -31,6 +33,7 @@ from flowgraph.status import BACKLOG, backlog_as_added, rows_by_id
 from flowgraph.store import Store
 from flowgraph.task import CompletedAlreadyError
 from flowgraph.text import feature_text
+from flowgraph.work_item import WorkItemId
 
 
 def is_feature_id(text: str) -> bool:
@@ -78,6 +81,21 @@ def show_feature_item(feature: str, store: Store) -> str:
     next_started = iter(sorted(in_backlog, key=start_order.index))
     rows = [held[next(next_started)] if row.state == BACKLOG else row for row in held.values()]
     return feature_text(detail, rows, feature_bucket(shown, [row.state for row in rows]))
+
+
+def show_any_item(item: str, store: Store) -> str:
+    """The text fgraph show gives of the work item or the Feature of that id.
+
+    Raises FeatureIdError for a Feature id below 1, ItemIdError for a text that is neither, and
+    the refusal of `show_item` or of `show_feature_item` for an id the record holds no item of.
+    """
+    match parse_shown_id(item):
+        case FeatureId():
+            return show_feature_item(item, store)
+        case WorkItemId():
+            return show_item(item, store)
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 def parent_named(parent: str | None, store: Store) -> Parent:

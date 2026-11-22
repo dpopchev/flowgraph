@@ -13,23 +13,32 @@ then = "fgraph show S-0001 lists it as verified, yes, with the text and the day"
 
 [[tasks]]
 id = "T-0361"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_verify_yes.py, failing on the criterion of S-0093"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_complete_story.py does. Seen red, then marked a strict xfail naming S-0093 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_verify_yes.py states that on a record with a completed Story fgraph verify S-0001 --yes with a text exits 0 and fgraph show S-0001 lists it as verified, yes, with the text and the day; and that fgraph verify of a Story that is not completed exits 2 and writes nothing"
 created = 2026-11-22 21:03:16+00:00
+started = 2026-11-22 22:45:05+00:00
+completed = 2026-11-22 22:48:27+00:00
+commit = "09d5bcb"
 
 [[tasks]]
 id = "T-0362"
-state = "backlog"
+state = "completed"
 title = "Add the verify command to fgraph, keeping the yes of a closing on a completed work item"
 description = "Removes the xfail mark of tests/functional/test_verify_yes.py. Written on 2026-11-22 against the modules of that day, before U-0010 moves them: they are taken again when the Task starts. A module of src/ that would pass the line limit of mk/python.mk is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph verify ID --yes TEXT keeps on a completed Story, Bug or Upkeep the answer yes, what the run printed and the time, written on main and committed as a note is; fgraph show lists it; a work item that is not completed, a Spike, a Feature and a Task are refused with exit 2 naming what verify takes; neither or both of --yes and --no is refused; a second answer on one work item is refused -- the reading of the agent, named in the commit; fgraph verify --help prints its menu"
 created = 2026-11-22 21:03:18+00:00
+started = 2026-11-22 22:48:42+00:00
+completed = 2026-11-22 22:55:31+00:00
+commit = "a5d6b68"
 
 [[tasks]]
 id = "T-0363"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph verify keeps the answer of a closing"
 expected_output = "changed: README.md shows fgraph verify --yes and its Status table names the closing; docs/domain-model.md says what a verified work item holds, per kind what the question is, and where it is written"
 created = 2026-11-22 21:03:20+00:00
+started = 2026-11-22 22:55:58+00:00
+completed = 2026-11-22 22:59:52+00:00
+commit = "6b62b00"

@@ -143,6 +143,17 @@ something, so a blank one is refused where the line is built. A line is noted
 with `fgraph note` in Backlog, started, Completed or Removed alike, and is never
 amended or removed: it is added after the lines the item keeps already.
 
+A completed Story, Bug or Upkeep also holds the answer of its closing once it
+is verified, none before. It is its own fact, a `Verification` of the
+completed work item and never a knowledge line: the answer, yes so far, the
+text the run of its criterion printed and the time. The question per kind is
+the one its criterion states: for a Story, does the Then hold on the trunk; for
+a Bug, is the expected seen; for an Upkeep, does it still hold. A Spike is not
+verified: it keeps its decision. The text says something, so a blank one is
+refused where the answer is built. An item takes one answer: a second is
+refused, never added or replaced. `fgraph verify` keeps it on a completed item
+alone, so any other state is refused.
+
 A work item in any state also keeps its relations, the references it names to
 other work items. A relation is a typed reference stored on the item that names
 it, as the `parent` is, never on the item it names: the other side is derived
@@ -867,6 +878,17 @@ and its merge tool.
   nothing written. `fgraph show` lists the
   lines under `Knowledge (n)` after the Tasks, each with its kind, its date and
   its text, and no heading when there is none.
+- The answer of a closing is one `[verified]` table inside the file of a
+  completed work item, with its `answer` (`yes`), its `text` and its `on` time,
+  held only once there is one: a file without it, as every file written before,
+  is read as before, and a Spike's file holding it is refused when read.
+  `fgraph verify ID --yes TEXT` writes it as one write and one commit,
+  `chore: verify S-0001 in the record`, and says `verified S-0001`, on `main`
+  as a note of a completed item is. It is refused, exit 2 and nothing written,
+  for an item not completed, a Spike, a Feature, a Task, an id the record does
+  not hold, a blank text, a second answer and a call without `--yes`.
+  `fgraph show` lists it as `verified`, the answer, the day and the text, after
+  the commit.
 - The file of a Feature holds its lines of knowledge as a work item's does, the
   same `[[knowledge]]` tables, read back whole in every state. `fgraph note` of a
   Feature is one write and one commit, `chore: note F-0001 in the record`, and

@@ -1,9 +1,10 @@
 """The moves of a work item between its states: started, then completed, while it takes Tasks."""
 
+from dataclasses import replace
 from datetime import datetime
 from typing import assert_never
 
-from flowgraph.criterion import Evidence, settled
+from flowgraph.criterion import Answer, Evidence, settled
 from flowgraph.task import (
     CompletedAlreadyError,
     NoTaskError,
@@ -20,6 +21,13 @@ from flowgraph.work_item.model import (
     StartedWorkItem,
     WorkItem,
     WorkItemState,
+    state_name,
+)
+from flowgraph.work_item.verification import (
+    TAKES,
+    NotVerifiableError,
+    VerifiedAlreadyError,
+    make_verification,
 )
 
 
@@ -104,5 +112,27 @@ def completed_work_item(
             raise CompletedAlreadyError(f"{work_item_id_text(item.id)} is completed already")
         case RemovedWorkItem():
             raise RemovedAlreadyError(item.id)
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def verified_work_item(item: WorkItemState, text: str, on: datetime) -> CompletedWorkItem:
+    """The completed work item with the answer yes of its closing, the text the run printed and
+    the time.
+
+    Raises NotVerifiableError when it is not completed or is a Spike, VerifiedAlreadyError when
+    it holds an answer already (a second answer is refused, never added or replaced) and
+    EmptyPartError when the text is blank.
+    """
+    named = work_item_id_text(item.id)
+    match item:
+        case CompletedWorkItem(criterion=Answer()):
+            raise NotVerifiableError(f"{named} is a Spike: {TAKES}")
+        case CompletedWorkItem(verified=None):
+            return replace(item, verified=make_verification("yes", text, on))
+        case CompletedWorkItem():
+            raise VerifiedAlreadyError(f"{named} is verified already")
+        case WorkItem() | StartedWorkItem() | RemovedWorkItem():
+            raise NotVerifiableError(f"{named} is {state_name(item)}: {TAKES}")
         case _ as unreachable:
             assert_never(unreachable)

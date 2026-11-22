@@ -25,6 +25,7 @@ from flowgraph.work_item.held_file import (
     reason_held,
     started_held,
     superseded_held,
+    verified_held,
 )
 from flowgraph.work_item.id import (
     Kind,
@@ -40,7 +41,7 @@ from flowgraph.work_item.model import (
     WorkItemState,
 )
 from flowgraph.work_item.primitives import item_held, item_primitives
-from flowgraph.work_item.views import DependsRow, WorkItemDetail, WorkItemRow
+from flowgraph.work_item.views import DependsRow, VerifiedRow, WorkItemDetail, WorkItemRow
 
 
 def _read_file(path: Path, kind: Kind) -> HeldItemFile:
@@ -130,6 +131,7 @@ def read_work_item_detail(record: Path, item_id: WorkItemId) -> WorkItemDetail:
     its file does not hold one.
     """
     held = _read_file(_held_path(record, item_id), item_id.kind)
+    answer = verified_held(held)
     return WorkItemDetail(
         id=held.id,
         title=held.title,
@@ -148,6 +150,7 @@ def read_work_item_detail(record: Path, item_id: WorkItemId) -> WorkItemDetail:
         filed_during=held.filed_during,
         superseded_by=superseded_held(held),
         amends=held.amends,
+        verified=None if answer is None else VerifiedRow(answer.answer, answer.text, answer.on),
         **held.criterion.model_dump(),
     )
 

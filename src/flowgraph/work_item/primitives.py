@@ -4,7 +4,7 @@ from collections.abc import Sequence
 from dataclasses import replace
 from typing import assert_never
 
-from flowgraph.criterion import CriterionError, evidence_written
+from flowgraph.criterion import Answer, CriterionError, evidence_written
 from flowgraph.item import (
     backlog_task,
     criterion_held,
@@ -39,6 +39,15 @@ from flowgraph.work_item.model import (
 )
 from flowgraph.work_item.moves import completed_work_item, started_work_item
 from flowgraph.work_item.removal import removed_work_item
+from flowgraph.work_item.verification import make_verification
+
+
+def _verified_primitives(item: CompletedWorkItem) -> dict[str, object]:
+    """The answer of the closing as its table, held only once the item has one."""
+    answer = item.verified
+    if answer is None:
+        return {}
+    return {"verified": {"answer": answer.answer, "text": answer.text, "on": answer.on}}
 
 
 def _moves_primitives(item: WorkItemState) -> dict[str, object]:
@@ -50,7 +59,7 @@ def _moves_primitives(item: WorkItemState) -> dict[str, object]:
             return {"started": item.started}
         case CompletedWorkItem():
             times = {"started": item.started, "completed": item.completed}
-            return {**times, **evidence_primitives(item.commit)}
+            return {**times, **evidence_primitives(item.commit), **_verified_primitives(item)}
         case RemovedWorkItem():
             named = item.superseded_by
             superseded = {} if named is None else {"superseded_by": work_item_id_text(named)}
@@ -85,6 +94,19 @@ def item_primitives(item: WorkItemState) -> dict[str, object]:
         **knowledge,
         **relations_primitives(item.relations),
     }
+
+
+def _verified(done: CompletedWorkItem, held: CompletedItemFile) -> CompletedWorkItem:
+    """The completed work item with the answer its file holds, built through its constructor.
+
+    Raises CriterionError when a Spike holds one and EmptyPartError when its text is blank.
+    """
+    if held.verified is None:
+        return done
+    if isinstance(done.criterion, Answer):
+        raise CriterionError("a Spike holds no answer of a closing: fgraph verify takes none")
+    answer = held.verified
+    return replace(done, verified=make_verification(answer.answer, answer.text, answer.on))
 
 
 def item_held(held: HeldItemFile, kind: Kind, kinds: Sequence[Kind] = ()) -> WorkItemState:
@@ -125,7 +147,8 @@ def item_held(held: HeldItemFile, kind: Kind, kinds: Sequence[Kind] = ()) -> Wor
             match held:
                 case CompletedItemFile():
                     commit = evidence_written(held.commit)
-                    return completed_work_item(begun, held.completed, commit, decision)
+                    done = completed_work_item(begun, held.completed, commit, decision)
+                    return _verified(done, held)
                 case StartedItemFile():
                     return begun
                 case _ as unreachable:

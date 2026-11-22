@@ -19,7 +19,9 @@ completing an item names the commit that holds its work, and `fgraph land`
 lands it. `fgraph config` shows the configuration and sets a key of it. A work
 item, and a Feature, keeps the findings, decisions and deviations noted on it with
 `fgraph note`, in any state, and `fgraph show` lists them. `fgraph knowledge`
-lists the lines of the whole record. A term of the project, a word with what it
+lists the lines of the whole record. The closing of a completed Story, Bug or
+Upkeep is answered with `fgraph verify`: yes, with what the run of its criterion
+printed, which `fgraph show` lists. A term of the project, a word with what it
 means, is added with `fgraph add term`, listed by `fgraph terms` and shown by
 `fgraph show` of its name. `fgraph about` answers what an item is linked to: it
 lists the Feature, the work items, the terms and the knowledge lines of a work
@@ -45,6 +47,7 @@ the typed edges of the whole record as JSON.
 | the configuration               | every key shown and set by `fgraph config`               |
 | the knowledge of an item        | lines noted by `fgraph note` on a work item or a Feature |
 | the knowledge of the record     | every line listed by `fgraph knowledge`, newest first    |
+| the closing of a work item      | `fgraph verify --yes` keeps the yes of a completed one   |
 | the development                 | once enabled: start branches, `fgraph land` lands        |
 | the links of an item            | `fgraph about` lists every relation, both sides, by id   |
 | the export of the record        | `fgraph graph` prints its nodes and edges as JSON        |
@@ -1021,6 +1024,27 @@ not hold, a blank text and a note with none or more than one of the three kinds 
 started work item is noted in its worktree, as its Tasks are written, and every
 other one, a Feature too, on `main`; the branch of a work item writes that work
 item alone, so a Feature is not noted there.
+
+A completed Story, Bug or Upkeep is closed on a question: does its criterion
+hold on `main`? The run of the criterion is the agent's; `fgraph verify` keeps
+the answer yes with what the run printed and the day, as one write and one
+commit of the record, `chore: verify S-0001 in the record`. It is a fact of the
+work item, not a knowledge line, and `fgraph show` lists it after the commit.
+It takes a work item that is completed and holds no answer yet: one that is
+not completed, a Spike, a Feature, a Task, a blank text, a second answer and a
+call without `--yes` exit 2 and write nothing. The answer no is not offered yet.
+
+```sh
+fgraph verify S-0001 --yes "make check: all checks passed"
+# verified S-0001
+
+fgraph show S-0001
+# S-0001  Add the show command to src/flowgraph/cli.py
+#   bucket       Completed
+#   commit       def5678
+#   verified     yes  2026-11-22  make check: all checks passed
+# ...
+```
 
 A started Task that cannot go on is blocked, with the reason and who or what
 it waits on. It stays in InProgress and `fgraph show` lists it as blocked:

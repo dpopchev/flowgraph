@@ -54,8 +54,21 @@ class StartedItemFile(RelationsFile, BaseModel):
     knowledge: list[KnowledgeFile] = []
 
 
+class VerifiedFile(BaseModel):
+    """The table of the answer of a closing: the answer, what the run printed and the time."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    answer: Literal["yes"]
+    text: str
+    on: datetime
+
+
 class CompletedItemFile(RelationsFile, BaseModel):
-    """What the file of a completed work item holds: the commit it has, its Tasks all completed."""
+    """What the file of a completed work item holds: the commit it has, its Tasks all completed.
+
+    The answer of its closing is held once it has one; a file written before holds none.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
@@ -69,6 +82,7 @@ class CompletedItemFile(RelationsFile, BaseModel):
     started: datetime
     completed: datetime
     commit: str = ""
+    verified: VerifiedFile | None = None
     criterion: AnyCriterionFile
     tasks: list[CompletedTaskFile] = []
     knowledge: list[KnowledgeFile] = []
@@ -141,6 +155,17 @@ def completed_held(held: HeldItemFile) -> datetime | None:
     match held:
         case CompletedItemFile():
             return held.completed
+        case ItemFile() | StartedItemFile() | RemovedItemFile():
+            return None
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def verified_held(held: HeldItemFile) -> VerifiedFile | None:
+    """The answer of the closing a validated file holds; none for an item without one."""
+    match held:
+        case CompletedItemFile():
+            return held.verified
         case ItemFile() | StartedItemFile() | RemovedItemFile():
             return None
         case _ as unreachable:

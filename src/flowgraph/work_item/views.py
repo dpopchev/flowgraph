@@ -19,6 +19,16 @@ class DependsRow:
 
 
 @dataclass
+class VerifiedRow:
+    """The answer of the closing of a completed work item as plain data: the answer, the text
+    the run printed and the time."""
+
+    answer: str
+    text: str
+    on: datetime
+
+
+@dataclass
 class WorkItemRow:
     """One work item as plain data, as a view reads it from the record.
 
@@ -77,3 +87,4 @@ class WorkItemDetail:
     amends: str = ""
     amended_by: list[str] = field(default_factory=list[str])
     about: list[str] = field(default_factory=list[str])
+    verified: VerifiedRow | None = None

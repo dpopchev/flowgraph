@@ -217,8 +217,17 @@ def _check_on_main(item: str, move: str, record: Path, open_git: OpenGit) -> Non
     main, when the repository has one.
     """
     named = _started_on_main(item)
-    if named is None:
-        return
+    if named is not None:
+        check_on_main(named, move, record, open_git)
+
+
+def check_on_main(named: str, move: str, record: Path, open_git: OpenGit) -> None:
+    """Check that what is named makes its move on main, as a start or a release does.
+
+    Raises NotOnMainError naming it, the move, the branch the work tree of the record is on and
+    the work tree on main, when the repository has one. A record outside a git work tree is not
+    checked.
+    """
     work_tree = open_git(record)
     on = MAIN if work_tree is None else work_tree.current_branch()
     if work_tree is None or on == MAIN:

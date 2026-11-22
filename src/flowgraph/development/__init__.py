@@ -1,9 +1,9 @@
 """The development of a work item: its branch, its commits, its scope, its gate and its landing.
 
 The branch, the refusal of its git steps and the gate are named here. The commit, the landing and
-its way, the parallel start, the scope and the worktrees run on the items of a record, which name
-a branch through this package, so each is imported from its own module: commit, land, way,
-parallel, scope and worktrees.
+its way, the parallel start, the scope, the worktrees and the release run on the items of a
+record, which name a branch through this package, so each is imported from its own module:
+commit, land, way, parallel, scope, worktrees and release.
 """
 
 from flowgraph.development.branch import (

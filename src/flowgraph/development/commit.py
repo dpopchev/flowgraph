@@ -9,11 +9,12 @@ the commits off.
 
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
+from datetime import datetime
 from functools import partial
 from pathlib import Path
 from typing import Never
 
-from flowgraph.development import git
+from flowgraph.development import git, tag_git
 from flowgraph.development.branch import branch_of
 from flowgraph.development.git import GitError
 from flowgraph.item.commands import ToBranch, Written
@@ -72,6 +73,33 @@ class LandingSteps:
 NO_LANDING = LandingSteps(*([_lands_nothing] * 10))
 
 
+def _releases_nothing(*_: object) -> Never:
+    """A step of a release in a work tree built without them: a contract, it tags nothing."""
+    raise AssertionError("a work tree built without the steps of a release takes none")
+
+
+@dataclass(frozen=True)
+class ReleaseSteps:
+    """The steps only a release takes in a work tree, each bound to it.
+
+    `find_tags` lists the tags matching a pattern; `holds_commit` is true when a tag holds a
+    commit and None for a sha git does not know; `tagged_at` is when a tag was made; `make_tag`
+    makes an annotated tag under a message on the head of a branch and returns the short sha of
+    that commit, refused for a tag that exists; `push_tag` pushes a tag to the remote a branch
+    tracks and returns the name of the remote. Each step raises GitError when git refuses it.
+    """
+
+    find_tags: Callable[[str], list[str]]
+    holds_commit: Callable[[str, str], bool | None]
+    tagged_at: Callable[[str], datetime]
+    make_tag: Callable[[str, str, str], str]
+    push_tag: Callable[[str, str], str]
+
+
+# The steps of a release in a work tree built without them: each one refuses.
+NO_RELEASE = ReleaseSteps(*([_releases_nothing] * 5))
+
+
 @dataclass(frozen=True)
 class WorkTree:
     """The git work tree a record is inside: its top and its steps, each bound to it.
@@ -83,8 +111,8 @@ class WorkTree:
     `find_worktree` is the worktree of a branch, or None; `find_worktrees` lists every worktree
     of the repository. `changed_files` lists the files a commit changed, as paths from the top, a
     merge commit by what it brought to its first parent, and answers None for a sha git does not
-    know. `landing` holds the steps only a landing takes. Each step raises GitError
-    when git refuses it.
+    know. `landing` holds the steps only a landing takes, `release` those only a release takes.
+    Each step raises GitError when git refuses it.
     """
 
     path: Path
@@ -97,6 +125,7 @@ class WorkTree:
     ignores: Callable[[Path], bool] = _ignores_nothing
     changed_files: Callable[[str], list[str] | None] = _knows_no_commit
     landing: LandingSteps = NO_LANDING
+    release: ReleaseSteps = NO_RELEASE
 
 
 # The git work tree the directory is inside, or None when it is inside none.
@@ -137,6 +166,13 @@ def open_git(directory: Path) -> WorkTree | None:
             delete_branch=partial(git.delete_branch, top),
             delete_unmerged_branch=partial(git.delete_unmerged_branch, top),
             push=partial(git.push, top),
+        ),
+        release=ReleaseSteps(
+            find_tags=partial(tag_git.tags_like, top),
+            holds_commit=partial(tag_git.holds_commit, top),
+            tagged_at=partial(tag_git.tagged_at, top),
+            make_tag=partial(tag_git.make_tag, top),
+            push_tag=partial(tag_git.push_tag, top),
         ),
     )
 

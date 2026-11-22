@@ -9,8 +9,10 @@ from flowgraph.criterion import (
 )
 from flowgraph.development import GateError, GitError, SlugError
 from flowgraph.development.parallel import ParallelError
+from flowgraph.development.release import ReleaseError
 from flowgraph.development.scope import NotOnMainError, OutOfScopeError
 from flowgraph.development.task_check import CheckError
+from flowgraph.development.version import VersionError
 from flowgraph.development.way import LandError
 from flowgraph.feature import FeatureFileError, FeatureNotFoundError, NoCriterionError
 from flowgraph.feature.item import OpenWorkItemError
@@ -56,7 +58,8 @@ from flowgraph.work_item import (
 # The refusals of a command, each written as a usage error; a git step refused among them, and
 # a file of the record that holds no work item, no Feature or no queue (B-0019), and a relation
 # that names nothing or closes a cycle when the record is read (S-0078), and making a record where
-# one is held or in no directory (S-0082).
+# one is held or in no directory (S-0082), and a release refused or of a version that is none
+# (S-0091).
 REFUSED = (
     RecordHeldError,
     NoDirectoryError,
@@ -76,6 +79,8 @@ REFUSED = (
     GitError,
     LandError,
     GateError,
+    ReleaseError,
+    VersionError,
     CheckError,
     NotOnMainError,
     ParallelError,

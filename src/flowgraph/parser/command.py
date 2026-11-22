@@ -18,6 +18,7 @@ from flowgraph.development import RunGate, check_slug_branched
 from flowgraph.development.commit import OpenGit, Said, commit_written
 from flowgraph.development.land import land_item
 from flowgraph.development.parallel import check_parallel
+from flowgraph.development.release import release_trunk
 from flowgraph.development.scope import check_complete_on_main, check_start_on_main
 from flowgraph.development.task_check import check_task_checked
 from flowgraph.feature.amend import amend_named
@@ -196,7 +197,8 @@ def command_said(
     is one. The configuration says whether a start branches, how many work items are started at
     once, whether a landing is taken and the gate it runs through run_gate. A set of the
     configuration is committed by the configuration it leaves, so one that turns the commits
-    off is left uncommitted. Raises the refusal of the command, a git step refused among them.
+    off is left uncommitted. A release tags main, and pushes the tag when the configuration
+    says so. Raises the refusal of the command, a git step refused among them.
     """
     if args.command == "complete":
         check_complete_on_main(args.id, record, open_git)
@@ -224,6 +226,8 @@ def command_said(
             return land_item(
                 args.id, args.message, store, now, record, open_git, config, run_gate, args.decision
             )
+        case "release":
+            return release_trunk(args.version, store, record, open_git, config)
         case "knowledge":
             return Said(show_knowledge(args.kind, args.about, store))
         case "terms":

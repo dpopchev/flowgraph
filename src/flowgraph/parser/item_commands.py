@@ -136,6 +136,14 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         metavar="TEXT",
         help="the criterion holds on main: what the run of it printed",
     )
+    release = new_command(
+        commands, "release", "tag the head of main with its next v* version, annotated"
+    )
+    release.add_argument(
+        "--version",
+        metavar="VERSION",
+        help="the version to tag, as v1.0.0, instead of the next one the completed work names",
+    )
     knowledge = new_command(
         commands,
         "knowledge",
@@ -208,6 +216,7 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         "remove": remove,
         "note": note,
         "verify": verify,
+        "release": release,
         "knowledge": knowledge,
         "terms": terms,
         "graph": graph,

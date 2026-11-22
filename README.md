@@ -22,8 +22,9 @@ and sets a key of it. A work item, and a Feature, keeps the findings,
 decisions and deviations noted on it with `fgraph note`, in any state, and
 `fgraph show` lists them. `fgraph knowledge` lists the lines of the whole
 record. The closing of a completed Story, Bug or
-Upkeep is answered with `fgraph verify`: yes, with what the run of its criterion
-printed, which `fgraph show` lists. A term of the project, a word with what it
+Upkeep is answered with `fgraph verify`: yes or no, with what the run of its
+criterion printed, which `fgraph show` lists; a no files a Bug that amends it.
+A term of the project, a word with what it
 means, is added with `fgraph add term`, listed by `fgraph terms` and shown by
 `fgraph show` of its name. `fgraph about` answers what an item is linked to: it
 lists the Feature, the work items, the terms and the knowledge lines of a work
@@ -50,6 +51,7 @@ the typed edges of the whole record as JSON.
 | the knowledge of an item        | lines noted by `fgraph note` on a work item or a Feature |
 | the knowledge of the record     | every line listed by `fgraph knowledge`, newest first    |
 | the closing of a work item      | `fgraph verify --yes` keeps the yes of a completed one   |
+|                                 | `--no` keeps the no and files a Bug that amends it       |
 | the development                 | once enabled: start branches, `fgraph land` lands        |
 | the release of the trunk        | `fgraph release` tags `main` with its next `v*` version  |
 | the links of an item            | `fgraph about` lists every relation, both sides, by id   |
@@ -346,12 +348,20 @@ command that checks it, `--check COMMAND`, which `fgraph show` lists under the
 Task; without it the add exits 2 naming `--check`, and a blank command is
 refused. With the development off, `--check` exits 2 naming
 `development.enabled`. A Task added before holds no check and is read, started
-and completed as it was. This keeps and shows the check; it is not run yet.
+and completed as it was. `fgraph complete` of a Task that holds a check runs it,
+in the worktree of its work item, and writes what it prints as it prints it. A
+check that exits with another status than 0 refuses the complete with exit 2,
+naming the Task, the command and the status; nothing is written and the Task
+stays started. A check that passes completes the Task as before. Only the
+complete of a Task runs a check: the complete of a work item and `fgraph land`
+run none.
 
 ```sh
 fgraph add task "Add the show command" --parent S-0001 \
   --output "changed: cli.py" --check "make test"
 # added T-0001 to S-0001
+fgraph complete T-0001 --commit 677f9b0
+# fgraph: error: T-0001 cannot complete: its check "make test" exited with status 2
 ```
 
 A work item can depend on another: `--depends-on ID` of `fgraph add` and of
@@ -379,7 +389,18 @@ fgraph show S-0002
 #   bucket       Backlog
 #   depends on   S-0001 (Backlog)
 #   ...
+
+fgraph status
+# Backlog (2)
+#   S-0001  Add the show command
+# ~ S-0002  Raise the Stories fgraph lists under Backlog from 1 to 2  -- depends on S-0001
 ```
+
+`fgraph status` marks the line of a work item in Backlog that waits: it starts
+with `~` and ends with `-- depends on` and each id it depends on that is not
+completed. The mark is gone once each is completed; a block, marked `!`, says
+`waiting on` a person. A Feature in Backlog carries it when its first work item
+waits.
 
 `fgraph amend S-0002 --depends-on S-0003` replaces what it depends on and
 `--depends-on none` takes it all away. An id that is no work item of the
@@ -1126,8 +1147,9 @@ the answer yes with what the run printed and the day, as one write and one
 commit of the record, `chore: verify S-0001 in the record`. It is a fact of the
 work item, not a knowledge line, and `fgraph show` lists it after the commit.
 It takes a work item that is completed and holds no answer yet: one that is
-not completed, a Spike, a Feature, a Task, a blank text, a second answer and a
-call without `--yes` exit 2 and write nothing. The answer no is not offered yet.
+not completed, a Spike, a Feature, a Task, a blank text, a second answer (a no
+after a yes too) and a call with neither or both of `--yes` and `--no` exit 2
+and write nothing.
 
 ```sh
 fgraph verify S-0001 --yes "make check: all checks passed"
@@ -1138,6 +1160,36 @@ fgraph show S-0001
 #   bucket       Completed
 #   commit       def5678
 #   verified     yes  2026-11-22  make check: all checks passed
+# ...
+```
+
+A no moves nothing backwards: the work item stays Completed, keeps the answer
+no, and the same write adds a Bug in Backlog that amends it, under the next Bug
+id. The Bug observes what the run printed and expects the Then of a Story or an
+Upkeep, or the expected of a Bug; its title is built from that of the work
+item. Under a Feature that is not completed the Bug joins it, else it stands
+alone. Both files are one commit, `chore: verify S-0001 no and add B-0001 in
+the record`, and a failure in between writes neither.
+
+```sh
+fgraph verify S-0001 --no "status listed no reason"
+# verified S-0001 no
+# added B-0001 amending S-0001
+
+fgraph show B-0001
+# B-0001  No at the verify of S-0001: Add the show command to src/flowgraph/cli.py
+#   bucket       Backlog
+#   amends       S-0001
+#   observed     status listed no reason
+#   expected     the item is shown
+# Tasks (0)
+
+fgraph show S-0001
+# S-0001  Add the show command to src/flowgraph/cli.py
+#   bucket       Completed
+#   amended by   B-0001
+#   commit       def5678
+#   verified     no  2026-11-22  status listed no reason
 # ...
 ```
 

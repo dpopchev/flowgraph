@@ -17,6 +17,7 @@ from flowgraph.item import (
     TaskFile,
 )
 from flowgraph.work_item.depends import RelationsFile
+from flowgraph.work_item.verification import Verdict
 
 
 class ItemFile(RelationsFile, BaseModel):
@@ -59,7 +60,7 @@ class VerifiedFile(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    answer: Literal["yes"]
+    answer: Verdict
     text: str
     on: datetime
 

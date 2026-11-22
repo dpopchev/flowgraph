@@ -130,11 +130,14 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         commands, "verify", "keep the answer of the closing of a completed Story, Bug or Upkeep"
     )
     verify.add_argument("id", metavar="ID", help="the id of the completed work item")
-    verify.add_argument(
-        "--yes",
-        required=True,
+    answers = verify.add_mutually_exclusive_group(required=True)
+    answers.add_argument(
+        "--yes", metavar="TEXT", help="the criterion holds on main: what the run of it printed"
+    )
+    answers.add_argument(
+        "--no",
         metavar="TEXT",
-        help="the criterion holds on main: what the run of it printed",
+        help="it does not hold: what the run printed, the observed of the Bug it files",
     )
     release = new_command(
         commands, "release", "tag the head of main with its next v* version, annotated"

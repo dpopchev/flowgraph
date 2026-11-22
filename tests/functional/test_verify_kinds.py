@@ -1,6 +1,6 @@
 """The kinds fgraph verify takes and what it refuses: exit 2 and nothing written.
 
-It takes a completed Story, Bug or Upkeep, once. The answer no is not offered yet (S-0094).
+It takes a completed Story, Bug or Upkeep, once, with exactly one of the answers yes and no.
 Run end to end on a record in a temporary directory, through the file adapters of the package.
 """
 
@@ -120,17 +120,36 @@ def test_a_second_answer_is_refused_and_the_first_stays(tmp_path: Path) -> None:
 
 
 @pytest.mark.parametrize(
-    "argv",
-    [["verify", "S-0001"], ["verify", "S-0001", "--yes", TEXT, "--no", "it fails"]],
+    ("argv", "message"),
+    [
+        (["verify", "S-0001"], "one of the arguments --yes --no is required"),
+        (
+            ["verify", "S-0001", "--yes", TEXT, "--no", "it fails"],
+            "argument --no: not allowed with argument --yes",
+        ),
+    ],
     ids=["neither-answer", "both-answers"],
 )
-def test_verify_without_the_answer_yes_alone_is_refused_with_two(
-    tmp_path: Path, argv: list[str]
+def test_verify_without_exactly_one_answer_exits_with_two_naming_both(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], argv: list[str], message: str
 ) -> None:
     runs(tmp_path, *STANDING_ALONE)
     with pytest.raises(SystemExit) as exited:
         fgraph(argv, tmp_path)
-    assert exited.value.code == 2
+    error = capsys.readouterr().err.splitlines()[-1]
+    assert (exited.value.code, error) == (2, f"fgraph verify: error: {message}")
+
+
+def test_a_no_after_a_yes_is_refused_and_the_yes_stays(tmp_path: Path) -> None:
+    runs(tmp_path, *STANDING_ALONE, ["verify", "S-0001", "--yes", TEXT])
+    second = fgraph(["verify", "S-0001", "--no", "it fails"], tmp_path)
+    shown = fgraph(["show", "S-0001"], tmp_path).out
+    assert (second.status, f"verified     yes  2026-01-01  {TEXT}" in shown) == (2, True)
+
+
+def test_a_no_refused_adds_no_bug(tmp_path: Path) -> None:
+    runs(tmp_path, ADD_STORY, ADD_TASK, ["verify", "S-0001", "--no", "it fails"])
+    assert not (tmp_path / ".fgraph" / "items" / "B-0001.toml").exists()
 
 
 def test_a_blank_text_is_refused_and_nothing_is_written(tmp_path: Path) -> None:

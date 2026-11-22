@@ -131,8 +131,7 @@ without `--check` is refused with exit 2 naming it. With the development off it
 is refused, naming `development.enabled`. A blank one is refused where the Task
 is built. It is kept in the file of the work item, listed by `fgraph show`
 under the Task, and carried by every move of the Task. A Task written before
-holds none and is read as before. Keeping it is all that is done so far: the
-command is not run at `complete`.
+holds none and is read as before. `complete` runs it (Persistence).
 
 A work item in any state also keeps its knowledge: the lines noted on it, in
 the order noted. A line holds its kind, its text and the time it was noted; the
@@ -510,6 +509,15 @@ and `--depends-on none` alone takes them all away.
   depends on none. The file holds the ids as `depends_on = ["S-0001"]`, only
   when there is one, read back in every state; an id of no kind, or the work
   item itself, makes the file refused when it is read.
+- `fgraph status` marks what waits, the reading of S-0085: the line of a work
+  item in Backlog that depends on one not completed starts with `~` and ends
+  `-- depends on S-0001`, with each id not completed in the order written; the
+  mark is gone once each is completed. A Feature in Backlog carries it when its
+  first work item, the one its start takes, waits, with the ids that one waits
+  for; a work item under a Feature is on no line of the Backlog. The mark is
+  not the `!` of a block, which ends `-- waiting on <who>`: a block waits on a
+  person, a dependency on a work item. A line longer than the terminal is cut
+  as any other, and `fgraph watch` draws the same line.
 
 ## Filed during
 
@@ -576,6 +584,17 @@ take none.
   of the record, read from the record and stored nowhere.
 - `fgraph show` of the work item that amends lists `amends` with the id, after
   the work items it supersedes, and lists none without one.
+- A no files the Bug, the decision of F-0011: `fgraph verify ID --no TEXT` of a
+  completed Story, Bug or Upkeep keeps the answer no on it and adds, in the same
+  write, a Bug in Backlog that amends it, as `fgraph add bug --amends ID` would:
+  the next Bug id, its observed the text, its expected the Then of a Story or
+  an Upkeep or the expected of a Bug, its title `No at the verify of ID:` and
+  the title of the work item. It joins the Feature of the work item while that
+  Feature is not completed, by the rules of an add, else it stands alone.
+- No move goes backwards: the work item stays Completed with its answer, and
+  the Bug carries the work that remains. The Bug is saved first, then the work
+  item; both are one commit, `chore: verify S-0001 no and add B-0001 in the
+  record`, and a failure after the first save puts every file back as it was.
 
 ## Relations
 
@@ -1449,6 +1468,21 @@ development too.
   `open_git`, so the core decides when it runs and never calls git itself.
   The same key pushes the tag `fgraph release` makes (below), with the
   development on or off, since a release is no step of a landing.
+- `fgraph complete` of a started Task that holds a check runs it, answering S-0089:
+  through the shell, in the worktree of the work item of the Task (the directory
+  `fgraph` runs in when the item has none), before anything is written. Its
+  output is written as the check wrote it, never captured. A status other than
+  0 refuses the complete with exit 2 and one line naming the Task, the command
+  and the status, `T-0001 cannot complete: its check "make test" exited with
+  status 2`: nothing is written, no commit is made, and the Task stays
+  started. A status of 0 completes the Task as before, and so does a Task that
+  holds no check. The complete of a work item or of a Feature and `fgraph land`
+  run no check of a Task. Running it is an effect
+  (`src/flowgraph/development/task_run.py`): `run()` takes the runner as a
+  callable, `RunGate`, `run_check`, and `main()` binds `run_gate` to it; the
+  decision from its status is the core's (`check_task_passes`,
+  `src/flowgraph/development/task_check.py`). The default of `run()` runs no
+  check: every one passes.
 - `[git] commit` turns the commits of the record off. It is on by default,
   the reading of S-0040, off until set shown and not taken: inside a git work
   tree that does not ignore the record `fgraph` commits every write of it, as

@@ -1,10 +1,12 @@
 id = "S-0085"
-state = "started"
+state = "completed"
 title = "Raise the items of the Backlog fgraph status marks as waiting for another from none to every one"
 description = "The example of the note: S-0002 in Backlog depends on the started S-0001, and its line carries no mark; the mark is not decided."
 parent = "F-0008"
 created = 2026-11-22 21:01:59+00:00
 started = 2026-11-22 22:46:31+00:00
+completed = 2026-11-22 23:14:21+00:00
+commit = "bd71682"
 
 [criterion]
 given = "a Story in Backlog that depends on a work item that is not completed"
@@ -13,23 +15,37 @@ then = "its line is marked as waiting and names the work item it waits for"
 
 [[tasks]]
 id = "T-0334"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_status_waits.py, failing on the criterion of S-0085"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_depends_on.py does. Seen red, then marked a strict xfail naming S-0085 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_status_waits.py states that on a record where S-0002 in Backlog depends on S-0001 in Backlog, fgraph status exits 0 and the line of S-0002 is marked and names S-0001; and that once S-0001 is completed the line carries no mark"
 created = 2026-11-22 21:02:01+00:00
+started = 2026-11-22 22:50:51+00:00
+completed = 2026-11-22 22:53:57+00:00
+commit = "ac52af7"
 
 [[tasks]]
 id = "T-0335"
-state = "backlog"
+state = "completed"
 title = "Mark in fgraph status each item of the Backlog that waits for a work item not completed"
 description = "Removes the xfail mark of tests/functional/test_status_waits.py. Written on 2026-11-22 against the modules of that day, before U-0010 moves them: they are taken again when the Task starts. A module of src/ that would pass the line limit of mk/python.mk is split by one cohesive part, named in the commit."
 expected_output = "changed: the line of a work item in Backlog whose depends on names a work item that is not completed carries a mark and the ids it waits for, the mark chosen in the Task and told apart from the ! of a block; the line of a Feature in Backlog carries it when its first work item waits; once each one waited for is completed the mark is gone; fgraph watch draws the same line"
 created = 2026-11-22 21:02:03+00:00
+started = 2026-11-22 22:53:59+00:00
+completed = 2026-11-22 23:05:13+00:00
+commit = "798d645"
 
 [[tasks]]
 id = "T-0336"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph status marks what waits"
 expected_output = "changed: README.md shows the line of a waiting work item; docs/domain-model.md, Depends on, says what the mark is and when a Feature carries it"
 created = 2026-11-22 21:02:05+00:00
+started = 2026-11-22 23:05:15+00:00
+completed = 2026-11-22 23:08:36+00:00
+commit = "cf642c3"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: yes -- at bd71682 on main, on a scratch record where S-0002 in Backlog depends on S-0001 in Backlog, fgraph status exit 0 printed ~ S-0002  second  -- depends on S-0001; once S-0001 was completed the line was   S-0002  second, with no mark; a Feature in Backlog whose first work item depends on S-0003, not completed, printed ~ F-0001  0/1 W  feat  -- depends on S-0003; make check on the tree of the landing, the branch merged into main at 1c416bd in a scratch clone before it landed: 2509 passed, all checks passed"
+noted = 2026-11-22 23:14:37+00:00

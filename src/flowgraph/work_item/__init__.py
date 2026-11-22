@@ -85,7 +85,7 @@ from flowgraph.work_item.verification import (
     VerifiedAlreadyError,
     make_verification,
 )
-from flowgraph.work_item.verify import verify_work_item
+from flowgraph.work_item.verify import JoinParent, verify_work_item, verify_work_item_no
 from flowgraph.work_item.views import DependsRow, VerifiedRow, WorkItemDetail, WorkItemRow
 
 __all__ = [
@@ -96,6 +96,7 @@ __all__ = [
     "DependsRow",
     "FindTaskIds",
     "FindWorkItemRows",
+    "JoinParent",
     "Kind",
     "KindError",
     "LoadHolder",
@@ -156,6 +157,7 @@ __all__ = [
     "unblocked_task",
     "verified_work_item",
     "verify_work_item",
+    "verify_work_item_no",
     "work_item_detail",
     "work_item_id_text",
     "work_item_path",

@@ -21,7 +21,8 @@ commit = "dbcfa27"
 
 [[tasks]]
 id = "T-0218"
-state = "backlog"
+state = "started"
 title = "Say in docs/domain-model.md what fgraph show refuses for a wrong id"
 expected_output = "changed: docs/domain-model.md names both refusals of show"
 created = 2026-11-22 06:16:13+00:00
+started = 2026-11-22 06:22:19+00:00

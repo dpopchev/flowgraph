@@ -44,3 +44,8 @@ created = 2026-11-22 21:02:36+00:00
 started = 2026-11-22 22:51:21+00:00
 completed = 2026-11-22 22:54:21+00:00
 commit = "bb46f97"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: yes -- at 715ccca on main, in a scratch git repository with the development on: fgraph add task --check make test exit 0 printed added T-0001 to S-0001 and fgraph show S-0001 listed check  make test under the Task; the add without --check exit 2 with the development is on, so a Task is added with --check COMMAND; with the development off the add with --check exit 2 with a Task takes no --check: the development is off; make check: 2430 passed, all checks passed. The lane started T-0347 in the record after its change was in the work tree, on the word of the coordinator, and wrote its unit tests after the code."
+noted = 2026-11-22 22:59:40+00:00

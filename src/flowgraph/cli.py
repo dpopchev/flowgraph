@@ -48,6 +48,7 @@ from flowgraph.item import (
     write_task,
 )
 from flowgraph.knowledge import DECISION, DEVIATION, FINDING
+from flowgraph.knowledge_list import show_knowledge
 from flowgraph.land import land_item
 from flowgraph.parallel import check_parallel
 from flowgraph.parent import parent_asked
@@ -206,6 +207,8 @@ def _said(
             return land_item(
                 args.id, args.message, store, now, record, open_git, config, run_gate, args.decision
             )
+        case "knowledge":
+            return Said(show_knowledge(args.kind, store))
         case "show":
             return Said(show_any_item(args.id, store))
         case "status":

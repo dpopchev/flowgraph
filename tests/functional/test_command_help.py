@@ -31,6 +31,7 @@ COMMANDS = [
     ("complete",),
     ("land",),
     ("note",),
+    ("knowledge",),
     ("remove",),
     ("reorder",),
     ("status",),

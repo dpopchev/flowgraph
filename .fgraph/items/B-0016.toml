@@ -11,11 +11,13 @@ expected = "add and amend agree on the Features a work item is put under, the re
 
 [[tasks]]
 id = "T-0255"
-state = "started"
+state = "completed"
 title = "Put a work item under a Feature in Backlog, started or blocked by fgraph amend --parent, as fgraph add does, in check_move of src/flowgraph/feature_move.py"
 expected_output = "changed: src/flowgraph/feature_move.py; tests/work_item/test_work_item_amend_parent.py and tests/functional/test_amend_parent.py state the move under a started and a blocked Feature"
 created = 2026-11-22 08:10:49+00:00
 started = 2026-11-22 08:10:51+00:00
+completed = 2026-11-22 08:13:49+00:00
+commit = "4e42e7d"
 
 [[tasks]]
 id = "T-0256"

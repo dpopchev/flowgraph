@@ -9,3 +9,11 @@ created = 2026-11-22 21:03:31+00:00
 given = "a started Spike whose Tasks are completed"
 when = "it is completed with its decision and the answer no"
 then = "it is Completed, and fgraph show lists the answer no beside its decision"
+
+[[tasks]]
+id = "T-0367"
+state = "backlog"
+title = "Add tests/functional/test_complete_spike_answer.py, failing on the criterion of S-0095"
+description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_complete_spike.py does. Seen red, then marked a strict xfail naming S-0095 until the Task that turns it green removes the mark."
+expected_output = "created: tests/functional/test_complete_spike_answer.py states that fgraph complete of a started Spike with its decision and the answer no exits 0, the Spike is Completed and fgraph show lists no beside the decision; and that with the answer left out it exits 2 naming it"
+created = 2026-11-22 21:03:33+00:00

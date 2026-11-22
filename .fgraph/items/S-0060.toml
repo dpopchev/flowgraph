@@ -12,11 +12,13 @@ then = "the frame is as tall as the terminal at most and says how many lines it 
 
 [[tasks]]
 id = "T-0221"
-state = "started"
+state = "completed"
 title = "Cut a frame of fgraph watch taller than the terminal to its height, its last line naming the lines left out, in src/flowgraph/watch.py and src/flowgraph/cli.py"
 expected_output = "changed: framed of src/flowgraph/watch.py takes the height of the terminal and run of src/flowgraph/cli.py reads it; tests/watch/test_frames.py and tests/functional/test_watch.py state the cut"
 created = 2026-11-22 06:28:53+00:00
 started = 2026-11-22 06:28:55+00:00
+completed = 2026-11-22 06:32:26+00:00
+commit = "b80851e"
 
 [[tasks]]
 id = "T-0222"

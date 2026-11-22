@@ -24,11 +24,12 @@ commit = "3360b4a"
 
 [[tasks]]
 id = "T-0304"
-state = "backlog"
+state = "started"
 title = "Extend fgraph about to a term, walking the terms under it"
 description = "Removes the xfail mark of tests/functional/test_about_term.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph about NAME lists the term with its meaning and its relations, then the items and the knowledge lines about it and about every term under it -- each term that is part of it or is one, and those under them, to any depth; a line or an item reached through another term is marked with that term, via gate; each is listed once, under the nearest term; the walk is a pure function of src/flowgraph/about.py over the terms as plain data, and it ends on terms that close a cycle; a word that is no id and no term is refused naming both"
 created = 2026-11-22 10:48:09+00:00
+started = 2026-11-22 17:31:07+00:00
 
 [[tasks]]
 id = "T-0305"

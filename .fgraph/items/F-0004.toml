@@ -1,0 +1,11 @@
+id = "F-0004"
+state = "backlog"
+title = "Raise the typed relations a work item holds to another item from one, its parent, to five"
+description = "Asked by the developer on 2026-11-22; the plan was shown and filed on the developer word: file all. Row 3 of the plan. Readings of the agent shown with the plan: a relation is stored on the item that names it and the other side is derived by the view, so a write stays one file and the scope of a branch holds; an id that is not in the record, or a cycle, is refused at the write."
+created = 2026-11-22 10:41:27+00:00
+criteria = [
+    "a developer says a work item depends on another, and it does not start before that one is completed",
+    "a developer says during which work item one was filed, and sees it from both sides",
+    "a developer removes a work item as superseded by another, and sees it from both sides",
+    "a developer says which completed work item one amends, and sees it from both sides",
+]

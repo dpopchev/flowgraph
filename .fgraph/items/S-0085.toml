@@ -1,0 +1,11 @@
+id = "S-0085"
+state = "backlog"
+title = "Raise the items of the Backlog fgraph status marks as waiting for another from none to every one"
+description = "The example of the note: S-0002 in Backlog depends on the started S-0001, and its line carries no mark; the mark is not decided."
+parent = "F-0008"
+created = 2026-11-22 21:01:59+00:00
+
+[criterion]
+given = "a Story in Backlog that depends on a work item that is not completed"
+when = "fgraph status is run"
+then = "its line is marked as waiting and names the work item it waits for"

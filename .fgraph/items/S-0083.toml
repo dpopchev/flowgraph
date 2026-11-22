@@ -17,3 +17,10 @@ title = "Add the install target to mk/wheel.mk, installing the built wheel as a 
 description = "The check installs into a temporary tool directory, never into the one of the developer."
 expected_output = "changed: mk/wheel.mk gains install, which builds the wheel and installs it with uv tool install, in place of an older one; make help lists it; with UV_TOOL_DIR and UV_TOOL_BIN_DIR set to a temporary directory, make install leaves an fgraph there that runs init and status in another directory with exit 0"
 created = 2026-11-22 21:01:45+00:00
+
+[[tasks]]
+id = "T-0329"
+state = "backlog"
+title = "Update README.md to say how fgraph is installed for every repository"
+expected_output = "changed: README.md, Use, names make install and what it runs, and that the record of a repository is then made with fgraph init"
+created = 2026-11-22 21:01:47+00:00

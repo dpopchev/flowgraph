@@ -55,3 +55,8 @@ created = 2026-11-22 10:47:56+00:00
 started = 2026-11-22 16:35:24+00:00
 completed = 2026-11-22 16:41:43+00:00
 commit = "fe58b5b"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: at 0ca2ba9 on main, on a fresh record fgraph add term gate --means printed added gate, fgraph terms listed gate a check every deliverable passes, and fgraph show gate printed means a check every deliverable passes, added 2026-11-22; make check: all checks passed"
+noted = 2026-11-22 16:45:55+00:00

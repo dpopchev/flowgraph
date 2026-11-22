@@ -7,3 +7,10 @@ created = 2026-11-22 06:16:13+00:00
 [criterion]
 observed = "fgraph amend X-1 and fgraph remove X-1 say 'X-1' is no Story, Upkeep, Bug or Spike id, fgraph start X-1 and fgraph complete X-1 say it is no Story, Upkeep, Bug, Spike or Task id, and each says F-0000 is no work item id, though each takes a Feature since F-0002"
 expected = "the refusal of each names every kind it takes, the Feature among them, and a Feature id below 1 is refused as a Feature id"
+
+[[tasks]]
+id = "T-0259"
+state = "backlog"
+title = "Refuse a Feature id below 1 given to fgraph start, complete, amend and remove as a Feature id, by its shape F- and a number, in src/flowgraph/feature_item.py"
+expected_output = "changed: is_feature_id of src/flowgraph/feature_item.py reads the shape F- and a number, so F-0000 is refused as fgraph show refuses it, a Feature id counts from 1: 0 is below 1; tests/functional/test_wrong_feature_id.py states it for each of the four commands, seen red"
+created = 2026-11-22 09:26:33+00:00

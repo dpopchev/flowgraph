@@ -1,9 +1,10 @@
 id = "S-0092"
-state = "backlog"
+state = "started"
 title = "Raise the closes of a Feature that tag the trunk, under delivery.tag, from none to every one"
 description = "The words of the note: delivery.tag = feature-close or none."
 parent = "F-0010"
 created = 2026-11-22 21:03:04+00:00
+started = 2026-11-22 23:38:58+00:00
 depends_on = [
     "S-0091",
 ]

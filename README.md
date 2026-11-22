@@ -18,7 +18,8 @@ starting a work item also checks out its branch in a worktree of its own,
 completing an item names the commit that holds its work, and `fgraph land`
 lands it. `fgraph config` shows the configuration and sets a key of it. A work
 item, and a Feature, keeps the findings, decisions and deviations noted on it with
-`fgraph note`, in any state, and `fgraph show` lists them.
+`fgraph note`, in any state, and `fgraph show` lists them. `fgraph knowledge`
+lists the lines of the whole record.
 
 | Part                            | State                                                    |
 | ------------------------------- | -------------------------------------------------------- |
@@ -34,6 +35,7 @@ item, and a Feature, keeps the findings, decisions and deviations noted on it wi
 | the layers of a record          | `.fgraph/config.toml`: commits on, development off       |
 | the configuration               | every key shown and set by `fgraph config`               |
 | the knowledge of an item        | lines noted by `fgraph note` on a work item or a Feature |
+| the knowledge of the record     | every line listed by `fgraph knowledge`, newest first    |
 | the development                 | once enabled: start branches, `fgraph land` lands        |
 | the ontology                    | not started                                              |
 | flowgraph tracking its own work | its Stories are in `.fgraph/` since 0.4.0                |
@@ -662,6 +664,30 @@ fgraph show F-0001
 #   S-0002  Add the note command to src/flowgraph/cli.py  Backlog
 # Knowledge (1)
 #   decision  2026-11-22  the budget is agreed
+```
+
+`fgraph knowledge` lists the lines of every work item and every Feature of the
+record, the last noted first, each with its date, its kind, the id of its item
+and its text. `--kind` narrows the list to `finding`, `decision` or `deviation`;
+another word exits 2 naming the three. The decision of a completed Spike is
+listed among the decisions at the time the Spike was completed, and stays kept
+on the Spike. A record with no line prints one line saying so:
+
+```sh
+fgraph knowledge
+# 2026-11-24  deviation  S-0001  the second Task was dropped
+# 2026-11-23  decision  Q-0001  yes: one file per work item
+# 2026-11-22  decision  F-0001  the budget is agreed
+# 2026-11-22  decision  S-0001  keep one store
+# 2026-11-22  finding  S-0001  the file holds the lines in the order noted
+
+fgraph knowledge --kind decision
+# 2026-11-23  decision  Q-0001  yes: one file per work item
+# 2026-11-22  decision  F-0001  the budget is agreed
+# 2026-11-22  decision  S-0001  keep one store
+
+fgraph knowledge --kind finding
+# 2026-11-22  finding  S-0001  the file holds the lines in the order noted
 ```
 
 A line is never amended or removed. The id of a Task, an id the record does

@@ -576,6 +576,16 @@ and its merge tool.
   which writes that work item alone, the note of a Feature is refused naming it,
   as the write of any other item is, exit 2 and nothing written. A Task takes no
   note: its id is refused.
+- `fgraph knowledge` is a view of the whole record: it reads every work item and
+  every Feature and writes nothing. It lists every line of each, with its date,
+  its kind, the id of its item and its text, the last noted first; lines noted
+  at one time come in the reverse of the order they were collected, the work
+  items by kind and id before the Features. The decision of a completed Spike is
+  listed among the decisions at the time the Spike was completed; it is not
+  copied, and stays kept on the Spike as its `decision`. `--kind` narrows the list to
+  `finding`, `decision` or `deviation`; any other word is refused naming the
+  three, exit 2. A record with no line of the kind asked, or none, prints one
+  line saying so and exits 0.
 - A blocked Task is kept as `state = "blocked"` with its `started` time, its
   `since` time, its `reason` and its `waiting_on`. Only a started work item's
   file may hold one, and it is read back through its start and its block.

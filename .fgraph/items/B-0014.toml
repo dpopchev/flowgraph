@@ -11,11 +11,13 @@ expected = "the start a completion makes is held to main as any start of a work 
 
 [[tasks]]
 id = "T-0250"
-state = "started"
+state = "completed"
 title = "Probe each case of B-0014 as functional tests: a completion on a branch that is neither main nor of a work item starts and branches the next work item there, and a work item completed on its own branch is refused as completed already at its landing"
 expected_output = "changed: tests/functional/test_start_next_branch.py and tests/functional/test_complete_feature_branch.py state each case as wanted, each seen red"
 created = 2026-11-22 07:56:27+00:00
 started = 2026-11-22 07:56:30+00:00
+completed = 2026-11-22 07:57:34+00:00
+commit = "22d0dc4"
 
 [[tasks]]
 id = "T-0251"

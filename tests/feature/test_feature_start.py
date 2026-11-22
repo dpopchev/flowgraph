@@ -7,9 +7,10 @@ from typing import Never
 
 import pytest
 
-from flowgraph.branch import make_slug
 from flowgraph.config import Config, make_config
 from flowgraph.criterion import NO_COMMIT, make_scenario
+from flowgraph.development import make_slug
+from flowgraph.development.parallel import ParallelError
 from flowgraph.feature import (
     FeatureNotFoundError,
     FeatureState,
@@ -25,7 +26,6 @@ from flowgraph.feature.start import (
     start_feature_item,
 )
 from flowgraph.item import ToBranch, Written
-from flowgraph.parallel import ParallelError
 from flowgraph.parent import STANDALONE, FeatureId, Parent, make_feature_id
 from flowgraph.queue import Queue, make_queue
 from flowgraph.store import FeatureStore, Store

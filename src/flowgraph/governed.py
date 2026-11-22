@@ -8,8 +8,8 @@ written.
 from collections.abc import Sequence
 from pathlib import Path
 
-from flowgraph.commit import OpenGit, WorkTree
 from flowgraph.criterion import said
+from flowgraph.development.commit import OpenGit, WorkTree
 from flowgraph.knowledge_list import KnowledgeEntry, collected, newest_first
 from flowgraph.store import Store
 

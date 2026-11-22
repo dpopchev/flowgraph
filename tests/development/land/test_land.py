@@ -8,14 +8,13 @@ from typing import Never
 
 import pytest
 
-from flowgraph.branch import GitError
-from flowgraph.commit import LandingSteps, Said, WorkTree
 from flowgraph.config import Config, make_config
 from flowgraph.criterion import make_commit, make_scenario
+from flowgraph.development import GateError, GitError, RunGate
+from flowgraph.development.commit import LandingSteps, Said, WorkTree
+from flowgraph.development.land import LandError, land_item
 from flowgraph.feature import FeatureNotFoundError, make_feature, started_feature
-from flowgraph.gate import GateError, RunGate
 from flowgraph.item import Store
-from flowgraph.land import LandError, land_item
 from flowgraph.parent import FeatureId, make_feature_id
 from flowgraph.queue import make_queue
 from flowgraph.store import FeatureStore

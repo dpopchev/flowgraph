@@ -10,6 +10,7 @@ from typing import Never
 import pytest
 
 from flowgraph.criterion import NO_COMMIT, EmptyPartError, make_scenario
+from flowgraph.development.scope import OutOfScopeError, Scope, within
 from flowgraph.feature import (
     FeatureFileError,
     FeatureNotFoundError,
@@ -35,7 +36,6 @@ from flowgraph.feature.start import check_start_under_feature
 from flowgraph.item import Written
 from flowgraph.parent import STANDALONE, FeatureId, Parent, make_feature_id
 from flowgraph.queue import make_queue
-from flowgraph.scope import OutOfScopeError, Scope, within
 from flowgraph.store import FeatureStore, Store
 from flowgraph.story import STORY, make_story_id
 from flowgraph.task import (

@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph.branch import branch_of, make_slug
+from flowgraph.development import branch_of, make_slug
 from flowgraph.story import (
     StoryIdError,
     make_story_id,

@@ -14,8 +14,6 @@ from typing import Never, assert_never
 
 from flowgraph.about import about_item
 from flowgraph.about_terms import about_asked
-from flowgraph.branch import check_slug_branched
-from flowgraph.commit import OpenGit, Said, commit_written, open_git
 from flowgraph.config import CONFIG, Config, LoadConfig, make_config, read_config
 from flowgraph.criterion import (
     Criterion,
@@ -23,6 +21,18 @@ from flowgraph.criterion import (
     make_hypothesis,
     make_scenario,
 )
+from flowgraph.development import RunGate, check_slug_branched, run_gate
+from flowgraph.development.commit import OpenGit, Said, commit_written, open_git
+from flowgraph.development.land import land_item
+from flowgraph.development.parallel import check_parallel
+from flowgraph.development.scope import (
+    check_complete_on_main,
+    check_start_on_main,
+    scope_in,
+    within,
+    worktree_of_item,
+)
+from flowgraph.development.worktrees import across_worktrees, held_elsewhere
 from flowgraph.feature.amend import amend_named
 from flowgraph.feature.block import block_named, unblock_named
 from flowgraph.feature.item import (
@@ -39,7 +49,6 @@ from flowgraph.feature.start import (
     check_start_under_feature,
     start_feature_item,
 )
-from flowgraph.gate import RunGate, run_gate
 from flowgraph.governed import governs_asked
 from flowgraph.graph import graph_text
 from flowgraph.item import (
@@ -59,20 +68,11 @@ from flowgraph.item_depends import (
 )
 from flowgraph.knowledge import DECISION, DEVIATION, FINDING
 from flowgraph.knowledge_list import show_knowledge
-from flowgraph.land import land_item
-from flowgraph.parallel import check_parallel
 from flowgraph.parent import parent_asked
 from flowgraph.parser import TOP, build_command_line, help_asked
 from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, Now, locate
 from flowgraph.refusals import REFUSED
 from flowgraph.relation_read import check_relations
-from flowgraph.scope import (
-    check_complete_on_main,
-    check_start_on_main,
-    scope_in,
-    within,
-    worktree_of_item,
-)
 from flowgraph.setting import set_setting, show_config, unset_setting
 from flowgraph.store import OpenStore, Store, open_files
 from flowgraph.term_item import add_term_item, relate_term_item, terms_text
@@ -82,7 +82,6 @@ from flowgraph.watch import Wait, framed, make_pace, watch
 from flowgraph.work_item import (
     Amendment,
 )
-from flowgraph.worktrees import across_worktrees, held_elsewhere
 
 __all__ = ["Store", "open_files", "open_git", "read_config", "run", "run_gate"]
 

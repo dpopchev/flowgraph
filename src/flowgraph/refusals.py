@@ -1,6 +1,5 @@
 """The refusals of a command: each is written as a usage error, whichever command raises it."""
 
-from flowgraph.branch import GitError, SlugError
 from flowgraph.config import ConfigError
 from flowgraph.criterion import (
     CommitError,
@@ -9,21 +8,21 @@ from flowgraph.criterion import (
     DecisionError,
     EmptyPartError,
 )
+from flowgraph.development import GateError, GitError, SlugError
+from flowgraph.development.land import LandError
+from flowgraph.development.parallel import ParallelError
+from flowgraph.development.scope import NotOnMainError, OutOfScopeError
 from flowgraph.feature import FeatureFileError, FeatureNotFoundError, NoCriterionError
 from flowgraph.feature.item import OpenWorkItemError
 from flowgraph.feature.start import FeatureNotStartedError, NoWorkItemError, WorkItemInProgressError
-from flowgraph.gate import GateError
 from flowgraph.graph import FormatError
 from flowgraph.item import ItemIdError
 from flowgraph.item_depends import StartWaitsError
 from flowgraph.knowledge_list import KindListedError
-from flowgraph.land import LandError
-from flowgraph.parallel import ParallelError
 from flowgraph.parent import FeatureIdError
 from flowgraph.queue import NotInBacklogError, QueueFileError, SameItemError, UnderFeatureError
 from flowgraph.relation import RelationError
 from flowgraph.relation_read import RelationReadError
-from flowgraph.scope import NotOnMainError, OutOfScopeError
 from flowgraph.task import (
     BlockedError,
     CompletedAlreadyError,

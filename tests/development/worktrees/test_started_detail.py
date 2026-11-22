@@ -6,12 +6,12 @@ from typing import Never
 
 import pytest
 
-from flowgraph.commit import WorkTree
+from flowgraph.development.commit import WorkTree
+from flowgraph.development.worktrees import across_worktrees
 from flowgraph.item import Store
 from flowgraph.story import make_story_id
 from flowgraph.task import TaskRow
 from flowgraph.work_item import WorkItemDetail, WorkItemId, WorkItemNotFoundError
-from flowgraph.worktrees import across_worktrees
 
 pytestmark = pytest.mark.view
 

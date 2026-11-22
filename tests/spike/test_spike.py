@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph.branch import branch_of, make_slug
 from flowgraph.criterion import CriterionError, Hypothesis, make_hypothesis, make_scenario
+from flowgraph.development import branch_of, make_slug
 from flowgraph.spike import (
     SPIKE,
     SpikeIdError,

@@ -7,12 +7,12 @@ from typing import Never
 
 import pytest
 
-from flowgraph.commit import WorkTree
 from flowgraph.config import Settings
 from flowgraph.criterion import make_scenario
+from flowgraph.development.commit import WorkTree
+from flowgraph.development.scope import OutOfScopeError, Scope, scope_in, scope_of, within
 from flowgraph.item import Store
 from flowgraph.queue import Queue, make_queue
-from flowgraph.scope import OutOfScopeError, Scope, scope_in, scope_of, within
 from flowgraph.story import make_story, make_story_id
 from flowgraph.upkeep import make_upkeep_id
 from flowgraph.work_item import WorkItemState

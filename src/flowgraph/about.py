@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import assert_never
 
 from flowgraph.about_file import about_file, is_file_here, is_governed
-from flowgraph.commit import OpenGit
+from flowgraph.development.commit import OpenGit
 from flowgraph.feature import FeatureDetail, feature_bucket, feature_detail
 from flowgraph.item_depends import bucketed, record_standing
 from flowgraph.item_id import ItemIdError, parse_shown_id

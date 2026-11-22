@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph.gate import run_gate
+from flowgraph.development.gate import run_gate
 
 pytestmark = pytest.mark.edge
 

@@ -10,7 +10,7 @@ import pytest
 
 from flowgraph.bug import BUG
 from flowgraph.config import Config, make_config
-from flowgraph.parallel import ParallelError, check_feature_parallel, check_parallel
+from flowgraph.development.parallel import ParallelError, check_feature_parallel, check_parallel
 from flowgraph.parent import make_feature_id
 from flowgraph.spike import SPIKE
 from flowgraph.story import STORY

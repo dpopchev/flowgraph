@@ -13,9 +13,9 @@ from functools import partial
 from pathlib import Path
 from typing import Never
 
-from flowgraph import branch
-from flowgraph.branch import GitError, branch_of
 from flowgraph.config import Config
+from flowgraph.development import branch
+from flowgraph.development.branch import GitError, branch_of
 from flowgraph.item import ToBranch, Written
 from flowgraph.store import Store
 from flowgraph.work_item import work_item_id_text

@@ -5,7 +5,7 @@ from typing import Never
 
 import pytest
 
-from flowgraph.commit import WorkTree, kept_in
+from flowgraph.development.commit import WorkTree, kept_in
 
 pytestmark = pytest.mark.command
 

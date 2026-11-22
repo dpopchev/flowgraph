@@ -7,9 +7,9 @@ from typing import Never
 import pytest
 
 from flowgraph.criterion import EmptyPartError
+from flowgraph.development.scope import OutOfScopeError, Scope, within
 from flowgraph.item import Written
 from flowgraph.queue import make_queue
-from flowgraph.scope import OutOfScopeError, Scope, within
 from flowgraph.store import Store, TermStore
 from flowgraph.story import make_story_id
 from flowgraph.term import Term, TermError, TermNotFoundError, make_term, relate

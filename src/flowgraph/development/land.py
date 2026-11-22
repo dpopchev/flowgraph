@@ -22,8 +22,6 @@ from pathlib import Path
 from typing import assert_never
 
 from flowgraph import work_item
-from flowgraph.branch import MAIN, GitError
-from flowgraph.commit import OpenGit, Said, WorkTree, branch_started, commit_written
 from flowgraph.config import (
     DEVELOPMENT_ENABLED,
     DEVELOPMENT_MERGE,
@@ -32,10 +30,12 @@ from flowgraph.config import (
     Merge,
 )
 from flowgraph.criterion import DecisionError, EmptyPartError, make_commit
+from flowgraph.development.branch import MAIN, GitError
+from flowgraph.development.commit import OpenGit, Said, WorkTree, branch_started, commit_written
+from flowgraph.development.gate import GateError, RunGate, check_gate
 from flowgraph.feature import FeatureNotFoundError
 from flowgraph.feature.complete import completed_with
 from flowgraph.feature.next import complete_and_start_next
-from flowgraph.gate import GateError, RunGate, check_gate
 from flowgraph.item import ToBranch, parse_work_item_id_of_any_kind
 from flowgraph.record import Now
 from flowgraph.store import Store

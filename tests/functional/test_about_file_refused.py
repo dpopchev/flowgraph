@@ -11,7 +11,7 @@ from pathlib import Path
 import pytest
 
 from flowgraph.cli import open_files, open_git, run
-from flowgraph.commit import OpenGit
+from flowgraph.development.commit import OpenGit
 
 pytestmark = pytest.mark.functional
 

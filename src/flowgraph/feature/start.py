@@ -9,8 +9,9 @@ a work item do (`flowgraph.item`).
 from typing import assert_never
 
 from flowgraph import work_item
-from flowgraph.branch import make_slug, slug_of_title
 from flowgraph.config import Config
+from flowgraph.development import make_slug, slug_of_title
+from flowgraph.development.parallel import check_feature_parallel
 from flowgraph.feature import (
     BlockedFeature,
     CompletedFeature,
@@ -22,7 +23,6 @@ from flowgraph.feature import (
 )
 from flowgraph.item import MESSAGE, ItemIdError, ToBranch, Written, parse_item_id
 from flowgraph.item_depends import check_first_waits
-from flowgraph.parallel import check_feature_parallel
 from flowgraph.parent import FeatureId, Standalone, feature_id_text, parse_feature_id
 from flowgraph.queue import queued
 from flowgraph.record import Now

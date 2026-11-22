@@ -8,7 +8,7 @@ from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flowgraph.commit import OpenGit
+from flowgraph.development.commit import OpenGit
 from flowgraph.governed import governed_text, governing, placed
 from flowgraph.item_id import ItemIdError
 from flowgraph.status import COMPLETED, rows_by_id

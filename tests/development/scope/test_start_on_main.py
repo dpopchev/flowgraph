@@ -6,8 +6,8 @@ from typing import Never
 
 import pytest
 
-from flowgraph.commit import WorkTree
-from flowgraph.scope import NotOnMainError, check_complete_on_main, check_start_on_main
+from flowgraph.development.commit import WorkTree
+from flowgraph.development.scope import NotOnMainError, check_complete_on_main, check_start_on_main
 
 pytestmark = pytest.mark.command
 

@@ -10,7 +10,6 @@ from functools import partial
 from typing import assert_never
 
 from flowgraph import work_item
-from flowgraph.branch import Slug, SlugError, make_slug, slug_of_title
 from flowgraph.config import DEVELOPMENT_ENABLED, Config
 from flowgraph.criterion import (
     NO_COMMIT,
@@ -22,6 +21,7 @@ from flowgraph.criterion import (
     NoCommit,
     make_commit,
 )
+from flowgraph.development import Slug, SlugError, make_slug, slug_of_title
 from flowgraph.feature.complete import complete_with_feature
 from flowgraph.feature.move import check_move
 from flowgraph.item_depends import bucketed

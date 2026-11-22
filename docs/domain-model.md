@@ -686,6 +686,29 @@ criterion. It is added and then it stands.
   `fgraph status` reads them. `fgraph knowledge --about TERM` narrows its list to
   the lines about that term; a term the record holds none of is refused.
 
+## Graph
+
+`fgraph graph` is a view of the whole record as a graph: it reads the record as plain
+data, as `fgraph about` and `fgraph knowledge` do, and writes nothing. Its one format
+is `json`, the default; another word is refused naming it, exit 2. The document holds
+three lists.
+
+- `nodes`: each has `id`, `kind`, `title` and `bucket`. The kinds are `feature`,
+  `story`, `upkeep`, `bug`, `spike`, `task` and `term`. The title of a term is its
+  meaning. The bucket is that of a Feature or a work item as `fgraph status` lists it,
+  and `null` for a Task and a term, which are in none.
+- `edges`: each has `kind`, `from` and `to`. The kinds are `under` (a work item to its
+  Feature), `task of` (a Task to its work item), `depends on`, `filed during`,
+  `superseded by` and `amends` (a work item to another), `is a` and `part of` (a term
+  to another) and `about` (a work item or a Feature to a term). An edge is written once,
+  on the side that names it, never as its other side.
+- `knowledge`: the lines of every work item and Feature, each with its `item`, `kind`,
+  `noted`, `text`, `about` and `governs`.
+
+The order is fixed: the nodes by id, the edges by their kind in the order above and
+then by their two ends, the knowledge lines by item and time noted, and the keys of
+each object in the order given here, so two runs on one record print the same bytes.
+
 ## Evidence
 
 A completed item carries the proof that it is completed. For a work item,

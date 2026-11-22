@@ -41,6 +41,7 @@ from flowgraph.feature_start import (
 )
 from flowgraph.gate import RunGate, run_gate
 from flowgraph.governed import governs_asked
+from flowgraph.graph import graph_text
 from flowgraph.item import (
     Written,
     add_item,
@@ -254,6 +255,8 @@ def _said(
             return Said(show_knowledge(args.kind, args.about, store))
         case "terms":
             return Said(terms_text(store))
+        case "graph":
+            return Said(graph_text(args.format, store))
         case "about":
             return Said(about_item(args.id, store, cwd, open_git))
         case "show":

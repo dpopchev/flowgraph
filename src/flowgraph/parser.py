@@ -8,14 +8,13 @@ import argparse
 from collections.abc import Collection, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Protocol
 
+from flowgraph.graph import JSON
+from flowgraph.parser_add import add_kinds
+from flowgraph.parser_base import HELP, Commands, new_command
 from flowgraph.term import KINDS
 
 DESCRIPTION = "flowgraph keeps the record of a project's work."
-
-# The options that ask for help.
-HELP = ("-h", "--help")
 
 # The options of the command line that take the record directory as their value.
 DIR = ("-d", "--dir")
@@ -31,14 +30,6 @@ EVERY = 5
 CommandPath = tuple[str, ...]
 
 
-class Commands(Protocol):
-    """The commands a parser holds, as argparse makes them: each is added as a parser of its own."""
-
-    def add_parser(
-        self, name: str, *, help: str, add_help: bool, color: bool
-    ) -> argparse.ArgumentParser: ...
-
-
 @dataclass(frozen=True)
 class CommandLine:
     """The parser of the command line, and the parser of each command under its path."""
@@ -47,101 +38,9 @@ class CommandLine:
     commands: Mapping[CommandPath, argparse.ArgumentParser]
 
 
-def _command(parsers: Commands, name: str, summary: str) -> argparse.ArgumentParser:
-    """A command of that name under the parsers, with its help option.
-
-    The help option only marks the call: `run` writes the help through its own writer, where
-    argparse's built-in one prints and exits. Color is off so the help is the same text on
-    every stream.
-    """
-    made = parsers.add_parser(name, help=summary, add_help=False, color=False)
-    made.add_argument(*HELP, action="store_true", help="show the help of this command and exit")
-    return made
-
-
-def _add_kinds(kinds: Commands) -> dict[str, argparse.ArgumentParser]:
-    """The parser of each kind of item `fgraph add` takes, under its name."""
-    story = _command(kinds, "story", "new behavior, with its one Given / When / Then")
-    story.add_argument("title", metavar="TITLE", help="what is true once the Story is completed")
-    story.add_argument("--given", required=True, metavar="STATE", help="the initial state")
-    story.add_argument("--when", required=True, metavar="ACTION", help="the action")
-    story.add_argument("--then", required=True, metavar="STATE", help="the expected state")
-    task = _command(kinds, "task", "a deliverable of a work item, with its output")
-    task.add_argument("title", metavar="TITLE", help="a verb, the artifact and its target state")
-    task.add_argument(
-        "--parent", required=True, metavar="ID", help="the work item it is written for"
-    )
-    task.add_argument("--output", required=True, metavar="TEXT", help="the expected output")
-    upkeep = _command(
-        kinds, "upkeep", "work that keeps a behavior, with its one Given / When / Then"
-    )
-    upkeep.add_argument("title", metavar="TITLE", help="what is true once it is completed")
-    upkeep.add_argument("--given", required=True, metavar="STATE", help="the initial state")
-    upkeep.add_argument("--when", required=True, metavar="ACTION", help="the action that runs")
-    upkeep.add_argument("--then", required=True, metavar="STATE", help="what still holds")
-    bug = _command(
-        kinds, "bug", "a behavior that fails, with what is observed and what is expected"
-    )
-    bug.add_argument("title", metavar="TITLE", help="what is true once the Bug is completed")
-    bug.add_argument("--observed", required=True, metavar="TEXT", help="what happens")
-    bug.add_argument("--expected", required=True, metavar="TEXT", help="what we wish to see")
-    spike = _command(kinds, "spike", "a question to answer, with its hypothesis")
-    spike.add_argument("title", metavar="TITLE", help="what is settled once it is completed")
-    spike.add_argument("--hypothesis", required=True, metavar="TEXT", help="a yes/no question")
-    for kind in (story, upkeep, bug, spike):
-        kind.add_argument(
-            "--parent", metavar="ID", help="the Feature it is under; it stands alone without one"
-        )
-        kind.add_argument(
-            "--depends-on",
-            action="append",
-            metavar="ID",
-            help="a work item it waits for, which must be completed before it starts; once per id",
-        )
-        kind.add_argument(
-            "--filed-during",
-            metavar="ID",
-            help="the work item it was found during; it does not change after the add",
-        )
-        kind.add_argument(
-            "--amends",
-            metavar="ID",
-            help="the completed work item whose landed behavior it changes; once, at the add",
-        )
-    feature = _command(
-        kinds, "feature", "a bigger outcome that groups work items, with its criteria"
-    )
-    feature.add_argument("title", metavar="TITLE", help="what is true once it is completed")
-    feature.add_argument(
-        "--criterion",
-        required=True,
-        action="append",
-        metavar="TEXT",
-        help="what the user experiences; give it once per criterion",
-    )
-    term = _command(kinds, "term", "a word of the project, with what it means")
-    term.add_argument("name", metavar="NAME", help="lowercase words joined by -; it is its id")
-    term.add_argument("--means", required=True, metavar="TEXT", help="what the term means")
-    made = {
-        "story": story,
-        "task": task,
-        "upkeep": upkeep,
-        "bug": bug,
-        "spike": spike,
-        "feature": feature,
-    }
-    for kind in (story, upkeep, bug, spike, feature):
-        kind.add_argument(
-            "--about", action="append", metavar="TERM", help="a term it is about; once per term"
-        )
-    for kind in made.values():
-        kind.add_argument("--description", default="", metavar="TEXT", help="free text, optional")
-    return {**made, "term": term}
-
-
 def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     """The parser of each command that reads or moves an item of the record, under its name."""
-    amend = _command(commands, "amend", "rewrite parts of a work item or a Feature in Backlog")
+    amend = new_command(commands, "amend", "rewrite parts of a work item or a Feature in Backlog")
     amend.add_argument("id", metavar="ID", help="the id of the work item or of the Feature")
     amend.add_argument("--title", metavar="TEXT", help="what is true once it is completed")
     amend.add_argument("--description", metavar="TEXT", help="free text; a blank one clears it")
@@ -172,15 +71,17 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         metavar="TERM",
         help="a term it is about, once per term, in place of its own; none takes them away",
     )
-    show = _command(commands, "show", "show a work item with its Tasks, a Feature or a term")
+    show = new_command(commands, "show", "show a work item with its Tasks, a Feature or a term")
     show.add_argument(
         "id",
         metavar="ID",
         help="the id of the work item or of the Feature, or the name of the term",
     )
-    about = _command(commands, "about", "list the links of a work item or a Feature, by relation")
+    about = new_command(
+        commands, "about", "list the links of a work item or a Feature, by relation"
+    )
     about.add_argument("id", metavar="ID", help="the id of the work item or of the Feature")
-    start = _command(commands, "start", "start a work item or a Task of it, or a Feature")
+    start = new_command(commands, "start", "start a work item or a Task of it, or a Feature")
     start.add_argument(
         "id", metavar="ID", help="the id of the work item, of the Task or of the Feature"
     )
@@ -192,15 +93,15 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
             " of a Feature, those of its first work item; read with the development on"
         ),
     )
-    block = _command(commands, "block", "block a started Task or Feature that cannot go on")
+    block = new_command(commands, "block", "block a started Task or Feature that cannot go on")
     block.add_argument("id", metavar="ID", help="the id of the Task or of the Feature")
     block.add_argument("--reason", required=True, metavar="TEXT", help="why it cannot go on")
     block.add_argument(
         "--waiting-on", required=True, metavar="TEXT", help="who or what it waits on"
     )
-    unblock = _command(commands, "unblock", "take a blocked Task or Feature back to started")
+    unblock = new_command(commands, "unblock", "take a blocked Task or Feature back to started")
     unblock.add_argument("id", metavar="ID", help="the id of the Task or of the Feature")
-    complete = _command(
+    complete = new_command(
         commands, "complete", "complete a work item or a Task of it, or a Feature left done"
     )
     complete.add_argument(
@@ -214,7 +115,7 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     complete.add_argument(
         "--decision", metavar="TEXT", help="what answers the hypothesis, of a Spike"
     )
-    land = _command(
+    land = new_command(
         commands,
         "land",
         "land a started work item on main: merge its branch, run its gate and complete it",
@@ -226,7 +127,7 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         help="the message of the commit the landing makes: needed unless it lands by fast-forward",
     )
     land.add_argument("--decision", metavar="TEXT", help="what answers the hypothesis, of a Spike")
-    remove = _command(
+    remove = new_command(
         commands, "remove", "remove a work item or a Feature in Backlog, kept with its reason"
     )
     remove.add_argument("id", metavar="ID", help="the id of the work item or of the Feature")
@@ -236,7 +137,7 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         metavar="ID",
         help="the work item that supersedes it, in place of the reason or beside it",
     )
-    note = _command(
+    note = new_command(
         commands, "note", "keep a finding, a decision or a deviation on a work item, in any state"
     )
     note.add_argument("id", metavar="ID", help="the id of the work item")
@@ -250,7 +151,7 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     kinds.add_argument(
         "--deviation", metavar="TEXT", help="a change to what a started item was agreed to do"
     )
-    knowledge = _command(
+    knowledge = new_command(
         commands,
         "knowledge",
         "list the knowledge lines of every work item and Feature, newest first",
@@ -261,12 +162,19 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         help="list the lines of one kind alone: finding, decision or deviation",
     )
     knowledge.add_argument("--about", metavar="TERM", help="list the lines about one term alone")
-    terms = _command(commands, "terms", "list the terms of the record with their meanings")
-    relate = _command(commands, "relate", "relate a term to another: is-a or part-of")
+    terms = new_command(commands, "terms", "list the terms of the record with their meanings")
+    graph = new_command(commands, "graph", "print the nodes and typed edges of the record")
+    graph.add_argument(
+        "--format",
+        default=JSON,
+        metavar="FORMAT",
+        help=f"the format it prints: {JSON}, the default",
+    )
+    relate = new_command(commands, "relate", "relate a term to another: is-a or part-of")
     relate.add_argument("first", metavar="TERM", help="the term that is a kind or a part")
     relate.add_argument("kind", metavar="KIND", help=f"the kind of relation: {' or '.join(KINDS)}")
     relate.add_argument("second", metavar="TERM", help="the term it is a kind of or part of")
-    reorder = _command(
+    reorder = new_command(
         commands, "reorder", "put a work item or a Feature of the Backlog before another"
     )
     reorder.add_argument(
@@ -278,13 +186,15 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         metavar="ID",
         help="the work item or the Feature it is listed right above",
     )
-    status = _command(commands, "status", "list the items of the record by bucket")
+    status = new_command(commands, "status", "list the items of the record by bucket")
     status.add_argument(
         "--all",
         action="store_true",
         help=f"list every item, instead of the top {TOP} under each heading",
     )
-    watch = _command(commands, "watch", "follow the record live: redraw its status every interval")
+    watch = new_command(
+        commands, "watch", "follow the record live: redraw its status every interval"
+    )
     watch.add_argument(
         "-n",
         dest="seconds",
@@ -314,6 +224,7 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         "note": note,
         "knowledge": knowledge,
         "terms": terms,
+        "graph": graph,
         "relate": relate,
         "reorder": reorder,
         "status": status,
@@ -323,13 +234,13 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
 
 def _config_actions(actions: Commands) -> dict[str, argparse.ArgumentParser]:
     """The parser of each action `fgraph config` takes, under its name."""
-    show = _command(actions, "show", "list every key of the configuration with its value")
-    set_key = _command(actions, "set", "set one key of the configuration, in its config.toml")
+    show = new_command(actions, "show", "list every key of the configuration with its value")
+    set_key = new_command(actions, "set", "set one key of the configuration, in its config.toml")
     set_key.add_argument(
         "key", metavar="KEY", help="a key fgraph config show lists, as development.enabled"
     )
     set_key.add_argument("value", metavar="VALUE", help="the value the key takes, as a text")
-    unset_key = _command(
+    unset_key = new_command(
         actions, "unset", "take one key of the configuration back to its default, or none"
     )
     unset_key.add_argument(
@@ -351,10 +262,10 @@ def build_command_line() -> CommandLine:
         help="the record directory, instead of .fgraph/ or else fgraph/ in this directory",
     )
     commands = parser.add_subparsers(dest="command", metavar="COMMAND")
-    add = _command(commands, "add", "add an item to the record")
-    kinds = _add_kinds(add.add_subparsers(dest="kind", metavar="KIND", required=True))
+    add = new_command(commands, "add", "add an item to the record")
+    kinds = add_kinds(add.add_subparsers(dest="kind", metavar="KIND", required=True))
     moves = _moves(commands)
-    config = _command(commands, "config", "show the configuration of the record, or set a key")
+    config = new_command(commands, "config", "show the configuration of the record, or set a key")
     actions = _config_actions(config.add_subparsers(dest="action", metavar="ACTION", required=True))
     return CommandLine(
         parser,

@@ -13,23 +13,32 @@ then = "it prints every node with its kind and every edge with its kind and its 
 
 [[tasks]]
 id = "T-0313"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_graph_json.py, failing on the criterion of S-0077"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_about_item.py does. Seen red, then marked a strict xfail naming S-0077 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_graph_json.py states that, on a record with a Feature, a work item under it with a Task, two related terms and a work item that depends on another, fgraph graph --format json exits 0 and prints JSON holding every node with its kind and every edge with its kind and its two ends"
 created = 2026-11-22 10:48:19+00:00
+started = 2026-11-22 18:10:58+00:00
+completed = 2026-11-22 18:18:42+00:00
+commit = "a904f5b"
 
 [[tasks]]
 id = "T-0314"
-state = "backlog"
+state = "completed"
 title = "Add the graph command to fgraph, exporting the nodes and typed edges of the record as JSON"
 description = "Removes the xfail mark of tests/functional/test_graph_json.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph graph --format json prints one JSON document: nodes, each with its id, its kind -- feature, story, bug, spike, upkeep, task, term -- its title or meaning and its bucket where it has one; edges, each with its kind and its two ends, from and to -- under, task of, depends on, filed during, superseded by, amends, is a, part of, about; and the knowledge lines as a list of their own, each with its item, its kind, its date, its text, its terms and the files it governs; the keys and the order are fixed, by id, so two runs on one record print the same bytes; json is the one format and the default, another word refused naming it; it is a view in src/flowgraph/graph.py that writes nothing; fgraph graph --help prints its menu"
 created = 2026-11-22 10:48:20+00:00
+started = 2026-11-22 18:18:49+00:00
+completed = 2026-11-22 18:25:32+00:00
+commit = "8e3f2b5"
 
 [[tasks]]
 id = "T-0315"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph graph exports the record"
 expected_output = "changed: README.md shows fgraph graph on a small record with the document it prints, and one question asked of that document with another tool; docs/domain-model.md lists the kinds of node and of edge the document holds and says its order is fixed"
 created = 2026-11-22 10:48:21+00:00
+started = 2026-11-22 18:25:37+00:00
+completed = 2026-11-22 19:28:30+00:00
+commit = "12d51d7"

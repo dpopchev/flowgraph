@@ -35,6 +35,7 @@ COMMANDS = [
     ("note",),
     ("knowledge",),
     ("terms",),
+    ("graph",),
     ("remove",),
     ("reorder",),
     ("status",),

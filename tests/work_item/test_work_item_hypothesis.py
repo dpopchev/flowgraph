@@ -8,6 +8,7 @@ import pytest
 
 from flowgraph.criterion import (
     Answer,
+    Decision,
     DecisionError,
     EmptyPartError,
     Hypothesis,
@@ -48,7 +49,7 @@ ITEM = append_task(make_work_item(ONE, "a title", QUESTION, "", CREATED), TASK)
 READY = completed_task(
     started_task(started_work_item(ITEM, ON), make_task_id(3), ON), make_task_id(3), ON, COMMIT
 )
-SETTLED = completed_work_item(READY, ON, COMMIT, "yes, one file")
+SETTLED = completed_work_item(READY, ON, COMMIT, Decision("yes, one file", "yes"))
 PLAIN = append_task(
     make_work_item(
         make_work_item_id(CHORE, 1), "a title", make_scenario("a", "b", "c"), "", CREATED
@@ -74,7 +75,7 @@ def test_a_blank_hypothesis_is_refused() -> None:
 
 @pytest.mark.model
 def test_a_work_item_that_states_a_hypothesis_is_completed_with_its_decision() -> None:
-    assert SETTLED.criterion == Answer("Can one file hold the record?", "yes, one file")
+    assert SETTLED.criterion == Answer("Can one file hold the record?", "yes, one file", "yes")
 
 
 @pytest.mark.model
@@ -88,7 +89,7 @@ def test_a_hypothesis_is_not_completed_without_its_decision() -> None:
 @pytest.mark.model
 def test_a_blank_decision_is_refused() -> None:
     with pytest.raises(EmptyPartError, match=r"^decision is empty$"):
-        completed_work_item(READY, ON, COMMIT, " ")
+        completed_work_item(READY, ON, COMMIT, Decision(" ", "yes"))
 
 
 @pytest.mark.model
@@ -97,7 +98,7 @@ def test_a_work_item_with_another_criterion_takes_no_decision() -> None:
         DecisionError,
         match=r"^CH-0001 takes no decision: only a Spike is completed with one$",
     ):
-        completed_work_item(PLAIN_READY, ON, COMMIT, "yes")
+        completed_work_item(PLAIN_READY, ON, COMMIT, Decision("yes", "yes"))
 
 
 @pytest.mark.model
@@ -134,7 +135,7 @@ def test_the_detail_of_a_settled_work_item_names_its_hypothesis_and_its_decision
 
 @pytest.mark.model
 def test_a_work_item_is_completed_with_the_decision_given() -> None:
-    assert completed_work_item(READY, ON, COMMIT, "yes, one file") == SETTLED
+    assert completed_work_item(READY, ON, COMMIT, Decision("yes, one file", "yes")) == SETTLED
 
 
 @pytest.mark.edge
@@ -151,6 +152,7 @@ def test_the_decision_is_written_beside_the_hypothesis_it_answers(tmp_path: Path
     assert tomllib.loads((tmp_path / FILE).read_text("utf-8"))["criterion"] == {
         "hypothesis": "Can one file hold the record?",
         "decision": "yes, one file",
+        "answer": "yes",
     }
 
 

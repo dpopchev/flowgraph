@@ -14,6 +14,7 @@ from pydantic import BaseModel, ConfigDict
 from flowgraph.criterion import (
     Commit,
     Criterion,
+    Decision,
     Evidence,
     NoCommit,
     criterion_parts,
@@ -59,12 +60,16 @@ class HypothesisFile(BaseModel):
 
 
 class AnswerFile(BaseModel):
-    """The criterion table of the file of a completed Spike: its hypothesis and its decision."""
+    """The criterion table of the file of a completed Spike: its hypothesis, decision and answer.
+
+    A file of a Spike completed before the answer was taken holds none.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
     hypothesis: str
     decision: str
+    answer: Literal["yes", "no"] | None = None
 
 
 # The criterion table of a work item file, in the form its kind takes.
@@ -128,11 +133,14 @@ def criterion_held(held: AnyCriterionFile) -> Criterion:
             assert_never(unreachable)
 
 
-def decision_held(held: AnyCriterionFile) -> str | None:
-    """The decision a validated criterion table holds; None for one without a decision."""
+def decision_held(held: AnyCriterionFile) -> Decision | None:
+    """The decision a validated criterion table holds; None for one without a decision.
+
+    The answer of a table written before it was taken is None.
+    """
     match held:
         case AnswerFile():
-            return held.decision
+            return Decision(held.decision, held.answer)
         case CriterionFile() | DefectFile() | HypothesisFile():
             return None
         case _ as unreachable:

@@ -63,10 +63,14 @@ def entries_of(item: str, rows: Iterable[KnowledgeRow]) -> list[KnowledgeEntry]:
 
 
 def decision_entries(detail: WorkItemDetail, completed: datetime | None) -> list[KnowledgeEntry]:
-    """The decision of a completed Spike as an entry at its completed time; none for any other."""
+    """The decision of a completed Spike as an entry at its completed time; none for any other.
+
+    The text names its answer when it holds one.
+    """
     if not detail.decision or completed is None:
         return []
-    return [KnowledgeEntry(detail.id, kind_name(DECISION), completed, detail.decision)]
+    text = f"{detail.decision} (answer {detail.answer})" if detail.answer else detail.decision
+    return [KnowledgeEntry(detail.id, kind_name(DECISION), completed, text)]
 
 
 def newest_first(

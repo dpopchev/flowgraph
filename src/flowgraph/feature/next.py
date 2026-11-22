@@ -10,6 +10,7 @@ do (`flowgraph.item.commands`).
 
 from typing import assert_never
 
+from flowgraph.criterion import Decision
 from flowgraph.development import SlugError
 from flowgraph.development.parallel import ParallelError, check_parallel
 from flowgraph.development.scope import OutOfScopeError
@@ -87,7 +88,12 @@ def start_next(item_id: WorkItemId, store: Store, now: Now, config: Config) -> W
 
 
 def complete_and_start_next(
-    item: str, sha: str | None, store: Store, now: Now, config: Config, decision: str | None = None
+    item: str,
+    sha: str | None,
+    store: Store,
+    now: Now,
+    config: Config,
+    decision: Decision | None = None,
 ) -> Written:
     """Complete the item of that id, and start the next work item of its Feature with it.
 

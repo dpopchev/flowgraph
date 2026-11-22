@@ -103,7 +103,16 @@ def test_verify_of_what_it_does_not_take_exits_with_two_and_names_what_it_takes(
 
 
 def test_a_completed_spike_is_refused(tmp_path: Path) -> None:
-    complete = ["complete", "Q-0001", "--commit", "def5678", "--decision", "yes, one file"]
+    complete = [
+        "complete",
+        "Q-0001",
+        "--commit",
+        "def5678",
+        "--decision",
+        "yes, one file",
+        "--answer",
+        "yes",
+    ]
     runs(tmp_path, *started(ADD_SPIKE, "Q-0001"), complete)
     outcome = fgraph(["verify", "Q-0001", "--yes", TEXT], tmp_path)
     assert (outcome.status, outcome.err.splitlines()[-1]) == (

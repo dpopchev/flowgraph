@@ -11,6 +11,7 @@ from flowgraph.criterion import (
     NO_COMMIT,
     Commit,
     CommitNeededError,
+    Decision,
     DecisionError,
     Evidence,
     NoCommit,
@@ -145,7 +146,12 @@ def _completed(named: str, evidence: Evidence, feature: FeatureId | None = None)
 
 
 def complete_item(
-    item: str, sha: str | None, store: Store, now: Now, config: Config, decision: str | None = None
+    item: str,
+    sha: str | None,
+    store: Store,
+    now: Now,
+    config: Config,
+    decision: Decision | None = None,
 ) -> Written:
     """Complete the work item or the Task of that id, in the commit given; what the write says.
 
@@ -153,8 +159,8 @@ def complete_item(
     Spike is completed with the decision that answers its hypothesis. The last work item of a
     started Feature completes the Feature with it, in the same write. Raises ItemIdError when
     the text is no id, CommitError when the sha is no commit, CommitNeededError when the
-    development needs one, DecisionError when a Spike has no decision or another item is given
-    one, or the refusal of the complete; nothing is saved.
+    development needs one, DecisionError when a Spike has no decision or no answer or another
+    item is given a decision, or the refusal of the complete; nothing is saved.
     """
     match parse_item_id(item):
         case WorkItemId() as item_id:

@@ -4,7 +4,7 @@ from dataclasses import replace
 from datetime import datetime
 from typing import assert_never
 
-from flowgraph.criterion import Answer, Evidence, settled
+from flowgraph.criterion import Answer, Decision, Evidence, settled
 from flowgraph.task import (
     CompletedAlreadyError,
     NoTaskError,
@@ -80,13 +80,14 @@ def started_work_item(item: WorkItemState, on: datetime) -> StartedWorkItem:
 
 
 def completed_work_item(
-    item: WorkItemState, on: datetime, commit: Evidence, decision: str | None = None
+    item: WorkItemState, on: datetime, commit: Evidence, decision: Decision | None = None
 ) -> CompletedWorkItem:
     """The work item completed on that time, kept to the second, in that commit or without one.
 
-    A work item that states a hypothesis is completed with the decision that answers it. Raises
-    NotStartedError when it is in Backlog, OpenTaskError naming the Tasks not completed,
-    DecisionError when a hypothesis has no decision or another criterion is given one, and
+    A work item that states a hypothesis is completed with the decision that answers it, and
+    its yes or no. Raises NotStartedError when it is in Backlog, OpenTaskError naming the Tasks
+    not completed, DecisionError when a hypothesis has no decision or no answer or another
+    criterion is given a decision, and
     CompletedAlreadyError when it is completed.
     """
     match item:

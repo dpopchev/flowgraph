@@ -35,8 +35,10 @@ commit = "0af9623"
 
 [[tasks]]
 id = "T-0187"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph reorder places a Feature in the queue"
 expected_output = "changed: README.md and docs/domain-model.md, Order, say fgraph reorder places a Feature in the queue of the Backlog as a work item, that queue.toml holds the ids of both, that a work item under a Feature is reordered among the work items of its Feature alone, in the order they start in, and what is refused"
 created = 2026-11-21 23:10:19+00:00
 started = 2026-11-22 01:24:02+00:00
+completed = 2026-11-22 01:27:07+00:00
+commit = "446d79f"

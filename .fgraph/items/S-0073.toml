@@ -35,8 +35,10 @@ commit = "aa53085"
 
 [[tasks]]
 id = "T-0302"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph about lists the links of an item"
 expected_output = "changed: README.md shows fgraph about on a work item with several relations, and its Status table names the questions fgraph answers; docs/domain-model.md says what about lists for a work item and for a Feature, in which order, and that it derives every other side from the record"
 created = 2026-11-22 10:48:06+00:00
 started = 2026-11-22 17:25:52+00:00
+completed = 2026-11-22 17:29:10+00:00
+commit = "1523e6d"

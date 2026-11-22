@@ -613,6 +613,25 @@ criterion. It is added and then it stands.
   the first through relations of the same kind.
 - `fgraph relate` is a write of a term, so it is on `main` alone as `fgraph add
   term` is, and refused on the branch of a work item the same way.
+- A work item, a Feature and a line of knowledge name the terms they are about,
+  each by its name. The item or the line stores them, as `about`, a list of names
+  in the order given, each once, in its file: at the top of the file of the item
+  and in the `[[knowledge]]` table of the line. A term stores nothing of it; the
+  items and lines about a term are read from the record, as the other side of a
+  relation is. `--about TERM`, once per term, is taken by `fgraph add` of a work
+  item or a Feature, by `fgraph amend` of one in Backlog, which gives the terms
+  in place of its own and, as `--about none`, takes them all away, and by `fgraph
+  note`. A term the record holds none of is refused, exit 2, naming `fgraph add
+  term`, and so is `none` given with a term; nothing is written. A term is checked
+  against the terms of the record of `main`, so a term added there after a branch
+  was cut is accepted on the branch.
+- `fgraph show` of an item lists `about` with its terms, and each of its lines
+  ends with `(about gate, lane)` when it has terms. `fgraph show` of a term lists,
+  after its relations, `items` with the ids of the work items and Features about
+  it and `knowledge` with the lines about it, the last noted first, each with the
+  id of its item; both are read from the record, the started work items where
+  `fgraph status` reads them. `fgraph knowledge --about TERM` narrows its list to
+  the lines about that term; a term the record holds none of is refused.
 
 ## Evidence
 

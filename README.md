@@ -71,6 +71,27 @@ fgraph show lane            # lane, with the line: parts  gate
 `fgraph relate gate is-a check` shows `is a  check` under `gate` and `kinds  gate`
 under `check`. Like `fgraph add term`, it is written on `main` alone.
 
+An item and a line of knowledge name the terms they are about, with `--about`
+once per term. `fgraph note`, `fgraph add` of a work item or a Feature and
+`fgraph amend` of one in Backlog take it; `fgraph amend S-0001 --about none` takes
+every term of the item away. A term the record holds none of exits 2, names `fgraph
+add term` and writes nothing. On the branch of a work item the terms are those of
+`main`, a term added there after the branch was cut included. `fgraph show` of
+an item lists its terms and, after each line, the terms of the line; `fgraph show`
+of a term lists, after its relations, the items about it and the lines about it,
+each with the id of its item; `fgraph knowledge --about gate` lists the lines
+about that term alone:
+
+```sh
+fgraph add story "Hold the landing" --given a --when b --then c --about gate
+fgraph note S-0001 --decision "a gate runs on main" --about gate --about lane
+fgraph amend S-0001 --about lane
+fgraph show S-0001          # about  lane, and the line: decision  2026-11-22  a gate runs on main  (about gate, lane)
+fgraph show gate            # gate, with the lines: items  S-0001, knowledge  S-0001  decision  2026-11-22  a gate runs on main
+fgraph knowledge --about gate
+# 2026-11-22  decision  S-0001  a gate runs on main  (about gate, lane)
+```
+
 ## Use
 
 `fgraph` looks for the record in the directory it runs in: `.fgraph/` first,

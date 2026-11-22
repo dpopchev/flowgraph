@@ -872,9 +872,10 @@ with its started time, and Completed once its last work item is completed,
 with its completed time and the commit of that completion (below). `fgraph
 show S-0001` names the Feature as its `parent`. An add exits 2 and names why
 when a criterion or the title is blank or when `--parent` names no Feature of
-the record. A work item added alone is put under a Feature later, and one
-under a Feature taken out, with `fgraph amend --parent` while both are in
-Backlog (below). The wording of a Feature in Backlog is rewritten with
+the record, or one completed or removed. A work item added alone is put
+under a Feature later, by the same rule, and one under a Feature taken out
+while that one is in Backlog, with `fgraph amend --parent` (below). The
+wording of a Feature in Backlog is rewritten with
 `fgraph amend` too, and a Feature in Backlog is removed with `fgraph remove`,
 its work items with it (below). A Feature is kept as `items/F-0001.toml`.
 
@@ -1528,25 +1529,29 @@ out it is the line of the Backlog that entry places. One never placed follows
 the placed ones as it was added. A `--parent` that names the Feature it is
 under already moves it nowhere, and the amend is taken.
 
-The Feature it is put under and the one it is taken out of are in Backlog, as
+The Feature it is put under takes it as it takes a work item added under it:
+in Backlog, started or blocked. The one it is taken out of is in Backlog, as
 the work item is. An amend with `--parent` exits 2, writes nothing and names
 why:
 
-- when the Feature it is put under is started, blocked or completed;
-- when the Feature it is taken out of is, whether it then stands alone or
-  goes under another;
+- when the Feature it is put under is completed or removed;
+- when the Feature it is taken out of is started, blocked or completed,
+  whether the work item then stands alone or goes under another;
 - when the record does not hold the Feature named;
-- when the text is neither a Feature id nor `none`.
+- when the text is neither a Feature id nor `none`, naming both.
 
 ```sh
 fgraph amend S-0003 --parent F-0001
-# fgraph: error: S-0003 cannot be put under F-0001: F-0001 is started already
+# fgraph: error: S-0003 cannot be put under F-0001: F-0001 is completed already
 
 fgraph amend S-0002 --parent none
 # fgraph: error: S-0002 cannot be taken out of F-0001: F-0001 is started already
 
 fgraph amend S-0002 --parent F-0009
 # fgraph: error: no Feature F-0009 in the record
+
+fgraph amend S-0002 --parent None
+# fgraph: error: 'None' is neither a Feature id nor none: a Feature id is F- and a number
 ```
 
 A Feature still in Backlog is rewritten with `fgraph amend` too: its title

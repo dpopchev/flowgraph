@@ -389,14 +389,17 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
   item: its id, its created time and its Tasks stay, and so does its entry in
   the queue, which then orders it where its new parent reads it
   (Persistence).
-- The Feature it is put under and the one it is taken out of are in Backlog,
-  as the work item is, each by its own state: one that is started, blocked or
-  completed is refused naming the work item and the Feature, `S-0003 cannot
-  be put under F-0001: F-0001 is started already`, `S-0002 cannot be taken
-  out of F-0001: F-0001 is blocked`. The one it is put under is read first,
-  so a move from one Feature to another names that one when both refuse. A
-  Feature the record does not hold is refused, `no Feature F-0009 in the
-  record`, and so is a text that is neither a Feature id nor `none`. Nothing
+- The Feature it is put under takes it by the one rule `fgraph add --parent`
+  follows too (B-0016): a Feature in Backlog, started or blocked, never one
+  completed or removed, `S-0003 cannot be put under F-0001: F-0001 is
+  completed already`. The one it is taken out of is in Backlog, as the work
+  item is: one that is started, blocked or completed is refused naming the
+  work item and the Feature, `S-0002 cannot be taken out of F-0001: F-0001
+  is blocked`. The one it is put under is read first, so a move from one
+  Feature to another names that one when both refuse. A Feature the record
+  does not hold is refused, `no Feature F-0009 in the record`, and so is a
+  text that is neither a Feature id nor `none`, naming both, `'None' is
+  neither a Feature id nor none: a Feature id is F- and a number`. Nothing
   is written then, the other parts named beside it neither.
 - A parent that is the one the work item has moves it nowhere: no Feature is
   read and the amend is taken, as one that rewrites a part to the text it

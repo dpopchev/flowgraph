@@ -1,9 +1,11 @@
 id = "B-0010"
-state = "started"
+state = "completed"
 title = "Cut the landings that leave a merge held in the checkout of main under their gate from some to none"
 description = "Found during T-0177 of S-0042 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. Beside it: the help of fgraph land in src/flowgraph/parser.py does not name the gate. The first Task is the probe that shows each case. Its Tasks are written when it is ordered."
 created = 2026-11-21 23:57:20+00:00
 started = 2026-11-22 07:11:38+00:00
+completed = 2026-11-22 07:19:24+00:00
+commit = "a4879c0"
 
 [criterion]
 observed = "read from the code during T-0177 of S-0042 and not tested: Ctrl-C during the gate of a landing by merge-commit or squash leaves the merge held in the checkout of main, since _committed of src/flowgraph/land.py drops it only on a refusal; a gate that changes a tracked file the merge touched may make the drop of the merge fail, so the developer sees a refusal of git and not that of the gate; and the files a passing gate leaves stay uncommitted in the checkout"

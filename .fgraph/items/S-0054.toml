@@ -46,7 +46,8 @@ commit = "289d5d1"
 
 [[tasks]]
 id = "T-0195"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say a Feature is completed with its last work item"
 expected_output = "changed: README.md and docs/domain-model.md say a Feature moves to Completed with its last work item, in the same write, holding the commit of that completion as its evidence or none with the development off; how status and show list a completed Feature; that its completed work items stay within it; what a completed Feature refuses; and that a Feature never started keeps its derived bucket"
 created = 2026-11-21 23:43:08+00:00
+started = 2026-11-22 02:21:19+00:00

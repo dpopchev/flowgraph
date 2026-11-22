@@ -28,6 +28,7 @@ from flowgraph.criterion import (
     make_scenario,
 )
 from flowgraph.feature import FeatureNotFoundError, NoCriterionError
+from flowgraph.feature_amend import amend_named
 from flowgraph.feature_block import block_named, unblock_named
 from flowgraph.feature_item import (
     add_feature_item,
@@ -48,7 +49,6 @@ from flowgraph.item import (
     ItemIdError,
     Written,
     add_item,
-    amend_item,
     kind_named,
     remove_item,
     reorder_item,
@@ -193,7 +193,7 @@ def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -
                 args.hypothesis,
                 None if args.parent is None else parent_asked(args.parent),
             )
-            return amend_item(args.id, parts, store)
+            return amend_named(args.id, parts, args.criterion, store)
         case "complete":
             return complete_and_start_next(args.id, args.commit, store, now, config, args.decision)
         case "start" if is_feature_id(args.id):

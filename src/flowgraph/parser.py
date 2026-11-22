@@ -116,10 +116,16 @@ def _add_kinds(kinds: Commands) -> dict[str, argparse.ArgumentParser]:
 
 def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     """The parser of each command that reads or moves an item of the record, under its name."""
-    amend = _command(commands, "amend", "rewrite parts of a work item in Backlog")
-    amend.add_argument("id", metavar="ID", help="the id of the work item")
+    amend = _command(commands, "amend", "rewrite parts of a work item or a Feature in Backlog")
+    amend.add_argument("id", metavar="ID", help="the id of the work item or of the Feature")
     amend.add_argument("--title", metavar="TEXT", help="what is true once it is completed")
     amend.add_argument("--description", metavar="TEXT", help="free text; a blank one clears it")
+    amend.add_argument(
+        "--criterion",
+        action="append",
+        metavar="TEXT",
+        help="what the user experiences, of a Feature; once per criterion, in place of its own",
+    )
     amend.add_argument("--given", metavar="STATE", help="the initial state")
     amend.add_argument("--when", metavar="ACTION", help="the action")
     amend.add_argument("--then", metavar="STATE", help="the expected state")

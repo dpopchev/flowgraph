@@ -135,7 +135,7 @@ def test_an_upkeep_in_progress_is_listed_under_in_progress(tmp_path: Path) -> No
             [["add", "task", "t", "--parent", "U-0009", "--output", "o"]],
             "no Upkeep U-0009 in the record",
         ),
-        ([["start", "X-0001"]], "'X-0001' is no Story, Upkeep, Bug, Spike or Task id"),
+        ([["start", "X-0001"]], "'X-0001' is no Story, Upkeep, Bug, Spike, Task or Feature id"),
     ],
     ids=[
         "upkeep-without-task",

@@ -610,6 +610,13 @@ and its merge tool.
   Feature, `'T-0001' is no Story, Upkeep, Bug, Spike or Feature id`; a text
   written `F-` and a number below 1 is refused as a Feature id,
   `a Feature id counts from 1: 0 is below 1`.
+- `fgraph start`, `fgraph complete`, `fgraph amend` and `fgraph remove` take
+  a Feature too, so their refusal of a wrong id names it (B-0018): start and
+  complete, which take a Task as well, `'X-1' is no Story, Upkeep, Bug,
+  Spike, Task or Feature id`; amend and remove `'X-1' is no Story, Upkeep,
+  Bug, Spike or Feature id`. A text written `F-` and a number below 1 goes to
+  the Feature and is refused as a Feature id by each of the four, `a Feature
+  id counts from 1: 0 is below 1`.
 - A Feature has a state of its own, kept in its file as that of a work item
   is (S-0052): `state = "backlog"` for a `Feature`, and `state = "started"`
   with its `started` time, kept to the second, for a `StartedFeature`. A

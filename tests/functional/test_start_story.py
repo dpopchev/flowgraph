@@ -107,7 +107,7 @@ class TestATaskOfAStartedStoryStarted:
         ),
         ([["start", "S-0002"]], "no Story S-0002 in the record"),
         ([ADD_STORY, ADD_TASK, ["start", "T-0002"]], "no Task T-0002 in the record"),
-        ([["start", "X-0001"]], "'X-0001' is no Story, Upkeep, Bug, Spike or Task id"),
+        ([["start", "X-0001"]], "'X-0001' is no Story, Upkeep, Bug, Spike, Task or Feature id"),
     ],
     ids=[
         "story-without-task",

@@ -41,7 +41,8 @@ def parse_work_item_id_of_any_kind(text: str) -> WorkItemId:
 def parse_item_id(text: str) -> ItemId:
     """The id of a work item of any kind, or of a Task, written as the text.
 
-    Raises ItemIdError when the text is none of them.
+    Raises ItemIdError naming every kind, the Task and the Feature when the text is none of them:
+    fgraph start and complete, which read it, take a Feature too, read before it.
     """
     parsers: list[Callable[[str], ItemId]] = [
         *(partial(parse_work_item_id, kind) for kind in KINDS),
@@ -53,7 +54,20 @@ def parse_item_id(text: str) -> ItemId:
         except WorkItemIdError, TaskIdError:
             continue
     nouns = ", ".join(kind.noun for kind in KINDS)
-    raise ItemIdError(f"{text!r} is no {nouns} or Task id")
+    raise ItemIdError(f"{text!r} is no {nouns}, Task or Feature id")
+
+
+def parse_amended_id(text: str) -> WorkItemId:
+    """The id of a work item of any kind, as fgraph amend and remove read the text.
+
+    Raises ItemIdError naming every kind and the Feature when the text is none of them: amend and
+    remove take a Feature too, read before it.
+    """
+    try:
+        return parse_work_item_id_of_any_kind(text)
+    except WorkItemIdError:
+        nouns = ", ".join(kind.noun for kind in KINDS)
+        raise ItemIdError(f"{text!r} is no {nouns} or Feature id") from None
 
 
 def parse_placed_id(text: str) -> Placed:

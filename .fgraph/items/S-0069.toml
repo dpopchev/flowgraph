@@ -13,11 +13,12 @@ then = "fgraph show of the new Story lists the Story it amends, and fgraph show 
 
 [[tasks]]
 id = "T-0287"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_amends.py, failing on the criterion of S-0069"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_add_story.py does. Seen red, then marked a strict xfail naming S-0069 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_amends.py states that, on a record with a completed Story, fgraph add story with --amends and the id of the completed Story exits 0, fgraph show of the new Story lists the Story it amends, and fgraph show of the completed Story lists the new one as amending it"
 created = 2026-11-22 10:47:48+00:00
+started = 2026-11-22 12:26:55+00:00
 
 [[tasks]]
 id = "T-0288"

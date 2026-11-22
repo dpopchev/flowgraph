@@ -13,11 +13,12 @@ then = "main holds the next v* tag, annotated: the next minor when a Story or a 
 
 [[tasks]]
 id = "T-0355"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_release.py, failing on the criterion of S-0091"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_land_work_item.py does. Seen red, then marked a strict xfail naming S-0091 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_release.py states that in a repository tagged v0.1.0 with a Story completed since, fgraph release exits 0, prints v0.2.0 and main holds the annotated tag v0.2.0; with an Upkeep alone completed since it tags v0.1.1; and with nothing completed since it exits 2 and tags nothing"
 created = 2026-11-22 21:02:58+00:00
+started = 2026-11-22 23:17:22+00:00
 
 [[tasks]]
 id = "T-0356"

@@ -24,11 +24,12 @@ commit = "d87df63"
 
 [[tasks]]
 id = "T-0301"
-state = "backlog"
+state = "started"
 title = "Add the about command to fgraph, listing the links of an item, in src/flowgraph/about.py"
 description = "Removes the xfail mark of tests/functional/test_about_item.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph about ID lists, for a work item, each relation that holds under a heading of its own with its count: its Feature, the work items it depends on and those that depend on it, the one it was filed during and those filed during it, what it supersedes or is superseded by, what it amends or is amended by, its terms and its knowledge lines; a relation with nothing is not listed; for a Feature it lists its work items, its terms and its knowledge lines; each linked item is one line, its id, its bucket and its title; it is a view in src/flowgraph/about.py that reads the record as plain data and writes nothing; a wrong id is refused as fgraph show refuses it; fgraph about --help prints its menu"
 created = 2026-11-22 10:48:05+00:00
+started = 2026-11-22 17:16:45+00:00
 
 [[tasks]]
 id = "T-0302"

@@ -1,0 +1,11 @@
+id = "S-0069"
+state = "backlog"
+title = "Raise the work items fgraph shows with the completed work item they amend from none to every one"
+description = "Part of F-0004. The agent suggested deprioritizing this one, since no move reads the relation yet; filed with the others on the developer word."
+parent = "F-0004"
+created = 2026-11-22 10:41:32+00:00
+
+[criterion]
+given = "a record with a completed Story"
+when = "fgraph add story is run with --amends and the id of the completed Story"
+then = "fgraph show of the new Story lists the Story it amends, and fgraph show of the completed Story lists the new one as amending it"

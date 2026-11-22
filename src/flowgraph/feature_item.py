@@ -7,6 +7,7 @@ from collections.abc import Iterable
 from typing import assert_never
 
 from flowgraph.feature import (
+    BlockedFeature,
     CompletedFeature,
     Feature,
     StartedFeature,
@@ -87,7 +88,7 @@ def parent_named(parent: str | None, store: Store) -> Parent:
         return STANDALONE
     feature_id = parse_feature_id(parent)
     match store.features.load_feature(feature_id):
-        case Feature() | StartedFeature():
+        case Feature() | StartedFeature() | BlockedFeature():
             return feature_id
         case CompletedFeature():
             raise CompletedAlreadyError(f"{feature_id_text(feature_id)} is completed already")

@@ -25,7 +25,7 @@ lands it. `fgraph config` shows the configuration and sets a key of it.
 | where the record lives          | located on every call but `--help`                       |
 | the record and its flow         | a work item with its Tasks, from Backlog to Completed    |
 | the kinds of work item          | Story, Upkeep, Bug, Spike                                |
-| the level above                 | a Feature groups work items, starts and completes        |
+| the level above                 | a Feature groups work items, starts, blocks, completes   |
 | the order of the Backlog        | a queue, reordered by `fgraph reorder`, Features too     |
 | the wording of a work item      | rewritten by `fgraph amend` while in Backlog             |
 | git                             | every write of the record committed, unless turned off   |
@@ -623,7 +623,8 @@ A block exits 2 and names why when the Task is still in Backlog, blocked
 already or completed, when the reason or what it waits on is blank, when the
 id is a Story's, or when the record does not hold the Task. A blocked Task is
 not started or completed, and its Story is not completed, while it is
-blocked.
+blocked. `fgraph block` and `fgraph unblock` take a started Feature too
+(below).
 
 Unblock it once it can go on. It is started again, with the started time it
 had, and can be completed or blocked once more:
@@ -925,8 +926,8 @@ waits on, in the order the file of the work item holds them. The id of the
 Feature stays in its column, and the lines of the work item and of the Task
 under it are written as under any Feature. On a terminal the line is cut to
 the width as any line of the status, so the mark is kept and what is waited
-on is what the cut takes first. Blocking a Feature itself, and blocking a
-work item, are not built.
+on is what the cut takes first. A Feature is blocked itself with `fgraph
+block` too (below); blocking a work item is not built.
 
 The completion of a work item of a started Feature starts the next one, in
 the same write: a Feature starts its work items one by one. The next one is
@@ -1054,6 +1055,93 @@ started too: that Feature stays under InProgress,
 removed work item holds nothing back and is counted in neither number. No
 command completes a Feature by itself.
 
+A started Feature that cannot go on is blocked, with the reason and who or
+what it waits on, as a Task is: `fgraph block` takes the id of a Feature. It
+stays under InProgress. `fgraph status` lists it with `!` before its id and
+what it waits on after its title, the look of a Feature marked by a blocked
+Task (above), and `fgraph show` lists it as blocked, with its reason and what
+it waits on. Here F-0001 holds S-0001, started, and S-0003 in Backlog:
+
+```sh
+fgraph block F-0001 --reason "the budget is not agreed" --waiting-on "the sponsor"
+# blocked F-0001
+
+fgraph status
+# Backlog (1)
+#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# InProgress (1)
+# ! F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5  -- waiting on the sponsor
+#     S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
+# Completed (0)
+
+fgraph show F-0001
+# F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
+#   bucket       InProgress, blocked
+#   reason       the budget is not agreed
+#   waiting on   the sponsor
+# Criteria (2)
+# ...
+```
+
+Only a started Feature is blocked. The block is a state of the Feature, kept
+in its file with its reason, what it waits on and the time it is blocked
+since, where the mark of a blocked Task is derived and kept in no file. It is
+one write and one commit, `chore: block F-0001 in the record`, made on main
+alone as every write of a Feature. Its own block comes before that of a Task
+of its work item: while both are blocked, the line of the Feature names what
+the Feature waits on, and the line of the Task what the Task waits on.
+
+While a Feature is blocked no further work item of it starts, and its started
+one goes on: its Tasks are written as before, and it is completed and landed
+as before. `fgraph start` of a work item of it in Backlog exits 2 naming the
+block, and the completion of its started one stands and says the next one is
+not started:
+
+```sh
+fgraph start S-0003
+# fgraph: error: S-0003 cannot start: F-0001 is blocked, waiting on the sponsor: unblock it first
+
+fgraph complete S-0001 --commit 677f9b0
+# completed S-0001 at 677f9b0
+# not started: S-0003 cannot start: F-0001 is blocked, waiting on the sponsor: unblock it first
+```
+
+`fgraph land S-0001` says the same after `landed S-0001 at 3e9ae5c`. The
+completion of its last work item completes a blocked Feature as it completes
+a started one (above): the block holds back a start, never a completion. The
+alternative, that every write under a blocked Feature is refused, the Tasks
+of its started work item among them, was shown with the plan of S-0056 and
+not taken.
+
+Unblock it once it can go on. It is started again, with the started time it
+had, and its block leaves its file. When no work item of it is started, the
+unblock starts the next one, as the completion of one does:
+
+```sh
+fgraph unblock F-0001
+# unblocked F-0001
+# started S-0003
+```
+
+The two are one commit of the record, `chore: unblock F-0001 and start S-0003
+in the record`, and with the development on S-0003 gets its branch and its
+worktree at that commit, named on a third line as after a landing. While a
+work item of the Feature is started the unblock starts none: it says
+`unblocked F-0001` alone and its commit is `chore: unblock F-0001 in the
+record`. A next work item that cannot start stays in Backlog and the unblock
+stands: the line after it says `not started:` and why, as after a completion
+(above), and `fgraph start S-0003` starts it once what refused it is gone.
+
+A block of a Feature exits 2 and names why, with nothing written: when it is
+in Backlog, `F-0001 is in Backlog: start it first`; blocked already, `F-0001
+is blocked already`; or completed, `F-0001 is completed already`; when the
+reason or what it waits on is blank; when the record does not hold the
+Feature; and in the worktree of a work item, whose branch writes that work
+item alone. An unblock exits 2 when the Feature is not blocked, `F-0001 is
+not blocked`, or the record does not hold it. A blocked Feature is not
+started once more: `fgraph start F-0001` exits 2, `F-0001 is blocked: unblock
+it first`.
+
 A completed Feature takes no start and no work item added under it; each
 exits 2 with nothing written:
 
@@ -1071,6 +1159,7 @@ The start of a Feature exits 2 and names why, with nothing written and no
 branch made:
 
 - when it is started already: `F-0001 is started already`;
+- when it is blocked: `F-0001 is blocked: unblock it first`;
 - when it is completed: `F-0001 is completed already`;
 - when it has no work item in Backlog:
   `F-0001 has no work item in Backlog to start with`;

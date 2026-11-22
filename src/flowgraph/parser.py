@@ -137,14 +137,14 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         metavar="TEXT",
         help="the words of a work item's branch after its id, instead of its title's first four",
     )
-    block = _command(commands, "block", "block a started Task that cannot go on")
-    block.add_argument("id", metavar="ID", help="the id of the Task")
+    block = _command(commands, "block", "block a started Task or Feature that cannot go on")
+    block.add_argument("id", metavar="ID", help="the id of the Task or of the Feature")
     block.add_argument("--reason", required=True, metavar="TEXT", help="why it cannot go on")
     block.add_argument(
         "--waiting-on", required=True, metavar="TEXT", help="who or what it waits on"
     )
-    unblock = _command(commands, "unblock", "take a blocked Task back to started")
-    unblock.add_argument("id", metavar="ID", help="the id of the Task")
+    unblock = _command(commands, "unblock", "take a blocked Task or Feature back to started")
+    unblock.add_argument("id", metavar="ID", help="the id of the Task or of the Feature")
     complete = _command(commands, "complete", "complete a work item or a Task of it")
     complete.add_argument("id", metavar="ID", help="the id of the work item or of the Task")
     complete.add_argument(

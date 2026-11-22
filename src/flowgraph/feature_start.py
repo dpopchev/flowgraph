@@ -1,9 +1,9 @@
 """The start of a Feature, and what a Feature asks of the start of a work item under it.
 
 A Feature is to its work items what a work item is to its Tasks: it starts with its first work
-item and not without one, a work item of it does not start before it, and one work item of it is
-started at a time. Each runs on the store of a record, as the commands of a work item do
-(`flowgraph.item`).
+item and not without one, a work item of it does not start before it or while it is blocked, and
+one work item of it is started at a time. Each runs on the store of a record, as the commands of
+a work item do (`flowgraph.item`).
 """
 
 from typing import assert_never
@@ -11,7 +11,13 @@ from typing import assert_never
 from flowgraph import work_item
 from flowgraph.branch import make_slug, slug_of_title
 from flowgraph.config import Config
-from flowgraph.feature import CompletedFeature, Feature, StartedFeature, started_feature
+from flowgraph.feature import (
+    BlockedFeature,
+    CompletedFeature,
+    Feature,
+    StartedFeature,
+    started_feature,
+)
 from flowgraph.item import MESSAGE, ItemIdError, ToBranch, Written, parse_item_id
 from flowgraph.parallel import check_feature_parallel
 from flowgraph.parent import FeatureId, Standalone, feature_id_text, parse_feature_id
@@ -19,7 +25,7 @@ from flowgraph.queue import queued
 from flowgraph.record import Now
 from flowgraph.status import STARTED, backlog_as_added, rows_by_id
 from flowgraph.store import Store
-from flowgraph.task import CompletedAlreadyError, NoTaskError, TaskId
+from flowgraph.task import BlockedError, CompletedAlreadyError, NoTaskError, TaskId
 from flowgraph.work_item import (
     CompletedWorkItem,
     RemovedWorkItem,
@@ -115,7 +121,8 @@ def check_start_under_feature(item: str, store: Store) -> None:
     """Check that the start of the work item of that id is one its Feature takes.
 
     Raises FeatureNotStartedError naming the Feature when it is not started,
-    WorkItemInProgressError naming each started work item of it when one is, and
+    WorkItemInProgressError naming each started work item of it when one is, BlockedError
+    naming it and what it waits on when it is blocked, which starts no further work item, and
     CompletedAlreadyError naming it when it is completed. A work item standing alone passes,
     and so does one that is not in Backlog, which the start refuses; a Task, a Feature and a
     text that is no id are not read. Raises WorkItemNotFoundError when the record holds no such
@@ -148,6 +155,9 @@ def check_start_under_feature(item: str, store: Store) -> None:
                 raise WorkItemInProgressError(
                     f"{named} cannot start: {one}, started already: {already}"
                 )
+        case BlockedFeature(waiting_on=waiting_on):
+            held = f"{feature} is blocked, waiting on {waiting_on}"
+            raise BlockedError(f"{named} cannot start: {held}: unblock it first")
         case CompletedFeature():
             raise CompletedAlreadyError(f"{named} cannot start: {feature} is completed already")
         case _ as unreachable:

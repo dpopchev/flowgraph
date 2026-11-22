@@ -2,7 +2,7 @@
 
 A Feature is to its work items what a work item is to its Tasks: its state is its own, each a
 type that carries what it needs and nothing else, and a move returns the Feature in its next
-state.
+state. A started one is blocked and unblocked back to started, as a Task is.
 """
 
 from collections.abc import Iterable
@@ -12,11 +12,18 @@ from typing import assert_never
 
 from flowgraph.criterion import Evidence, evidence_text, said
 from flowgraph.parent import FeatureId, feature_id_text
-from flowgraph.task import CompletedAlreadyError, NotStartedError, StartedAlreadyError
+from flowgraph.task import (
+    BlockedError,
+    CompletedAlreadyError,
+    NotBlockedError,
+    NotStartedError,
+    StartedAlreadyError,
+)
 
 # The states of a Feature as the record writes them; a file without the line reads as in Backlog.
 IN_BACKLOG = "backlog"
 STARTED = "started"
+BLOCKED = "blocked"
 COMPLETED = "completed"
 
 
@@ -44,6 +51,21 @@ class StartedFeature:
 
 
 @dataclass(frozen=True)
+class BlockedFeature:
+    """A Feature in InProgress that cannot go on: its reason, since when, and what it waits on."""
+
+    id: FeatureId
+    title: str
+    description: str
+    criteria: tuple[str, ...]
+    created: datetime
+    started: datetime
+    reason: str
+    since: datetime
+    waiting_on: str
+
+
+@dataclass(frozen=True)
 class CompletedFeature:
     """A Feature in Completed: completed with its last work item, in the commit of that one."""
 
@@ -58,7 +80,7 @@ class CompletedFeature:
 
 
 # A Feature in any of its states, as the record keeps it.
-FeatureState = Feature | StartedFeature | CompletedFeature
+FeatureState = Feature | StartedFeature | BlockedFeature | CompletedFeature
 
 
 class NoCriterionError(ValueError):
@@ -83,8 +105,8 @@ def make_feature(
 def started_feature(feature: FeatureState, on: datetime) -> StartedFeature:
     """The Feature started on that time, kept to the second, holding what it held.
 
-    Raises StartedAlreadyError when it is started and CompletedAlreadyError when it is
-    completed.
+    Raises StartedAlreadyError when it is started, BlockedError when it is blocked and
+    CompletedAlreadyError when it is completed.
     """
     match feature:
         case Feature():
@@ -98,8 +120,63 @@ def started_feature(feature: FeatureState, on: datetime) -> StartedFeature:
             )
         case StartedFeature():
             raise StartedAlreadyError(f"{feature_id_text(feature.id)} is started already")
+        case BlockedFeature():
+            raise BlockedError(f"{feature_id_text(feature.id)} is blocked: unblock it first")
         case CompletedFeature():
             raise CompletedAlreadyError(f"{feature_id_text(feature.id)} is completed already")
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def blocked_feature(
+    feature: FeatureState, reason: str, waiting_on: str, on: datetime
+) -> BlockedFeature:
+    """The started Feature blocked on that time, kept to the second, for the reason given.
+
+    Raises NotStartedError when it is in Backlog, BlockedError when it is blocked already,
+    CompletedAlreadyError when it is completed and EmptyPartError when the reason or what it
+    waits on is blank.
+    """
+    match feature:
+        case Feature():
+            raise NotStartedError(f"{feature_id_text(feature.id)} is in Backlog: start it first")
+        case StartedFeature():
+            return BlockedFeature(
+                feature.id,
+                feature.title,
+                feature.description,
+                feature.criteria,
+                feature.created,
+                feature.started,
+                said("reason", reason),
+                on.replace(microsecond=0),
+                said("waiting on", waiting_on),
+            )
+        case BlockedFeature():
+            raise BlockedError(f"{feature_id_text(feature.id)} is blocked already")
+        case CompletedFeature():
+            raise CompletedAlreadyError(f"{feature_id_text(feature.id)} is completed already")
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def unblocked_feature(feature: FeatureState) -> StartedFeature:
+    """The blocked Feature started again, with the started time it had; its block is dropped.
+
+    Raises NotBlockedError when it is in Backlog, started or completed.
+    """
+    match feature:
+        case BlockedFeature():
+            return StartedFeature(
+                feature.id,
+                feature.title,
+                feature.description,
+                feature.criteria,
+                feature.created,
+                feature.started,
+            )
+        case Feature() | StartedFeature() | CompletedFeature():
+            raise NotBlockedError(f"{feature_id_text(feature.id)} is not blocked")
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -107,12 +184,14 @@ def started_feature(feature: FeatureState, on: datetime) -> StartedFeature:
 def completed_feature(feature: FeatureState, on: datetime, commit: Evidence) -> CompletedFeature:
     """The started Feature completed on that time, kept to the second, in that commit or none.
 
-    Raises NotStartedError when it is in Backlog and CompletedAlreadyError when it is completed.
+    A blocked one is completed as a started one is, its block dropped: its last work item
+    completes it. Raises NotStartedError when it is in Backlog and CompletedAlreadyError when
+    it is completed.
     """
     match feature:
         case Feature():
             raise NotStartedError(f"{feature_id_text(feature.id)} is in Backlog: start it first")
-        case StartedFeature():
+        case StartedFeature() | BlockedFeature():
             return CompletedFeature(
                 feature.id,
                 feature.title,
@@ -134,8 +213,19 @@ def commit_sha(feature: FeatureState) -> str:
     match feature:
         case CompletedFeature():
             return evidence_text(feature.commit)
-        case Feature() | StartedFeature():
+        case Feature() | StartedFeature() | BlockedFeature():
             return ""
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def block_of(feature: FeatureState) -> tuple[str, str]:
+    """The reason of a blocked Feature and what it waits on; both empty for one not blocked."""
+    match feature:
+        case BlockedFeature():
+            return feature.reason, feature.waiting_on
+        case Feature() | StartedFeature() | CompletedFeature():
+            return "", ""
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -147,6 +237,8 @@ def state_name(feature: FeatureState) -> str:
             return IN_BACKLOG
         case StartedFeature():
             return STARTED
+        case BlockedFeature():
+            return BLOCKED
         case CompletedFeature():
             return COMPLETED
         case _ as unreachable:

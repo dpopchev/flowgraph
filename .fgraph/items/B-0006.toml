@@ -7,3 +7,10 @@ created = 2026-11-21 22:39:07+00:00
 [criterion]
 observed = "README.md says fgraph commits every write of the record and names add, amend, reorder, start and complete, leaving out remove, block and unblock, which docs/domain-model.md lists"
 expected = "README.md names the eight writes fgraph commits, as docs/domain-model.md does"
+
+[[tasks]]
+id = "T-0225"
+state = "backlog"
+title = "Name in README.md the writes fgraph commits as docs/domain-model.md does: add, amend, remove, reorder, start, block, unblock, complete and config set, with the messages of a block and an unblock"
+expected_output = "changed: README.md lists remove, block and unblock among the writes fgraph commits and words their messages"
+created = 2026-11-22 06:41:38+00:00

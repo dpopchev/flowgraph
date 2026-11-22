@@ -27,7 +27,7 @@ lands it. `fgraph config` shows the configuration and sets a key of it.
 | the kinds of work item          | Story, Upkeep, Bug, Spike                                |
 | the level above                 | a Feature groups work items, starts, blocks, completes   |
 | the order of the Backlog        | a queue, reordered by `fgraph reorder`, Features too     |
-| the wording of a work item      | rewritten by `fgraph amend` while in Backlog, parent too |
+| the wording of a work item      | `fgraph amend` in Backlog: parent too, a Feature's too   |
 | git                             | every write of the record committed, unless turned off   |
 | the layers of a record          | `.fgraph/config.toml`: commits on, development off       |
 | the configuration               | every key shown and set by `fgraph config`               |
@@ -829,7 +829,8 @@ show S-0001` names the Feature as its `parent`. An add exits 2 and names why
 when a criterion or the title is blank or when `--parent` names no Feature of
 the record. A work item added alone is put under a Feature later, and one
 under a Feature taken out, with `fgraph amend --parent` while both are in
-Backlog (below). A Feature is kept as `items/F-0001.toml`.
+Backlog (below). The wording of a Feature in Backlog is rewritten with
+`fgraph amend` too (below). A Feature is kept as `items/F-0001.toml`.
 
 `fgraph status` lists a Feature inside its bucket, as one line in place of
 its work items: its id, its progress and its title. Here a Story that stands
@@ -1476,6 +1477,54 @@ fgraph amend S-0002 --parent F-0009
 # fgraph: error: no Feature F-0009 in the record
 ```
 
+A Feature still in Backlog is rewritten with `fgraph amend` too: its title
+with `--title`, its description with `--description` and its criteria with
+`--criterion`, given once per criterion as `fgraph add feature` takes it. The
+criteria given replace the ones it had, whole: none is added to them. A part
+without its option stays as it was, and so do its id, its work items and its
+place in the queue:
+
+```sh
+fgraph amend F-0001 --title "Raise the kinds of work a project tracks with fgraph from 1 to 4" \
+  --criterion "a developer sees every work item of the project by bucket" \
+  --criterion "a developer adds a Story, an Upkeep, a Bug and a Spike"
+# amended F-0001
+
+fgraph show F-0001
+# F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 4
+#   bucket       Backlog
+# Criteria (2)
+#   a developer sees every work item of the project by bucket
+#   a developer adds a Story, an Upkeep, a Bug and a Spike
+# Work items (1)
+#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  Backlog
+```
+
+`--description ""` clears its description. An amend of a Feature exits 2,
+writes nothing and names why:
+
+- when it names no part;
+- when the title or a criterion is blank;
+- when it is given an option of a work item: `--given`, `--when`, `--then`,
+  `--observed`, `--expected`, `--hypothesis` or `--parent`;
+- when the Feature is started, blocked or completed: only one in Backlog is
+  amended, as only a work item in Backlog is;
+- when the record does not hold it.
+
+`--criterion` given to a work item is refused the same way: only a Feature
+states criteria.
+
+```sh
+fgraph amend F-0001 --then "fgraph status lists it under Backlog"
+# fgraph: error: F-0001 has no then: a Feature is amended by its title, its description and its criteria
+
+fgraph amend F-0001 --title "Raise the kinds of work a project tracks with fgraph from 1 to 4"
+# fgraph: error: F-0001 is started already
+
+fgraph amend S-0002 --criterion "a developer adds every kind of work"
+# fgraph: error: S-0002 has no criteria: only a Feature states them
+```
+
 A work item filed by mistake or superseded is removed from the Backlog with
 the reason. Nothing is deleted: it is kept with its Tasks, apart from the
 flow, and `fgraph status` lists it under Removed:
@@ -1517,9 +1566,10 @@ git log -1 --format=%s --name-only
 ```
 
 The other messages follow the write: `chore: add T-0001 of S-0001 in the
-record`, `chore: amend S-0001 in the record`, `chore: reorder S-0002 before
-S-0001 in the record` -- a Feature by its id, `chore: reorder F-0001 before
-S-0001 in the record` --, `chore: start T-0001 of S-0001 in the record`,
+record`, `chore: amend S-0001 in the record` -- a Feature by its id, `chore:
+amend F-0001 in the record` --, `chore: reorder S-0002 before S-0001 in the
+record` -- a Feature by its id, `chore: reorder F-0001 before S-0001 in the
+record` --, `chore: start T-0001 of S-0001 in the record`,
 `chore: start F-0001 in the record` for a Feature and its first work item
 together, `chore: complete S-0001 in the record`, `chore: complete S-0001 and
 F-0001 in the record` for a work item and the Feature it completes, `chore:

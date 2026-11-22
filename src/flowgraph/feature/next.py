@@ -25,7 +25,8 @@ from flowgraph.feature.start import (
     check_start_under_feature,
     first_in_backlog,
 )
-from flowgraph.item.commands import MESSAGE, Written, complete_item, parse_item_id, start_item
+from flowgraph.item.commands import MESSAGE, Written, parse_item_id
+from flowgraph.item.moves import complete_item, start_item
 from flowgraph.parent import FeatureId, Standalone
 from flowgraph.record import Config, Now
 from flowgraph.record.store import Store

@@ -13,8 +13,9 @@ from typing import assert_never
 from flowgraph.feature import blocked_feature, unblocked_feature
 from flowgraph.feature.next import NOT_STARTED, start_next
 from flowgraph.feature.start import first_in_backlog
-from flowgraph.item.commands import MESSAGE, Written, block_item, unblock_item
+from flowgraph.item.commands import MESSAGE, Written
 from flowgraph.item.id import parse_moved_id
+from flowgraph.item.moves import block_item, unblock_item
 from flowgraph.parent import FeatureId, feature_id_text
 from flowgraph.record import Config, Now
 from flowgraph.record.store import Store

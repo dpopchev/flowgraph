@@ -53,10 +53,10 @@ from flowgraph.item.commands import (
     add_item,
     kind_named,
     reorder_item,
-    start_item,
     status_item,
     write_task,
 )
+from flowgraph.item.moves import start_item
 from flowgraph.knowledge import DECISION, DEVIATION, FINDING
 from flowgraph.knowledge.governed import governs_asked
 from flowgraph.knowledge.list import show_knowledge

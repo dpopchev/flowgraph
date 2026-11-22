@@ -1,57 +1,72 @@
 """A Feature: a bigger outcome that groups work items, with the criteria the user experiences.
 
 It is not worked on directly, so it holds no Task. Its state is its own, in Backlog, started,
-blocked or completed, as that of a work item is (`flowgraph.feature_state`); a started one is
-in InProgress, blocked or not, and a completed one in Completed, and every other bucket a list
-shows it in is still derived from the states of its work items. It is kept as one file of the
-record, `items/F-0001.toml`.
+blocked, completed or removed, as that of a work item is (`flowgraph.feature_state`); a started
+one is in InProgress, blocked or not, a completed one in Completed and a removed one in Removed,
+and every other bucket a list shows it in is still derived from the states of its work items. It
+is kept as one file of the record, `items/F-0001.toml` (`flowgraph.feature_file`).
 """
 
-import tomllib
 from collections.abc import Callable, Collection, Iterable
 from dataclasses import dataclass, field
-from datetime import datetime
-from pathlib import Path
-from typing import Annotated, Literal, assert_never
+from typing import assert_never
 
-from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
-
-from flowgraph.criterion import CommitError, evidence_written
+from flowgraph.feature_file import (
+    FeatureFileError,
+    FeatureMismatchError,
+    FeatureNotFoundError,
+    feature_file,
+    read_feature,
+    read_feature_ids,
+    write_feature,
+)
 from flowgraph.feature_state import (
-    IN_BACKLOG,
     BlockedFeature,
     CompletedFeature,
     Feature,
+    FeatureRemovedError,
     FeatureState,
     NoCriterionError,
+    RemovedFeature,
     StartedFeature,
     block_of,
     blocked_feature,
     commit_sha,
     completed_feature,
     make_feature,
+    removal_reason,
+    removed_feature,
     started_feature,
-    state_name,
     unblocked_feature,
 )
-from flowgraph.item_file import evidence_primitives, write_checked
 from flowgraph.parent import FeatureId, feature_id_text, make_feature_id, parse_feature_id
-from flowgraph.record import ITEMS, Now
+from flowgraph.record import Now
 from flowgraph.work_item import WorkItemRow
 
-# The states of a Feature and its moves live in feature_state.py; they stay importable from here.
+# The states of a Feature and its moves live in feature_state.py and its file in feature_file.py;
+# they stay importable from here.
 __all__ = [
     "BlockedFeature",
     "CompletedFeature",
     "Feature",
+    "FeatureFileError",
+    "FeatureMismatchError",
+    "FeatureNotFoundError",
+    "FeatureRemovedError",
     "FeatureState",
     "NoCriterionError",
+    "RemovedFeature",
     "StartedFeature",
     "blocked_feature",
     "completed_feature",
+    "feature_file",
     "make_feature",
+    "read_feature",
+    "read_feature_ids",
+    "removed_feature",
     "started_feature",
     "unblocked_feature",
+    "write_feature",
 ]
 
 # The states of a completed and of a removed work item, as the record writes them.
@@ -69,7 +84,8 @@ BEGUN = frozenset({"started", COMPLETED})
 class FeatureDetail:
     """One Feature as plain data, as a view reads it from the record; a commit once it has one.
 
-    Its reason and what it waits on while it is blocked, both empty otherwise.
+    Its reason and what it waits on while it is blocked; its reason alone once it is removed;
+    both empty otherwise.
     """
 
     id: str
@@ -87,7 +103,8 @@ class FeatureRow:
 
     Its progress is the work items completed of those it holds; a removed one is not held. Its
     started work items are the rows a list writes under it, in the order given. Its commit is
-    the one it was completed in, empty while it has none; what it waits on while it is blocked.
+    the one it was completed in, empty while it has none; what it waits on while it is blocked;
+    its reason the one it was removed for, empty unless it is removed.
     """
 
     id: str
@@ -98,6 +115,7 @@ class FeatureRow:
     started: list[WorkItemRow] = field(default_factory=list[WorkItemRow], kw_only=True)
     commit: str = field(default="", kw_only=True)
     waiting_on: str = field(default="", kw_only=True)
+    reason: str = field(default="", kw_only=True)
 
 
 # The Feature of that id, whole; raises FeatureNotFoundError when the record holds none.
@@ -110,21 +128,6 @@ SaveFeature = Callable[[FeatureState], None]
 FindFeatureIds = Callable[[], list[str]]
 
 
-class FeatureNotFoundError(Exception):
-    """A record that holds no Feature of the id asked for."""
-
-    def __init__(self, feature_id: FeatureId) -> None:
-        super().__init__(f"no Feature {feature_id_text(feature_id)} in the record")
-
-
-class FeatureFileError(Exception):
-    """A file named as a Feature in a record that does not hold one; names its path."""
-
-
-class FeatureMismatchError(Exception):
-    """A Feature read back different from the one written; its file is as it was before."""
-
-
 def next_feature_id(taken: Collection[FeatureId]) -> FeatureId:
     """The next free Feature id: one above the highest taken, the first when none is."""
     return make_feature_id(max((feature_id.number for feature_id in taken), default=0) + 1)
@@ -132,13 +135,15 @@ def next_feature_id(taken: Collection[FeatureId]) -> FeatureId:
 
 def feature_detail(feature: FeatureState) -> FeatureDetail:
     """The Feature as the plain data a view reads."""
+    reason, waiting_on = block_of(feature)
     return FeatureDetail(
         feature_id_text(feature.id),
         feature.title,
         feature.description,
         list(feature.criteria),
         commit_sha(feature),
-        *block_of(feature),
+        reason or removal_reason(feature),
+        waiting_on,
     )
 
 
@@ -158,11 +163,11 @@ def bucket_of(states: Collection[str]) -> str:
 def feature_bucket(feature: FeatureState, states: Collection[str]) -> str:
     """The bucket a list shows the Feature in, given the states of its work items.
 
-    A started Feature is in InProgress, blocked or not, and a completed one in Completed, each
-    by its own state: only the completion of its last work item completes a started Feature, so
-    one whose work items are all completed or removed stays in InProgress. Every bucket of a
-    Feature never started stays derived, as that of one whose work items were started before a
-    Feature had a state.
+    A started Feature is in InProgress, blocked or not, a completed one in Completed and a
+    removed one in Removed, each by its own state: only the completion of its last work item
+    completes a started Feature, so one whose work items are all completed or removed stays in
+    InProgress. Every bucket of a Feature never started stays derived, as that of one whose work
+    items were started before a Feature had a state.
     """
     match feature:
         case Feature():
@@ -171,6 +176,8 @@ def feature_bucket(feature: FeatureState, states: Collection[str]) -> str:
             return "InProgress"
         case CompletedFeature():
             return "Completed"
+        case RemovedFeature():
+            return "Removed"
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -190,6 +197,7 @@ def feature_row(feature: FeatureState, states: Collection[str]) -> FeatureRow:
         held,
         commit=commit_sha(feature),
         waiting_on=block_of(feature)[1],
+        reason=removal_reason(feature),
     )
 
 
@@ -211,166 +219,3 @@ def add_feature(
     feature = make_feature(next_feature_id(taken), title, criteria, description, now())
     save_feature(feature)
     return feature.id
-
-
-class _FeatureFile(BaseModel):
-    """What the file of a Feature in Backlog holds: no Task, and no time but its created one."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    id: str
-    state: Literal["backlog"]
-    title: str
-    description: str = ""
-    created: datetime
-    criteria: list[str]
-
-
-class _StartedFeatureFile(BaseModel):
-    """What the file of a started Feature holds: its started time too."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    id: str
-    state: Literal["started"]
-    title: str
-    description: str = ""
-    created: datetime
-    started: datetime
-    criteria: list[str]
-
-
-class _BlockedFeatureFile(BaseModel):
-    """What the file of a blocked Feature holds: its started time too, and its block."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    id: str
-    state: Literal["blocked"]
-    title: str
-    description: str = ""
-    created: datetime
-    started: datetime
-    since: datetime
-    reason: str
-    waiting_on: str
-    criteria: list[str]
-
-
-class _CompletedFeatureFile(BaseModel):
-    """What the file of a completed Feature holds: its completed time too, and its commit."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    id: str
-    state: Literal["completed"]
-    title: str
-    description: str = ""
-    created: datetime
-    started: datetime
-    completed: datetime
-    commit: str = ""
-    criteria: list[str]
-
-
-# The file of a Feature in any of its states.
-_HeldFeatureFile = _FeatureFile | _StartedFeatureFile | _BlockedFeatureFile | _CompletedFeatureFile
-
-# The validator of a Feature file, which tells the states apart by the state line.
-_HELD_FEATURE: TypeAdapter[_HeldFeatureFile] = TypeAdapter(
-    Annotated[_HeldFeatureFile, Field(discriminator="state")]
-)
-
-
-def feature_file(record: Path, feature_id: FeatureId) -> Path:
-    """The path of the file of the Feature of that id in the record."""
-    return record / ITEMS / f"{feature_id_text(feature_id)}.toml"
-
-
-def _read_file(path: Path) -> FeatureState:
-    """The Feature one file holds, built through its constructor and its moves.
-
-    A file without a state line, as every one written before a Feature had a state, holds a
-    Feature in Backlog. Raises FeatureFileError, for a commit that is no sha too.
-    """
-    try:
-        written = tomllib.loads(path.read_text(encoding="utf-8"))
-        held = _HELD_FEATURE.validate_python({"state": IN_BACKLOG, **written})
-        commit = evidence_written(held.commit if isinstance(held, _CompletedFeatureFile) else "")
-    except (tomllib.TOMLDecodeError, ValidationError, CommitError) as error:
-        raise FeatureFileError(f"{path} holds no Feature: {error}") from error
-    feature = make_feature(
-        parse_feature_id(held.id), held.title, held.criteria, held.description, held.created
-    )
-    match held:
-        case _FeatureFile():
-            return feature
-        case _StartedFeatureFile():
-            return started_feature(feature, held.started)
-        case _BlockedFeatureFile():
-            begun = started_feature(feature, held.started)
-            return blocked_feature(begun, held.reason, held.waiting_on, held.since)
-        case _CompletedFeatureFile():
-            return completed_feature(started_feature(feature, held.started), held.completed, commit)
-        case _ as unreachable:
-            assert_never(unreachable)
-
-
-def _moves_primitives(feature: FeatureState) -> dict[str, object]:
-    """The times and the commit of the moves a Feature has made, as its file holds them."""
-    match feature:
-        case Feature():
-            return {}
-        case StartedFeature():
-            return {"started": feature.started}
-        case BlockedFeature():
-            block = {"reason": feature.reason, "waiting_on": feature.waiting_on}
-            return {"started": feature.started, "since": feature.since, **block}
-        case CompletedFeature():
-            times = {"started": feature.started, "completed": feature.completed}
-            return {**times, **evidence_primitives(feature.commit)}
-        case _ as unreachable:
-            assert_never(unreachable)
-
-
-def read_feature(record: Path, feature_id: FeatureId) -> FeatureState:
-    """Adapter: the Feature of that id in the record, whole.
-
-    Raises FeatureNotFoundError when the record holds no such Feature and FeatureFileError when
-    its file does not hold one.
-    """
-    path = feature_file(record, feature_id)
-    if not path.is_file():
-        raise FeatureNotFoundError(feature_id)
-    return _read_file(path)
-
-
-def read_feature_ids(record: Path) -> list[str]:
-    """Adapter: the ids of the Features in the record, as their files are named, in no order."""
-    return [path.stem for path in (record / ITEMS).glob("F-*.toml")]
-
-
-def write_feature(record: Path, feature: FeatureState) -> None:
-    """Adapter: write the Feature as its one file in the record, its state line in it.
-
-    It is written beside its file and read back before it replaces it. Raises
-    FeatureMismatchError naming the file when the Feature read back differs; the file is then
-    as it was before.
-    """
-    path = feature_file(record, feature.id)
-    described = {"description": feature.description} if feature.description else {}
-    primitives = {
-        "id": feature_id_text(feature.id),
-        "state": state_name(feature),
-        "title": feature.title,
-        **described,
-        "created": feature.created,
-        **_moves_primitives(feature),
-        "criteria": list(feature.criteria),
-    }
-    write_checked(
-        path,
-        primitives,
-        lambda beside: _read_file(beside) == feature,
-        FeatureMismatchError(f"{path}: the Feature written reads back different"),
-    )

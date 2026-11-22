@@ -12,7 +12,13 @@ from typing import assert_never
 
 from flowgraph.branch import SlugError
 from flowgraph.config import Config
-from flowgraph.feature import BlockedFeature, CompletedFeature, Feature, StartedFeature
+from flowgraph.feature import (
+    BlockedFeature,
+    CompletedFeature,
+    Feature,
+    RemovedFeature,
+    StartedFeature,
+)
 from flowgraph.feature_start import (
     WorkItemInProgressError,
     check_start_under_feature,
@@ -43,8 +49,8 @@ def _next_of(item_id: WorkItemId, store: Store) -> WorkItemId | None:
 
     It is the first work item in Backlog of the started Feature the work item is under: of a
     blocked one too, whose block then refuses its start. A work item standing alone starts
-    none, and neither does one under a Feature never started or completed, with that completion
-    or before it.
+    none, and neither does one under a Feature never started, removed, or completed, with that
+    completion or before it.
     """
     match store.load_work_item(item_id).parent:
         case Standalone():
@@ -54,7 +60,7 @@ def _next_of(item_id: WorkItemId, store: Store) -> WorkItemId | None:
         case _ as unreachable:
             assert_never(unreachable)
     match feature:
-        case Feature() | CompletedFeature():
+        case Feature() | CompletedFeature() | RemovedFeature():
             return None
         case StartedFeature() | BlockedFeature():
             return first_in_backlog(feature_id, store)

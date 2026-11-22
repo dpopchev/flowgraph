@@ -14,7 +14,9 @@ from flowgraph.feature import (
     BlockedFeature,
     CompletedFeature,
     Feature,
+    FeatureRemovedError,
     FeatureState,
+    RemovedFeature,
     StartedFeature,
     make_feature,
 )
@@ -44,7 +46,8 @@ def amended_feature(feature: FeatureState, amendment: FeatureAmendment) -> Featu
     Each part goes through the constructor of a Feature. Raises NoPartError when it names none,
     EmptyPartError when its title or a criterion is blank, NoCriterionError when it gives no
     criterion in place of the ones it had, StartedAlreadyError when the Feature is started,
-    BlockedError when it is blocked and CompletedAlreadyError when it is completed.
+    BlockedError when it is blocked, CompletedAlreadyError when it is completed and
+    RemovedAlreadyError when it is removed.
     """
     named = feature_id_text(feature.id)
     match feature:
@@ -65,6 +68,8 @@ def amended_feature(feature: FeatureState, amendment: FeatureAmendment) -> Featu
             raise BlockedError(f"{named} is blocked")
         case CompletedFeature():
             raise CompletedAlreadyError(f"{named} is completed already")
+        case RemovedFeature():
+            raise FeatureRemovedError(feature.id)
         case _ as unreachable:
             assert_never(unreachable)
 

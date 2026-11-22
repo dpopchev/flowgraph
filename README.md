@@ -25,7 +25,7 @@ lands it. `fgraph config` shows the configuration and sets a key of it.
 | where the record lives          | located on every call but `--help`                       |
 | the record and its flow         | a work item with its Tasks, from Backlog to Completed    |
 | the kinds of work item          | Story, Upkeep, Bug, Spike                                |
-| the level above                 | a Feature groups work items, starts, blocks, completes   |
+| the level above                 | a Feature groups work items, takes each operation of one |
 | the order of the Backlog        | a queue, reordered by `fgraph reorder`, Features too     |
 | the wording of a work item      | `fgraph amend` in Backlog: parent too, a Feature's too   |
 | git                             | every write of the record committed, unless turned off   |
@@ -830,7 +830,8 @@ when a criterion or the title is blank or when `--parent` names no Feature of
 the record. A work item added alone is put under a Feature later, and one
 under a Feature taken out, with `fgraph amend --parent` while both are in
 Backlog (below). The wording of a Feature in Backlog is rewritten with
-`fgraph amend` too (below). A Feature is kept as `items/F-0001.toml`.
+`fgraph amend` too, and a Feature in Backlog is removed with `fgraph remove`,
+its work items with it (below). A Feature is kept as `items/F-0001.toml`.
 
 `fgraph status` lists a Feature inside its bucket, as one line in place of
 its work items: its id, its progress and its title. Here a Story that stands
@@ -858,7 +859,8 @@ It is counted once, beside the heading and toward the top 5 (below). Its
 work items in Backlog and its completed ones are listed on no line and
 counted beside no heading: they are counted in its progress, and `fgraph show
 F-0001` lists each with its bucket. A removed one keeps its line under
-Removed.
+Removed, unless the Feature itself is removed: that Feature is listed there
+in place of its work items (below).
 
 `fgraph start` takes a Feature, and starts its first work item with it:
 
@@ -1541,11 +1543,81 @@ fgraph status
 #   S-0002  Raise the kinds of work item fgraph adds from 1 to 2  -- superseded by S-0003
 ```
 
-The heading Removed is listed only when a work item is removed. A remove
-exits 2 and names why when the reason is blank, when the work item is
-started, completed or removed already, when the id is a Task's, or when the
-record does not hold it. A removed work item takes no Task, no amend and no
-move.
+The heading Removed is listed only when a work item or a Feature is removed.
+A remove exits 2 and names why when the reason is blank, when the work item
+is started, completed or removed already, when the id is a Task's, or when
+the record does not hold it. A removed work item takes no Task, no amend and
+no move.
+
+A Feature still in Backlog is removed the same way, `fgraph remove` with its
+id and the reason, and its work items are removed with it, each for the same
+reason: a Feature is to its work items what a work item is to its Tasks, and
+a removed work item keeps its Tasks. Nothing is deleted. `fgraph status`
+lists the Feature under Removed with its reason, after the removed work
+items, and its work items on no line of their own; `fgraph show` of it lists
+its bucket, its reason and its work items. Here F-0001 holds S-0001 and
+S-0004, both in Backlog:
+
+```sh
+fgraph remove F-0001 --reason "dropped from the plan"
+# removed F-0001
+
+fgraph status
+# Backlog (0)
+# InProgress (0)
+# Completed (0)
+# Removed (2)
+#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2  -- superseded by S-0003
+#   F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5  -- dropped from the plan
+
+fgraph show F-0001
+# F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
+#   bucket       Removed
+#   reason       dropped from the plan
+# Criteria (2)
+#   a developer sees every work item of the project by bucket
+#   a developer adds every kind of work
+# Work items (2)
+#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  Removed
+#   S-0004  Raise the Stories fgraph lists under InProgress from 0 to 1  Removed
+```
+
+The line of a removed Feature holds no progress: it holds no work item any
+more. The Feature and its work items are one write and one commit of the
+record, `chore: remove F-0001 in the record`. A work item of it that was
+removed before stays as it was, with the reason it had, and is listed on no
+line of its own either once its Feature is removed. A work item removed
+under a Feature that is not removed keeps its line under Removed.
+
+A remove of a Feature exits 2 and names why, with nothing written:
+
+- when the reason is blank;
+- when the Feature is started, blocked, completed or removed already: only
+  one in Backlog is removed, as only a work item in Backlog is;
+- when a work item of it is started or completed, as under a Feature whose
+  work items were started before a Feature had a state: its work items are
+  all in Backlog, or removed already;
+- when the record does not hold it;
+- in the worktree of a work item, whose branch writes that work item alone.
+
+```sh
+fgraph remove F-0001 --reason "dropped from the plan"
+# fgraph: error: F-0001 is started already
+
+fgraph remove F-0001 --reason "dropped from the plan"
+# fgraph: error: F-0001 cannot be removed: S-0001 is completed already
+```
+
+A removed Feature takes no move, no amend and no work item, added under it
+or put under it; each exits 2 with nothing written:
+
+```sh
+fgraph start F-0001
+# fgraph: error: F-0001 is removed already
+
+fgraph amend S-0005 --parent F-0001
+# fgraph: error: S-0005 cannot be put under F-0001: F-0001 is removed already
+```
 
 When the record is inside a git work tree, `fgraph` commits every write of
 it, unless `[git] commit = false` of its `config.toml` turns the commits off:
@@ -1571,7 +1643,9 @@ amend F-0001 in the record` --, `chore: reorder S-0002 before S-0001 in the
 record` -- a Feature by its id, `chore: reorder F-0001 before S-0001 in the
 record` --, `chore: start T-0001 of S-0001 in the record`,
 `chore: start F-0001 in the record` for a Feature and its first work item
-together, `chore: complete S-0001 in the record`, `chore: complete S-0001 and
+together, `chore: remove S-0001 in the record`, `chore: remove F-0001 in the
+record` for a Feature and its work items together, `chore: complete S-0001 in
+the record`, `chore: complete S-0001 and
 F-0001 in the record` for a work item and the Feature it completes, `chore:
 complete S-0001 and start S-0002 in the record` for a work item and the next
 one of its Feature, which it starts, `chore: set development.enabled in the

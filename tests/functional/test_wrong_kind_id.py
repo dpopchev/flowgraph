@@ -1,9 +1,9 @@
 """The criterion of a work item command given the id of a Feature: it names every kind it takes.
 
-`fgraph remove` and `fgraph add task --parent` each take a Story, an Upkeep, a Bug and a Spike;
-`fgraph reorder` and `fgraph amend` take a Feature too (tests/functional/test_reorder_feature.py,
-tests/functional/test_amend_feature.py). Run end to end on a record in a temporary directory,
-through the file adapters of the package.
+`fgraph add task --parent` takes a Story, an Upkeep, a Bug and a Spike; `fgraph reorder`,
+`fgraph amend` and `fgraph remove` take a Feature too (tests/functional/test_reorder_feature.py,
+tests/functional/test_amend_feature.py, tests/functional/test_remove_feature.py). Run end to end
+on a record in a temporary directory, through the file adapters of the package.
 """
 
 from collections.abc import Sequence
@@ -59,11 +59,8 @@ def runs(cwd: Path, *argvs: Sequence[str]) -> Outcome:
 
 @pytest.mark.parametrize(
     "argv",
-    [
-        ["remove", "F-0001", "--reason", "a reason"],
-        ["add", "task", "a task title", "--parent", "F-0001", "--output", "an output"],
-    ],
-    ids=["remove", "add-task-parent"],
+    [["add", "task", "a task title", "--parent", "F-0001", "--output", "an output"]],
+    ids=["add-task-parent"],
 )
 def test_a_work_item_command_given_a_feature_id_exits_with_two_and_names_every_kind_it_takes(
     argv: list[str], tmp_path: Path

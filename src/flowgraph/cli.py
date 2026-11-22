@@ -37,6 +37,7 @@ from flowgraph.feature_item import (
     show_feature_item,
 )
 from flowgraph.feature_next import complete_and_start_next
+from flowgraph.feature_remove import remove_named
 from flowgraph.feature_start import (
     FeatureNotStartedError,
     NoWorkItemError,
@@ -50,7 +51,6 @@ from flowgraph.item import (
     Written,
     add_item,
     kind_named,
-    remove_item,
     reorder_item,
     show_item,
     start_item,
@@ -205,7 +205,7 @@ def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -
         case "unblock":
             return unblock_named(args.id, store, now, config)
         case "remove":
-            return remove_item(args.id, args.reason, store, now)
+            return remove_named(args.id, args.reason, store, now)
         case "reorder":
             return reorder_item(args.id, args.before, store)
         case _:

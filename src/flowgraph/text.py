@@ -34,11 +34,11 @@ CUT = "..."
 def status_text(rows: Iterable[WorkItemRow | FeatureRow], top: int | None = None) -> str:
     """The items by bucket, in the order of the flow: a heading with its count, then its items.
 
-    A completed item is listed with its commit, a removed one with its reason. Removed stands
-    apart from the flow: its heading is listed only when an item is removed. A Feature is one
-    item of its bucket, listed among the work items in the order given. Under a top a
-    heading lists that many of its items, the first ones given, then how many more it holds;
-    its count stays that of all of them.
+    A completed item is listed with its commit when it holds one, a removed one with its reason.
+    Removed stands apart from the flow: its heading is listed only when an item is removed. A
+    Feature is one item of its bucket, listed among the work items in the order given. Under a
+    top a heading lists that many of its items, the first ones given, then how many more it
+    holds; its count stays that of all of them.
     """
     listed = list(rows)
     lines: list[str] = []
@@ -133,8 +133,9 @@ def _status_line(row: StoryRow | UpkeepRow) -> str:
     """One item of a bucket: its id and title, with its commit or the reason it was removed.
 
     A started one is listed with its Tasks completed of all, between its id and its title, and
-    under it each Task of it being worked on a line of its own, in the order written. A commit
-    stands before the title, so a line cut to a width keeps it; a reason ends the line.
+    under it each Task of it being worked on a line of its own, in the order written. A completed
+    one holds a commit or not: one it holds stands before the title, so a line cut to a width
+    keeps it; a reason ends the line.
     """
     if row.state == STARTED:
         completed = sum(task.state == COMPLETED for task in row.tasks)

@@ -1,0 +1,11 @@
+id = "S-0103"
+state = "backlog"
+title = "Raise the knowledge lines a later line supersedes from none to every one it names"
+description = "Its Tasks are written when it is ordered."
+parent = "F-0014"
+created = 2026-11-22 21:04:01+00:00
+
+[criterion]
+given = "a Story with a decision noted on it"
+when = "a later decision is noted as superseding the first"
+then = "fgraph show lists the first as superseded by the later"

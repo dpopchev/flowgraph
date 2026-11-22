@@ -13,11 +13,12 @@ then = "it lists its Feature, what it depends on, what was filed during it, what
 
 [[tasks]]
 id = "T-0300"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_about_item.py, failing on the criterion of S-0073"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_feature.py does. Seen red, then marked a strict xfail naming S-0073 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_about_item.py states that, on a record with a Story that has a Feature, a work item it depends on, a knowledge line and a term, fgraph about with the id of the Story exits 0 and lists its Feature, what it depends on, its term and its knowledge line, each under its relation"
 created = 2026-11-22 10:48:04+00:00
+started = 2026-11-22 17:10:20+00:00
 
 [[tasks]]
 id = "T-0301"

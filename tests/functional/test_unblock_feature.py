@@ -14,6 +14,7 @@ from pathlib import Path
 import pytest
 
 from flowgraph.cli import open_files, run
+from tests.functional.completed_story import COMPLETIONS as FIRST_DONE
 
 pytestmark = pytest.mark.functional
 
@@ -30,11 +31,6 @@ UNBLOCK = ["unblock", "F-0001"]
 ADDED = (ADD_FEATURE, ADD_STORY, ADD_TASK)
 STARTED = (*ADDED, ["start", "F-0001"])
 BLOCKED = (*STARTED, BLOCK)
-FIRST_DONE = (
-    ["start", "T-0001"],
-    ["complete", "T-0001", "--commit", "abc1234"],
-    ["complete", "S-0001", "--commit", "def5678"],
-)
 SECOND_WITHOUT_A_TASK = (*ADDED, ADD_OTHER, ["start", "F-0001"], BLOCK, *FIRST_DONE)
 NONE_STARTED = (*ADDED, ADD_OTHER, TASK_FOR_OTHER, ["start", "F-0001"], BLOCK, *FIRST_DONE)
 

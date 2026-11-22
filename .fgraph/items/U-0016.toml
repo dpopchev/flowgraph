@@ -12,8 +12,11 @@ then = "it takes it from one helper of the suite, and make check passes"
 
 [[tasks]]
 id = "T-0330"
-state = "backlog"
+state = "completed"
 title = "Add one helper to tests/functional that builds a completed work item, used by the tests that spell the sequence out"
 description = "Written on 2026-11-22, when U-0016 was ordered. A change of the tests alone."
 expected_output = "changed: one helper of tests/functional, its module chosen in the Task and named in the commit, gives the commands that leave a completed work item -- the add, the Task, the starts and the completes -- and those of one under a Feature, the Feature started first; tests/functional/test_amends.py, test_about_links.py and every other test that spells that sequence out take it from the helper; each test states what it stated; make check passes"
 created = 2026-11-22 21:01:49+00:00
+started = 2026-11-22 22:23:33+00:00
+completed = 2026-11-22 22:25:54+00:00
+commit = "cee8b7e"

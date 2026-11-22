@@ -11,6 +11,7 @@ from pathlib import Path
 import pytest
 
 from flowgraph.cli import open_files, run
+from tests.functional.completed_story import ADD_TASK, COMPLETIONS
 
 pytestmark = pytest.mark.functional
 
@@ -31,14 +32,7 @@ SECOND = ["add", "story", "the second title", *CRITERION, "--depends-on", "S-000
 DURING = ["add", "story", "the third title", *CRITERION, "--filed-during", "S-0002"]
 OLD = ["add", "story", "the old title", *CRITERION]
 REMOVE_OLD = ["remove", "S-0005", "--superseded-by", "S-0002"]
-ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
-COMPLETED_FIRST = [
-    ADD_TASK,
-    ["start", "F-0001"],
-    ["start", "T-0001"],
-    ["complete", "T-0001", "--commit", "abc1234"],
-    ["complete", "S-0001", "--commit", "def5678"],
-]
+COMPLETED_FIRST = [ADD_TASK, ["start", "F-0001"], *COMPLETIONS]
 AMEND = ["add", "story", "the amending title", *CRITERION, "--amends", "S-0001"]
 ALL = [GATE, FEATURE, FIRST, *COMPLETED_FIRST, SECOND, DURING, AMEND, OLD, REMOVE_OLD]
 

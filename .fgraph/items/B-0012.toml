@@ -1,9 +1,11 @@
 id = "B-0012"
-state = "started"
+state = "completed"
 title = "Raise the items the help of fgraph reorder names from the work item alone to the Feature too"
 description = "Found during T-0190 of S-0052 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. Beside it: fgraph start of a Feature takes --slug and names the branch of its first work item with it, one more case of B-0005. Its Tasks are written when it is ordered."
 created = 2026-11-22 01:58:45+00:00
 started = 2026-11-22 07:36:20+00:00
+completed = 2026-11-22 07:40:52+00:00
+commit = "1e516d6"
 
 [criterion]
 observed = "fgraph reorder --help says it puts a work item of the Backlog before another and names the id of the work item to move, though it takes a Feature since S-0051"

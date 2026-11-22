@@ -1,0 +1,11 @@
+id = "S-0093"
+state = "backlog"
+title = "Raise the completed work items fgraph keeps the yes of their closing on, with what the run printed, from none to every Story, Bug and Upkeep"
+description = "The words of the note: verify <id>, the yes or no of the closing, with what the run printed. The run of the criterion is the agent's; fgraph keeps its answer."
+parent = "F-0011"
+created = 2026-11-22 21:03:14+00:00
+
+[criterion]
+given = "a completed Story"
+when = "fgraph verify S-0001 --yes is run with what the run of its criterion printed"
+then = "fgraph show S-0001 lists it as verified, yes, with the text and the day"

@@ -7,3 +7,10 @@ created = 2026-11-22 02:28:45+00:00
 [criterion]
 observed = "a started Feature whose last work item in Backlog is removed stays under InProgress at n/n W with no command that completes it: only a work item added under it and completed does; and a Feature file deleted by hand refuses the completion of its work item inside fgraph land after main has moved"
 expected = "a started Feature left with every work item completed or removed has a way to Completed, and a landing checks the Feature of the work item before main moves"
+
+[[tasks]]
+id = "T-0246"
+state = "backlog"
+title = "Complete with fgraph complete a started Feature whose every work item is completed or removed, at the commit of its last completed one, in src/flowgraph/feature_complete.py and src/flowgraph/cli.py"
+expected_output = "changed: complete_feature_item of src/flowgraph/feature_complete.py and its dispatch in src/flowgraph/cli.py; tests/functional/test_complete_feature.py states the completion and its refusals"
+created = 2026-11-22 07:42:11+00:00

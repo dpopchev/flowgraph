@@ -17,3 +17,11 @@ title = "Add tests/functional/test_about_file.py, failing on the criterion of S-
 description = "Run through run() of src/flowgraph/cli.py against the real git in tmp_path, as tests/functional/test_land_merge.py does. Seen red, then marked a strict xfail naming S-0075 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_about_file.py states that, in a git repository in tmp_path with a completed Story whose commit changed a file, fgraph about with the path of the file exits 0 and lists the Story and the Task whose commits touched the file"
 created = 2026-11-22 10:48:10+00:00
+
+[[tasks]]
+id = "T-0307"
+state = "backlog"
+title = "Add the files a commit changed to the WorkTree of src/flowgraph/commit.py"
+description = "New code the next Task runs. A read of git alone; nothing is written."
+expected_output = "changed: the WorkTree of src/flowgraph/commit.py answers which files a commit changed, as paths from the top of the work tree; a merge commit answers with what it brought to its first parent; a sha git does not know answers with none; tests/commit/ states each against the real git in tmp_path"
+created = 2026-11-22 10:48:12+00:00

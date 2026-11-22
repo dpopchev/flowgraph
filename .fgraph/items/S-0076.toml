@@ -17,3 +17,11 @@ title = "Add tests/functional/test_note_governs.py, failing on the criterion of 
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_note_finding.py does. Seen red, then marked a strict xfail naming S-0076 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_note_governs.py states that, on a record with a Story, fgraph note of the Story with --decision, a text and --governs with a path exits 0, and fgraph about with that path lists the line first, as what governs the file, with the id of the Story"
 created = 2026-11-22 10:48:15+00:00
+
+[[tasks]]
+id = "T-0311"
+state = "backlog"
+title = "Add --governs to fgraph note, listed first by fgraph about of the file"
+description = "Removes the xfail mark of tests/functional/test_note_governs.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
+expected_output = "changed: fgraph note takes --governs PATH, once per file, kept on the knowledge line as a path from the top of the work tree, or as given outside one; fgraph about PATH lists the lines that govern the file first, under Governed by, each with its kind, its date, the id of its item and its text, before the items whose commits touched it; outside a git work tree it lists those lines alone, where S-0075 refused the path; fgraph show of the item lists each line with the files it governs; a path is not checked against the disk: a governed file may be renamed or not yet written"
+created = 2026-11-22 10:48:17+00:00

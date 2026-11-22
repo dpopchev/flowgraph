@@ -1,0 +1,11 @@
+id = "S-0064"
+state = "backlog"
+title = "Raise the items that take a knowledge line from the work items alone to the Feature too"
+description = "Part of F-0003."
+parent = "F-0003"
+created = 2026-11-22 10:41:25+00:00
+
+[criterion]
+given = "a record with a Feature"
+when = "fgraph note of the Feature is run with --decision and a text"
+then = "fgraph show of the Feature lists the text under Knowledge with its kind and the date it was noted"

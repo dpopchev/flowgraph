@@ -1,8 +1,9 @@
 id = "B-0019"
-state = "backlog"
+state = "started"
 title = "Cut the files of the record that hold no work item, no Feature or no queue refused with a Python traceback from every one to none"
 description = "Found during the criterion run of B-0008 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. Widened to the file of a Feature and the queue on 2026-11-22, when its Tasks were written, on the developer's go."
 created = 2026-11-22 06:53:31+00:00
+started = 2026-11-22 09:41:29+00:00
 
 [criterion]
 observed = "a file of the record that holds no work item, no Feature or no queue -- a commit that is no sha, two started Tasks, the criterion of another kind, a file that is no TOML -- makes fgraph status, start and show exit 1 with a traceback ending in WorkItemFileError, FeatureFileError or QueueFileError: <path> holds no <kind>: ..., as none of them is among the refusals of src/flowgraph/cli.py"

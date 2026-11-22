@@ -1,6 +1,8 @@
-"""The answer of the closing of a completed work item: yes, with what the run printed and when.
+"""The answer of the closing of a completed work item: yes or no, with what the run printed and
+when.
 
-It is a fact of the completed work item, never a knowledge line. Only yes is kept so far.
+It is a fact of the completed work item, never a knowledge line. A no moves nothing backwards:
+the work item stays completed, and the no files a Bug that amends it.
 """
 
 from dataclasses import dataclass
@@ -10,7 +12,7 @@ from typing import Literal
 from flowgraph.criterion import said
 
 # The answers a closing is kept with.
-Verdict = Literal["yes"]
+Verdict = Literal["yes", "no"]
 
 # What the refusals of a verify say it takes.
 TAKES = "fgraph verify takes a completed Story, Bug or Upkeep"

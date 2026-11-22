@@ -16,10 +16,7 @@ import pytest
 from flowgraph.cli import open_files, run
 from tests.functional.completed_story import STANDING_ALONE
 
-pytestmark = [
-    pytest.mark.functional,
-    pytest.mark.xfail(strict=True, reason="S-0094: fgraph verify --no is not offered yet"),
-]
+pytestmark = pytest.mark.functional
 
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 TEXT = "status listed no reason"

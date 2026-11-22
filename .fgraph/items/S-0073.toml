@@ -1,0 +1,11 @@
+id = "S-0073"
+state = "backlog"
+title = "Raise the links of a work item fgraph about lists in one view from none to every one"
+description = "Part of F-0006."
+parent = "F-0006"
+created = 2026-11-22 10:41:40+00:00
+
+[criterion]
+given = "a record with a Story that has a Feature, a work item it depends on, a knowledge line and a term"
+when = "fgraph about is run with the id of the Story"
+then = "it lists its Feature, what it depends on, what was filed during it, what it supersedes, its terms and its knowledge lines, each under its relation"

@@ -1,6 +1,7 @@
 """A knowledge line: what a work item learned, kept on it in the order it was noted.
 
-A line is never amended or removed. Its kind is a sum type: the finding is the one kind so far.
+A line is never amended or removed. Its kind is a sum type: the finding, the decision and the
+deviation.
 """
 
 from dataclasses import dataclass
@@ -15,11 +16,23 @@ class Finding:
     """The kind of a line that states what the work learned."""
 
 
-# The kind of knowledge a line holds.
-KnowledgeKind = Finding
+@dataclass(frozen=True)
+class Decision:
+    """The kind of a line that states what was decided."""
 
-# The finding, as the one kind there is.
+
+@dataclass(frozen=True)
+class Deviation:
+    """The kind of a line that states a change to what a started item was agreed to do."""
+
+
+# The kind of knowledge a line holds.
+KnowledgeKind = Finding | Decision | Deviation
+
+# The three kinds there are.
 FINDING = Finding()
+DECISION = Decision()
+DEVIATION = Deviation()
 
 
 @dataclass(frozen=True)
@@ -45,6 +58,10 @@ def kind_name(kind: KnowledgeKind) -> str:
     match kind:
         case Finding():
             return "finding"
+        case Decision():
+            return "decision"
+        case Deviation():
+            return "deviation"
         case _ as unreachable:
             assert_never(unreachable)
 

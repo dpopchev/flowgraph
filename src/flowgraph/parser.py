@@ -188,9 +188,16 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     )
     remove.add_argument("id", metavar="ID", help="the id of the work item or of the Feature")
     remove.add_argument("--reason", required=True, metavar="TEXT", help="why it is removed")
-    note = _command(commands, "note", "keep a finding on a work item, in any state")
+    note = _command(
+        commands, "note", "keep a finding, a decision or a deviation on a work item, in any state"
+    )
     note.add_argument("id", metavar="ID", help="the id of the work item")
-    note.add_argument("--finding", required=True, metavar="TEXT", help="what the work learned")
+    kinds = note.add_mutually_exclusive_group(required=True)
+    kinds.add_argument("--finding", metavar="TEXT", help="what the work learned")
+    kinds.add_argument("--decision", metavar="TEXT", help="what was decided")
+    kinds.add_argument(
+        "--deviation", metavar="TEXT", help="a change to what a started item was agreed to do"
+    )
     reorder = _command(
         commands, "reorder", "put a work item or a Feature of the Backlog before another"
     )

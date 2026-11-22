@@ -13,23 +13,32 @@ then = "fgraph show of the Story lists each text under Knowledge with its kind"
 
 [[tasks]]
 id = "T-0268"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_note_kinds.py, failing on the criterion of S-0063"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_note_finding.py does. Seen red, then marked a strict xfail naming S-0063 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_note_kinds.py states that, on a record with a started Story, fgraph note of the Story with --decision and a text, then with --deviation and a text, each exits 0 and fgraph show of the Story lists each text under Knowledge with its kind"
 created = 2026-11-22 10:47:26+00:00
+started = 2026-11-22 11:08:37+00:00
+completed = 2026-11-22 11:08:54+00:00
+commit = "d09ba16"
 
 [[tasks]]
 id = "T-0269"
-state = "backlog"
+state = "completed"
 title = "Extend the knowledge line of src/flowgraph/knowledge.py and fgraph note to the decision and the deviation"
 description = "Removes the xfail mark of tests/functional/test_note_kinds.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: the kind of a knowledge line is one of three, the finding, the decision and the deviation; fgraph note takes exactly one of --finding, --decision and --deviation with its text, none or two of them refused naming the three; the file keeps the kind of each line, and a kind it does not know is refused when read, naming the file; fgraph show lists each line with its kind"
 created = 2026-11-22 10:47:27+00:00
+started = 2026-11-22 11:08:55+00:00
+completed = 2026-11-22 11:14:12+00:00
+commit = "7ed5b54"
 
 [[tasks]]
 id = "T-0270"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to name the three kinds of knowledge line"
 expected_output = "changed: README.md shows a decision and a deviation noted and shown; docs/domain-model.md names the three kinds and what each records -- a finding what was learned, a decision what was decided, a deviation a change to what a started item was agreed to do, since fgraph amend refuses one once it is started"
 created = 2026-11-22 10:47:29+00:00
+started = 2026-11-22 11:14:13+00:00
+completed = 2026-11-22 11:19:17+00:00
+commit = "5fb119a"

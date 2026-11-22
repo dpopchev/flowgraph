@@ -127,7 +127,9 @@ one work item for a Task.
 
 A work item in any state also keeps its knowledge: the lines noted on it, in
 the order noted. A line holds its kind, its text and the time it was noted; the
-finding is the one kind so far, a sum type the next kinds extend. The text says
+kind is one of three, a sum type: a finding records what was learned, a decision
+what was decided, and a deviation a change to what a started item was agreed to
+do, since `fgraph amend` refuses one once it is started. The text says
 something, so a blank one is refused where the line is built. A line is noted
 with `fgraph note` in Backlog, started, Completed or Removed alike, and is never
 amended or removed: it is added after the lines the item keeps already.
@@ -554,8 +556,12 @@ and its merge tool.
   state. `fgraph note` writes it as one write and one commit, `chore: note
   S-0001 in the record`, and says `noted S-0001`. With the development on, a
   started work item is noted in its worktree, where its Tasks are written, and
-  every other one on `main`. The id of a Task, an id the record does not hold
-  and a blank text are refused, exit 2, nothing written. `fgraph show` lists the
+  every other one on `main`. `fgraph note` takes exactly one of `--finding`,
+  `--decision` and `--deviation`, and the `kind` of the table is `finding`,
+  `decision` or `deviation`; a file with any other kind is refused when read,
+  naming the file. The id of a Task, an id the record does not hold, a blank
+  text and none or more than one of the three kinds are refused, exit 2,
+  nothing written. `fgraph show` lists the
   lines under `Knowledge (n)` after the Tasks, each with its kind, its date and
   its text, and no heading when there is none.
 - A blocked Task is kept as `state = "blocked"` with its `started` time, its

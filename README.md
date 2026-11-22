@@ -17,8 +17,8 @@ turns the commits of the record off, and once it turns the development on,
 starting a work item also checks out its branch in a worktree of its own,
 completing an item names the commit that holds its work, and `fgraph land`
 lands it. `fgraph config` shows the configuration and sets a key of it. A work
-item keeps the findings noted on it with `fgraph note`, in any state, and
-`fgraph show` lists them.
+item keeps the findings, decisions and deviations noted on it with `fgraph note`,
+in any state, and `fgraph show` lists them.
 
 | Part                            | State                                                    |
 | ------------------------------- | -------------------------------------------------------- |
@@ -33,7 +33,7 @@ item keeps the findings noted on it with `fgraph note`, in any state, and
 | git                             | every write of the record committed, unless turned off   |
 | the layers of a record          | `.fgraph/config.toml`: commits on, development off       |
 | the configuration               | every key shown and set by `fgraph config`               |
-| the knowledge of a work item    | findings noted by `fgraph note`, listed by `fgraph show` |
+| the knowledge of a work item    | lines noted by `fgraph note`, listed by `fgraph show`    |
 | the development                 | once enabled: start branches, `fgraph land` lands        |
 | the ontology                    | not started                                              |
 | flowgraph tracking its own work | its Stories are in `.fgraph/` since 0.4.0                |
@@ -621,13 +621,20 @@ and status and show list it. The file of an item completed without a commit
 holds no `commit` key.
 
 A work item keeps what the work learned as lines of knowledge. `fgraph note`
-appends a finding to a work item in any state, Completed and Removed included,
+appends a finding, a decision or a deviation to a work item in any state, Completed and Removed included,
 as one write and one commit of the record; `fgraph show` lists the lines after
 the Tasks, each with its kind, the date it was noted and its text, and no
-heading when there is none:
+heading when there is none. A note takes exactly one of `--finding`,
+`--decision` and `--deviation`, with its text:
 
 ```sh
 fgraph note S-0001 --finding "the file holds the lines in the order noted"
+# noted S-0001
+
+fgraph note S-0001 --decision "keep one store"
+# noted S-0001
+
+fgraph note S-0001 --deviation "the second Task was dropped"
 # noted S-0001
 
 fgraph show S-0001
@@ -635,12 +642,14 @@ fgraph show S-0001
 # Tasks (1)
 #   T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
 #     expected output  changed: src/flowgraph/cli.py gains the show command
-# Knowledge (1)
+# Knowledge (3)
 #   finding  2026-11-22  the file holds the lines in the order noted
+#   decision  2026-11-22  keep one store
+#   deviation  2026-11-22  the second Task was dropped
 ```
 
 A line is never amended or removed. The id of a Task, an id the record does
-not hold and a blank text exit 2 and write nothing. With the development on, a
+not hold, a blank text and a note with none or more than one of the three kinds exit 2 and write nothing. With the development on, a
 started work item is noted in its worktree, as its Tasks are written, and every
 other one on `main`.
 

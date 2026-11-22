@@ -10,7 +10,7 @@ from flowgraph.commit import WorkTree
 from flowgraph.item import Store
 from flowgraph.story import make_story_id
 from flowgraph.task import TaskRow
-from flowgraph.work_item import WorkItemDetail
+from flowgraph.work_item import WorkItemDetail, WorkItemId, WorkItemNotFoundError
 from flowgraph.worktrees import across_worktrees
 
 pytestmark = pytest.mark.view
@@ -77,6 +77,18 @@ def test_a_started_work_item_is_read_whole_from_the_worktree_of_its_branch() -> 
 
 def test_a_started_work_item_without_a_worktree_is_read_whole_from_the_record() -> None:
     shared = across_worktrees(store(RECORD), RECORD, lambda _: work_tree(worktree=None), never)
+    assert shared.find_work_item_detail(ITEM) == AT_START
+
+
+def test_a_started_work_item_its_worktree_holds_no_file_of_is_read_whole_from_the_record() -> None:
+    def lacking(item_id: WorkItemId) -> Never:
+        raise WorkItemNotFoundError(item_id)
+
+    def held_on_main(record: Path) -> Store:
+        held = store(record)
+        return held if record == RECORD else replace(held, find_work_item_detail=lacking)
+
+    shared = across_worktrees(store(RECORD), RECORD, lambda _: work_tree(), held_on_main)
     assert shared.find_work_item_detail(ITEM) == AT_START
 
 

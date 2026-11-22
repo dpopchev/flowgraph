@@ -81,6 +81,15 @@ def test_a_started_work_item_without_a_worktree_is_read_from_the_record() -> Non
     assert shared.find_work_item_rows(STORY) == [AT_START, QUEUED]
 
 
+def test_a_started_work_item_its_worktree_holds_no_row_of_is_read_from_the_record() -> None:
+    def held_on_main(record: Path) -> Store:
+        held = store(record)
+        return held if record == RECORD else replace(held, find_work_item_rows=lambda _: [])
+
+    shared = across_worktrees(store(RECORD), RECORD, lambda _: work_tree(), held_on_main)
+    assert shared.find_work_item_rows(STORY) == [AT_START, QUEUED]
+
+
 def test_a_record_outside_a_git_work_tree_reads_its_own_rows() -> None:
     shared = across_worktrees(store(RECORD), RECORD, lambda _: None, never)
     assert shared.find_work_item_rows(STORY) == [AT_START, QUEUED]

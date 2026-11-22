@@ -17,6 +17,7 @@ from flowgraph.work_item import (
     Kind,
     WorkItemDetail,
     WorkItemId,
+    WorkItemNotFoundError,
     WorkItemRow,
     parse_work_item_id,
 )
@@ -36,8 +37,8 @@ def across_worktrees(store: Store, record: Path, open_git: OpenGit, open_store: 
     Its row of a started work item is the one the worktree of its branch `wi/<id>-*` holds, as
     its file is there, committed or not, and so is its detail. Both are those of the record
     itself for a work item without such a worktree, outside a git work tree, for a record git
-    ignores, and in a work tree on the branch of a work item, which reads its own record. Git is
-    asked only when a row or the detail read is started.
+    ignores, for a worktree that holds no file of it, and in a work tree on the branch of a work
+    item, which reads its own record. Git is asked only when a row or the detail read is started.
     """
 
     def find_task_ids() -> list[str]:
@@ -79,7 +80,10 @@ def across_worktrees(store: Store, record: Path, open_git: OpenGit, open_store: 
         worktree = None if inside is None else worktree_of_item(record, open_git, item_id)
         if inside is None or worktree is None:
             return detail
-        return open_store(worktree / inside).find_work_item_detail(item_id)
+        try:
+            return open_store(worktree / inside).find_work_item_detail(item_id)
+        except WorkItemNotFoundError:
+            return detail
 
     return replace(
         store,

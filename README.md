@@ -482,7 +482,8 @@ and so is one started with the development off, which has no branch.
 `fgraph status` and `fgraph show` on main read a started Story where its Tasks
 are written: they list the Tasks of the Story as its worktree holds them,
 committed or not, so the progress, the Task being worked and the bucket and
-the commit of each Task are current before the landing:
+the commit of each Task are current before the landing. A worktree that holds
+no file of the Story leaves both to read it from the record of main:
 
 ```sh
 cd /src/project.worktrees/S-0001-raise-the-stories-fgraph

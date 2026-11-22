@@ -22,3 +22,11 @@ title = "Add tests/functional/test_status_json.py, failing on the criterion of S
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_graph_json.py does. Seen red, then marked a strict xfail naming S-0087 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_status_json.py states that on a record with items in every bucket, a blocked Task and a waiting Story, fgraph status --format json exits 0 and prints one JSON document that holds the count of each bucket, the blocked Task with its reason and what it waits on, the waiting Story with the id it waits for and the next to start; two runs print the same bytes; --format xml exits 2"
 created = 2026-11-22 21:02:16+00:00
+
+[[tasks]]
+id = "T-0341"
+state = "backlog"
+title = "Add --format json to fgraph status"
+description = "Removes the xfail mark of tests/functional/test_status_json.py. Written on 2026-11-22 against the modules of that day, before U-0010 moves them: they are taken again when the Task starts. A module of src/ that would pass the line limit of mk/python.mk is split by one cohesive part, named in the commit."
+expected_output = "changed: fgraph status --format json prints one JSON document: each bucket with its count and every item of it, not the top 5 -- its id, kind and title, its progress, its Tasks with their state, the reason and the waiting on of a block, the ids it waits for -- and the next to start; a Feature holds its work items; the keys are sorted and two runs print the same bytes; --format text is the default and prints what it printed before; another format exits 2 naming the two, as fgraph graph refuses one"
+created = 2026-11-22 21:02:18+00:00

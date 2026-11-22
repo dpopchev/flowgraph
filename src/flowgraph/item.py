@@ -5,7 +5,6 @@ a view returns the text fgraph writes, a write what it says and the message of i
 each raises the refusal of the move.
 """
 
-from collections.abc import Collection, Mapping
 from dataclasses import dataclass
 from functools import partial
 from typing import assert_never
@@ -23,7 +22,6 @@ from flowgraph.criterion import (
     NoCommit,
     make_commit,
 )
-from flowgraph.feature import FeatureRow, feature_row
 from flowgraph.item_id import (
     ItemId,
     ItemIdError,
@@ -31,29 +29,35 @@ from flowgraph.item_id import (
     parse_item_id,
     parse_work_item_id_of_any_kind,
 )
-from flowgraph.parent import STANDALONE, Parent, feature_id_text, parse_feature_id
-from flowgraph.queue import queued, reorder
+from flowgraph.parent import STANDALONE, Parent
+from flowgraph.queue import reorder
 from flowgraph.record import Now
+from flowgraph.status import (
+    BACKLOG,
+    COMPLETED,
+    STARTED,
+    backlog_as_added,
+    rows_by_id,
+    status_item,
+)
 from flowgraph.store import KINDS, Store
 from flowgraph.task import TaskId, parse_task_id, task_id_text
-from flowgraph.text import show_text, status_text
-from flowgraph.work_item import (
-    Kind,
-    WorkItemId,
-    WorkItemRow,
-    parse_work_item_id,
-    work_item_id_text,
-)
+from flowgraph.text import show_text
+from flowgraph.work_item import Kind, WorkItemId, parse_work_item_id, work_item_id_text
 
-# The ids of an item live in item_id.py and stay importable from here.
-__all__ = ["ItemId", "ItemIdError", "kind_named", "parse_item_id", "parse_work_item_id_of_any_kind"]
-
-# The state of a row in Backlog, as the record writes it.
-BACKLOG = "backlog"
-
-# The states of a started and of a completed row, as the record writes them.
-STARTED = "started"
-COMPLETED = "completed"
+# The ids of an item live in item_id.py and the listing of the status in status.py; both stay
+# importable from here.
+__all__ = [
+    "BACKLOG",
+    "COMPLETED",
+    "STARTED",
+    "ItemId",
+    "ItemIdError",
+    "kind_named",
+    "parse_item_id",
+    "parse_work_item_id_of_any_kind",
+    "status_item",
+]
 
 # The message of the commit that holds a write, for what was written.
 MESSAGE = "chore: {} in the record"
@@ -79,60 +83,6 @@ class Written:
     branch: ToBranch | None = None
 
 
-def _rows_by_id(store: Store) -> dict[WorkItemId, WorkItemRow]:
-    """The row of every work item in the record under its id, by kind and then by number."""
-    return {
-        parse_work_item_id(kind, row.id): row
-        for kind in KINDS
-        for row in store.find_work_item_rows(kind)
-    }
-
-
-def _backlog_as_added(rows: Mapping[WorkItemId, WorkItemRow]) -> list[WorkItemId]:
-    """The work items in Backlog in the order added; those added at one time as the rows list."""
-    backlog = [item_id for item_id, row in rows.items() if row.state == BACKLOG]
-    return sorted(backlog, key=lambda item_id: rows[item_id].created)
-
-
-def _last_first(rows: Mapping[WorkItemId, WorkItemRow], state: str) -> list[WorkItemRow]:
-    """The work items in that state, the last to reach it first; those of one time as the rows list.
-
-    A started one reached it at its started time, a completed one at its completed time.
-    """
-    held = [row for row in rows.values() if row.state == state]
-    return sorted(held, key=lambda row: row.completed or row.started or row.created, reverse=True)
-
-
-def _feature_rows(store: Store, rows: Collection[WorkItemRow]) -> list[FeatureRow]:
-    """The Features of the record by number, each with the bucket its work items derive."""
-    held = sorted(
-        (parse_feature_id(text) for text in store.features.find_feature_ids()),
-        key=lambda feature_id: feature_id.number,
-    )
-    return [
-        feature_row(
-            store.features.load_feature(feature_id),
-            [row.state for row in rows if row.parent == feature_id_text(feature_id)],
-        )
-        for feature_id in held
-    ]
-
-
-def status_item(store: Store, top: int | None = None) -> str:
-    """The text of the Features of the record, then its work items of every kind by bucket.
-
-    The Features are listed by number, each with its derived bucket. The Backlog is listed in
-    the order of its queue, InProgress the last started first and Completed the last completed
-    first; Removed by kind and number. Under a top each heading lists that many, the first ones.
-    """
-    rows = _rows_by_id(store)
-    backlog = queued(store.load_queue(), _backlog_as_added(rows))
-    moved = [*_last_first(rows, STARTED), *_last_first(rows, COMPLETED)]
-    others = [row for row in rows.values() if row.state not in (BACKLOG, STARTED, COMPLETED)]
-    listed = [*(rows[item_id] for item_id in backlog), *moved, *others]
-    return status_text(listed, _feature_rows(store, rows.values()), top)
-
-
 def reorder_item(item: str, before: str, store: Store) -> Written:
     """Put the work item right before the other in the queue of the Backlog; what the write says.
 
@@ -144,7 +94,7 @@ def reorder_item(item: str, before: str, store: Store) -> Written:
     reorder(
         item=moved,
         before=other,
-        find_backlog=lambda: _backlog_as_added(_rows_by_id(store)),
+        find_backlog=lambda: backlog_as_added(rows_by_id(store)),
         load_queue=store.load_queue,
         save_queue=store.save_queue,
     )

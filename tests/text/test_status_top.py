@@ -12,7 +12,7 @@ pytestmark = pytest.mark.view
 
 CREATED = datetime(2026, 1, 1, tzinfo=UTC)
 THREE = [WorkItemRow(f"S-000{n}", f"title {n}", "backlog", created=CREATED) for n in (1, 2, 3)]
-FEATURES = [FeatureRow(f"F-000{n}", f"feature {n}", "Backlog", 0, 0) for n in (1, 2, 3)]
+FEATURE = FeatureRow("F-0001", "a feature title", "Backlog", 0, 0)
 
 
 def test_a_heading_lists_its_top_then_how_many_more() -> None:
@@ -35,9 +35,10 @@ def test_a_heading_with_as_many_items_as_the_top_lists_no_more_line() -> None:
     ]
 
 
-def test_the_features_are_listed_to_the_top_too() -> None:
-    assert status_text([], FEATURES, top=1).splitlines()[:3] == [
-        "Features (3)",
-        "  F-0001  0/0 W  Backlog  feature 1",
+def test_a_feature_counts_once_toward_the_top_of_its_heading() -> None:
+    assert status_text([THREE[0], FEATURE, *THREE[1:]], top=2).splitlines()[:4] == [
+        "Backlog (4)",
+        "  S-0001  title 1",
+        "  F-0001  0/0 W  a feature title",
         "  ... 2 more",
     ]

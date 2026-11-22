@@ -75,9 +75,10 @@ def test_a_work_item_command_given_a_feature_id_exits_with_two_and_names_every_k
         (["start", "X-1"], "Story, Upkeep, Bug, Spike, Task or Feature"),
         (["complete", "X-1"], "Story, Upkeep, Bug, Spike, Task or Feature"),
         (["amend", "X-1", "--title", "a title"], "Story, Upkeep, Bug, Spike or Feature"),
+        (["amend", "X-1", "--criterion", "a criterion"], "Story, Upkeep, Bug, Spike or Feature"),
         (["remove", "X-1", "--reason", "a reason"], "Story, Upkeep, Bug, Spike or Feature"),
     ],
-    ids=["start", "complete", "amend", "remove"],
+    ids=["start", "complete", "amend", "amend-criteria", "remove"],
 )
 def test_a_command_that_takes_a_feature_given_no_id_exits_with_two_and_names_the_feature_too(
     argv: list[str], kinds: str, tmp_path: Path

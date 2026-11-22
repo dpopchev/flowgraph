@@ -11,10 +11,11 @@ expected = "the refusal of block and unblock names every kind they take, and a F
 
 [[tasks]]
 id = "T-0253"
-state = "backlog"
+state = "started"
 title = "Refuse a wrong id of fgraph block and unblock naming every kind they take, the Task and the Feature, and a Feature id below 1 as a Feature id, in src/flowgraph/item_id.py and src/flowgraph/feature_block.py"
 expected_output = "changed: parse_moved_id of src/flowgraph/item_id.py read by block_named and unblock_named of src/flowgraph/feature_block.py; tests/item/test_item_id.py and tests/functional/test_block_feature.py state the refusals; docs/domain-model.md names them"
 created = 2026-11-22 08:02:32+00:00
+started = 2026-11-22 08:02:34+00:00
 
 [[tasks]]
 id = "T-0254"

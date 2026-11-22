@@ -44,3 +44,8 @@ created = 2026-11-22 10:48:21+00:00
 started = 2026-11-22 18:25:37+00:00
 completed = 2026-11-22 19:28:30+00:00
 commit = "12d51d7"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: at a2ce200 on main, on a fresh record with a Feature, two Stories (one under it, about a term, with a Task, the other depending on it), two related terms and a finding, fgraph graph --format json exit 0 printed nodes F-0001, S-0001, S-0002, T-0001, gate, lane, edges under, task of, depends on, part of, about, and the knowledge line; two runs printed the same bytes; --format xml exit 2; make check: all checks passed"
+noted = 2026-11-22 19:32:07+00:00

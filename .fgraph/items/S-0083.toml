@@ -33,3 +33,8 @@ created = 2026-11-22 21:01:47+00:00
 started = 2026-11-22 22:36:47+00:00
 completed = 2026-11-22 22:39:16+00:00
 commit = "7ba61c4"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: yes -- at fceb92d on main, with UV_TOOL_DIR and UV_TOOL_BIN_DIR set to scratch directories, make install exit 0 printed fgraph installed as a uv tool from build/dist/flowgraph-0.15.0-py3-none-any.whl; in another directory the installed fgraph init exit 0 printed record: <dir>/.fgraph and fgraph status exit 0 listed the three buckets, with flowgraph imported from the site-packages of the tool directory and not from the checkout; the tool directory of the developer holds no tool before and after; make check: 2398 passed, all checks passed"
+noted = 2026-11-22 22:42:45+00:00

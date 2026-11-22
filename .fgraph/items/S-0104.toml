@@ -1,0 +1,15 @@
+id = "S-0104"
+state = "backlog"
+title = "Cut the lines fgraph knowledge lists for a session start from every one to the live ones"
+description = "Open: whether a line with no mark is live. Its Tasks are written when it is ordered."
+parent = "F-0014"
+created = 2026-11-22 21:04:03+00:00
+depends_on = [
+    "S-0102",
+    "S-0103",
+]
+
+[criterion]
+given = "a record with a standing line, an open line and a superseded line"
+when = "the live lines of fgraph knowledge are asked for"
+then = "it lists the standing and the open line alone"

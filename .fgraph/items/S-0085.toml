@@ -24,11 +24,12 @@ commit = "ac52af7"
 
 [[tasks]]
 id = "T-0335"
-state = "backlog"
+state = "started"
 title = "Mark in fgraph status each item of the Backlog that waits for a work item not completed"
 description = "Removes the xfail mark of tests/functional/test_status_waits.py. Written on 2026-11-22 against the modules of that day, before U-0010 moves them: they are taken again when the Task starts. A module of src/ that would pass the line limit of mk/python.mk is split by one cohesive part, named in the commit."
 expected_output = "changed: the line of a work item in Backlog whose depends on names a work item that is not completed carries a mark and the ids it waits for, the mark chosen in the Task and told apart from the ! of a block; the line of a Feature in Backlog carries it when its first work item waits; once each one waited for is completed the mark is gone; fgraph watch draws the same line"
 created = 2026-11-22 21:02:03+00:00
+started = 2026-11-22 22:53:59+00:00
 
 [[tasks]]
 id = "T-0336"

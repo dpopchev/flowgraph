@@ -24,12 +24,14 @@ commit = "71e325f"
 
 [[tasks]]
 id = "T-0275"
-state = "started"
+state = "completed"
 title = "Add the knowledge command to fgraph, listing the knowledge lines of the whole record"
 description = "Removes the xfail mark of tests/functional/test_knowledge_command.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph knowledge lists every knowledge line of the record, of the work items and of the Features, newest first, each with its date, its kind, the id of its item and its text; the decision of a completed Spike is listed among the decisions, at the time the Spike was completed; --kind finding, decision or deviation narrows the list to that kind, another word refused naming the three; a record with no line prints one line saying so and exits 0; it is a view in a module of its own that reads the record as plain data and writes nothing; fgraph knowledge --help prints its menu"
 created = 2026-11-22 10:47:35+00:00
 started = 2026-11-22 11:35:11+00:00
+completed = 2026-11-22 11:40:49+00:00
+commit = "2a08145"
 
 [[tasks]]
 id = "T-0276"

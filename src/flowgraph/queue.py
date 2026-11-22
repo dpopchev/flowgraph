@@ -16,10 +16,8 @@ from pydantic import BaseModel, ConfigDict, ValidationError
 
 from flowgraph.item_file import write_checked
 from flowgraph.parent import (
-    STANDALONE,
     FeatureId,
     FeatureIdError,
-    Parent,
     feature_id_text,
     parse_feature_id,
 )
@@ -142,32 +140,22 @@ def queued(queue: Queue, added: Collection[Placed]) -> list[Placed]:
     return [*placed, *(each for each in added if each not in placed)]
 
 
-def _ordered_in(entry: Entry) -> Parent:
-    """Where the entry is ordered: inside its Feature, or standing alone as a line."""
-    match entry:
-        case Line():
-            return STANDALONE
-        case Inside():
-            return entry.feature
-        case _ as unreachable:
-            assert_never(unreachable)
-
-
 def _check_ordered_together(item: Entry, before: Entry) -> None:
     """Check that the two are lines of the Backlog, or work items under one Feature.
 
     Raises UnderFeatureError naming the first of the two that is under a Feature, and it.
     """
-    if _ordered_in(item) == _ordered_in(before):
-        return
-    for entry in (item, before):
-        match entry:
-            case Inside():
-                raise UnderFeatureError(entry.id, entry.feature)
-            case Line():
-                continue
-            case _ as unreachable:
-                assert_never(unreachable)
+    match item, before:
+        case Line(), Line():
+            return
+        case Inside(feature=one), Inside(feature=other) if one == other:
+            return
+        case Inside(), _:
+            raise UnderFeatureError(item.id, item.feature)
+        case Line(), Inside():
+            raise UnderFeatureError(before.id, before.feature)
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 def moved_before(queue: Queue, added: Sequence[Entry], item: Placed, before: Placed) -> Queue:

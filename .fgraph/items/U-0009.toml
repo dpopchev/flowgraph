@@ -12,7 +12,10 @@ then = "it still passes"
 
 [[tasks]]
 id = "T-0243"
-state = "backlog"
+state = "completed"
 title = "Match the two entries of _check_ordered_together of src/flowgraph/queue.py as one pair, so no branch of it is left that nothing reaches"
 expected_output = "changed: src/flowgraph/queue.py; the coverage of make check lists no branch of queue.py to the exit"
 created = 2026-11-22 07:32:35+00:00
+started = 2026-11-22 07:32:37+00:00
+completed = 2026-11-22 07:34:36+00:00
+commit = "69c4a6e"

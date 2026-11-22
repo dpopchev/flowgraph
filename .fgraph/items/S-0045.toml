@@ -13,11 +13,12 @@ then = "fgraph config show lists development.enabled as true"
 
 [[tasks]]
 id = "T-0179"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_config_command.py, failing on the criterion of S-0045"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path. Seen red, then marked a strict xfail naming S-0045 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_config_command.py states that, on a record without config.toml, fgraph config set development.enabled true exits 0 and fgraph config show then lists development.enabled as true"
 created = 2026-11-21 22:40:56+00:00
+started = 2026-11-22 00:00:40+00:00
 
 [[tasks]]
 id = "T-0180"

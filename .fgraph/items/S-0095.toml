@@ -1,0 +1,11 @@
+id = "S-0095"
+state = "backlog"
+title = "Raise the completed Spikes fgraph lists with the yes or no of their hypothesis beside their decision from none to every one"
+description = "The constraints of the note: the hypothesis stays on a Spike alone, and a no on a Spike is a completion."
+parent = "F-0011"
+created = 2026-11-22 21:03:31+00:00
+
+[criterion]
+given = "a started Spike whose Tasks are completed"
+when = "it is completed with its decision and the answer no"
+then = "it is Completed, and fgraph show lists the answer no beside its decision"

@@ -1,8 +1,9 @@
 """A Feature: a bigger outcome that groups work items, with the criteria the user experiences.
 
 It is not worked on directly, so it holds no Task. Its state is its own, in Backlog or started,
-as that of a work item is; the bucket a list shows it in is derived from the states of its work
-items. It is kept as one file of the record, `items/F-0001.toml`.
+as that of a work item is; a started one is in InProgress, and every other bucket a list shows
+it in is still derived from the states of its work items. It is kept as one file of the record,
+`items/F-0001.toml`.
 """
 
 import tomllib
@@ -75,7 +76,7 @@ class FeatureDetail:
 
 @dataclass
 class FeatureRow:
-    """One Feature as a line of a list reads it: its id, its title and its derived bucket.
+    """One Feature as a line of a list reads it: its id, its title and its bucket.
 
     Its progress is the work items completed of those it holds; a removed one is not held. Its
     started work items are the rows a list writes under it, in the order given.
@@ -190,15 +191,32 @@ def bucket_of(states: Collection[str]) -> str:
     return "Backlog"
 
 
+def feature_bucket(feature: FeatureState, states: Collection[str]) -> str:
+    """The bucket a list shows the Feature in, given the states of its work items.
+
+    A started Feature is in InProgress by its own state. Completed has no state yet, so it stays
+    derived, and so does every bucket of a Feature never started, as one whose work items were
+    started before a Feature had a state.
+    """
+    derived = bucket_of(states)
+    match feature:
+        case Feature():
+            return derived
+        case StartedFeature():
+            return derived if derived == "Completed" else "InProgress"
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
 def feature_row(feature: FeatureState, states: Collection[str]) -> FeatureRow:
-    """The Feature as the row a list reads, its bucket derived from the states of its work items.
+    """The Feature as the row a list reads, in its bucket over the states of its work items.
 
     Its work items completed and held are counted from the same states, as the record writes them.
     """
     completed = sum(state == COMPLETED for state in states)
     held = sum(state != REMOVED for state in states)
     return FeatureRow(
-        feature_id_text(feature.id), feature.title, bucket_of(states), completed, held
+        feature_id_text(feature.id), feature.title, feature_bucket(feature, states), completed, held
     )
 
 

@@ -80,7 +80,7 @@ class TestARecordWithAFeatureAndAStoryAddedUnderIt:
 def test_a_feature_with_a_started_story_is_listed_in_progress_with_the_story_under_it(
     tmp_path: Path,
 ) -> None:
-    listed = status_after(tmp_path, ADD_FEATURE, ADD_STORY, ADD_TASK, ["start", "S-0001"])
+    listed = status_after(tmp_path, ADD_FEATURE, ADD_STORY, ADD_TASK, ["start", "F-0001"])
     assert listed.out.splitlines()[1:4] == [
         "InProgress (1)",
         "  F-0001  0/1 W  a feature title",
@@ -94,7 +94,7 @@ def test_a_feature_whose_story_is_completed_is_listed_completed(tmp_path: Path) 
         ADD_FEATURE,
         ADD_STORY,
         ADD_TASK,
-        ["start", "S-0001"],
+        ["start", "F-0001"],
         ["start", "T-0001"],
         ["complete", "T-0001", "--commit", "abc1234"],
         ["complete", "S-0001", "--commit", "def5678"],

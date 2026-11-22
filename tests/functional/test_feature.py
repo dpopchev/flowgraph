@@ -100,7 +100,7 @@ def test_a_story_under_a_feature_names_its_parent(tmp_path: Path) -> None:
 
 
 def test_a_feature_is_in_progress_once_a_work_item_of_it_is_started(tmp_path: Path) -> None:
-    runs(tmp_path, ADD_FEATURE, ADD_STORY, ADD_BUG, ADD_TASK, ["start", "S-0001"])
+    runs(tmp_path, ADD_FEATURE, ADD_STORY, ADD_BUG, ADD_TASK, ["start", "F-0001"])
     assert fgraph(["show", "F-0001"], tmp_path).out.splitlines()[1:2] + fgraph(
         ["show", "F-0001"], tmp_path
     ).out.splitlines()[-3:] == [
@@ -120,7 +120,7 @@ def test_a_feature_is_completed_once_each_work_item_of_it_is_completed_or_remove
         ADD_STORY,
         ADD_BUG,
         ADD_TASK,
-        ["start", "S-0001"],
+        ["start", "F-0001"],
         ["start", "T-0001"],
         ["complete", "T-0001", "--commit", "abc1234"],
         ["complete", "S-0001", "--commit", "def5678"],

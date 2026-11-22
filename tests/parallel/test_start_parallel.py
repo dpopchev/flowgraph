@@ -1,4 +1,7 @@
-"""The start of a work item within `development.parallel`: what the check lets pass and names."""
+"""The start of a work item within `development.parallel`: what the check lets pass and names.
+
+The start of a Feature starts one work item, so it is checked as one more.
+"""
 
 from datetime import UTC, datetime
 from typing import Never
@@ -7,7 +10,8 @@ import pytest
 
 from flowgraph.bug import BUG
 from flowgraph.config import Config, make_config
-from flowgraph.parallel import ParallelError, check_parallel
+from flowgraph.parallel import ParallelError, check_feature_parallel, check_parallel
+from flowgraph.parent import make_feature_id
 from flowgraph.spike import SPIKE
 from flowgraph.story import STORY
 from flowgraph.upkeep import UPKEEP
@@ -16,6 +20,7 @@ from flowgraph.work_item import Kind, WorkItemRow
 pytestmark = pytest.mark.command
 
 CREATED = datetime(2026, 1, 1, tzinfo=UTC)
+F1 = make_feature_id(1)
 ROWS = {
     STORY: [
         WorkItemRow("S-0001", "a started story", "started", created=CREATED, started=CREATED),
@@ -89,3 +94,25 @@ def test_a_text_that_is_no_id_passes_to_the_start_that_refuses_it() -> None:
 )
 def test_a_work_item_not_in_backlog_passes_to_the_start_that_refuses_it(item: str) -> None:
     assert check_parallel(item, rows, limited(1)) is None
+
+
+def test_a_feature_started_beside_as_many_started_as_parallel_names_each_of_every_kind() -> None:
+    with pytest.raises(ParallelError) as error:
+        check_feature_parallel(F1, rows, limited(4))
+    assert str(error.value) == (
+        "F-0001 cannot start: development.parallel = 4,"
+        " started already: S-0001, U-0001, B-0001, Q-0001"
+    )
+
+
+def test_a_feature_started_beside_fewer_started_than_parallel_passes() -> None:
+    assert check_feature_parallel(F1, rows, limited(5)) is None
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["[development]\nenabled = true\n", "[development]\nparallel = 1\n"],
+    ids=["parallel-left-out", "development-off"],
+)
+def test_a_feature_started_under_no_limit_passes_without_a_read_of_the_rows(text: str) -> None:
+    assert check_feature_parallel(F1, never, make_config(text)) is None

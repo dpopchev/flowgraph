@@ -56,6 +56,19 @@ def test_a_work_item_started_off_main_names_the_work_tree_that_is_on_main() -> N
         check_start_on_main("S-0002", RECORD, lambda _: work_tree("wi/S-0001-a-slug"))
 
 
+def test_a_feature_started_on_main_passes() -> None:
+    assert check_start_on_main("F-0001", RECORD, lambda _: work_tree("main")) is None
+
+
+def test_a_feature_started_off_main_names_the_work_tree_that_is_on_main() -> None:
+    with pytest.raises(
+        NotOnMainError,
+        match=r"^F-0001 starts on main, in /src/project:"
+        r" /src/project.worktrees/S-0001-a-slug is on wi/S-0001-a-slug$",
+    ):
+        check_start_on_main("F-0001", RECORD, lambda _: work_tree("wi/S-0001-a-slug"))
+
+
 def test_a_work_item_started_off_main_with_no_work_tree_on_main_names_the_branch_alone() -> None:
     with pytest.raises(
         NotOnMainError,

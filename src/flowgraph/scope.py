@@ -16,7 +16,7 @@ from flowgraph.commit import OpenGit, kept_in
 from flowgraph.config import Settings
 from flowgraph.feature import FeatureState
 from flowgraph.item import ItemIdError, parse_item_id, parse_work_item_id_of_any_kind
-from flowgraph.parent import feature_id_text
+from flowgraph.parent import FeatureIdError, feature_id_text, parse_feature_id
 from flowgraph.queue import Queue
 from flowgraph.store import Store
 from flowgraph.task import TaskId
@@ -156,30 +156,45 @@ def within(store: Store, find_scope: FindScope, find_worktree: FindItemWorktree)
     )
 
 
-def check_start_on_main(item: str, record: Path, open_git: OpenGit) -> None:
-    """Check that the start of the item of that id is made where it may be.
+def _started_on_main(item: str) -> str | None:
+    """The id, as it is written, the text names when it starts on main alone; None otherwise.
 
-    A work item starts on main alone: raises NotOnMainError naming the branch the work tree of
-    the record is on and, when the repository has one, the work tree that is on main. A Task
-    starts anywhere, a record outside a git work tree is not checked, and a text that is no id
-    is left to the start, which refuses it. A record git ignores is checked as any other: its
-    start makes a branch too.
+    A work item and a Feature do; a Task does not, and neither does a text that is no id.
     """
+    try:
+        return feature_id_text(parse_feature_id(item))
+    except FeatureIdError:
+        pass
     try:
         item_id = parse_item_id(item)
     except ItemIdError:
-        return
+        return None
     match item_id:
         case TaskId():
-            return
+            return None
         case WorkItemId():
-            work_tree = open_git(record)
-            on = MAIN if work_tree is None else work_tree.current_branch()
-            if work_tree is None or on == MAIN:
-                return
-            home = work_tree.find_worktree(MAIN)
-            where = MAIN if home is None else f"{MAIN}, in {home}"
-            here = f"{work_tree.path} is on {on or 'no branch'}"
-            raise NotOnMainError(f"{work_item_id_text(item_id)} starts on {where}: {here}")
+            return work_item_id_text(item_id)
         case _ as unreachable:
             assert_never(unreachable)
+
+
+def check_start_on_main(item: str, record: Path, open_git: OpenGit) -> None:
+    """Check that the start of the item of that id is made where it may be.
+
+    A work item starts on main alone, and so does a Feature, which starts its first work item:
+    raises NotOnMainError naming the branch the work tree of the record is on and, when the
+    repository has one, the work tree that is on main. A Task starts anywhere, a record outside
+    a git work tree is not checked, and a text that is no id is left to the start, which refuses
+    it. A record git ignores is checked as any other: its start makes a branch too.
+    """
+    named = _started_on_main(item)
+    if named is None:
+        return
+    work_tree = open_git(record)
+    on = MAIN if work_tree is None else work_tree.current_branch()
+    if work_tree is None or on == MAIN:
+        return
+    home = work_tree.find_worktree(MAIN)
+    where = MAIN if home is None else f"{MAIN}, in {home}"
+    here = f"{work_tree.path} is on {on or 'no branch'}"
+    raise NotOnMainError(f"{named} starts on {where}: {here}")

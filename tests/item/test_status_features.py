@@ -1,4 +1,4 @@
-"""The Features of status: each one line in its derived bucket, in place of its work items."""
+"""The Features of status: each one line in its bucket, in place of its work items."""
 
 from collections.abc import Sequence
 from datetime import UTC, datetime
@@ -6,7 +6,7 @@ from typing import Never
 
 import pytest
 
-from flowgraph.feature import Feature, make_feature
+from flowgraph.feature import Feature, FeatureState, make_feature, started_feature
 from flowgraph.item import Store, status_item
 from flowgraph.parent import make_feature_id
 from flowgraph.queue import Queue, make_queue
@@ -54,7 +54,7 @@ def story(
 
 
 def store(
-    rows: Sequence[WorkItemRow], features: Sequence[Feature], queue: Queue = NO_QUEUE
+    rows: Sequence[WorkItemRow], features: Sequence[FeatureState], queue: Queue = NO_QUEUE
 ) -> Store:
     """The store of a record holding those Stories, those Features and that queue.
 
@@ -136,6 +136,13 @@ def test_a_feature_placed_in_the_queue_that_left_the_backlog_is_listed_once_unde
         "  F-0001  0/1 W  feature 1\n"
         "    S-0002  0/0 T  title 2\n"
         "Completed (0)\n"
+    )
+
+
+def test_a_started_feature_is_listed_under_in_progress_though_no_work_item_of_it_is_begun() -> None:
+    rows = [story(1, "backlog", "F-0001")]
+    assert status_item(store(rows, [started_feature(feature(1), DAY[2])])) == (
+        "Backlog (0)\nInProgress (1)\n  F-0001  0/1 W  feature 1\nCompleted (0)\n"
     )
 
 

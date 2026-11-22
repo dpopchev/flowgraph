@@ -1,11 +1,12 @@
 """A Feature named by its id: its add, its view over its work items, and the parent it gives."""
 
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from typing import Never
 
 import pytest
 
-from flowgraph.feature import Feature, FeatureNotFoundError, FeatureState, make_feature
+from flowgraph.feature import FeatureNotFoundError, FeatureState, make_feature, started_feature
 from flowgraph.feature_item import add_feature_item, parent_named, show_feature_item
 from flowgraph.item import Written
 from flowgraph.parent import STANDALONE, FeatureId, FeatureIdError, make_feature_id
@@ -14,7 +15,7 @@ from flowgraph.scope import OutOfScopeError, Scope, within
 from flowgraph.store import NO_FEATURES, FeatureStore, Store
 from flowgraph.story import STORY, make_story_id
 from flowgraph.upkeep import UPKEEP, make_upkeep_id
-from flowgraph.work_item import WorkItemRow
+from flowgraph.work_item import Kind, WorkItemRow
 
 CREATED = datetime(2026, 1, 1, tzinfo=UTC)
 ONE = make_feature_id(1)
@@ -35,18 +36,25 @@ def never(*_: object) -> Never:
     raise AssertionError("a Feature reads the rows of the work items, the queue and its own file")
 
 
-def held(feature_id: FeatureId) -> Feature:
-    """The Feature of that id among those the record holds, which is FEATURE alone."""
-    if feature_id != ONE:
-        raise FeatureNotFoundError(feature_id)
-    return FEATURE
+def store(
+    saved: list[FeatureState] | None = None,
+    queue: Queue = NO_QUEUE,
+    feature: FeatureState = FEATURE,
+    rows: Mapping[Kind, list[WorkItemRow]] = ROWS,
+) -> Store:
+    """The store of a record holding that Feature as F-0001, those rows and that queue.
 
-
-def store(saved: list[FeatureState] | None = None, queue: Queue = NO_QUEUE) -> Store:
-    """The store of a record holding FEATURE, ROWS and that queue; it notes a Feature it saves."""
+    It holds FEATURE and ROWS unless others are given, and notes a Feature it saves.
+    """
     kept = [] if saved is None else saved
+
+    def held(feature_id: FeatureId) -> FeatureState:
+        if feature_id != ONE:
+            raise FeatureNotFoundError(feature_id)
+        return feature
+
     return Store(
-        find_work_item_rows=lambda kind: ROWS.get(kind, []),
+        find_work_item_rows=lambda kind: rows.get(kind, []),
         load_work_item=never,
         find_work_item_detail=never,
         find_task_ids=never,
@@ -96,6 +104,13 @@ def test_the_work_items_in_backlog_of_a_feature_are_shown_in_the_order_the_queue
         "  U-0001  an upkeep  Backlog",
         "  S-0003  a later story  Backlog",
     ]
+
+
+@pytest.mark.view
+def test_a_started_feature_is_shown_in_progress_though_no_work_item_of_it_is_begun() -> None:
+    started = started_feature(FEATURE, CREATED)
+    shown = show_feature_item("F-0001", store(feature=started, rows={UPKEEP: ROWS[UPKEEP]}))
+    assert shown.splitlines()[1] == "  bucket       InProgress"
 
 
 @pytest.mark.view

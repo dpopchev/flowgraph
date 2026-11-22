@@ -1,7 +1,8 @@
 """The status of a record: its work items and its Features listed by bucket, read from its store.
 
 A view: it reads the rows, the queue and the Features of the record and changes nothing. A
-Feature is one item of its derived bucket, listed in place of its work items.
+Feature is one item of its bucket, listed in place of its work items: a started one of
+InProgress, any other of the bucket derived from its work items.
 """
 
 from collections.abc import Collection, Iterable, Mapping
@@ -133,7 +134,7 @@ def find_backlog(store: Store) -> list[Entry]:
 def status_item(store: Store, top: int | None = None) -> str:
     """The text of the work items standing alone and of the Features of the record, by bucket.
 
-    A Feature is listed in its derived bucket in place of its work items: those in Backlog and
+    A Feature is listed in its bucket in place of its work items: those in Backlog and
     the completed ones are on no line, the started ones under its own. The Backlog lists the
     work items and the Features placed in its queue, then the others as they were added;
     InProgress the last started first and Completed the last completed first, a Feature by its

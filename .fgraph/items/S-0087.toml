@@ -1,0 +1,16 @@
+id = "S-0087"
+state = "backlog"
+title = "Raise the formats fgraph status prints in from one, text, to two: JSON"
+description = "The words of the note: the counts, and --format json; read by the SessionStart hook."
+parent = "F-0008"
+created = 2026-11-22 21:02:14+00:00
+depends_on = [
+    "S-0084",
+    "S-0085",
+    "S-0086",
+]
+
+[criterion]
+given = "a record with items in every bucket, a blocked Task and a Story that waits for another"
+when = "fgraph status --format json is run"
+then = "it prints one JSON document with the count of each bucket and every item of it, with the reason of each block, what each item waits for and the next to start"

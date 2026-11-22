@@ -13,12 +13,14 @@ then = "fgraph show of the first lists that it is part of the second, and fgraph
 
 [[tasks]]
 id = "T-0294"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_relate_terms.py, failing on the criterion of S-0071"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_add_term.py does. Seen red, then marked a strict xfail naming S-0071 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_relate_terms.py states that, on a record with two terms, fgraph relate with the first term, part-of and the second term exits 0, fgraph show of the first lists that it is part of the second, and fgraph show of the second lists the first as its part"
 created = 2026-11-22 10:47:57+00:00
 started = 2026-11-22 16:42:48+00:00
+completed = 2026-11-22 16:48:38+00:00
+commit = "e4d6e42"
 
 [[tasks]]
 id = "T-0295"

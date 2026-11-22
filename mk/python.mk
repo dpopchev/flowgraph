@@ -29,7 +29,7 @@ PYCACHE_PTH := pycache_prefix.pth
 # above it and breaks. The number is written here, once; a command line gives
 # another (`make check MAX_LINES=300`). The tests are not counted.
 LINES_IN  := src
-MAX_LINES := 400
+MAX_LINES := 250
 
 CHECKS += lint lines typecheck test
 CLEANS += clean-python

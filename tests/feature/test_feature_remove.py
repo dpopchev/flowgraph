@@ -10,6 +10,7 @@ from typing import Never
 import pytest
 
 from flowgraph.criterion import NO_COMMIT, EmptyPartError, make_scenario
+from flowgraph.development.scope import OutOfScopeError, Scope, within
 from flowgraph.feature import (
     FeatureFileError,
     FeatureNotFoundError,
@@ -27,16 +28,16 @@ from flowgraph.feature import (
     unblocked_feature,
     write_feature,
 )
-from flowgraph.feature_amend import FeatureAmendment, amended_feature
-from flowgraph.feature_item import parent_named, show_feature_item
-from flowgraph.feature_move import check_move
-from flowgraph.feature_remove import remove_named
-from flowgraph.feature_start import check_start_under_feature
-from flowgraph.item import Written
+from flowgraph.feature.amend import FeatureAmendment, amended_feature
+from flowgraph.feature.item import parent_named, show_feature_item
+from flowgraph.feature.move import check_move
+from flowgraph.feature.remove import remove_named
+from flowgraph.feature.start import check_start_under_feature
+from flowgraph.item.commands import Written
 from flowgraph.parent import STANDALONE, FeatureId, Parent, make_feature_id
-from flowgraph.queue import make_queue
-from flowgraph.scope import OutOfScopeError, Scope, within
-from flowgraph.store import FeatureStore, Store
+from flowgraph.record.queue import make_queue
+from flowgraph.record.store import FeatureStore, Store
+from flowgraph.status import status_text
 from flowgraph.story import STORY, make_story_id
 from flowgraph.task import (
     BlockedError,
@@ -46,7 +47,6 @@ from flowgraph.task import (
     make_task,
     make_task_id,
 )
-from flowgraph.text import status_text
 from flowgraph.work_item import (
     RemovedAlreadyError,
     WorkItem,

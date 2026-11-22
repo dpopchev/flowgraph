@@ -1,11 +1,11 @@
-"""A work item of any kind: its kind and id, its states, its Tasks and the moves between them.
+"""A work item of any kind: its states, its Tasks and the lines it keeps.
 
 The kind is a value the id carries, so one set of states and moves serves the Story, the
-Upkeep and every kind that shares their Given / When / Then.
+Upkeep and every kind that shares their Given / When / Then. The kind and the id are in
+flowgraph.work_item.id, the moves between the states in flowgraph.work_item.moves.
 """
 
-import re
-from collections.abc import Callable, Collection, Iterable
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass, replace
 from datetime import datetime
 from typing import assert_never
@@ -15,51 +15,21 @@ from flowgraph.criterion import (
     Criterion,
     CriterionError,
     Evidence,
-    Scenario,
     evidence_text,
     said,
-    settled,
 )
 from flowgraph.knowledge import KnowledgeLine
 from flowgraph.parent import STANDALONE, Parent
 from flowgraph.relation import Relations, make_relations
 from flowgraph.task import (
     BlockedTask,
-    CompletedAlreadyError,
     CompletedTask,
-    NoTaskError,
-    NotStartedError,
-    StartedAlreadyError,
     StartedTask,
     Task,
     TaskState,
 )
-from flowgraph.task_list import all_completed
+from flowgraph.work_item.id import WorkItemId, work_item_id_text
 from flowgraph.work_item.views import WorkItemRow
-
-
-@dataclass(frozen=True)
-class Kind:
-    """A kind of work item: its noun, the article before it, the prefix of its ids, and the
-    form of criterion a work item of the kind takes."""
-
-    noun: str
-    article: str
-    prefix: str
-    takes: type[Criterion] = Scenario
-
-
-@dataclass(frozen=True)
-class WorkItemId:
-    """The identity of a work item: its kind and its number among the items of that kind."""
-
-    kind: Kind
-    number: int
-
-    def __str__(self) -> str:
-        """The id as it is written, so a relation names it in a message."""
-        return work_item_id_text(self)
-
 
 # The relations of a work item that names none.
 NO_RELATIONS: Relations[WorkItemId] = Relations()
@@ -162,14 +132,6 @@ LoadWorkItem = Callable[[WorkItemId], WorkItemState]
 SaveWorkItem = Callable[[WorkItemState], None]
 
 
-class KindError(ValueError):
-    """A kind of work item without a noun, or with a prefix that is not capital letters."""
-
-
-class WorkItemIdError(ValueError):
-    """A number or a text that is no id of the kind asked for."""
-
-
 class WorkItemNotFoundError(Exception):
     """A record that holds no work item of the id asked for; `item_id` is that id."""
 
@@ -191,50 +153,6 @@ class WorkItemFileError(Exception):
 
 class WorkItemMismatchError(Exception):
     """A work item read back different from the one written; its file is as it was before."""
-
-
-def make_kind(noun: str, article: str, prefix: str, takes: type[Criterion] = Scenario) -> Kind:
-    """The kind of work item of that noun, written with that article and prefix.
-
-    It takes a Given / When / Then unless another form of criterion is named. Raises KindError
-    when the noun is blank or the prefix is not capital letters.
-    """
-    if not noun.strip():
-        raise KindError("a kind names its noun")
-    if re.fullmatch(r"[A-Z]+", prefix) is None:
-        raise KindError(f"{prefix!r} is no prefix: it is capital letters")
-    return Kind(noun, article, prefix, takes)
-
-
-def make_work_item_id(kind: Kind, number: int) -> WorkItemId:
-    """The id of the work item of that kind with that number in the record.
-
-    Raises WorkItemIdError naming the kind when the number is below 1.
-    """
-    if number < 1:
-        raise WorkItemIdError(f"{kind.article} {kind.noun} id counts from 1: {number} is below 1")
-    return WorkItemId(kind, number)
-
-
-def work_item_id_text(item_id: WorkItemId) -> str:
-    """The id as it is written: the prefix of its kind, `-` and the number, four digits at least."""
-    return f"{item_id.kind.prefix}-{item_id.number:04d}"
-
-
-def parse_work_item_id(kind: Kind, text: str) -> WorkItemId:
-    """The id of that kind written as the text.
-
-    Raises WorkItemIdError when the text is not the prefix of the kind, `-` and a number.
-    """
-    written = re.fullmatch(rf"{kind.prefix}-(\d+)", text)
-    if written is None:
-        raise WorkItemIdError(f"{text!r} is no {kind.noun} id: it is {kind.prefix}- and a number")
-    return make_work_item_id(kind, int(written.group(1)))
-
-
-def next_work_item_id(kind: Kind, taken: Collection[WorkItemId]) -> WorkItemId:
-    """The next free id of the kind: one above the highest taken, the first when none is."""
-    return make_work_item_id(kind, max((item_id.number for item_id in taken), default=0) + 1)
 
 
 def make_work_item(
@@ -277,91 +195,6 @@ def append_task[W: OpenWorkItem](item: W, task: Task) -> W:
 def noted_work_item[W: WorkItemState](item: W, line: KnowledgeLine) -> W:
     """The work item, in whatever state, with the line after the lines it already keeps."""
     return replace(item, knowledge=(*item.knowledge, line))
-
-
-def still_open(item: WorkItemState) -> OpenWorkItem:
-    """The work item, which still takes Tasks; raises CompletedAlreadyError when it is completed."""
-    match item:
-        case WorkItem() | StartedWorkItem():
-            return item
-        case CompletedWorkItem():
-            raise CompletedAlreadyError(f"{work_item_id_text(item.id)} is completed already")
-        case RemovedWorkItem():
-            raise RemovedAlreadyError(item.id)
-        case _ as unreachable:
-            assert_never(unreachable)
-
-
-def started_work_item(item: WorkItemState, on: datetime) -> StartedWorkItem:
-    """The work item started on that time, kept to the second, its Tasks still in Backlog.
-
-    Raises NoTaskError when it has no Task, StartedAlreadyError when it is started and
-    CompletedAlreadyError when it is completed.
-    """
-    match item:
-        case WorkItem(tasks=()):
-            raise NoTaskError(f"{work_item_id_text(item.id)} has no Task to start with")
-        case WorkItem():
-            to_the_second = on.replace(microsecond=0)
-            return StartedWorkItem(
-                item.id,
-                item.title,
-                item.criterion,
-                item.description,
-                item.created,
-                to_the_second,
-                item.tasks,
-                item.parent,
-                item.knowledge,
-                item.relations,
-                item.about,
-            )
-        case StartedWorkItem():
-            raise StartedAlreadyError(f"{work_item_id_text(item.id)} is started already")
-        case CompletedWorkItem():
-            raise CompletedAlreadyError(f"{work_item_id_text(item.id)} is completed already")
-        case RemovedWorkItem():
-            raise RemovedAlreadyError(item.id)
-        case _ as unreachable:
-            assert_never(unreachable)
-
-
-def completed_work_item(
-    item: WorkItemState, on: datetime, commit: Evidence, decision: str | None = None
-) -> CompletedWorkItem:
-    """The work item completed on that time, kept to the second, in that commit or without one.
-
-    A work item that states a hypothesis is completed with the decision that answers it. Raises
-    NotStartedError when it is in Backlog, OpenTaskError naming the Tasks not completed,
-    DecisionError when a hypothesis has no decision or another criterion is given one, and
-    CompletedAlreadyError when it is completed.
-    """
-    match item:
-        case WorkItem():
-            raise NotStartedError(f"{work_item_id_text(item.id)} is in Backlog: start it first")
-        case StartedWorkItem():
-            done = all_completed(item.tasks, work_item_id_text(item.id))
-            return CompletedWorkItem(
-                item.id,
-                item.title,
-                settled(item.criterion, decision, work_item_id_text(item.id)),
-                item.description,
-                item.created,
-                item.started,
-                on.replace(microsecond=0),
-                commit,
-                done,
-                item.parent,
-                item.knowledge,
-                item.relations,
-                about=item.about,
-            )
-        case CompletedWorkItem():
-            raise CompletedAlreadyError(f"{work_item_id_text(item.id)} is completed already")
-        case RemovedWorkItem():
-            raise RemovedAlreadyError(item.id)
-        case _ as unreachable:
-            assert_never(unreachable)
 
 
 def state_name(item: WorkItemState | TaskState) -> str:

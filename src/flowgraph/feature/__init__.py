@@ -1,0 +1,87 @@
+"""A Feature: a bigger outcome that groups work items, kept in the record with its criteria.
+
+Its model, its states and their moves, its file, its views and the move of a work item under it
+are named here. Its commands run on the store of a record, which reads a Feature through this
+package, so each is imported from its own module: amend, block, complete, item, next, note,
+remove and start.
+"""
+
+from flowgraph.feature.file import FeatureMismatchError
+from flowgraph.feature.model import (
+    BlockedFeature,
+    CompletedFeature,
+    Feature,
+    FeatureFileError,
+    FeatureNotFoundError,
+    FeatureRemovedError,
+    FeatureState,
+    FindFeatureIds,
+    LoadFeature,
+    NoCriterionError,
+    RemovedFeature,
+    SaveFeature,
+    StartedFeature,
+    add_feature,
+    blocked_feature,
+    completed_feature,
+    feature_file,
+    make_feature,
+    next_feature_id,
+    note_feature,
+    noted_feature,
+    read_feature,
+    read_feature_ids,
+    removed_feature,
+    started_feature,
+    unblocked_feature,
+    write_feature,
+)
+from flowgraph.feature.move import check_move
+from flowgraph.feature.views import (
+    DONE,
+    FeatureDetail,
+    FeatureRow,
+    bucket_of,
+    feature_bucket,
+    feature_detail,
+    feature_row,
+)
+
+__all__ = [
+    "DONE",
+    "BlockedFeature",
+    "CompletedFeature",
+    "Feature",
+    "FeatureDetail",
+    "FeatureFileError",
+    "FeatureMismatchError",
+    "FeatureNotFoundError",
+    "FeatureRemovedError",
+    "FeatureRow",
+    "FeatureState",
+    "FindFeatureIds",
+    "LoadFeature",
+    "NoCriterionError",
+    "RemovedFeature",
+    "SaveFeature",
+    "StartedFeature",
+    "add_feature",
+    "blocked_feature",
+    "bucket_of",
+    "check_move",
+    "completed_feature",
+    "feature_bucket",
+    "feature_detail",
+    "feature_file",
+    "feature_row",
+    "make_feature",
+    "next_feature_id",
+    "note_feature",
+    "noted_feature",
+    "read_feature",
+    "read_feature_ids",
+    "removed_feature",
+    "started_feature",
+    "unblocked_feature",
+    "write_feature",
+]

@@ -5,8 +5,9 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph.branch import branch_of, make_slug
 from flowgraph.criterion import CriterionError, Hypothesis, make_hypothesis, make_scenario
+from flowgraph.development import branch_of, make_slug
+from flowgraph.record.store import KINDS
 from flowgraph.spike import (
     SPIKE,
     SpikeIdError,
@@ -16,7 +17,6 @@ from flowgraph.spike import (
     parse_spike_id,
     spike_id_text,
 )
-from flowgraph.store import KINDS
 
 pytestmark = pytest.mark.model
 

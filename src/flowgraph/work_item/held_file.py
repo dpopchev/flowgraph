@@ -9,7 +9,7 @@ from typing import Annotated, Literal, assert_never
 
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
 
-from flowgraph.item_file import (
+from flowgraph.item import (
     AnyCriterionFile,
     CompletedTaskFile,
     HeldTask,

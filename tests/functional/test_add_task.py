@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from flowgraph.cli import Store, run
-from flowgraph.queue import make_queue
+from flowgraph.record.queue import make_queue
 from flowgraph.story import (
     StoryId,
     StoryNotFoundError,

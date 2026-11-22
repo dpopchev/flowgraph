@@ -655,7 +655,7 @@ criterion. It is added and then it stands.
   now, a term added after the start included.
 - Every refusal is exit 2, with nothing written.
 - Two terms are related by one kind of a closed set of two, held once in
-  `src/flowgraph/term.py`: `is-a`, the first is a kind of the second, and `part-of`,
+  `src/flowgraph/term/model.py`: `is-a`, the first is a kind of the second, and `part-of`,
   the first is a part of the second. A relation is stored on the file of the first
   term alone, as `is_a` or `part_of`, a list of the names of the terms it names, so
   a relation is one write of one file; the other side is read from the record, as
@@ -746,7 +746,7 @@ commit, a Task as a work item.
 - With the development off `fgraph complete` takes none, and a `--commit`
   given is still kept as the evidence.
 - The evidence is a value of its own in the model, a commit or none (`Commit`
-  or `NoCommit`, `src/flowgraph/criterion.py`): no commit is a value of the
+  or `NoCommit`, `src/flowgraph/criterion/model.py`): no commit is a value of the
   evidence, not a missing one, as standing alone is a value of `parent`.
 - A Spike is completed with its decision either way: the decision answers its
   hypothesis and stands beside the commit or none.
@@ -921,7 +921,7 @@ and its merge tool.
   `Defect`, what is observed and expected; or a `Hypothesis`, which its
   completion turns into an `Answer`, the hypothesis with its decision. Each
   kind keeps only its kind, its id functions and those names; the kinds are
-  listed once, in `src/flowgraph/store.py`.
+  listed once, in `src/flowgraph/record/store.py`.
 - An amend rewrites the parts of the criterion the work item has: `--given`,
   `--when` and `--then`, `--observed` and `--expected`, or `--hypothesis`. A
   part of another form is refused.
@@ -1366,9 +1366,9 @@ development too.
   and is refused with one. Both refusals exit 2 naming the option and the
   key, `development.merge`, before any git step.
 - The way of merging is a closed set in the model (`Merge`,
-  `src/flowgraph/config.py`), and a landing is built from it with its message
+  `src/flowgraph/record/layers.py`), and a landing is built from it with its message
   as one of three values -- `MergeCommit` and `Squash`, each with the
-  message, and `FastForward`, with none (`src/flowgraph/land.py`) -- so a
+  message, and `FastForward`, with none (`src/flowgraph/development/way.py`) -- so a
   fast-forward with a message and a commit without one cannot be built.
 - `[development] gate` names one command of the record, a command line run
   at a landing. It is the reading, decided when S-0042 was ordered, of the
@@ -1392,8 +1392,8 @@ development too.
   exit 2 naming the key, `development.gate`, the command as the file writes
   it and its status. A gate that passes lands as a landing without one.
 - The gate is a value or none in the model (`Gate`, a `Gated` command or
-  `Ungated`, `src/flowgraph/config.py`), never an empty text with a meaning.
-  Running it is an effect (`src/flowgraph/gate.py`): `run()` takes it as a
+  `Ungated`, `src/flowgraph/record/layers.py`), never an empty text with a meaning.
+  Running it is an effect (`src/flowgraph/development/gate.py`): `run()` takes it as a
   callable, `RunGate`, and `main()` binds the adapter `run_gate`, which runs
   the command line through the shell. The default of `run()` runs no gate: a
   run that lands under one is given its runner.
@@ -1420,7 +1420,7 @@ development too.
   file and the key, whatever the command. The help option needs no record
   and reads none.
 - The configuration is read at the edge into a value of the model
-  (`src/flowgraph/config.py`). Reading it is an effect: `run()` takes it as a
+  (`src/flowgraph/record/config.py`). Reading it is an effect: `run()` takes it as a
   callable, the defaults when none is given, and `main()` reads the file.
 - Only these five keys are built: `git.commit`, `development.enabled`,
   `development.parallel`, `development.merge` and `development.gate`, each
@@ -1446,7 +1446,7 @@ development too.
   which the configuration refuses.
 - The whole file is read back through the constructor of the configuration
   before it replaces the one in the record (`write_settings`,
-  `src/flowgraph/config.py`). A key the configuration does not have, a value
+  `src/flowgraph/record/config.py`). A key the configuration does not have, a value
   the key does not take and the development turned on with the commits off
   are refused with exit 2 naming the key, nothing written: the file is as it
   was, and a record without one is left without. The refusal names no file,
@@ -1472,10 +1472,10 @@ development too.
   not kept. A `config.toml` that is refused is refused by `fgraph config`
   too, as by every command: it is mended in the file.
 - In the model the keys a file writes are its settings (`Settings`,
-  `src/flowgraph/config.py`): plain data by table, a key left out left out,
+  `src/flowgraph/record/config.py`): plain data by table, a key left out left out,
   apart from the configuration, which holds a value for every key. A set
   loads the settings whole, sets one key by a function that returns them and
-  saves them whole (`src/flowgraph/setting.py`), where each key is listed
+  saves them whole (`src/flowgraph/record/setting.py`), where each key is listed
   once with what it takes and the value a configuration holds under it.
 
 Who writes what with the development on, so that two branches never change

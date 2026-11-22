@@ -1,51 +1,42 @@
-"""The views and the commands of a work item: each command loads it whole, moves it, saves it."""
+"""The views and the commands of a work item: each command loads it whole, moves it, saves it.
 
-from collections.abc import Callable, Iterable
+The commands on a Task of a work item are in flowgraph.work_item.task_commands.
+"""
+
+from collections.abc import Iterable
 from datetime import datetime
 from typing import assert_never
 
-from flowgraph.criterion import Criterion, Evidence, criterion_parts
+from flowgraph.criterion import Criterion, criterion_parts
 from flowgraph.knowledge import KnowledgeKind, knowledge_row, make_knowledge_line
 from flowgraph.parent import STANDALONE, Parent, parent_text
 from flowgraph.record import Now
-from flowgraph.task import (
-    TaskId,
-    TaskNotFoundError,
-    make_task,
-    next_task_id,
-    parse_task_id,
-    row_of,
-)
+from flowgraph.task import row_of
 from flowgraph.work_item.amend import Amendment, CheckMove, amended_work_item
+from flowgraph.work_item.id import (
+    Kind,
+    WorkItemId,
+    next_work_item_id,
+    parse_work_item_id,
+    work_item_id_text,
+)
 from flowgraph.work_item.model import (
     CompletedWorkItem,
-    FindTaskIds,
     FindWorkItemRows,
-    Kind,
     LoadWorkItem,
     RemovedWorkItem,
     SaveWorkItem,
     StartedWorkItem,
     WorkItem,
-    WorkItemId,
     WorkItemState,
-    append_task,
     commit_sha,
     make_work_item,
-    next_work_item_id,
     noted_work_item,
-    parse_work_item_id,
-    started_work_item,
     state_name,
-    still_open,
-    work_item_id_text,
 )
+from flowgraph.work_item.moves import started_work_item
 from flowgraph.work_item.removal import reason_of, removed_work_item, superseded_by_of
-from flowgraph.work_item.tasks import blocked_task, completed_task, started_task, unblocked_task
 from flowgraph.work_item.views import DependsRow, WorkItemDetail, WorkItemRow
-
-# The work item that holds the Task of that id, whole; raises TaskNotFoundError when none does.
-LoadHolder = Callable[[TaskId], WorkItemState]
 
 
 def _started_on(item: WorkItemState) -> datetime | None:
@@ -119,20 +110,6 @@ def work_item_detail(item: WorkItemState) -> WorkItemDetail:
     )
 
 
-def holder_of(
-    task_id: TaskId, item_ids: Iterable[WorkItemId], load_work_item: LoadWorkItem
-) -> WorkItemState:
-    """The work item among those of the ids that holds the Task of that id.
-
-    Raises TaskNotFoundError when none does.
-    """
-    for item_id in item_ids:
-        item = load_work_item(item_id)
-        if any(task.id == task_id for task in item.tasks):
-            return item
-    raise TaskNotFoundError(task_id)
-
-
 def add_work_item(
     *,
     kind: Kind,
@@ -171,30 +148,6 @@ def add_work_item(
     )
     save_work_item(item)
     return item.id
-
-
-def add_task(
-    *,
-    parent: WorkItemId,
-    title: str,
-    expected_output: str,
-    description: str,
-    load_work_item: LoadWorkItem,
-    find_task_ids: FindTaskIds,
-    save_work_item: SaveWorkItem,
-    now: Now,
-) -> TaskId:
-    """Write a Task for the work item of the parent id, under the next free id; return that id.
-
-    Raises WorkItemNotFoundError when the record holds no such item, CompletedAlreadyError when
-    it is completed, and EmptyPartError when the title or the expected output is blank; nothing
-    is saved.
-    """
-    item = still_open(load_work_item(parent))
-    taken = [parse_task_id(text) for text in find_task_ids()]
-    task = make_task(next_task_id(taken), title, expected_output, description, now())
-    save_work_item(append_task(item, task))
-    return task.id
 
 
 def remove_work_item(
@@ -250,71 +203,6 @@ def start_work_item(
     nothing is saved.
     """
     save_work_item(started_work_item(load_work_item(item_id), now()))
-
-
-def start_task(
-    *, task_id: TaskId, load_holder: LoadHolder, save_work_item: SaveWorkItem, now: Now
-) -> WorkItemId:
-    """Start the Task of that id now, save its work item whole and return the id of that item.
-
-    Raises TaskNotFoundError when no item holds the Task, ItemInBacklogError when its item is in
-    Backlog, StartedAlreadyError when it is started and CompletedAlreadyError when it is
-    completed; nothing is saved.
-    """
-    item = load_holder(task_id)
-    save_work_item(started_task(item, task_id, now()))
-    return item.id
-
-
-def block_task(
-    *,
-    task_id: TaskId,
-    reason: str,
-    waiting_on: str,
-    load_holder: LoadHolder,
-    save_work_item: SaveWorkItem,
-    now: Now,
-) -> WorkItemId:
-    """Block the started Task of that id now, save its work item whole and return its id.
-
-    Raises TaskNotFoundError when no item holds the Task, NotStartedError when it is in Backlog,
-    BlockedError when it is blocked already, CompletedAlreadyError when it is completed and
-    EmptyPartError when the reason or what it waits on is blank; nothing is saved.
-    """
-    item = load_holder(task_id)
-    save_work_item(blocked_task(item, task_id, reason, waiting_on, now()))
-    return item.id
-
-
-def unblock_task(
-    *, task_id: TaskId, load_holder: LoadHolder, save_work_item: SaveWorkItem
-) -> WorkItemId:
-    """Unblock the blocked Task of that id, save its work item whole and return its id.
-
-    Raises TaskNotFoundError when no item holds the Task and NotBlockedError when it is not
-    blocked; nothing is saved.
-    """
-    item = load_holder(task_id)
-    save_work_item(unblocked_task(item, task_id))
-    return item.id
-
-
-def complete_task(
-    *,
-    task_id: TaskId,
-    commit: Evidence,
-    load_holder: LoadHolder,
-    save_work_item: SaveWorkItem,
-    now: Now,
-) -> WorkItemId:
-    """Complete the Task of that id now, in that commit or none, save its item and return its id.
-
-    Raises TaskNotFoundError when no item holds the Task, NotStartedError when it is in Backlog
-    and CompletedAlreadyError when it is completed; nothing is saved.
-    """
-    item = load_holder(task_id)
-    save_work_item(completed_task(item, task_id, now(), commit))
-    return item.id
 
 
 def note_work_item(

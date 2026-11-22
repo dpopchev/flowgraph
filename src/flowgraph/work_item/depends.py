@@ -8,7 +8,7 @@ from collections.abc import Iterable, Sequence
 from pydantic import BaseModel
 
 from flowgraph.relation import Relations, make_relations
-from flowgraph.work_item.model import (
+from flowgraph.work_item.id import (
     Kind,
     WorkItemId,
     WorkItemIdError,

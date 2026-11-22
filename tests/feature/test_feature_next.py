@@ -7,16 +7,16 @@ from typing import Never
 
 import pytest
 
-from flowgraph.branch import make_slug
-from flowgraph.config import Config, make_config
 from flowgraph.criterion import make_commit, make_scenario
+from flowgraph.development import make_slug
+from flowgraph.development.scope import OutOfScopeError
 from flowgraph.feature import FeatureState, completed_feature, make_feature, started_feature
-from flowgraph.feature_next import complete_and_start_next
-from flowgraph.item import ToBranch, Written
+from flowgraph.feature.next import complete_and_start_next
+from flowgraph.item.commands import ToBranch, Written
 from flowgraph.parent import STANDALONE, FeatureId, Parent, make_feature_id
-from flowgraph.queue import Queue, make_queue
-from flowgraph.scope import OutOfScopeError
-from flowgraph.store import FeatureStore, Store
+from flowgraph.record import Config, make_config
+from flowgraph.record.queue import Queue, make_queue
+from flowgraph.record.store import FeatureStore, Store
 from flowgraph.story import STORY, make_story_id
 from flowgraph.task import make_task, make_task_id
 from flowgraph.work_item import (

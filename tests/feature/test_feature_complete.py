@@ -7,6 +7,7 @@ from typing import Never
 import pytest
 
 from flowgraph.criterion import NO_COMMIT, Evidence, make_commit, make_scenario
+from flowgraph.development.scope import OutOfScopeError
 from flowgraph.feature import (
     FeatureNotFoundError,
     FeatureState,
@@ -14,11 +15,10 @@ from flowgraph.feature import (
     make_feature,
     started_feature,
 )
-from flowgraph.feature_complete import complete_with_feature
+from flowgraph.feature.complete import complete_with_feature
 from flowgraph.parent import STANDALONE, FeatureId, Parent, make_feature_id
-from flowgraph.queue import make_queue
-from flowgraph.scope import OutOfScopeError
-from flowgraph.store import NO_FEATURES, FeatureStore, Store
+from flowgraph.record.queue import make_queue
+from flowgraph.record.store import NO_FEATURES, FeatureStore, Store
 from flowgraph.story import STORY, make_story_id
 from flowgraph.task import OpenTaskError, make_task, make_task_id
 from flowgraph.work_item import (

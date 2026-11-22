@@ -3,8 +3,8 @@
 import pytest
 
 from flowgraph.bug import make_bug_id
-from flowgraph.item import ItemIdError, parse_item_id, parse_work_item_id_of_any_kind
-from flowgraph.item_id import parse_moved_id, parse_placed_id, parse_shown_id
+from flowgraph.item.commands import ItemIdError, parse_item_id, parse_work_item_id_of_any_kind
+from flowgraph.item.id import parse_moved_id, parse_placed_id, parse_shown_id
 from flowgraph.parent import FeatureIdError, make_feature_id
 from flowgraph.story import make_story_id
 from flowgraph.task import make_task_id

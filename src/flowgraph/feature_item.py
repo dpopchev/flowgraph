@@ -4,8 +4,16 @@ Each runs on the store of a record, as the commands of a work item do (`flowgrap
 """
 
 from collections.abc import Iterable
+from typing import assert_never
 
-from flowgraph.feature import add_feature, feature_bucket, feature_detail
+from flowgraph.feature import (
+    CompletedFeature,
+    Feature,
+    StartedFeature,
+    add_feature,
+    feature_bucket,
+    feature_detail,
+)
 from flowgraph.item import MESSAGE, Written
 from flowgraph.parent import (
     STANDALONE,
@@ -18,6 +26,7 @@ from flowgraph.queue import queued
 from flowgraph.record import Now
 from flowgraph.status import BACKLOG, backlog_as_added, rows_by_id
 from flowgraph.store import Store
+from flowgraph.task import CompletedAlreadyError
 from flowgraph.text import feature_text
 
 
@@ -71,11 +80,16 @@ def show_feature_item(feature: str, store: Store) -> str:
 def parent_named(parent: str | None, store: Store) -> Parent:
     """The parent a work item is added under: standing alone when none is named.
 
-    Raises FeatureIdError when the name is no Feature id and FeatureNotFoundError when the
-    record holds no such Feature.
+    Raises FeatureIdError when the name is no Feature id, FeatureNotFoundError when the record
+    holds no such Feature and CompletedAlreadyError when that Feature is completed.
     """
     if parent is None:
         return STANDALONE
     feature_id = parse_feature_id(parent)
-    store.features.load_feature(feature_id)
-    return feature_id
+    match store.features.load_feature(feature_id):
+        case Feature() | StartedFeature():
+            return feature_id
+        case CompletedFeature():
+            raise CompletedAlreadyError(f"{feature_id_text(feature_id)} is completed already")
+        case _ as unreachable:
+            assert_never(unreachable)

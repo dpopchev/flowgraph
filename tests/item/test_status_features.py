@@ -6,7 +6,14 @@ from typing import Never
 
 import pytest
 
-from flowgraph.feature import Feature, FeatureState, make_feature, started_feature
+from flowgraph.criterion import make_commit
+from flowgraph.feature import (
+    Feature,
+    FeatureState,
+    completed_feature,
+    make_feature,
+    started_feature,
+)
 from flowgraph.item import Store, status_item
 from flowgraph.parent import make_feature_id
 from flowgraph.queue import Queue, make_queue
@@ -212,6 +219,37 @@ def test_a_completed_feature_is_placed_by_its_last_completed_work_item_and_lists
         "  F-0001  2/2 W  feature 1",
         "  S-0001  abc1234  title 1",
     ]
+
+
+def test_a_feature_completed_by_its_own_state_is_placed_by_its_completed_time_with_its_commit() -> (
+    None
+):
+    rows = [
+        story(1, "completed", completed=DAY[3]),
+        story(2, "completed", "F-0001", completed=DAY[2]),
+        story(3, "completed", completed=DAY[5]),
+    ]
+    landed = completed_feature(started_feature(feature(1), DAY[1]), DAY[4], make_commit("def5678"))
+    assert status_item(store(rows, [landed])).splitlines()[2:] == [
+        "Completed (3)",
+        "  S-0003  abc1234  title 3",
+        "  F-0001  1/1 W  def5678  feature 1",
+        "  S-0001  abc1234  title 1",
+    ]
+
+
+def test_a_started_feature_whose_work_items_are_all_completed_or_removed_stays_in_progress() -> (
+    None
+):
+    rows = [story(1, "completed", "F-0001", completed=DAY[3]), story(2, "removed", "F-0001")]
+    assert status_item(store(rows, [started_feature(feature(1), DAY[2])])) == (
+        "Backlog (0)\n"
+        "InProgress (1)\n"
+        "  F-0001  1/1 W  feature 1\n"
+        "Completed (0)\n"
+        "Removed (1)\n"
+        "  S-0002  title 2  -- a reason\n"
+    )
 
 
 def test_a_removed_work_item_of_a_feature_keeps_its_line_under_removed() -> None:

@@ -13,31 +13,43 @@ then = "fgraph status lists the Feature under Completed with 2/2 W and the commi
 
 [[tasks]]
 id = "T-0192"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_complete_feature.py, failing on the criterion of S-0054"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_start_feature.py does. Seen red, then marked a strict xfail naming S-0054 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_complete_feature.py states that, on a record with a started Feature of two Stories, the first completed and the second started with its Tasks completed, the completion of the second Story leaves fgraph status listing the Feature under Completed with 2/2 W and the commit of that completion"
 created = 2026-11-21 23:43:07+00:00
+started = 2026-11-22 02:03:51+00:00
+completed = 2026-11-22 02:05:29+00:00
+commit = "ad337e9"
 
 [[tasks]]
 id = "T-0193"
-state = "backlog"
+state = "completed"
 title = "Extend the Feature of src/flowgraph/feature.py to a completed state kept in its file with its evidence"
 description = "New code the next Task runs. The evidence is the Commit or NoCommit of src/flowgraph/criterion.py, as a completed work item holds it since S-0041."
 expected_output = "changed: src/flowgraph/feature.py holds the CompletedFeature: its started and completed times and its evidence, the commit of the completion of its last work item or none; the move from a StartedFeature to it, refused for a Feature in Backlog and for one completed already; its file holds the state line, the two times and the commit when it has one, read back whole; proved in tests/feature/"
 created = 2026-11-21 23:43:08+00:00
+started = 2026-11-22 02:05:29+00:00
+completed = 2026-11-22 02:10:17+00:00
+commit = "76ba6c3"
 
 [[tasks]]
 id = "T-0194"
-state = "backlog"
+state = "completed"
 title = "Complete a started Feature with the completion of its last work item, in fgraph complete and fgraph land"
 description = "Removes the xfail mark of tests/functional/test_complete_feature.py. The removal of the last work item in Backlog of a started Feature completes nothing: only a completion does, and the docs say so. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: the completion of a work item under a started Feature, by fgraph complete or by fgraph land, that leaves every work item of the Feature completed or removed completes the Feature in the same write and the same commit of the record, at the commit of that completion, none with the development off; fgraph status lists a completed Feature under Completed with its progress n/m W and that commit, placed by its completed time, its work items on no line of their own, and fgraph show of it lists its state and its commit; a completed Feature takes no start and no work item added under it; a Feature never started through fgraph keeps its derived bucket, listed without a commit; a removed work item counts in neither number, as today"
 created = 2026-11-21 23:43:08+00:00
+started = 2026-11-22 02:10:18+00:00
+completed = 2026-11-22 02:21:18+00:00
+commit = "289d5d1"
 
 [[tasks]]
 id = "T-0195"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a Feature is completed with its last work item"
 expected_output = "changed: README.md and docs/domain-model.md say a Feature moves to Completed with its last work item, in the same write, holding the commit of that completion as its evidence or none with the development off; how status and show list a completed Feature; that its completed work items stay within it; what a completed Feature refuses; and that a Feature never started keeps its derived bucket"
 created = 2026-11-21 23:43:08+00:00
+started = 2026-11-22 02:21:19+00:00
+completed = 2026-11-22 02:25:29+00:00
+commit = "cff91b4"

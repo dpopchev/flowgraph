@@ -12,9 +12,13 @@ from flowgraph.branch import GitError
 from flowgraph.commit import Said, WorkTree
 from flowgraph.config import Config, make_config
 from flowgraph.criterion import make_commit, make_scenario
+from flowgraph.feature import make_feature, started_feature
 from flowgraph.gate import GateError, RunGate
 from flowgraph.item import Store
 from flowgraph.land import LandError, land_item
+from flowgraph.parent import make_feature_id
+from flowgraph.store import FeatureStore
+from flowgraph.story import STORY as STORY_KIND
 from flowgraph.story import make_story, make_story_id
 from flowgraph.task import OpenTaskError, make_task, make_task_id
 from flowgraph.work_item import (
@@ -24,6 +28,7 @@ from flowgraph.work_item import (
     completed_task,
     started_task,
     started_work_item,
+    work_item_row,
 )
 
 pytestmark = pytest.mark.command
@@ -184,6 +189,37 @@ def test_a_landing_completes_the_work_item_at_the_merge_commit() -> None:
     assert [(type(item), item.commit) for item in saved if isinstance(item, CompletedWorkItem)] == [
         (CompletedWorkItem, make_commit("3e9ae5c"))
     ]
+
+
+def last_of_a_started_feature() -> Store:
+    """The store of a record whose started Feature F-0001 holds S-0001 alone, ready to land."""
+    last = replace(READY, parent=make_feature_id(1))
+    feature = make_feature(make_feature_id(1), "a feature title", ["a criterion"], "", CREATED)
+    started = started_feature(feature, CREATED)
+    return replace(
+        store(last),
+        find_work_item_rows=lambda kind: [work_item_row(last)] if kind == STORY_KIND else [],
+        features=FeatureStore(lambda _: started, lambda _: None, lambda: ["F-0001"]),
+    )
+
+
+def test_a_landing_that_completes_the_feature_of_the_work_item_names_it_after_the_work_item() -> (
+    None
+):
+    kept, tree = last_of_a_started_feature(), work_tree([])
+    landed = land_item("S-0001", MESSAGE, kept, lambda: NOW, RECORD, lambda _: tree, ON, no_gate)
+    assert landed == Said("landed S-0001 at 3e9ae5c\ncompleted F-0001 at 3e9ae5c\n")
+
+
+def test_a_landing_that_completes_the_feature_commits_the_record_once_naming_both() -> None:
+    steps: list[object] = []
+    kept, tree = last_of_a_started_feature(), work_tree(steps)
+    land_item("S-0001", MESSAGE, kept, lambda: NOW, RECORD, lambda _: tree, ON, no_gate)
+    assert steps[2] == (
+        "commit",
+        [".fgraph/items/S-0001.toml"],
+        "chore: complete S-0001 and F-0001 in the record",
+    )
 
 
 def test_a_branch_without_a_worktree_is_deleted_alone() -> None:

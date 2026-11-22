@@ -239,7 +239,8 @@ def land_item(
     the complete when a Task of it is not completed or its decision is missing, GateError when
     the gate exits with another status than 0, and GitError when git refuses a step. Nothing is
     merged unless main is moved; a step refused after it says how far the landing came. A record
-    git ignores is completed with no commit of the record.
+    git ignores is completed with no commit of the record. The last work item of a started
+    Feature completes the Feature in that commit of the record, named after the landing.
     """
     item_id = parse_work_item_id_of_any_kind(item)
     text = work_item_id_text(item_id)
@@ -269,4 +270,6 @@ def land_item(
         raise GitError(
             f"{error} -- {landed}, its worktree and its branch are not removed"
         ) from error
-    return Said(f"landed {text} at {sha}\n")
+    # What the complete says after the line of the work item: the Feature completed with it.
+    _, _, with_it = written.out.partition("\n")
+    return Said(f"landed {text} at {sha}\n{with_it}")

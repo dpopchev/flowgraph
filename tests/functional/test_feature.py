@@ -111,7 +111,7 @@ def test_a_feature_is_in_progress_once_a_work_item_of_it_is_started(tmp_path: Pa
     ]
 
 
-def test_a_feature_is_completed_once_each_work_item_of_it_is_completed_or_removed(
+def test_a_feature_is_completed_by_the_completion_that_leaves_each_work_item_completed_or_removed(
     tmp_path: Path,
 ) -> None:
     runs(
@@ -123,8 +123,8 @@ def test_a_feature_is_completed_once_each_work_item_of_it_is_completed_or_remove
         ["start", "F-0001"],
         ["start", "T-0001"],
         ["complete", "T-0001", "--commit", "abc1234"],
-        ["complete", "S-0001", "--commit", "def5678"],
         ["remove", "B-0001", "--reason", "not a bug"],
+        ["complete", "S-0001", "--commit", "def5678"],
     )
     assert fgraph(["show", "F-0001"], tmp_path).out.splitlines()[1] == "  bucket       Completed"
 

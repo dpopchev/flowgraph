@@ -157,14 +157,16 @@ class TestTheNextStoryOfAStartedFeatureStartedOnceTheFirstIsCompleted:
         )
 
 
-def test_a_started_feature_whose_stories_are_all_completed_or_removed_is_listed_completed(
+def test_a_started_feature_whose_last_story_in_backlog_is_removed_stays_in_progress(
     tmp_path: Path,
 ) -> None:
     remove = ["remove", "S-0002", "--reason", "not needed"]
     runs(tmp_path, *TWO_STORIES, START_FEATURE, *COMPLETE_FIRST, remove)
-    assert fgraph(["status"], tmp_path, LATER).out.splitlines()[2:4] == [
-        "Completed (1)",
+    assert fgraph(["status"], tmp_path, LATER).out.splitlines()[:4] == [
+        "Backlog (0)",
+        "InProgress (1)",
         "  F-0001  1/1 W  a feature title",
+        "Completed (0)",
     ]
 
 

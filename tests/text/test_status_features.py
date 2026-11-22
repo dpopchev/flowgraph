@@ -49,6 +49,13 @@ def test_a_feature_is_listed_among_the_work_items_of_its_bucket_in_the_order_giv
     ]
 
 
+def test_a_feature_completed_in_a_commit_is_listed_with_it_between_its_progress_and_its_title() -> (
+    None
+):
+    landed = FeatureRow("F-0004", "a landed feature", "Completed", 2, 2, commit="def5678")
+    assert status_text([landed]).splitlines()[-1] == "  F-0004  2/2 W  def5678  a landed feature"
+
+
 def test_the_started_work_items_of_a_feature_are_listed_under_its_line_indented() -> None:
     assert status_text([BEGUN]).splitlines()[1:6] == [
         "InProgress (1)",

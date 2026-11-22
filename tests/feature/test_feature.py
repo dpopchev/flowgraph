@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph.criterion import EmptyPartError
+from flowgraph.criterion import EmptyPartError, make_commit
 from flowgraph.feature import (
     Feature,
     FeatureDetail,
@@ -16,11 +16,13 @@ from flowgraph.feature import (
     NoCriterionError,
     add_feature,
     bucket_of,
+    completed_feature,
     feature_detail,
     make_feature,
     next_feature_id,
     read_feature,
     read_feature_ids,
+    started_feature,
     write_feature,
 )
 from flowgraph.parent import (
@@ -122,6 +124,12 @@ def test_a_feature_reads_as_its_detail() -> None:
     assert feature_detail(FEATURE) == FeatureDetail(
         "F-0001", "a title", "why", ["a criterion", "another"]
     )
+
+
+@pytest.mark.view
+def test_a_feature_completed_in_a_commit_reads_as_its_detail_with_the_sha() -> None:
+    landed = completed_feature(started_feature(FEATURE, CREATED), CREATED, make_commit("abc1234"))
+    assert feature_detail(landed).commit == "abc1234"
 
 
 @pytest.mark.command

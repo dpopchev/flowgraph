@@ -88,13 +88,16 @@ def _item_lines(row: WorkItemRow | FeatureRow) -> str:
 def _feature_lines(feature: FeatureRow) -> str:
     """One Feature: its id, its work items completed of all, then its title.
 
-    Under it each started work item of it, written as one of a bucket is with its Tasks being
-    worked, two columns further in.
+    A completed one is listed with its commit before its title, as a completed work item is,
+    after the progress every line of a Feature holds right after its id. Under it each started
+    work item of it, written as one of a bucket is with its Tasks being worked, two columns
+    further in.
     """
     progress = f"{feature.completed}/{feature.held} W"
+    commit = f"{feature.commit}  " if feature.commit else ""
     started = (line for row in feature.started for line in _status_line(row).splitlines())
     under = "".join(f"  {line}\n" for line in started)
-    return f"  {feature.id}  {progress}  {feature.title}\n{under}"
+    return f"  {feature.id}  {progress}  {commit}{feature.title}\n{under}"
 
 
 def _top_of(items: Sequence[str], top: int | None) -> list[str]:
@@ -142,13 +145,15 @@ def feature_text(detail: FeatureDetail, rows: Iterable[StoryRow | UpkeepRow], bu
     """The Feature with its bucket, its criteria, then its work items with their buckets.
 
     The bucket of a Feature is read from its state and its work items, so it is given; a
-    description is listed only when there is one.
+    commit and a description are listed only when there is one.
     """
     listed = list(rows)
+    committed = [f"  commit       {detail.commit}\n"] if detail.commit else []
     described = [f"  description  {detail.description}\n"] if detail.description else []
     lines = [
         f"{detail.id}  {detail.title}\n",
         f"  bucket       {bucket}\n",
+        *committed,
         *described,
         f"Criteria ({len(detail.criteria)})\n",
         *(f"  {criterion}\n" for criterion in detail.criteria),

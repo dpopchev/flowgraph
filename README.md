@@ -25,7 +25,7 @@ lands it. `fgraph config` shows the configuration and sets a key of it.
 | where the record lives          | located on every call but `--help`                       |
 | the record and its flow         | a work item with its Tasks, from Backlog to Completed    |
 | the kinds of work item          | Story, Upkeep, Bug, Spike                                |
-| the level above                 | a Feature groups work items and starts with its first    |
+| the level above                 | a Feature groups work items, starts and completes        |
 | the order of the Backlog        | a queue, reordered by `fgraph reorder`, Features too     |
 | the wording of a work item      | rewritten by `fgraph amend` while in Backlog             |
 | git                             | every write of the record committed, unless turned off   |
@@ -819,9 +819,9 @@ fgraph show F-0001
 ```
 
 A Feature has a state of its own, kept in its file as that of a work item is:
-it is in Backlog until `fgraph start` starts it, and InProgress from then on,
-with its started time (below). Completed has no state yet: a Feature is
-listed there when each of its work items is completed or removed. `fgraph
+it is in Backlog until `fgraph start` starts it, InProgress from then on,
+with its started time, and Completed once its last work item is completed,
+with its completed time and the commit of that completion (below). `fgraph
 show S-0001` names the Feature as its `parent`. An add exits 2 and names why
 when a criterion or the title is blank or when `--parent` names no Feature of
 the record. A Feature is kept as `items/F-0001.toml`.
@@ -893,15 +893,90 @@ fgraph status
 ```
 
 The lines under a Feature belong to it: they count neither beside the heading
-nor toward the top 5. When each work item of the Feature is completed or
-removed, the Feature is one line under Completed, `F-0001  1/1 W  <title>`:
-that bucket is still derived from its work items, nothing completes a Feature
-yet.
+nor toward the top 5.
+
+A Feature moves to Completed with its last work item: the completion that
+leaves each work item of a started Feature completed or removed completes the
+Feature in the same write. Here S-0001 is the one work item of F-0001:
+
+```sh
+fgraph complete S-0001 --commit 677f9b0
+# completed S-0001 at 677f9b0
+# completed F-0001 at 677f9b0
+
+fgraph status
+# Backlog (1)
+#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# InProgress (0)
+# Completed (1)
+#   F-0001  1/1 W  677f9b0  Raise the kinds of work a project tracks with fgraph from 1 to 5
+
+fgraph show F-0001
+# F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
+#   bucket       Completed
+#   commit       677f9b0
+# Criteria (2)
+#   a developer sees every work item of the project by bucket
+#   a developer adds every kind of work
+# Work items (1)
+#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  Completed
+```
+
+The Feature holds the commit of that completion as its evidence, and none
+when the work item is completed without one, as with the development off:
+`completed S-0001`, then `completed F-0001`, and the line of the Feature is
+`F-0001  1/1 W  <title>`. The line of a completed Feature is its id, its
+progress, its commit and its title: the progress stays right after the id, as
+on its line in any bucket, and the commit stands before the title, as on the
+line of a completed work item. It is placed under Completed by its completed
+time, and its completed work items stay within it: counted in its progress,
+listed by `fgraph show F-0001`, on no line of `fgraph status`. The Feature
+and the work item are completed in one commit of the record, `chore: complete
+S-0001 and F-0001 in the record`.
+
+With the development on, `fgraph land` of the last work item completes the
+Feature the same way, at the commit the landing leaves main on:
+
+```sh
+fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
+# landed S-0001 at 3e9ae5c
+# completed F-0001 at 3e9ae5c
+```
+
+The Feature is written on main, as the landing is. `fgraph complete S-0001`
+in the worktree of S-0001, whose branch writes S-0001 alone, exits 2 with
+nothing written when it would complete the Feature:
+
+```sh
+fgraph complete S-0001 --commit 677f9b0
+# fgraph: error: F-0001 is not written here: the branch wi/S-0001-raise-the-stories-fgraph writes S-0001 alone
+```
+
+Only a completion completes a Feature. A completion that leaves a work item
+of it in Backlog leaves the Feature started, and so does `fgraph remove` of
+its last work item in Backlog: that Feature stays under InProgress,
+`F-0001  1/1 W  <title>`, until a work item added under it is completed. A
+removed work item holds nothing back and is counted in neither number. No
+command completes a Feature by itself.
+
+A completed Feature takes no start and no work item added under it; each
+exits 2 with nothing written:
+
+```sh
+fgraph start F-0001
+# fgraph: error: F-0001 is completed already
+
+fgraph add story "Raise the Stories fgraph lists under Completed from 0 to 1" \
+  --given "a started Story" --when "it is completed" \
+  --then "fgraph status lists it under Completed" --parent F-0001
+# fgraph: error: F-0001 is completed already
+```
 
 The start of a Feature exits 2 and names why, with nothing written and no
 branch made:
 
 - when it is started already: `F-0001 is started already`;
+- when it is completed: `F-0001 is completed already`;
 - when it has no work item in Backlog:
   `F-0001 has no work item in Backlog to start with`;
 - when its first work item has no Task:
@@ -934,7 +1009,10 @@ Feature written before it had a state is such a file. `fgraph status` and
 did -- InProgress once one of them is started or completed, Completed when
 each is completed or removed -- a started work item of it is worked and
 completed as before, and `fgraph start` of the Feature starts its next work
-item in Backlog and writes the state line.
+item in Backlog and writes the state line. A Feature never started is
+completed by nothing: the completion of its last work item writes that work
+item alone, and the Feature keeps its derived bucket, listed under Completed
+without a commit, `F-0001  7/7 W  <title>`.
 
 The state of a Feature reverses the developer's decision of 2026-11-21 that a
 Feature has no state and that its bucket is derived from its work items. The
@@ -1207,8 +1285,9 @@ record`, `chore: amend S-0001 in the record`, `chore: reorder S-0002 before
 S-0001 in the record` -- a Feature by its id, `chore: reorder F-0001 before
 S-0001 in the record` --, `chore: start T-0001 of S-0001 in the record`,
 `chore: start F-0001 in the record` for a Feature and its first work item
-together, `chore: complete S-0001 in the record`, `chore: set
-development.enabled in the record`. A write that leaves its file as it was
+together, `chore: complete S-0001 in the record`, `chore: complete S-0001 and
+F-0001 in the record` for a work item and the Feature it completes, `chore:
+set development.enabled in the record`. A write that leaves its file as it was
 makes no commit. Outside a git work tree a write is made as before, with no
 commit and no warning, and so is every write of a record with the commits
 turned off. A commit git refuses exits 2 and names the git command, and every

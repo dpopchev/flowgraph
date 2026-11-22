@@ -88,7 +88,9 @@ def test_a_feature_with_a_started_story_is_listed_in_progress_with_the_story_und
     ]
 
 
-def test_a_feature_whose_story_is_completed_is_listed_completed(tmp_path: Path) -> None:
+def test_a_feature_whose_story_is_completed_is_listed_completed_with_the_commit_of_the_story(
+    tmp_path: Path,
+) -> None:
     listed = status_after(
         tmp_path,
         ADD_FEATURE,
@@ -101,7 +103,7 @@ def test_a_feature_whose_story_is_completed_is_listed_completed(tmp_path: Path) 
     )
     assert listed.out.splitlines()[2:] == [
         "Completed (1)",
-        "  F-0001  1/1 W  a feature title",
+        "  F-0001  1/1 W  def5678  a feature title",
     ]
 
 

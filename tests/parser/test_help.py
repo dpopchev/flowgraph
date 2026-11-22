@@ -74,6 +74,7 @@ def test_every_command_kind_under_add_and_action_under_config_has_its_help() -> 
             ("add", "spike"),
             ("add", "story"),
             ("add", "task"),
+            ("add", "term"),
             ("add", "upkeep"),
             ("amend",),
             ("block",),
@@ -90,6 +91,7 @@ def test_every_command_kind_under_add_and_action_under_config_has_its_help() -> 
             ("show",),
             ("start",),
             ("status",),
+            ("terms",),
             ("unblock",),
             ("watch",),
         ]

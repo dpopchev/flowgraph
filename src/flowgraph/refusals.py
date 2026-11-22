@@ -35,6 +35,8 @@ from flowgraph.task import (
     TaskInProgressError,
     TaskNotFoundError,
 )
+from flowgraph.term import TermError, TermFileError, TermNotFoundError
+from flowgraph.term_item import TermExistsError
 from flowgraph.watch import PaceError
 from flowgraph.work_item import (
     NoPartError,
@@ -95,4 +97,8 @@ REFUSED = (
     StartWaitsError,
     PaceError,
     KindListedError,
+    TermError,
+    TermFileError,
+    TermNotFoundError,
+    TermExistsError,
 )

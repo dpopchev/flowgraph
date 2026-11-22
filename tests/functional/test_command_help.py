@@ -23,6 +23,7 @@ COMMANDS = [
     ("add", "bug"),
     ("add", "spike"),
     ("add", "feature"),
+    ("add", "term"),
     ("amend",),
     ("show",),
     ("start",),
@@ -32,6 +33,7 @@ COMMANDS = [
     ("land",),
     ("note",),
     ("knowledge",),
+    ("terms",),
     ("remove",),
     ("reorder",),
     ("status",),
@@ -144,6 +146,7 @@ def test_the_help_of_add_lists_the_kinds() -> None:
         "bug",
         "spike",
         "feature",
+        "term",
     ]
 
 

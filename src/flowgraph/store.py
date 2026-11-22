@@ -35,6 +35,14 @@ from flowgraph.parent import FeatureId
 from flowgraph.queue import QUEUE, LoadQueue, Queue, SaveQueue, read_queue, write_queue
 from flowgraph.spike import SPIKE
 from flowgraph.story import STORY
+from flowgraph.term import (
+    Term,
+    TermNotFoundError,
+    read_term,
+    read_term_names,
+    term_file,
+    write_term,
+)
 from flowgraph.upkeep import UPKEEP
 from flowgraph.work_item import (
     FindTaskIds,
@@ -90,6 +98,33 @@ def _take_none(feature: FeatureState) -> Never:
 NO_FEATURES = FeatureStore(_hold_none, _take_none, list)
 
 
+@dataclass(frozen=True)
+class TermStore:
+    """The reads and writes of the terms of one record."""
+
+    load_term: Callable[[str], Term]
+    save_term: Callable[[Term], None]
+    find_term_names: Callable[[], list[str]]
+
+
+class NoTermStoreError(Exception):
+    """A term saved into a store that was built without the terms of its record."""
+
+
+def _hold_no_term(name: str) -> Never:
+    """The load of a store that holds no term."""
+    raise TermNotFoundError(name)
+
+
+def _take_no_term(term: Term) -> Never:
+    """The save of a store that takes no term."""
+    raise NoTermStoreError(f"this store keeps no term: {term.name!r} is not saved")
+
+
+# The terms of a store built without them: it holds none and takes none.
+NO_TERMS = TermStore(_hold_no_term, _take_no_term, list)
+
+
 class NoSettingsStoreError(Exception):
     """Settings saved into a store that was built without the settings of its record."""
 
@@ -103,7 +138,8 @@ def _take_no_settings(settings: Settings) -> Never:
 class Store:
     """The reads and writes of one record, each already bound to its directory.
 
-    A store built without its Features holds none, and so does one built without its settings.
+    A store built without its Features holds none, and so does one built without its terms or
+    its settings.
     """
 
     find_work_item_rows: FindKindRows
@@ -116,6 +152,7 @@ class Store:
     find_changed_files: FindChangedFiles
     restore_files: RestoreFiles
     features: FeatureStore = NO_FEATURES
+    terms: TermStore = NO_TERMS
     load_settings: LoadSettings = dict
     save_settings: SaveSettings = _take_no_settings
 
@@ -152,6 +189,11 @@ def open_files(record: Path) -> Store:
         journal = noted(journal, feature_file(record, feature.id))
         write_feature(record, feature)
 
+    def save_term(term: Term) -> None:
+        nonlocal journal
+        journal = noted(journal, term_file(record, term.name))
+        write_term(record, term)
+
     def save_settings(settings: Settings) -> None:
         nonlocal journal
         journal = noted(journal, record / CONFIG)
@@ -160,6 +202,7 @@ def open_files(record: Path) -> Store:
     features = FeatureStore(
         partial(read_feature, record), save_feature, partial(read_feature_ids, record)
     )
+    terms = TermStore(partial(read_term, record), save_term, partial(read_term_names, record))
     return Store(
         find_work_item_rows=partial(work_item.read_work_item_rows, record),
         load_work_item=partial(work_item.read_work_item, record, kinds=KINDS),
@@ -171,6 +214,7 @@ def open_files(record: Path) -> Store:
         find_changed_files=lambda: changed_files(journal),
         restore_files=lambda: restore(journal),
         features=features,
+        terms=terms,
         load_settings=partial(read_settings, record),
         save_settings=save_settings,
     )

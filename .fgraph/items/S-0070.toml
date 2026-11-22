@@ -13,31 +13,43 @@ then = "fgraph terms lists the term, and fgraph show of its name prints its mean
 
 [[tasks]]
 id = "T-0290"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_add_term.py, failing on the criterion of S-0070"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_add_story.py does. Seen red, then marked a strict xfail naming S-0070 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_add_term.py states that, on a record, fgraph add term with a name and --means with its meaning exits 0, fgraph terms lists the term, and fgraph show of its name prints its meaning"
 created = 2026-11-22 10:47:52+00:00
+started = 2026-11-22 16:18:30+00:00
+completed = 2026-11-22 16:18:43+00:00
+commit = "54fd168"
 
 [[tasks]]
 id = "T-0291"
-state = "backlog"
+state = "completed"
 title = "Create src/flowgraph/term.py holding the Term and the file that keeps it"
 description = "New code the next Task runs. A term is a node of the record, not a tag on a knowledge line. It has no flow: it is in no bucket and no queue."
 expected_output = "created: src/flowgraph/term.py holds the Term -- its name, its meaning and the time it was added -- built by its constructor alone: a name is lowercase words of letters and digits joined by -, and it is the id of the term; a blank meaning and a name that reads as the id of an item, F-0001 or S-0001, are refused; one file per term, terms/<name>.toml in the record, written checked and read back whole, a file that holds no term refused naming it; tests/term/ states each"
 created = 2026-11-22 10:47:53+00:00
+started = 2026-11-22 16:18:44+00:00
+completed = 2026-11-22 16:23:09+00:00
+commit = "5784592"
 
 [[tasks]]
 id = "T-0292"
-state = "backlog"
+state = "completed"
 title = "Add the term to fgraph add, the terms command and the show of a term"
 description = "Removes the xfail mark of tests/functional/test_add_term.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit. Open, to settle with the developer when this Task starts: whether the worktree of a started work item reads the terms of main, as Task ids are read across worktrees."
 expected_output = "changed: fgraph add term NAME --means TEXT adds the term as one write and one commit on main, chore: add term gate in the record, and says added gate; a name the record holds already is refused; fgraph terms lists every term by name with its meaning, and one line saying so when there is none; fgraph show NAME prints the term with its meaning; a name that is no term of the record is refused as a wrong id is; on the branch of a work item a term is not added, refused naming the work item the branch owns; fgraph add term --help and fgraph terms --help print their menus"
 created = 2026-11-22 10:47:55+00:00
+started = 2026-11-22 16:23:10+00:00
+completed = 2026-11-22 16:35:23+00:00
+commit = "7f8bc37"
 
 [[tasks]]
 id = "T-0293"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say the record keeps the terms of the project"
 expected_output = "changed: README.md shows a term added, listed and shown, and its Status table says the ontology is started; docs/domain-model.md says what a term is and holds, that its name is its id, that it has no flow, where it is kept and written, and what is refused; docs/board-review.md, Open questions, says the question of a term as a tag or a node is answered: a node"
 created = 2026-11-22 10:47:56+00:00
+started = 2026-11-22 16:35:24+00:00
+completed = 2026-11-22 16:41:43+00:00
+commit = "fe58b5b"

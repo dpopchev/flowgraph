@@ -70,6 +70,7 @@ from flowgraph.scope import (
 )
 from flowgraph.setting import set_setting, show_config, unset_setting
 from flowgraph.store import OpenStore, Store, open_files
+from flowgraph.term_item import add_term_item, terms_text
 from flowgraph.terminal import Height, Width, no_terminal, terminal_height, terminal_width
 from flowgraph.text import cut_lines
 from flowgraph.watch import Wait, framed, make_pace, watch
@@ -107,6 +108,8 @@ def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -
     match args.command:
         case "add" if args.kind == "task":
             return write_task(args.parent, args.title, args.output, args.description, store, now)
+        case "add" if args.kind == "term":
+            return add_term_item(args.name, args.means, store, now)
         case "add" if args.kind == "feature":
             return add_feature_item(args.title, args.criterion, args.description, store, now)
         case "add":
@@ -232,6 +235,8 @@ def _said(
             )
         case "knowledge":
             return Said(show_knowledge(args.kind, store))
+        case "terms":
+            return Said(terms_text(store))
         case "show":
             return Said(show_any_item(args.id, store))
         case "status":

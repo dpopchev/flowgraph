@@ -131,6 +131,20 @@ fgraph about gate
 #     S-0001  decision  2026-11-22  a lane holds one work item  (via lane)
 ```
 
+`fgraph about` of the path of a file lists the completed work items and Tasks
+whose commits changed it, newest first, each on a line of its id, its commit and
+its title, a Task under its work item. Nothing is stored for a file: the answer
+is read from git, by the commit each completed item names. The path is taken from
+the directory fgraph runs in. A work item that only a Task of it touched shows `-`
+for its commit. With two work items that touched `src/gate.py`:
+
+```sh
+fgraph about src/gate.py
+# S-0002  4f2a9c1  Hold the landing
+#   T-0004  91be07d  Add the gate to the landing
+# S-0001  c03d5e8  Run the gate
+```
+
 ## Use
 
 `fgraph` looks for the record in the directory it runs in: `.fgraph/` first,

@@ -1,5 +1,6 @@
 """The status of a record: its items by bucket, the text fgraph writes, the terminal, the watch."""
 
+from flowgraph.status.document import StatusFormatError
 from flowgraph.status.show import feature_text, show_text
 from flowgraph.status.terminal import (
     Height,
@@ -18,6 +19,7 @@ from flowgraph.status.view import (
     rows_by_id,
     rows_under,
     status_item,
+    status_output,
 )
 from flowgraph.status.watch import CLEAR, Pace, PaceError, Wait, framed, make_pace, watch
 
@@ -31,6 +33,7 @@ __all__ = [
     "Height",
     "Pace",
     "PaceError",
+    "StatusFormatError",
     "Wait",
     "Width",
     "backlog_as_added",
@@ -44,6 +47,7 @@ __all__ = [
     "rows_under",
     "show_text",
     "status_item",
+    "status_output",
     "status_text",
     "terminal_height",
     "terminal_width",

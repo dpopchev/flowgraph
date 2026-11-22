@@ -4,6 +4,7 @@ import argparse
 
 from flowgraph.graph import JSON
 from flowgraph.parser.base import Commands, new_command
+from flowgraph.status import document
 from flowgraph.term import KINDS
 
 # The items status lists under one heading, unless every one is asked for.
@@ -186,7 +187,14 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     status.add_argument(
         "--all",
         action="store_true",
-        help=f"list every item, instead of the top {TOP} under each heading",
+        help=f"list every item, instead of the top {TOP} under each heading; {document.JSON} lists"
+        " every item whether or not it is given",
+    )
+    status.add_argument(
+        "--format",
+        default=document.TEXT,
+        metavar="FORMAT",
+        help=f"the format it prints: {document.TEXT}, the default, or {document.JSON}",
     )
     watch = new_command(
         commands, "watch", "follow the record live: redraw its status every interval"

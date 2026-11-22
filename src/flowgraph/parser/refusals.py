@@ -28,7 +28,7 @@ from flowgraph.record.queue_file import QueueFileError
 from flowgraph.relation import RelationError
 from flowgraph.relation.depends import StartWaitsError
 from flowgraph.relation.read import RelationReadError
-from flowgraph.status import PaceError
+from flowgraph.status import PaceError, StatusFormatError
 from flowgraph.task import (
     BlockedError,
     CompletedAlreadyError,
@@ -118,6 +118,7 @@ REFUSED = (
     PaceError,
     KindListedError,
     FormatError,
+    StatusFormatError,
     TermError,
     TermFileError,
     TermNotFoundError,

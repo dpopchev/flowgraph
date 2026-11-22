@@ -110,7 +110,6 @@ def document(printed: Outcome) -> dict[str, Any]:
     return json.loads(printed.out)
 
 
-@pytest.mark.xfail(strict=True, reason="S-0087: fgraph status has no --format json yet")
 class TestARecordWithAnItemInEveryBucket:
     def test_status_exits_with_zero(self, printed: Outcome) -> None:
         assert printed.status == 0

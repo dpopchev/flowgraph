@@ -30,6 +30,7 @@ lists the lines of the whole record.
 | the kinds of work item          | Story, Upkeep, Bug, Spike                                |
 | the level above                 | a Feature groups work items, takes each operation of one |
 | the order of the Backlog        | a queue, reordered by `fgraph reorder`, Features too     |
+| the relations of a work item    | `--depends-on`: its start waits for the work items named |
 | the wording of a work item      | `fgraph amend` in Backlog: parent too, a Feature's too   |
 | git                             | every write of the record committed, unless turned off   |
 | the layers of a record          | `.fgraph/config.toml`: commits on, development off       |
@@ -123,6 +124,41 @@ record, with its Tasks inside it; a Task id, `T-0001`, counts across the
 record. In a git repository it counts across the worktrees too: the next Task
 id is one above the highest in the record of main and of every worktree, so a
 Task added on a branch never takes an id main hands out meanwhile.
+
+A work item can depend on another: `--depends-on ID` of `fgraph add` and of
+`fgraph amend`, once per work item it waits for, of any kind. The start of it
+is refused, with exit 2, while one it depends on is not completed, and the
+refusal names each with its bucket; `fgraph show` lists them with their bucket
+as they are now:
+
+```sh
+fgraph add story "Raise the Stories fgraph lists under Backlog from 1 to 2" \
+  --given "a record with a Story in Backlog" \
+  --when "a second Story is added" \
+  --then "fgraph status lists both under Backlog" \
+  --depends-on S-0001
+# added S-0002
+
+fgraph add task "Add a second Story to the listing" --parent S-0002 --output "changed: cli.py"
+# added T-0002 to S-0002
+
+fgraph start S-0002
+# fgraph: error: S-0002 cannot start: it depends on S-0001, in Backlog
+
+fgraph show S-0002
+# S-0002  Raise the Stories fgraph lists under Backlog from 1 to 2
+#   bucket       Backlog
+#   depends on   S-0001 (Backlog)
+#   ...
+```
+
+`fgraph amend S-0002 --depends-on S-0003` replaces what it depends on and
+`--depends-on none` takes it all away. An id that is no work item of the
+record, a removed work item, the work item itself and a work item that depends
+on it, directly or through others, are refused at the write with exit 2, and
+nothing is written. The start of a Feature starts its first work item, and the
+next work item a completion starts is that of its Feature: both are refused as
+the start of that work item is, and say so.
 
 The prefix `S` of a Story is one letter, as that of every other kind, since
 the developer's choice of 2026-11-21: `Q` for the Spike left `S` to the

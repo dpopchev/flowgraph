@@ -134,6 +134,15 @@ something, so a blank one is refused where the line is built. A line is noted
 with `fgraph note` in Backlog, started, Completed or Removed alike, and is never
 amended or removed: it is added after the lines the item keeps already.
 
+A work item in any state also keeps its relations, the references it names to
+other work items. A relation is a typed reference stored on the item that names
+it, as the `parent` is, never on the item it names: the other side is derived
+by a view over the record, so a write is one file and the scope of a branch
+holds. The relations of an item are one value with a field per kind of
+relation, so a new kind is a new field. The first is `depends on`: the work
+items of any kind it waits for, none by default, each once, in the order given.
+A work item that names itself is refused where its relations are built.
+
 A Feature keeps its knowledge lines as a work item does, in each of its five
 states, and they stay on it through every move and every amend. A Task keeps
 none: what a Task learns is noted on its work item.
@@ -441,6 +450,41 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
   and `--criterion` given to a work item is refused the other way round,
   `S-0001 has no criteria: only a Feature states them`. Nothing is written
   then, the other parts named beside it neither.
+
+## Depends on
+
+A work item depends on the work items it waits for, the reading of S-0066:
+`fgraph add --depends-on ID` and `fgraph amend --depends-on ID` of a work item
+in Backlog, once per work item, of any kind. An amend replaces the ones it had,
+and `--depends-on none` alone takes them all away.
+
+- It refuses the start, not the work: `fgraph start` of a work item in Backlog
+  exits 2 while one it depends on is not completed, naming each with its
+  bucket, `S-0002 cannot start: it depends on S-0001, in Backlog`; several are
+  listed one after the other, `S-0003 cannot start: it depends on S-0001, in
+  Backlog; S-0002, in InProgress`. It stops refusing once each is Completed.
+  A work item it depends on that is removed is not completed, so it is named,
+  `in Removed`, until the depends on is amended.
+- The start of a Feature starts its first work item and the completion of a
+  work item starts the next one of its Feature, so both are refused as that
+  start is: `F-0001 cannot start: its first work item S-0002 cannot start: it
+  depends on S-0001, in Backlog`. A completion stands and says it on a line of
+  its own, `not started: S-0003 cannot start: it depends on S-0001, in
+  Backlog`, as for any next work item that cannot start.
+- The ids are checked at the write, and the write is refused with exit 2,
+  nothing written: an id of a kind no work item has, `no Story S-0009 in the
+  record` for one the record does not hold, `a work item cannot depend on
+  S-0002: it is removed`, `S-0001 cannot depend on itself`, and a dependency
+  that would close a cycle, `S-0001 cannot depend on S-0003: it would close a
+  cycle`, whether S-0003 depends on S-0001 directly or through others. `none`
+  given with an id is refused, `none stands alone: it takes every dependency
+  away`. A Feature is amended by its title, its description and its criteria,
+  so `--depends-on` given to one is refused as a part it has not.
+- `fgraph show` lists `depends on` with each id and the bucket it is in now,
+  `S-0001 (Backlog)`, after the parent, and lists none for a work item that
+  depends on none. The file holds the ids as `depends_on = ["S-0001"]`, only
+  when there is one, read back in every state; an id of no kind, or the work
+  item itself, makes the file refused when it is read.
 
 ## Evidence
 

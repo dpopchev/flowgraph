@@ -1,0 +1,11 @@
+id = "S-0090"
+state = "backlog"
+title = "Raise the landings fgraph pushes to the remote of the trunk, under delivery.push, from none to every one"
+description = "The words of the note: land, into the trunk, pushing when configured."
+parent = "F-0010"
+created = 2026-11-22 21:02:48+00:00
+
+[criterion]
+given = "a repository with an origin, the development on, delivery.push set to true and a started Story whose Tasks are completed"
+when = "fgraph land of the Story is run"
+then = "main of the origin is at the commit of the landing, with the write that completes the Story"

@@ -13,11 +13,12 @@ then = "the line of the Feature starts with ! and ends with what the Task waits 
 
 [[tasks]]
 id = "T-0199"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_status_feature_blocked.py, failing on the criterion of S-0055"
 description = "decided: S-0055: a started Task beside the blocked one does not lift the mark -- the Feature is marked while its started work item holds a blocked Task. Run through run() of src/flowgraph/cli.py on a record in tmp_path. Seen red, then marked a strict xfail naming S-0055 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_status_feature_blocked.py states that, on a record with a started Feature whose started Story holds a blocked Task, the line of the Feature in fgraph status starts with ! and ends with what the Task waits on"
 created = 2026-11-21 23:43:46+00:00
+started = 2026-11-22 02:51:17+00:00
 
 [[tasks]]
 id = "T-0200"

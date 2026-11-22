@@ -32,3 +32,11 @@ title = "Move the six modules that keep the record of src/flowgraph into a subpa
 description = "Written on 2026-11-22 against the modules of that day; the list is taken again when the Task starts. A move alone: no behavior changes."
 expected_output = "changed: record.py, store.py, journal.py, queue.py, config.py and setting.py of src/flowgraph are the modules of one subpackage, its name chosen in the Task and named in the commit, since record.py holds the word today; its __init__.py names what the other modules import; the tests of those modules state what they stated; make check passes"
 created = 2026-11-22 10:48:28+00:00
+
+[[tasks]]
+id = "T-0322"
+state = "backlog"
+title = "Move the remaining modules of src/flowgraph into the subpackage of their aggregate, leaving __init__.py and cli.py"
+description = "Written on 2026-11-22 against the modules of that day; the list is taken again when the Task starts. A move alone: no behavior changes."
+expected_output = "changed: src/flowgraph holds two modules outside a subpackage, __init__.py and cli.py, and fgraph = flowgraph.cli:main of pyproject.toml still runs; the item and its ids, the Task, the criterion, the Bug, the Spike, the parent, the views -- status, text, terminal, watch -- the parser, and the modules the knowledge base added -- knowledge, relation, term, about, graph -- each sit in the subpackage of their aggregate or their view, named after its domain term and never after a layer; the imports between subpackages are acyclic and go through public names; make check passes, and make wheel builds a wheel that ships every subpackage"
+created = 2026-11-22 10:48:30+00:00

@@ -16,6 +16,7 @@ from flowgraph.cli import run
 pytestmark = pytest.mark.functional
 
 COMMANDS = [
+    ("init",),
     ("add",),
     ("add", "story"),
     ("add", "task"),

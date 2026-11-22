@@ -13,10 +13,7 @@ import pytest
 
 from flowgraph.cli import open_files, read_config, run
 
-pytestmark = [
-    pytest.mark.functional,
-    pytest.mark.xfail(strict=True, reason="S-0082: fgraph init is not yet there"),
-]
+pytestmark = pytest.mark.functional
 
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 ADD_STORY = [
@@ -55,6 +52,7 @@ def fgraph(argv: Sequence[str], cwd: Path) -> Outcome:
         open_git=lambda _: None,
         now=lambda: NOW,
         load_config=read_config,
+        make_dir=Path.mkdir,
     )
     return Outcome(status, "".join(out), "".join(err))
 

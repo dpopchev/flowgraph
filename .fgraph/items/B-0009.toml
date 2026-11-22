@@ -31,8 +31,10 @@ commit = "2464eaa"
 
 [[tasks]]
 id = "T-0233"
-state = "started"
+state = "completed"
 title = "Say in README.md that a landing is refused while a merge is held in the checkout of main, and for a branch that brings nothing"
 expected_output = "changed: README.md names both refusals of a landing"
 created = 2026-11-22 06:59:18+00:00
 started = 2026-11-22 07:02:19+00:00
+completed = 2026-11-22 07:04:04+00:00
+commit = "f319d81"

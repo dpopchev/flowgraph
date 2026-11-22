@@ -7,3 +7,8 @@ criteria = [
     "a developer names the criterion of the Feature that the criterion of a work item is, or names none",
     "a developer sees the criteria of a Feature as met k of n",
 ]
+
+[[knowledge]]
+kind = "decision"
+text = "Relayed by the note of the ~/.claude session of 2026-11-22, as the word of the developer of that day: a Feature may hold work items whose criterion is none of its criteria."
+noted = 2026-11-22 21:04:38+00:00

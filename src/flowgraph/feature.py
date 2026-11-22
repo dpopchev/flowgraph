@@ -34,11 +34,13 @@ from flowgraph.feature_state import (
     commit_sha,
     completed_feature,
     make_feature,
+    noted_feature,
     removal_reason,
     removed_feature,
     started_feature,
     unblocked_feature,
 )
+from flowgraph.knowledge import KnowledgeKind, KnowledgeRow, knowledge_row, make_knowledge_line
 from flowgraph.parent import FeatureId, feature_id_text, make_feature_id, parse_feature_id
 from flowgraph.record import Now
 from flowgraph.work_item import WorkItemRow
@@ -61,6 +63,8 @@ __all__ = [
     "completed_feature",
     "feature_file",
     "make_feature",
+    "note_feature",
+    "noted_feature",
     "read_feature",
     "read_feature_ids",
     "removed_feature",
@@ -95,6 +99,7 @@ class FeatureDetail:
     commit: str = ""
     reason: str = ""
     waiting_on: str = ""
+    knowledge: list[KnowledgeRow] = field(default_factory=list[KnowledgeRow])
 
 
 @dataclass
@@ -144,6 +149,7 @@ def feature_detail(feature: FeatureState) -> FeatureDetail:
         commit_sha(feature),
         reason or removal_reason(feature),
         waiting_on,
+        [knowledge_row(line) for line in feature.knowledge],
     )
 
 
@@ -199,6 +205,24 @@ def feature_row(feature: FeatureState, states: Collection[str]) -> FeatureRow:
         waiting_on=block_of(feature)[1],
         reason=removal_reason(feature),
     )
+
+
+def note_feature(
+    *,
+    feature_id: FeatureId,
+    kind: KnowledgeKind,
+    text: str,
+    load_feature: LoadFeature,
+    save_feature: SaveFeature,
+    now: Now,
+) -> None:
+    """Keep a line of that kind and text on the Feature of that id, in any state, and save it.
+
+    The line goes after the lines the Feature keeps. Raises FeatureNotFoundError when the record
+    holds no such Feature and EmptyPartError when the text is blank; nothing is saved.
+    """
+    line = make_knowledge_line(kind, text, now())
+    save_feature(noted_feature(load_feature(feature_id), line))
 
 
 def add_feature(

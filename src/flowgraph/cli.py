@@ -31,6 +31,7 @@ from flowgraph.feature_item import (
     show_any_item,
 )
 from flowgraph.feature_next import complete_and_start_next
+from flowgraph.feature_note import note_named
 from flowgraph.feature_remove import remove_named
 from flowgraph.feature_start import (
     check_start_under_feature,
@@ -41,7 +42,6 @@ from flowgraph.item import (
     Written,
     add_item,
     kind_named,
-    note_item,
     reorder_item,
     start_item,
     status_item,
@@ -144,7 +144,7 @@ def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -
                 )
                 if text is not None
             )
-            return note_item(args.id, kind, text, store, now)
+            return note_named(args.id, kind, text, store, now)
         case "reorder":
             return reorder_item(args.id, args.before, store)
         case _:

@@ -7,7 +7,7 @@ as the commands of a work item do (`flowgraph.item`).
 """
 
 from collections.abc import Sequence
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, fields, replace
 from typing import assert_never
 
 from flowgraph.feature import (
@@ -56,13 +56,14 @@ def amended_feature(feature: FeatureState, amendment: FeatureAmendment) -> Featu
             if amendment == FeatureAmendment():
                 raise NoPartError(f"amend rewrites no part of {named}: name one")
             title, described, criteria = amendment.title, amendment.description, amendment.criteria
-            return make_feature(
+            amended = make_feature(
                 feature.id,
                 feature.title if title is None else title,
                 feature.criteria if criteria is None else criteria,
                 feature.description if described is None else described,
                 feature.created,
             )
+            return replace(amended, knowledge=feature.knowledge)
         case StartedFeature():
             raise StartedAlreadyError(f"{named} is started already")
         case BlockedFeature():

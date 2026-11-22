@@ -134,6 +134,10 @@ something, so a blank one is refused where the line is built. A line is noted
 with `fgraph note` in Backlog, started, Completed or Removed alike, and is never
 amended or removed: it is added after the lines the item keeps already.
 
+A Feature keeps its knowledge lines as a work item does, in each of its five
+states, and they stay on it through every move and every amend. A Task keeps
+none: what a Task learns is noted on its work item.
+
 ## States are types
 
 The state of an item is its type, so an item carries only what its state
@@ -564,6 +568,14 @@ and its merge tool.
   nothing written. `fgraph show` lists the
   lines under `Knowledge (n)` after the Tasks, each with its kind, its date and
   its text, and no heading when there is none.
+- The file of a Feature holds its lines of knowledge as a work item's does, the
+  same `[[knowledge]]` tables, read back whole in every state. `fgraph note` of a
+  Feature is one write and one commit, `chore: note F-0001 in the record`, and
+  says `noted F-0001`; `fgraph show` lists the lines under `Knowledge (n)` after
+  its work items. It is written on `main` alone: on the branch of a work item,
+  which writes that work item alone, the note of a Feature is refused naming it,
+  as the write of any other item is, exit 2 and nothing written. A Task takes no
+  note: its id is refused.
 - A blocked Task is kept as `state = "blocked"` with its `started` time, its
   `since` time, its `reason` and its `waiting_on`. Only a started work item's
   file may hold one, and it is read back through its start and its block.

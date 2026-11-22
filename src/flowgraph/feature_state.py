@@ -7,11 +7,12 @@ removed with its reason: Removed stands apart from the flow, and a removed Featu
 """
 
 from collections.abc import Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 from typing import assert_never
 
 from flowgraph.criterion import Evidence, evidence_text, said
+from flowgraph.knowledge import KnowledgeLine
 from flowgraph.parent import FeatureId, feature_id_text
 from flowgraph.task import (
     BlockedError,
@@ -39,6 +40,7 @@ class Feature:
     description: str
     criteria: tuple[str, ...]
     created: datetime
+    knowledge: tuple[KnowledgeLine, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -51,6 +53,7 @@ class StartedFeature:
     criteria: tuple[str, ...]
     created: datetime
     started: datetime
+    knowledge: tuple[KnowledgeLine, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -66,6 +69,7 @@ class BlockedFeature:
     reason: str
     since: datetime
     waiting_on: str
+    knowledge: tuple[KnowledgeLine, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -80,6 +84,7 @@ class CompletedFeature:
     started: datetime
     completed: datetime
     commit: Evidence
+    knowledge: tuple[KnowledgeLine, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -93,6 +98,7 @@ class RemovedFeature:
     created: datetime
     removed: datetime
     reason: str
+    knowledge: tuple[KnowledgeLine, ...] = ()
 
 
 # A Feature in any of its states, as the record keeps it.
@@ -144,6 +150,7 @@ def started_feature(feature: FeatureState, on: datetime) -> StartedFeature:
                 feature.criteria,
                 feature.created,
                 on.replace(microsecond=0),
+                feature.knowledge,
             )
         case StartedFeature():
             raise StartedAlreadyError(f"{feature_id_text(feature.id)} is started already")
@@ -180,6 +187,7 @@ def blocked_feature(
                 said("reason", reason),
                 on.replace(microsecond=0),
                 said("waiting on", waiting_on),
+                feature.knowledge,
             )
         case BlockedFeature():
             raise BlockedError(f"{feature_id_text(feature.id)} is blocked already")
@@ -205,6 +213,7 @@ def unblocked_feature(feature: FeatureState) -> StartedFeature:
                 feature.criteria,
                 feature.created,
                 feature.started,
+                feature.knowledge,
             )
         case Feature() | StartedFeature() | CompletedFeature() | RemovedFeature():
             raise NotBlockedError(f"{feature_id_text(feature.id)} is not blocked")
@@ -232,6 +241,7 @@ def completed_feature(feature: FeatureState, on: datetime, commit: Evidence) -> 
                 feature.started,
                 on.replace(microsecond=0),
                 commit,
+                feature.knowledge,
             )
         case CompletedFeature():
             raise CompletedAlreadyError(f"{feature_id_text(feature.id)} is completed already")
@@ -258,6 +268,7 @@ def removed_feature(feature: FeatureState, reason: str, on: datetime) -> Removed
                 feature.created,
                 on.replace(microsecond=0),
                 said("reason", reason),
+                feature.knowledge,
             )
         case StartedFeature():
             raise StartedAlreadyError(f"{feature_id_text(feature.id)} is started already")
@@ -269,6 +280,11 @@ def removed_feature(feature: FeatureState, reason: str, on: datetime) -> Removed
             raise FeatureRemovedError(feature.id)
         case _ as unreachable:
             assert_never(unreachable)
+
+
+def noted_feature[F: FeatureState](feature: F, line: KnowledgeLine) -> F:
+    """The Feature, in whatever state, with the line after the lines it already keeps."""
+    return replace(feature, knowledge=(*feature.knowledge, line))
 
 
 def commit_sha(feature: FeatureState) -> str:

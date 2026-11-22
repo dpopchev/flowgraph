@@ -187,6 +187,26 @@ def check_start_on_main(item: str, record: Path, open_git: OpenGit) -> None:
     a git work tree is not checked, and a text that is no id is left to the start, which refuses
     it. A record git ignores is checked as any other: its start makes a branch too.
     """
+    _check_on_main(item, "starts", record, open_git)
+
+
+def check_complete_on_main(item: str, record: Path, open_git: OpenGit) -> None:
+    """Check that the completion of the item of that id is made where it may be.
+
+    A work item completes on main alone, as it starts there: its landing completes it, and so
+    the next work item of its Feature, which its completion starts, is started on main too. A
+    Feature does, and a Task completes anywhere. Raises NotOnMainError as check_start_on_main
+    does.
+    """
+    _check_on_main(item, "completes", record, open_git)
+
+
+def _check_on_main(item: str, move: str, record: Path, open_git: OpenGit) -> None:
+    """Check that the move of the item of that id is made on main when the item makes it there.
+
+    Raises NotOnMainError naming the move, the branch the work tree is on and the work tree on
+    main, when the repository has one.
+    """
     named = _started_on_main(item)
     if named is None:
         return
@@ -197,4 +217,4 @@ def check_start_on_main(item: str, record: Path, open_git: OpenGit) -> None:
     home = work_tree.find_worktree(MAIN)
     where = MAIN if home is None else f"{MAIN}, in {home}"
     here = f"{work_tree.path} is on {on or 'no branch'}"
-    raise NotOnMainError(f"{named} starts on {where}: {here}")
+    raise NotOnMainError(f"{named} {move} on {where}: {here}")

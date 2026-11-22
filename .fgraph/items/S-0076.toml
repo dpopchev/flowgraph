@@ -1,0 +1,11 @@
+id = "S-0076"
+state = "backlog"
+title = "Raise the knowledge lines fgraph about lists as governing a file from none to every one noted with --governs"
+description = "Part of F-0006. What governs this file becomes a query (docs/board-review.md, group 6)."
+parent = "F-0006"
+created = 2026-11-22 10:41:44+00:00
+
+[criterion]
+given = "a record with a Story"
+when = "fgraph note of the Story is run with --decision, a text and --governs with a path, then fgraph about with that path"
+then = "fgraph about lists the line first, as what governs the file, with the id of the Story"

@@ -13,12 +13,14 @@ then = "it lists the Story and the Tasks whose commits touched the file"
 
 [[tasks]]
 id = "T-0306"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_about_file.py, failing on the criterion of S-0075"
 description = "Run through run() of src/flowgraph/cli.py against the real git in tmp_path, as tests/functional/test_land_merge.py does. Seen red, then marked a strict xfail naming S-0075 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_about_file.py states that, in a git repository in tmp_path with a completed Story whose commit changed a file, fgraph about with the path of the file exits 0 and lists the Story and the Task whose commits touched the file"
 created = 2026-11-22 10:48:10+00:00
 started = 2026-11-22 17:39:39+00:00
+completed = 2026-11-22 17:44:45+00:00
+commit = "8d5cc4b"
 
 [[tasks]]
 id = "T-0307"

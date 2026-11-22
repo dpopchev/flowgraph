@@ -28,3 +28,10 @@ title = "File a Bug that amends the work item at a no of fgraph verify"
 description = "Removes the xfail mark of tests/functional/test_verify_no.py. Written on 2026-11-22 against the modules of that day, before U-0010 moves them: they are taken again when the Task starts. A module of src/ that would pass the line limit of mk/python.mk is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph verify ID --no TEXT keeps the answer no on the completed work item and adds, in the same write, a Bug in Backlog that amends it: its observed the text, its expected the Then of a Story or an Upkeep or the expected of a Bug, its title given by --title or built from that of the work item, as the Task chooses; it prints both ids; the work item stays Completed and no move goes backwards; under a Feature the Bug joins the Feature of the work item when that Feature is not completed, else it stands alone"
 created = 2026-11-22 21:03:27+00:00
+
+[[tasks]]
+id = "T-0366"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say a no of fgraph verify files a Bug"
+expected_output = "changed: README.md shows fgraph verify --no and the Bug it files; docs/domain-model.md, Amends, says a no files the Bug and that no move goes backwards"
+created = 2026-11-22 21:03:29+00:00

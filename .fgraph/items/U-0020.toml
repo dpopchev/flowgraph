@@ -1,0 +1,11 @@
+id = "U-0020"
+state = "backlog"
+title = "Cut the functional tests that each define their own fgraph, runs and Outcome from every one to none, taken from one shared module"
+description = "Found during T-0330 of U-0016 on 2026-11-23, under the burn of the goal; filed at the end of the queue and not burned. The suite had no way to share code between test files until tests/functional/completed_story.py: from tests.functional.completed_story import works under uv run pytest and make check, since pytest puts the rootdir on the path. Each functional test still copies the helper that runs the command on a record in tmp_path and the dataclass of what the run left. Beside it: about 20 files spell the steps of a completed work item apart, with an assertion, a block or another work item between them, and were left as they are by U-0016. Its Tasks are written when it is ordered."
+created = 2026-11-22 22:27:05+00:00
+filed_during = "U-0016"
+
+[criterion]
+given = "main, where 95 files of tests/functional each define fgraph() and 94 each define the class Outcome, and tests/functional/completed_story.py is the one module the tests share"
+when = "make check runs"
+then = "it still passes with the same count of tests, each functional test taking the run of the command and its outcome from one module of the suite"

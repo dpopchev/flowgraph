@@ -11,6 +11,7 @@ import pytest
 from flowgraph.cli import Store, run
 from flowgraph.queue import make_queue
 from flowgraph.story import StoryState, story_row
+from flowgraph.work_item import work_item_detail
 
 pytestmark = pytest.mark.functional
 
@@ -48,7 +49,9 @@ def fgraph(argv: Sequence[str], saved: list[StoryState]) -> Outcome:
                 story_row(story) for story in saved if story.id.kind == kind
             ],
             load_work_item=never_read,
-            find_work_item_detail=never_read,
+            find_work_item_detail=lambda item_id: work_item_detail(
+                next(story for story in saved if story.id == item_id)
+            ),
             find_task_ids=lambda: [],
             save_work_item=saved.append,
             load_queue=lambda: make_queue([]),

@@ -65,6 +65,7 @@ from flowgraph.parent import parent_asked
 from flowgraph.parser import TOP, build_command_line, help_asked
 from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, Now, locate
 from flowgraph.refusals import REFUSED
+from flowgraph.relation_read import check_relations
 from flowgraph.scope import (
     check_complete_on_main,
     check_start_on_main,
@@ -81,7 +82,7 @@ from flowgraph.watch import Wait, framed, make_pace, watch
 from flowgraph.work_item import (
     Amendment,
 )
-from flowgraph.worktrees import across_worktrees
+from flowgraph.worktrees import across_worktrees, held_elsewhere
 
 __all__ = ["Store", "open_files", "open_git", "read_config", "run", "run_gate"]
 
@@ -311,8 +312,10 @@ def run(
     wait, which by default returns at once; it
     exits with 0 once its count is written or Ctrl-C ends it. The configuration of the record is
     read through load_config before any command runs, the defaults by default; one that is
-    refused fails with 2, whatever the command. A landing runs the gate of the configuration
-    through run_gate, which a run that lands under a gate is given: the default runs none.
+    refused fails with 2, whatever the command, and so does a record whose relation names nothing
+    or closes a cycle, which is checked as the worktrees compose it, before any command runs. A
+    landing runs the gate of the configuration through run_gate, which a run that lands under a
+    gate is given: the default runs none.
     """
     command_line = build_command_line()
     parser = command_line.parser
@@ -330,6 +333,7 @@ def run(
             )
             try:
                 config = load_config(path)
+                check_relations(path, store, partial(held_elsewhere, path, open_git, open_store))
                 if args.command == "watch":
                     _watch(args, store, write, wait, width, height)
                     return 0

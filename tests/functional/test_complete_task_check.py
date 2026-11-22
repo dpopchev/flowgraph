@@ -56,6 +56,7 @@ def fgraph(argv: Sequence[str], cwd: Path) -> Outcome:
         open_git=open_git,
         load_config=read_config,
         run_gate=run_gate,
+        run_check=run_gate,
     )
     return Outcome(status, "".join(out), "".join(err))
 
@@ -99,7 +100,6 @@ def environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setenv("GIT_CONFIG_NOSYSTEM", "1")
 
 
-@pytest.mark.xfail(strict=True, reason="S-0089: fgraph complete runs no check of a Task yet")
 class TestACompleteOfATaskWhoseCheckFails:
     @pytest.fixture
     def worktree(self, tmp_path: Path) -> Path:

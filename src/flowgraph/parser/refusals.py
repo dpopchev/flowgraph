@@ -10,7 +10,7 @@ from flowgraph.criterion import (
 from flowgraph.development import GateError, GitError, SlugError
 from flowgraph.development.parallel import ParallelError
 from flowgraph.development.scope import NotOnMainError, OutOfScopeError
-from flowgraph.development.task_check import CheckError
+from flowgraph.development.task_check import CheckError, TaskCheckError
 from flowgraph.development.way import LandError
 from flowgraph.feature import FeatureFileError, FeatureNotFoundError, NoCriterionError
 from flowgraph.feature.item import OpenWorkItemError
@@ -75,6 +75,7 @@ REFUSED = (
     LandError,
     GateError,
     CheckError,
+    TaskCheckError,
     NotOnMainError,
     ParallelError,
     OutOfScopeError,

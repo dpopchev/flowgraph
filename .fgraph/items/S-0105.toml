@@ -1,0 +1,10 @@
+id = "S-0105"
+state = "backlog"
+title = "Raise the things a frame of fgraph watch shows beyond fgraph status from none to three: every bucket, the progress and a clock"
+description = "From the note of the ~/.claude session of 2026-11-22 on the gaps of the planning skill (output: watch for a person), filed and ordered on the word of the developer of that day: update the backlog and prioritize. Today the frame is fgraph status byte for byte. Its Tasks are written when it is ordered."
+created = 2026-11-22 21:04:06+00:00
+
+[criterion]
+given = "a record with items in every bucket"
+when = "fgraph watch draws a frame"
+then = "the frame is its own: it lists every bucket, the progress of the record and the time of the frame"

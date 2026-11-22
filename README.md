@@ -30,7 +30,8 @@ lists the lines of the whole record.
 | the kinds of work item          | Story, Upkeep, Bug, Spike                                |
 | the level above                 | a Feature groups work items, takes each operation of one |
 | the order of the Backlog        | a queue, reordered by `fgraph reorder`, Features too     |
-| the relations of a work item    | `--depends-on` it waits for, `--filed-during` it found   |
+| the relations of a work item    | `--depends-on` it waits for, `--filed-during` it found,  |
+|                                 | `fgraph remove --superseded-by` the one that replaces it |
 | the wording of a work item      | `fgraph amend` in Backlog: parent too, a Feature's too   |
 | git                             | every write of the record committed, unless turned off   |
 | the layers of a record          | `.fgraph/config.toml`: commits on, development off       |
@@ -1766,6 +1767,40 @@ A remove exits 2 and names why when the reason is blank, when the work item
 is started, completed or removed already, when the id is a Task's, or when
 the record does not hold it. A removed work item takes no Task, no amend and
 no move.
+
+A work item superseded by another names it, `--superseded-by ID`, in place of
+the reason or beside it, in place of the free text of a reason such as
+`superseded by S-0003`. `fgraph status` lists it under Removed with
+`superseded by` before the reason, when one is given, and `fgraph show` lists
+it from both sides, the second read from the record:
+
+```sh
+fgraph remove S-0002 --superseded-by S-0003 --reason "refiled as a smaller step"
+# removed S-0002
+
+fgraph status
+# ...
+# Removed (1)
+#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2  -- superseded by S-0003, refiled as a smaller step
+
+fgraph show S-0002
+# S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+#   bucket       Removed
+#   superseded by S-0003
+#   reason       refiled as a smaller step
+#   ...
+
+fgraph show S-0003
+# S-0003  ...
+#   bucket       Backlog
+#   supersedes   S-0002
+#   ...
+```
+
+A remove with neither `--reason` nor `--superseded-by` is refused, naming both,
+as is an id that is no work item of the record, the work item itself and a
+removed work item, with exit 2 and nothing written. A Feature takes `--reason`
+alone, and is refused `--superseded-by`.
 
 A Feature still in Backlog is removed the same way, `fgraph remove` with its
 id and the reason, and its work items are removed with it, each for the same

@@ -160,7 +160,7 @@ needs. The same five exist for `Story`, `Bug`, `Spike`, `Upkeep` and `Task`;
 | `StartedStory` | InProgress | started |
 | `BlockedStory` | InProgress, shown as blocked | reason, since, waiting on |
 | `CompletedStory` | Completed | completed on, evidence |
-| `RemovedStory` | Removed | removed on, reason |
+| `RemovedStory` | Removed | removed on, reason, superseded by or none |
 
 `CompletedSpike` also adds the decision, which answers its hypothesis.
 
@@ -507,6 +507,31 @@ none.
   order of the record, read from the record and stored nowhere.
 - `fgraph show` of the work item that was found lists `filed during` with the
   id, after the work items it depends on, and lists none without one.
+
+## Superseded by
+
+A removed work item names the work item that supersedes it, the reading of
+S-0068: `fgraph remove --superseded-by ID` of a Story, an Upkeep, a Bug or a
+Spike in Backlog, one id of any kind of work item. It replaces the free text of
+a reason such as `refiled under F-0002 as S-0050`. It belongs to the removed
+state, with its removed time, not to every state.
+
+- It stands in place of the reason or beside it: a remove with neither is
+  refused naming both, `a remove takes --reason or --superseded-by, or both`.
+  A reason is blank only when `--superseded-by` is given. A Feature is removed
+  with `--reason` alone, and is refused `--superseded-by`.
+- The ids are checked at the remove, which is refused with exit 2, nothing
+  written: an id of a kind no work item has, `no Story S-0009 in the record`
+  for one the record does not hold, `S-0001 cannot be superseded by itself`,
+  `a work item cannot be superseded by S-0002: it is removed`.
+- Which side is stored: the removed work item keeps the id, as
+  `superseded_by = "S-0002"` in its file beside `removed` and `reason`, only
+  when there is one. The other side is derived: `fgraph show` of the work item
+  that supersedes lists `supersedes` with the id of each work item that names
+  it, in the order of the record, read from the record and stored nowhere.
+- `fgraph status` lists a removed work item as `-- superseded by S-0002`,
+  before the reason given beside it, joined by a comma; `fgraph show` of it
+  lists `superseded by` before `reason`.
 
 ## Evidence
 

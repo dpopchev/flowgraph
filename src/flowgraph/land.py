@@ -159,13 +159,13 @@ def _committed(work_tree: WorkTree, branch: str, check: Check, commit: Callable[
     """Hold the merge of the branch, check it, then commit it; the sha of that commit.
 
     Raises the refusal of the check, or GitError when git refuses the merge or the commit; the
-    merge held is dropped then.
+    merge held is dropped then, and so it is when Ctrl-C interrupts the check, as under a gate.
     """
     work_tree.landing.merge(branch)
     try:
         check()
         return commit()
-    except NOT_COMMITTED:
+    except (*NOT_COMMITTED, KeyboardInterrupt):
         work_tree.landing.abort_merge()
         raise
 

@@ -27,7 +27,7 @@ lands it. `fgraph config` shows the configuration and sets a key of it.
 | the kinds of work item          | Story, Upkeep, Bug, Spike                                |
 | the level above                 | a Feature groups work items, starts, blocks, completes   |
 | the order of the Backlog        | a queue, reordered by `fgraph reorder`, Features too     |
-| the wording of a work item      | rewritten by `fgraph amend` while in Backlog             |
+| the wording of a work item      | rewritten by `fgraph amend` while in Backlog, parent too |
 | git                             | every write of the record committed, unless turned off   |
 | the layers of a record          | `.fgraph/config.toml`: commits on, development off       |
 | the configuration               | every key shown and set by `fgraph config`               |
@@ -827,7 +827,9 @@ with its started time, and Completed once its last work item is completed,
 with its completed time and the commit of that completion (below). `fgraph
 show S-0001` names the Feature as its `parent`. An add exits 2 and names why
 when a criterion or the title is blank or when `--parent` names no Feature of
-the record. A Feature is kept as `items/F-0001.toml`.
+the record. A work item added alone is put under a Feature later, and one
+under a Feature taken out, with `fgraph amend --parent` while both are in
+Backlog (below). A Feature is kept as `items/F-0001.toml`.
 
 `fgraph status` lists a Feature inside its bucket, as one line in place of
 its work items: its id, its progress and its title. Here a Story that stands
@@ -1423,6 +1425,56 @@ description. An amend exits 2 and names why when it names no part, when the
 title or a part of the criterion is blank, when the work item is started or
 completed already, when the id is a Task's, or when the record does not hold
 it.
+
+`--parent` puts a work item in Backlog under a Feature, and with the word
+`none` takes it out of the one it is under, to stand alone; it is given alone
+or beside the other parts:
+
+```sh
+fgraph amend S-0002 --parent F-0001
+# amended S-0002
+
+fgraph show F-0001
+# F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
+#   bucket       Backlog
+# Criteria (2)
+#   a developer sees every work item of the project by bucket
+#   a developer adds every kind of work
+# Work items (2)
+#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  Backlog
+#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2  Backlog
+
+fgraph amend S-0002 --parent none
+# amended S-0002
+```
+
+The work item keeps its id, its Tasks and its entry in `queue.toml`, which an
+amend never writes. Put under a Feature it is on no line of the Backlog and
+starts where that entry orders it among the work items of the Feature; taken
+out it is the line of the Backlog that entry places. One never placed follows
+the placed ones as it was added. A `--parent` that names the Feature it is
+under already moves it nowhere, and the amend is taken.
+
+The Feature it is put under and the one it is taken out of are in Backlog, as
+the work item is. An amend with `--parent` exits 2, writes nothing and names
+why:
+
+- when the Feature it is put under is started, blocked or completed;
+- when the Feature it is taken out of is, whether it then stands alone or
+  goes under another;
+- when the record does not hold the Feature named;
+- when the text is neither a Feature id nor `none`.
+
+```sh
+fgraph amend S-0003 --parent F-0001
+# fgraph: error: S-0003 cannot be put under F-0001: F-0001 is started already
+
+fgraph amend S-0002 --parent none
+# fgraph: error: S-0002 cannot be taken out of F-0001: F-0001 is started already
+
+fgraph amend S-0002 --parent F-0009
+# fgraph: error: no Feature F-0009 in the record
+```
 
 A work item filed by mistake or superseded is removed from the Backlog with
 the reason. Nothing is deleted: it is kept with its Tasks, apart from the

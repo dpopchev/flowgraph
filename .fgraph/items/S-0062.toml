@@ -9,3 +9,11 @@ created = 2026-11-22 10:41:23+00:00
 given = "a record with a Story"
 when = "fgraph note of the Story is run with --finding and a text"
 then = "fgraph show of the Story lists the text under Knowledge with its kind and the date it was noted"
+
+[[tasks]]
+id = "T-0264"
+state = "backlog"
+title = "Add tests/functional/test_note_finding.py, failing on the criterion of S-0062"
+description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_add_task.py does. Seen red, then marked a strict xfail naming S-0062 until the Task that turns it green removes the mark."
+expected_output = "created: tests/functional/test_note_finding.py states that, on a record with a Story, fgraph note of the Story with --finding and a text exits 0 and fgraph show of the Story lists the text under Knowledge with its kind and the date it was noted"
+created = 2026-11-22 10:47:22+00:00

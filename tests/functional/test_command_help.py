@@ -141,3 +141,11 @@ def test_the_help_of_add_lists_the_kinds() -> None:
         "spike",
         "feature",
     ]
+
+
+def test_the_help_menu_says_a_landing_runs_its_gate() -> None:
+    menu = " ".join(fgraph(["--help"]).out.split())
+    summary = menu.split(" land ", 1)[1].split(" remove ", 1)[0]
+    assert summary == (
+        "land a started work item on main: merge its branch, run its gate and complete it"
+    )

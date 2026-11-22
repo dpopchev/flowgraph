@@ -27,7 +27,7 @@ from flowgraph.task import TaskId, parse_task_id, task_id_text
 from flowgraph.work_item import WorkItemId, parse_work_item_id, work_item_id_text
 
 
-def _load_holder(store: Store) -> work_item.LoadHolder:
+def load_holder(store: Store) -> work_item.LoadHolder:
     """The load of the work item that holds a Task, among the items of every kind."""
 
     def holder(task_id: TaskId) -> work_item.WorkItemState:
@@ -66,7 +66,7 @@ def start_item(item: str, slug: str | None, store: Store, now: Now) -> Written:
                 raise SlugError(f"--slug names the branch of a work item: {item} is a Task")
             holder = work_item.start_task(
                 task_id=task_id,
-                load_holder=_load_holder(store),
+                load_holder=load_holder(store),
                 save_work_item=store.save_work_item,
                 now=now,
             )
@@ -87,7 +87,7 @@ def block_item(task: str, reason: str, waiting_on: str, store: Store, now: Now) 
         task_id=task_id,
         reason=reason,
         waiting_on=waiting_on,
-        load_holder=_load_holder(store),
+        load_holder=load_holder(store),
         save_work_item=store.save_work_item,
         now=now,
     )
@@ -103,7 +103,7 @@ def unblock_item(task: str, store: Store) -> Written:
     """
     task_id = parse_task_id(task)
     holder = work_item.unblock_task(
-        task_id=task_id, load_holder=_load_holder(store), save_work_item=store.save_work_item
+        task_id=task_id, load_holder=load_holder(store), save_work_item=store.save_work_item
     )
     unblocked = f"{task_id_text(task_id)} of {work_item_id_text(holder)}"
     return Written(f"unblocked {unblocked}\n", MESSAGE.format(f"unblock {unblocked}"))
@@ -172,7 +172,7 @@ def complete_item(
             holder = work_item.complete_task(
                 task_id=task_id,
                 commit=evidence,
-                load_holder=_load_holder(store),
+                load_holder=load_holder(store),
                 save_work_item=store.save_work_item,
                 now=now,
             )

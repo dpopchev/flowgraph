@@ -20,6 +20,7 @@ from flowgraph.development.land import land_item
 from flowgraph.development.parallel import check_parallel
 from flowgraph.development.scope import check_complete_on_main, check_start_on_main
 from flowgraph.development.task_check import check_task_checked
+from flowgraph.development.task_run import check_task_run
 from flowgraph.feature.amend import amend_named
 from flowgraph.feature.block import block_named, unblock_named
 from flowgraph.feature.item import (
@@ -187,6 +188,7 @@ def command_said(
     config: Config,
     run_gate: RunGate,
     cwd: Path,
+    run_check: RunGate,
 ) -> Said | None:
     """Run the command the arguments name on the record; None when they name none.
 
@@ -194,12 +196,14 @@ def command_said(
 
     A write is committed once it is made. The lines of status are cut to the width, when there
     is one. The configuration says whether a start branches, how many work items are started at
-    once, whether a landing is taken and the gate it runs through run_gate. A set of the
+    once, whether a landing is taken and the gate it runs through run_gate; the complete of a
+    Task runs its check through run_check. A set of the
     configuration is committed by the configuration it leaves, so one that turns the commits
     off is left uncommitted. Raises the refusal of the command, a git step refused among them.
     """
     if args.command == "complete":
         check_complete_on_main(args.id, record, open_git)
+        check_task_run(args.id, store, record, open_git, cwd, run_check)
     if args.command == "start":
         check_slug_branched(args.id, args.slug, config.development.enabled, record / CONFIG)
         check_start_on_main(args.id, record, open_git)

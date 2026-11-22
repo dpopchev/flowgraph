@@ -343,12 +343,20 @@ command that checks it, `--check COMMAND`, which `fgraph show` lists under the
 Task; without it the add exits 2 naming `--check`, and a blank command is
 refused. With the development off, `--check` exits 2 naming
 `development.enabled`. A Task added before holds no check and is read, started
-and completed as it was. This keeps and shows the check; it is not run yet.
+and completed as it was. `fgraph complete` of a Task that holds a check runs it,
+in the worktree of its work item, and writes what it prints as it prints it. A
+check that exits with another status than 0 refuses the complete with exit 2,
+naming the Task, the command and the status; nothing is written and the Task
+stays started. A check that passes completes the Task as before. Only the
+complete of a Task runs a check: the complete of a work item and `fgraph land`
+run none.
 
 ```sh
 fgraph add task "Add the show command" --parent S-0001 \
   --output "changed: cli.py" --check "make test"
 # added T-0001 to S-0001
+fgraph complete T-0001 --commit 677f9b0
+# fgraph: error: T-0001 cannot complete: its check "make test" exited with status 2
 ```
 
 A work item can depend on another: `--depends-on ID` of `fgraph add` and of

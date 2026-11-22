@@ -24,12 +24,14 @@ commit = "913a5ed"
 
 [[tasks]]
 id = "T-0203"
-state = "started"
+state = "completed"
 title = "Extend the Feature of src/flowgraph/feature.py to a blocked state kept in its file"
 description = "New code the next Task runs. As a blocked Task: the fields of the block leave the file at the unblock."
 expected_output = "changed: src/flowgraph/feature.py holds the BlockedFeature: its started time, the time it is blocked since, its reason and what it waits on; the block of a StartedFeature and the unblock back to it with the started time it had, each refused for a Feature in another state, a blank reason or a blank waiting on refused; its file holds the state line and those fields, read back whole; proved in tests/feature/"
 created = 2026-11-21 23:43:47+00:00
 started = 2026-11-22 03:04:43+00:00
+completed = 2026-11-22 03:09:23+00:00
+commit = "f1c53f5"
 
 [[tasks]]
 id = "T-0204"

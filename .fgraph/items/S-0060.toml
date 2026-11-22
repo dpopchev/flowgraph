@@ -8,3 +8,10 @@ created = 2026-11-21 22:00:03+00:00
 given = "a record whose status is taller than the terminal, and fgraph watch running on that terminal"
 when = "a frame is written"
 then = "the frame is as tall as the terminal at most and says how many lines it left out"
+
+[[tasks]]
+id = "T-0221"
+state = "backlog"
+title = "Cut a frame of fgraph watch taller than the terminal to its height, its last line naming the lines left out, in src/flowgraph/watch.py and src/flowgraph/cli.py"
+expected_output = "changed: framed of src/flowgraph/watch.py takes the height of the terminal and run of src/flowgraph/cli.py reads it; tests/watch/test_frames.py and tests/functional/test_watch.py state the cut"
+created = 2026-11-22 06:28:53+00:00

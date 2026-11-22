@@ -46,7 +46,8 @@ commit = "375cff7"
 
 [[tasks]]
 id = "T-0267"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say a work item keeps the findings noted with fgraph note"
 expected_output = "changed: README.md shows fgraph note with a finding and the show that lists it, and its Status table names the knowledge lines; docs/domain-model.md says what a knowledge line holds, that it is noted in any state and never amended or removed, where it is written with the development on, how the file keeps it and what is refused"
 created = 2026-11-22 10:47:25+00:00
+started = 2026-11-22 11:04:58+00:00

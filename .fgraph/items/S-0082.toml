@@ -9,3 +9,11 @@ created = 2026-11-22 21:01:37+00:00
 given = "a directory that holds no .fgraph/ and no fgraph/"
 when = "fgraph init is run there"
 then = "it holds .fgraph/, fgraph add story exits 0 there and fgraph status lists the Story under Backlog"
+
+[[tasks]]
+id = "T-0325"
+state = "backlog"
+title = "Add tests/functional/test_init_record.py, failing on the criterion of S-0082"
+description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_locate_record.py does. Seen red, then marked a strict xfail naming S-0082 until the Task that turns it green removes the mark."
+expected_output = "created: tests/functional/test_init_record.py states that in a directory with no record fgraph init exits 0 and prints the record it made, fgraph add story then exits 0 and fgraph status lists the Story under Backlog; and that fgraph init in a directory that holds a record exits 2 naming it and writes nothing"
+created = 2026-11-22 21:01:39+00:00

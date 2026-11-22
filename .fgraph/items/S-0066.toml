@@ -35,12 +35,14 @@ commit = "c183fd2"
 
 [[tasks]]
 id = "T-0279"
-state = "started"
+state = "completed"
 title = "Add --depends-on to fgraph add and fgraph amend, and its refusal to fgraph start"
 description = "Removes the xfail mark of tests/functional/test_depends_on.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph add of every kind of work item and fgraph amend of one in Backlog take --depends-on ID, once per work item depended on, and --depends-on none of amend takes them all away; the file of the work item keeps the ids as depends_on, read back in every state; an id that is no work item of the record, the work item itself, a removed one and one that would close a cycle are refused, exit 2, nothing written; fgraph start of a work item is refused while one it depends on is not completed, naming each with its bucket -- S-0002 cannot start: it depends on S-0001, in Backlog -- and the start of a Feature, and the next work item a completion starts, hold to the same refusal and say so; fgraph show lists depends on with each id and its bucket"
 created = 2026-11-22 10:47:39+00:00
 started = 2026-11-22 11:52:02+00:00
+completed = 2026-11-22 11:57:57+00:00
+commit = "d0f26a6"
 
 [[tasks]]
 id = "T-0280"

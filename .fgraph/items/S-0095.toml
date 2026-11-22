@@ -25,3 +25,10 @@ title = "Take the yes or no of its hypothesis at the complete of a Spike, beside
 description = "Removes the xfail mark of tests/functional/test_complete_spike_answer.py. Written on 2026-11-22 against the modules of that day, before U-0010 moves them: they are taken again when the Task starts. A module of src/ that would pass the line limit of mk/python.mk is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph complete and fgraph land of a Spike take the answer to its hypothesis, yes or no, by an option the Task names, needed beside --decision; it is written on the completed Spike and listed by fgraph show beside the decision, and by fgraph knowledge with the decision; a Spike completed before, which holds no answer, is read as before; another kind given the answer is refused"
 created = 2026-11-22 21:03:35+00:00
+
+[[tasks]]
+id = "T-0369"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say a Spike completes on a yes or a no"
+expected_output = "changed: README.md shows the complete of a Spike with its answer; docs/domain-model.md lists the answer among what a completed Spike holds"
+created = 2026-11-22 21:03:37+00:00

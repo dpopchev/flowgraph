@@ -2,14 +2,23 @@
 
 A view: it reads the rows, the queue and the Features of the record and changes nothing. A
 Feature is one item of its bucket, listed in place of its work items: a started one of
-InProgress, any other of the bucket derived from its work items.
+InProgress, a completed one of Completed, one never started of the bucket derived from its work
+items.
 """
 
 from collections.abc import Collection, Iterable, Mapping
 from dataclasses import replace
 from datetime import datetime
+from typing import assert_never
 
-from flowgraph.feature import FeatureRow, FeatureState, feature_row
+from flowgraph.feature import (
+    CompletedFeature,
+    Feature,
+    FeatureRow,
+    FeatureState,
+    StartedFeature,
+    feature_row,
+)
 from flowgraph.parent import feature_id_text, parse_feature_id
 from flowgraph.queue import Entry, Inside, Line, Placed, queued
 from flowgraph.store import KINDS, Store
@@ -55,14 +64,21 @@ def _last_first(rows: Iterable[WorkItemRow], state: str) -> list[WorkItemRow]:
 def _placed_feature(feature: FeatureState, under: Collection[WorkItemRow]) -> _PlacedFeature:
     """The row of the Feature over its work items, with the time that places it in its bucket.
 
-    The row holds its started work items, the last started first. The time is that of its last
-    started work item; with none started that of its last completed one, as under Completed;
-    with neither the time it was added, as in Backlog.
+    The row holds its started work items, the last started first. A completed Feature is placed
+    by its own completed time. For any other the time is that of its last started work item;
+    with none started that of its last completed one, as under Completed; with neither the time
+    it was added, as in Backlog.
     """
     started = _last_first(under, STARTED)
     row = replace(feature_row(feature, [each.state for each in under]), started=started)
-    reached = [_reached(each) for each in started or _last_first(under, COMPLETED)]
-    return max(reached, default=feature.created), row
+    match feature:
+        case CompletedFeature():
+            return feature.completed, row
+        case Feature() | StartedFeature():
+            reached = [_reached(each) for each in started or _last_first(under, COMPLETED)]
+            return max(reached, default=feature.created), row
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 def _placed_features(store: Store, rows: Collection[WorkItemRow]) -> list[_PlacedFeature]:
@@ -138,8 +154,9 @@ def status_item(store: Store, top: int | None = None) -> str:
     the completed ones are on no line, the started ones under its own. The Backlog lists the
     work items and the Features placed in its queue, then the others as they were added;
     InProgress the last started first and Completed the last completed first, a Feature by its
-    last work item to reach it; Removed by kind and number, a work item of a Feature too. Under
-    a top each heading lists that many, the first ones.
+    last work item to reach it, a completed one by its own completed time; Removed by kind and
+    number, a work item of a Feature too. Under a top each heading lists that many, the first
+    ones.
     """
     rows = rows_by_id(store)
     features = _placed_features(store, rows.values())

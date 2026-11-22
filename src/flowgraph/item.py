@@ -22,6 +22,7 @@ from flowgraph.criterion import (
     NoCommit,
     make_commit,
 )
+from flowgraph.feature_complete import complete_with_feature
 from flowgraph.item_id import (
     ItemId,
     ItemIdError,
@@ -30,7 +31,7 @@ from flowgraph.item_id import (
     parse_placed_id,
     parse_work_item_id_of_any_kind,
 )
-from flowgraph.parent import STANDALONE, Parent
+from flowgraph.parent import STANDALONE, FeatureId, Parent, feature_id_text
 from flowgraph.queue import placed_text, reorder
 from flowgraph.record import Now
 from flowgraph.status import BACKLOG, COMPLETED, STARTED, find_backlog, status_item
@@ -287,16 +288,24 @@ def _evidence_given(named: str, sha: str | None, config: Config) -> Evidence:
     return NO_COMMIT
 
 
-def _completed(named: str, evidence: Evidence) -> Written:
-    """What the complete of the item of that name says: the commit it is completed at, if any."""
+def _completed(named: str, evidence: Evidence, feature: FeatureId | None = None) -> Written:
+    """What the complete of the item of that name says: the commit it is completed at, if any.
+
+    A Feature completed with it is named on a line of its own after it, at the same commit, and
+    in the message beside it.
+    """
     match evidence:
         case Commit():
-            out = f"completed {named} at {evidence.sha}\n"
+            at = f" at {evidence.sha}"
         case NoCommit():
-            out = f"completed {named}\n"
+            at = ""
         case _ as unreachable:
             assert_never(unreachable)
-    return Written(out, MESSAGE.format(f"complete {named}"))
+    if feature is None:
+        return Written(f"completed {named}{at}\n", MESSAGE.format(f"complete {named}"))
+    with_it = feature_id_text(feature)
+    out = f"completed {named}{at}\ncompleted {with_it}{at}\n"
+    return Written(out, MESSAGE.format(f"complete {named} and {with_it}"))
 
 
 def complete_item(
@@ -305,7 +314,8 @@ def complete_item(
     """Complete the work item or the Task of that id, in the commit given; what the write says.
 
     With the development on a commit is needed; with it off none is, and one given is kept. A
-    Spike is completed with the decision that answers its hypothesis. Raises ItemIdError when
+    Spike is completed with the decision that answers its hypothesis. The last work item of a
+    started Feature completes the Feature with it, in the same write. Raises ItemIdError when
     the text is no id, CommitError when the sha is no commit, CommitNeededError when the
     development needs one, DecisionError when a Spike has no decision or another item is given
     one, or the refusal of the complete; nothing is saved.
@@ -314,15 +324,8 @@ def complete_item(
         case WorkItemId() as item_id:
             text = work_item_id_text(item_id)
             evidence = _evidence_given(text, sha, config)
-            work_item.complete_work_item(
-                item_id=item_id,
-                commit=evidence,
-                load_work_item=store.load_work_item,
-                save_work_item=store.save_work_item,
-                now=now,
-                decision=decision,
-            )
-            return _completed(text, evidence)
+            feature = complete_with_feature(item_id, evidence, decision, store, now)
+            return _completed(text, evidence, feature)
         case TaskId() as task_id:
             named = task_id_text(task_id)
             if decision is not None:

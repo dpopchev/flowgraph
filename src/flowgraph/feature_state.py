@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import assert_never
 
-from flowgraph.criterion import Evidence, said
+from flowgraph.criterion import Evidence, evidence_text, said
 from flowgraph.parent import FeatureId, feature_id_text
 from flowgraph.task import CompletedAlreadyError, NotStartedError, StartedAlreadyError
 
@@ -125,6 +125,17 @@ def completed_feature(feature: FeatureState, on: datetime, commit: Evidence) -> 
             )
         case CompletedFeature():
             raise CompletedAlreadyError(f"{feature_id_text(feature.id)} is completed already")
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def commit_sha(feature: FeatureState) -> str:
+    """The sha of the commit of a completed Feature; empty for one that has none."""
+    match feature:
+        case CompletedFeature():
+            return evidence_text(feature.commit)
+        case Feature() | StartedFeature():
+            return ""
         case _ as unreachable:
             assert_never(unreachable)
 

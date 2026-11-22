@@ -24,6 +24,7 @@ from flowgraph.feature_state import (
     FeatureState,
     NoCriterionError,
     StartedFeature,
+    commit_sha,
     completed_feature,
     make_feature,
     started_feature,
@@ -59,12 +60,13 @@ BEGUN = frozenset({"started", COMPLETED})
 
 @dataclass
 class FeatureDetail:
-    """One Feature as plain data, as a view reads it from the record."""
+    """One Feature as plain data, as a view reads it from the record; a commit once it has one."""
 
     id: str
     title: str
     description: str
     criteria: list[str]
+    commit: str = ""
 
 
 @dataclass
@@ -72,7 +74,8 @@ class FeatureRow:
     """One Feature as a line of a list reads it: its id, its title and its bucket.
 
     Its progress is the work items completed of those it holds; a removed one is not held. Its
-    started work items are the rows a list writes under it, in the order given.
+    started work items are the rows a list writes under it, in the order given. Its commit is
+    the one it was completed in, empty while it has none.
     """
 
     id: str
@@ -81,6 +84,7 @@ class FeatureRow:
     completed: int
     held: int
     started: list[WorkItemRow] = field(default_factory=list[WorkItemRow], kw_only=True)
+    commit: str = field(default="", kw_only=True)
 
 
 # The Feature of that id, whole; raises FeatureNotFoundError when the record holds none.
@@ -116,7 +120,11 @@ def next_feature_id(taken: Collection[FeatureId]) -> FeatureId:
 def feature_detail(feature: FeatureState) -> FeatureDetail:
     """The Feature as the plain data a view reads."""
     return FeatureDetail(
-        feature_id_text(feature.id), feature.title, feature.description, list(feature.criteria)
+        feature_id_text(feature.id),
+        feature.title,
+        feature.description,
+        list(feature.criteria),
+        commit_sha(feature),
     )
 
 
@@ -136,16 +144,17 @@ def bucket_of(states: Collection[str]) -> str:
 def feature_bucket(feature: FeatureState, states: Collection[str]) -> str:
     """The bucket a list shows the Feature in, given the states of its work items.
 
-    A started Feature is in InProgress by its own state, unless its work items derive Completed,
-    and a completed one in Completed by its own. Every bucket of a Feature never started stays
-    derived, as that of one whose work items were started before a Feature had a state.
+    A started Feature is in InProgress and a completed one in Completed, each by its own state:
+    only the completion of its last work item completes a started Feature, so one whose work
+    items are all completed or removed stays in InProgress. Every bucket of a Feature never
+    started stays derived, as that of one whose work items were started before a Feature had a
+    state.
     """
-    derived = bucket_of(states)
     match feature:
         case Feature():
-            return derived
+            return bucket_of(states)
         case StartedFeature():
-            return derived if derived == "Completed" else "InProgress"
+            return "InProgress"
         case CompletedFeature():
             return "Completed"
         case _ as unreachable:
@@ -160,7 +169,12 @@ def feature_row(feature: FeatureState, states: Collection[str]) -> FeatureRow:
     completed = sum(state == COMPLETED for state in states)
     held = sum(state != REMOVED for state in states)
     return FeatureRow(
-        feature_id_text(feature.id), feature.title, feature_bucket(feature, states), completed, held
+        feature_id_text(feature.id),
+        feature.title,
+        feature_bucket(feature, states),
+        completed,
+        held,
+        commit=commit_sha(feature),
     )
 
 

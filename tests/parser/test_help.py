@@ -64,6 +64,16 @@ def test_every_command_lists_its_help_option() -> None:
     assert without == []
 
 
+def test_relate_names_its_two_terms_and_the_two_kinds_in_its_help() -> None:
+    helped = COMMAND_LINE.commands["relate",].format_help()
+    assert tuple(word for word in ("TERM", "KIND", "is-a", "part-of") if word in helped) == (
+        "TERM",
+        "KIND",
+        "is-a",
+        "part-of",
+    )
+
+
 def test_every_command_kind_under_add_and_action_under_config_has_its_help() -> None:
     assert sorted(COMMAND_LINE.commands) == sorted(
         [
@@ -86,6 +96,7 @@ def test_every_command_kind_under_add_and_action_under_config_has_its_help() -> 
             ("knowledge",),
             ("land",),
             ("note",),
+            ("relate",),
             ("remove",),
             ("reorder",),
             ("show",),

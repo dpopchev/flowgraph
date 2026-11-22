@@ -125,3 +125,26 @@ class TestATermAddedAgain:
 
     def test_makes_no_commit(self, again: Outcome, checkout: Path) -> None:
         assert git(checkout, "rev-list", "--count", "main") == "2"
+
+
+class TestTwoTermsRelatedOnMain:
+    @pytest.fixture
+    def related(self, checkout: Path) -> Outcome:
+        fgraph(ADD_TERM, checkout)
+        fgraph(["add", "term", "lane", "--means", "one work item in its own worktree"], checkout)
+        return fgraph(["relate", "gate", "part-of", "lane"], checkout)
+
+    def test_the_write_is_one_commit_on_main(self, related: Outcome, checkout: Path) -> None:
+        assert git(checkout, "rev-list", "--count", "main") == "4"
+
+    def test_the_commit_says_what_was_related(self, related: Outcome, checkout: Path) -> None:
+        assert (
+            git(checkout, "log", "-1", "--format=%s", "main") == "chore: relate gate in the record"
+        )
+
+    def test_the_commit_holds_only_the_file_of_the_first_term(
+        self, related: Outcome, checkout: Path
+    ) -> None:
+        assert (
+            git(checkout, "show", "--name-only", "--format=", "main") == ".fgraph/terms/gate.toml"
+        )

@@ -11,10 +11,7 @@ import pytest
 
 from flowgraph.cli import open_files, run
 
-pytestmark = [
-    pytest.mark.functional,
-    pytest.mark.xfail(reason="S-0071: fgraph relate is not there yet", strict=True),
-]
+pytestmark = pytest.mark.functional
 
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 
@@ -65,3 +62,47 @@ class TestTwoTermsRelatedWithPartOf:
         self, related: Outcome, tmp_path: Path
     ) -> None:
         assert "  parts  gate\n" in fgraph(["show", "lane"], tmp_path).out
+
+
+@pytest.fixture
+def terms(tmp_path: Path) -> Path:
+    """A record with the terms gate and lane."""
+    fgraph(["add", "term", "gate", "--means", "a check before a landing"], tmp_path)
+    fgraph(["add", "term", "lane", "--means", "one work item in its own worktree"], tmp_path)
+    return tmp_path
+
+
+@pytest.mark.parametrize(
+    ("argv", "said"),
+    [
+        (["relate", "gate", "owns", "lane"], "'owns' is no kind of relation: is-a or part-of"),
+        (["relate", "gate", "part-of", "none"], "no term 'none' in the record"),
+        (["relate", "gate", "part-of", "gate"], "gate cannot be part-of itself"),
+    ],
+    ids=["a-kind-outside-the-set", "a-term-not-in-the-record", "itself"],
+)
+def test_a_relation_refused_exits_with_two_and_says_why(
+    argv: list[str], said: str, terms: Path
+) -> None:
+    refused = fgraph(argv, terms)
+    assert (refused.status, refused.err.splitlines()[-1]) == (2, f"fgraph: error: {said}")
+
+
+def test_a_relation_kept_already_exits_with_two_and_writes_nothing(terms: Path) -> None:
+    fgraph(["relate", "gate", "part-of", "lane"], terms)
+    kept = (terms / ".fgraph" / "terms" / "gate.toml").read_text(encoding="utf-8")
+    again = fgraph(["relate", "gate", "part-of", "lane"], terms)
+    now = (terms / ".fgraph" / "terms" / "gate.toml").read_text(encoding="utf-8")
+    assert (again.status, now) == (2, kept)
+
+
+def test_a_relation_that_closes_a_cycle_exits_with_two_and_writes_nothing(terms: Path) -> None:
+    fgraph(["relate", "gate", "part-of", "lane"], terms)
+    refused = fgraph(["relate", "lane", "part-of", "gate"], terms)
+    assert (
+        refused.status,
+        "part_of" in (terms / ".fgraph" / "terms" / "lane.toml").read_text(),
+    ) == (
+        2,
+        False,
+    )

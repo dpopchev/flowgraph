@@ -33,3 +33,10 @@ title = "Add the term to fgraph add, the terms command and the show of a term"
 description = "Removes the xfail mark of tests/functional/test_add_term.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit. Open, to settle with the developer when this Task starts: whether the worktree of a started work item reads the terms of main, as Task ids are read across worktrees."
 expected_output = "changed: fgraph add term NAME --means TEXT adds the term as one write and one commit on main, chore: add term gate in the record, and says added gate; a name the record holds already is refused; fgraph terms lists every term by name with its meaning, and one line saying so when there is none; fgraph show NAME prints the term with its meaning; a name that is no term of the record is refused as a wrong id is; on the branch of a work item a term is not added, refused naming the work item the branch owns; fgraph add term --help and fgraph terms --help print their menus"
 created = 2026-11-22 10:47:55+00:00
+
+[[tasks]]
+id = "T-0293"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say the record keeps the terms of the project"
+expected_output = "changed: README.md shows a term added, listed and shown, and its Status table says the ontology is started; docs/domain-model.md says what a term is and holds, that its name is its id, that it has no flow, where it is kept and written, and what is refused; docs/board-review.md, Open questions, says the question of a term as a tag or a node is answered: a node"
+created = 2026-11-22 10:47:56+00:00

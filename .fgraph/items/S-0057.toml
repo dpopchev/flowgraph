@@ -1,10 +1,12 @@
 id = "S-0057"
-state = "started"
+state = "completed"
 title = "Raise the Features fgraph amend rewrites in Backlog from none to every one"
 description = "Part of F-0002. The developer's words of 2026-11-21, in the agent's wording: a Feature is part of the Backlog and just holds a couple of work items; starting it, when git is used for the development as well, starts its work items one by one in separate branches; they are completed but all stay in progress; when all are completed the Feature moves to Completed; a Feature can be blocked, or gets blocked when its child work item is blocked. The principle the plan was shown under: a Feature is to its work items what a work item is to its Tasks. Filed on the developer's 'file' of 2026-11-21. Its Tasks are written when it is ordered. Named not built in docs/domain-model.md, Persistence. Readings of the agent: --title, --description and --criterion, which given once or more replaces the criteria; a part without its option stays; a started or a completed Feature is refused, as a work item is."
 parent = "F-0002"
 created = 2026-11-21 21:22:03+00:00
 started = 2026-11-22 03:37:20+00:00
+completed = 2026-11-22 03:54:18+00:00
+commit = "6959cea"
 
 [criterion]
 given = "a record with a Feature in Backlog"

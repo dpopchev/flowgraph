@@ -1,9 +1,10 @@
 id = "S-0058"
-state = "backlog"
+state = "started"
 title = "Raise the Features fgraph remove takes out of the Backlog from none to every one"
 description = "Part of F-0002. The developer's words of 2026-11-21, in the agent's wording: a Feature is part of the Backlog and just holds a couple of work items; starting it, when git is used for the development as well, starts its work items one by one in separate branches; they are completed but all stay in progress; when all are completed the Feature moves to Completed; a Feature can be blocked, or gets blocked when its child work item is blocked. The principle the plan was shown under: a Feature is to its work items what a work item is to its Tasks. Filed on the developer's 'file' of 2026-11-21. Its Tasks are written when it is ordered. Named not built in docs/domain-model.md, Persistence. Open, decided when it is ordered: what becomes of its work items -- removed with it under the same reason, or left standing alone."
 parent = "F-0002"
 created = 2026-11-21 21:22:03+00:00
+started = 2026-11-22 03:54:18+00:00
 
 [criterion]
 given = "a record with a Feature in Backlog and a Story under it"

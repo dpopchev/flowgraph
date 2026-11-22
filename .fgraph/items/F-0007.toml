@@ -17,3 +17,8 @@ noted = 2026-11-22 21:04:21+00:00
 kind = "finding"
 text = "open: how the wheel reaches a repository -- uv tool install, a path dependency or an index; the reading filed is uv tool install of the wheel behind make install; decided by the developer when the Story of the install is ordered."
 noted = 2026-11-22 21:04:23+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer set the goal of the session on 2026-11-22: burn U-0010, U-0016 and F-0007 to F-0011 until each is Completed, every work item landed on main with a verified: finding of its criterion run at the landing commit and make check passing on main; the work items are delegated to subagents, their model by difficulty, and the session coordinates; a finding of a lane is filed at the end of the queue and not burned."
+noted = 2026-11-22 21:12:16+00:00

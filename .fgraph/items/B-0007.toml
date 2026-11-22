@@ -1,9 +1,11 @@
 id = "B-0007"
-state = "started"
+state = "completed"
 title = "Raise the keys the refusal of a landing names with the commits off from one to both"
 description = "Found during T-0164 of S-0040 on 2026-11-21, under the burn of the Backlog; filed at the end of the queue and not burned. Open beside it: whether the start of a work item is still held to main on a record fgraph never commits -- check_start_on_main of src/flowgraph/scope.py reads no configuration. Its Tasks are written when it is ordered."
 created = 2026-11-21 22:49:39+00:00
 started = 2026-11-22 06:44:16+00:00
+completed = 2026-11-22 06:48:25+00:00
+commit = "ed950a7"
 
 [criterion]
 observed = "under [git] commit = false fgraph land says the development is off -- set development.enabled = true, and that advice then meets the refusal of the two keys together"

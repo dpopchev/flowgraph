@@ -11,6 +11,9 @@ before main moves.
 
 `[development] gate` names one command a landing runs while that merge is held, once the work
 item is checked to complete: a gate that fails drops the merge, so main is where it was.
+
+`[delivery] push` pushes main to the branch it tracks as the last step, once the landing is
+whole: a push that fails leaves the landing as it is, since history is never undone.
 """
 
 from collections.abc import Sequence
@@ -87,6 +90,18 @@ def _without_branch(started: ToBranch | None) -> str:
     return f"; {work_item_id_text(started.item)} is started, its branch is not"
 
 
+def _pushed(item: str, sha: str, work_tree: WorkTree) -> str:
+    """Push main once the landing is whole; the line that names the remote it is pushed to.
+
+    Raises GitError saying the work item is landed and main is not pushed when git refuses it.
+    """
+    try:
+        remote = work_tree.landing.push(MAIN)
+    except GitError as error:
+        raise GitError(f"{error} -- {item} is landed at {sha}, {MAIN} is not pushed") from error
+    return f"pushed {MAIN} to {remote}\n"
+
+
 def land_item(
     item: str,
     message: str | None,
@@ -116,6 +131,8 @@ def land_item(
     Feature completes the Feature in that commit of the record, named after the landing. Any
     other starts the next work item of the Feature in that commit, named after the landing too,
     and its branch is checked out at it, in a worktree of its own, once the landing is whole.
+    With the push of the delivery on, main is pushed to the branch it tracks after that, the
+    last step: a push git refuses leaves the landing whole and says main is not pushed.
     """
     item_id = parse_work_item_id_of_any_kind(item)
     text = work_item_id_text(item_id)
@@ -150,6 +167,8 @@ def land_item(
     # or the next work item of the Feature, started or not.
     _, _, with_it = written.out.partition("\n")
     said = f"landed {text} at {sha}\n{with_it}"
-    if written.branch is None:
-        return Said(said)
-    return Said(said + branch_started(written.branch, work_tree))
+    if written.branch is not None:
+        said += branch_started(written.branch, work_tree)
+    if config.delivery.push:
+        said += _pushed(text, sha, work_tree)
+    return Said(said)

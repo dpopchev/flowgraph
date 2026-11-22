@@ -59,6 +59,11 @@ def _no_gate(command: str, directory: Path) -> Never:
     raise AssertionError(f"run() was given no run_gate to run {command!r} in {directory}")
 
 
+def _no_check(command: str, directory: Path) -> int:
+    """The check runner of a run given none: it runs nothing and says every check passed."""
+    return 0
+
+
 def _no_dir(path: Path) -> Never:
     """The make_dir of a run given none: a contract, such a run makes no record."""
     raise AssertionError(f"run() was given no make_dir to make {path}")
@@ -97,6 +102,7 @@ def run(
     wait: Wait = _no_wait,
     load_config: LoadConfig = _no_config,
     run_gate: RunGate = _no_gate,
+    run_check: RunGate = _no_check,
     make_dir: MakeDir = _no_dir,
 ) -> int:
     """Read the arguments, locate the record in cwd, run the command and return the exit status.
@@ -113,7 +119,9 @@ def run(
     refused fails with 2, whatever the command, and so does a record whose relation names nothing
     or closes a cycle, which is checked as the worktrees compose it, before any command runs. A
     landing runs the gate of the configuration through run_gate, which a run that lands under a
-    gate is given: the default runs none.
+    gate is given: the default runs none. The complete of a Task that holds a check runs it
+    through run_check, which a run that must refuse a failing one is given: the default runs
+    none, and every check then passes.
     """
     command_line = build_command_line()
     parser = command_line.parser
@@ -143,7 +151,9 @@ def run(
                 if args.command == "watch":
                     _watch(args, store, write, wait, width, height)
                     return 0
-                said = command_said(args, store, now, path, open_git, width, config, run_gate, cwd)
+                said = command_said(
+                    args, store, now, path, open_git, width, config, run_gate, cwd, run_check
+                )
             except REFUSED as error:
                 write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
                 return 2
@@ -187,6 +197,7 @@ def main() -> None:
             wait=time.sleep,
             load_config=read_config,
             run_gate=run_gate,
+            run_check=run_gate,
             make_dir=Path.mkdir,
         )
     )

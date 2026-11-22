@@ -345,12 +345,20 @@ command that checks it, `--check COMMAND`, which `fgraph show` lists under the
 Task; without it the add exits 2 naming `--check`, and a blank command is
 refused. With the development off, `--check` exits 2 naming
 `development.enabled`. A Task added before holds no check and is read, started
-and completed as it was. This keeps and shows the check; it is not run yet.
+and completed as it was. `fgraph complete` of a Task that holds a check runs it,
+in the worktree of its work item, and writes what it prints as it prints it. A
+check that exits with another status than 0 refuses the complete with exit 2,
+naming the Task, the command and the status; nothing is written and the Task
+stays started. A check that passes completes the Task as before. Only the
+complete of a Task runs a check: the complete of a work item and `fgraph land`
+run none.
 
 ```sh
 fgraph add task "Add the show command" --parent S-0001 \
   --output "changed: cli.py" --check "make test"
 # added T-0001 to S-0001
+fgraph complete T-0001 --commit 677f9b0
+# fgraph: error: T-0001 cannot complete: its check "make test" exited with status 2
 ```
 
 A work item can depend on another: `--depends-on ID` of `fgraph add` and of
@@ -378,7 +386,18 @@ fgraph show S-0002
 #   bucket       Backlog
 #   depends on   S-0001 (Backlog)
 #   ...
+
+fgraph status
+# Backlog (2)
+#   S-0001  Add the show command
+# ~ S-0002  Raise the Stories fgraph lists under Backlog from 1 to 2  -- depends on S-0001
 ```
+
+`fgraph status` marks the line of a work item in Backlog that waits: it starts
+with `~` and ends with `-- depends on` and each id it depends on that is not
+completed. The mark is gone once each is completed; a block, marked `!`, says
+`waiting on` a person. A Feature in Backlog carries it when its first work item
+waits.
 
 `fgraph amend S-0002 --depends-on S-0003` replaces what it depends on and
 `--depends-on none` takes it all away. An id that is no work item of the
@@ -600,6 +619,43 @@ fgraph status
 # fgraph: error: /src/project/.fgraph/config.toml: development.gate is "": it takes a command line
 ```
 
+The delivery pushes a landing to the remote of `main` when the record says so:
+
+```toml
+[development]
+enabled = true
+
+[delivery]
+push = true
+```
+
+`push` is `true` or `false`, `false` by default, so a record that names none
+pushes nothing, as a landing did before the key. With it `true`, `fgraph
+land` pushes `main` to the branch it tracks on its remote as its last step:
+after the write that completes the Story, the removal of its worktree and its
+branch, and the branch of the next work item of a Feature. The landing names
+the remote on a line of its own:
+
+```sh
+fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
+# landed S-0001 at 3e9ae5c
+# pushed main to origin
+```
+
+A push git refuses -- a remote it cannot reach, a `main` that tracks no
+branch of a remote -- leaves the landing as it is: `main` is merged, the Story
+completed and committed, nothing undone, since history only moves forward.
+The landing exits 2 naming the git command and its error, then the landing
+and the push left to you, `git push` once the remote is there:
+
+```sh
+fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
+# fgraph: error: git push --quiet origin refs/heads/main:refs/heads/main failed: fatal: Could not read from remote repository. -- S-0001 is landed at 3e9ae5c, main is not pushed
+```
+
+It is a step of a landing, so it pushes nothing with the development off,
+where it is held as written and the landing is refused as above.
+
 The commits of the record are a layer the record turns off:
 
 ```toml
@@ -668,6 +724,7 @@ fgraph config show
 # development.parallel = none
 # development.merge = "merge-commit"
 # development.gate = none
+# delivery.push = false
 ```
 
 `none` is how a key that holds no value is listed: `parallel` without a
@@ -690,6 +747,7 @@ fgraph config show
 # development.parallel = none
 # development.merge = "merge-commit"
 # development.gate = "make check"
+# delivery.push = false
 ```
 
 VALUE is a text, read by what its key takes and never guessed from the text,
@@ -702,6 +760,7 @@ so `fgraph config set development.gate true` names the command `true`:
 | `development.parallel` | a whole number of 1 or more                | `fgraph config set development.parallel 2`        |
 | `development.merge`    | `merge-commit`, `squash` or `fast-forward` | `fgraph config set development.merge squash`      |
 | `development.gate`     | a command line, one argument of the shell  | `fgraph config set development.gate "make check"` |
+| `delivery.push`        | `true` or `false`                          | `fgraph config set delivery.push true`            |
 
 The whole file is read back as a configuration before it replaces the one in
 the record. A key the configuration does not have, a value the key does not

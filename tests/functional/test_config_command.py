@@ -87,7 +87,8 @@ def test_show_lists_every_key_at_its_default_on_a_record_without_a_config_file(
         "development.enabled = false\n"
         "development.parallel = none\n"
         'development.merge = "merge-commit"\n'
-        "development.gate = none\n",
+        "development.gate = none\n"
+        "delivery.push = false\n",
         "",
     )
 
@@ -124,12 +125,28 @@ class TestTheGateTakenBackWithConfigUnset:
         assert unset == Outcome(0, "unset development.gate = none\n", "")
 
     def test_show_then_lists_development_gate_as_none(self, unset: Outcome, project: Path) -> None:
-        assert fgraph(SHOW, project).out.splitlines()[-1] == "development.gate = none"
+        assert "development.gate = none" in fgraph(SHOW, project).out.splitlines()
 
     def test_the_config_file_keeps_the_other_keys(self, unset: Outcome, project: Path) -> None:
         assert tomllib.loads((project / CONFIG).read_text(encoding="utf-8")) == {
             "development": {"enabled": True, "parallel": 2}
         }
+
+
+def test_the_push_of_a_landing_set_is_listed_by_show_as_true(project: Path) -> None:
+    fgraph(["config", "set", "delivery.push", "true"], project)
+    assert fgraph(SHOW, project).out.splitlines()[-1] == "delivery.push = true"
+
+
+def test_the_push_of_a_landing_unset_is_back_to_false_with_no_delivery_table(
+    project: Path,
+) -> None:
+    (project / CONFIG).write_text(f"{LIMITED}[delivery]\npush = true\n", encoding="utf-8")
+    unset = fgraph(["config", "unset", "delivery.push"], project)
+    assert (unset.out, tomllib.loads((project / CONFIG).read_text(encoding="utf-8"))) == (
+        "unset delivery.push = false\n",
+        {"development": {"enabled": True, "parallel": 2}},
+    )
 
 
 def test_an_unset_of_no_key_of_the_configuration_exits_with_two_naming_it(project: Path) -> None:

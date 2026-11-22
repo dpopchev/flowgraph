@@ -131,8 +131,7 @@ without `--check` is refused with exit 2 naming it. With the development off it
 is refused, naming `development.enabled`. A blank one is refused where the Task
 is built. It is kept in the file of the work item, listed by `fgraph show`
 under the Task, and carried by every move of the Task. A Task written before
-holds none and is read as before. Keeping it is all that is done so far: the
-command is not run at `complete`.
+holds none and is read as before. `complete` runs it (Persistence).
 
 A work item in any state also keeps its knowledge: the lines noted on it, in
 the order noted. A line holds its kind, its text and the time it was noted; the
@@ -510,6 +509,15 @@ and `--depends-on none` alone takes them all away.
   depends on none. The file holds the ids as `depends_on = ["S-0001"]`, only
   when there is one, read back in every state; an id of no kind, or the work
   item itself, makes the file refused when it is read.
+- `fgraph status` marks what waits, the reading of S-0085: the line of a work
+  item in Backlog that depends on one not completed starts with `~` and ends
+  `-- depends on S-0001`, with each id not completed in the order written; the
+  mark is gone once each is completed. A Feature in Backlog carries it when its
+  first work item, the one its start takes, waits, with the ids that one waits
+  for; a work item under a Feature is on no line of the Backlog. The mark is
+  not the `!` of a block, which ends `-- waiting on <who>`: a block waits on a
+  person, a dependency on a work item. A line longer than the terminal is cut
+  as any other, and `fgraph watch` draws the same line.
 
 ## Filed during
 
@@ -1449,6 +1457,30 @@ development too.
   callable, `RunGate`, and `main()` binds the adapter `run_gate`, which runs
   the command line through the shell. The default of `run()` runs no gate: a
   run that lands under one is given its runner.
+- `[delivery] push` pushes `main` at a landing, `true` or `false`. It is
+  `false` by default, as S-0090 states it: a record that names
+  none pushes nothing, as a landing did before the key. It is a step of a
+  landing, so it pushes nothing with the development off, where it is held as
+  written and the landing is refused naming `development.enabled`. In the
+  model it is a value of its own layer (`Delivery`,
+  `src/flowgraph/record/layers.py`); the push is an effect, one more step of
+  the git adapter (`push`, `src/flowgraph/development/git.py`), bound by
+  `open_git`, so the core decides when it runs and never calls git itself.
+- `fgraph complete` of a started Task that holds a check runs it, answering S-0089:
+  through the shell, in the worktree of the work item of the Task (the directory
+  `fgraph` runs in when the item has none), before anything is written. Its
+  output is written as the check wrote it, never captured. A status other than
+  0 refuses the complete with exit 2 and one line naming the Task, the command
+  and the status, `T-0001 cannot complete: its check "make test" exited with
+  status 2`: nothing is written, no commit is made, and the Task stays
+  started. A status of 0 completes the Task as before, and so does a Task that
+  holds no check. The complete of a work item or of a Feature and `fgraph land`
+  run no check of a Task. Running it is an effect
+  (`src/flowgraph/development/task_run.py`): `run()` takes the runner as a
+  callable, `RunGate`, `run_check`, and `main()` binds `run_gate` to it; the
+  decision from its status is the core's (`check_task_passes`,
+  `src/flowgraph/development/task_check.py`). The default of `run()` runs no
+  check: every one passes.
 - `[git] commit` turns the commits of the record off. It is on by default,
   the reading of S-0040, off until set shown and not taken: inside a git work
   tree that does not ignore the record `fgraph` commits every write of it, as
@@ -1701,6 +1733,19 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   complete: before the commit of a `merge-commit` or a `squash`, and before
   a `fast-forward` drops the merge and moves `main`. A gate that fails drops
   the merge held, and no later step is taken.
+- With `[delivery] push = true` the push of `main` is the last step of every
+  way, once the landing is whole: after the commit of the record that
+  completes the work item, the removal of the worktree and the branch landed,
+  and the branch of the next work item of a Feature. `main` is pushed to the
+  branch it tracks on its remote, and the landing says `pushed main to
+  <remote>` on a line of its own. A step refused before it takes no push.
+- A push git refuses -- a remote it cannot reach, a `main` that tracks no
+  branch of a remote -- leaves the landing as it is, the reading of the agent
+  for S-0090: `main` merged, the work item completed and committed, the
+  worktree and the branch removed, the next work item started with its
+  branch; nothing is undone, since history only moves forward. The landing
+  exits 2 naming the git command and its error, then `-- <id> is landed at
+  <sha>, main is not pushed`; the push is left to the developer.
 - A squash is not made by `git merge --squash`: that takes a change staged
   in the checkout into the commit and drops it with the squash. The merge of
   its own refuses such a checkout, and committed with one parent it holds

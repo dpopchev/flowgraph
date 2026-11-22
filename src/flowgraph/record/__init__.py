@@ -8,6 +8,7 @@ journal, queue, queue_file and setting.
 
 from flowgraph.record.config import (
     CONFIG,
+    DELIVERY_PUSH,
     DEVELOPMENT_ENABLED,
     DEVELOPMENT_GATE,
     DEVELOPMENT_MERGE,
@@ -37,6 +38,7 @@ from flowgraph.record.location import (
 
 __all__ = [
     "CONFIG",
+    "DELIVERY_PUSH",
     "DEVELOPMENT_ENABLED",
     "DEVELOPMENT_GATE",
     "DEVELOPMENT_MERGE",

@@ -77,6 +77,13 @@ NONE = "none"
 def parent_asked(text: str) -> Parent:
     """The parent a command asks for: standing alone for `none`, else the Feature of that id.
 
-    Raises FeatureIdError when the text is neither.
+    Raises FeatureIdError naming both when the text is neither, and as for any Feature id below
+    1 when it is written as one.
     """
-    return STANDALONE if text == NONE else parse_feature_id(text)
+    if text == NONE:
+        return STANDALONE
+    if re.fullmatch(r"F-\d+", text) is None:
+        raise FeatureIdError(
+            f"{text!r} is neither a Feature id nor {NONE}: a Feature id is F- and a number"
+        )
+    return parse_feature_id(text)

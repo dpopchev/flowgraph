@@ -97,8 +97,8 @@ def test_the_parent_asked_for_is_the_feature_of_that_id_or_standing_alone(
 
 @pytest.mark.model
 @pytest.mark.parametrize("text", ["S-0001", "", "None"], ids=["a-story", "nothing", "a-capital"])
-def test_a_parent_asked_for_that_is_neither_is_refused(text: str) -> None:
-    refusal = rf"^'{text}' is no Feature id: it is F- and a number$"
+def test_a_parent_asked_for_that_is_neither_is_refused_naming_none(text: str) -> None:
+    refusal = rf"^'{text}' is neither a Feature id nor none: a Feature id is F- and a number$"
     with pytest.raises(FeatureIdError, match=refusal):
         parent_asked(text)
 

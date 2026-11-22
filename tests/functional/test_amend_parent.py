@@ -197,8 +197,8 @@ def test_a_work_item_alone_is_put_under_a_started_feature_as_an_add_puts_it(
             "no Feature F-0009 in the record",
         ),
         (
-            [ADD_FEATURE, ADD_ALONE, ["amend", "S-0001", "--parent", "S-0001"]],
-            "'S-0001' is no Feature id: it is F- and a number",
+            [ADD_FEATURE, ADD_ALONE, ["amend", "S-0001", "--parent", "None"]],
+            "'None' is neither a Feature id nor none: a Feature id is F- and a number",
         ),
         ([*STARTED, ["amend", "S-0001", "--parent", "none"]], "S-0001 is started already"),
     ],

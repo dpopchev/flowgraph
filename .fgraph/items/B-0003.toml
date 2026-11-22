@@ -11,10 +11,11 @@ expected = "the refusal of show names every kind it takes, the Feature among the
 
 [[tasks]]
 id = "T-0217"
-state = "backlog"
+state = "started"
 title = "Refuse a wrong id of fgraph show naming every kind it takes, the Feature among them, and a Feature id below 1 as a Feature id"
 expected_output = "changed: src/flowgraph/item_id.py and src/flowgraph/item.py; tests/functional/test_show_wrong_id.py and tests/item/test_item_id.py state both refusals"
 created = 2026-11-22 06:16:12+00:00
+started = 2026-11-22 06:16:24+00:00
 
 [[tasks]]
 id = "T-0218"

@@ -1,8 +1,9 @@
 id = "U-0016"
-state = "backlog"
+state = "started"
 title = "Cut the hand-written command sequences the functional tests use to build a completed work item from several to one shared helper"
 description = "Found during T-0301 of S-0073 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. The first run of test_about_links.py failed since the start of a work item under a Feature needs the start of the Feature first. Its Tasks are written when it is ordered."
 created = 2026-11-22 17:29:53+00:00
+started = 2026-11-22 22:16:31+00:00
 
 [criterion]
 given = "tests/functional/test_amends.py, test_about_links.py and others, each spelling out the add, the Task, the start and the completes of a completed Story"

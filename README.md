@@ -722,7 +722,14 @@ runs in the checkout of `main` with the work of the branch merged in, not yet
 committed; a landing by `fast-forward` runs it on that same merge before
 `main` moves to the tip. When the gate fails the landing exits 2 naming the
 command and its status, as shown with the configuration, and the merge is
-dropped: `main` is where it was.
+dropped: `main` is where it was. Ctrl-C during the gate drops it as well.
+
+A gate checks the tree; it is not meant to change it. A file the merge brought
+that the gate changes goes with the merge when it is dropped, and is left
+changed in the checkout when the gate passes, as the commit of a landing holds
+what the merge staged alone. A file the gate writes or changes outside the
+merge -- a report, a cache, a build -- stays in the checkout, uncommitted,
+whatever the gate exits with.
 
 An Upkeep is work that keeps a behavior and changes the inside, such as a
 split of a module. Its criterion is a Given / When / Then whose When already

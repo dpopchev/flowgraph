@@ -32,8 +32,10 @@ commit = "17c74c1"
 
 [[tasks]]
 id = "T-0241"
-state = "started"
+state = "completed"
 title = "Name fgraph config set in the refusal of a landing with the development off, in place of the key to set in the file, in src/flowgraph/land.py"
 expected_output = "changed: src/flowgraph/land.py; the tests that state the refusal and README.md name fgraph config set"
 created = 2026-11-22 07:20:08+00:00
 started = 2026-11-22 07:26:14+00:00
+completed = 2026-11-22 07:29:00+00:00
+commit = "3c5d575"

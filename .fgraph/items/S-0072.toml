@@ -44,3 +44,8 @@ created = 2026-11-22 10:48:03+00:00
 started = 2026-11-22 17:08:19+00:00
 completed = 2026-11-22 17:08:36+00:00
 commit = "549c272"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: at 4752201 on main, on a fresh record with a term and a Story, fgraph note S-0001 --decision --about gate printed noted S-0001, fgraph show gate listed S-0001 decision 2026-11-22 a gate runs on main under knowledge, and fgraph show S-0001 listed the line with (about gate); a term not in the record refused naming fgraph add term; make check: all checks passed"
+noted = 2026-11-22 17:12:43+00:00

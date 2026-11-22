@@ -1,8 +1,9 @@
 id = "S-0061"
-state = "backlog"
+state = "started"
 title = "Raise the keys of the configuration fgraph takes back to none from none to every one that has no default"
 description = "Found during T-0180 of S-0045 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. development.parallel and development.gate have no default value to write, so once set they go back to none only by removing their line from the file. Beside it: the refusal of a landing with the development off still says to set the key in the file, where it could name fgraph config set. Its Tasks are written when it is ordered."
 created = 2026-11-22 00:15:10+00:00
+started = 2026-11-22 07:20:08+00:00
 
 [criterion]
 given = "a record whose config.toml sets development.gate"

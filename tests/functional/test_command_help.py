@@ -93,10 +93,12 @@ class TestTheHelpOfStartInAnyDirectory:
             "  ID           the id of the work item, of the Task or of the Feature"
         )
 
-    def test_says_the_slug_is_read_with_the_development_on(self, helped: Outcome) -> None:
+    def test_says_the_slug_names_the_branch_of_a_work_item_or_of_the_first_of_a_feature(
+        self, helped: Outcome
+    ) -> None:
         assert " ".join(helped.out.split("--slug TEXT")[-1].split()) == (
             "the words of a work item's branch after its id, instead of its title's first four;"
-            " read with the development on"
+            " of a Feature, those of its first work item; read with the development on"
         )
 
     def test_writes_nothing_on_the_error_output(self, helped: Outcome) -> None:
@@ -149,3 +151,17 @@ def test_the_help_menu_says_a_landing_runs_its_gate() -> None:
     assert summary == (
         "land a started work item on main: merge its branch, run its gate and complete it"
     )
+
+
+def test_the_help_of_reorder_names_the_feature_beside_the_work_item() -> None:
+    helped = fgraph(["reorder", "--help"]).out.splitlines()
+    assert [line for line in helped if line.startswith(("  ID ", "  --before"))] == [
+        "  ID           the id of the work item or of the Feature to move",
+        "  --before ID  the work item or the Feature it is listed right above",
+    ]
+
+
+def test_the_help_menu_says_reorder_puts_a_work_item_or_a_feature_before_another() -> None:
+    menu = " ".join(fgraph(["--help"]).out.split())
+    summary = menu.split(" reorder ", 1)[1].split(" status ", 1)[0]
+    assert summary == "put a work item or a Feature of the Backlog before another"

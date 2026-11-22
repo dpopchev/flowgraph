@@ -1,8 +1,9 @@
 id = "B-0009"
-state = "backlog"
+state = "started"
 title = "Cut the merges of the developer a refused landing drops from any to none"
 description = "Found during T-0174 of S-0043 on 2026-11-21, under the burn of the Backlog; filed at the end of the queue and not burned. The first Task is the probe that shows each case. Its Tasks are written when it is ordered."
 created = 2026-11-21 23:42:00+00:00
+started = 2026-11-22 06:59:19+00:00
 
 [criterion]
 observed = "inferred from the code during T-0174 of S-0043 and not probed: when the checkout of main already holds a merge the developer left unconcluded, git refuses the merge of a landing and merge_uncommitted of src/flowgraph/branch.py then aborts the merge the developer held; and for a branch with no commit main lacks no merge is held, so the commit of the landing fails with nothing to commit or commits what the developer had staged"

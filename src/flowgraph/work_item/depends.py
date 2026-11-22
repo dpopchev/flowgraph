@@ -1,6 +1,11 @@
-"""The work items a work item depends on, as its file holds them: the ids as written, in order."""
+"""The relations of a work item as its file holds them: the ids as written, in order.
+
+The work items it depends on and the one it was filed during.
+"""
 
 from collections.abc import Iterable, Sequence
+
+from pydantic import BaseModel
 
 from flowgraph.relation import Relations, make_relations
 from flowgraph.work_item.model import (
@@ -10,6 +15,13 @@ from flowgraph.work_item.model import (
     parse_work_item_id,
     work_item_id_text,
 )
+
+
+class RelationsFile(BaseModel):
+    """What the file of a work item holds of its relations, each held only when there is one."""
+
+    depends_on: list[str] = []
+    filed_during: str = ""
 
 
 def _id_held(text: str, kinds: Sequence[Kind]) -> WorkItemId:
@@ -23,21 +35,26 @@ def _id_held(text: str, kinds: Sequence[Kind]) -> WorkItemId:
         except WorkItemIdError:
             continue
     nouns = ", ".join(kind.noun for kind in kinds)
-    raise WorkItemIdError(f"depends_on {text!r} is the id of no work item of a kind known: {nouns}")
+    raise WorkItemIdError(f"relation {text!r} is the id of no work item of a kind known: {nouns}")
 
 
 def relations_held(
-    item_id: WorkItemId, depends_on: Iterable[str], kinds: Sequence[Kind]
+    item_id: WorkItemId, held: RelationsFile, kinds: Sequence[Kind]
 ) -> Relations[WorkItemId]:
     """The relations of the work item a validated file holds, built through their constructor.
 
     Raises WorkItemIdError when an id is that of no kind given and RelationError when the item
     names itself.
     """
-    return make_relations(item_id, (_id_held(text, kinds) for text in depends_on))
+    depends_on: Iterable[WorkItemId] = (_id_held(text, kinds) for text in held.depends_on)
+    filed_during = _id_held(held.filed_during, kinds) if held.filed_during else None
+    return make_relations(item_id, depends_on, filed_during)
 
 
-def depends_primitives(relations: Relations[WorkItemId]) -> dict[str, object]:
-    """The relations as the primitives a file holds: held only when there is one."""
+def relations_primitives(relations: Relations[WorkItemId]) -> dict[str, object]:
+    """The relations as the primitives a file holds: each held only when there is one."""
     ids = [work_item_id_text(each) for each in relations.depends_on]
-    return {"depends_on": ids} if ids else {}
+    depends = {"depends_on": ids} if ids else {}
+    named = relations.filed_during
+    during = {"filed_during": work_item_id_text(named)} if named else {}
+    return {**depends, **during}

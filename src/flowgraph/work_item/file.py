@@ -37,7 +37,7 @@ from flowgraph.record import ITEMS
 from flowgraph.relation import RelationError
 from flowgraph.task import TaskInProgressError
 from flowgraph.task_list import at_most_one_started
-from flowgraph.work_item.depends import depends_primitives, relations_held
+from flowgraph.work_item.depends import RelationsFile, relations_held, relations_primitives
 from flowgraph.work_item.model import (
     CompletedWorkItem,
     Kind,
@@ -62,7 +62,7 @@ from flowgraph.work_item.removal import removed_work_item
 from flowgraph.work_item.views import DependsRow, WorkItemDetail, WorkItemRow
 
 
-class _ItemFile(BaseModel):
+class _ItemFile(RelationsFile, BaseModel):
     """What the file of a work item in Backlog holds: its Tasks are all in Backlog."""
 
     model_config = ConfigDict(extra="forbid")
@@ -76,10 +76,9 @@ class _ItemFile(BaseModel):
     criterion: AnyCriterionFile
     tasks: list[TaskFile] = []
     knowledge: list[KnowledgeFile] = []
-    depends_on: list[str] = []
 
 
-class _StartedItemFile(BaseModel):
+class _StartedItemFile(RelationsFile, BaseModel):
     """What the file of a started work item holds: its started time, its Tasks in any state."""
 
     model_config = ConfigDict(extra="forbid")
@@ -94,10 +93,9 @@ class _StartedItemFile(BaseModel):
     criterion: AnyCriterionFile
     tasks: list[HeldTask] = []
     knowledge: list[KnowledgeFile] = []
-    depends_on: list[str] = []
 
 
-class _CompletedItemFile(BaseModel):
+class _CompletedItemFile(RelationsFile, BaseModel):
     """What the file of a completed work item holds: the commit it has, its Tasks all completed."""
 
     model_config = ConfigDict(extra="forbid")
@@ -114,10 +112,9 @@ class _CompletedItemFile(BaseModel):
     criterion: AnyCriterionFile
     tasks: list[CompletedTaskFile] = []
     knowledge: list[KnowledgeFile] = []
-    depends_on: list[str] = []
 
 
-class _RemovedItemFile(BaseModel):
+class _RemovedItemFile(RelationsFile, BaseModel):
     """What the file of a removed work item holds: its removal, its Tasks all in Backlog."""
 
     model_config = ConfigDict(extra="forbid")
@@ -133,7 +130,6 @@ class _RemovedItemFile(BaseModel):
     criterion: AnyCriterionFile
     tasks: list[TaskFile] = []
     knowledge: list[KnowledgeFile] = []
-    depends_on: list[str] = []
 
 
 # The file of a work item in any of its states.
@@ -236,6 +232,7 @@ def read_work_item_rows(record: Path, kind: Kind) -> list[WorkItemRow]:
             completed=_completed_held(held),
             tasks=[task_row(task) for task in held.tasks],
             depends_on=held.depends_on,
+            filed_during=held.filed_during,
         )
         for held in _files_of(record, kind)
     ]
@@ -284,6 +281,7 @@ def read_work_item_detail(record: Path, item_id: WorkItemId) -> WorkItemDetail:
         parent=held.parent,
         knowledge=[KnowledgeRow(line.kind, line.noted, line.text) for line in held.knowledge],
         depends_on=[DependsRow(each) for each in held.depends_on],
+        filed_during=held.filed_during,
         **held.criterion.model_dump(),
     )
 
@@ -334,7 +332,7 @@ def _item_primitives(item: WorkItemState) -> dict[str, object]:
         "criterion": criterion_primitives(item.criterion),
         **tasks,
         **knowledge,
-        **depends_primitives(item.relations),
+        **relations_primitives(item.relations),
     }
 
 
@@ -356,7 +354,7 @@ def _item_held(held: _HeldItemFile, kind: Kind, kinds: Sequence[Kind] = ()) -> W
     item = make_work_item(item_id, held.title, criterion, held.description, held.created, parent)
     for task in held.tasks:
         item = append_task(item, backlog_task(task))
-    relations = relations_held(item_id, held.depends_on, (kind, *kinds))
+    relations = relations_held(item_id, held, (kind, *kinds))
     item = replace(item, knowledge=tuple(knowledge_held(line) for line in held.knowledge))
     item = replace(item, relations=relations)
     match held:

@@ -25,7 +25,8 @@ class WorkItemRow:
     A started time while started, a completed time and the commit it has once completed, a reason
     once removed. Its created time orders the work items of the Backlog nobody placed, its
     started time those of InProgress, its completed time those of Completed. Its Tasks are in
-    the order written, each with its own state. The ids it depends on are as written.
+    the order written, each with its own state. The ids it depends on and the one it
+    was filed during are as written.
     """
 
     id: str
@@ -39,6 +40,7 @@ class WorkItemRow:
     completed: datetime | None = field(default=None, kw_only=True)
     tasks: list[TaskRow] = field(default_factory=list[TaskRow], kw_only=True)
     depends_on: list[str] = field(default_factory=list[str], kw_only=True)
+    filed_during: str = field(default="", kw_only=True)
 
 
 @dataclass
@@ -65,3 +67,5 @@ class WorkItemDetail:
     parent: str = ""
     knowledge: list[KnowledgeRow] = field(default_factory=list[KnowledgeRow])
     depends_on: list[DependsRow] = field(default_factory=list[DependsRow])
+    filed_during: str = ""
+    filed_here: list[str] = field(default_factory=list[str])

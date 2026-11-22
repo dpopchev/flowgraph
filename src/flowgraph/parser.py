@@ -96,6 +96,11 @@ def _add_kinds(kinds: Commands) -> dict[str, argparse.ArgumentParser]:
             metavar="ID",
             help="a work item it waits for, which must be completed before it starts; once per id",
         )
+        kind.add_argument(
+            "--filed-during",
+            metavar="ID",
+            help="the work item it was found during; it does not change after the add",
+        )
     feature = _command(
         kinds, "feature", "a bigger outcome that groups work items, with its criteria"
     )

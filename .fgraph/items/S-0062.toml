@@ -55,3 +55,8 @@ created = 2026-11-22 10:47:25+00:00
 started = 2026-11-22 11:04:58+00:00
 completed = 2026-11-22 11:07:37+00:00
 commit = "ce5fa7b"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: at f8c8b78 on main, fgraph note S-0001 --finding on a fresh record printed noted S-0001 and fgraph show listed Knowledge (1), finding 2026-11-22 the file holds it; make check: 1940 passed, all checks passed"
+noted = 2026-11-22 11:10:40+00:00

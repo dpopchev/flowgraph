@@ -11,10 +11,7 @@ import pytest
 
 from flowgraph.cli import open_files, run
 
-pytestmark = [
-    pytest.mark.functional,
-    pytest.mark.xfail(reason="S-0072: fgraph note takes no --about yet", strict=True),
-]
+pytestmark = pytest.mark.functional
 
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 ADD_STORY = [

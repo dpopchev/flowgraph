@@ -58,6 +58,7 @@ def removed_work_item(
                 item.knowledge,
                 item.relations,
                 _superseded_by_kept(item.id, superseded_by),
+                item.about,
             )
         case StartedWorkItem():
             raise StartedAlreadyError(f"{work_item_id_text(item.id)} is started already")

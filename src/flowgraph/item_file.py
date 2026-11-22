@@ -162,22 +162,25 @@ class KnowledgeFile(BaseModel):
     kind: Literal["finding", "decision", "deviation"]
     text: str
     noted: datetime
+    about: list[str] = []
 
 
 def knowledge_primitives(line: KnowledgeLine) -> dict[str, object]:
-    """The knowledge line as the primitives its table holds."""
-    return {"kind": kind_name(line.kind), "text": line.text, "noted": line.noted}
+    """The knowledge line as the primitives its table holds; its terms only when it has some."""
+    about = {"about": list(line.about)} if line.about else {}
+    return {"kind": kind_name(line.kind), "text": line.text, "noted": line.noted, **about}
 
 
 def knowledge_held(held: KnowledgeFile) -> KnowledgeLine:
     """The knowledge line a validated table holds, built through its constructor."""
+    about = tuple(held.about)
     match held.kind:
         case "finding":
-            return make_knowledge_line(FINDING, held.text, held.noted)
+            return make_knowledge_line(FINDING, held.text, held.noted, about)
         case "decision":
-            return make_knowledge_line(DECISION, held.text, held.noted)
+            return make_knowledge_line(DECISION, held.text, held.noted, about)
         case "deviation":
-            return make_knowledge_line(DEVIATION, held.text, held.noted)
+            return make_knowledge_line(DEVIATION, held.text, held.noted, about)
         case _ as unreachable:
             assert_never(unreachable)
 

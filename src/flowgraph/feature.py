@@ -100,6 +100,7 @@ class FeatureDetail:
     reason: str = ""
     waiting_on: str = ""
     knowledge: list[KnowledgeRow] = field(default_factory=list[KnowledgeRow])
+    about: list[str] = field(default_factory=list[str])
 
 
 @dataclass
@@ -150,6 +151,7 @@ def feature_detail(feature: FeatureState) -> FeatureDetail:
         reason or removal_reason(feature),
         waiting_on,
         [knowledge_row(line) for line in feature.knowledge],
+        list(feature.about),
     )
 
 
@@ -215,13 +217,15 @@ def note_feature(
     load_feature: LoadFeature,
     save_feature: SaveFeature,
     now: Now,
+    about: tuple[str, ...] = (),
 ) -> None:
     """Keep a line of that kind and text on the Feature of that id, in any state, and save it.
 
-    The line goes after the lines the Feature keeps. Raises FeatureNotFoundError when the record
-    holds no such Feature and EmptyPartError when the text is blank; nothing is saved.
+    The line is about the terms given and goes after the lines the Feature keeps. Raises
+    FeatureNotFoundError when the record holds no such Feature and EmptyPartError when the text
+    is blank; nothing is saved.
     """
-    line = make_knowledge_line(kind, text, now())
+    line = make_knowledge_line(kind, text, now(), about)
     save_feature(noted_feature(load_feature(feature_id), line))
 
 
@@ -233,13 +237,14 @@ def add_feature(
     find_feature_ids: FindFeatureIds,
     save_feature: SaveFeature,
     now: Now,
+    about: tuple[str, ...] = (),
 ) -> FeatureId:
-    """Add a Feature under its next free id and return that id.
+    """Add a Feature under its next free id, about the terms given, and return that id.
 
     Raises EmptyPartError when the title or a criterion is blank and NoCriterionError when it
     states none; nothing is saved.
     """
     taken = [parse_feature_id(text) for text in find_feature_ids()]
-    feature = make_feature(next_feature_id(taken), title, criteria, description, now())
+    feature = make_feature(next_feature_id(taken), title, criteria, description, now(), about)
     save_feature(feature)
     return feature.id

@@ -4,7 +4,7 @@ from collections.abc import Collection, Iterable, Sequence
 from typing import assert_never
 
 from flowgraph.feature import FeatureDetail, FeatureRow
-from flowgraph.knowledge import KnowledgeRow
+from flowgraph.knowledge import KnowledgeRow, about_text
 from flowgraph.story import StoryDetail, StoryRow
 from flowgraph.task import TaskRow
 from flowgraph.upkeep import UpkeepDetail, UpkeepRow
@@ -174,7 +174,10 @@ def _knowledge_lines(knowledge: Sequence[KnowledgeRow]) -> list[str]:
         return []
     return [
         f"Knowledge ({len(knowledge)})\n",
-        *(f"  {line.kind}  {line.noted.date().isoformat()}  {line.text}\n" for line in knowledge),
+        *(
+            f"  {line.kind}  {line.noted.date().isoformat()}  {line.text}{about_text(line.about)}\n"
+            for line in knowledge
+        ),
     ]
 
 
@@ -189,6 +192,7 @@ def feature_text(detail: FeatureDetail, rows: Iterable[StoryRow | UpkeepRow], bu
     committed = [f"  commit       {detail.commit}\n"] if detail.commit else []
     described = [f"  description  {detail.description}\n"] if detail.description else []
     reason = [f"  reason       {detail.reason}\n"] if detail.reason else []
+    about = [f"  about        {', '.join(detail.about)}\n"] if detail.about else []
     waited = [f"  waiting on   {detail.waiting_on}\n"] if detail.waiting_on else []
     lines = [
         f"{detail.id}  {detail.title}\n",
@@ -197,6 +201,7 @@ def feature_text(detail: FeatureDetail, rows: Iterable[StoryRow | UpkeepRow], bu
         *waited,
         *committed,
         *described,
+        *about,
         f"Criteria ({len(detail.criteria)})\n",
         *(f"  {criterion}\n" for criterion in detail.criteria),
         f"Work items ({len(listed)})\n",
@@ -218,7 +223,8 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     a removed one and the reason of a removal are listed only when there is one, the bucket of a
     Task only once it has left Backlog. A blocked Task is listed in InProgress as blocked, with
     its reason and what it waits on. The knowledge lines follow, in the order noted, each with
-    its kind, its date and its text; there is no heading without one.
+    its kind, its date and its text, then the terms it is about; there is no heading without one.
+    The terms the item is about are listed after its description, only when there are some.
     """
     bucket = next(name for name, states in BUCKETS if detail.state in states)
     under = [f"  parent       {detail.parent}\n"] if detail.parent else []
@@ -236,6 +242,7 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     supersedes = ", ".join(detail.supersedes)
     supersede = [f"  supersedes   {supersedes}\n"] if supersedes else []
     described = [f"  description  {detail.description}\n"] if detail.description else []
+    about = [f"  about        {', '.join(detail.about)}\n"] if detail.about else []
     stated = {
         "given": detail.given,
         "when": detail.when,
@@ -259,6 +266,7 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
         *superseded,
         *removed,
         *described,
+        *about,
         *(f"  {part:<13}{text}\n" for part, text in stated.items() if text),
         f"Tasks ({len(detail.tasks)})\n",
     ]

@@ -29,6 +29,7 @@ class ItemFile(RelationsFile, BaseModel):
     title: str
     description: str = ""
     parent: str = ""
+    about: list[str] = []
     created: datetime
     criterion: AnyCriterionFile
     tasks: list[TaskFile] = []
@@ -45,6 +46,7 @@ class StartedItemFile(RelationsFile, BaseModel):
     title: str
     description: str = ""
     parent: str = ""
+    about: list[str] = []
     created: datetime
     started: datetime
     criterion: AnyCriterionFile
@@ -62,6 +64,7 @@ class CompletedItemFile(RelationsFile, BaseModel):
     title: str
     description: str = ""
     parent: str = ""
+    about: list[str] = []
     created: datetime
     started: datetime
     completed: datetime
@@ -81,6 +84,7 @@ class RemovedItemFile(RelationsFile, BaseModel):
     title: str
     description: str = ""
     parent: str = ""
+    about: list[str] = []
     created: datetime
     removed: datetime
     reason: str = ""

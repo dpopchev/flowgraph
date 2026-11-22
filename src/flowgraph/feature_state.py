@@ -41,6 +41,7 @@ class Feature:
     criteria: tuple[str, ...]
     created: datetime
     knowledge: tuple[KnowledgeLine, ...] = ()
+    about: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -54,6 +55,7 @@ class StartedFeature:
     created: datetime
     started: datetime
     knowledge: tuple[KnowledgeLine, ...] = ()
+    about: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -70,6 +72,7 @@ class BlockedFeature:
     since: datetime
     waiting_on: str
     knowledge: tuple[KnowledgeLine, ...] = ()
+    about: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -85,6 +88,7 @@ class CompletedFeature:
     completed: datetime
     commit: Evidence
     knowledge: tuple[KnowledgeLine, ...] = ()
+    about: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -99,6 +103,7 @@ class RemovedFeature:
     removed: datetime
     reason: str
     knowledge: tuple[KnowledgeLine, ...] = ()
+    about: tuple[str, ...] = ()
 
 
 # A Feature in any of its states, as the record keeps it.
@@ -121,9 +126,14 @@ class FeatureRemovedError(RemovedAlreadyError):
 
 
 def make_feature(
-    feature_id: FeatureId, title: str, criteria: Iterable[str], description: str, created: datetime
+    feature_id: FeatureId,
+    title: str,
+    criteria: Iterable[str],
+    description: str,
+    created: datetime,
+    about: tuple[str, ...] = (),
 ) -> Feature:
-    """A Feature with its criteria, its created time kept to the second.
+    """A Feature with its criteria, its created time kept to the second, about those terms.
 
     Raises EmptyPartError when the title or a criterion is blank and NoCriterionError when it
     states none.
@@ -132,7 +142,8 @@ def make_feature(
     if not stated:
         raise NoCriterionError("a Feature states at least one criterion")
     to_the_second = created.replace(microsecond=0)
-    return Feature(feature_id, said("title", title), description, stated, to_the_second)
+    titled = said("title", title)
+    return Feature(feature_id, titled, description, stated, to_the_second, (), about)
 
 
 def started_feature(feature: FeatureState, on: datetime) -> StartedFeature:
@@ -151,6 +162,7 @@ def started_feature(feature: FeatureState, on: datetime) -> StartedFeature:
                 feature.created,
                 on.replace(microsecond=0),
                 feature.knowledge,
+                feature.about,
             )
         case StartedFeature():
             raise StartedAlreadyError(f"{feature_id_text(feature.id)} is started already")
@@ -188,6 +200,7 @@ def blocked_feature(
                 on.replace(microsecond=0),
                 said("waiting on", waiting_on),
                 feature.knowledge,
+                feature.about,
             )
         case BlockedFeature():
             raise BlockedError(f"{feature_id_text(feature.id)} is blocked already")
@@ -214,6 +227,7 @@ def unblocked_feature(feature: FeatureState) -> StartedFeature:
                 feature.created,
                 feature.started,
                 feature.knowledge,
+                feature.about,
             )
         case Feature() | StartedFeature() | CompletedFeature() | RemovedFeature():
             raise NotBlockedError(f"{feature_id_text(feature.id)} is not blocked")
@@ -242,6 +256,7 @@ def completed_feature(feature: FeatureState, on: datetime, commit: Evidence) -> 
                 on.replace(microsecond=0),
                 commit,
                 feature.knowledge,
+                feature.about,
             )
         case CompletedFeature():
             raise CompletedAlreadyError(f"{feature_id_text(feature.id)} is completed already")
@@ -269,6 +284,7 @@ def removed_feature(feature: FeatureState, reason: str, on: datetime) -> Removed
                 on.replace(microsecond=0),
                 said("reason", reason),
                 feature.knowledge,
+                feature.about,
             )
         case StartedFeature():
             raise StartedAlreadyError(f"{feature_id_text(feature.id)} is started already")

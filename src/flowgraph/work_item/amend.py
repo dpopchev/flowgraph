@@ -41,7 +41,8 @@ class Amendment:
 
     The parts of the criterion are those of every form; a work item takes the ones it states.
     Its parent is the Feature to put it under, or standing alone. The work items it depends on
-    replace those it had; none given takes them all away.
+    replace those it had; none given takes them all away. The terms it is about replace those it
+    had too, none given as well.
     """
 
     title: str | None = None
@@ -54,6 +55,7 @@ class Amendment:
     hypothesis: str | None = None
     parent: Parent | None = None
     depends_on: tuple[WorkItemId, ...] | None = None
+    about: tuple[str, ...] | None = None
 
 
 # Check the move of the work item of that id from the parent it had to the one an amend names;
@@ -135,6 +137,7 @@ def amended_work_item(item: WorkItemState, amendment: Amendment) -> WorkItem:
             title = said("title", _kept(amendment.title, item.title))
             description = _kept(amendment.description, item.description)
             parent = _kept(amendment.parent, item.parent)
+            about = _kept(amendment.about, item.about)
             relations = item.relations
             if amendment.depends_on is not None:
                 relations = with_depends_on(relations, item.id, amendment.depends_on)
@@ -145,6 +148,7 @@ def amended_work_item(item: WorkItemState, amendment: Amendment) -> WorkItem:
                 description=description,
                 parent=parent,
                 relations=relations,
+                about=about,
             )
         case StartedWorkItem():
             raise StartedAlreadyError(f"{named} is started already")

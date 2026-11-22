@@ -165,7 +165,10 @@ def read_work_item_detail(record: Path, item_id: WorkItemId) -> WorkItemDetail:
         commit=commit_held(held),
         reason=reason_held(held),
         parent=held.parent,
-        knowledge=[KnowledgeRow(line.kind, line.noted, line.text) for line in held.knowledge],
+        knowledge=[
+            KnowledgeRow(line.kind, line.noted, line.text, line.about) for line in held.knowledge
+        ],
+        about=held.about,
         depends_on=[DependsRow(each) for each in held.depends_on],
         filed_during=held.filed_during,
         superseded_by=superseded_held(held),
@@ -211,12 +214,14 @@ def _item_primitives(item: WorkItemState) -> dict[str, object]:
     tasks = {"tasks": [task_primitives(task) for task in item.tasks]} if item.tasks else {}
     lines = [knowledge_primitives(line) for line in item.knowledge]
     knowledge = {"knowledge": lines} if lines else {}
+    about = {"about": list(item.about)} if item.about else {}
     return {
         "id": work_item_id_text(item.id),
         "state": state_name(item),
         "title": item.title,
         **described,
         **under,
+        **about,
         "created": item.created,
         **_moves_primitives(item),
         "criterion": criterion_primitives(item.criterion),
@@ -241,7 +246,10 @@ def _item_held(held: HeldItemFile, kind: Kind, kinds: Sequence[Kind] = ()) -> Wo
         raise CriterionError(f"{kind.article} {kind.noun} holds its decision once it is completed")
     item_id = parse_work_item_id(kind, held.id)
     parent = parent_written(held.parent)
-    item = make_work_item(item_id, held.title, criterion, held.description, held.created, parent)
+    about = tuple(held.about)
+    item = make_work_item(
+        item_id, held.title, criterion, held.description, held.created, parent, about=about
+    )
     for task in held.tasks:
         item = append_task(item, backlog_task(task))
     relations = relations_held(item_id, held, (kind, *kinds))

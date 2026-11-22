@@ -130,6 +130,10 @@ def _add_kinds(kinds: Commands) -> dict[str, argparse.ArgumentParser]:
         "spike": spike,
         "feature": feature,
     }
+    for kind in (story, upkeep, bug, spike, feature):
+        kind.add_argument(
+            "--about", action="append", metavar="TERM", help="a term it is about; once per term"
+        )
     for kind in made.values():
         kind.add_argument("--description", default="", metavar="TEXT", help="free text, optional")
     return {**made, "term": term}
@@ -161,6 +165,12 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         action="append",
         metavar="ID",
         help="a work item it waits for, once per id, in place of its own; none takes them away",
+    )
+    amend.add_argument(
+        "--about",
+        action="append",
+        metavar="TERM",
+        help="a term it is about, once per term, in place of its own; none takes them away",
     )
     show = _command(commands, "show", "show a work item with its Tasks, a Feature or a term")
     show.add_argument(
@@ -228,6 +238,7 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         commands, "note", "keep a finding, a decision or a deviation on a work item, in any state"
     )
     note.add_argument("id", metavar="ID", help="the id of the work item")
+    note.add_argument("--about", action="append", metavar="TERM", help="a term the line is about")
     kinds = note.add_mutually_exclusive_group(required=True)
     kinds.add_argument("--finding", metavar="TEXT", help="what the work learned")
     kinds.add_argument("--decision", metavar="TEXT", help="what was decided")
@@ -244,6 +255,7 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         metavar="KIND",
         help="list the lines of one kind alone: finding, decision or deviation",
     )
+    knowledge.add_argument("--about", metavar="TERM", help="list the lines about one term alone")
     terms = _command(commands, "terms", "list the terms of the record with their meanings")
     relate = _command(commands, "relate", "relate a term to another: is-a or part-of")
     relate.add_argument("first", metavar="TERM", help="the term that is a kind or a part")

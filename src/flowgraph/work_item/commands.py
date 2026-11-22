@@ -107,6 +107,7 @@ def work_item_detail(item: WorkItemState) -> WorkItemDetail:
         reason=reason_of(item),
         parent=parent_text(item.parent),
         knowledge=[knowledge_row(line) for line in item.knowledge],
+        about=list(item.about),
         depends_on=[DependsRow(work_item_id_text(each)) for each in item.relations.depends_on],
         filed_during=_named_text(item.relations.filed_during),
         filed_here=[],
@@ -145,18 +146,28 @@ def add_work_item(
     depends_on: Iterable[WorkItemId] = (),
     filed_during: WorkItemId | None = None,
     amends: WorkItemId | None = None,
+    about: tuple[str, ...] = (),
 ) -> WorkItemId:
     """Add a work item of that kind to Backlog under its next free id and return that id.
 
     It stands alone unless a Feature is named as its parent, depends on the work items given,
-    is filed during the one given and amends the one given. The rows found are those of the
-    kind. Raises EmptyPartError when the title is blank and CriterionError when the criterion is
-    not of the form the kind takes; nothing is saved.
+    is filed during the one given, amends the one given and is about the terms given. The rows
+    found are those of the kind. Raises EmptyPartError when the title is blank and CriterionError
+    when the criterion is not of the form the kind takes; nothing is saved.
     """
     taken = [parse_work_item_id(kind, row.id) for row in find_work_item_rows()]
     item_id = next_work_item_id(kind, taken)
     item = make_work_item(
-        item_id, title, criterion, description, now(), parent, depends_on, filed_during, amends
+        item_id,
+        title,
+        criterion,
+        description,
+        now(),
+        parent,
+        depends_on,
+        filed_during,
+        amends,
+        about,
     )
     save_work_item(item)
     return item.id
@@ -314,11 +325,13 @@ def note_work_item(
     load_work_item: LoadWorkItem,
     save_work_item: SaveWorkItem,
     now: Now,
+    about: tuple[str, ...] = (),
 ) -> None:
     """Keep a line of that kind and text on the work item of that id, in any state, and save it.
 
-    The line goes after the lines the item keeps. Raises WorkItemNotFoundError when the record
-    holds no such item and EmptyPartError when the text is blank; nothing is saved.
+    The line is about the terms given and goes after the lines the item keeps. Raises
+    WorkItemNotFoundError when the record holds no such item and EmptyPartError when the text is
+    blank; nothing is saved.
     """
-    line = make_knowledge_line(kind, text, now())
+    line = make_knowledge_line(kind, text, now(), about)
     save_work_item(noted_work_item(load_work_item(item_id), line))

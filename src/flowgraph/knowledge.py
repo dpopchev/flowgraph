@@ -4,7 +4,8 @@ A line is never amended or removed. Its kind is a sum type: the finding, the dec
 deviation.
 """
 
-from dataclasses import dataclass
+from collections.abc import Sequence
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import assert_never
 
@@ -37,11 +38,12 @@ DEVIATION = Deviation()
 
 @dataclass(frozen=True)
 class KnowledgeLine:
-    """One line of knowledge: its kind, its text and the time it was noted."""
+    """One line of knowledge: its kind, its text, when it was noted and the terms it is about."""
 
     kind: KnowledgeKind
     text: str
     noted: datetime
+    about: tuple[str, ...] = ()
 
 
 @dataclass
@@ -51,6 +53,7 @@ class KnowledgeRow:
     kind: str
     noted: datetime
     text: str
+    about: list[str] = field(default_factory=list[str])
 
 
 def kind_name(kind: KnowledgeKind) -> str:
@@ -66,14 +69,21 @@ def kind_name(kind: KnowledgeKind) -> str:
             assert_never(unreachable)
 
 
-def make_knowledge_line(kind: KnowledgeKind, text: str, noted: datetime) -> KnowledgeLine:
-    """The line of that kind and text, noted at that time, kept to the second.
+def make_knowledge_line(
+    kind: KnowledgeKind, text: str, noted: datetime, about: tuple[str, ...] = ()
+) -> KnowledgeLine:
+    """The line of that kind and text, noted at that time, kept to the second, about those terms.
 
     Raises EmptyPartError naming the text when it is blank.
     """
-    return KnowledgeLine(kind, said("text", text), noted.replace(microsecond=0))
+    return KnowledgeLine(kind, said("text", text), noted.replace(microsecond=0), about)
 
 
 def knowledge_row(line: KnowledgeLine) -> KnowledgeRow:
     """The line as the row a view reads."""
-    return KnowledgeRow(kind_name(line.kind), line.noted, line.text)
+    return KnowledgeRow(kind_name(line.kind), line.noted, line.text, list(line.about))
+
+
+def about_text(about: Sequence[str]) -> str:
+    """The terms a line is about as a view ends the line with them; empty for none."""
+    return f"  (about {', '.join(about)})" if about else ""

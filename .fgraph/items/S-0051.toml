@@ -13,12 +13,14 @@ then = "fgraph status lists the Feature before the Story under Backlog"
 
 [[tasks]]
 id = "T-0185"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_reorder_feature.py, failing on the criterion of S-0051"
 description = "decided: S-0051: a work item under a Feature is still reordered, before another work item of the same Feature alone; that order is the one its work items start in. Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_reorder_backlog.py does. Seen red, then marked a strict xfail naming S-0051 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_reorder_feature.py states that, on a record with a Story standing alone and, added after it, a Feature, both in Backlog, fgraph reorder of the Feature before the Story exits 0 and fgraph status lists the Feature before the Story under Backlog"
 created = 2026-11-21 23:10:18+00:00
 started = 2026-11-22 01:12:47+00:00
+completed = 2026-11-22 01:14:18+00:00
+commit = "5010fe8"
 
 [[tasks]]
 id = "T-0186"

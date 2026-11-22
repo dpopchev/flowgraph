@@ -409,6 +409,58 @@ it). When the top of the heading leaves it out it is listed after the top, apart
 from the count of those more; a Backlog where nothing can start marks none. No
 `next` command is added.
 
+`fgraph status --format json` prints the same view as one JSON document another
+tool reads, such as the SessionStart hook of an agent harness: each bucket with
+its count and every item of it, not the top 5, the Tasks of each work item with
+their state, the reason and what a block waits on, the ids a work item waits for,
+and the next to start. `text` is the default and prints what `fgraph status` has
+always printed; another word is refused naming both, with exit 2. `--all` changes
+nothing for JSON, which lists every item anyway, and `fgraph watch` stays text.
+The keys are sorted, so two runs on one record print the same bytes; every key is
+listed in `docs/domain-model.md`, section Status as JSON.
+
+```sh
+fgraph status --format json
+# {
+#   "buckets": [
+#     {
+#       "count": 1,
+#       "items": [
+#         {
+#           "commit": null,
+#           "id": "S-0001",
+#           "kind": "story",
+#           "progress": {
+#             "completed": 0,
+#             "total": 1
+#           },
+#           "reason": null,
+#           "state": "started",
+#           "superseded_by": null,
+#           "tasks": [
+#             {
+#               "commit": null,
+#               "id": "T-0001",
+#               "reason": "no key",
+#               "state": "blocked",
+#               "title": "Write the command",
+#               "waiting_on": "developer"
+#             }
+#           ],
+#           "title": "Add the show command",
+#           "waits_for": []
+#         }
+#       ],
+#       "name": "InProgress"
+#     }
+#   ],
+#   "next_to_start": null
+# }
+```
+
+The example is cut to one bucket: the document always lists all four, in the order
+of the flow, Removed too, with a count of 0 and an empty list when it holds nothing.
+
 `fgraph amend S-0002 --depends-on S-0003` replaces what it depends on and
 `--depends-on none` takes it all away. An id that is no work item of the
 record, a removed work item, the work item itself and a work item that depends

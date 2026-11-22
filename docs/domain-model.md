@@ -772,6 +772,41 @@ The order is fixed: the nodes by id, the edges by their kind in the order above 
 then by their two ends, the knowledge lines by item and time noted, and the keys of
 each object in the order given here, so two runs on one record print the same bytes.
 
+## Status as JSON
+
+`fgraph status --format json` is a second formatter of the rows `fgraph status` lists, the
+reading of S-0087: no fact is computed again and none is read back from the text. It is
+read by a consumer that parses it, so the keys below are a contract. `text` is the default
+and prints what status printed before; another word is refused naming both, exit 2, as
+`fgraph graph` refuses one. `--all` changes nothing for JSON, which lists every item
+anyway; `fgraph watch` stays text. The keys of every object are sorted, the indent is two
+and the text ends with a newline, so two runs on one record print the same bytes. A key
+that holds nothing is `null`, never an empty text; a list that holds nothing is `[]`.
+
+- Document: `buckets`, one object per bucket, always the four, in the order of the flow
+  (Backlog, InProgress, Completed, Removed; Removed too when empty); `next_to_start`, the
+  id of the line of the Backlog that `fgraph start` would take, or `null`.
+- Bucket: `name`; `count`, the number of its items; `items`, every one of them, in the
+  order the text lists them.
+- Work item (an item of kind `story`, `upkeep`, `bug` or `spike`): `id`; `kind`; `title`;
+  `state`, as the record writes it (`backlog`, `started`, `blocked`, `completed`,
+  `removed`); `commit`, the one it was completed in; `reason`, the one it was removed
+  for; `superseded_by`, the id that supersedes it; `progress`, an object `completed` and
+  `total`, its Tasks completed of all; `tasks`, in the order written; `waits_for`, the
+  ids it depends on that are not completed, in the order written.
+- Task: `id`; `title`; `state` (`backlog`, `started`, `blocked`, `completed`); `commit`;
+  `reason` and `waiting_on`, those of a block, `null` unless it is blocked.
+- Feature (kind `feature`): `id`; `kind`; `title`; `commit`; `reason`, the one it was
+  removed for; `progress`, an object `completed` and `total`, its work items completed of
+  those it holds; `waits_for`, what its first work item in Backlog waits for; `block`, an
+  object `reason` and `waiting_on` while it is blocked, else `null`; `work_items`, its
+  started work items as work items above. Those in Backlog and the completed ones are in
+  no list of it, as on no line of the text.
+
+The block of a Task is its own state and is carried by the Task: a Feature does not copy
+it, as the text line of a Feature does. `fgraph graph` prints `"bucket": null` for a Task;
+the status document carries the state of each Task instead.
+
 ## Evidence
 
 A completed item carries the proof that it is completed. For a work item,

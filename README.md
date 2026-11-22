@@ -1391,7 +1391,9 @@ with it; `fgraph show` writes as before.
 as a frame, waits 5 seconds and writes the next, each frame read anew from
 the record. On a terminal a frame replaces the one before it, each line cut
 to the width the terminal has then; written to a pipe or a file the frames
-follow each other, every line whole. Ctrl-C ends it, with exit 0:
+follow each other, every line whole, each one reaching the pipe as it is
+written, so `fgraph watch | cat` shows a frame every interval. Ctrl-C ends
+it, with exit 0:
 
 ```sh
 fgraph watch            # a frame every 5 seconds, until Ctrl-C

@@ -32,6 +32,8 @@ from flowgraph.config import (
     Merge,
 )
 from flowgraph.criterion import DecisionError, EmptyPartError, make_commit
+from flowgraph.feature import FeatureNotFoundError
+from flowgraph.feature_complete import completed_with
 from flowgraph.feature_next import complete_and_start_next
 from flowgraph.gate import GateError, RunGate, check_gate
 from flowgraph.item import ToBranch, parse_work_item_id_of_any_kind
@@ -51,6 +53,7 @@ UNMERGED = make_commit("0000000")
 # What stops a merge held from being committed: a refusal of the complete, of the gate or of git.
 NOT_COMMITTED = (
     WorkItemNotFoundError,
+    FeatureNotFoundError,
     NotStartedError,
     OpenTaskError,
     CompletedAlreadyError,
@@ -139,9 +142,14 @@ def _branch_to_land(item: str, found: Sequence[str]) -> str:
 
 
 def _check_completes(item_id: WorkItemId, decision: str | None, landing: Landing) -> None:
-    """Check that the work item can complete as the merge held brought it; raises its refusal."""
+    """Check that the work item can complete as the merge held brought it; raises its refusal.
+
+    The Feature it is under is read too, as its completion reads it after main has moved: one
+    the record does not hold raises FeatureNotFoundError while the merge can still be dropped.
+    """
     merged = landing.store.load_work_item(item_id)
-    work_item.completed_work_item(merged, landing.now(), UNMERGED, decision)
+    done = work_item.completed_work_item(merged, landing.now(), UNMERGED, decision)
+    completed_with(done, landing.store)
 
 
 def _check_lands(completes: Check, passes: Check) -> None:

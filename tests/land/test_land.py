@@ -12,11 +12,11 @@ from flowgraph.branch import GitError
 from flowgraph.commit import LandingSteps, Said, WorkTree
 from flowgraph.config import Config, make_config
 from flowgraph.criterion import make_commit, make_scenario
-from flowgraph.feature import make_feature, started_feature
+from flowgraph.feature import FeatureNotFoundError, make_feature, started_feature
 from flowgraph.gate import GateError, RunGate
 from flowgraph.item import Store
 from flowgraph.land import LandError, land_item
-from flowgraph.parent import make_feature_id
+from flowgraph.parent import FeatureId, make_feature_id
 from flowgraph.queue import make_queue
 from flowgraph.store import FeatureStore
 from flowgraph.story import STORY as STORY_KIND
@@ -240,6 +240,24 @@ def test_a_landing_that_completes_the_feature_commits_the_record_once_naming_bot
         [".fgraph/items/S-0001.toml"],
         "chore: complete S-0001 and F-0001 in the record",
     )
+
+
+def test_a_landing_under_a_feature_the_record_does_not_hold_drops_the_merge_before_main_moves() -> (
+    None
+):
+    def lacking(feature_id: FeatureId) -> Never:
+        raise FeatureNotFoundError(feature_id)
+
+    steps: list[object] = []
+    kept = replace(
+        last_of_a_started_feature(),
+        features=FeatureStore(lacking, never, lambda: []),
+    )
+    with pytest.raises(FeatureNotFoundError):
+        land_item(
+            "S-0001", MESSAGE, kept, lambda: NOW, RECORD, lambda _: work_tree(steps), ON, no_gate
+        )
+    assert steps == [("merge", BRANCH), "abort merge"]
 
 
 def first_of_a_started_feature() -> Store:

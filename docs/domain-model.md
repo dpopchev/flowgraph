@@ -946,6 +946,12 @@ and its merge tool.
 - A command loads a work item whole, changes it and saves it whole. The file
   is validated as it is read; a write is read back before it replaces the
   file.
+- A file of a work item, of a Feature or the queue that holds none of them
+  -- no TOML, a commit that is no sha, two started Tasks, the criterion of
+  another kind -- is refused as every other refusal is (B-0019): exit 2,
+  nothing written, one line naming the file and why, `fgraph: error:
+  <path> holds no Story: <why>`, `holds no Feature: <why>` or `holds no
+  queue: <why>`, never a Python traceback.
 - The queue of the Backlog (Order) is one file beside `items/`, `queue.toml`:
   a `backlog` list of the ids placed, in their order -- the ids of work items
   and of Features, `F-0001` beside `S-0001`. A record without the file holds

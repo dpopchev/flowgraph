@@ -26,7 +26,7 @@ from flowgraph.criterion import (
     make_hypothesis,
     make_scenario,
 )
-from flowgraph.feature import FeatureNotFoundError, NoCriterionError
+from flowgraph.feature import FeatureFileError, FeatureNotFoundError, NoCriterionError
 from flowgraph.feature_amend import amend_named
 from flowgraph.feature_block import block_named, unblock_named
 from flowgraph.feature_item import (
@@ -61,7 +61,7 @@ from flowgraph.land import LandError, land_item
 from flowgraph.parallel import ParallelError, check_parallel
 from flowgraph.parent import FeatureIdError, parent_asked
 from flowgraph.parser import TOP, build_command_line, help_asked
-from flowgraph.queue import NotInBacklogError, SameItemError, UnderFeatureError
+from flowgraph.queue import NotInBacklogError, QueueFileError, SameItemError, UnderFeatureError
 from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, Now, locate
 from flowgraph.scope import (
     NotOnMainError,
@@ -95,6 +95,7 @@ from flowgraph.work_item import (
     NoPartError,
     NoSuchPartError,
     RemovedAlreadyError,
+    WorkItemFileError,
     WorkItemIdError,
     WorkItemNotFoundError,
 )
@@ -105,9 +106,13 @@ __all__ = ["Store", "open_files", "open_git", "read_config", "run", "run_gate"]
 # Write text to a stream; what it returns is ignored, so a stream's write and a list's append fit.
 Write = Callable[[str], object]
 
-# The refusals of a command, each written as a usage error; a git step refused among them.
+# The refusals of a command, each written as a usage error; a git step refused among them, and
+# a file of the record that holds no work item, no Feature or no queue (B-0019).
 REFUSED = (
     ConfigError,
+    WorkItemFileError,
+    FeatureFileError,
+    QueueFileError,
     ItemIdError,
     WorkItemIdError,
     FeatureIdError,

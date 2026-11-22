@@ -93,10 +93,12 @@ class TestTheHelpOfStartInAnyDirectory:
             "  ID           the id of the work item, of the Task or of the Feature"
         )
 
-    def test_says_the_slug_is_read_with_the_development_on(self, helped: Outcome) -> None:
+    def test_says_the_slug_names_the_branch_of_a_work_item_or_of_the_first_of_a_feature(
+        self, helped: Outcome
+    ) -> None:
         assert " ".join(helped.out.split("--slug TEXT")[-1].split()) == (
             "the words of a work item's branch after its id, instead of its title's first four;"
-            " read with the development on"
+            " of a Feature, those of its first work item; read with the development on"
         )
 
     def test_writes_nothing_on_the_error_output(self, helped: Outcome) -> None:

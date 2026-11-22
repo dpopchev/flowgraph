@@ -146,7 +146,7 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         metavar="TEXT",
         help=(
             "the words of a work item's branch after its id, instead of its title's first four;"
-            " read with the development on"
+            " of a Feature, those of its first work item; read with the development on"
         ),
     )
     block = _command(commands, "block", "block a started Task or Feature that cannot go on")

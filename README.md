@@ -64,7 +64,8 @@ fgraph start --help
 # options:
 #   -h, --help   show the help of this command and exit
 #   --slug TEXT  the words of a work item's branch after its id, instead of its
-#                title's first four; read with the development on
+#                title's first four; of a Feature, those of its first work item;
+#                read with the development on
 ```
 
 `fgraph add --help` lists the kinds it adds, and each kind prints its own:

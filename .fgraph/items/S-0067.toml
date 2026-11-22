@@ -35,8 +35,10 @@ commit = "5007959"
 
 [[tasks]]
 id = "T-0283"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a work item names the one it was filed during"
 expected_output = "changed: README.md shows --filed-during and the show of each side; docs/domain-model.md says what filed during records, that it is given at the add alone, which side is stored and which is derived"
 created = 2026-11-22 10:47:44+00:00
 started = 2026-11-22 12:14:20+00:00
+completed = 2026-11-22 12:14:39+00:00
+commit = "e0aaffc"

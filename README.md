@@ -25,7 +25,7 @@ lands it. `fgraph config` shows the configuration and sets a key of it.
 | where the record lives          | located on every call but `--help`                       |
 | the record and its flow         | a work item with its Tasks, from Backlog to Completed    |
 | the kinds of work item          | Story, Upkeep, Bug, Spike                                |
-| the level above                 | a Feature groups work items; status lists its bucket     |
+| the level above                 | a Feature groups work items, one line in its bucket      |
 | the order of the Backlog        | a queue, reordered by `fgraph reorder`                   |
 | the wording of a work item      | rewritten by `fgraph amend` while in Backlog             |
 | git                             | every write of the record committed, unless turned off   |
@@ -822,16 +822,16 @@ each is completed or removed. `fgraph show S-0001` names the Feature as its
 or when `--parent` names no Feature of the record. A Feature is kept as
 `items/F-0001.toml`.
 
-`fgraph status` lists the Features of the record first, by number, each with
-its progress and its derived bucket before its title, and then the work items
-by bucket as before:
+`fgraph status` lists a Feature inside its bucket, as one line in place of
+its work items: its id, its progress and its title. Here a Story that stands
+alone, S-0002, was added after the Feature, and the Story under the Feature
+is on no line of its own:
 
 ```sh
 fgraph status
-# Features (1)
-#   F-0001  0/1 W  Backlog  Raise the kinds of work a project tracks with fgraph from 1 to 5
-# Backlog (1)
-#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
+# Backlog (2)
+#   F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
+#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (0)
 # Completed (0)
 ```
@@ -841,13 +841,44 @@ holds: one of three completed reads `1/3 W`, so two are still to be done. A
 removed work item is counted in neither number, and a Feature without a work
 item reads `0/0 W`.
 
-The heading Features is listed only when the record holds a Feature. A work
-item under a Feature stays in its own bucket; `fgraph show F-0001` lists the
-work items of a Feature.
+A Feature holds a place of its own in the Backlog: it joins the end when it
+is added, after the work items `fgraph reorder` placed and those added before
+it. It is counted once, beside the heading and toward the top 5 (below). Its
+work items in Backlog and its completed ones are listed on no line and
+counted beside no heading: they are counted in its progress, and `fgraph show
+F-0001` lists each with its bucket. A removed one keeps its line under
+Removed.
+
+Once a work item of the Feature is started the Feature is listed under
+InProgress, and the started work item under its line, indented, with its
+progress and its Task being worked:
+
+```sh
+fgraph status
+# Backlog (1)
+#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# InProgress (1)
+#   F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
+#     S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
+#       => T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
+# Completed (0)
+```
+
+The lines under a Feature belong to it: they count neither beside the heading
+nor toward the top 5. When each work item of the Feature is completed or
+removed, the Feature is one line under Completed, `F-0001  1/1 W  <title>`.
+
+This reverses the developer's decision of 2026-11-21 that listed the Features
+in a block of their own above the buckets, under a heading `Features`, each
+with its derived bucket before its title, while a work item under a Feature
+stayed in its own bucket. By the developer's words of the same day a Feature
+is part of the Backlog and just holds its work items, so no heading
+`Features` is listed any more.
 
 The Backlog is a queue: `fgraph status` lists it in the order the work is to
 be pulled. A work item joins the end of the queue when it is added, whatever
-its kind; `fgraph reorder` puts one work item right before another:
+its kind, and so does a Feature; `fgraph reorder` puts one work item right
+before another, and takes no Feature yet:
 
 ```sh
 fgraph status
@@ -874,7 +905,9 @@ order given is kept as `queue.toml` in the record, apart from the item files.
 
 The buckets past the Backlog list the last one in on top: InProgress the work
 item started last, Completed the one completed last. Work items started or
-completed at one time are listed by kind and number:
+completed at one time are listed by kind and number. A Feature is placed
+among them by its work items: under InProgress by the one started last, under
+Completed by the one completed last:
 
 ```sh
 fgraph status
@@ -882,15 +915,16 @@ fgraph status
 # InProgress (2)
 #   B-0001  0/2 T  Cut the tracebacks fgraph --dir prints for a file from 1 to 0
 #   S-0003  1/3 T  Raise the kinds of work item fgraph adds from 2 to 3
-# Completed (2)
+# Completed (3)
 #   U-0002  757fbaf  Cut the lines one kind of work item holds from 885 to 250
+#   F-0001  1/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #   S-0002  87c0307  Raise the kinds of work item fgraph adds from 1 to 2
 ```
 
-`fgraph status` lists the top 5 under each heading -- Features, Backlog,
-InProgress, Completed and Removed -- in the order above, and then how many
-more the heading holds. The count beside the heading stays that of all its
-items:
+`fgraph status` lists the top 5 under each heading -- Backlog, InProgress,
+Completed and Removed -- in the order above, and then how many more the
+heading holds. A Feature counts as one item, as a work item does. The count
+beside the heading stays that of all its items:
 
 ```sh
 fgraph status

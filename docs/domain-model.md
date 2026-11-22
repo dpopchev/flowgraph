@@ -177,6 +177,15 @@ The Backlog is a queue: the order work is to be pulled in, across every kind
 of work item. The developer said so on 2026-11-21.
 
 - A work item joins the end of the queue when it is added.
+- A Feature holds a place of its own in the Backlog and joins the end when it
+  is added, the developer's words of 2026-11-21: a Feature is part of the
+  Backlog, ordered as the others and not riding on its work items. It is
+  listed after the work items the queue places, among those nobody placed by
+  its created time; added at one time with a work item it follows it, and
+  Features added at one time are listed by number. The queue places no
+  Feature yet: `reorder` takes work items alone.
+- A work item under a Feature is listed on no line of the Backlog (below), so
+  a place the queue gives it shows nowhere.
 - `reorder` puts one work item of the Backlog right before another. It is not
   a move: the type of the item stays, only its place changes.
 - The queue is its own aggregate, apart from the items: it places work items
@@ -192,13 +201,25 @@ of work item. The developer said so on 2026-11-21.
 - InProgress is listed the last started first, by the same decision: by the
   started time each work item holds; those started at one time, by kind and
   number. A blocked Task does not move its work item in the list.
-- Removed is listed by kind and number.
+- A Feature is placed in those two buckets among the work items that stand
+  alone, by a time of its work items: under Completed the completed time of
+  its last completed work item; under InProgress the started time of its last
+  started one, and while none is started the completed time of its last
+  completed one. A Feature whose work items are all removed is derived
+  Completed with no such time, and is placed by its created time. At one time
+  with a work item it follows it, and Features of one time are listed by
+  number.
+- Removed is listed by kind and number, a removed work item of a Feature too:
+  it keeps its own line there.
 - `fgraph status` lists the top 5 under each heading, the developer's
-  decision of 2026-11-21: the first five of the Features, of the Backlog, of
-  InProgress, of Completed and of Removed, in the order each is listed in,
-  then one line `... N more` for the N it does not list. The count beside the
-  heading stays that of all its items, and a heading of five or fewer has no
-  such line. `fgraph status --all` lists every one.
+  decision of 2026-11-21: the first five of the Backlog, of InProgress, of
+  Completed and of Removed, in the order each is listed in, then one line
+  `... N more` for the N it does not list. The count beside the heading stays
+  that of all its items, and a heading of five or fewer has no such line.
+  `fgraph status --all` lists every one. A Feature is one item of its bucket:
+  it counts once toward the top 5 and once beside the heading (Persistence).
+  Until the Features were listed inside their buckets they had a heading of
+  their own, with a top 5 of its own.
 - `fgraph status` lists a work item under InProgress with its progress, the
   developer's decision of 2026-11-21: `<completed>/<all> T`, its Tasks
   completed of all it holds, between its id and its title, written as board
@@ -213,6 +234,14 @@ of work item. The developer said so on 2026-11-21.
   them. A Task in Backlog or completed is not listed. A Task line belongs to
   its work item: it does not count toward the top 5 of the heading, nor in
   the count beside it.
+- Under a Feature of InProgress `fgraph status` lists each started work item
+  of it, the developer's words of 2026-11-21 -- a Feature is to its work
+  items what a work item is to its Tasks: the work item as one of InProgress
+  is written, with its progress and under it its Tasks being worked, two
+  columns further in -- `    S-0001  1/3 T  <title>`, then
+  `      => T-0001  <title>` -- the last started first. Those lines belong to
+  the Feature: they count neither toward the top 5 of the heading nor in the
+  count beside it.
 - On a terminal `fgraph status` cuts each line longer than the terminal is
   wide to that width, ending it with `...`, the developer's decision of
   2026-11-21, after board 1's watch; written to a pipe or a file every line
@@ -437,23 +466,35 @@ and its merge tool.
   that stands alone: standing alone is a value of `parent` in the model, and
   the files written before the Feature read as they are. `--parent` is given
   when the work item is added and names a Feature the record holds.
-- `fgraph status` lists the Features of a record in a block of their own
-  above the buckets, the developer's decision of 2026-11-21: the heading
-  `Features` with their count, then each Feature by number with its id, its
-  progress, its derived bucket and its title. The heading is listed only when
-  the record holds a Feature, as Removed is. The status stays flat: a work
-  item under a Feature is listed in its own bucket and not with its Feature,
-  and the buckets, their counts and the order of the Backlog are those of the
-  work items.
+- `fgraph status` lists a Feature inside its bucket, as one line in place of
+  its work items, the developer's words of 2026-11-21: a Feature is an
+  umbrella, part of the Backlog, that just holds a couple of work items. The
+  line is its id, its progress and its title, `F-0001  1/3 W  <title>`, in
+  the bucket its work items derive, placed there as Order says. It is one
+  item of that bucket: counted once beside the heading and once toward the
+  top 5. Its work items in Backlog and its completed ones are listed on no
+  line of their own and counted beside no heading; they are counted in its
+  progress, and `fgraph show` of the Feature lists them with their buckets as
+  before. A started one is listed under the line of its Feature (Order), and
+  a removed one keeps its line under Removed. The bucket stays derived: no
+  command starts, completes or removes a Feature yet.
+- This reverses the developer's decision of 2026-11-21 that listed the
+  Features of a record in a block of their own above the buckets: the heading
+  `Features` with their count, listed only when the record held a Feature,
+  then each Feature by number with its id, its progress, its derived bucket
+  and its title, `F-0001  1/3 W  InProgress <title>`, while the status stayed
+  flat -- a work item under a Feature in its own bucket, and the buckets,
+  their counts and the order of the Backlog those of the work items. No
+  heading `Features` is listed any more, and the line of a Feature no longer
+  names its bucket: the heading it stands under does.
 - The progress of a Feature is derived as its bucket is, the developer's
   decision of 2026-11-21: `<completed>/<all> W`, the work items under it that
   are completed of all it holds, written as board 1's watch writes it. A
   removed work item is counted in neither number, a started or a Backlog one
   only in the second, and a Feature without a work item reads `0/0 W`. Every
-  Feature is listed with it, in any bucket: `F-0001  1/3 W  InProgress
-  <title>`.
-- Not built yet: amending or removing a Feature, and moving a work item to
-  another Feature.
+  Feature is listed with it, in any bucket: `F-0001  1/3 W  <title>`.
+- Not built yet: reordering, starting, amending or removing a Feature, and
+  moving a work item to another Feature.
 - Each kind reads the files of its own prefix. A file with a prefix no kind
   knows is left alone; nothing reports it yet. An `items/SP-0001.toml` of an
   older record, written while a Spike was `SP-0001`, is such a file: it is

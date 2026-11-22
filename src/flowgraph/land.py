@@ -16,18 +16,19 @@ item is checked to complete: a gate that fails drops the merge, so main is where
 """
 
 from collections.abc import Callable, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from functools import partial
 from pathlib import Path
 from typing import assert_never
 
 from flowgraph import work_item
 from flowgraph.branch import MAIN, GitError
-from flowgraph.commit import OpenGit, Said, WorkTree, commit_written
+from flowgraph.commit import OpenGit, Said, WorkTree, branch_started, commit_written
 from flowgraph.config import CONFIG, DEVELOPMENT_ENABLED, DEVELOPMENT_MERGE, Config, Merge
 from flowgraph.criterion import DecisionError, EmptyPartError, make_commit
+from flowgraph.feature_next import complete_and_start_next
 from flowgraph.gate import GateError, RunGate, check_gate
-from flowgraph.item import complete_item, parse_work_item_id_of_any_kind
+from flowgraph.item import ToBranch, parse_work_item_id_of_any_kind
 from flowgraph.record import Now
 from flowgraph.store import Store
 from flowgraph.task import CompletedAlreadyError, NotStartedError, OpenTaskError
@@ -215,6 +216,13 @@ def _removed(way: Way, work_tree: WorkTree, branch: str) -> None:
             assert_never(unreachable)
 
 
+def _without_branch(started: ToBranch | None) -> str:
+    """What a removal refused adds of the next work item the landing started: it has no branch."""
+    if started is None:
+        return ""
+    return f"; {work_item_id_text(started.item)} is started, its branch is not"
+
+
 def land_item(
     item: str,
     message: str | None,
@@ -240,7 +248,9 @@ def land_item(
     the gate exits with another status than 0, and GitError when git refuses a step. Nothing is
     merged unless main is moved; a step refused after it says how far the landing came. A record
     git ignores is completed with no commit of the record. The last work item of a started
-    Feature completes the Feature in that commit of the record, named after the landing.
+    Feature completes the Feature in that commit of the record, named after the landing. Any
+    other starts the next work item of the Feature in that commit, named after the landing too,
+    and its branch is checked out at it, in a worktree of its own, once the landing is whole.
     """
     item_id = parse_work_item_id_of_any_kind(item)
     text = work_item_id_text(item_id)
@@ -258,18 +268,22 @@ def land_item(
     completes = partial(_check_completes, item_id, decision, Landing(store, now, work_tree))
     passes = partial(check_gate, text, config.development.gate, work_tree.path, run_gate)
     sha = _merged(way, text, branch, work_tree, partial(_check_lands, completes, passes))
-    written = complete_item(text, sha, store, now, config, decision)
+    written = complete_and_start_next(text, sha, store, now, config, decision)
+    # The branch of the next work item is made last, once the landing is whole.
+    unbranched = replace(written, branch=None)
     try:
-        commit_written(written, store, record, lambda _: work_tree, config)
+        commit_written(unbranched, store, record, lambda _: work_tree, config)
     except GitError as error:
         raise GitError(f"{error} -- {text} is merged at {sha}, complete it there") from error
     try:
         _removed(way, work_tree, branch)
     except GitError as error:
-        landed = f"{text} is landed at {sha}"
-        raise GitError(
-            f"{error} -- {landed}, its worktree and its branch are not removed"
-        ) from error
-    # What the complete says after the line of the work item: the Feature completed with it.
+        landed = f"{text} is landed at {sha}, its worktree and its branch are not removed"
+        raise GitError(f"{error} -- {landed}{_without_branch(written.branch)}") from error
+    # What the complete says after the line of the work item: the Feature completed with it,
+    # or the next work item of the Feature, started or not.
     _, _, with_it = written.out.partition("\n")
-    return Said(f"landed {text} at {sha}\n{with_it}")
+    said = f"landed {text} at {sha}\n{with_it}"
+    if written.branch is None:
+        return Said(said)
+    return Said(said + branch_started(written.branch, work_tree))

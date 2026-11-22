@@ -15,7 +15,7 @@ from pathlib import Path
 from flowgraph import branch
 from flowgraph.branch import GitError, branch_of
 from flowgraph.config import Config
-from flowgraph.item import Written
+from flowgraph.item import ToBranch, Written
 from flowgraph.store import Store
 from flowgraph.work_item import work_item_id_text
 
@@ -140,7 +140,7 @@ def commit_written(
         return Said(written.out, warning)
     top = work_tree.path.resolve()
     if not config.git.commit or work_tree.ignores(record):
-        at, where = HEAD, ""
+        at = HEAD
     else:
         files = [file.resolve().relative_to(top) for file in store.find_changed_files()]
         if not files:
@@ -150,13 +150,22 @@ def commit_written(
         except GitError:
             store.restore_files()
             raise
-        where = f" at {at[:7]}"
     if to_branch is None:
         return Said(written.out)
-    made = branch_of(to_branch.item, to_branch.slug, top)
+    return Said(written.out + branch_started(to_branch, work_tree, at))
+
+
+def branch_started(to_branch: ToBranch, work_tree: WorkTree, at: str = HEAD) -> str:
+    """Check the branch of a started work item out at the commit, in a worktree of its own.
+
+    Returns the line that names the branch and its worktree. Raises GitError when git refuses
+    the worktree, naming the work item started, at the commit when it is one of the record.
+    """
+    made = branch_of(to_branch.item, to_branch.slug, work_tree.path.resolve())
     try:
         work_tree.add_worktree(made.name, made.path, at)
     except GitError as error:
+        where = "" if at == HEAD else f" at {at[:7]}"
         started = f"{work_item_id_text(to_branch.item)} is started{where}"
         raise GitError(f"{error} -- {started}, its branch is not") from error
-    return Said(f"{written.out}branch {made.name} in {made.path}\n")
+    return f"branch {made.name} in {made.path}\n"

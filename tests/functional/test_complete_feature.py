@@ -35,8 +35,8 @@ FIRST_COMPLETED = (
     ["complete", "T-0001", "--commit", "abc1234"],
     ["complete", "S-0001", "--commit", "def5678"],
 )
+# The completion of the first Story starts the second.
 SECOND_READY = (
-    ["start", "S-0002"],
     ["start", "T-0002"],
     ["complete", "T-0002", "--commit", "1234abc"],
 )
@@ -161,15 +161,16 @@ class TestAStoryOfAStartedFeatureCompletedWhileAnotherIsInBacklog:
     def completed(self, tmp_path: Path) -> Outcome:
         return runs(tmp_path, *TWO_STORIES, *FIRST_COMPLETED)
 
-    def test_complete_names_the_story_alone(self, completed: Outcome) -> None:
-        assert completed.out == "completed S-0001 at def5678\n"
+    def test_complete_names_no_feature_completed(self, completed: Outcome) -> None:
+        assert "F-0001" not in completed.out
 
     def test_status_lists_the_feature_under_in_progress(
         self, completed: Outcome, tmp_path: Path
     ) -> None:
-        assert fgraph(["status"], tmp_path, LATER).out == (
-            "Backlog (0)\nInProgress (1)\n  F-0001  1/2 W  a feature title\nCompleted (0)\n"
-        )
+        assert fgraph(["status"], tmp_path, LATER).out.splitlines()[1:3] == [
+            "InProgress (1)",
+            "  F-0001  1/2 W  a feature title",
+        ]
 
     def test_the_file_of_the_feature_holds_it_started(
         self, completed: Outcome, tmp_path: Path

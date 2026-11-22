@@ -28,7 +28,8 @@ ADD_THIRD = ["add", "story", "a third title", *CRITERION, "--parent", "F-0001"]
 ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
 TASK_FOR_OTHER = ["add", "task", "a task title", "--parent", "S-0002", "--output", "an output"]
 TASK_FOR_THIRD = ["add", "task", "a task title", "--parent", "S-0003", "--output", "an output"]
-TWO_STORIES = (ADD_FEATURE, ADD_STORY, ADD_OTHER, ADD_TASK, TASK_FOR_OTHER)
+SECOND_WITHOUT_A_TASK = (ADD_FEATURE, ADD_STORY, ADD_OTHER, ADD_TASK)
+TWO_STORIES = (*SECOND_WITHOUT_A_TASK, TASK_FOR_OTHER)
 START_FEATURE = ["start", "F-0001"]
 COMPLETE_FIRST = (
     ["start", "T-0001"],
@@ -137,10 +138,13 @@ def test_the_story_started_with_a_feature_is_the_first_in_the_order_of_the_queue
     )
 
 
-class TestTheNextStoryOfAStartedFeatureStartedOnceTheFirstIsCompleted:
+class TestTheNextStoryOfAStartedFeatureGivenItsTaskOnceTheFirstIsCompletedStarted:
+    """The completion of the first Story leaves the second, without a Task then, in Backlog."""
+
     @pytest.fixture
     def started(self, tmp_path: Path) -> Outcome:
-        return runs(tmp_path, *TWO_STORIES, START_FEATURE, *COMPLETE_FIRST, ["start", "S-0002"])
+        completed = (*SECOND_WITHOUT_A_TASK, START_FEATURE, *COMPLETE_FIRST)
+        return runs(tmp_path, *completed, TASK_FOR_OTHER, ["start", "S-0002"])
 
     def test_start_names_the_story(self, started: Outcome) -> None:
         assert (started.status, started.out) == (0, "started S-0002\n")
@@ -161,7 +165,7 @@ def test_a_started_feature_whose_last_story_in_backlog_is_removed_stays_in_progr
     tmp_path: Path,
 ) -> None:
     remove = ["remove", "S-0002", "--reason", "not needed"]
-    runs(tmp_path, *TWO_STORIES, START_FEATURE, *COMPLETE_FIRST, remove)
+    runs(tmp_path, *SECOND_WITHOUT_A_TASK, START_FEATURE, *COMPLETE_FIRST, remove)
     assert fgraph(["status"], tmp_path, LATER).out.splitlines()[:4] == [
         "Backlog (0)",
         "InProgress (1)",
@@ -171,14 +175,19 @@ def test_a_started_feature_whose_last_story_in_backlog_is_removed_stays_in_progr
 
 
 class TestAFeatureWrittenBeforeItHadAStateThatHoldsACompletedStory:
-    """The file of the Feature holds no state line; S-0003 is placed before S-0002 in the queue."""
+    """The file of the Feature holds no state line; S-0003 is placed before S-0002 in the queue.
+
+    The state line is gone before S-0001 is completed, so that completion starts no Story.
+    """
 
     @pytest.fixture
     def record(self, tmp_path: Path) -> Path:
         reorder = ["reorder", "S-0003", "--before", "S-0002"]
         added = (*TWO_STORIES, ADD_THIRD, TASK_FOR_THIRD, reorder)
-        runs(tmp_path, *added, START_FEATURE, *COMPLETE_FIRST)
+        *task_completed, complete_story = COMPLETE_FIRST
+        runs(tmp_path, *added, START_FEATURE, *task_completed)
         write_as_before(tmp_path)
+        fgraph(complete_story, tmp_path, LATER)
         return tmp_path
 
     def test_status_lists_it_in_its_derived_bucket(self, record: Path) -> None:

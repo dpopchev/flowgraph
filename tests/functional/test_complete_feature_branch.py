@@ -1,7 +1,8 @@
 """The completion of a Feature with the development on: its last Story landed on main.
 
 The landing completes the Feature in the commit of the record that completes the Story; on the
-branch of the Story nothing completes it. Run end to end through `run` on a real git repository
+branch of the Story nothing completes it. A Story landed while another of its Feature is in
+Backlog is in `test_start_next_branch.py`. Run end to end through `run` on a real git repository
 in a temporary directory, never a faked git; the identity of its commits comes from the
 environment and no git config is read.
 """
@@ -23,10 +24,7 @@ CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_FEATURE = ["add", "feature", "a feature title", "--criterion", "a criterion"]
 ADD_STORY = ["add", "story", "Raise the Stories fgraph lists", *CRITERION, "--parent", "F-0001"]
 ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
-ADD_OTHER = ["add", "story", "another title", *CRITERION, "--parent", "F-0001"]
-TASK_FOR_OTHER = ["add", "task", "a task title", "--parent", "S-0002", "--output", "an output"]
 ONE_STORY = (ADD_FEATURE, ADD_STORY, ADD_TASK)
-TWO_STORIES = (*ONE_STORY, ADD_OTHER, TASK_FOR_OTHER)
 LAND = ["land", "S-0001", "--message", "feat: land the first Story"]
 LEAF = "S-0001-raise-the-stories-fgraph"
 BRANCH = f"wi/{LEAF}"
@@ -149,35 +147,6 @@ class TestTheLastStoryOfAStartedFeatureLanded:
 
     def test_nothing_is_left_to_commit(self, landed: Outcome, checkout: Path) -> None:
         assert git(checkout, "status", "--porcelain") == ""
-
-
-class TestAStoryLandedWhileAnotherOfItsStartedFeatureIsInBacklog:
-    @pytest.fixture
-    def checkout(self, tmp_path: Path) -> Path:
-        return ready_to_land(tmp_path, TWO_STORIES)
-
-    @pytest.fixture
-    def landed(self, checkout: Path) -> Outcome:
-        return fgraph(LAND, checkout)
-
-    def test_land_names_the_story_alone(self, landed: Outcome, checkout: Path) -> None:
-        merge = git(checkout, "rev-parse", "--short", "HEAD~1")
-        assert (landed.status, landed.out) == (0, f"landed S-0001 at {merge}\n")
-
-    def test_the_complete_is_committed_with_the_file_of_the_story_alone(
-        self, landed: Outcome, checkout: Path
-    ) -> None:
-        assert (
-            git(checkout, "log", "-1", "--format=%s"),
-            git(checkout, "show", "--name-only", "--format=", "HEAD"),
-        ) == ("chore: complete S-0001 in the record", STORY_FILE)
-
-    def test_status_lists_the_feature_under_in_progress(
-        self, landed: Outcome, checkout: Path
-    ) -> None:
-        assert fgraph(["status"], checkout).out == (
-            "Backlog (0)\nInProgress (1)\n  F-0001  1/2 W  a feature title\nCompleted (0)\n"
-        )
 
 
 class TestTheLastStoryOfAStartedFeatureCompletedOnItsBranch:

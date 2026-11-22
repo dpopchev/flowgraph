@@ -1,0 +1,11 @@
+id = "S-0102"
+state = "backlog"
+title = "Raise the knowledge lines a developer marks as standing or as open from none to every one"
+description = "Its Tasks are written when it is ordered."
+parent = "F-0014"
+created = 2026-11-22 21:03:59+00:00
+
+[criterion]
+given = "a record with a Story"
+when = "a finding is noted on it as open"
+then = "fgraph show and fgraph knowledge list the line with its mark"

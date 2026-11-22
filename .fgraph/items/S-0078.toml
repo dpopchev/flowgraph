@@ -44,3 +44,8 @@ created = 2026-11-22 10:48:24+00:00
 started = 2026-11-22 19:41:51+00:00
 completed = 2026-11-22 19:42:02+00:00
 commit = "2c70592"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: at 4bfda51 on main, on a fresh record whose S-0002.toml was edited by hand to depend on S-0099, fgraph status exit 2 with one line, <path>/S-0002.toml: depends on names S-0099, which is not in the record, no traceback; with a depends on cycle put in S-0001.toml, exit 2 with depends on closes a cycle: S-0001 -> S-0002 -> S-0001; fgraph status on the record of flowgraph exit 0; make check: all checks passed"
+noted = 2026-11-22 19:46:07+00:00

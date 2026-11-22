@@ -12,7 +12,7 @@ from functools import partial
 from pathlib import Path
 from typing import Never, assert_never
 
-from flowgraph.about import about_asked
+from flowgraph.about_terms import about_asked
 from flowgraph.branch import check_slug_branched
 from flowgraph.commit import OpenGit, Said, commit_written, open_git
 from flowgraph.config import CONFIG, Config, LoadConfig, make_config, read_config

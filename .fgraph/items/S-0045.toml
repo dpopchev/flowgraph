@@ -35,7 +35,8 @@ commit = "ff9c86a"
 
 [[tasks]]
 id = "T-0181"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say the configuration is shown and set through fgraph config"
 expected_output = "changed: README.md and docs/domain-model.md show fgraph config show and fgraph config set with every key of .fgraph/config.toml, say a key the file lacks is listed at its default, what a set writes, commits and refuses, and that the file is no longer written by hand"
 created = 2026-11-21 22:40:57+00:00
+started = 2026-11-22 00:09:35+00:00

@@ -44,3 +44,8 @@ created = 2026-11-22 10:48:18+00:00
 started = 2026-11-22 18:09:25+00:00
 completed = 2026-11-22 18:09:26+00:00
 commit = "e5dd7f0"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: at 1980fac on main, on a fresh record fgraph note S-0001 --decision keep it flat --governs src/model.py printed noted S-0001 and fgraph about src/model.py exit 0 listed Governed by, decision 2026-11-22 S-0001 keep it flat, the file not on disk; a path governed by no line and not on disk exit 2; make check: all checks passed"
+noted = 2026-11-22 18:15:33+00:00

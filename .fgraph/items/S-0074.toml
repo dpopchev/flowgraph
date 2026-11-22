@@ -44,3 +44,8 @@ created = 2026-11-22 10:48:09+00:00
 started = 2026-11-22 17:37:59+00:00
 completed = 2026-11-22 17:38:05+00:00
 commit = "0dde4d8"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: at 85f29a1 on main, on a fresh record where lane is part of gate, fgraph about gate exit 0 listed under knowledge S-0001 decision about the whole and S-0001 finding about the part (via lane); make check: all checks passed"
+noted = 2026-11-22 17:42:31+00:00

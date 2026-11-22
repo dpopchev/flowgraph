@@ -79,17 +79,12 @@ def fgraph(argv: Sequence[str], saved: dict[str, StoryState]) -> Outcome:
     return Outcome(status, "".join(out), "".join(err))
 
 
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0063")
-
-
-@XFAIL
 def test_a_decision_and_a_deviation_noted_on_a_story_each_exit_with_zero() -> None:
     saved: dict[str, StoryState] = {}
     fgraph(ADD_STORY, saved)
     assert [fgraph(note, saved).status for note in NOTES] == [0, 0]
 
 
-@XFAIL
 def test_a_decision_and_a_deviation_noted_on_a_story_are_listed_under_knowledge_by_show() -> None:
     saved: dict[str, StoryState] = {}
     fgraph(ADD_STORY, saved)

@@ -20,6 +20,8 @@ from flowgraph.criterion import (
     make_scenario,
 )
 from flowgraph.knowledge import (
+    DECISION,
+    DEVIATION,
     FINDING,
     KnowledgeLine,
     kind_name,
@@ -157,7 +159,7 @@ class KnowledgeFile(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    kind: Literal["finding"]
+    kind: Literal["finding", "decision", "deviation"]
     text: str
     noted: datetime
 
@@ -172,6 +174,10 @@ def knowledge_held(held: KnowledgeFile) -> KnowledgeLine:
     match held.kind:
         case "finding":
             return make_knowledge_line(FINDING, held.text, held.noted)
+        case "decision":
+            return make_knowledge_line(DECISION, held.text, held.noted)
+        case "deviation":
+            return make_knowledge_line(DEVIATION, held.text, held.noted)
         case _ as unreachable:
             assert_never(unreachable)
 

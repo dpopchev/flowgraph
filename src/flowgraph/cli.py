@@ -47,6 +47,7 @@ from flowgraph.item import (
     status_item,
     write_task,
 )
+from flowgraph.knowledge import DECISION, DEVIATION, FINDING
 from flowgraph.land import land_item
 from flowgraph.parallel import check_parallel
 from flowgraph.parent import parent_asked
@@ -134,7 +135,16 @@ def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -
         case "remove":
             return remove_named(args.id, args.reason, store, now)
         case "note":
-            return note_item(args.id, args.finding, store, now)
+            kind, text = next(
+                (kind, text)
+                for kind, text in (
+                    (FINDING, args.finding),
+                    (DECISION, args.decision),
+                    (DEVIATION, args.deviation),
+                )
+                if text is not None
+            )
+            return note_item(args.id, kind, text, store, now)
         case "reorder":
             return reorder_item(args.id, args.before, store)
         case _:

@@ -33,7 +33,7 @@ from flowgraph.item_id import (
     parse_placed_id,
     parse_work_item_id_of_any_kind,
 )
-from flowgraph.knowledge import FINDING
+from flowgraph.knowledge import KnowledgeKind
 from flowgraph.parent import STANDALONE, FeatureId, Parent, feature_id_text
 from flowgraph.queue import placed_text, reorder
 from flowgraph.record import Now
@@ -174,18 +174,18 @@ def remove_item(item: str, reason: str, store: Store, now: Now) -> Written:
     return Written(f"removed {text}\n", MESSAGE.format(f"remove {text}"))
 
 
-def note_item(item: str, finding: str, store: Store, now: Now) -> Written:
-    """Keep the finding on the work item of that id, in any state; what the write says.
+def note_item(item: str, kind: KnowledgeKind, text: str, store: Store, now: Now) -> Written:
+    """Keep the line of that kind and text on the work item of that id, in any state.
 
-    The finding goes after the lines the item keeps already, none of which is amended. Raises
+    The line goes after the lines the item keeps already, none of which is amended. Raises
     WorkItemIdError when the text is the id of no kind, WorkItemNotFoundError when the record
-    holds no such item and EmptyPartError when the finding is blank; nothing is saved.
+    holds no such item and EmptyPartError when the text is blank; nothing is saved.
     """
     item_id = parse_work_item_id_of_any_kind(item)
     work_item.note_work_item(
         item_id=item_id,
-        kind=FINDING,
-        text=finding,
+        kind=kind,
+        text=text,
         load_work_item=store.load_work_item,
         save_work_item=store.save_work_item,
         now=now,

@@ -13,11 +13,12 @@ then = "fgraph show of the term lists the line with the id of the Story, and fgr
 
 [[tasks]]
 id = "T-0297"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_note_about.py, failing on the criterion of S-0072"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_note_finding.py does. Seen red, then marked a strict xfail naming S-0072 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_note_about.py states that, on a record with a term and a Story, fgraph note of the Story with --decision, a text and --about with the name of the term exits 0, fgraph show of the term lists the line with the id of the Story, and fgraph show of the Story lists the term"
 created = 2026-11-22 10:48:01+00:00
+started = 2026-11-22 16:56:45+00:00
 
 [[tasks]]
 id = "T-0298"

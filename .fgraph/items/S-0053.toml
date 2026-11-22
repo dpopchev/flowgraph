@@ -24,12 +24,14 @@ commit = "ea8f1bb"
 
 [[tasks]]
 id = "T-0197"
-state = "started"
+state = "completed"
 title = "Start the next work item of a started Feature at the completion of the one before, in fgraph complete and fgraph land"
 description = "The reading of S-0053 as written: the Feature starts its work items. Removes the xfail mark of tests/functional/test_start_next.py. The tests of other work items that complete a work item of a started Feature and then start the next by hand are rewritten, named in the commit. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: the completion of a work item under a started Feature, by fgraph complete or by fgraph land, starts the next work item of the Feature -- the first of its work items in Backlog in the order of the queue -- with its branch and its worktree when the development is on, as any start, and says so on lines of its own after the line of the completion; a next work item without a Task is not started and the completion says so, naming it; so is one [development] parallel refuses, naming the key; the completion itself stands in each case; with no work item left in Backlog nothing is started"
 created = 2026-11-21 23:43:09+00:00
 started = 2026-11-22 02:31:25+00:00
+completed = 2026-11-22 02:43:31+00:00
+commit = "244b655"
 
 [[tasks]]
 id = "T-0198"

@@ -35,11 +35,12 @@ commit = "1c9d0d4"
 
 [[tasks]]
 id = "T-0308"
-state = "backlog"
+state = "started"
 title = "Extend fgraph about to the path of a file, listing the items whose commits touched it"
 description = "Removes the xfail mark of tests/functional/test_about_file.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph about PATH, a path given from the directory fgraph runs in, lists the completed work items and Tasks whose commit changed the file, newest first, each with its id, its commit and its title, a Task under its work item; nothing is stored for a file: the answer is read from git by the commit each completed item names; a file no commit of the record touched prints one line saying so and exits 0; outside a git work tree a path is refused, saying the answer is read from git; an argument is read as an id, then as a term, then as a path, and one that is none of them is refused naming the three"
 created = 2026-11-22 10:48:13+00:00
+started = 2026-11-22 17:48:55+00:00
 
 [[tasks]]
 id = "T-0309"

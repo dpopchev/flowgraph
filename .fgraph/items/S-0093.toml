@@ -35,7 +35,8 @@ commit = "a5d6b68"
 
 [[tasks]]
 id = "T-0363"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say fgraph verify keeps the answer of a closing"
 expected_output = "changed: README.md shows fgraph verify --yes and its Status table names the closing; docs/domain-model.md says what a verified work item holds, per kind what the question is, and where it is written"
 created = 2026-11-22 21:03:20+00:00
+started = 2026-11-22 22:55:58+00:00

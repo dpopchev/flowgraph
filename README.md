@@ -1632,9 +1632,10 @@ fgraph amend S-0005 --parent F-0001
 
 When the record is inside a git work tree, `fgraph` commits every write of
 it, unless `[git] commit = false` of its `config.toml` turns the commits off:
-`add`, `amend`, `reorder`, `start`, `complete` and `config set` each leave
-one commit that holds the files of the record the write changed, alone, under
-a message `fgraph` words. Whatever else is staged or changed stays out of it:
+`add`, `amend`, `remove`, `reorder`, `start`, `block`, `unblock`, `complete`
+and `config set` each leave one commit that holds the files of the record the
+write changed, alone, under a message `fgraph` words. Whatever else is staged
+or changed stays out of it:
 
 ```sh
 fgraph add story "Raise the Stories fgraph lists under Backlog from 0 to 1" \
@@ -1655,9 +1656,13 @@ record` -- a Feature by its id, `chore: reorder F-0001 before S-0001 in the
 record` --, `chore: start T-0001 of S-0001 in the record`,
 `chore: start F-0001 in the record` for a Feature and its first work item
 together, `chore: remove S-0001 in the record`, `chore: remove F-0001 in the
-record` for a Feature and its work items together, `chore: complete S-0001 in
-the record`, `chore: complete S-0001 and
-F-0001 in the record` for a work item and the Feature it completes, `chore:
+record` for a Feature and its work items together, `chore: block T-0001 of
+S-0001 in the record`, `chore: unblock T-0001 of S-0001 in the record`,
+`chore: block F-0001 in the record` and `chore: unblock F-0001 in the
+record` for a Feature, `chore: unblock F-0001 and start S-0002 in the
+record` for a Feature and the next work item its unblock starts, `chore:
+complete S-0001 in the record`, `chore: complete S-0001 and F-0001 in the
+record` for a work item and the Feature it completes, `chore:
 complete S-0001 and start S-0002 in the record` for a work item and the next
 one of its Feature, which it starts, `chore: set development.enabled in the
 record`. A write that leaves its file as it was

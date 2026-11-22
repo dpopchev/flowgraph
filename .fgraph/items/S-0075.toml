@@ -55,3 +55,8 @@ created = 2026-11-22 10:48:14+00:00
 started = 2026-11-22 17:53:51+00:00
 completed = 2026-11-22 17:54:06+00:00
 commit = "ed15e25"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: at 26314ae on main, in a throwaway git repository with a completed Story whose Task commit bb67c56 added f.txt, fgraph about f.txt exit 0 listed S-0001 with T-0001 bb67c56 a task under it; a file no commit touched printed no commit of the record touched g.txt, exit 0; make check: all checks passed"
+noted = 2026-11-22 17:58:20+00:00

@@ -24,6 +24,7 @@ from flowgraph.feature import (
 from flowgraph.parent import FeatureId, feature_id_text, parse_feature_id
 from flowgraph.record.queue import Entry, Inside, Line, Placed, queued
 from flowgraph.record.store import KINDS, Store
+from flowgraph.status.next import with_next
 from flowgraph.status.text import status_text
 from flowgraph.status.waits import with_waits
 from flowgraph.work_item import STARTED, WorkItemId, WorkItemRow, parse_work_item_id
@@ -198,6 +199,8 @@ def status_item(store: Store, top: int | None = None) -> str:
     held = {row.id for _, row in features}
     alone = {item_id: row for item_id, row in rows.items() if row.parent not in held}
     backlog = _backlog_lines(alone, features)
+    in_queue = queued(store.load_queue(), backlog)
+    queue_lines = with_next([backlog[placed] for placed in in_queue])
     started = [row for row in alone.values() if row.state == STARTED]
     completed = [row for row in alone.values() if row.state == COMPLETED]
     gone = [row for _, row in features if row.bucket == "Removed"]
@@ -208,7 +211,7 @@ def status_item(store: Store, top: int | None = None) -> str:
         if row.state not in (BACKLOG, STARTED, COMPLETED) and row.parent not in with_them
     ]
     listed = [
-        *(backlog[placed] for placed in queued(store.load_queue(), backlog)),
+        *queue_lines,
         *_with_features(started, features, "InProgress", last_first=True),
         *_with_features(completed, features, "Completed", last_first=True),
         *removed,

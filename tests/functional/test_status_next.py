@@ -29,7 +29,8 @@ SEVEN = [
 ALL_WAIT = (
     ADD_FIRST,
     ADD_SECOND,
-    ["amend", "S-0001", "--depends-on", "S-0002"],
+    ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"],
+    ["start", "S-0001"],
     ["amend", "S-0002", "--depends-on", "S-0001"],
 )
 STATUS = ["status"]
@@ -77,13 +78,11 @@ def test_status_of_a_backlog_whose_first_item_waits_exits_0(tmp_path: Path) -> N
     assert runs(tmp_path, *FIRST_WAITS, STATUS).status == 0
 
 
-@pytest.mark.xfail(strict=True, reason="S-0086: status does not name the next to start yet")
 def test_status_names_the_second_item_as_the_next_to_start(tmp_path: Path) -> None:
     out = runs(tmp_path, *FIRST_WAITS, STATUS).out
     assert marked(out) == ["> S-0002  a second title"]
 
 
-@pytest.mark.xfail(strict=True, reason="S-0086: status does not name the next to start yet")
 def test_status_names_the_next_to_start_when_the_top_leaves_it_out(tmp_path: Path) -> None:
     out = runs(tmp_path, *SEVEN, STATUS).out
     assert marked(out) == ["> S-0007  title 7"]

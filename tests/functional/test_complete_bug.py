@@ -103,7 +103,7 @@ def test_a_bug_joins_the_backlog_after_the_work_items_added_before_it(tmp_path: 
     runs(tmp_path, ADD_STORY, ADD_BUG)
     assert fgraph(["status"], tmp_path).out.splitlines()[:3] == [
         "Backlog (2)",
-        "  S-0001  a title",
+        "> S-0001  a title",
         "  B-0001  a bug title",
     ]
 

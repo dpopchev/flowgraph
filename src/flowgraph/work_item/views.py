@@ -38,7 +38,8 @@ class WorkItemRow:
     the order written, each with its own state. The ids it depends on and the one it
     was filed during and the one it amends are as written, and so is the one that supersedes
     it once removed. The ids it waits for are those it depends on that are not completed, set by
-    the view that lists the Backlog and empty where it is not read from the whole record.
+    the view that lists the Backlog and empty where it is not read from the whole record. It is
+    the next to start when it is the first line of the Backlog its start would take, set there too.
     """
 
     id: str
@@ -56,6 +57,7 @@ class WorkItemRow:
     superseded_by: str = field(default="", kw_only=True)
     amends: str = field(default="", kw_only=True)
     waits_for: list[str] = field(default_factory=list[str], kw_only=True)
+    next_to_start: bool = field(default=False, kw_only=True)
 
 
 @dataclass

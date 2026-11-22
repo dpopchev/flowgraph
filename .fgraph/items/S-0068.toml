@@ -44,3 +44,8 @@ created = 2026-11-22 10:47:47+00:00
 started = 2026-11-22 12:25:26+00:00
 completed = 2026-11-22 12:25:42+00:00
 commit = "722db51"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: at 93ccb39 on main, on a fresh record with two Stories, fgraph remove S-0001 --superseded-by S-0002 printed removed S-0001, fgraph status listed S-0001 under Removed with -- superseded by S-0002 and fgraph show S-0002 listed supersedes S-0001; make check: all checks passed"
+noted = 2026-11-22 12:29:22+00:00

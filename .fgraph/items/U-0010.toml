@@ -68,3 +68,8 @@ state = "backlog"
 title = "Update README.md and docs/domain-model.md to name the subpackages of src/flowgraph"
 expected_output = "changed: README.md, Develop, lists the subpackages of src/flowgraph with what each holds and names the line limit of 250; docs/domain-model.md names each module by its new path wherever it names one"
 created = 2026-11-22 10:48:32+00:00
+
+[[knowledge]]
+kind = "deviation"
+text = "T-0322 was completed with the imports acyclic per module, as pyright checks them, and not per subpackage as its expected output says: the cycles between subpackages are filed as the Upkeep found during it, at the end of the queue; the Then of U-0010 does not name them."
+noted = 2026-11-22 21:33:59+00:00

@@ -1,8 +1,9 @@
 id = "B-0017"
-state = "backlog"
+state = "started"
 title = "Raise the writes of a Feature the git tables of docs/domain-model.md list from some to every one"
 description = "Found during T-0211 of S-0057 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. Its Tasks are written when it is ordered."
 created = 2026-11-22 03:55:39+00:00
+started = 2026-11-22 08:20:59+00:00
 
 [criterion]
 observed = "the two git tables of docs/domain-model.md, where a write is made and the commit messages, hold no row for the amend, the block or the unblock of a Feature"

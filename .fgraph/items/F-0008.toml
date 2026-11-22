@@ -1,0 +1,11 @@
+id = "F-0008"
+state = "backlog"
+title = "Raise the questions of a session start fgraph status answers from one, what each bucket holds, to four, as text and as JSON"
+description = "From the note of the ~/.claude session of 2026-11-22 on the gaps of the planning skill (output: status for a session), filed and ordered on the word of the developer of that day: update the backlog and prioritize. Read by the SessionStart hook of the skill and by the agent. Constraint of the note: no context and no next command -- fgraph status is the session read, and the hook composes it with the knowledge list, under 10,000 characters. Probed on 2026-11-22 with fgraph 0.15.0, on a record with a blocked Task and a Story that depends on a started one: the line of the Task ends -- waiting on developer without its reason, the line of the waiting Story carries no mark, fgraph status --format json exits 2 as an unrecognized argument, and fgraph graph prints each Task node with bucket null."
+created = 2026-11-22 21:01:51+00:00
+criteria = [
+    "a session sees why a blocked Task or Feature cannot go on, beside what it waits on",
+    "a session sees which item of the Backlog waits for one that is not completed",
+    "a session sees the next item that can start",
+    "a tool reads the status of the record as JSON, the state of a Task too",
+]

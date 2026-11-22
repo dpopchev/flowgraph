@@ -23,7 +23,8 @@ lists the lines of the whole record. A term of the project, a word with what it
 means, is added with `fgraph add term`, listed by `fgraph terms` and shown by
 `fgraph show` of its name. `fgraph about` answers what an item is linked to: it
 lists the Feature, the work items, the terms and the knowledge lines of a work
-item or a Feature, each under its relation.
+item or a Feature, each under its relation. `fgraph graph` exports the nodes and
+the typed edges of the whole record as JSON.
 
 | Part                            | State                                                    |
 | ------------------------------- | -------------------------------------------------------- |
@@ -45,6 +46,7 @@ item or a Feature, each under its relation.
 | the knowledge of the record     | every line listed by `fgraph knowledge`, newest first    |
 | the development                 | once enabled: start branches, `fgraph land` lands        |
 | the links of an item            | `fgraph about` lists every relation, both sides, by id   |
+| the export of the record        | `fgraph graph` prints its nodes and edges as JSON        |
 | the ontology                    | started: terms, related by is-a and part-of              |
 | flowgraph tracking its own work | its Stories are in `.fgraph/` since 0.4.0                |
 
@@ -162,6 +164,72 @@ fgraph about src/gate.py
 #   decision  2026-11-22  S-0001  the gate holds no state
 # S-0002  4f2a9c1  Hold the landing
 #   T-0004  91be07d  Add the gate to the landing
+```
+
+`fgraph graph` exports the whole record as one JSON document another tool reads:
+every node with its kind -- feature, story, upkeep, bug, spike, task or term --
+its title, which for a term is its meaning, and its bucket where it has one;
+every edge with its kind and its two ends, `from` and `to`; and the knowledge
+lines as a list of their own. It reads the record and writes nothing; `json` is
+its one format and its default, and another word is refused naming it. The order
+is fixed, by id, so two runs on one record print the same bytes:
+
+```sh
+fgraph graph --format json
+# {
+#   "nodes": [
+#     {
+#       "id": "F-0001",
+#       "kind": "feature",
+#       "title": "Land work safely",
+#       "bucket": "Backlog"
+#     },
+#     {
+#       "id": "S-0001",
+#       "kind": "story",
+#       "title": "Run the gate",
+#       "bucket": "Backlog"
+#     },
+#     {
+#       "id": "gate",
+#       "kind": "term",
+#       "title": "a check every deliverable passes before it lands",
+#       "bucket": null
+#     }
+#   ],
+#   "edges": [
+#     {
+#       "kind": "under",
+#       "from": "S-0001",
+#       "to": "F-0001"
+#     },
+#     {
+#       "kind": "about",
+#       "from": "S-0001",
+#       "to": "gate"
+#     }
+#   ],
+#   "knowledge": [
+#     {
+#       "item": "S-0001",
+#       "kind": "decision",
+#       "noted": "2026-11-22T09:30:00+00:00",
+#       "text": "a gate runs on main",
+#       "about": [
+#         "gate"
+#       ],
+#       "governs": []
+#     }
+#   ]
+# }
+```
+
+Another tool asks the document what the record does not list in one view. With
+`jq`, the work items about the term `gate`:
+
+```sh
+fgraph graph | jq -r '.edges[] | select(.kind == "about" and .to == "gate") | .from'
+# S-0001
 ```
 
 ## Use

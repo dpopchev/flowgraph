@@ -8,3 +8,8 @@ criteria = [
     "a developer releases the trunk with its next v* tag by one command",
     "a developer has the trunk tagged at the close of a Feature when the configuration says so",
 ]
+
+[[knowledge]]
+kind = "finding"
+text = "open: delivery, for land, verify and release, is the word of the sender of the note; the developer may give another when the items are ordered."
+noted = 2026-11-22 21:04:31+00:00

@@ -1,9 +1,10 @@
 id = "S-0075"
-state = "backlog"
+state = "started"
 title = "Raise the files fgraph about answers for from none to every file a commit of the record touched"
 description = "Part of F-0006. Read from git by the commit each completed item names; nothing is stored."
 parent = "F-0006"
 created = 2026-11-22 10:41:42+00:00
+started = 2026-11-22 17:38:20+00:00
 
 [criterion]
 given = "a record in a git repository with a completed Story whose commit changed a file"

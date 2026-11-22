@@ -16,6 +16,7 @@ import pytest
 import tomli_w
 
 from flowgraph.cli import open_files, run
+from tests.functional.completed_story import COMPLETIONS
 
 pytestmark = pytest.mark.functional
 
@@ -29,12 +30,7 @@ ADD_THIRD = ["add", "story", "a third title", *CRITERION, "--parent", "F-0001"]
 ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
 TASK_FOR_OTHER = ["add", "task", "a task title", "--parent", "S-0002", "--output", "an output"]
 TWO_STORIES = (ADD_FEATURE, ADD_STORY, ADD_OTHER, ADD_TASK, TASK_FOR_OTHER)
-FIRST_COMPLETED = (
-    ["start", "F-0001"],
-    ["start", "T-0001"],
-    ["complete", "T-0001", "--commit", "abc1234"],
-    ["complete", "S-0001", "--commit", "def5678"],
-)
+FIRST_COMPLETED = (["start", "F-0001"], *COMPLETIONS)
 # The completion of the first Story starts the second.
 SECOND_READY = (
     ["start", "T-0002"],

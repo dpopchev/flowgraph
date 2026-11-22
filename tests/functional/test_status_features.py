@@ -11,6 +11,7 @@ from pathlib import Path
 import pytest
 
 from flowgraph.cli import open_files, run
+from tests.functional.completed_story import UNDER_A_FEATURE
 
 pytestmark = pytest.mark.functional
 
@@ -91,16 +92,7 @@ def test_a_feature_with_a_started_story_is_listed_in_progress_with_the_story_und
 def test_a_feature_whose_story_is_completed_is_listed_completed_with_the_commit_of_the_story(
     tmp_path: Path,
 ) -> None:
-    listed = status_after(
-        tmp_path,
-        ADD_FEATURE,
-        ADD_STORY,
-        ADD_TASK,
-        ["start", "F-0001"],
-        ["start", "T-0001"],
-        ["complete", "T-0001", "--commit", "abc1234"],
-        ["complete", "S-0001", "--commit", "def5678"],
-    )
+    listed = status_after(tmp_path, *UNDER_A_FEATURE)
     assert listed.out.splitlines()[2:] == [
         "Completed (1)",
         "  F-0001  1/1 W  def5678  a feature title",

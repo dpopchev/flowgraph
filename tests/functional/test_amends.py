@@ -14,21 +14,12 @@ from pathlib import Path
 import pytest
 
 from flowgraph.cli import open_files, run
+from tests.functional.completed_story import ADD_STORY
+from tests.functional.completed_story import STANDING_ALONE as COMPLETED_STORY
 
 pytestmark = pytest.mark.functional
 
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
-CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
-ADD_STORY = ["add", "story", "a title", *CRITERION]
-ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
-COMPLETED_STORY = (
-    ADD_STORY,
-    ADD_TASK,
-    ["start", "S-0001"],
-    ["start", "T-0001"],
-    ["complete", "T-0001", "--commit", "abc1234"],
-    ["complete", "S-0001", "--commit", "def5678"],
-)
 AMEND = [*ADD_STORY, "--amends", "S-0001"]
 
 

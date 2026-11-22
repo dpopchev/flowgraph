@@ -15,6 +15,7 @@ import pytest
 import tomli_w
 
 from flowgraph.cli import open_files, run
+from tests.functional.completed_story import COMPLETIONS as COMPLETE_FIRST
 
 pytestmark = pytest.mark.functional
 
@@ -31,11 +32,6 @@ TASK_FOR_THIRD = ["add", "task", "a task title", "--parent", "S-0003", "--output
 SECOND_WITHOUT_A_TASK = (ADD_FEATURE, ADD_STORY, ADD_OTHER, ADD_TASK)
 TWO_STORIES = (*SECOND_WITHOUT_A_TASK, TASK_FOR_OTHER)
 START_FEATURE = ["start", "F-0001"]
-COMPLETE_FIRST = (
-    ["start", "T-0001"],
-    ["complete", "T-0001", "--commit", "abc1234"],
-    ["complete", "S-0001", "--commit", "def5678"],
-)
 NOT_STARTED = "F-0001 is not started, start it first"
 
 

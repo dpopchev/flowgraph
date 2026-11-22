@@ -1187,12 +1187,13 @@ branch:
   on it `fgraph` writes the file of that work item alone.
 - Refused there with exit 2, nothing written: a Task added to another work
   item, a Task of another work item started or completed, a work item added,
-  a reorder of the Backlog, whose queue is no file of the work item, a set of
-  the configuration, whose `config.toml` is none either, and the complete of
-  the work item itself when it would complete its Feature, whose file is
-  none either (above). The refusal names the work item the branch owns. The
-  complete of the work item itself that would start the next one of its
-  Feature is written there, and that next one is not started (above).
+  a reorder of the Backlog, whose queue is no file of the work item, and a
+  set of the configuration, whose `config.toml` is none either. The refusal
+  names the work item the branch owns.
+- The work item itself is never completed there: a work item completes on
+  `main` alone (B-0014, above), so its completion run on its branch is
+  refused as on any branch but `main`, and the next work item of its Feature
+  is started on `main` by that completion or by its landing.
 - A work tree on any other branch, and a record outside a git work tree,
   write as before.
 

@@ -29,11 +29,12 @@ commit = "5efd612"
 
 [[tasks]]
 id = "T-0341"
-state = "backlog"
+state = "started"
 title = "Add --format json to fgraph status"
 description = "Removes the xfail mark of tests/functional/test_status_json.py. Written on 2026-11-22 against the modules of that day, before U-0010 moves them: they are taken again when the Task starts. A module of src/ that would pass the line limit of mk/python.mk is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph status --format json prints one JSON document: each bucket with its count and every item of it, not the top 5 -- its id, kind and title, its progress, its Tasks with their state, the reason and the waiting on of a block, the ids it waits for -- and the next to start; a Feature holds its work items; the keys are sorted and two runs print the same bytes; --format text is the default and prints what it printed before; another format exits 2 naming the two, as fgraph graph refuses one"
 created = 2026-11-22 21:02:18+00:00
+started = 2026-11-22 23:48:34+00:00
 
 [[tasks]]
 id = "T-0342"

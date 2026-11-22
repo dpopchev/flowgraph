@@ -144,7 +144,10 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     start.add_argument(
         "--slug",
         metavar="TEXT",
-        help="the words of a work item's branch after its id, instead of its title's first four",
+        help=(
+            "the words of a work item's branch after its id, instead of its title's first four;"
+            " read with the development on"
+        ),
     )
     block = _command(commands, "block", "block a started Task or Feature that cannot go on")
     block.add_argument("id", metavar="ID", help="the id of the Task or of the Feature")

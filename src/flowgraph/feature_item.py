@@ -41,6 +41,8 @@ from flowgraph.record import Now
 from flowgraph.status import BACKLOG, backlog_as_added, rows_under
 from flowgraph.store import Store
 from flowgraph.task import CompletedAlreadyError
+from flowgraph.term import is_term_name
+from flowgraph.term_item import show_term
 from flowgraph.text import feature_text
 from flowgraph.work_item import WorkItemId, WorkItemRow
 
@@ -97,11 +99,14 @@ def show_feature_item(feature: str, store: Store) -> str:
 
 
 def show_any_item(item: str, store: Store) -> str:
-    """The text fgraph show gives of the work item or the Feature of that id.
+    """The text fgraph show gives of the term of that name, or the work item or Feature of that id.
 
-    Raises FeatureIdError for a Feature id below 1, ItemIdError for a text that is neither, and
-    the refusal of `show_item` or of `show_feature_item` for an id the record holds no item of.
+    Raises TermNotFoundError for a term name the record holds none of, FeatureIdError for a
+    Feature id below 1, ItemIdError for a text that is neither, and the refusal of `show_item` or
+    of `show_feature_item` for an id the record holds no item of.
     """
+    if is_term_name(item):
+        return show_term(item, store)
     match parse_shown_id(item):
         case FeatureId():
             return show_feature_item(item, store)

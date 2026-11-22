@@ -5,14 +5,19 @@ own. So the next Task id is one above the highest in the record of every worktre
 worktree hand out no id twice. And the row of a started work item, as its detail, is the one its
 worktree holds, since its Tasks move there. It covers the worktrees of one repository, not two
 clones.
+
+A term is written on main alone, so the worktree of a started work item reads the terms of the
+record of main: its own copy of them is the one its branch was made with.
 """
 
 from dataclasses import replace
 from pathlib import Path
 
+from flowgraph.branch import MAIN
 from flowgraph.commit import OpenGit, kept_in
 from flowgraph.scope import scope_of, worktree_of_item
 from flowgraph.store import OpenStore, Store
+from flowgraph.term import Term
 from flowgraph.work_item import (
     STARTED,
     Kind,
@@ -83,8 +88,28 @@ def across_worktrees(store: Store, record: Path, open_git: OpenGit, open_store: 
         except WorkItemNotFoundError:
             return detail
 
+    def main_store() -> Store | None:
+        """The store of the record of main, for a work tree on the branch of a work item."""
+        work_tree = kept_in(record, open_git)
+        if work_tree is None or scope_of(work_tree.current_branch()) is None:
+            return None
+        home = work_tree.find_worktree(MAIN)
+        if home is None:
+            return None
+        return open_store(home / record.resolve().relative_to(work_tree.path.resolve()))
+
+    def load_term(name: str) -> Term:
+        main = main_store()
+        return (store if main is None else main).terms.load_term(name)
+
+    def find_term_names() -> list[str]:
+        main = main_store()
+        return (store if main is None else main).terms.find_term_names()
+
+    terms = replace(store.terms, load_term=load_term, find_term_names=find_term_names)
     return replace(
         store,
+        terms=terms,
         find_task_ids=find_task_ids,
         find_work_item_rows=find_work_item_rows,
         find_work_item_detail=find_work_item_detail,

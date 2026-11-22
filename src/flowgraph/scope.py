@@ -20,6 +20,7 @@ from flowgraph.parent import FeatureIdError, feature_id_text, parse_feature_id
 from flowgraph.queue import Queue
 from flowgraph.store import Store
 from flowgraph.task import TaskId
+from flowgraph.term import Term
 from flowgraph.work_item import (
     CompletedWorkItem,
     RemovedWorkItem,
@@ -108,10 +109,10 @@ def _is_started(item: WorkItemState) -> bool:
 def within(store: Store, find_scope: FindScope, find_worktree: FindItemWorktree) -> Store:
     """The store that saves within the scope found when it saves; its reads are as they were.
 
-    On the branch of a work item a save of another work item, of the queue, of a Feature or of
-    the settings raises OutOfScopeError and writes nothing. On any other branch so does a Task
-    write of a started work item that has a worktree: the save of a started work item that was
-    started already. The scope and the worktree are asked for only at a save.
+    On the branch of a work item a save of another work item, of the queue, of a Feature, of a
+    term or of the settings raises OutOfScopeError and writes nothing. On any other branch so
+    does a Task write of a started work item that has a worktree: the save of a started work
+    item that was started already. The scope and the worktree are asked for only at a save.
     """
 
     def save_work_item(item: WorkItemState) -> None:
@@ -140,6 +141,12 @@ def within(store: Store, find_scope: FindScope, find_worktree: FindItemWorktree)
             raise OutOfScopeError(f"{named} is not written here: {_alone(scope)}")
         store.features.save_feature(feature)
 
+    def save_term(term: Term) -> None:
+        scope = find_scope()
+        if scope is not None:
+            raise OutOfScopeError(f"{term.name} is not added here: {_alone(scope)}")
+        store.terms.save_term(term)
+
     def save_settings(settings: Settings) -> None:
         scope = find_scope()
         if scope is not None:
@@ -147,11 +154,13 @@ def within(store: Store, find_scope: FindScope, find_worktree: FindItemWorktree)
         store.save_settings(settings)
 
     features = replace(store.features, save_feature=save_feature)
+    terms = replace(store.terms, save_term=save_term)
     return replace(
         store,
         save_work_item=save_work_item,
         save_queue=save_queue,
         features=features,
+        terms=terms,
         save_settings=save_settings,
     )
 

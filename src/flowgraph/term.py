@@ -69,6 +69,11 @@ def make_term(name: str, meaning: str, added: datetime) -> Term:
     return Term(name, said("meaning", meaning), added)
 
 
+def is_term_name(text: str) -> bool:
+    """True when the text is written as a term name: a term is shown by it, an item by its id."""
+    return NAME.fullmatch(text) is not None and ITEM_ID.fullmatch(text) is None
+
+
 class _TermFile(BaseModel):
     """What the file of a term holds."""
 

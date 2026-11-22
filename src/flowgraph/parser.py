@@ -117,6 +117,9 @@ def _add_kinds(kinds: Commands) -> dict[str, argparse.ArgumentParser]:
         metavar="TEXT",
         help="what the user experiences; give it once per criterion",
     )
+    term = _command(kinds, "term", "a word of the project, with what it means")
+    term.add_argument("name", metavar="NAME", help="lowercase words joined by -; it is its id")
+    term.add_argument("--means", required=True, metavar="TEXT", help="what the term means")
     made = {
         "story": story,
         "task": task,
@@ -127,7 +130,7 @@ def _add_kinds(kinds: Commands) -> dict[str, argparse.ArgumentParser]:
     }
     for kind in made.values():
         kind.add_argument("--description", default="", metavar="TEXT", help="free text, optional")
-    return made
+    return {**made, "term": term}
 
 
 def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
@@ -157,8 +160,12 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         metavar="ID",
         help="a work item it waits for, once per id, in place of its own; none takes them away",
     )
-    show = _command(commands, "show", "show a work item with its Tasks, or a Feature")
-    show.add_argument("id", metavar="ID", help="the id of the work item or of the Feature")
+    show = _command(commands, "show", "show a work item with its Tasks, a Feature or a term")
+    show.add_argument(
+        "id",
+        metavar="ID",
+        help="the id of the work item or of the Feature, or the name of the term",
+    )
     start = _command(commands, "start", "start a work item or a Task of it, or a Feature")
     start.add_argument(
         "id", metavar="ID", help="the id of the work item, of the Task or of the Feature"
@@ -235,6 +242,7 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         metavar="KIND",
         help="list the lines of one kind alone: finding, decision or deviation",
     )
+    terms = _command(commands, "terms", "list the terms of the record with their meanings")
     reorder = _command(
         commands, "reorder", "put a work item or a Feature of the Backlog before another"
     )
@@ -281,6 +289,7 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         "remove": remove,
         "note": note,
         "knowledge": knowledge,
+        "terms": terms,
         "reorder": reorder,
         "status": status,
         "watch": watch,

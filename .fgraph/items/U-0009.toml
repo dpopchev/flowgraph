@@ -1,0 +1,10 @@
+id = "U-0009"
+state = "backlog"
+title = "Cut the branches of _check_ordered_together of src/flowgraph/queue.py that nothing reaches from one to none"
+description = "Found during T-0186 of S-0051 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. _check_ordered_together of src/flowgraph/queue.py has a fall-through after its loop that nothing reaches, which the coverage reports as a branch never taken. Its Tasks are written when it is ordered."
+created = 2026-11-22 01:29:55+00:00
+
+[criterion]
+given = "main"
+when = "make check runs"
+then = "it still passes"

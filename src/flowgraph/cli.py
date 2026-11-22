@@ -12,25 +12,18 @@ from functools import partial
 from pathlib import Path
 from typing import Never, assert_never
 
-from flowgraph.branch import GitError, SlugError, check_slug_branched
+from flowgraph.branch import check_slug_branched
 from flowgraph.commit import OpenGit, Said, commit_written, open_git
-from flowgraph.config import CONFIG, Config, ConfigError, LoadConfig, make_config, read_config
+from flowgraph.config import CONFIG, Config, LoadConfig, make_config, read_config
 from flowgraph.criterion import (
-    CommitError,
-    CommitNeededError,
     Criterion,
-    CriterionError,
-    DecisionError,
-    EmptyPartError,
     make_defect,
     make_hypothesis,
     make_scenario,
 )
-from flowgraph.feature import FeatureFileError, FeatureNotFoundError, NoCriterionError
 from flowgraph.feature_amend import amend_named
 from flowgraph.feature_block import block_named, unblock_named
 from flowgraph.feature_item import (
-    OpenWorkItemError,
     add_feature_item,
     complete_feature_item,
     is_feature_id,
@@ -40,32 +33,27 @@ from flowgraph.feature_item import (
 from flowgraph.feature_next import complete_and_start_next
 from flowgraph.feature_remove import remove_named
 from flowgraph.feature_start import (
-    FeatureNotStartedError,
-    NoWorkItemError,
-    WorkItemInProgressError,
     check_start_under_feature,
     start_feature_item,
 )
-from flowgraph.gate import GateError, RunGate, run_gate
+from flowgraph.gate import RunGate, run_gate
 from flowgraph.item import (
-    ItemIdError,
     Written,
     add_item,
     kind_named,
+    note_item,
     reorder_item,
     start_item,
     status_item,
     write_task,
 )
-from flowgraph.land import LandError, land_item
-from flowgraph.parallel import ParallelError, check_parallel
-from flowgraph.parent import FeatureIdError, parent_asked
+from flowgraph.land import land_item
+from flowgraph.parallel import check_parallel
+from flowgraph.parent import parent_asked
 from flowgraph.parser import TOP, build_command_line, help_asked
-from flowgraph.queue import NotInBacklogError, QueueFileError, SameItemError, UnderFeatureError
 from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, Now, locate
+from flowgraph.refusals import REFUSED
 from flowgraph.scope import (
-    NotOnMainError,
-    OutOfScopeError,
     check_complete_on_main,
     check_start_on_main,
     scope_in,
@@ -74,30 +62,11 @@ from flowgraph.scope import (
 )
 from flowgraph.setting import set_setting, show_config, unset_setting
 from flowgraph.store import OpenStore, Store, open_files
-from flowgraph.task import (
-    BlockedError,
-    CompletedAlreadyError,
-    ItemInBacklogError,
-    NoTaskError,
-    NotBlockedError,
-    NotStartedError,
-    OpenTaskError,
-    StartedAlreadyError,
-    TaskIdError,
-    TaskInProgressError,
-    TaskNotFoundError,
-)
 from flowgraph.terminal import Height, Width, no_terminal, terminal_height, terminal_width
 from flowgraph.text import cut_lines
-from flowgraph.watch import PaceError, Wait, framed, make_pace, watch
+from flowgraph.watch import Wait, framed, make_pace, watch
 from flowgraph.work_item import (
     Amendment,
-    NoPartError,
-    NoSuchPartError,
-    RemovedAlreadyError,
-    WorkItemFileError,
-    WorkItemIdError,
-    WorkItemNotFoundError,
 )
 from flowgraph.worktrees import across_worktrees
 
@@ -105,55 +74,6 @@ __all__ = ["Store", "open_files", "open_git", "read_config", "run", "run_gate"]
 
 # Write text to a stream; what it returns is ignored, so a stream's write and a list's append fit.
 Write = Callable[[str], object]
-
-# The refusals of a command, each written as a usage error; a git step refused among them, and
-# a file of the record that holds no work item, no Feature or no queue (B-0019).
-REFUSED = (
-    ConfigError,
-    WorkItemFileError,
-    FeatureFileError,
-    QueueFileError,
-    ItemIdError,
-    WorkItemIdError,
-    FeatureIdError,
-    FeatureNotFoundError,
-    NoCriterionError,
-    NoWorkItemError,
-    FeatureNotStartedError,
-    WorkItemInProgressError,
-    SlugError,
-    GitError,
-    LandError,
-    GateError,
-    NotOnMainError,
-    ParallelError,
-    OutOfScopeError,
-    CommitError,
-    CommitNeededError,
-    EmptyPartError,
-    CriterionError,
-    DecisionError,
-    NoPartError,
-    NoSuchPartError,
-    RemovedAlreadyError,
-    WorkItemNotFoundError,
-    TaskIdError,
-    TaskNotFoundError,
-    NoTaskError,
-    NotStartedError,
-    StartedAlreadyError,
-    BlockedError,
-    NotBlockedError,
-    TaskInProgressError,
-    ItemInBacklogError,
-    OpenTaskError,
-    OpenWorkItemError,
-    CompletedAlreadyError,
-    NotInBacklogError,
-    SameItemError,
-    UnderFeatureError,
-    PaceError,
-)
 
 
 def _criterion(args: argparse.Namespace) -> Criterion:
@@ -213,6 +133,8 @@ def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -
             return unblock_named(args.id, store, now, config)
         case "remove":
             return remove_named(args.id, args.reason, store, now)
+        case "note":
+            return note_item(args.id, args.finding, store, now)
         case "reorder":
             return reorder_item(args.id, args.before, store)
         case _:

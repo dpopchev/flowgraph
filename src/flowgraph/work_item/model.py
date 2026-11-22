@@ -6,7 +6,7 @@ Upkeep and every kind that shares their Given / When / Then.
 
 import re
 from collections.abc import Callable, Collection
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, replace
 from datetime import datetime
 from typing import assert_never
 
@@ -20,6 +20,7 @@ from flowgraph.criterion import (
     said,
     settled,
 )
+from flowgraph.knowledge import KnowledgeLine
 from flowgraph.parent import STANDALONE, Parent
 from flowgraph.task import (
     BlockedTask,
@@ -30,10 +31,10 @@ from flowgraph.task import (
     StartedAlreadyError,
     StartedTask,
     Task,
-    TaskRow,
     TaskState,
 )
 from flowgraph.task_list import all_completed
+from flowgraph.work_item.views import WorkItemRow
 
 
 @dataclass(frozen=True)
@@ -66,6 +67,7 @@ class WorkItem:
     created: datetime
     tasks: tuple[Task, ...]
     parent: Parent = STANDALONE
+    knowledge: tuple[KnowledgeLine, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -80,6 +82,7 @@ class StartedWorkItem:
     started: datetime
     tasks: tuple[TaskState, ...]
     parent: Parent = STANDALONE
+    knowledge: tuple[KnowledgeLine, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -96,6 +99,7 @@ class CompletedWorkItem:
     commit: Evidence
     tasks: tuple[CompletedTask, ...]
     parent: Parent = STANDALONE
+    knowledge: tuple[KnowledgeLine, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -111,6 +115,7 @@ class RemovedWorkItem:
     reason: str
     tasks: tuple[Task, ...]
     parent: Parent = STANDALONE
+    knowledge: tuple[KnowledgeLine, ...] = ()
 
 
 # A work item that still takes Tasks: in Backlog or started.
@@ -121,52 +126,6 @@ WorkItemState = WorkItem | StartedWorkItem | CompletedWorkItem | RemovedWorkItem
 
 # The state of a started work item or Task, as the record writes it: its one name.
 STARTED = "started"
-
-
-@dataclass
-class WorkItemRow:
-    """One work item as plain data, as a view reads it from the record.
-
-    A started time while started, a completed time and the commit it has once completed, a reason
-    once removed. Its created time orders the work items of the Backlog nobody placed, its
-    started time those of InProgress, its completed time those of Completed. Its Tasks are in
-    the order written, each with its own state.
-    """
-
-    id: str
-    title: str
-    state: str
-    commit: str = ""
-    reason: str = ""
-    parent: str = ""
-    created: datetime = field(kw_only=True)
-    started: datetime | None = field(default=None, kw_only=True)
-    completed: datetime | None = field(default=None, kw_only=True)
-    tasks: list[TaskRow] = field(default_factory=list[TaskRow], kw_only=True)
-
-
-@dataclass
-class WorkItemDetail:
-    """One work item with its criterion and its Tasks as plain data, as a view reads it whole.
-
-    The parts of its criterion are those its kind states; the others are empty.
-    """
-
-    id: str
-    title: str
-    state: str
-    description: str
-    tasks: list[TaskRow]
-    given: str = ""
-    when: str = ""
-    then: str = ""
-    observed: str = ""
-    expected: str = ""
-    hypothesis: str = ""
-    decision: str = ""
-    commit: str = ""
-    reason: str = ""
-    parent: str = ""
 
 
 # The rows of the work items in the record; an empty list when it holds none.
@@ -285,6 +244,11 @@ def append_task[W: OpenWorkItem](item: W, task: Task) -> W:
     return replace(item, tasks=(*item.tasks, task))
 
 
+def noted_work_item[W: WorkItemState](item: W, line: KnowledgeLine) -> W:
+    """The work item, in whatever state, with the line after the lines it already keeps."""
+    return replace(item, knowledge=(*item.knowledge, line))
+
+
 def still_open(item: WorkItemState) -> OpenWorkItem:
     """The work item, which still takes Tasks; raises CompletedAlreadyError when it is completed."""
     match item:
@@ -318,6 +282,7 @@ def started_work_item(item: WorkItemState, on: datetime) -> StartedWorkItem:
                 to_the_second,
                 item.tasks,
                 item.parent,
+                item.knowledge,
             )
         case StartedWorkItem():
             raise StartedAlreadyError(f"{work_item_id_text(item.id)} is started already")
@@ -355,6 +320,7 @@ def completed_work_item(
                 commit,
                 done,
                 item.parent,
+                item.knowledge,
             )
         case CompletedWorkItem():
             raise CompletedAlreadyError(f"{work_item_id_text(item.id)} is completed already")

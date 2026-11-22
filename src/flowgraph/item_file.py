@@ -19,6 +19,12 @@ from flowgraph.criterion import (
     make_hypothesis,
     make_scenario,
 )
+from flowgraph.knowledge import (
+    FINDING,
+    KnowledgeLine,
+    kind_name,
+    make_knowledge_line,
+)
 from flowgraph.task import (
     BlockedTask,
     CompletedTask,
@@ -144,6 +150,30 @@ HeldTask = Annotated[
 
 # A Task table of a work item file, in any state.
 AnyTaskFile = TaskFile | StartedTaskFile | BlockedTaskFile | CompletedTaskFile
+
+
+class KnowledgeFile(BaseModel):
+    """One table of the knowledge of a work item file: a line, with its kind, text and time."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    kind: Literal["finding"]
+    text: str
+    noted: datetime
+
+
+def knowledge_primitives(line: KnowledgeLine) -> dict[str, object]:
+    """The knowledge line as the primitives its table holds."""
+    return {"kind": kind_name(line.kind), "text": line.text, "noted": line.noted}
+
+
+def knowledge_held(held: KnowledgeFile) -> KnowledgeLine:
+    """The knowledge line a validated table holds, built through its constructor."""
+    match held.kind:
+        case "finding":
+            return make_knowledge_line(FINDING, held.text, held.noted)
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 def criterion_primitives(criterion: Criterion) -> dict[str, object]:

@@ -30,6 +30,7 @@ COMMANDS = [
     ("unblock",),
     ("complete",),
     ("land",),
+    ("note",),
     ("remove",),
     ("reorder",),
     ("status",),

@@ -16,17 +16,21 @@ from flowgraph.item_file import (
     AnyCriterionFile,
     CompletedTaskFile,
     HeldTask,
+    KnowledgeFile,
     TaskFile,
     backlog_task,
     criterion_held,
     criterion_primitives,
     decision_held,
     evidence_primitives,
+    knowledge_held,
+    knowledge_primitives,
     task_held,
     task_primitives,
     task_row,
     write_checked,
 )
+from flowgraph.knowledge import KnowledgeRow
 from flowgraph.parent import FeatureIdError, parent_text, parent_written
 from flowgraph.record import ITEMS
 from flowgraph.task import TaskInProgressError
@@ -37,12 +41,10 @@ from flowgraph.work_item.model import (
     RemovedWorkItem,
     StartedWorkItem,
     WorkItem,
-    WorkItemDetail,
     WorkItemFileError,
     WorkItemId,
     WorkItemMismatchError,
     WorkItemNotFoundError,
-    WorkItemRow,
     WorkItemState,
     append_task,
     completed_work_item,
@@ -53,6 +55,7 @@ from flowgraph.work_item.model import (
     work_item_id_text,
 )
 from flowgraph.work_item.removal import removed_work_item
+from flowgraph.work_item.views import WorkItemDetail, WorkItemRow
 
 
 class _ItemFile(BaseModel):
@@ -68,6 +71,7 @@ class _ItemFile(BaseModel):
     created: datetime
     criterion: AnyCriterionFile
     tasks: list[TaskFile] = []
+    knowledge: list[KnowledgeFile] = []
 
 
 class _StartedItemFile(BaseModel):
@@ -84,6 +88,7 @@ class _StartedItemFile(BaseModel):
     started: datetime
     criterion: AnyCriterionFile
     tasks: list[HeldTask] = []
+    knowledge: list[KnowledgeFile] = []
 
 
 class _CompletedItemFile(BaseModel):
@@ -102,6 +107,7 @@ class _CompletedItemFile(BaseModel):
     commit: str = ""
     criterion: AnyCriterionFile
     tasks: list[CompletedTaskFile] = []
+    knowledge: list[KnowledgeFile] = []
 
 
 class _RemovedItemFile(BaseModel):
@@ -119,6 +125,7 @@ class _RemovedItemFile(BaseModel):
     reason: str
     criterion: AnyCriterionFile
     tasks: list[TaskFile] = []
+    knowledge: list[KnowledgeFile] = []
 
 
 # The file of a work item in any of its states.
@@ -263,6 +270,7 @@ def read_work_item_detail(record: Path, item_id: WorkItemId) -> WorkItemDetail:
         commit=_commit_held(held),
         reason=_reason_held(held),
         parent=held.parent,
+        knowledge=[KnowledgeRow(line.kind, line.noted, line.text) for line in held.knowledge],
         **held.criterion.model_dump(),
     )
 
@@ -300,6 +308,8 @@ def _item_primitives(item: WorkItemState) -> dict[str, object]:
     described = {"description": item.description} if item.description else {}
     under = {"parent": parent_text(item.parent)} if parent_text(item.parent) else {}
     tasks = {"tasks": [task_primitives(task) for task in item.tasks]} if item.tasks else {}
+    lines = [knowledge_primitives(line) for line in item.knowledge]
+    knowledge = {"knowledge": lines} if lines else {}
     return {
         "id": work_item_id_text(item.id),
         "state": state_name(item),
@@ -310,6 +320,7 @@ def _item_primitives(item: WorkItemState) -> dict[str, object]:
         **_moves_primitives(item),
         "criterion": criterion_primitives(item.criterion),
         **tasks,
+        **knowledge,
     }
 
 
@@ -330,6 +341,7 @@ def _item_held(held: _HeldItemFile, kind: Kind) -> WorkItemState:
     item = make_work_item(item_id, held.title, criterion, held.description, held.created, parent)
     for task in held.tasks:
         item = append_task(item, backlog_task(task))
+    item = replace(item, knowledge=tuple(knowledge_held(line) for line in held.knowledge))
     match held:
         case _ItemFile():
             return item

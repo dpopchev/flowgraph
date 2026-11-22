@@ -19,10 +19,7 @@ from flowgraph.story import (
 )
 from flowgraph.task import task_id_text
 
-pytestmark = [
-    pytest.mark.functional,
-    pytest.mark.xfail(strict=True, reason="S-0062: fgraph note is not written yet"),
-]
+pytestmark = pytest.mark.functional
 
 CWD = Path("/work")
 NOW = datetime(2026, 1, 1, tzinfo=UTC)

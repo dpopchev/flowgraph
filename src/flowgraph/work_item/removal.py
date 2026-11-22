@@ -38,6 +38,7 @@ def removed_work_item(item: WorkItemState, reason: str, on: datetime) -> Removed
                 said("reason", reason),
                 item.tasks,
                 item.parent,
+                item.knowledge,
             )
         case StartedWorkItem():
             raise StartedAlreadyError(f"{work_item_id_text(item.id)} is started already")

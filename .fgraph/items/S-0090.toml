@@ -13,12 +13,14 @@ then = "main of the origin is at the commit of the landing, with the write that 
 
 [[tasks]]
 id = "T-0352"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_land_push.py, failing on the criterion of S-0090"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_land_work_item.py does. Seen red, then marked a strict xfail naming S-0090 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_land_push.py states that in a repository whose origin is a bare repository of tmp_path, with delivery.push true, fgraph land exits 0 and main of the origin holds the commit of the landing and the completed Story; and that with delivery.push false the origin is left as it was"
 created = 2026-11-22 21:02:50+00:00
 started = 2026-11-22 22:46:42+00:00
+completed = 2026-11-22 22:50:34+00:00
+commit = "a37b61a"
 
 [[tasks]]
 id = "T-0353"

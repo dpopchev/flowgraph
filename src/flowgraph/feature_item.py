@@ -38,7 +38,7 @@ from flowgraph.parent import (
 )
 from flowgraph.queue import queued
 from flowgraph.record import Now
-from flowgraph.status import BACKLOG, backlog_as_added, rows_by_id
+from flowgraph.status import BACKLOG, backlog_as_added, rows_under
 from flowgraph.store import Store
 from flowgraph.task import CompletedAlreadyError
 from flowgraph.text import feature_text
@@ -86,9 +86,10 @@ def show_feature_item(feature: str, store: Store) -> str:
     gives: the one they start in. Raises FeatureIdError when the text is no Feature id and
     FeatureNotFoundError when the record holds no such Feature.
     """
-    shown = store.features.load_feature(parse_feature_id(feature))
+    feature_id = parse_feature_id(feature)
+    shown = store.features.load_feature(feature_id)
     detail = feature_detail(shown)
-    held = {item_id: row for item_id, row in rows_by_id(store).items() if row.parent == detail.id}
+    held = rows_under(feature_id, store)
     in_backlog = backlog_as_added(held)
     start_order = queued(store.load_queue(), in_backlog)
     next_started = iter(sorted(in_backlog, key=start_order.index))
@@ -133,7 +134,7 @@ def complete_feature_item(feature: str, commit: str | None, store: Store, now: N
         last = "it is completed at the commit of its last completed work item"
         raise CommitError(f"{named} takes no --commit: {last}")
     held = store.features.load_feature(feature_id)
-    rows = [row for row in rows_by_id(store).values() if row.parent == named]
+    rows = list(rows_under(feature_id, store).values())
     done = completed_feature(held, now(), _last_commit(rows))
     open_rows = [row for row in rows if row.state not in DONE]
     if open_rows:

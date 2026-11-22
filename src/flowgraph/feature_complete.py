@@ -20,9 +20,9 @@ from flowgraph.feature import (
     StartedFeature,
     completed_feature,
 )
-from flowgraph.parent import FeatureId, Standalone, feature_id_text
+from flowgraph.parent import FeatureId, Standalone
 from flowgraph.record import Now
-from flowgraph.status import rows_by_id
+from flowgraph.status import rows_under
 from flowgraph.store import Store
 from flowgraph.work_item import CompletedWorkItem, WorkItemId
 
@@ -47,12 +47,8 @@ def completed_with(done: CompletedWorkItem, store: Store) -> CompletedFeature | 
         case Feature() | CompletedFeature() | RemovedFeature():
             return None
         case StartedFeature() | BlockedFeature():
-            named = feature_id_text(feature_id)
-            others = [
-                row
-                for item_id, row in rows_by_id(store).items()
-                if row.parent == named and item_id != done.id
-            ]
+            under = rows_under(feature_id, store)
+            others = [row for item_id, row in under.items() if item_id != done.id]
             if all(row.state in DONE for row in others):
                 return completed_feature(feature, done.completed, done.commit)
             return None
@@ -68,7 +64,7 @@ def complete_with_feature(
     Returns the Feature completed, None when the completion completes none. The Feature is
     saved first, so a save of it refused, as on the branch of the work item, which writes that
     work item alone, leaves nothing written. Raises the refusal of the completion of the work
-    item, as `work_item.complete_work_item` does; nothing is saved.
+    item, as `work_item.completed_work_item` does; nothing is saved.
     """
     done = work_item.completed_work_item(store.load_work_item(item_id), now(), commit, decision)
     feature = completed_with(done, store)

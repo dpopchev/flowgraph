@@ -18,7 +18,7 @@ from flowgraph.story import (
     story_id_text,
 )
 from flowgraph.task import CompletedAlreadyError, TaskNotFoundError, make_task, make_task_id
-from flowgraph.work_item import add_task, complete_task, complete_work_item, holder_of
+from flowgraph.work_item import add_task, complete_task, holder_of
 
 pytestmark = pytest.mark.command
 
@@ -69,18 +69,6 @@ def test_a_task_no_story_holds_is_refused_by_its_id() -> None:
 
 
 HALF = completed_task(begun(1), make_task_id(1), NOW, COMMIT)
-
-
-def test_a_completed_story_is_saved_whole_completed_now() -> None:
-    saved: list[StoryState] = []
-    complete_work_item(
-        item_id=make_story_id(1),
-        commit=COMMIT,
-        load_work_item=lambda _: HALF,
-        save_work_item=saved.append,
-        now=lambda: NOW,
-    )
-    assert saved == [completed_story(HALF, NOW, COMMIT)]
 
 
 def test_a_task_written_for_a_completed_story_is_refused_by_its_id() -> None:

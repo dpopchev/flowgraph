@@ -21,7 +21,7 @@ from flowgraph.feature import (
     StartedFeature,
     feature_row,
 )
-from flowgraph.parent import feature_id_text, parse_feature_id
+from flowgraph.parent import FeatureId, feature_id_text, parse_feature_id
 from flowgraph.queue import Entry, Inside, Line, Placed, queued
 from flowgraph.store import KINDS, Store
 from flowgraph.text import status_text
@@ -44,6 +44,12 @@ def rows_by_id(store: Store) -> dict[WorkItemId, WorkItemRow]:
         for kind in KINDS
         for row in store.find_work_item_rows(kind)
     }
+
+
+def rows_under(feature: FeatureId, store: Store) -> dict[WorkItemId, WorkItemRow]:
+    """The row of every work item under the Feature under its id, by kind and then by number."""
+    named = feature_id_text(feature)
+    return {item_id: row for item_id, row in rows_by_id(store).items() if row.parent == named}
 
 
 def backlog_as_added(rows: Mapping[WorkItemId, WorkItemRow]) -> list[WorkItemId]:

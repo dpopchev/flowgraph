@@ -25,7 +25,6 @@ from flowgraph.work_item import (
     append_task,
     commit_sha,
     complete_task,
-    complete_work_item,
     completed_task,
     completed_work_item,
     make_kind,
@@ -171,17 +170,9 @@ def test_a_task_is_completed_without_a_commit_in_the_work_item_that_holds_it() -
     assert saved == [READY]
 
 
-@pytest.mark.command
+@pytest.mark.model
 def test_a_work_item_is_completed_without_a_commit() -> None:
-    saved: list[WorkItemState] = []
-    complete_work_item(
-        item_id=ONE,
-        commit=NO_COMMIT,
-        load_work_item=lambda _: READY,
-        save_work_item=saved.append,
-        now=lambda: ON,
-    )
-    assert saved == [WHOLE]
+    assert completed_work_item(READY, ON, NO_COMMIT) == WHOLE
 
 
 @pytest.mark.edge

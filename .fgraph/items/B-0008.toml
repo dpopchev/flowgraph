@@ -11,14 +11,20 @@ expected = "the refusal names the file, as every other file that holds no work i
 
 [[tasks]]
 id = "T-0228"
-state = "backlog"
+state = "completed"
 title = "Refuse a completed file whose commit is no sha as a file that holds no work item, naming the file, in read_work_item of src/flowgraph/work_item/file.py"
 expected_output = "changed: src/flowgraph/work_item/file.py catches CommitError; tests/story/test_completed_file.py states the refusal of a wrong commit of the work item and of a Task"
 created = 2026-11-22 06:48:55+00:00
+started = 2026-11-22 06:48:57+00:00
+completed = 2026-11-22 06:51:13+00:00
+commit = "9c872b2"
 
 [[tasks]]
 id = "T-0229"
-state = "backlog"
+state = "completed"
 title = "Say in the docstrings of status_text and _status_line of src/flowgraph/text.py that a completed item is listed with its commit when it holds one"
 expected_output = "changed: src/flowgraph/text.py, the docstrings of status_text and _status_line"
 created = 2026-11-22 06:48:55+00:00
+started = 2026-11-22 06:51:13+00:00
+completed = 2026-11-22 06:53:08+00:00
+commit = "f57b45d"

@@ -44,3 +44,8 @@ created = 2026-11-22 10:48:06+00:00
 started = 2026-11-22 17:25:52+00:00
 completed = 2026-11-22 17:29:10+00:00
 commit = "1523e6d"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: at fb5bd91 on main, on a fresh record with a Story under a Feature, depending on another, about a term and with a finding, fgraph about S-0002 exit 0 listed feature (1) F-0001, depends on (1) S-0001, terms (1) gate and knowledge (1) the finding, each under its relation; fgraph about F-0001 listed its two work items; make check: all checks passed"
+noted = 2026-11-22 17:33:14+00:00

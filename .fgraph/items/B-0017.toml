@@ -11,7 +11,10 @@ expected = "each write of a Feature has its row in both tables"
 
 [[tasks]]
 id = "T-0258"
-state = "backlog"
+state = "completed"
 title = "Give each write of a Feature its row in both git tables of docs/domain-model.md, where a write is made and its commit message: add, amend, block, unblock and complete of a Feature, and the unset of a key"
 expected_output = "changed: docs/domain-model.md, the table Write | Where and the table Write | Message"
 created = 2026-11-22 08:20:58+00:00
+started = 2026-11-22 08:21:01+00:00
+completed = 2026-11-22 08:23:12+00:00
+commit = "bec250b"

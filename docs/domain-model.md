@@ -1148,19 +1148,22 @@ held to `main`, and there is no landing:
 | Write | Where |
 |---|---|
 | add a work item | `main` |
+| add a Feature | `main` |
 | add a Task to a work item in Backlog | `main` |
 | reorder the Backlog | `main` |
 | amend a work item in Backlog | `main` |
+| amend a Feature in Backlog | `main` |
 | remove a work item in Backlog | `main` |
 | remove a Feature in Backlog, with its work items | `main` |
-| set a key of the configuration | `main` |
+| block and unblock a started Feature | `main`: an unblock that starts the next work item commits both and makes the branch of that one |
+| set or unset a key of the configuration | `main` |
 | start a work item | `main`: `fgraph` commits it and makes its branch |
 | start a Feature | `main`: `fgraph` commits it with its first work item and makes the branch of that one |
 | add a Task to a started work item | its branch |
 | start, block, unblock and complete its Tasks | its branch |
 | land the work item | `main`: `fgraph land` merges its branch and completes it |
 | complete the work item | `main`, after a merge made by hand |
-| complete a Feature | `main`: with its last work item, by its landing or its complete |
+| complete a Feature | `main`: with its last work item, by its landing or its complete, or by `fgraph complete F-0001` once each work item of it is completed or removed |
 | start the next work item of a Feature | `main`: with the completion of the one before, by its landing or its complete; `fgraph` commits both and makes the branch of the next one |
 
 The branch a work item owns may change and append within its scope, through
@@ -1236,15 +1239,17 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   | Write | Message |
   |---|---|
   | add a work item | `chore: add S-0001 in the record` |
+  | add a Feature | `chore: add F-0001 in the record` |
   | add a Task | `chore: add T-0001 of S-0001 in the record` |
-  | amend | `chore: amend S-0001 in the record` |
+  | amend | `chore: amend S-0001 in the record`, `chore: amend F-0001 in the record` for a Feature |
   | reorder | `chore: reorder S-0002 before S-0001 in the record`, `chore: reorder F-0001 before S-0001 in the record` |
   | start | `chore: start S-0001 in the record`, `chore: start T-0001 of S-0001 in the record`, `chore: start F-0001 in the record` for a Feature and its first work item |
-  | block | `chore: block T-0001 of S-0001 in the record` |
-  | unblock | `chore: unblock T-0001 of S-0001 in the record` |
+  | block | `chore: block T-0001 of S-0001 in the record`, `chore: block F-0001 in the record` for a Feature |
+  | unblock | `chore: unblock T-0001 of S-0001 in the record`, `chore: unblock F-0001 in the record` for a Feature, `chore: unblock F-0001 and start S-0002 in the record` for a Feature and the next work item its unblock starts |
   | remove | `chore: remove S-0001 in the record`, `chore: remove F-0001 in the record` for a Feature and its work items |
-  | complete | `chore: complete S-0001 in the record`, `chore: complete T-0001 of S-0001 in the record`, `chore: complete S-0002 and F-0001 in the record` for a work item and the Feature it completes, `chore: complete S-0001 and start S-0002 in the record` for a work item and the next one of its Feature |
+  | complete | `chore: complete S-0001 in the record`, `chore: complete T-0001 of S-0001 in the record`, `chore: complete S-0002 and F-0001 in the record` for a work item and the Feature it completes, `chore: complete S-0001 and start S-0002 in the record` for a work item and the next one of its Feature, `chore: complete F-0001 in the record` for a Feature left with every work item completed or removed |
   | set a key of the configuration | `chore: set development.enabled in the record` |
+  | unset a key of the configuration | `chore: unset development.gate in the record` |
 
 - A write that leaves its file as it was makes no commit. With the
   development on, completing a Task names the commit of its work, so the

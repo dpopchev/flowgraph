@@ -12,12 +12,14 @@ then = "it still passes, with the line limit of mk/python.mk lowered from 400 to
 
 [[tasks]]
 id = "T-0319"
-state = "started"
+state = "completed"
 title = "Move the eleven modules of the Feature of src/flowgraph into the subpackage src/flowgraph/feature"
 description = "Written on 2026-11-22 against the modules of that day; the list is taken again when the Task starts. A move alone: no behavior changes."
 expected_output = "changed: feature.py and the ten feature_*.py modules of src/flowgraph are the modules of src/flowgraph/feature, named without the prefix; its __init__.py names what the other modules import, and no module outside it imports an underscore name of it; the tests of those modules state what they stated, moved only with their module; make check passes"
 created = 2026-11-22 10:48:26+00:00
 started = 2026-11-22 21:15:38+00:00
+completed = 2026-11-22 21:19:38+00:00
+commit = "398efd9"
 
 [[tasks]]
 id = "T-0320"

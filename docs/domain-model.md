@@ -145,6 +145,19 @@ A kind whose criterion and payload match another's shares its state types and
 names them as its own: `Story` and `Upkeep` are both `WorkItem`, told apart
 by the kind on their id (Persistence).
 
+A `Feature` has a state of its own too, the developer's words of 2026-11-21
+(Persistence): a Feature is to its work items what a work item is to its
+Tasks. Two of its states are built, each a type that carries what it needs
+and nothing else:
+
+| Type | Bucket | Adds |
+|---|---|---|
+| `Feature` | Backlog | the attributes of a Feature, above |
+| `StartedFeature` | InProgress | started |
+
+Completed has no type yet: a Feature is listed there when each of its work
+items is completed or removed (Persistence).
+
 - A bucket is derived from the type; it is never a stored field.
 - Blocked is not a bucket: a blocked item stays in InProgress and shows as
   blocked.
@@ -171,6 +184,9 @@ Removed: apart, reached by remove
 
 Completed and Removed are terminal, and no move goes backwards.
 
+A Feature moves by `start` alone so far, `Feature` to `StartedFeature`, and
+its start starts its first work item with it (Persistence).
+
 ## Order
 
 The Backlog is a queue: the order work is to be pulled in, across every kind
@@ -193,7 +209,8 @@ of work item. The developer said so on 2026-11-21.
   its Feature alone, the reading decided when S-0051 was ordered: `reorder`
   puts it right before another work item of the same Feature, both in
   Backlog, whatever the bucket of the Feature. That order is the one the work
-  items of the Feature start in. `fgraph show` of the Feature lists its work
+  items of the Feature start in: `fgraph start` of the Feature starts the
+  first of them (Persistence). `fgraph show` of the Feature lists its work
   items in Backlog in it, in the places they hold by kind and number among
   the others; no other view shows it.
 - The queue is its own aggregate, apart from the items: it places work items
@@ -473,14 +490,78 @@ and its merge tool.
 - An amend rewrites the parts of the criterion the work item has: `--given`,
   `--when` and `--then`, `--observed` and `--expected`, or `--hypothesis`. A
   part of another form is refused.
-- A Feature is kept as `items/F-0001.toml`: its id, its title, its
-  description, its created time and its `criteria`, a list of one or more. It
-  has no state line and no Task, the developer's decision of 2026-11-21: its
-  bucket is derived from the states of its work items -- Completed when each
-  is completed or removed; InProgress once one is started or completed while
-  another is not; Backlog otherwise, as with no work item. `fgraph add
-  feature` adds one, on `main` as a work item is added, and `fgraph show`
-  lists its criteria and its work items with their buckets.
+- A Feature is kept as `items/F-0001.toml`: its id, its state line, its
+  title, its description, its created time and its `criteria`, a list of one
+  or more. It holds no Task. `fgraph add feature` adds one, on `main` as a
+  work item is added, and `fgraph show` lists its criteria and its work items
+  with their buckets.
+- A Feature has a state of its own, kept in its file as that of a work item
+  is (S-0052): `state = "backlog"` for a `Feature`, and `state = "started"`
+  with its `started` time, kept to the second, for a `StartedFeature`. A
+  started one is read back through the move, so a file holds no state the
+  move could not reach: a started time without `state = "started"`, or that
+  state without its time, is refused when the file is read.
+- A Feature file without a state line reads as a Feature in Backlog. Every
+  Feature written before it had a state is such a file, and reads as it is;
+  the next write of that Feature holds the line.
+- This reverses the developer's decision of 2026-11-21 that a Feature has no
+  state line and that its bucket, as everything about it, is derived from the
+  states of its work items. The developer's words of the same day reversed
+  it, in the agent's wording: a Feature is part of the Backlog and just holds
+  a couple of work items; starting it, when git is used for the development
+  as well, starts its work items one by one in separate branches; they are
+  completed but all stay in progress; when all are completed the Feature
+  moves to Completed; a Feature can be blocked, or gets blocked when its
+  child work item is blocked. The principle F-0002 was planned and filed
+  under: a Feature is to its work items what a work item is to its Tasks --
+  it cannot start without one, its work item cannot start before it, one is
+  started at a time, the completed ones stay inside it and are counted, it
+  completes with the last, and a blocked one marks it.
+- `fgraph start F-0001` starts the Feature and its first work item with it,
+  in one write and one commit, `chore: start F-0001 in the record`, and says
+  `started F-0001 with S-0001`. The first work item is the first of its work
+  items in Backlog in the order they start in (Order), so a Feature that
+  holds completed work items starts with the next one. That work item is
+  started as any other: with the development on, its branch is checked out in
+  its worktree at the commit of the start, `--slug` naming the branch, and
+  the start is held to `main`.
+- The start of a Feature is refused with exit 2 and nothing written: a
+  Feature started already, `F-0001 is started already`; one with no work item
+  in Backlog, `F-0001 has no work item in Backlog to start with`; one whose
+  first work item has no Task, `F-0001 cannot start: S-0001 has no Task to
+  start with`; and a start `[development] parallel` refuses (below).
+- A work item does not start before its Feature: the start of a work item in
+  Backlog under a Feature that is not started is refused with exit 2, naming
+  the Feature, `S-0001 cannot start: F-0001 is not started, start it first`.
+  The alternative, that the start of a child starts its Feature, was shown
+  with the plan and not taken.
+- One work item of a Feature is started at a time: the start of a work item
+  of a started Feature beside another started work item of it is refused
+  naming that one, `S-0002 cannot start: F-0001 starts one work item at a
+  time, started already: S-0001`. With none started it starts: once the one
+  before is completed, `fgraph start` of the next starts it, and nothing
+  starts it by itself yet.
+- Both rules are asked at the start of a work item in Backlog and nowhere
+  else: no Task write and no completion asks them. So a work item started
+  under a Feature that was never started, as in a record whose work items
+  were started one by one before a Feature had a state, is worked and
+  completed as before.
+- The one at a time of a Feature and `[development] parallel` both hold,
+  decided when S-0052 was ordered: a Feature starts one work item at a time,
+  and `parallel` counts every started work item of the record, those of a
+  Feature among them. The start of a Feature starts one work item, so
+  `parallel` refuses it as it refuses that one, naming the Feature: `F-0001
+  cannot start: development.parallel = 1, started already: S-0002`. It is
+  asked once the Feature is known to start, so a Feature started already, or
+  without a work item in Backlog, is refused for that.
+- The bucket of a Feature is read from its state and its work items. A
+  `StartedFeature` is in InProgress. Completed has no state yet, so a
+  Feature, started or not, is listed there when each of its work items is
+  completed or removed. A Feature never started keeps the bucket its work
+  items derive: InProgress once one is started or completed while another is
+  not; Backlog otherwise, as with no work item. So a Feature whose file holds
+  no state line is listed as it was, and `fgraph start` of it starts its next
+  work item in Backlog.
 - A work item under a Feature holds `parent = "F-0001"` in its file, and
   carries it through every move. A file without the key holds a work item
   that stands alone: standing alone is a value of `parent` in the model, and
@@ -490,15 +571,14 @@ and its merge tool.
   its work items, the developer's words of 2026-11-21: a Feature is an
   umbrella, part of the Backlog, that just holds a couple of work items. The
   line is its id, its progress and its title, `F-0001  1/3 W  <title>`, in
-  the bucket its work items derive, placed there as Order says. It is one
+  its bucket (above), placed there as Order says. It is one
   item of that bucket: counted once beside the heading and once toward the
   top 5. Its work items in Backlog and its completed ones are listed on no
   line of their own and counted beside no heading; they are counted in its
   progress, and `fgraph show` of the Feature lists them with their buckets,
   those in Backlog in the order they start in (Order). A started one is
   listed under the line of its Feature (Order), and a removed one keeps its
-  line under Removed. The bucket stays derived: no command starts, completes
-  or removes a Feature yet.
+  line under Removed. No command completes or removes a Feature yet.
 - This reverses the developer's decision of 2026-11-21 that listed the
   Features of a record in a block of their own above the buckets: the heading
   `Features` with their count, listed only when the record held a Feature,
@@ -508,14 +588,16 @@ and its merge tool.
   their counts and the order of the Backlog those of the work items. No
   heading `Features` is listed any more, and the line of a Feature no longer
   names its bucket: the heading it stands under does.
-- The progress of a Feature is derived as its bucket is, the developer's
+- The progress of a Feature is derived from its work items, the developer's
   decision of 2026-11-21: `<completed>/<all> W`, the work items under it that
   are completed of all it holds, written as board 1's watch writes it. A
   removed work item is counted in neither number, a started or a Backlog one
   only in the second, and a Feature without a work item reads `0/0 W`. Every
   Feature is listed with it, in any bucket: `F-0001  1/3 W  <title>`.
-- Not built yet: starting, amending or removing a Feature, and moving a work
-  item to another Feature. Reordering one is built (Order).
+- Not built yet: completing, blocking, amending or removing a Feature,
+  starting the next work item of a started Feature once the one before is
+  completed, and moving a work item to another Feature. Starting one is built
+  (above), and so is reordering one (Order).
 - Each kind reads the files of its own prefix. A file with a prefix no kind
   knows is left alone; nothing reports it yet. An `items/SP-0001.toml` of an
   older record, written while a Spike was `SP-0001`, is such a file: it is
@@ -585,7 +667,9 @@ development too.
   that many work items are started already. The refusal names the key,
   `development.parallel`, its number and each started work item. The started
   work items are those of every kind, read as `fgraph status` reads them: a
-  started work item is the one its worktree holds.
+  started work item is the one its worktree holds. Those under a Feature are
+  counted among them, and the start of a Feature, which starts one work item,
+  is refused the same way, naming the Feature (Persistence).
 - The start of a Task is neither counted nor limited by `parallel`: a work
   item has one started Task at a time whatever the key. A work item that is
   not in Backlog is left to the start, which refuses it for its own state.
@@ -731,6 +815,7 @@ held to `main`, and there is no landing:
 | remove a work item in Backlog | `main` |
 | set a key of the configuration | `main` |
 | start a work item | `main`: `fgraph` commits it and makes its branch |
+| start a Feature | `main`: `fgraph` commits it with its first work item and makes the branch of that one |
 | add a Task to a started work item | its branch |
 | start, block, unblock and complete its Tasks | its branch |
 | land the work item | `main`: `fgraph land` merges its branch and completes it |
@@ -758,6 +843,9 @@ A work item starts on `main` alone, the developer's decision of 2026-11-21:
   work tree that is on `main`, where the start is made.
 - The start of a Task is not checked against `main`, and neither is a record
   outside a git work tree.
+- The start of a Feature starts its first work item, so it is held to `main`
+  as the start of that work item is, and refused the same way, naming the
+  Feature.
 
 `fgraph` holds the side of `main` too, under the principle the developer
 agreed on 2026-11-21 that `fgraph` owns the record, its rituals and its rules:
@@ -806,7 +894,7 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   | add a Task | `chore: add T-0001 of S-0001 in the record` |
   | amend | `chore: amend S-0001 in the record` |
   | reorder | `chore: reorder S-0002 before S-0001 in the record`, `chore: reorder F-0001 before S-0001 in the record` |
-  | start | `chore: start S-0001 in the record`, `chore: start T-0001 of S-0001 in the record` |
+  | start | `chore: start S-0001 in the record`, `chore: start T-0001 of S-0001 in the record`, `chore: start F-0001 in the record` for a Feature and its first work item |
   | block | `chore: block T-0001 of S-0001 in the record` |
   | unblock | `chore: unblock T-0001 of S-0001 in the record` |
   | remove | `chore: remove S-0001 in the record` |

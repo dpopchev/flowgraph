@@ -25,7 +25,7 @@ lands it. `fgraph config` shows the configuration and sets a key of it.
 | where the record lives          | located on every call but `--help`                       |
 | the record and its flow         | a work item with its Tasks, from Backlog to Completed    |
 | the kinds of work item          | Story, Upkeep, Bug, Spike                                |
-| the level above                 | a Feature groups work items, one line in its bucket      |
+| the level above                 | a Feature groups work items and starts with its first    |
 | the order of the Backlog        | a queue, reordered by `fgraph reorder`, Features too     |
 | the wording of a work item      | rewritten by `fgraph amend` while in Backlog             |
 | git                             | every write of the record committed, unless turned off   |
@@ -59,7 +59,7 @@ fgraph start --help
 # usage: fgraph start [-h] [--slug TEXT] ID
 #
 # positional arguments:
-#   ID           the id of the work item or of the Task
+#   ID           the id of the work item, of the Task or of the Feature
 #
 # options:
 #   -h, --help   show the help of this command and exit
@@ -188,7 +188,9 @@ It starts once one of them is completed or landed. The key has no default:
 left out, nothing limits the started work items. It is a key of the
 development, so it limits nothing with the development off. The start of a
 Task is neither counted nor limited by it: a Story has one started Task at a
-time whatever the key, as shown further down.
+time whatever the key, as shown further down. The start of a Feature starts
+one work item, so it is refused as the start of that one is, naming the
+Feature (further down).
 
 The development says how a landing merges when the record names a way:
 
@@ -460,7 +462,8 @@ fgraph start S-0002
 ```
 
 The start of a Task is not checked against main: a Task starts on the branch
-of its Story.
+of its Story. A Feature starts on main alone as a Story does, since its start
+starts its first work item (further down).
 
 A Task of a started Story that has a worktree is written there: added,
 started and completed in it. On main the same write exits 2 and names the
@@ -815,12 +818,13 @@ fgraph show F-0001
 #   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  Backlog
 ```
 
-A Feature has no state of its own: its bucket is derived from its work items.
-It is InProgress once one of them is started or completed, and Completed when
-each is completed or removed. `fgraph show S-0001` names the Feature as its
-`parent`. An add exits 2 and names why when a criterion or the title is blank
-or when `--parent` names no Feature of the record. A Feature is kept as
-`items/F-0001.toml`.
+A Feature has a state of its own, kept in its file as that of a work item is:
+it is in Backlog until `fgraph start` starts it, and InProgress from then on,
+with its started time (below). Completed has no state yet: a Feature is
+listed there when each of its work items is completed or removed. `fgraph
+show S-0001` names the Feature as its `parent`. An add exits 2 and names why
+when a criterion or the title is blank or when `--parent` names no Feature of
+the record. A Feature is kept as `items/F-0001.toml`.
 
 `fgraph status` lists a Feature inside its bucket, as one line in place of
 its work items: its id, its progress and its title. Here a Story that stands
@@ -850,9 +854,32 @@ counted beside no heading: they are counted in its progress, and `fgraph show
 F-0001` lists each with its bucket. A removed one keeps its line under
 Removed.
 
-Once a work item of the Feature is started the Feature is listed under
-InProgress, and the started work item under its line, indented, with its
-progress and its Task being worked:
+`fgraph start` takes a Feature, and starts its first work item with it:
+
+```sh
+fgraph start F-0001
+# started F-0001 with S-0001
+```
+
+A Feature is to its work items what a work item is to its Tasks, the
+principle the developer's words of 2026-11-21 were filed under (F-0002): it
+does not start without one, its work item does not start before it, and one
+of them is started at a time. The first work item is the first of its work
+items in Backlog in the order they start in, the one `fgraph reorder` gives
+them (below); a Feature that already holds completed work items starts with
+the next one. The Feature and that work item are started in one write and one
+commit, `chore: start F-0001 in the record`. The work item is started as any
+other: with the development on it gets its branch and its worktree, `--slug`
+naming the branch, and the start is made on main alone:
+
+```sh
+fgraph start F-0001
+# started F-0001 with S-0001
+# branch wi/S-0001-raise-the-stories-fgraph in /src/project.worktrees/S-0001-raise-the-stories-fgraph
+```
+
+The started Feature is listed under InProgress, and its started work item
+under its line, indented, with its progress and its Task being worked:
 
 ```sh
 fgraph status
@@ -867,7 +894,54 @@ fgraph status
 
 The lines under a Feature belong to it: they count neither beside the heading
 nor toward the top 5. When each work item of the Feature is completed or
-removed, the Feature is one line under Completed, `F-0001  1/1 W  <title>`.
+removed, the Feature is one line under Completed, `F-0001  1/1 W  <title>`:
+that bucket is still derived from its work items, nothing completes a Feature
+yet.
+
+The start of a Feature exits 2 and names why, with nothing written and no
+branch made:
+
+- when it is started already: `F-0001 is started already`;
+- when it has no work item in Backlog:
+  `F-0001 has no work item in Backlog to start with`;
+- when its first work item has no Task:
+  `F-0001 cannot start: S-0001 has no Task to start with`;
+- when `[development] parallel` refuses one more started work item:
+  `F-0001 cannot start: development.parallel = 1, started already: S-0002`.
+
+A work item does not start before its Feature, and one work item of a Feature
+is started at a time. `fgraph start` of a work item in Backlog under a
+Feature exits 2 naming the Feature while the Feature is not started, and
+naming the started work item of the Feature while one is -- here S-0003, a
+second Story under F-0001:
+
+```sh
+fgraph start S-0001
+# fgraph: error: S-0001 cannot start: F-0001 is not started, start it first
+
+fgraph start S-0003
+# fgraph: error: S-0003 cannot start: F-0001 starts one work item at a time, started already: S-0001
+```
+
+Once S-0001 is completed, `fgraph start S-0003` starts the next one: nothing
+starts it by itself yet. The one at a time of a Feature and `parallel` both
+hold: a Feature starts one work item at a time, and `parallel` counts every
+started work item of the record, those under a Feature among them.
+
+A Feature file without a state line reads as a Feature in Backlog: every
+Feature written before it had a state is such a file. `fgraph status` and
+`fgraph show` list that Feature in the bucket its work items derive, as they
+did -- InProgress once one of them is started or completed, Completed when
+each is completed or removed -- a started work item of it is worked and
+completed as before, and `fgraph start` of the Feature starts its next work
+item in Backlog and writes the state line.
+
+The state of a Feature reverses the developer's decision of 2026-11-21 that a
+Feature has no state and that its bucket is derived from its work items. The
+developer's words of the same day reversed it: starting a Feature starts its
+work items one by one, in separate branches when git is used for the
+development; they are completed but all stay in progress, and the Feature
+moves to Completed when all are.
 
 This reverses the developer's decision of 2026-11-21 that listed the Features
 in a block of their own above the buckets, under a heading `Features`, each
@@ -1132,13 +1206,14 @@ The other messages follow the write: `chore: add T-0001 of S-0001 in the
 record`, `chore: amend S-0001 in the record`, `chore: reorder S-0002 before
 S-0001 in the record` -- a Feature by its id, `chore: reorder F-0001 before
 S-0001 in the record` --, `chore: start T-0001 of S-0001 in the record`,
-`chore: complete S-0001 in the record`, `chore: set development.enabled in
-the record`. A write that leaves its file as it was makes no commit. Outside
-a git work tree a write is made as before, with no commit and no warning, and
-so is every write of a record with the commits turned off. A commit git
-refuses exits 2 and names the git command, and every file the write changed
-is put back as it was. The commits of the development and their messages stay
-yours.
+`chore: start F-0001 in the record` for a Feature and its first work item
+together, `chore: complete S-0001 in the record`, `chore: set
+development.enabled in the record`. A write that leaves its file as it was
+makes no commit. Outside a git work tree a write is made as before, with no
+commit and no warning, and so is every write of a record with the commits
+turned off. A commit git refuses exits 2 and names the git command, and every
+file the write changed is put back as it was. The commits of the development
+and their messages stay yours.
 
 A record git ignores is written without a commit. When a rule of `.gitignore`
 names the record, every write is made with no commit and no warning. With the

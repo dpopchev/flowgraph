@@ -102,7 +102,6 @@ def checkout(tmp_path: Path) -> Path:
     return tmp_path
 
 
-@pytest.mark.xfail(strict=True, reason="S-0075: fgraph about does not read a path yet")
 class TestAFileACommitOfATaskChanged:
     @pytest.fixture
     def about(self, checkout: Path) -> Outcome:
@@ -117,3 +116,29 @@ class TestAFileACommitOfATaskChanged:
         task = git(checkout, "log", "--format=%H", "--grep", "the work of the Task")
         story = git(checkout, "log", "--format=%H", "--grep", "land the Story")
         assert about.out == f"S-0001  {story}  {TITLE}\n  T-0001  {task}  {TASK_TITLE}\n"
+
+
+class TestAFileGivenFromADirectoryBelowTheTop:
+    @pytest.fixture
+    def about(self, checkout: Path) -> Outcome:
+        (checkout / "below").mkdir()
+        (checkout / "below" / "up.txt").write_text("a file\n", encoding="utf-8")
+        return fgraph(
+            ["--dir", str(checkout / ".fgraph"), "about", "../work.txt"], checkout / "below"
+        )
+
+    def test_about_reads_the_path_from_that_directory(self, about: Outcome) -> None:
+        assert "T-0001" in about.out
+
+
+class TestAFileNoCommitOfTheRecordTouched:
+    @pytest.fixture
+    def about(self, checkout: Path) -> Outcome:
+        commit(checkout, "other.txt", "chore: a commit of no item")
+        return fgraph(["about", "other.txt"], checkout)
+
+    def test_about_exits_with_zero(self, about: Outcome) -> None:
+        assert about.status == 0
+
+    def test_about_says_so_in_one_line(self, about: Outcome) -> None:
+        assert about.out == "no commit of the record touched other.txt\n"

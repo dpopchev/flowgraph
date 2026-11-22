@@ -10,8 +10,11 @@ each term that is part of it or is a kind of it, and those under them, to any de
 """
 
 from collections.abc import Mapping, Sequence
+from pathlib import Path
 from typing import assert_never
 
+from flowgraph.about_file import about_file, is_file_here
+from flowgraph.commit import OpenGit
 from flowgraph.feature import FeatureDetail, feature_bucket, feature_detail
 from flowgraph.item_depends import bucketed, record_standing
 from flowgraph.item_id import ItemIdError, parse_shown_id
@@ -148,21 +151,32 @@ def _term_about(items: Sequence[str], knowledge: Sequence[str]) -> str:
     )
 
 
-def about_item(item: str, store: Store) -> str:
-    """The text fgraph about gives of the term, work item or Feature named: its links by relation.
+def about_item(item: str, store: Store, directory: Path, open_git: OpenGit) -> str:
+    """The text fgraph about gives of what is named: a work item, a Feature, a term or a file.
 
-    Raises FeatureIdError for a Feature id below 1, ItemIdError for a text that is no term name
-    and no id, or a term name the record holds no term of, and the refusal of `fgraph show` for an
-    id the record holds no item of. Nothing is written.
+    The text is read as an id, then as a term, then as the path of a file from the directory
+    fgraph runs in, read from the git work tree of the directory. Raises FeatureIdError for a
+    Feature id below 1, ItemIdError for a text that is none of them or a path git cannot answer
+    for, and the refusal of `fgraph show` for an id the record holds no item of. Nothing is
+    written.
     """
     if is_term_name(item):
         try:
             return _term_text(item, store)
         except TermNotFoundError as error:
+            if is_file_here(item, directory):
+                return about_file(item, directory, store, open_git)
             raise ItemIdError(
-                f"{item!r} is no Story, Upkeep, Bug, Spike or Feature id and no term in the record"
+                f"{item!r} is no Story, Upkeep, Bug, Spike or Feature id, no term in the record"
+                " and no file"
             ) from error
-    match parse_shown_id(item):
+    try:
+        placed = parse_shown_id(item)
+    except ItemIdError:
+        if is_file_here(item, directory):
+            return about_file(item, directory, store, open_git)
+        raise
+    match placed:
         case FeatureId() as feature:
             detail = feature_detail(store.features.load_feature(feature))
             head = f"{feature_id_text(feature)}  {detail.title}\n"

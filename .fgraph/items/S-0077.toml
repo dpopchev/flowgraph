@@ -35,7 +35,8 @@ commit = "8e3f2b5"
 
 [[tasks]]
 id = "T-0315"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say fgraph graph exports the record"
 expected_output = "changed: README.md shows fgraph graph on a small record with the document it prints, and one question asked of that document with another tool; docs/domain-model.md lists the kinds of node and of edge the document holds and says its order is fixed"
 created = 2026-11-22 10:48:21+00:00
+started = 2026-11-22 18:25:37+00:00

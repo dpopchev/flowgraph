@@ -6,7 +6,7 @@ it builds the ontology of the project on the way: its terms and how they relate.
 
 ## Status
 
-Early: `fgraph` adds a Story to a record, writes its Tasks, takes them from
+Early: `fgraph init` makes the record of a directory, `fgraph` adds a Story to it, writes its Tasks, takes them from
 Backlog through InProgress to Completed, shows a Story with its Tasks and
 lists the record by bucket. An Upkeep moves the same way, with its own Tasks,
 and is listed beside the Stories. The Backlog is a queue that `fgraph
@@ -30,7 +30,8 @@ the typed edges of the whole record as JSON.
 | ------------------------------- | -------------------------------------------------------- |
 | the `fgraph` command            | runs, prints its help menu                               |
 | the wheel                       | built by `make wheel`, ships `fgraph`                    |
-| where the record lives          | located on every call but `--help`                       |
+| where the record lives          | located on every call but `--help` and `fgraph init`     |
+| making a record                 | `fgraph init` makes `.fgraph/`, no `mkdir`               |
 | the record and its flow         | a work item with its Tasks, from Backlog to Completed    |
 | the kinds of work item          | Story, Upkeep, Bug, Spike                                |
 | the level above                 | a Feature groups work items, takes each operation of one |
@@ -235,7 +236,8 @@ fgraph graph | jq -r '.edges[] | select(.kind == "about" and .to == "gate") | .f
 ## Use
 
 `fgraph` looks for the record in the directory it runs in: `.fgraph/` first,
-then `fgraph/`. When neither is there, it exits 2 and asks for the path:
+then `fgraph/`. When neither is there, it exits 2 and says to run `fgraph init`
+or to pass the path:
 
 ```sh
 fgraph                      # uses ./.fgraph/, else ./fgraph/
@@ -263,7 +265,19 @@ fgraph start --help
 `fgraph add --help` lists the kinds it adds, and each kind prints its own:
 `fgraph add story --help`.
 
-A record is a directory you create (`mkdir .fgraph`). Add a Story with its
+`fgraph init` makes the record of a directory: `.fgraph/` in the directory it
+runs in, or in the one `--dir` names, and it prints the record it made. It
+writes a `.fgraph/config.toml` at the defaults, commits on and development off,
+and in a git work tree it commits that file as `chore: make the record`. A
+directory that holds `.fgraph/` or `fgraph/` is refused, exit 2, naming it, and
+nothing is written. It is the one command that runs with no record:
+
+```sh
+fgraph init
+# record: /path/to/project/.fgraph
+```
+
+Add a Story with its
 title and its one Given / When / Then, then list the record by bucket. The
 title names the outcome: a directional verb, the target metric or behavior,
 and the quantified shift or target state (`docs/domain-model.md`, Titles):

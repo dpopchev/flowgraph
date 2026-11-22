@@ -368,13 +368,16 @@ def run(
 
 
 def main() -> None:
-    """Run the command in the working directory of the process, on its arguments and streams."""
+    """Run the command in the working directory of the process, on its arguments and streams.
+
+    Each write to stdout is flushed, so a frame of watch reaches a pipe as it is written.
+    """
     sys.exit(
         run(
             sys.argv[1:],
             Path.cwd(),
             Path.is_dir,
-            sys.stdout.write,
+            partial(print, end="", flush=True),
             sys.stderr.write,
             open_store=open_files,
             open_git=open_git,

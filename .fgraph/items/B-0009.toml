@@ -21,3 +21,10 @@ state = "backlog"
 title = "Refuse the merge of a landing in src/flowgraph/branch.py while a merge is held, leaving it as it was, and when the branch brings nothing main lacks, before any commit"
 expected_output = "changed: merge_uncommitted of src/flowgraph/branch.py; the tests of tests/branch/test_landing_git.py pass"
 created = 2026-11-22 06:59:18+00:00
+
+[[tasks]]
+id = "T-0233"
+state = "backlog"
+title = "Say in README.md that a landing is refused while a merge is held in the checkout of main, and for a branch that brings nothing"
+expected_output = "changed: README.md names both refusals of a landing"
+created = 2026-11-22 06:59:18+00:00

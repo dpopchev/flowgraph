@@ -1,0 +1,11 @@
+id = "S-0077"
+state = "backlog"
+title = "Raise the formats fgraph graph exports the nodes and typed edges of the record in from 0 to 1, JSON"
+description = "Part of F-0006."
+parent = "F-0006"
+created = 2026-11-22 10:41:45+00:00
+
+[criterion]
+given = "a record with Features, work items, Tasks, terms and relations"
+when = "fgraph graph --format json is run"
+then = "it prints every node with its kind and every edge with its kind and its two ends, as JSON another tool reads"

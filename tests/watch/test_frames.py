@@ -58,3 +58,17 @@ def test_a_frame_on_a_terminal_has_each_line_cut_to_its_width() -> None:
 
 def test_a_frame_written_to_no_terminal_is_the_text_whole() -> None:
     assert framed("0123456789\n", None) == "0123456789\n"
+
+
+def test_a_frame_taller_than_the_terminal_keeps_a_line_below_it_and_names_the_lines_left_out() -> (
+    None
+):
+    assert framed("a\nb\nc\nd\ne\n", 80, 4) == f"{CLEAR}a\nb\n... 3 more lines\n"
+
+
+def test_a_frame_one_line_shorter_than_the_terminal_is_whole() -> None:
+    assert framed("a\nb\nc\n", 80, 4) == f"{CLEAR}a\nb\nc\n"
+
+
+def test_a_terminal_too_short_for_a_line_of_the_frame_shows_only_the_lines_left_out() -> None:
+    assert framed("a\nb\n", 80, 1) == f"{CLEAR}... 2 more lines\n"

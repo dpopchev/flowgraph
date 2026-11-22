@@ -50,11 +50,15 @@ def interrupt(_: float) -> None:
 
 
 def fgraph(
-    argv: Sequence[str], cwd: Path, wait: Wait = no_wait, width: int | None = None
+    argv: Sequence[str],
+    cwd: Path,
+    wait: Wait = no_wait,
+    width: int | None = None,
+    height: int | None = None,
 ) -> Outcome:
     """Run the command in cwd on the files of `.fgraph/`, waiting between two frames by wait.
 
-    Without a width the output is no terminal.
+    Without a width the output is no terminal; without a height no frame is cut to one.
     """
     (cwd / ".fgraph").mkdir(exist_ok=True)
     out: list[str] = []
@@ -70,6 +74,7 @@ def fgraph(
         now=lambda: NOW,
         wait=wait,
         width=lambda: width,
+        height=lambda: height,
     )
     return Outcome(status, "".join(out), "".join(err))
 
@@ -130,6 +135,16 @@ def test_on_a_terminal_watch_cuts_a_line_to_its_width(tmp_path: Path) -> None:
     fgraph(["add", "story", LONG, *CRITERION], tmp_path)
     watched = fgraph(["watch", "--count", "1"], tmp_path, width=40)
     assert watched.out.splitlines()[1] == "  S-0001  a title that is much longer..."
+
+
+def test_on_a_terminal_watch_cuts_a_frame_taller_than_it_and_names_the_lines_left_out(
+    six_in_backlog: Path,
+) -> None:
+    watched = fgraph(["watch", "--all", "--count", "1"], six_in_backlog, width=80, height=6)
+    assert watched.out == (
+        f"{CLEAR}Backlog (6)\n  S-0001  a title\n  S-0002  a title\n  S-0003  a title\n"
+        "... 5 more lines\n"
+    )
 
 
 def test_watch_written_to_no_terminal_lists_a_line_whole(tmp_path: Path) -> None:

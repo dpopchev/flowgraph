@@ -4,7 +4,6 @@ Without a command it shows the help menu and names the record.
 """
 
 import argparse
-import shutil
 import sys
 import time
 from collections.abc import Callable, Sequence
@@ -85,6 +84,7 @@ from flowgraph.task import (
     TaskInProgressError,
     TaskNotFoundError,
 )
+from flowgraph.terminal import Height, Width, no_terminal, terminal_height, terminal_width
 from flowgraph.text import cut_lines
 from flowgraph.watch import PaceError, Wait, framed, make_pace, watch
 from flowgraph.work_item import (
@@ -101,9 +101,6 @@ __all__ = ["Store", "open_files", "open_git", "read_config", "run", "run_gate"]
 
 # Write text to a stream; what it returns is ignored, so a stream's write and a list's append fit.
 Write = Callable[[str], object]
-
-# The width in columns of the terminal the output is written to; None when it is no terminal.
-Width = Callable[[], int | None]
 
 # The refusals of a command, each written as a usage error; a git step refused among them.
 REFUSED = (
@@ -211,11 +208,6 @@ def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -
             return None
 
 
-def _no_terminal() -> None:
-    """The width of an output that is no terminal: none."""
-    return None
-
-
 def _no_wait(seconds: float) -> None:
     """The wait of a run given none: the next frame of watch follows at once."""
 
@@ -228,14 +220,6 @@ def _no_config(record: Path) -> Config:
 def _no_gate(command: str, directory: Path) -> Never:
     """The gate of a run given none to run it: a contract, such a run lands under no gate."""
     raise AssertionError(f"run() was given no run_gate to run {command!r} in {directory}")
-
-
-def terminal_width() -> int | None:
-    """Adapter: the columns of the terminal the output of the process is written to.
-
-    None when the output is a pipe or a file.
-    """
-    return shutil.get_terminal_size().columns if sys.stdout.isatty() else None
 
 
 def _said(
@@ -281,18 +265,20 @@ def _said(
             return None
 
 
-def _watch(args: argparse.Namespace, store: Store, write: Write, wait: Wait, width: Width) -> None:
+def _watch(
+    args: argparse.Namespace, store: Store, write: Write, wait: Wait, width: Width, height: Height
+) -> None:
     """Write the frames of watch on the record: each what status writes then, read anew.
 
-    A frame is cut to the width the terminal has then and replaces the one before it; without
-    a width it is whole and follows it. Raises PaceError when the seconds or the count asked
-    for are no positive number; no frame is written then.
+    A frame is cut to the width and the height the terminal has then and replaces the one
+    before it; without a width it is whole and follows it. Raises PaceError when the seconds or
+    the count asked for are no positive number; no frame is written then.
     """
     pace = make_pace(args.seconds, args.count)
     top = None if args.all else TOP
 
     def read_frame() -> str:
-        return framed(status_item(store, top), width())
+        return framed(status_item(store, top), width(), height())
 
     watch(read_frame, write, wait, pace)
 
@@ -307,7 +293,8 @@ def run(
     open_store: OpenStore,
     open_git: OpenGit,
     now: Now,
-    width: Width = _no_terminal,
+    width: Width = no_terminal,
+    height: Height = no_terminal,
     wait: Wait = _no_wait,
     load_config: LoadConfig = _no_config,
     run_gate: RunGate = _no_gate,
@@ -318,7 +305,8 @@ def run(
     the arguments name. Every other call fails with 2 when there is no record. A write finds the
     git work tree of the record through open_git and is committed there. The lines of status are
     cut to the width of the terminal; without one, as by default, they are whole. Watch writes
-    its frames as it goes and waits between two by wait, which by default returns at once; it
+    its frames as it goes, each cut to the height of the terminal too, and waits between two by
+    wait, which by default returns at once; it
     exits with 0 once its count is written or Ctrl-C ends it. The configuration of the record is
     read through load_config before any command runs, the defaults by default; one that is
     refused fails with 2, whatever the command. A landing runs the gate of the configuration
@@ -341,7 +329,7 @@ def run(
             try:
                 config = load_config(path)
                 if args.command == "watch":
-                    _watch(args, store, write, wait, width)
+                    _watch(args, store, write, wait, width, height)
                     return 0
                 said = _said(args, store, now, path, open_git, width, config, run_gate)
             except REFUSED as error:
@@ -383,6 +371,7 @@ def main() -> None:
             open_git=open_git,
             now=lambda: datetime.now(UTC),
             width=terminal_width,
+            height=terminal_height,
             wait=time.sleep,
             load_config=read_config,
             run_gate=run_gate,

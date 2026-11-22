@@ -23,11 +23,41 @@ NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_FEATURE = ["add", "feature", "a feature title", "--criterion", "a criterion"]
 ADD_STORY = ["add", "story", "Raise the Stories fgraph lists", *CRITERION, "--parent", "F-0001"]
-ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+ADD_TASK = [
+    "add",
+    "task",
+    "a task title",
+    "--parent",
+    "S-0001",
+    "--output",
+    "an output",
+    "--check",
+    "make test",
+]
 ADD_OTHER = ["add", "story", "another title", *CRITERION, "--parent", "F-0001"]
-TASK_FOR_OTHER = ["add", "task", "a task title", "--parent", "S-0002", "--output", "an output"]
+TASK_FOR_OTHER = [
+    "add",
+    "task",
+    "a task title",
+    "--parent",
+    "S-0002",
+    "--output",
+    "an output",
+    "--check",
+    "make test",
+]
 ADD_ALONE = ["add", "story", "a title that stands alone", *CRITERION]
-TASK_FOR_ALONE = ["add", "task", "a task title", "--parent", "S-0003", "--output", "an output"]
+TASK_FOR_ALONE = [
+    "add",
+    "task",
+    "a task title",
+    "--parent",
+    "S-0003",
+    "--output",
+    "an output",
+    "--check",
+    "make test",
+]
 SECOND_WITHOUT_A_TASK = (ADD_FEATURE, ADD_STORY, ADD_TASK, ADD_OTHER)
 TWO_STORIES = (*SECOND_WITHOUT_A_TASK, TASK_FOR_OTHER)
 LAND = ["land", "S-0001", "--message", "feat: land the first Story"]

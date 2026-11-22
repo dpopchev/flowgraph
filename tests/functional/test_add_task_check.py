@@ -84,7 +84,6 @@ def fgraph(argv: Sequence[str], saved: dict[str, StoryState], config: str) -> Ou
     return Outcome(status, "".join(out), "".join(err))
 
 
-@pytest.mark.xfail(strict=True, reason="S-0088 adds --check to fgraph add task")
 class TestATaskAddedWithItsCheckWithTheDevelopmentOn:
     @pytest.fixture
     def added(self) -> tuple[Outcome, Outcome]:
@@ -103,7 +102,6 @@ class TestATaskAddedWithItsCheckWithTheDevelopmentOn:
         assert "    check            make test\n" in added[1].out
 
 
-@pytest.mark.xfail(strict=True, reason="S-0088 adds --check to fgraph add task")
 class TestATaskAddedWithoutItsCheckWithTheDevelopmentOn:
     @pytest.fixture
     def outcome(self) -> Outcome:
@@ -118,7 +116,6 @@ class TestATaskAddedWithoutItsCheckWithTheDevelopmentOn:
         assert "--check" in outcome.err.splitlines()[-1]
 
 
-@pytest.mark.xfail(strict=True, reason="S-0088 adds --check to fgraph add task")
 class TestATaskAddedWithItsCheckWithTheDevelopmentOff:
     @pytest.fixture
     def outcome(self) -> Outcome:

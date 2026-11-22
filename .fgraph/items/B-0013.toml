@@ -41,7 +41,8 @@ commit = "388f2c2"
 
 [[tasks]]
 id = "T-0249"
-state = "backlog"
+state = "started"
 title = "Say in README.md that fgraph complete completes a started Feature left with every work item completed or removed, and what it refuses"
 expected_output = "changed: README.md names fgraph complete of a Feature"
 created = 2026-11-22 07:42:13+00:00
+started = 2026-11-22 07:52:20+00:00

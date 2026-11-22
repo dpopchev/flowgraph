@@ -11,11 +11,13 @@ expected = "each frame of fgraph watch reaches a pipe as it is written"
 
 [[tasks]]
 id = "T-0219"
-state = "started"
+state = "completed"
 title = "Flush every write of fgraph to stdout in main() of src/flowgraph/cli.py, so each frame of watch reaches a pipe as it is written"
 expected_output = "changed: src/flowgraph/cli.py binds the write of main() to a flushed print; tests/watch/test_pipe.py reads the first frame of fgraph watch through a pipe before watch ends"
 created = 2026-11-22 06:24:25+00:00
 started = 2026-11-22 06:24:27+00:00
+completed = 2026-11-22 06:26:41+00:00
+commit = "9f82891"
 
 [[tasks]]
 id = "T-0220"

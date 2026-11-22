@@ -384,6 +384,17 @@ fgraph config set git.commit false
 # fgraph: error: development.enabled is true while git.commit is false: the development needs the commits of the record
 ```
 
+`fgraph config unset KEY` takes a key back to its default: it removes the key
+from the file, and a table left with no key with it. A key with no default,
+`development.parallel` or `development.gate`, is then `none` again. It is
+committed as a set is, under `chore: unset development.gate in the record`,
+and a key the configuration does not have exits 2 naming it:
+
+```sh
+fgraph config unset development.gate
+# unset development.gate = none
+```
+
 A set is a write of the record as any other. In a git repository fgraph
 commits the file alone, under `chore: set development.enabled in the record`,
 and a set to the value the file writes already changes nothing and makes no

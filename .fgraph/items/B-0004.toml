@@ -14,3 +14,10 @@ state = "backlog"
 title = "Flush every write of fgraph to stdout in main() of src/flowgraph/cli.py, so each frame of watch reaches a pipe as it is written"
 expected_output = "changed: src/flowgraph/cli.py binds the write of main() to a flushed print; tests/watch/test_pipe.py reads the first frame of fgraph watch through a pipe before watch ends"
 created = 2026-11-22 06:24:25+00:00
+
+[[tasks]]
+id = "T-0220"
+state = "backlog"
+title = "Say in README.md that each frame of fgraph watch reaches a pipe as it is written"
+expected_output = "changed: README.md names the frames of watch written to a pipe as they come"
+created = 2026-11-22 06:24:26+00:00

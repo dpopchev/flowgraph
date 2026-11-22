@@ -24,11 +24,12 @@ commit = "e4d6e42"
 
 [[tasks]]
 id = "T-0295"
-state = "backlog"
+state = "started"
 title = "Add the relate command to fgraph, keeping a typed relation between two terms"
 description = "Removes the xfail mark of tests/functional/test_relate_terms.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph relate TERM KIND TERM keeps the relation in the file of the first term, as one write and one commit on main, chore: relate gate in the record; the kind is one of a closed set of two, is-a and part-of, held once in src/flowgraph/term.py, another word refused naming the two; a term that is not in the record, a term related to itself, a relation kept already and one that would close a cycle of its kind are refused, exit 2, nothing written; fgraph show of the first lists is a or part of with the other term, and fgraph show of the other lists the first as one of its kinds or as its part, read from the record; fgraph relate --help prints its menu"
 created = 2026-11-22 10:47:58+00:00
+started = 2026-11-22 16:48:40+00:00
 
 [[tasks]]
 id = "T-0296"

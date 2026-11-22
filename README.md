@@ -1390,7 +1390,9 @@ with it; `fgraph show` writes as before.
 `fgraph watch` follows the record live: it writes what `fgraph status` writes
 as a frame, waits 5 seconds and writes the next, each frame read anew from
 the record. On a terminal a frame replaces the one before it, each line cut
-to the width the terminal has then; written to a pipe or a file the frames
+to the width the terminal has then, and a frame as tall as the terminal or
+taller is cut to one line under its height, its last line naming the lines
+it left out (`... 5 more lines`); written to a pipe or a file the frames
 follow each other, every line whole, each one reaching the pipe as it is
 written, so `fgraph watch | cat` shows a frame every interval. Ctrl-C ends
 it, with exit 0:

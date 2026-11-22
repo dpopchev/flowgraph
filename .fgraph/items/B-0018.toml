@@ -14,3 +14,10 @@ state = "backlog"
 title = "Refuse a Feature id below 1 given to fgraph start, complete, amend and remove as a Feature id, by its shape F- and a number, in src/flowgraph/feature_item.py"
 expected_output = "changed: is_feature_id of src/flowgraph/feature_item.py reads the shape F- and a number, so F-0000 is refused as fgraph show refuses it, a Feature id counts from 1: 0 is below 1; tests/functional/test_wrong_feature_id.py states it for each of the four commands, seen red"
 created = 2026-11-22 09:26:33+00:00
+
+[[tasks]]
+id = "T-0260"
+state = "backlog"
+title = "Name every kind fgraph start, complete, amend and remove take in their refusal of a wrong id, the Feature among them, in src/flowgraph/item_id.py and src/flowgraph/item.py"
+expected_output = "changed: the parsers of src/flowgraph/item_id.py read by start_item, complete_item, amend_item and remove_item of src/flowgraph/item.py; tests/functional/test_wrong_kind_id.py states 'X-1' is no Story, Upkeep, Bug, Spike, Task or Feature id for start and complete, and no Story, Upkeep, Bug, Spike or Feature id for amend and remove, seen red; docs/domain-model.md names the refusals"
+created = 2026-11-22 09:26:34+00:00

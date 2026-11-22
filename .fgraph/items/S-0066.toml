@@ -1,0 +1,11 @@
+id = "S-0066"
+state = "backlog"
+title = "Raise the work items fgraph start refuses while what they depend on is not completed from none to every one"
+description = "Part of F-0004. fgraph add takes --depends-on too."
+parent = "F-0004"
+created = 2026-11-22 10:41:28+00:00
+
+[criterion]
+given = "a record with two Stories in Backlog"
+when = "fgraph amend of the second is run with --depends-on and the id of the first, then fgraph start of the second"
+then = "the start exits 2 naming the first and its bucket, and fgraph show of the second lists that it depends on the first"

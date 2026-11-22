@@ -38,8 +38,10 @@ commit = "f08913a"
 
 [[tasks]]
 id = "T-0366"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a no of fgraph verify files a Bug"
 expected_output = "changed: README.md shows fgraph verify --no and the Bug it files; docs/domain-model.md, Amends, says a no files the Bug and that no move goes backwards"
 created = 2026-11-22 21:03:29+00:00
 started = 2026-11-22 23:20:15+00:00
+completed = 2026-11-22 23:23:27+00:00
+commit = "e190b30"

@@ -21,8 +21,10 @@ commit = "2abe226"
 
 [[tasks]]
 id = "T-0227"
-state = "started"
+state = "completed"
 title = "Say in README.md that a landing under [git] commit = false is refused naming both keys"
 expected_output = "changed: README.md names the refusal of a landing with the commits off"
 created = 2026-11-22 06:44:16+00:00
 started = 2026-11-22 06:46:38+00:00
+completed = 2026-11-22 06:48:25+00:00
+commit = "c39f8ce"

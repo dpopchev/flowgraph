@@ -24,12 +24,14 @@ commit = "444e7f7"
 
 [[tasks]]
 id = "T-0332"
-state = "started"
+state = "completed"
 title = "Add the reason of a block to the lines of fgraph status"
 description = "Removes the xfail mark of tests/functional/test_status_block_reason.py. Written on 2026-11-22 against the modules of that day, before U-0010 moves them: they are taken again when the Task starts. A module of src/ that would pass the line limit of mk/python.mk is split by one cohesive part, named in the commit."
 expected_output = "changed: the line of a blocked Task and of a blocked Feature in fgraph status names its reason beside what it waits on, the words chosen in the Task and named in the commit; a line longer than the terminal is cut as before; fgraph watch draws the same line; the tests that state those lines state the new ones"
 created = 2026-11-22 21:01:56+00:00
 started = 2026-11-22 22:36:51+00:00
+completed = 2026-11-22 22:42:49+00:00
+commit = "075af59"
 
 [[tasks]]
 id = "T-0333"

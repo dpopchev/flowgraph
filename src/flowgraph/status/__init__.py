@@ -1,5 +1,6 @@
 """The status of a record: its items by bucket, the text fgraph writes, the terminal, the watch."""
 
+from flowgraph.status.show import feature_text, show_text
 from flowgraph.status.terminal import (
     Height,
     Width,
@@ -7,14 +8,7 @@ from flowgraph.status.terminal import (
     terminal_height,
     terminal_width,
 )
-from flowgraph.status.text import (
-    APART,
-    BUCKETS,
-    cut_lines,
-    feature_text,
-    show_text,
-    status_text,
-)
+from flowgraph.status.text import APART, BUCKETS, cut_lines, status_text
 from flowgraph.status.view import (
     BACKLOG,
     COMPLETED,

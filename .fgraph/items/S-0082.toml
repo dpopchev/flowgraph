@@ -1,0 +1,11 @@
+id = "S-0082"
+state = "backlog"
+title = "Cut the commands outside fgraph a developer runs to make the record of a directory from one, mkdir, to none"
+description = "Reported broken in the note: no command makes a record."
+parent = "F-0007"
+created = 2026-11-22 21:01:37+00:00
+
+[criterion]
+given = "a directory that holds no .fgraph/ and no fgraph/"
+when = "fgraph init is run there"
+then = "it holds .fgraph/, fgraph add story exits 0 there and fgraph status lists the Story under Backlog"

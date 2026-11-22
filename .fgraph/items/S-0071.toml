@@ -1,9 +1,10 @@
 id = "S-0071"
-state = "backlog"
+state = "started"
 title = "Raise the kinds of relation fgraph relate keeps between two terms from 0 to 2, is-a and part-of"
 description = "Part of F-0005. A kind outside the set, a term that is not in the record or a cycle is refused, and nothing is written."
 parent = "F-0005"
 created = 2026-11-22 10:41:36+00:00
+started = 2026-11-22 16:42:01+00:00
 
 [criterion]
 given = "a record with two terms"

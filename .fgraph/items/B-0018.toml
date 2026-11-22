@@ -21,8 +21,10 @@ commit = "3784d08"
 
 [[tasks]]
 id = "T-0260"
-state = "started"
+state = "completed"
 title = "Name every kind fgraph start, complete, amend and remove take in their refusal of a wrong id, the Feature among them, in src/flowgraph/item_id.py and src/flowgraph/item.py"
 expected_output = "changed: the parsers of src/flowgraph/item_id.py read by start_item, complete_item, amend_item and remove_item of src/flowgraph/item.py; tests/functional/test_wrong_kind_id.py states 'X-1' is no Story, Upkeep, Bug, Spike, Task or Feature id for start and complete, and no Story, Upkeep, Bug, Spike or Feature id for amend and remove, seen red; docs/domain-model.md names the refusals"
 created = 2026-11-22 09:26:34+00:00
 started = 2026-11-22 09:32:32+00:00
+completed = 2026-11-22 09:38:16+00:00
+commit = "a91b0d9"

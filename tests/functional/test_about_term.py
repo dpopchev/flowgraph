@@ -90,5 +90,6 @@ class TestAWordThatIsNoIdAndNoTerm:
         assert about.status == 2
 
     def test_about_names_the_ids_and_the_term_it_is_neither(self, about: Outcome) -> None:
-        said = "'nope' is no Story, Upkeep, Bug, Spike or Feature id and no term in the record\n"
+        said = "'nope' is no Story, Upkeep, Bug, Spike or Feature id, no term in the record"
+        said += " and no file\n"
         assert about.err.endswith(said)

@@ -588,9 +588,21 @@ its count and each linked item is one line, its id, its bucket and its title.
   them, to any depth, nearest first. It ends on a term already reached, so a cycle ends
   it. A line or an item reached through another term is marked with that term, `(via
   lane)`; each is listed once, under the nearest term, so one about the named term
-  itself is never marked. A word that is no id and no term of the record is refused,
-  exit 2, naming both. This is what a term as a node answers and a tag could not: a
+  itself is never marked. A word that is no id, no term of the record and no file is refused,
+  exit 2, naming the three. This is what a term as a node answers and a tag could not: a
   tag is matched by its own name, a relation to the whole is not followed.
+- A text that is no id and no term name, or a term name the record holds no term of,
+  is read as the path of a file when it is a file from the directory fgraph runs in.
+  A file is a derived node of the record: nothing is stored for it. The answer is read
+  from git, by the commit each completed work item and each completed Task names: the
+  files that commit changed, as paths from the top of the work tree. A merge commit is
+  read by what it brought to its first parent, so a landed work item names the files
+  its branch changed. A commit git does not know names no file. The completed work
+  items and Tasks whose commit changed the file are listed newest first, a Task under
+  its work item; a file none touched is said so in one line, exit 0. Outside a git
+  work tree a path is refused, saying the answer is read from git, and so is a path
+  outside the work tree of the directory, exit 2. A text that is no id, no term and
+  no file is refused, exit 2.
 
 ## Terms
 

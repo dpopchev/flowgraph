@@ -141,6 +141,20 @@ def commit_files(work_tree: Path, files: Sequence[Path], message: str) -> str:
     return _git(work_tree, "rev-parse", "HEAD")
 
 
+def changed_files(work_tree: Path, commit: str) -> list[str] | None:
+    """Adapter: the files the commit changed, as paths from the top of the work tree.
+
+    A merge commit answers with what it brought to its first parent. A sha git does not know as
+    a commit answers with None.
+    """
+    try:
+        _git(work_tree, "rev-parse", "--verify", "--quiet", f"{commit}^{{commit}}")
+    except GitError:
+        return None
+    shown = _git(work_tree, "show", "--first-parent", "--name-only", "--format=", "-z", commit)
+    return [name for name in shown.split("\0") if name]
+
+
 def add_worktree(work_tree: Path, branch: str, path: Path, commit: str) -> None:
     """Adapter: check out a new branch at the commit in a new worktree at the path.
 

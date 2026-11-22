@@ -208,8 +208,11 @@ def _said(
     width: Width,
     config: Config,
     run_gate: RunGate,
+    cwd: Path,
 ) -> Said | None:
     """Run the command the arguments name on the record; None when they name none.
+
+    The directory fgraph runs in, cwd, is where the path of fgraph about a file is taken from.
 
     A write is committed once it is made. The lines of status are cut to the width, when there
     is one. The configuration says whether a start branches, how many work items are started at
@@ -246,7 +249,7 @@ def _said(
         case "terms":
             return Said(terms_text(store))
         case "about":
-            return Said(about_item(args.id, store))
+            return Said(about_item(args.id, store, cwd, open_git))
         case "show":
             return Said(show_any_item(args.id, store))
         case "status":
@@ -321,7 +324,7 @@ def run(
                 if args.command == "watch":
                     _watch(args, store, write, wait, width, height)
                     return 0
-                said = _said(args, store, now, path, open_git, width, config, run_gate)
+                said = _said(args, store, now, path, open_git, width, config, run_gate, cwd)
             except REFUSED as error:
                 write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
                 return 2

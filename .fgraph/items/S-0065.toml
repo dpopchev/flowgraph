@@ -44,3 +44,8 @@ created = 2026-11-22 10:47:36+00:00
 started = 2026-11-22 11:40:50+00:00
 completed = 2026-11-22 11:41:06+00:00
 commit = "ae5b09d"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: at feb2855 on main, on a fresh record with decisions on S-0001, F-0001 and a completed Spike Q-0001, fgraph knowledge --kind decision printed three lines, Q-0001 yes: one file per item, F-0001 ship in two steps, S-0001 keep one store, newest first, exit 0; --kind nope exit 2 naming the three; make check: all checks passed"
+noted = 2026-11-22 11:44:01+00:00

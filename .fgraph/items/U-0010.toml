@@ -34,11 +34,12 @@ commit = "ccf77f3"
 
 [[tasks]]
 id = "T-0321"
-state = "backlog"
+state = "started"
 title = "Move the six modules that keep the record of src/flowgraph into a subpackage of their own"
 description = "Written on 2026-11-22 against the modules of that day; the list is taken again when the Task starts. A move alone: no behavior changes."
 expected_output = "changed: record.py, store.py, journal.py, queue.py, config.py and setting.py of src/flowgraph are the modules of one subpackage, its name chosen in the Task and named in the commit, since record.py holds the word today; its __init__.py names what the other modules import; the tests of those modules state what they stated; make check passes"
 created = 2026-11-22 10:48:28+00:00
+started = 2026-11-22 21:23:04+00:00
 
 [[tasks]]
 id = "T-0322"

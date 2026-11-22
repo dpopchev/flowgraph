@@ -1,0 +1,11 @@
+id = "S-0075"
+state = "backlog"
+title = "Raise the files fgraph about answers for from none to every file a commit of the record touched"
+description = "Part of F-0006. Read from git by the commit each completed item names; nothing is stored."
+parent = "F-0006"
+created = 2026-11-22 10:41:42+00:00
+
+[criterion]
+given = "a record in a git repository with a completed Story whose commit changed a file"
+when = "fgraph about is run with the path of the file"
+then = "it lists the Story and the Tasks whose commits touched the file"

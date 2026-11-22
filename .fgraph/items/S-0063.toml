@@ -24,12 +24,14 @@ commit = "d09ba16"
 
 [[tasks]]
 id = "T-0269"
-state = "started"
+state = "completed"
 title = "Extend the knowledge line of src/flowgraph/knowledge.py and fgraph note to the decision and the deviation"
 description = "Removes the xfail mark of tests/functional/test_note_kinds.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: the kind of a knowledge line is one of three, the finding, the decision and the deviation; fgraph note takes exactly one of --finding, --decision and --deviation with its text, none or two of them refused naming the three; the file keeps the kind of each line, and a kind it does not know is refused when read, naming the file; fgraph show lists each line with its kind"
 created = 2026-11-22 10:47:27+00:00
 started = 2026-11-22 11:08:55+00:00
+completed = 2026-11-22 11:14:12+00:00
+commit = "7ed5b54"
 
 [[tasks]]
 id = "T-0270"

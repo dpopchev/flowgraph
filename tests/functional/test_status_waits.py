@@ -75,13 +75,11 @@ def test_status_of_a_waiting_story_exits_0(tmp_path: Path) -> None:
     assert runs(tmp_path, *WAITING, STATUS).status == 0
 
 
-@pytest.mark.xfail(strict=True, reason="S-0085: the line of a waiting item carries no mark yet")
 def test_line_of_a_waiting_story_is_marked(tmp_path: Path) -> None:
     out = runs(tmp_path, *WAITING, STATUS).out
     assert line_of(out, "S-0002").startswith("~ ")
 
 
-@pytest.mark.xfail(strict=True, reason="S-0085: the line of a waiting item names none yet")
 def test_line_of_a_waiting_story_names_what_it_waits_for(tmp_path: Path) -> None:
     out = runs(tmp_path, *WAITING, STATUS).out
     assert line_of(out, "S-0002").endswith("-- depends on S-0001")

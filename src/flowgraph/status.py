@@ -8,7 +8,7 @@ from collections.abc import Collection, Iterable, Mapping
 from dataclasses import replace
 from datetime import datetime
 
-from flowgraph.feature import Feature, FeatureRow, feature_row
+from flowgraph.feature import FeatureRow, FeatureState, feature_row
 from flowgraph.parent import feature_id_text, parse_feature_id
 from flowgraph.queue import Entry, Inside, Line, Placed, queued
 from flowgraph.store import KINDS, Store
@@ -51,7 +51,7 @@ def _last_first(rows: Iterable[WorkItemRow], state: str) -> list[WorkItemRow]:
     return sorted((row for row in rows if row.state == state), key=_reached, reverse=True)
 
 
-def _placed_feature(feature: Feature, under: Collection[WorkItemRow]) -> _PlacedFeature:
+def _placed_feature(feature: FeatureState, under: Collection[WorkItemRow]) -> _PlacedFeature:
     """The row of the Feature over its work items, with the time that places it in its bucket.
 
     The row holds its started work items, the last started first. The time is that of its last

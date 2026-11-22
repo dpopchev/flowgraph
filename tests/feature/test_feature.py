@@ -12,6 +12,7 @@ from flowgraph.feature import (
     FeatureDetail,
     FeatureFileError,
     FeatureNotFoundError,
+    FeatureState,
     NoCriterionError,
     add_feature,
     bucket_of,
@@ -125,7 +126,7 @@ def test_a_feature_reads_as_its_detail() -> None:
 
 @pytest.mark.command
 def test_a_feature_is_added_under_the_next_free_id_and_saved_whole() -> None:
-    saved: list[Feature] = []
+    saved: list[FeatureState] = []
     add_feature(
         title="a title",
         criteria=["a criterion", "another"],
@@ -142,6 +143,7 @@ def test_a_feature_is_written_as_its_one_file_named_by_its_id(tmp_path: Path) ->
     write_feature(tmp_path, FEATURE)
     assert tomllib.loads((tmp_path / FILE).read_text("utf-8")) == {
         "id": "F-0001",
+        "state": "backlog",
         "title": "a title",
         "description": "why",
         "created": CREATED.replace(microsecond=0),

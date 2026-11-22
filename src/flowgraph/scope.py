@@ -14,7 +14,7 @@ from typing import assert_never
 from flowgraph.branch import MAIN
 from flowgraph.commit import OpenGit, kept_in
 from flowgraph.config import Settings
-from flowgraph.feature import Feature
+from flowgraph.feature import FeatureState
 from flowgraph.item import ItemIdError, parse_item_id, parse_work_item_id_of_any_kind
 from flowgraph.parent import feature_id_text
 from flowgraph.queue import Queue
@@ -133,7 +133,7 @@ def within(store: Store, find_scope: FindScope, find_worktree: FindItemWorktree)
             raise OutOfScopeError(f"the Backlog is not reordered here: {_alone(scope)}")
         store.save_queue(queue)
 
-    def save_feature(feature: Feature) -> None:
+    def save_feature(feature: FeatureState) -> None:
         scope = find_scope()
         if scope is not None:
             named = feature_id_text(feature.id)

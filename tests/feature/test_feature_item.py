@@ -5,7 +5,7 @@ from typing import Never
 
 import pytest
 
-from flowgraph.feature import Feature, FeatureNotFoundError, make_feature
+from flowgraph.feature import Feature, FeatureNotFoundError, FeatureState, make_feature
 from flowgraph.feature_item import add_feature_item, parent_named, show_feature_item
 from flowgraph.item import Written
 from flowgraph.parent import STANDALONE, FeatureId, FeatureIdError, make_feature_id
@@ -42,7 +42,7 @@ def held(feature_id: FeatureId) -> Feature:
     return FEATURE
 
 
-def store(saved: list[Feature] | None = None, queue: Queue = NO_QUEUE) -> Store:
+def store(saved: list[FeatureState] | None = None, queue: Queue = NO_QUEUE) -> Store:
     """The store of a record holding FEATURE, ROWS and that queue; it notes a Feature it saves."""
     kept = [] if saved is None else saved
     return Store(
@@ -67,7 +67,7 @@ def test_a_feature_added_says_its_id_and_the_message_of_its_commit() -> None:
 
 @pytest.mark.command
 def test_a_feature_added_is_saved_under_the_next_free_id() -> None:
-    saved: list[Feature] = []
+    saved: list[FeatureState] = []
     add_feature_item("a title", ["a criterion"], "", store(saved), lambda: CREATED)
     assert saved == [make_feature(make_feature_id(2), "a title", ["a criterion"], "", CREATED)]
 
@@ -144,6 +144,6 @@ def test_a_feature_is_not_written_on_the_branch_of_a_work_item() -> None:
 
 @pytest.mark.command
 def test_a_feature_is_written_on_a_branch_no_work_item_owns() -> None:
-    saved: list[Feature] = []
+    saved: list[FeatureState] = []
     within(store(saved), lambda: None, never).features.save_feature(FEATURE)
     assert saved == [FEATURE]

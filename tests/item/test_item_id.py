@@ -25,7 +25,8 @@ def test_an_item_id_is_read_as_the_id_of_its_kind(text: str, item: object) -> No
 
 @pytest.mark.parametrize("text", ["X-0001", "S-0000"], ids=["no-kind", "below-one"])
 def test_a_text_that_is_no_id_of_any_kind_is_refused_by_itself(text: str) -> None:
-    with pytest.raises(ItemIdError, match=f"^'{text}' is no Story, Upkeep, Bug, Spike or Task id$"):
+    named = f"^'{text}' is no Story, Upkeep, Bug, Spike, Task or Feature id$"
+    with pytest.raises(ItemIdError, match=named):
         parse_item_id(text)
 
 

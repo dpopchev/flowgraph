@@ -3,6 +3,7 @@
 Each runs on the store of a record, as the commands of a work item do (`flowgraph.item`).
 """
 
+import re
 from collections.abc import Iterable
 from typing import assert_never
 
@@ -31,7 +32,6 @@ from flowgraph.item_id import parse_shown_id
 from flowgraph.parent import (
     STANDALONE,
     FeatureId,
-    FeatureIdError,
     Parent,
     feature_id_text,
     parse_feature_id,
@@ -50,12 +50,11 @@ class OpenWorkItemError(ValueError):
 
 
 def is_feature_id(text: str) -> bool:
-    """True when the text is written as the id of a Feature."""
-    try:
-        parse_feature_id(text)
-    except FeatureIdError:
-        return False
-    return True
+    """True when the text is written as the id of a Feature: `F-` and a number.
+
+    A number below 1 is written so too, so `F-0000` goes to the Feature, whose parse refuses it.
+    """
+    return re.fullmatch(r"F-\d+", text) is not None
 
 
 def add_feature_item(

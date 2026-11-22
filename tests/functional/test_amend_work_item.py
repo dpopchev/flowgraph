@@ -142,7 +142,7 @@ def test_an_upkeep_in_backlog_is_amended_as_a_story_is(tmp_path: Path) -> None:
         ),
         (
             [ADD_STORY, ADD_TASK, ["amend", "T-0001", "--then", "a new state"]],
-            "'T-0001' is no Story, Upkeep, Bug or Spike id",
+            "'T-0001' is no Story, Upkeep, Bug, Spike or Feature id",
         ),
         (
             [ADD_STORY, ["amend", "S-0002", "--then", "a new state"]],

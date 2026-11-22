@@ -28,6 +28,7 @@ from flowgraph.item_id import (
     ItemId,
     ItemIdError,
     kind_named,
+    parse_amended_id,
     parse_item_id,
     parse_placed_id,
     parse_work_item_id_of_any_kind,
@@ -142,10 +143,10 @@ def amend_item(item: str, parts: work_item.Amendment, store: Store) -> Written:
     """Rewrite the parts named of the work item in Backlog of that id; what the write says.
 
     A parent named puts it under that Feature or takes it out of the one it is under, both in
-    Backlog; its entry in the queue stays. Raises WorkItemIdError when the text is the id of no
-    kind, or the refusal of the amend or of the move.
+    Backlog; its entry in the queue stays. Raises ItemIdError naming the Feature too when the
+    text is the id of no kind, or the refusal of the amend or of the move.
     """
-    item_id = parse_work_item_id_of_any_kind(item)
+    item_id = parse_amended_id(item)
     work_item.amend_work_item(
         item_id=item_id,
         amendment=parts,
@@ -160,9 +161,10 @@ def amend_item(item: str, parts: work_item.Amendment, store: Store) -> Written:
 def remove_item(item: str, reason: str, store: Store, now: Now) -> Written:
     """Remove the work item in Backlog of that id for the reason given; what the write says.
 
-    Raises WorkItemIdError when the text is the id of no kind, or the refusal of the remove.
+    Raises ItemIdError naming the Feature too when the text is the id of no kind, or the refusal
+    of the remove.
     """
-    item_id = parse_work_item_id_of_any_kind(item)
+    item_id = parse_amended_id(item)
     load, save = store.load_work_item, store.save_work_item
     work_item.remove_work_item(
         item_id=item_id, reason=reason, load_work_item=load, save_work_item=save, now=now

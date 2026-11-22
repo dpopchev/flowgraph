@@ -21,7 +21,8 @@ from flowgraph.feature import (
     make_feature,
 )
 from flowgraph.feature_item import is_feature_id
-from flowgraph.item import MESSAGE, Written, amend_item, parse_work_item_id_of_any_kind
+from flowgraph.item import MESSAGE, Written, amend_item
+from flowgraph.item_id import parse_amended_id
 from flowgraph.parent import feature_id_text, parse_feature_id
 from flowgraph.store import Store
 from flowgraph.task import BlockedError, CompletedAlreadyError, StartedAlreadyError
@@ -107,7 +108,7 @@ def amend_named(
     """
     if not is_feature_id(item):
         if criteria is not None:
-            named = work_item_id_text(parse_work_item_id_of_any_kind(item))
+            named = work_item_id_text(parse_amended_id(item))
             raise NoSuchPartError(f"{named} has no criteria: only a Feature states them")
         return amend_item(item, parts, store)
     feature_id = parse_feature_id(item)

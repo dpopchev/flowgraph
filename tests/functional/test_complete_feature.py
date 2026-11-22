@@ -227,3 +227,59 @@ class TestTheLastStoryOfAFeatureNeverStartedCompleted:
         self, completed: Outcome, tmp_path: Path
     ) -> None:
         assert tuple(feature_held(tmp_path)) == KEPT_BEFORE
+
+
+# The first Story completed, the second left in Backlog with no Task, then removed.
+LEFT_DONE = (
+    ADD_FEATURE,
+    ADD_STORY,
+    ADD_OTHER,
+    ADD_TASK,
+    *FIRST_COMPLETED,
+    ["remove", "S-0002", "--reason", "not needed"],
+)
+
+
+class TestAStartedFeatureLeftWithEveryStoryCompletedOrRemovedCompleted:
+    @pytest.fixture
+    def completed(self, tmp_path: Path) -> Outcome:
+        return runs(tmp_path, *LEFT_DONE, ["complete", "F-0001"])
+
+    def test_complete_names_the_feature_at_the_commit_of_its_last_completed_story(
+        self, completed: Outcome
+    ) -> None:
+        assert completed == Outcome(0, "completed F-0001 at def5678\n", "")
+
+    def test_status_lists_the_feature_under_completed(
+        self, completed: Outcome, tmp_path: Path
+    ) -> None:
+        assert fgraph(["status"], tmp_path, LATER).out.splitlines()[2:4] == [
+            "Completed (1)",
+            "  F-0001  1/1 W  def5678  a feature title",
+        ]
+
+
+COMPLETE_FEATURE = ["complete", "F-0001"]
+
+
+@pytest.mark.parametrize(
+    ("argvs", "why"),
+    [
+        (
+            (ADD_FEATURE, ADD_STORY, ADD_OTHER, ADD_TASK, *FIRST_COMPLETED, COMPLETE_FEATURE),
+            "F-0001 cannot complete: S-0002 is in Backlog",
+        ),
+        ((ADD_FEATURE, ADD_STORY, COMPLETE_FEATURE), "F-0001 is in Backlog: start it first"),
+        (
+            (*LEFT_DONE, [*COMPLETE_FEATURE, "--commit", "abc1234"]),
+            "F-0001 takes no --commit: it is completed at the commit of its last completed"
+            " work item",
+        ),
+    ],
+    ids=["a-story-in-backlog", "never-started", "a-commit-given"],
+)
+def test_a_complete_of_a_feature_refused_exits_with_two_naming_why(
+    argvs: tuple[Sequence[str], ...], why: str, tmp_path: Path
+) -> None:
+    refused = runs(tmp_path, *argvs)
+    assert (refused.status, refused.err.splitlines()[-1]) == (2, f"fgraph: error: {why}")

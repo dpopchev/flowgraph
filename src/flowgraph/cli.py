@@ -30,7 +30,9 @@ from flowgraph.feature import FeatureNotFoundError, NoCriterionError
 from flowgraph.feature_amend import amend_named
 from flowgraph.feature_block import block_named, unblock_named
 from flowgraph.feature_item import (
+    OpenWorkItemError,
     add_feature_item,
+    complete_feature_item,
     is_feature_id,
     parent_named,
     show_any_item,
@@ -139,6 +141,7 @@ REFUSED = (
     TaskInProgressError,
     ItemInBacklogError,
     OpenTaskError,
+    OpenWorkItemError,
     CompletedAlreadyError,
     NotInBacklogError,
     SameItemError,
@@ -190,6 +193,8 @@ def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -
                 None if args.parent is None else parent_asked(args.parent),
             )
             return amend_named(args.id, parts, args.criterion, store)
+        case "complete" if is_feature_id(args.id):
+            return complete_feature_item(args.id, args.commit, store, now)
         case "complete":
             return complete_and_start_next(args.id, args.commit, store, now, config, args.decision)
         case "start" if is_feature_id(args.id):

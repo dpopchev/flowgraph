@@ -157,8 +157,12 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     )
     unblock = _command(commands, "unblock", "take a blocked Task or Feature back to started")
     unblock.add_argument("id", metavar="ID", help="the id of the Task or of the Feature")
-    complete = _command(commands, "complete", "complete a work item or a Task of it")
-    complete.add_argument("id", metavar="ID", help="the id of the work item or of the Task")
+    complete = _command(
+        commands, "complete", "complete a work item or a Task of it, or a Feature left done"
+    )
+    complete.add_argument(
+        "id", metavar="ID", help="the id of the work item, of the Task or of the Feature"
+    )
     complete.add_argument(
         "--commit",
         metavar="SHA",

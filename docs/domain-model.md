@@ -189,7 +189,10 @@ Completed and Removed are terminal, and no move goes backwards.
 A Feature moves by `start`, `Feature` to `StartedFeature`, and its start
 starts its first work item with it; and by the completion of its last work
 item, `StartedFeature` to `CompletedFeature`, in the write that completes
-that work item. No command completes a Feature by itself (Persistence).
+that work item. No command completes a Feature by itself (Persistence). The
+completion of any other work item of a `StartedFeature` leaves it as it is
+and starts the next work item of it, `WorkItem` to `StartedWorkItem`, in
+that write (Persistence).
 
 ## Order
 
@@ -559,14 +562,54 @@ and its merge tool.
 - One work item of a Feature is started at a time: the start of a work item
   of a started Feature beside another started work item of it is refused
   naming that one, `S-0002 cannot start: F-0001 starts one work item at a
-  time, started already: S-0001`. With none started it starts: once the one
-  before is completed, `fgraph start` of the next starts it, and nothing
-  starts it by itself yet.
+  time, started already: S-0001`. With none started it starts: `fgraph
+  start` of it is for the one the completion of the one before left in
+  Backlog (below).
 - Both rules are asked at the start of a work item in Backlog and nowhere
-  else: no Task write and no completion asks them. So a work item started
-  under a Feature that was never started, as in a record whose work items
-  were started one by one before a Feature had a state, is worked and
-  completed as before.
+  else: no Task write asks them, and a completion asks them of the next work
+  item it starts alone (below), never of the one it completes. So a work
+  item started under a Feature that was never started, as in a record whose
+  work items were started one by one before a Feature had a state, is worked
+  and completed as before.
+- The Feature starts its work items, the reading of S-0053 as written: the
+  completion of a work item under a `StartedFeature` -- by `fgraph complete`
+  or by `fgraph land` -- starts the next work item of the Feature in the same
+  write. The next one is the first of its work items in Backlog in the order
+  they start in (Order), the one `fgraph start F-0001` would start. It is
+  started as `fgraph start` of it starts it, by the same rules: the one at a
+  time of its Feature, `[development] parallel`, a Task to start with, and a
+  branch named by the slug of its title; no `--slug` names it. The
+  alternative, that the developer starts each work item with `fgraph start`,
+  was shown with the plan and not taken: by the developer's words of
+  2026-11-21 starting a Feature starts its work items one by one.
+- The completion names the start on a line of its own after its own,
+  `completed S-0001 at 677f9b0` then `started S-0002`, and the one commit of
+  the record holds the two files, worded `chore: complete S-0001 and start
+  S-0002 in the record`. With the development on the branch of the next work
+  item is checked out in its worktree at that commit of the record, and named
+  on a third line, `branch wi/S-0002-<slug> in <path>`. `fgraph land` says
+  `landed S-0001 at 677f9b0`, `started S-0002` and that line: it commits the
+  record, removes the worktree and the branch it landed, and makes the branch
+  of the next one last, so a worktree git refuses leaves the landing whole
+  and says `S-0002 is started, its branch is not`.
+- A next work item that cannot start is left in Backlog, and the completion
+  stands: it is never refused or put back for it. It exits 0, its commit is
+  that of a completion alone, `chore: complete S-0001 in the record`, and the
+  line after it says `not started:` and the refusal of that start. One
+  without a Task: `not started: S-0002 has no Task to start with`. One
+  `[development] parallel` refuses: `not started: S-0002 cannot start:
+  development.parallel = 1, started already: S-0003`. One beside another
+  started work item of its Feature, as in a record whose work items were
+  started before their Feature was: `not started: S-0002 cannot start: F-0001
+  starts one work item at a time, started already: S-0003`. One whose title
+  gives no slug. And one the branch of the completed work item does not
+  write, when `fgraph complete` is run on that branch: `not started: S-0002
+  is not written here: the branch wi/S-0001-<slug> writes S-0001 alone`.
+  `fgraph start S-0002` on `main` starts it once the refusal is gone.
+- A completion starts no work item when the Feature holds none in Backlog --
+  the last one completes the Feature (below) -- when the work item stands
+  alone, and under a Feature never started or completed already. The
+  completion of a Task starts none.
 - A Feature is completed with its last work item, the developer's words of
   2026-11-21 as S-0054 built them: the completion of a work item under a
   started Feature that leaves each work item of it completed or removed
@@ -580,7 +623,8 @@ and its merge tool.
   at the commit the landing leaves `main` on: `landed S-0002 at 677f9b0`,
   then `completed F-0001 at 677f9b0`.
 - Only a completion completes a Feature. A completion that leaves a work item
-  of it in Backlog or started leaves the Feature started, and so does the
+  of it in Backlog or started leaves the Feature started -- it starts the
+  next one in Backlog (above) -- and so does the
   removal of its last work item in Backlog: that Feature stays in InProgress
   with every work item it holds completed, `F-0001  1/1 W  <title>`, until a
   work item added under it is completed. A removed work item holds nothing
@@ -608,7 +652,9 @@ and its merge tool.
   `parallel` refuses it as it refuses that one, naming the Feature: `F-0001
   cannot start: development.parallel = 1, started already: S-0002`. It is
   asked once the Feature is known to start, so a Feature started already, or
-  without a work item in Backlog, is refused for that.
+  without a work item in Backlog, is refused for that. The next work item a
+  completion starts is counted the same, once the completed one no longer
+  is: refused, it stays in Backlog and the completion stands (above).
 - The bucket of a Feature is read from its state and its work items. A
   `StartedFeature` is in InProgress and a `CompletedFeature` in Completed,
   each by its own state. A Feature never started keeps the bucket its work
@@ -659,10 +705,10 @@ and its merge tool.
   removed work item is counted in neither number, a started or a Backlog one
   only in the second, and a Feature without a work item reads `0/0 W`. Every
   Feature is listed with it, in any bucket: `F-0001  1/3 W  <title>`.
-- Not built yet: blocking, amending or removing a Feature, starting the next
-  work item of a started Feature once the one before is completed, and moving
-  a work item to another Feature. Starting one is built (above), so is
-  completing one with its last work item, and so is reordering one (Order).
+- Not built yet: blocking, amending or removing a Feature, and moving a work
+  item to another Feature. Starting one is built (above), so is starting its
+  next work item with the completion of the one before, so is completing one
+  with its last work item, and so is reordering one (Order).
 - Each kind reads the files of its own prefix. A file with a prefix no kind
   knows is left alone; nothing reports it yet. An `items/SP-0001.toml` of an
   older record, written while a Spike was `SP-0001`, is such a file: it is
@@ -886,6 +932,7 @@ held to `main`, and there is no landing:
 | land the work item | `main`: `fgraph land` merges its branch and completes it |
 | complete the work item | `main`, after a merge made by hand |
 | complete a Feature | `main`: with its last work item, by its landing or its complete |
+| start the next work item of a Feature | `main`: with the completion of the one before, by its landing or its complete; `fgraph` commits both and makes the branch of the next one |
 
 The branch a work item owns may change and append within its scope, through
 `fgraph`: the developer's rule of 2026-11-21. `fgraph` holds the side of the
@@ -898,7 +945,9 @@ branch:
   a reorder of the Backlog, whose queue is no file of the work item, a set of
   the configuration, whose `config.toml` is none either, and the complete of
   the work item itself when it would complete its Feature, whose file is
-  none either (above). The refusal names the work item the branch owns.
+  none either (above). The refusal names the work item the branch owns. The
+  complete of the work item itself that would start the next one of its
+  Feature is written there, and that next one is not started (above).
 - A work tree on any other branch, and a record outside a git work tree,
   write as before.
 
@@ -965,7 +1014,7 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   | block | `chore: block T-0001 of S-0001 in the record` |
   | unblock | `chore: unblock T-0001 of S-0001 in the record` |
   | remove | `chore: remove S-0001 in the record` |
-  | complete | `chore: complete S-0001 in the record`, `chore: complete T-0001 of S-0001 in the record`, `chore: complete S-0002 and F-0001 in the record` for a work item and the Feature it completes |
+  | complete | `chore: complete S-0001 in the record`, `chore: complete T-0001 of S-0001 in the record`, `chore: complete S-0002 and F-0001 in the record` for a work item and the Feature it completes, `chore: complete S-0001 and start S-0002 in the record` for a work item and the next one of its Feature |
   | set a key of the configuration | `chore: set development.enabled in the record` |
 
 - A write that leaves its file as it was makes no commit. With the
@@ -1009,7 +1058,10 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   record`; then removes the worktree of the branch and the branch. These are
   the steps of a landing by `merge-commit`. The landing of the last work item
   of a started Feature completes the Feature in that commit of the record,
-  by any way of merging (above).
+  by any way of merging (above). The landing of any other starts the next
+  work item of the Feature in that commit, and checks its branch out at it,
+  in its worktree, once the worktree and the branch landed are removed
+  (above).
 - Every way of merging holds that same merge uncommitted first: the record
   of the branch is then in the checkout of `main`, where the work item is
   checked to complete before `main` moves. A `squash` commits the merge held

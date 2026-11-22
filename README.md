@@ -190,7 +190,9 @@ development, so it limits nothing with the development off. The start of a
 Task is neither counted nor limited by it: a Story has one started Task at a
 time whatever the key, as shown further down. The start of a Feature starts
 one work item, so it is refused as the start of that one is, naming the
-Feature (further down).
+Feature (further down). The next work item of a Feature, which the completion
+of the one before starts, stays in Backlog when the key refuses it, and the
+completion stands (further down).
 
 The development says how a landing merges when the record names a way:
 
@@ -895,6 +897,67 @@ fgraph status
 The lines under a Feature belong to it: they count neither beside the heading
 nor toward the top 5.
 
+The completion of a work item of a started Feature starts the next one, in
+the same write: a Feature starts its work items one by one. The next one is
+the first of its work items in Backlog in the order they start in, the one
+`fgraph reorder` gives them (below). Here F-0001 holds S-0001, started, and
+S-0003, a second Story under it, in Backlog:
+
+```sh
+fgraph complete S-0001 --commit 677f9b0
+# completed S-0001 at 677f9b0
+# started S-0003
+
+fgraph status
+# Backlog (1)
+#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# InProgress (1)
+#   F-0001  1/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
+#     S-0003  0/1 T  Raise the Stories fgraph lists under Completed from 0 to 1
+# Completed (0)
+```
+
+The start is named on a line of its own after the completion, and the two
+are one commit of the record, `chore: complete S-0001 and start S-0003 in the
+record`. The next work item is started as `fgraph start S-0003` starts it:
+with the development on it gets its branch, named by the slug of its title,
+checked out in a worktree of its own at that commit of the record. The
+completion is then a landing, which names the branch once the worktree and
+the branch it landed are removed; `fgraph complete` on main, after a merge
+made by hand, branches the next one the same way:
+
+```sh
+fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
+# landed S-0001 at 3e9ae5c
+# started S-0003
+# branch wi/S-0003-raise-the-stories-fgraph in /src/project.worktrees/S-0003-raise-the-stories-fgraph
+```
+
+A next work item that cannot start stays in Backlog, and the completion
+stands: it exits 0, is committed as a completion alone, `chore: complete
+S-0001 in the record`, and names why on the line after it, as `not started:`
+and the refusal of that start:
+
+- when it has no Task: `not started: S-0003 has no Task to start with`;
+- when `[development] parallel` refuses one more started work item:
+  `not started: S-0003 cannot start: development.parallel = 1, started already: S-0002`;
+- when another work item of the Feature is started, as one started before
+  its Feature was: `not started: S-0003 cannot start: F-0001 starts one work
+  item at a time, started already: S-0004`;
+- when its title gives no slug to name its branch;
+- when the completion is made in the worktree of S-0001, whose branch writes
+  S-0001 alone: `not started: S-0003 is not written here: the branch
+  wi/S-0001-raise-the-stories-fgraph writes S-0001 alone`.
+
+`fgraph start S-0003`, on main, starts it once what refused it is gone. A
+completion starts nothing when no work item of the Feature is left in
+Backlog -- the last one completes the Feature, next -- and nothing under a
+Feature that was never started.
+
+The alternative, that the developer starts each work item of a Feature with
+`fgraph start`, was shown with the plan of S-0053 and not taken: by the
+developer's words of 2026-11-21 the Feature starts its work items.
+
 A Feature moves to Completed with its last work item: the completion that
 leaves each work item of a started Feature completed or removed completes the
 Feature in the same write. Here S-0001 is the one work item of F-0001:
@@ -953,8 +1016,9 @@ fgraph complete S-0001 --commit 677f9b0
 ```
 
 Only a completion completes a Feature. A completion that leaves a work item
-of it in Backlog leaves the Feature started, and so does `fgraph remove` of
-its last work item in Backlog: that Feature stays under InProgress,
+of it in Backlog leaves the Feature started, and starts that work item
+(above). `fgraph remove` of its last work item in Backlog leaves the Feature
+started too: that Feature stays under InProgress,
 `F-0001  1/1 W  <title>`, until a work item added under it is completed. A
 removed work item holds nothing back and is counted in neither number. No
 command completes a Feature by itself.
@@ -998,9 +1062,9 @@ fgraph start S-0003
 # fgraph: error: S-0003 cannot start: F-0001 starts one work item at a time, started already: S-0001
 ```
 
-Once S-0001 is completed, `fgraph start S-0003` starts the next one: nothing
-starts it by itself yet. The one at a time of a Feature and `parallel` both
-hold: a Feature starts one work item at a time, and `parallel` counts every
+The completion of S-0001 starts S-0003 by itself (above); `fgraph start
+S-0003` is for the one a completion left in Backlog. The one at a time of a
+Feature and `parallel` both hold, for the start a completion makes too: a Feature starts one work item at a time, and `parallel` counts every
 started work item of the record, those under a Feature among them.
 
 A Feature file without a state line reads as a Feature in Backlog: every
@@ -1287,7 +1351,9 @@ S-0001 in the record` --, `chore: start T-0001 of S-0001 in the record`,
 `chore: start F-0001 in the record` for a Feature and its first work item
 together, `chore: complete S-0001 in the record`, `chore: complete S-0001 and
 F-0001 in the record` for a work item and the Feature it completes, `chore:
-set development.enabled in the record`. A write that leaves its file as it was
+complete S-0001 and start S-0002 in the record` for a work item and the next
+one of its Feature, which it starts, `chore: set development.enabled in the
+record`. A write that leaves its file as it was
 makes no commit. Outside a git work tree a write is made as before, with no
 commit and no warning, and so is every write of a record with the commits
 turned off. A commit git refuses exits 2 and names the git command, and every

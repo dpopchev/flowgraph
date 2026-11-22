@@ -48,13 +48,26 @@ def make_pace(seconds: float, count: int | None) -> Pace:
     return Pace(seconds, count)
 
 
-def framed(text: str, width: int | None) -> str:
+def framed(text: str, width: int | None, height: int | None = None) -> str:
     """The text as a frame on a terminal that wide: it replaces the frame before, each line cut.
 
+    On a terminal that high it keeps one line below it free, so the frame does not scroll: a
+    text taller than that keeps its first lines and ends with one naming how many it left out.
     Without a width the output is no terminal: the text is whole, and a frame follows the one
-    before it.
+    before it; without a height no line is left out.
     """
-    return text if width is None else f"{CLEAR}{cut_lines(text, width)}"
+    if width is None:
+        return text
+    return f"{CLEAR}{cut_lines(_cut_height(text, height), width)}"
+
+
+def _cut_height(text: str, height: int | None) -> str:
+    """The text kept to one line under that height, its last line naming the lines left out."""
+    lines = text.splitlines(keepends=True)
+    if height is None or len(lines) < height:
+        return text
+    kept = max(height - 2, 0)
+    return "".join(lines[:kept]) + f"... {len(lines) - kept} more lines\n"
 
 
 def watch(read_frame: ReadFrame, write: WriteFrame, wait: Wait, pace: Pace) -> None:

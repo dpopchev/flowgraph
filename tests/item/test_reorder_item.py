@@ -6,7 +6,7 @@ from typing import Never
 import pytest
 
 from flowgraph.feature import make_feature
-from flowgraph.item import ItemIdError, Store, Written, reorder_item
+from flowgraph.item.commands import ItemIdError, Store, Written, reorder_item
 from flowgraph.parent import make_feature_id
 from flowgraph.record.queue import NotInBacklogError, Queue, UnderFeatureError, make_queue
 from flowgraph.record.store import FeatureStore

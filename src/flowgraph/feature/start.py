@@ -3,7 +3,7 @@
 A Feature is to its work items what a work item is to its Tasks: it starts with its first work
 item and not without one, a work item of it does not start before it or while it is blocked, and
 one work item of it is started at a time. Each runs on the store of a record, as the commands of
-a work item do (`flowgraph.item`).
+a work item do (`flowgraph.item.commands`).
 """
 
 from typing import assert_never
@@ -20,12 +20,12 @@ from flowgraph.feature import (
     StartedFeature,
     started_feature,
 )
-from flowgraph.item import MESSAGE, ItemIdError, ToBranch, Written, parse_item_id
-from flowgraph.item_depends import check_first_waits
+from flowgraph.item.commands import MESSAGE, ItemIdError, ToBranch, Written, parse_item_id
 from flowgraph.parent import FeatureId, Standalone, feature_id_text, parse_feature_id
 from flowgraph.record import Config, Now
 from flowgraph.record.queue import queued
 from flowgraph.record.store import Store
+from flowgraph.relation.depends import check_first_waits
 from flowgraph.status import STARTED, backlog_as_added, rows_under
 from flowgraph.task import BlockedError, CompletedAlreadyError, NoTaskError, TaskId
 from flowgraph.work_item import (

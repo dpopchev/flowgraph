@@ -1,14 +1,14 @@
 """The note of a work item and of a Feature: `fgraph note` takes both.
 
 A Feature keeps knowledge lines as a work item does, in any of its states; a Task keeps none. It
-runs on the store of a record, as the commands of a work item do (`flowgraph.item`).
+runs on the store of a record, as the commands of a work item do (`flowgraph.item.commands`).
 """
 
 from flowgraph import work_item
 from flowgraph.feature import note_feature
 from flowgraph.feature.item import is_feature_id
-from flowgraph.item import MESSAGE, Written
-from flowgraph.item_id import parse_work_item_id_of_any_kind
+from flowgraph.item.commands import MESSAGE, Written
+from flowgraph.item.id import parse_work_item_id_of_any_kind
 from flowgraph.knowledge import KnowledgeKind
 from flowgraph.parent import feature_id_text, parse_feature_id
 from flowgraph.record import Now

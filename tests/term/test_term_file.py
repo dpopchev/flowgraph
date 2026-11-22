@@ -7,7 +7,6 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph import term as term_module
 from flowgraph.term import (
     TermFileError,
     TermMismatchError,
@@ -19,6 +18,7 @@ from flowgraph.term import (
     term_file,
     write_term,
 )
+from flowgraph.term import model as term_module
 
 pytestmark = pytest.mark.edge
 

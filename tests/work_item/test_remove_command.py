@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 import pytest
 
 from flowgraph.criterion import make_scenario
-from flowgraph.text import show_text, status_text
+from flowgraph.status import show_text, status_text
 from flowgraph.work_item import (
     RemovedAlreadyError,
     WorkItemDetail,

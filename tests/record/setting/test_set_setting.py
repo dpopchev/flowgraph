@@ -2,7 +2,7 @@
 
 import pytest
 
-from flowgraph.item import Written
+from flowgraph.item.commands import Written
 from flowgraph.record import ConfigError, Settings, make_config
 from flowgraph.record.setting import set_setting
 

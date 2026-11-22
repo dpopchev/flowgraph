@@ -5,8 +5,8 @@ from datetime import UTC, datetime
 import pytest
 
 from flowgraph.criterion import make_scenario
+from flowgraph.status import show_text
 from flowgraph.task import BlockedError, TaskRow, make_task, make_task_id
-from flowgraph.text import show_text
 from flowgraph.work_item import (
     WorkItemDetail,
     WorkItemState,

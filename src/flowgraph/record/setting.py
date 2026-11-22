@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import assert_never
 
-from flowgraph.item import Written
+from flowgraph.item.commands import Written
 from flowgraph.record.config import (
     DEVELOPMENT_ENABLED,
     DEVELOPMENT_GATE,

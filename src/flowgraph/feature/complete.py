@@ -4,7 +4,7 @@ A Feature is to its work items what a work item is to its Tasks: a started Featu
 by the completion that leaves each work item of it completed or removed, at the time and in the
 commit of that completion. Only a completion completes it: the removal of its last work item in
 Backlog leaves it started. It runs on the store of a record, as the commands of a work item do
-(`flowgraph.item`).
+(`flowgraph.item.commands`).
 """
 
 from typing import assert_never

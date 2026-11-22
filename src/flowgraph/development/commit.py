@@ -15,7 +15,7 @@ from typing import Never
 
 from flowgraph.development import branch
 from flowgraph.development.branch import GitError, branch_of
-from flowgraph.item import ToBranch, Written
+from flowgraph.item.commands import ToBranch, Written
 from flowgraph.record import Config
 from flowgraph.record.store import Store
 from flowgraph.work_item import work_item_id_text

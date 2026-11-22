@@ -3,7 +3,7 @@
 A Feature is to its work items what a work item is to its Tasks: one in Backlog is removed with
 its reason, and its work items are removed with it, for the same reason, as a removed work item
 keeps its Tasks. Nothing is deleted. It runs on the store of a record, as the commands of a work
-item do (`flowgraph.item`).
+item do (`flowgraph.item.commands`).
 """
 
 from datetime import datetime
@@ -11,12 +11,12 @@ from typing import assert_never
 
 from flowgraph.feature import removed_feature
 from flowgraph.feature.item import is_feature_id
-from flowgraph.item import MESSAGE, Written, remove_item
-from flowgraph.item_depends import superseded_by_asked
+from flowgraph.item.commands import MESSAGE, Written, remove_item
 from flowgraph.parent import feature_id_text, parse_feature_id
 from flowgraph.record import Now
 from flowgraph.record.store import Store
 from flowgraph.relation import RelationError
+from flowgraph.relation.depends import superseded_by_asked
 from flowgraph.status import rows_by_id
 from flowgraph.task import CompletedAlreadyError, StartedAlreadyError
 from flowgraph.work_item import (

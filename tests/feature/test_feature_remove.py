@@ -33,10 +33,11 @@ from flowgraph.feature.item import parent_named, show_feature_item
 from flowgraph.feature.move import check_move
 from flowgraph.feature.remove import remove_named
 from flowgraph.feature.start import check_start_under_feature
-from flowgraph.item import Written
+from flowgraph.item.commands import Written
 from flowgraph.parent import STANDALONE, FeatureId, Parent, make_feature_id
 from flowgraph.record.queue import make_queue
 from flowgraph.record.store import FeatureStore, Store
+from flowgraph.status import status_text
 from flowgraph.story import STORY, make_story_id
 from flowgraph.task import (
     BlockedError,
@@ -46,7 +47,6 @@ from flowgraph.task import (
     make_task,
     make_task_id,
 )
-from flowgraph.text import status_text
 from flowgraph.work_item import (
     RemovedAlreadyError,
     WorkItem,

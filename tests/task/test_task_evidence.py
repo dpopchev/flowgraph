@@ -8,13 +8,14 @@ from flowgraph.criterion import NO_COMMIT, make_commit
 from flowgraph.task import (
     CompletedTask,
     TaskRow,
+    all_completed,
     completed,
+    completed_among,
     make_task,
     make_task_id,
     row_of,
     started,
 )
-from flowgraph.task_list import all_completed, completed_among
 
 CREATED = datetime(2026, 1, 1, tzinfo=UTC)
 ON = datetime(2026, 1, 2, 9, 0, 0, tzinfo=UTC)

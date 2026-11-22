@@ -1,6 +1,6 @@
 """A Feature named by its id: its add, its view over its work items, and the parent it gives.
 
-Each runs on the store of a record, as the commands of a work item do (`flowgraph.item`).
+Each runs on the store of a record, as the commands of a work item do (`flowgraph.item.commands`).
 """
 
 import re
@@ -27,8 +27,8 @@ from flowgraph.feature import (
     feature_bucket,
     feature_detail,
 )
-from flowgraph.item import MESSAGE, Written, show_item
-from flowgraph.item_id import parse_shown_id
+from flowgraph.item.commands import MESSAGE, Written, show_item
+from flowgraph.item.id import parse_shown_id
 from flowgraph.parent import (
     STANDALONE,
     FeatureId,
@@ -39,11 +39,10 @@ from flowgraph.parent import (
 from flowgraph.record import Now
 from flowgraph.record.queue import queued
 from flowgraph.record.store import Store
-from flowgraph.status import BACKLOG, backlog_as_added, rows_under
+from flowgraph.status import BACKLOG, backlog_as_added, feature_text, rows_under
 from flowgraph.task import CompletedAlreadyError
 from flowgraph.term import is_term_name
-from flowgraph.term_item import show_term
-from flowgraph.text import feature_text
+from flowgraph.term.item import show_term
 from flowgraph.work_item import WorkItemId, WorkItemRow
 
 

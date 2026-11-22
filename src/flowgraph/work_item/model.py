@@ -33,8 +33,8 @@ from flowgraph.task import (
     StartedTask,
     Task,
     TaskState,
+    all_completed,
 )
-from flowgraph.task_list import all_completed
 from flowgraph.work_item.views import WorkItemRow
 
 

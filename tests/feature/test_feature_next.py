@@ -12,7 +12,7 @@ from flowgraph.development import make_slug
 from flowgraph.development.scope import OutOfScopeError
 from flowgraph.feature import FeatureState, completed_feature, make_feature, started_feature
 from flowgraph.feature.next import complete_and_start_next
-from flowgraph.item import ToBranch, Written
+from flowgraph.item.commands import ToBranch, Written
 from flowgraph.parent import STANDALONE, FeatureId, Parent, make_feature_id
 from flowgraph.record import Config, make_config
 from flowgraph.record.queue import Queue, make_queue

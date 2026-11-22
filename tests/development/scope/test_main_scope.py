@@ -10,7 +10,7 @@ import pytest
 from flowgraph.criterion import make_commit, make_scenario
 from flowgraph.development.commit import WorkTree
 from flowgraph.development.scope import OutOfScopeError, Scope, within, worktree_of_item
-from flowgraph.item import Store
+from flowgraph.item.commands import Store
 from flowgraph.story import make_story, make_story_id
 from flowgraph.task import make_task, make_task_id
 from flowgraph.work_item import (

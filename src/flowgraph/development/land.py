@@ -29,7 +29,7 @@ from flowgraph.development.gate import GateError, RunGate, check_gate
 from flowgraph.feature import FeatureNotFoundError
 from flowgraph.feature.complete import completed_with
 from flowgraph.feature.next import complete_and_start_next
-from flowgraph.item import ToBranch, parse_work_item_id_of_any_kind
+from flowgraph.item.commands import ToBranch, parse_work_item_id_of_any_kind
 from flowgraph.record import (
     DEVELOPMENT_ENABLED,
     DEVELOPMENT_MERGE,

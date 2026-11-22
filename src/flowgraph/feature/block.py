@@ -5,7 +5,7 @@ on is blocked, with its reason and what it waits on, and unblocked back to start
 blocked no further work item of it starts (`flowgraph.feature.start`) and its started one goes
 on; its unblock starts the next one when none is started, as the completion of one does
 (`flowgraph.feature.next`). Each runs on the store of a record, as the commands of a work item
-do (`flowgraph.item`).
+do (`flowgraph.item.commands`).
 """
 
 from typing import assert_never
@@ -13,8 +13,8 @@ from typing import assert_never
 from flowgraph.feature import blocked_feature, unblocked_feature
 from flowgraph.feature.next import NOT_STARTED, start_next
 from flowgraph.feature.start import first_in_backlog
-from flowgraph.item import MESSAGE, Written, block_item, unblock_item
-from flowgraph.item_id import parse_moved_id
+from flowgraph.item.commands import MESSAGE, Written, block_item, unblock_item
+from flowgraph.item.id import parse_moved_id
 from flowgraph.parent import FeatureId, feature_id_text
 from flowgraph.record import Config, Now
 from flowgraph.record.store import Store

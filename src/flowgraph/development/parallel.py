@@ -10,7 +10,7 @@ off.
 from collections.abc import Iterable
 from typing import assert_never
 
-from flowgraph.item import BACKLOG, STARTED, ItemIdError, parse_item_id
+from flowgraph.item.commands import BACKLOG, STARTED, ItemIdError, parse_item_id
 from flowgraph.parent import FeatureId, feature_id_text
 from flowgraph.record import DEVELOPMENT_PARALLEL, Config, Parallel, Unlimited
 from flowgraph.record.store import KINDS, FindKindRows

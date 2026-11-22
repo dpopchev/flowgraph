@@ -17,7 +17,7 @@ from flowgraph.feature import (
     started_feature,
 )
 from flowgraph.feature.amend import FeatureAmendment, amend_named, amended_feature
-from flowgraph.item import Written
+from flowgraph.item.commands import Written
 from flowgraph.parent import STANDALONE, FeatureId, make_feature_id
 from flowgraph.record.store import FeatureStore, Store
 from flowgraph.task import BlockedError, CompletedAlreadyError, StartedAlreadyError

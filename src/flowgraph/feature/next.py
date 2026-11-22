@@ -5,7 +5,7 @@ completion of a work item under a started Feature starts the first of its work i
 in the order of the queue, in the same write, as `fgraph start` of that work item would. A next
 work item that cannot start leaves the completion as it is, and the completion says why: a
 blocked Feature starts none. It runs on the store of a record, as the commands of a work item
-do (`flowgraph.item`).
+do (`flowgraph.item.commands`).
 """
 
 from typing import assert_never
@@ -25,11 +25,11 @@ from flowgraph.feature.start import (
     check_start_under_feature,
     first_in_backlog,
 )
-from flowgraph.item import MESSAGE, Written, complete_item, parse_item_id, start_item
-from flowgraph.item_depends import StartWaitsError, check_start_waits
+from flowgraph.item.commands import MESSAGE, Written, complete_item, parse_item_id, start_item
 from flowgraph.parent import FeatureId, Standalone
 from flowgraph.record import Config, Now
 from flowgraph.record.store import Store
+from flowgraph.relation.depends import StartWaitsError, check_start_waits
 from flowgraph.task import BlockedError, NoTaskError, TaskId
 from flowgraph.work_item import WorkItemId, work_item_id_text
 

@@ -30,7 +30,7 @@ from flowgraph.feature.state import (
     started_feature,
     state_name,
 )
-from flowgraph.item_file import (
+from flowgraph.item import (
     KnowledgeFile,
     evidence_primitives,
     knowledge_held,

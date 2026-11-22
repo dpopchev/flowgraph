@@ -9,7 +9,7 @@ import pytest
 
 from flowgraph.development import GitError, make_slug
 from flowgraph.development.commit import Said, WorkTree, commit_written
-from flowgraph.item import Store, ToBranch, Written
+from flowgraph.item.commands import Store, ToBranch, Written
 from flowgraph.record import make_config
 from flowgraph.story import make_story_id
 

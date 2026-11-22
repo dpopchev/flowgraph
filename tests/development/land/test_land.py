@@ -13,7 +13,7 @@ from flowgraph.development import GateError, GitError, RunGate
 from flowgraph.development.commit import LandingSteps, Said, WorkTree
 from flowgraph.development.land import LandError, land_item
 from flowgraph.feature import FeatureNotFoundError, make_feature, started_feature
-from flowgraph.item import Store
+from flowgraph.item.commands import Store
 from flowgraph.parent import FeatureId, make_feature_id
 from flowgraph.record import Config, make_config
 from flowgraph.record.queue import make_queue

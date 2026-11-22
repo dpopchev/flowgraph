@@ -3,7 +3,7 @@
 A Feature is to its work items what a work item is to its Tasks: the wording of one in Backlog
 is rewritten, part by part. It is not a move: the state of the Feature stays, and so do its id,
 its created time, its work items and its place in the queue. It runs on the store of a record,
-as the commands of a work item do (`flowgraph.item`).
+as the commands of a work item do (`flowgraph.item.commands`).
 """
 
 from collections.abc import Sequence
@@ -21,8 +21,8 @@ from flowgraph.feature import (
     make_feature,
 )
 from flowgraph.feature.item import is_feature_id
-from flowgraph.item import MESSAGE, Written, amend_item
-from flowgraph.item_id import parse_amended_id
+from flowgraph.item.commands import MESSAGE, Written, amend_item
+from flowgraph.item.id import parse_amended_id
 from flowgraph.parent import feature_id_text, parse_feature_id
 from flowgraph.record.store import Store
 from flowgraph.task import BlockedError, CompletedAlreadyError, StartedAlreadyError

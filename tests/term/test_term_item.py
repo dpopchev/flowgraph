@@ -8,12 +8,12 @@ import pytest
 
 from flowgraph.criterion import EmptyPartError
 from flowgraph.development.scope import OutOfScopeError, Scope, within
-from flowgraph.item import Written
+from flowgraph.item.commands import Written
 from flowgraph.record.queue import make_queue
 from flowgraph.record.store import Store, TermStore
 from flowgraph.story import make_story_id
 from flowgraph.term import Term, TermError, TermNotFoundError, make_term, relate
-from flowgraph.term_item import (
+from flowgraph.term.item import (
     TermExistsError,
     add_term_item,
     relate_term_item,

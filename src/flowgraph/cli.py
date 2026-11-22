@@ -13,7 +13,6 @@ from pathlib import Path
 from typing import Never, assert_never
 
 from flowgraph.about import about_item
-from flowgraph.about_terms import about_asked
 from flowgraph.criterion import (
     Criterion,
     make_defect,
@@ -48,9 +47,8 @@ from flowgraph.feature.start import (
     check_start_under_feature,
     start_feature_item,
 )
-from flowgraph.governed import governs_asked
 from flowgraph.graph import graph_text
-from flowgraph.item import (
+from flowgraph.item.commands import (
     Written,
     add_item,
     kind_named,
@@ -59,16 +57,11 @@ from flowgraph.item import (
     status_item,
     write_task,
 )
-from flowgraph.item_depends import (
-    amends_asked,
-    check_start_waits,
-    depends_asked,
-    filed_during_asked,
-)
 from flowgraph.knowledge import DECISION, DEVIATION, FINDING
-from flowgraph.knowledge_list import show_knowledge
+from flowgraph.knowledge.governed import governs_asked
+from flowgraph.knowledge.list import show_knowledge
 from flowgraph.parent import parent_asked
-from flowgraph.parser import TOP, build_command_line, help_asked
+from flowgraph.parser import REFUSED, TOP, build_command_line, help_asked
 from flowgraph.record import (
     CONFIG,
     Config,
@@ -85,12 +78,18 @@ from flowgraph.record import (
 )
 from flowgraph.record.setting import set_setting, show_config, unset_setting
 from flowgraph.record.store import OpenStore, Store, open_files
-from flowgraph.refusals import REFUSED
-from flowgraph.relation_read import check_relations
-from flowgraph.term_item import add_term_item, relate_term_item, terms_text
-from flowgraph.terminal import Height, Width, no_terminal, terminal_height, terminal_width
-from flowgraph.text import cut_lines
-from flowgraph.watch import Wait, framed, make_pace, watch
+from flowgraph.relation.depends import (
+    amends_asked,
+    check_start_waits,
+    depends_asked,
+    filed_during_asked,
+)
+from flowgraph.relation.read import check_relations
+from flowgraph.status.terminal import Height, Width, no_terminal, terminal_height, terminal_width
+from flowgraph.status.text import cut_lines
+from flowgraph.status.watch import Wait, framed, make_pace, watch
+from flowgraph.term.about import about_asked
+from flowgraph.term.item import add_term_item, relate_term_item, terms_text
 from flowgraph.work_item import (
     Amendment,
 )

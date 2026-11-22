@@ -5,7 +5,7 @@ from typing import Never
 
 import pytest
 
-from flowgraph.item import Store, status_item
+from flowgraph.item.commands import Store, status_item
 from flowgraph.record.queue import make_queue
 from flowgraph.story import STORY
 from flowgraph.upkeep import UPKEEP

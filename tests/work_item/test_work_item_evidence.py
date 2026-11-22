@@ -18,8 +18,8 @@ from flowgraph.criterion import (
     make_hypothesis,
     make_scenario,
 )
+from flowgraph.status import show_text, status_text
 from flowgraph.task import TaskRow, completed, make_task, make_task_id, started
-from flowgraph.text import show_text, status_text
 from flowgraph.work_item import (
     WorkItemState,
     append_task,

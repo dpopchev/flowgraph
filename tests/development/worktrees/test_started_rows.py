@@ -9,7 +9,7 @@ import pytest
 
 from flowgraph.development.commit import WorkTree
 from flowgraph.development.worktrees import across_worktrees
-from flowgraph.item import Store
+from flowgraph.item.commands import Store
 from flowgraph.story import STORY
 from flowgraph.task import TaskRow
 from flowgraph.work_item import WorkItemRow

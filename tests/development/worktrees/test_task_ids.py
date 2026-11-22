@@ -8,7 +8,7 @@ import pytest
 
 from flowgraph.development.commit import WorkTree
 from flowgraph.development.worktrees import across_worktrees
-from flowgraph.item import Store
+from flowgraph.item.commands import Store
 
 pytestmark = pytest.mark.command
 

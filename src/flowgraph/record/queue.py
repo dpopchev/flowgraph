@@ -14,7 +14,7 @@ from typing import assert_never
 
 from pydantic import BaseModel, ConfigDict, ValidationError
 
-from flowgraph.item_file import write_checked
+from flowgraph.item import write_checked
 from flowgraph.parent import (
     FeatureId,
     FeatureIdError,

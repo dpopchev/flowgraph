@@ -14,6 +14,7 @@ from flowgraph.relation import (
     RelationError,
     Standing,
     Waited,
+    amended_by,
     closes_cycle,
     filed_during_it,
     superseding,
@@ -50,6 +51,7 @@ def record_standing(store: Store) -> dict[str, Standing]:
             tuple(row.depends_on),
             row.filed_during,
             row.superseded_by,
+            row.amends,
         )
         for row in rows_by_id(store).values()
     }
@@ -123,15 +125,36 @@ def superseded_by_asked(text: str | None, item: str, store: Store) -> WorkItemId
     return asked
 
 
+def amends_asked(text: str | None, store: Store) -> WorkItemId | None:
+    """The completed work item a command asks the new one to amend; None when it names none.
+
+    Raises WorkItemIdError when the text is the id of no kind, WorkItemNotFoundError when the
+    record holds no such work item and RelationError when it is not completed; nothing is
+    written.
+    """
+    if text is None:
+        return None
+    asked = parse_work_item_id_of_any_kind(text)
+    named = work_item_id_text(asked)
+    record = record_standing(store)
+    if named not in record:
+        raise WorkItemNotFoundError(asked)
+    if not record[named].completed:
+        raise RelationError(f"a work item cannot amend {named}: it is not completed")
+    return asked
+
+
 def bucketed(detail: WorkItemDetail, store: Store) -> WorkItemDetail:
     """The detail of a work item with the bucket each work item it depends on is listed in and
-    the ids of the work items filed during it and of those it supersedes, read from the record."""
+    the ids of the work items filed during it, of those it supersedes and of those that amend it,
+    read from the record."""
     record = record_standing(store)
     return replace(
         detail,
         depends_on=[DependsRow(row.id, record[row.id].bucket) for row in detail.depends_on],
         filed_here=filed_during_it(detail.id, record),
         supersedes=superseding(detail.id, record),
+        amended_by=amended_by(detail.id, record),
     )
 
 

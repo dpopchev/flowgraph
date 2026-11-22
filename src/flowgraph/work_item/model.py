@@ -242,10 +242,11 @@ def make_work_item(
     parent: Parent = STANDALONE,
     depends_on: Iterable[WorkItemId] = (),
     filed_during: WorkItemId | None = None,
+    amends: WorkItemId | None = None,
 ) -> WorkItem:
     """A work item in Backlog, its created time kept to the second; it stands alone unless a
-    Feature is named as its parent, depends on the work items given and is filed during the one
-    given, none by default.
+    Feature is named as its parent, depends on the work items given, is filed during the one given
+    and amends the one given, none by default.
 
     Raises EmptyPartError when the title is blank, CriterionError when the criterion is not of
     the form the kind of the item takes and RelationError when it names itself.
@@ -256,7 +257,7 @@ def make_work_item(
         raise CriterionError(f"{kind.article} {kind.noun} states {stated}")
     to_the_second = created.replace(microsecond=0)
     titled = said("title", title)
-    relations = make_relations(item_id, depends_on, filed_during)
+    relations = make_relations(item_id, depends_on, filed_during, amends)
     return WorkItem(
         item_id, titled, criterion, description, to_the_second, (), parent, (), relations
     )

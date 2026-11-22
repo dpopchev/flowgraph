@@ -31,7 +31,8 @@ lists the lines of the whole record.
 | the level above                 | a Feature groups work items, takes each operation of one |
 | the order of the Backlog        | a queue, reordered by `fgraph reorder`, Features too     |
 | the relations of a work item    | `--depends-on` it waits for, `--filed-during` it found,  |
-|                                 | `fgraph remove --superseded-by` the one that replaces it |
+|                                 | `--amends` the completed one it changes, `fgraph remove` |
+|                                 | `--superseded-by` the one that replaces it               |
 | the wording of a work item      | `fgraph amend` in Backlog: parent too, a Feature's too   |
 | git                             | every write of the record committed, unless turned off   |
 | the layers of a record          | `.fgraph/config.toml`: commits on, development off       |
@@ -188,6 +189,34 @@ fgraph show S-0001
 An id that is no work item of the record and a removed work item are refused
 with exit 2, and nothing is written. `fgraph amend` does not take it: when a
 work item was found does not change.
+
+A work item can name the completed one whose landed behavior it changes:
+`--amends ID` of `fgraph add`, of every kind of work item, once. The other work
+item has no say in it, and `fgraph show` lists it from both sides, the second
+read from the record:
+
+```sh
+fgraph add story "Raise the kinds of work item fgraph adds from 4 to 5" \
+  --given "a record" --when "fgraph add is run" --then "it adds the new kind" \
+  --amends S-0001
+# added S-0002
+
+fgraph show S-0002
+# S-0002  Raise the kinds of work item fgraph adds from 4 to 5
+#   bucket       Backlog
+#   amends       S-0001
+#   ...
+
+fgraph show S-0001
+# S-0001  ...
+#   bucket       Completed
+#   amended by   S-0002
+#   ...
+```
+
+An id that is no work item of the record and a work item that is not completed
+are refused with exit 2, and nothing is written. `fgraph amend` does not take
+it: which work item the new one changes does not change.
 
 The prefix `S` of a Story is one letter, as that of every other kind, since
 the developer's choice of 2026-11-21: `Q` for the Spike left `S` to the

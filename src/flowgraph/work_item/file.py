@@ -118,6 +118,7 @@ def read_work_item_rows(record: Path, kind: Kind) -> list[WorkItemRow]:
             depends_on=held.depends_on,
             filed_during=held.filed_during,
             superseded_by=superseded_held(held),
+            amends=held.amends,
         )
         for held in _files_of(record, kind)
     ]
@@ -168,6 +169,7 @@ def read_work_item_detail(record: Path, item_id: WorkItemId) -> WorkItemDetail:
         depends_on=[DependsRow(each) for each in held.depends_on],
         filed_during=held.filed_during,
         superseded_by=superseded_held(held),
+        amends=held.amends,
         **held.criterion.model_dump(),
     )
 

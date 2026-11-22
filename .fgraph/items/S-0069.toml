@@ -13,23 +13,32 @@ then = "fgraph show of the new Story lists the Story it amends, and fgraph show 
 
 [[tasks]]
 id = "T-0287"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_amends.py, failing on the criterion of S-0069"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_add_story.py does. Seen red, then marked a strict xfail naming S-0069 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_amends.py states that, on a record with a completed Story, fgraph add story with --amends and the id of the completed Story exits 0, fgraph show of the new Story lists the Story it amends, and fgraph show of the completed Story lists the new one as amending it"
 created = 2026-11-22 10:47:48+00:00
+started = 2026-11-22 12:26:55+00:00
+completed = 2026-11-22 12:27:33+00:00
+commit = "5203796"
 
 [[tasks]]
 id = "T-0288"
-state = "backlog"
+state = "completed"
 title = "Add --amends to fgraph add, shown from both sides"
 description = "Removes the xfail mark of tests/functional/test_amends.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph add of every kind of work item takes --amends ID once, a completed work item whose landed behavior the new one changes; the file keeps it as amends, read back in every state; an id that is no work item of the record and one that is not completed are refused, exit 2, nothing written; fgraph show of the new work item lists amends with the id, and fgraph show of the completed one lists, as amended by, the id of each work item that names it, read from the record"
 created = 2026-11-22 10:47:50+00:00
+started = 2026-11-22 12:27:34+00:00
+completed = 2026-11-22 12:34:21+00:00
+commit = "8ae7921"
 
 [[tasks]]
 id = "T-0289"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to list the five typed relations of a work item"
 expected_output = "changed: README.md shows --amends and the show of each side; docs/domain-model.md lists the five typed relations of a work item in one table -- parent, depends on, filed during, superseded by, amends -- with where each is stored, which side is derived and which move reads it"
 created = 2026-11-22 10:47:51+00:00
+started = 2026-11-22 12:34:22+00:00
+completed = 2026-11-22 12:34:24+00:00
+commit = "659dbb3"

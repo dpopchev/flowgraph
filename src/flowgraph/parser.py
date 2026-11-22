@@ -101,6 +101,11 @@ def _add_kinds(kinds: Commands) -> dict[str, argparse.ArgumentParser]:
             metavar="ID",
             help="the work item it was found during; it does not change after the add",
         )
+        kind.add_argument(
+            "--amends",
+            metavar="ID",
+            help="the completed work item whose landed behavior it changes; once, at the add",
+        )
     feature = _command(
         kinds, "feature", "a bigger outcome that groups work items, with its criteria"
     )

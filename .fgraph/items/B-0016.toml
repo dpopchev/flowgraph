@@ -7,3 +7,10 @@ created = 2026-11-22 03:38:50+00:00
 [criterion]
 observed = "fgraph add --parent takes a work item under a started or a blocked Feature, while fgraph amend --parent under one is refused; --parent None is refused as no Feature id with no word of none; and docs/domain-model.md, Persistence, still names blocking a Feature not built"
 expected = "add and amend agree on the Features a work item is put under, the refusal of --parent names none, and the docs name only what is not built"
+
+[[tasks]]
+id = "T-0255"
+state = "backlog"
+title = "Put a work item under a Feature in Backlog, started or blocked by fgraph amend --parent, as fgraph add does, in check_move of src/flowgraph/feature_move.py"
+expected_output = "changed: src/flowgraph/feature_move.py; tests/work_item/test_work_item_amend_parent.py and tests/functional/test_amend_parent.py state the move under a started and a blocked Feature"
+created = 2026-11-22 08:10:49+00:00

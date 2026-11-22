@@ -1,0 +1,11 @@
+id = "S-0099"
+state = "backlog"
+title = "Raise the landings fgraph holds for the approver the configuration names from none to every one under development.approver"
+description = "Open: the note names the key alone; how fgraph is told an approval. Its Tasks are written when it is ordered."
+parent = "F-0012"
+created = 2026-11-22 21:03:48+00:00
+
+[criterion]
+given = "development.approver set to developer and a started work item whose Tasks are completed"
+when = "fgraph land of the work item is run without the approval of the developer"
+then = "it exits 2 saying the landing waits for the developer, and nothing is merged"

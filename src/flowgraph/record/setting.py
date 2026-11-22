@@ -23,18 +23,13 @@ from flowgraph.record.config import (
     GIT_COMMIT,
     Config,
     ConfigError,
-    Gate,
-    Gated,
-    Limit,
     LoadSettings,
-    Parallel,
     SaveSettings,
     Settings,
-    Ungated,
-    Unlimited,
     make_config,
     settings_text,
 )
+from flowgraph.record.layers import Gate, Gated, Limit, Parallel, Ungated, Unlimited
 
 # How a key that holds no value is listed: no value of the file.
 NONE = "none"

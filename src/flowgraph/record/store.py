@@ -32,7 +32,8 @@ from flowgraph.record.config import (
     write_settings,
 )
 from flowgraph.record.journal import Change, changed_files, noted, restore
-from flowgraph.record.queue import QUEUE, LoadQueue, Queue, SaveQueue, read_queue, write_queue
+from flowgraph.record.queue import LoadQueue, Queue, SaveQueue
+from flowgraph.record.queue_file import QUEUE, read_queue, write_queue
 from flowgraph.spike import SPIKE
 from flowgraph.story import STORY
 from flowgraph.term import (

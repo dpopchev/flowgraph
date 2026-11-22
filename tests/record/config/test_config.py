@@ -4,16 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph.record.config import (
-    UNGATED,
-    UNLIMITED,
-    ConfigError,
-    Gated,
-    Merge,
-    Parallel,
-    make_config,
-    read_config,
-)
+from flowgraph.record.config import ConfigError, make_config, read_config
+from flowgraph.record.layers import UNGATED, UNLIMITED, Gated, Merge, Parallel
 
 pytestmark = pytest.mark.edge
 

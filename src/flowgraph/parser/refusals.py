@@ -19,12 +19,8 @@ from flowgraph.item.commands import ItemIdError
 from flowgraph.knowledge.list import KindListedError
 from flowgraph.parent import FeatureIdError
 from flowgraph.record import ConfigError
-from flowgraph.record.queue import (
-    NotInBacklogError,
-    QueueFileError,
-    SameItemError,
-    UnderFeatureError,
-)
+from flowgraph.record.queue import NotInBacklogError, SameItemError, UnderFeatureError
+from flowgraph.record.queue_file import QueueFileError
 from flowgraph.relation import RelationError
 from flowgraph.relation.depends import StartWaitsError
 from flowgraph.relation.read import RelationReadError

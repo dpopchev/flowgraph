@@ -6,14 +6,9 @@ from pathlib import Path
 import pytest
 
 from flowgraph.parent import make_feature_id
-from flowgraph.record import queue as queue_module
-from flowgraph.record.queue import (
-    QueueFileError,
-    QueueMismatchError,
-    make_queue,
-    read_queue,
-    write_queue,
-)
+from flowgraph.record import queue_file as queue_file_module
+from flowgraph.record.queue import make_queue
+from flowgraph.record.queue_file import QueueFileError, QueueMismatchError, read_queue, write_queue
 from flowgraph.work_item import make_kind, make_work_item_id
 
 pytestmark = pytest.mark.edge
@@ -71,7 +66,7 @@ class TestAWriteThatReadsBackDifferent:
         """The file and the message of a write whose read-back places another work item."""
         path = tmp_path / FILE
         path.write_text("previous", encoding="utf-8")
-        monkeypatch.setattr(queue_module.tomllib, "loads", lambda _: {"backlog": ["CH-0009"]})
+        monkeypatch.setattr(queue_file_module.tomllib, "loads", lambda _: {"backlog": ["CH-0009"]})
         with pytest.raises(QueueMismatchError) as error:
             write_queue(tmp_path, KINDS, QUEUE)
         return path, str(error.value)

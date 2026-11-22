@@ -8,18 +8,11 @@ from flowgraph.work_item.amend import (
     amended_work_item,
 )
 from flowgraph.work_item.commands import (
-    LoadHolder,
-    add_task,
     add_work_item,
     amend_work_item,
-    block_task,
-    complete_task,
-    holder_of,
     note_work_item,
     remove_work_item,
-    start_task,
     start_work_item,
-    unblock_task,
     work_item_detail,
     work_item_row,
 )
@@ -31,13 +24,22 @@ from flowgraph.work_item.file import (
     work_item_path,
     write_work_item,
 )
+from flowgraph.work_item.id import (
+    Kind,
+    KindError,
+    WorkItemId,
+    WorkItemIdError,
+    make_kind,
+    make_work_item_id,
+    next_work_item_id,
+    parse_work_item_id,
+    work_item_id_text,
+)
 from flowgraph.work_item.model import (
     STARTED,
     CompletedWorkItem,
     FindTaskIds,
     FindWorkItemRows,
-    Kind,
-    KindError,
     LoadWorkItem,
     OpenWorkItem,
     RemovedAlreadyError,
@@ -46,26 +48,26 @@ from flowgraph.work_item.model import (
     StartedWorkItem,
     WorkItem,
     WorkItemFileError,
-    WorkItemId,
-    WorkItemIdError,
     WorkItemMismatchError,
     WorkItemNotFoundError,
     WorkItemState,
     append_task,
     commit_sha,
-    completed_work_item,
-    make_kind,
     make_work_item,
-    make_work_item_id,
-    next_work_item_id,
     noted_work_item,
-    parse_work_item_id,
-    started_work_item,
     state_name,
-    still_open,
-    work_item_id_text,
 )
+from flowgraph.work_item.moves import completed_work_item, started_work_item, still_open
 from flowgraph.work_item.removal import removed_work_item
+from flowgraph.work_item.task_commands import (
+    LoadHolder,
+    add_task,
+    block_task,
+    complete_task,
+    holder_of,
+    start_task,
+    unblock_task,
+)
 from flowgraph.work_item.tasks import (
     blocked_task,
     completed_task,

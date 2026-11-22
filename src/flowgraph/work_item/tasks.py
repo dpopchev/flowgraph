@@ -18,6 +18,7 @@ from flowgraph.task import (
     task_of,
     unblocked_among,
 )
+from flowgraph.work_item.id import work_item_id_text
 from flowgraph.work_item.model import (
     CompletedWorkItem,
     RemovedAlreadyError,
@@ -25,7 +26,6 @@ from flowgraph.work_item.model import (
     StartedWorkItem,
     WorkItem,
     WorkItemState,
-    work_item_id_text,
 )
 
 

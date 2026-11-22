@@ -23,15 +23,14 @@ from flowgraph.criterion import (
 from flowgraph.parent import Parent
 from flowgraph.relation import with_depends_on
 from flowgraph.task import CompletedAlreadyError, StartedAlreadyError
+from flowgraph.work_item.id import WorkItemId, work_item_id_text
 from flowgraph.work_item.model import (
     CompletedWorkItem,
     RemovedAlreadyError,
     RemovedWorkItem,
     StartedWorkItem,
     WorkItem,
-    WorkItemId,
     WorkItemState,
-    work_item_id_text,
 )
 
 

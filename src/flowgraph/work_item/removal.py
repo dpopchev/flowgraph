@@ -9,15 +9,14 @@ from typing import assert_never
 from flowgraph.criterion import said
 from flowgraph.relation import RelationError
 from flowgraph.task import CompletedAlreadyError, StartedAlreadyError
+from flowgraph.work_item.id import WorkItemId, work_item_id_text
 from flowgraph.work_item.model import (
     CompletedWorkItem,
     RemovedAlreadyError,
     RemovedWorkItem,
     StartedWorkItem,
     WorkItem,
-    WorkItemId,
     WorkItemState,
-    work_item_id_text,
 )
 
 

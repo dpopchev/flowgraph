@@ -24,11 +24,12 @@ commit = "811dd1f"
 
 [[tasks]]
 id = "T-0180"
-state = "backlog"
+state = "started"
 title = "Add the config command to src/flowgraph/parser.py and src/flowgraph/cli.py, showing every key and setting one"
 description = "Removes the xfail mark of tests/functional/test_config_command.py. A key is taken back to its default by setting that default: an unset is not built."
 expected_output = "changed: fgraph config is a command of src/flowgraph/parser.py run by src/flowgraph/cli.py; fgraph config show lists every key of the configuration, dotted, with its value, one a line, a key config.toml lacks at its default; fgraph config set KEY VALUE writes that one key into .fgraph/config.toml and keeps the others, the whole read back through make_config before it replaces the file, so a key the configuration does not have and a value the key does not take exit 2 naming it with nothing written; the write is committed as any write of the record, chore: set <key> in the record, left uncommitted with git.commit off, and refused on the branch of a work item, whose scope it is no file of; the adapter that writes the file is proved in tests/config/"
 created = 2026-11-21 22:40:57+00:00
+started = 2026-11-22 00:02:03+00:00
 
 [[tasks]]
 id = "T-0181"

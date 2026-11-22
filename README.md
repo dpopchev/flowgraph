@@ -235,6 +235,16 @@ fgraph graph | jq -r '.edges[] | select(.kind == "about" and .to == "gate") | .f
 
 ## Use
 
+`make install` in a checkout puts its `fgraph` on the path of every repository.
+It builds the wheel, as `make wheel` does, and runs `uv tool install --force
+--reinstall` on it, which replaces an older install. The record of a repository
+is then made there with `fgraph init`:
+
+```sh
+make install    # in the checkout of flowgraph
+fgraph init     # in any repository, makes its .fgraph/
+```
+
 `fgraph` looks for the record in the directory it runs in: `.fgraph/` first,
 then `fgraph/`. When neither is there, it exits 2 and says to run `fgraph init`
 or to pass the path:

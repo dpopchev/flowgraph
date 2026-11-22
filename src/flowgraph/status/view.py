@@ -25,10 +25,14 @@ from flowgraph.parent import FeatureId, feature_id_text, parse_feature_id
 from flowgraph.record.queue import Entry, Inside, Line, Placed, queued
 from flowgraph.record.store import KINDS, Store
 from flowgraph.status.text import status_text
+from flowgraph.status.waits import with_waits
 from flowgraph.work_item import STARTED, WorkItemId, WorkItemRow, parse_work_item_id
 
 # The state of a row in Backlog, as the record writes it.
 BACKLOG = "backlog"
+
+# The bucket a Feature never started is listed in while its work items are in Backlog.
+BACKLOG_BUCKET = "Backlog"
 
 # The state of a completed row, as the record writes it.
 COMPLETED = "completed"
@@ -105,6 +109,25 @@ def _placed_features(store: Store, rows: Collection[WorkItemRow]) -> list[_Place
     ]
 
 
+def _waiting_features(
+    features: Iterable[_PlacedFeature], rows: Mapping[WorkItemId, WorkItemRow], store: Store
+) -> list[_PlacedFeature]:
+    """The Features given, each in Backlog carrying what its first work item in Backlog waits for.
+
+    The first work item is the one its start takes: the first in the queue among those in Backlog.
+    """
+    queue = store.load_queue()
+    waiting: list[_PlacedFeature] = []
+    for at, row in features:
+        under = {item_id: each for item_id, each in rows.items() if each.parent == row.id}
+        in_backlog = backlog_as_added(under)
+        first = min(in_backlog, key=queued(queue, in_backlog).index, default=None)
+        listed = first is not None and row.bucket == BACKLOG_BUCKET
+        waits_for = under[first].waits_for if listed and first is not None else []
+        waiting.append((at, replace(row, waits_for=waits_for)))
+    return waiting
+
+
 def _with_features(
     rows: Iterable[WorkItemRow],
     features: Iterable[_PlacedFeature],
@@ -170,8 +193,8 @@ def status_item(store: Store, top: int | None = None) -> str:
     file edited by hand names, is listed as one standing alone, since no line of a Feature lists
     it. Under a top each heading lists that many, the first ones.
     """
-    rows = rows_by_id(store)
-    features = _placed_features(store, rows.values())
+    rows = with_waits(rows_by_id(store))
+    features = _waiting_features(_placed_features(store, rows.values()), rows, store)
     held = {row.id for _, row in features}
     alone = {item_id: row for item_id, row in rows.items() if row.parent not in held}
     backlog = _backlog_lines(alone, features)

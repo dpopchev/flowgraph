@@ -510,6 +510,15 @@ and `--depends-on none` alone takes them all away.
   depends on none. The file holds the ids as `depends_on = ["S-0001"]`, only
   when there is one, read back in every state; an id of no kind, or the work
   item itself, makes the file refused when it is read.
+- `fgraph status` marks what waits, the reading of S-0085: the line of a work
+  item in Backlog that depends on one not completed starts with `~` and ends
+  `-- depends on S-0001`, with each id not completed in the order written; the
+  mark is gone once each is completed. A Feature in Backlog carries it when its
+  first work item, the one its start takes, waits, with the ids that one waits
+  for; a work item under a Feature is on no line of the Backlog. The mark is
+  not the `!` of a block, which ends `-- waiting on <who>`: a block waits on a
+  person, a dependency on a work item. A line longer than the terminal is cut
+  as any other, and `fgraph watch` draws the same line.
 
 ## Filed during
 

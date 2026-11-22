@@ -61,7 +61,8 @@ class FeatureRow:
     started work items are the rows a list writes under it, in the order given. Its commit is
     the one it was completed in, empty while it has none; what it waits on while it is blocked;
     its reason the one it was removed for, empty unless it is removed; its block reason the one
-    it was blocked for, empty unless it is blocked.
+    it was blocked for, empty unless it is blocked; the ids its first work item in Backlog waits
+    for, set by the view that lists the Backlog.
     """
 
     id: str
@@ -74,6 +75,7 @@ class FeatureRow:
     waiting_on: str = field(default="", kw_only=True)
     reason: str = field(default="", kw_only=True)
     block_reason: str = field(default="", kw_only=True)
+    waits_for: list[str] = field(default_factory=list[str], kw_only=True)
 
 
 def feature_detail(feature: FeatureState) -> FeatureDetail:

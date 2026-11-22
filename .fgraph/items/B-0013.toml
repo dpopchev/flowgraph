@@ -31,10 +31,11 @@ commit = "0c13233"
 
 [[tasks]]
 id = "T-0248"
-state = "backlog"
+state = "started"
 title = "Name the rows under a Feature once, in place of the filter written in feature_start.py, feature_item.py and feature_complete.py, and drop complete_work_item of src/flowgraph/work_item/commands.py, which tests alone call"
 expected_output = "changed: src/flowgraph/status.py holds the rows under a Feature, read by the three; src/flowgraph/work_item/commands.py and its tests hold no complete_work_item"
 created = 2026-11-22 07:42:12+00:00
+started = 2026-11-22 07:48:25+00:00
 
 [[tasks]]
 id = "T-0249"

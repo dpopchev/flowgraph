@@ -29,13 +29,15 @@ class RelationError(ValueError):
 class Standing:
     """A work item of the record as the views of a relation read it: plain data.
 
-    Its bucket as it is listed, whether it is completed, and the ids it depends on as written.
+    Its bucket as it is listed, whether it is completed, the ids it depends on as written, the
+    one it was filed during and, once removed, the one that supersedes it.
     """
 
     bucket: str
     completed: bool
     depends_on: tuple[str, ...] = ()
     filed_during: str = ""
+    superseded_by: str = ""
 
 
 @dataclass(frozen=True)
@@ -75,6 +77,11 @@ def with_depends_on[Id](
 def filed_during_it(item: str, record: Mapping[str, Standing]) -> list[str]:
     """The ids of the work items of the record filed during the item, in the order of the record."""
     return [named for named, standing in record.items() if standing.filed_during == item]
+
+
+def superseding(item: str, record: Mapping[str, Standing]) -> list[str]:
+    """The ids of the work items of the record the item supersedes, in the order of the record."""
+    return [named for named, standing in record.items() if standing.superseded_by == item]
 
 
 def waiting_for(item: str, record: Mapping[str, Standing]) -> list[Waited]:

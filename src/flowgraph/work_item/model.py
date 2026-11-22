@@ -116,7 +116,10 @@ class CompletedWorkItem:
 
 @dataclass(frozen=True)
 class RemovedWorkItem:
-    """A work item in Removed: dropped out of Backlog for a reason, its Tasks kept as written."""
+    """A work item in Removed: dropped out of Backlog for a reason, its Tasks kept as written.
+
+    It names the work item that supersedes it when there is one; its reason may then be empty.
+    """
 
     id: WorkItemId
     title: str
@@ -129,6 +132,7 @@ class RemovedWorkItem:
     parent: Parent = STANDALONE
     knowledge: tuple[KnowledgeLine, ...] = ()
     relations: Relations[WorkItemId] = NO_RELATIONS
+    superseded_by: WorkItemId | None = None
 
 
 # A work item that still takes Tasks: in Backlog or started.

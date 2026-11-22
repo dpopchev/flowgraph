@@ -204,7 +204,12 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         commands, "remove", "remove a work item or a Feature in Backlog, kept with its reason"
     )
     remove.add_argument("id", metavar="ID", help="the id of the work item or of the Feature")
-    remove.add_argument("--reason", required=True, metavar="TEXT", help="why it is removed")
+    remove.add_argument("--reason", metavar="TEXT", help="why it is removed")
+    remove.add_argument(
+        "--superseded-by",
+        metavar="ID",
+        help="the work item that supersedes it, in place of the reason or beside it",
+    )
     note = _command(
         commands, "note", "keep a finding, a decision or a deviation on a work item, in any state"
     )

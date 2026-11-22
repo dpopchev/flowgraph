@@ -6,19 +6,13 @@ A kind reads the files of its own prefix; a file of another prefix is left alone
 import tomllib
 from collections.abc import Sequence
 from dataclasses import replace
-from datetime import datetime
 from pathlib import Path
-from typing import Annotated, Literal, assert_never
+from typing import assert_never
 
-from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
+from pydantic import ValidationError
 
 from flowgraph.criterion import CommitError, CriterionError, DecisionError, evidence_written
 from flowgraph.item_file import (
-    AnyCriterionFile,
-    CompletedTaskFile,
-    HeldTask,
-    KnowledgeFile,
-    TaskFile,
     backlog_task,
     criterion_held,
     criterion_primitives,
@@ -37,7 +31,20 @@ from flowgraph.record import ITEMS
 from flowgraph.relation import RelationError
 from flowgraph.task import TaskInProgressError
 from flowgraph.task_list import at_most_one_started
-from flowgraph.work_item.depends import RelationsFile, relations_held, relations_primitives
+from flowgraph.work_item.depends import id_held, relations_held, relations_primitives
+from flowgraph.work_item.held_file import (
+    HELD_ITEM,
+    CompletedItemFile,
+    HeldItemFile,
+    ItemFile,
+    RemovedItemFile,
+    StartedItemFile,
+    commit_held,
+    completed_held,
+    reason_held,
+    started_held,
+    superseded_held,
+)
 from flowgraph.work_item.model import (
     CompletedWorkItem,
     Kind,
@@ -62,138 +69,15 @@ from flowgraph.work_item.removal import removed_work_item
 from flowgraph.work_item.views import DependsRow, WorkItemDetail, WorkItemRow
 
 
-class _ItemFile(RelationsFile, BaseModel):
-    """What the file of a work item in Backlog holds: its Tasks are all in Backlog."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    id: str
-    state: Literal["backlog"]
-    title: str
-    description: str = ""
-    parent: str = ""
-    created: datetime
-    criterion: AnyCriterionFile
-    tasks: list[TaskFile] = []
-    knowledge: list[KnowledgeFile] = []
-
-
-class _StartedItemFile(RelationsFile, BaseModel):
-    """What the file of a started work item holds: its started time, its Tasks in any state."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    id: str
-    state: Literal["started"]
-    title: str
-    description: str = ""
-    parent: str = ""
-    created: datetime
-    started: datetime
-    criterion: AnyCriterionFile
-    tasks: list[HeldTask] = []
-    knowledge: list[KnowledgeFile] = []
-
-
-class _CompletedItemFile(RelationsFile, BaseModel):
-    """What the file of a completed work item holds: the commit it has, its Tasks all completed."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    id: str
-    state: Literal["completed"]
-    title: str
-    description: str = ""
-    parent: str = ""
-    created: datetime
-    started: datetime
-    completed: datetime
-    commit: str = ""
-    criterion: AnyCriterionFile
-    tasks: list[CompletedTaskFile] = []
-    knowledge: list[KnowledgeFile] = []
-
-
-class _RemovedItemFile(RelationsFile, BaseModel):
-    """What the file of a removed work item holds: its removal, its Tasks all in Backlog."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    id: str
-    state: Literal["removed"]
-    title: str
-    description: str = ""
-    parent: str = ""
-    created: datetime
-    removed: datetime
-    reason: str
-    criterion: AnyCriterionFile
-    tasks: list[TaskFile] = []
-    knowledge: list[KnowledgeFile] = []
-
-
-# The file of a work item in any of its states.
-_HeldItemFile = _ItemFile | _StartedItemFile | _CompletedItemFile | _RemovedItemFile
-
-# The validator of a work item file, which tells the states apart by the state line.
-_HELD_ITEM: TypeAdapter[_HeldItemFile] = TypeAdapter(
-    Annotated[_HeldItemFile, Field(discriminator="state")]
-)
-
-
-def _commit_held(held: _HeldItemFile) -> str:
-    """The commit a validated file holds; empty for an item that has none."""
-    match held:
-        case _CompletedItemFile():
-            return held.commit
-        case _ItemFile() | _StartedItemFile() | _RemovedItemFile():
-            return ""
-        case _ as unreachable:
-            assert_never(unreachable)
-
-
-def _reason_held(held: _HeldItemFile) -> str:
-    """The reason a validated file holds; empty for an item not removed."""
-    match held:
-        case _RemovedItemFile():
-            return held.reason
-        case _ItemFile() | _StartedItemFile() | _CompletedItemFile():
-            return ""
-        case _ as unreachable:
-            assert_never(unreachable)
-
-
-def _started_held(held: _HeldItemFile) -> datetime | None:
-    """The started time a validated file of a started item holds; none in any other state."""
-    match held:
-        case _StartedItemFile():
-            return held.started
-        case _ItemFile() | _CompletedItemFile() | _RemovedItemFile():
-            return None
-        case _ as unreachable:
-            assert_never(unreachable)
-
-
-def _completed_held(held: _HeldItemFile) -> datetime | None:
-    """The completed time a validated file holds; none for an item not completed."""
-    match held:
-        case _CompletedItemFile():
-            return held.completed
-        case _ItemFile() | _StartedItemFile() | _RemovedItemFile():
-            return None
-        case _ as unreachable:
-            assert_never(unreachable)
-
-
-def _read_file(path: Path, kind: Kind) -> _HeldItemFile:
+def _read_file(path: Path, kind: Kind) -> HeldItemFile:
     """The content of one file of a work item of that kind; raises WorkItemFileError naming it."""
     try:
-        return _HELD_ITEM.validate_python(tomllib.loads(path.read_text(encoding="utf-8")))
+        return HELD_ITEM.validate_python(tomllib.loads(path.read_text(encoding="utf-8")))
     except (tomllib.TOMLDecodeError, ValidationError) as error:
         raise WorkItemFileError(f"{path} holds no {kind.noun}: {error}") from error
 
 
-def _files_of(record: Path, kind: Kind) -> list[_HeldItemFile]:
+def _files_of(record: Path, kind: Kind) -> list[HeldItemFile]:
     """The content of every file of a work item of that kind in the record, in no order."""
     return [_read_file(path, kind) for path in (record / ITEMS).glob(f"{kind.prefix}-*.toml")]
 
@@ -224,15 +108,16 @@ def read_work_item_rows(record: Path, kind: Kind) -> list[WorkItemRow]:
             held.id,
             held.title,
             held.state,
-            _commit_held(held),
-            _reason_held(held),
+            commit_held(held),
+            reason_held(held),
             held.parent,
             created=held.created,
-            started=_started_held(held),
-            completed=_completed_held(held),
+            started=started_held(held),
+            completed=completed_held(held),
             tasks=[task_row(task) for task in held.tasks],
             depends_on=held.depends_on,
             filed_during=held.filed_during,
+            superseded_by=superseded_held(held),
         )
         for held in _files_of(record, kind)
     ]
@@ -276,12 +161,13 @@ def read_work_item_detail(record: Path, item_id: WorkItemId) -> WorkItemDetail:
         state=held.state,
         description=held.description,
         tasks=[task_row(task) for task in held.tasks],
-        commit=_commit_held(held),
-        reason=_reason_held(held),
+        commit=commit_held(held),
+        reason=reason_held(held),
         parent=held.parent,
         knowledge=[KnowledgeRow(line.kind, line.noted, line.text) for line in held.knowledge],
         depends_on=[DependsRow(each) for each in held.depends_on],
         filed_during=held.filed_during,
+        superseded_by=superseded_held(held),
         **held.criterion.model_dump(),
     )
 
@@ -305,7 +191,9 @@ def _moves_primitives(item: WorkItemState) -> dict[str, object]:
             times = {"started": item.started, "completed": item.completed}
             return {**times, **evidence_primitives(item.commit)}
         case RemovedWorkItem():
-            return {"removed": item.removed, "reason": item.reason}
+            named = item.superseded_by
+            superseded = {} if named is None else {"superseded_by": work_item_id_text(named)}
+            return {"removed": item.removed, "reason": item.reason, **superseded}
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -336,7 +224,7 @@ def _item_primitives(item: WorkItemState) -> dict[str, object]:
     }
 
 
-def _item_held(held: _HeldItemFile, kind: Kind, kinds: Sequence[Kind] = ()) -> WorkItemState:
+def _item_held(held: HeldItemFile, kind: Kind, kinds: Sequence[Kind] = ()) -> WorkItemState:
     """The work item of that kind a validated file holds, built through its constructors.
 
     An item and its Tasks past Backlog are built by the moves that took them there, so a file
@@ -347,7 +235,7 @@ def _item_held(held: _HeldItemFile, kind: Kind, kinds: Sequence[Kind] = ()) -> W
     """
     criterion = criterion_held(held.criterion)
     decision = decision_held(held.criterion)
-    if decision is not None and not isinstance(held, _CompletedItemFile):
+    if decision is not None and not isinstance(held, CompletedItemFile):
         raise CriterionError(f"{kind.article} {kind.noun} holds its decision once it is completed")
     item_id = parse_work_item_id(kind, held.id)
     parent = parent_written(held.parent)
@@ -358,18 +246,21 @@ def _item_held(held: _HeldItemFile, kind: Kind, kinds: Sequence[Kind] = ()) -> W
     item = replace(item, knowledge=tuple(knowledge_held(line) for line in held.knowledge))
     item = replace(item, relations=relations)
     match held:
-        case _ItemFile():
+        case ItemFile():
             return item
-        case _RemovedItemFile():
-            return removed_work_item(item, held.reason, held.removed)
-        case _StartedItemFile() | _CompletedItemFile():
+        case RemovedItemFile():
+            superseded_by = (
+                id_held(held.superseded_by, (kind, *kinds)) if held.superseded_by else None
+            )
+            return removed_work_item(item, held.reason, held.removed, superseded_by)
+        case StartedItemFile() | CompletedItemFile():
             tasks = at_most_one_started(tuple(task_held(task) for task in held.tasks))
             begun = replace(started_work_item(item, held.started), tasks=tasks)
             match held:
-                case _CompletedItemFile():
+                case CompletedItemFile():
                     commit = evidence_written(held.commit)
                     return completed_work_item(begun, held.completed, commit, decision)
-                case _StartedItemFile():
+                case StartedItemFile():
                     return begun
                 case _ as unreachable:
                     assert_never(unreachable)

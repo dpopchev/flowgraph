@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from flowgraph.criterion import EmptyPartError, make_commit, make_scenario
+from flowgraph.relation import RelationError
 from flowgraph.task import (
     CompletedAlreadyError,
     StartedAlreadyError,
@@ -28,6 +29,7 @@ from flowgraph.work_item import (
     make_work_item,
     make_work_item_id,
     read_work_item,
+    read_work_item_detail,
     read_work_item_rows,
     removed_work_item,
     started_task,
@@ -156,3 +158,65 @@ def test_the_row_read_from_the_file_of_a_removed_work_item_names_its_reason(
 ) -> None:
     write_work_item(tmp_path, GONE)
     assert read_work_item_rows(tmp_path, CHORE) == [work_item_row(GONE)]
+
+
+OTHER = make_work_item_id(CHORE, 2)
+SUPERSEDED = removed_work_item(ITEM, "refiled", ON, OTHER)
+
+
+@pytest.mark.model
+def test_a_removed_work_item_keeps_the_work_item_that_supersedes_it() -> None:
+    assert SUPERSEDED.superseded_by == OTHER
+
+
+@pytest.mark.model
+def test_a_removed_work_item_with_a_reason_alone_is_superseded_by_none() -> None:
+    assert GONE.superseded_by is None
+
+
+@pytest.mark.model
+def test_a_removed_work_item_superseded_by_another_needs_no_reason() -> None:
+    assert removed_work_item(ITEM, "", ON, OTHER).reason == ""
+
+
+@pytest.mark.model
+def test_a_work_item_superseded_by_itself_is_refused() -> None:
+    with pytest.raises(RelationError, match=r"^CH-0001 cannot be superseded by itself$"):
+        removed_work_item(ITEM, "a reason", ON, ONE)
+
+
+@pytest.mark.view
+def test_the_row_of_a_removed_work_item_names_what_supersedes_it() -> None:
+    assert work_item_row(SUPERSEDED).superseded_by == "CH-0002"
+
+
+@pytest.mark.view
+def test_the_detail_of_a_removed_work_item_names_what_supersedes_it() -> None:
+    assert work_item_detail(SUPERSEDED).superseded_by == "CH-0002"
+
+
+@pytest.mark.edge
+def test_a_superseded_work_item_is_written_with_what_supersedes_it(tmp_path: Path) -> None:
+    write_work_item(tmp_path, SUPERSEDED, [CHORE])
+    written = tomllib.loads((tmp_path / FILE).read_text("utf-8"))
+    assert written["superseded_by"] == "CH-0002"
+
+
+@pytest.mark.edge
+def test_a_superseded_work_item_reads_back_whole(tmp_path: Path) -> None:
+    write_work_item(tmp_path, SUPERSEDED, [CHORE])
+    assert read_work_item(tmp_path, ONE, [CHORE]) == SUPERSEDED
+
+
+@pytest.mark.edge
+def test_the_row_read_from_the_file_of_a_superseded_work_item_names_what_supersedes_it(
+    tmp_path: Path,
+) -> None:
+    write_work_item(tmp_path, SUPERSEDED, [CHORE])
+    assert read_work_item_rows(tmp_path, CHORE)[0].superseded_by == "CH-0002"
+
+
+@pytest.mark.edge
+def test_the_detail_read_from_the_file_of_a_superseded_work_item_names_it(tmp_path: Path) -> None:
+    write_work_item(tmp_path, SUPERSEDED, [CHORE])
+    assert read_work_item_detail(tmp_path, ONE).superseded_by == "CH-0002"

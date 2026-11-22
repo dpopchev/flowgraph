@@ -165,16 +165,27 @@ def amend_item(item: str, parts: work_item.Amendment, store: Store) -> Written:
     return Written(f"amended {text}\n", MESSAGE.format(f"amend {text}"))
 
 
-def remove_item(item: str, reason: str, store: Store, now: Now) -> Written:
+def remove_item(
+    item: str,
+    reason: str,
+    store: Store,
+    now: Now,
+    superseded_by: WorkItemId | None = None,
+) -> Written:
     """Remove the work item in Backlog of that id for the reason given; what the write says.
 
-    Raises ItemIdError naming the Feature too when the text is the id of no kind, or the refusal
-    of the remove.
+    It names the work item that supersedes it when one is given. Raises ItemIdError naming the
+    Feature too when the text is the id of no kind, or the refusal of the remove.
     """
     item_id = parse_amended_id(item)
     load, save = store.load_work_item, store.save_work_item
     work_item.remove_work_item(
-        item_id=item_id, reason=reason, load_work_item=load, save_work_item=save, now=now
+        item_id=item_id,
+        reason=reason,
+        load_work_item=load,
+        save_work_item=save,
+        now=now,
+        superseded_by=superseded_by,
     )
     text = work_item_id_text(item_id)
     return Written(f"removed {text}\n", MESSAGE.format(f"remove {text}"))

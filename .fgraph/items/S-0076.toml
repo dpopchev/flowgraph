@@ -35,8 +35,10 @@ commit = "97b6759"
 
 [[tasks]]
 id = "T-0312"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a knowledge line governs a file"
 expected_output = "changed: README.md shows a decision noted with --governs and fgraph about of the file listing it first; docs/domain-model.md says what governs records, that the path is kept as written and not checked, and how about orders what governs a file and what touched it"
 created = 2026-11-22 10:48:18+00:00
 started = 2026-11-22 18:09:25+00:00
+completed = 2026-11-22 18:09:26+00:00
+commit = "e5dd7f0"

@@ -22,8 +22,8 @@ from flowgraph.criterion import (
     NoCommit,
     make_commit,
 )
-from flowgraph.feature_complete import complete_with_feature
-from flowgraph.feature_move import check_move
+from flowgraph.feature.complete import complete_with_feature
+from flowgraph.feature.move import check_move
 from flowgraph.item_depends import bucketed
 from flowgraph.item_id import (
     ItemId,

@@ -2,7 +2,7 @@
 
 Its state line tells the states apart, and each state holds the times and the texts of the moves
 that reached it, no other. A Feature is built from its file through its constructor and its moves
-(`flowgraph.feature_state`).
+(`flowgraph.feature.state`).
 """
 
 import tomllib
@@ -14,7 +14,7 @@ from typing import Annotated, Literal, assert_never
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
 
 from flowgraph.criterion import CommitError, EmptyPartError, Evidence, evidence_written
-from flowgraph.feature_state import (
+from flowgraph.feature.state import (
     IN_BACKLOG,
     BlockedFeature,
     CompletedFeature,

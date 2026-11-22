@@ -10,7 +10,7 @@ from datetime import datetime
 from typing import assert_never
 
 from flowgraph.feature import removed_feature
-from flowgraph.feature_item import is_feature_id
+from flowgraph.feature.item import is_feature_id
 from flowgraph.item import MESSAGE, Written, remove_item
 from flowgraph.item_depends import superseded_by_asked
 from flowgraph.parent import feature_id_text, parse_feature_id

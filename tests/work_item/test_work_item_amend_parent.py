@@ -19,7 +19,7 @@ from flowgraph.feature import (
     make_feature,
     started_feature,
 )
-from flowgraph.feature_move import check_move
+from flowgraph.feature.move import check_move
 from flowgraph.parent import (
     STANDALONE,
     FeatureId,

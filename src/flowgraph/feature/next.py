@@ -19,7 +19,7 @@ from flowgraph.feature import (
     RemovedFeature,
     StartedFeature,
 )
-from flowgraph.feature_start import (
+from flowgraph.feature.start import (
     WorkItemInProgressError,
     check_start_under_feature,
     first_in_backlog,

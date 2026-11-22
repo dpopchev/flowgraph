@@ -23,19 +23,19 @@ from flowgraph.criterion import (
     make_hypothesis,
     make_scenario,
 )
-from flowgraph.feature_amend import amend_named
-from flowgraph.feature_block import block_named, unblock_named
-from flowgraph.feature_item import (
+from flowgraph.feature.amend import amend_named
+from flowgraph.feature.block import block_named, unblock_named
+from flowgraph.feature.item import (
     add_feature_item,
     complete_feature_item,
     is_feature_id,
     parent_named,
     show_any_item,
 )
-from flowgraph.feature_next import complete_and_start_next
-from flowgraph.feature_note import note_named
-from flowgraph.feature_remove import remove_named
-from flowgraph.feature_start import (
+from flowgraph.feature.next import complete_and_start_next
+from flowgraph.feature.note import note_named
+from flowgraph.feature.remove import remove_named
+from flowgraph.feature.start import (
     check_start_under_feature,
     start_feature_item,
 )

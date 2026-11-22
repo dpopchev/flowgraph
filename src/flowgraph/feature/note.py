@@ -6,7 +6,7 @@ runs on the store of a record, as the commands of a work item do (`flowgraph.ite
 
 from flowgraph import work_item
 from flowgraph.feature import note_feature
-from flowgraph.feature_item import is_feature_id
+from flowgraph.feature.item import is_feature_id
 from flowgraph.item import MESSAGE, Written
 from flowgraph.item_id import parse_work_item_id_of_any_kind
 from flowgraph.knowledge import KnowledgeKind

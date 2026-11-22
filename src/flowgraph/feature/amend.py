@@ -20,7 +20,7 @@ from flowgraph.feature import (
     StartedFeature,
     make_feature,
 )
-from flowgraph.feature_item import is_feature_id
+from flowgraph.feature.item import is_feature_id
 from flowgraph.item import MESSAGE, Written, amend_item
 from flowgraph.item_id import parse_amended_id
 from flowgraph.parent import feature_id_text, parse_feature_id

@@ -20,7 +20,7 @@ from flowgraph.feature import (
     unblocked_feature,
     write_feature,
 )
-from flowgraph.feature_amend import FeatureAmendment, amended_feature
+from flowgraph.feature.amend import FeatureAmendment, amended_feature
 from flowgraph.knowledge import DECISION, FINDING, make_knowledge_line
 from flowgraph.parent import make_feature_id
 

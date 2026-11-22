@@ -1,17 +1,17 @@
 """A Feature: a bigger outcome that groups work items, with the criteria the user experiences.
 
 It is not worked on directly, so it holds no Task. Its state is its own, in Backlog, started,
-blocked, completed or removed, as that of a work item is (`flowgraph.feature_state`); a started
+blocked, completed or removed, as that of a work item is (`flowgraph.feature.state`); a started
 one is in InProgress, blocked or not, a completed one in Completed and a removed one in Removed,
 and every other bucket a list shows it in is still derived from the states of its work items. It
-is kept as one file of the record, `items/F-0001.toml` (`flowgraph.feature_file`).
+is kept as one file of the record, `items/F-0001.toml` (`flowgraph.feature.file`).
 """
 
 from collections.abc import Callable, Collection, Iterable
 from dataclasses import dataclass, field
 from typing import assert_never
 
-from flowgraph.feature_file import (
+from flowgraph.feature.file import (
     FeatureFileError,
     FeatureMismatchError,
     FeatureNotFoundError,
@@ -20,7 +20,7 @@ from flowgraph.feature_file import (
     read_feature_ids,
     write_feature,
 )
-from flowgraph.feature_state import (
+from flowgraph.feature.state import (
     BlockedFeature,
     CompletedFeature,
     Feature,
@@ -45,8 +45,8 @@ from flowgraph.parent import FeatureId, feature_id_text, make_feature_id, parse_
 from flowgraph.record import Now
 from flowgraph.work_item import WorkItemRow
 
-# The states of a Feature and its moves live in feature_state.py and its file in feature_file.py;
-# they stay importable from here.
+# The states of a Feature and its moves live in state.py and its file in file.py; they stay
+# importable from here.
 __all__ = [
     "BlockedFeature",
     "CompletedFeature",

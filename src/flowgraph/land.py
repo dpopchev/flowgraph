@@ -33,8 +33,8 @@ from flowgraph.config import (
 )
 from flowgraph.criterion import DecisionError, EmptyPartError, make_commit
 from flowgraph.feature import FeatureNotFoundError
-from flowgraph.feature_complete import completed_with
-from flowgraph.feature_next import complete_and_start_next
+from flowgraph.feature.complete import completed_with
+from flowgraph.feature.next import complete_and_start_next
 from flowgraph.gate import GateError, RunGate, check_gate
 from flowgraph.item import ToBranch, parse_work_item_id_of_any_kind
 from flowgraph.record import Now

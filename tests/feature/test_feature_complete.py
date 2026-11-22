@@ -14,7 +14,7 @@ from flowgraph.feature import (
     make_feature,
     started_feature,
 )
-from flowgraph.feature_complete import complete_with_feature
+from flowgraph.feature.complete import complete_with_feature
 from flowgraph.parent import STANDALONE, FeatureId, Parent, make_feature_id
 from flowgraph.queue import make_queue
 from flowgraph.scope import OutOfScopeError

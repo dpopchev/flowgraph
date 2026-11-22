@@ -17,7 +17,7 @@ from flowgraph.feature import (
     make_feature,
     started_feature,
 )
-from flowgraph.feature_start import (
+from flowgraph.feature.start import (
     FeatureNotStartedError,
     NoWorkItemError,
     WorkItemInProgressError,

@@ -10,8 +10,8 @@ from flowgraph.criterion import (
     EmptyPartError,
 )
 from flowgraph.feature import FeatureFileError, FeatureNotFoundError, NoCriterionError
-from flowgraph.feature_item import OpenWorkItemError
-from flowgraph.feature_start import FeatureNotStartedError, NoWorkItemError, WorkItemInProgressError
+from flowgraph.feature.item import OpenWorkItemError
+from flowgraph.feature.start import FeatureNotStartedError, NoWorkItemError, WorkItemInProgressError
 from flowgraph.gate import GateError
 from flowgraph.graph import FormatError
 from flowgraph.item import ItemIdError

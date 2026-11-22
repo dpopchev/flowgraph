@@ -27,11 +27,11 @@ from flowgraph.feature import (
     unblocked_feature,
     write_feature,
 )
-from flowgraph.feature_amend import FeatureAmendment, amended_feature
-from flowgraph.feature_item import parent_named, show_feature_item
-from flowgraph.feature_move import check_move
-from flowgraph.feature_remove import remove_named
-from flowgraph.feature_start import check_start_under_feature
+from flowgraph.feature.amend import FeatureAmendment, amended_feature
+from flowgraph.feature.item import parent_named, show_feature_item
+from flowgraph.feature.move import check_move
+from flowgraph.feature.remove import remove_named
+from flowgraph.feature.start import check_start_under_feature
 from flowgraph.item import Written
 from flowgraph.parent import STANDALONE, FeatureId, Parent, make_feature_id
 from flowgraph.queue import make_queue

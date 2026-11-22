@@ -2,9 +2,9 @@
 
 A Feature is to its work items what a work item is to its Tasks: a started one that cannot go
 on is blocked, with its reason and what it waits on, and unblocked back to started. While it is
-blocked no further work item of it starts (`flowgraph.feature_start`) and its started one goes
+blocked no further work item of it starts (`flowgraph.feature.start`) and its started one goes
 on; its unblock starts the next one when none is started, as the completion of one does
-(`flowgraph.feature_next`). Each runs on the store of a record, as the commands of a work item
+(`flowgraph.feature.next`). Each runs on the store of a record, as the commands of a work item
 do (`flowgraph.item`).
 """
 
@@ -12,8 +12,8 @@ from typing import assert_never
 
 from flowgraph.config import Config
 from flowgraph.feature import blocked_feature, unblocked_feature
-from flowgraph.feature_next import NOT_STARTED, start_next
-from flowgraph.feature_start import first_in_backlog
+from flowgraph.feature.next import NOT_STARTED, start_next
+from flowgraph.feature.start import first_in_backlog
 from flowgraph.item import MESSAGE, Written, block_item, unblock_item
 from flowgraph.item_id import parse_moved_id
 from flowgraph.parent import FeatureId, feature_id_text

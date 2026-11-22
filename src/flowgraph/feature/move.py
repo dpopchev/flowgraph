@@ -9,7 +9,7 @@ one, so what it holds is not taken from it.
 
 from typing import assert_never
 
-from flowgraph.feature import (
+from flowgraph.feature.model import (
     BlockedFeature,
     CompletedFeature,
     Feature,

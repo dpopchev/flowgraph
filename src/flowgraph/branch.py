@@ -177,13 +177,19 @@ def abort_merge(work_tree: Path) -> None:
 def merge_uncommitted(work_tree: Path, branch: str) -> None:
     """Adapter: merge the branch into the work tree as a merge of its own, held uncommitted.
 
-    Raises GitError when git refuses the merge, as on a conflict; nothing is merged then.
+    Raises GitError when a merge is held in the work tree already, which is left as it was; when
+    git refuses the merge, as on a conflict, nothing is merged then; and when the branch brings
+    no commit to merge, so no merge is held and nothing staged is taken into a commit.
     """
+    if _merging(work_tree):
+        raise GitError(f"a merge is held in {work_tree}: commit it or abort it first")
     try:
         _git(work_tree, "merge", "--no-ff", "--no-commit", "--quiet", branch)
     except GitError:
         abort_merge(work_tree)
         raise
+    if not _merging(work_tree):
+        raise GitError(f"{branch} brings nothing to merge: it holds no commit {MAIN} lacks")
 
 
 def commit_merge(work_tree: Path, message: str) -> str:

@@ -35,7 +35,8 @@ commit = "0d42d7b"
 
 [[tasks]]
 id = "T-0296"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say how two terms relate"
 expected_output = "changed: README.md shows two terms related and the show of each side; docs/domain-model.md names the closed set of kinds, is-a and part-of, what each means, which side is stored, and what is refused"
 created = 2026-11-22 10:48:00+00:00
+started = 2026-11-22 16:53:10+00:00

@@ -25,3 +25,10 @@ title = "Add --filed-during to fgraph add, shown from both sides"
 description = "Removes the xfail mark of tests/functional/test_filed_during.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph add of every kind of work item takes --filed-during ID once, the work item it was found during, in any state but Removed; the file of the new work item keeps it as filed_during, held in src/flowgraph/relation.py beside depends on and read back in every state; an id that is no work item of the record is refused, exit 2, nothing written; fgraph show of the new work item lists filed during with the id, and fgraph show of the other lists, as filed during it, the id of each work item that names it, read from the record and stored nowhere; fgraph amend does not take it: when a work item was found does not change"
 created = 2026-11-22 10:47:42+00:00
+
+[[tasks]]
+id = "T-0283"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say a work item names the one it was filed during"
+expected_output = "changed: README.md shows --filed-during and the show of each side; docs/domain-model.md says what filed during records, that it is given at the add alone, which side is stored and which is derived"
+created = 2026-11-22 10:47:44+00:00

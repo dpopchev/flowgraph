@@ -16,7 +16,7 @@ from pathlib import Path
 from flowgraph.branch import MAIN
 from flowgraph.commit import OpenGit, kept_in
 from flowgraph.scope import scope_of, worktree_of_item
-from flowgraph.store import OpenStore, Store
+from flowgraph.store import KINDS, OpenStore, Store
 from flowgraph.term import Term
 from flowgraph.work_item import (
     STARTED,
@@ -27,6 +27,26 @@ from flowgraph.work_item import (
     WorkItemRow,
     parse_work_item_id,
 )
+
+
+def held_elsewhere(record: Path, open_git: OpenGit, open_store: OpenStore) -> frozenset[str]:
+    """The ids of the work items the records of the other worktrees of the repository hold.
+
+    The record of another worktree is found as across_worktrees finds it. Outside a git work
+    tree, and for a record git ignores, there is none: the set is empty.
+    """
+    work_tree = kept_in(record, open_git)
+    if work_tree is None:
+        return frozenset()
+    top = work_tree.path.resolve()
+    inside = record.resolve().relative_to(top)
+    others = [path / inside for path in work_tree.find_worktrees() if path.resolve() != top]
+    return frozenset(
+        row.id
+        for other in others
+        for kind in KINDS
+        for row in open_store(other).find_work_item_rows(kind)
+    )
 
 
 def across_worktrees(store: Store, record: Path, open_git: OpenGit, open_store: OpenStore) -> Store:

@@ -123,18 +123,25 @@ def _edges_in_order(edges: Iterable[Edge]) -> list[dict[str, str]]:
     return [{"kind": kind, "from": start, "to": end} for kind, start, end in ordered]
 
 
+def nodes_and_edges(store: Store) -> tuple[list[Node], list[Edge]]:
+    """Every node and every edge of the record, in no order: the plain data the views read."""
+    parts = [_feature_parts(store), _item_parts(store), _term_parts(store)]
+    return [node for part in parts for node in part[0]], [
+        edge for part in parts for edge in part[1]
+    ]
+
+
 def graph_text(format_: str, store: Store) -> str:
     """The text fgraph graph gives: the nodes, the edges and the knowledge lines, as JSON.
 
     Raises FormatError when the format is not json. Nothing is written.
     """
     chosen_format(format_)
-    parts = [_feature_parts(store), _item_parts(store), _term_parts(store)]
-    nodes = sorted((node for part in parts for node in part[0]), key=lambda node: str(node["id"]))
+    nodes, edges = nodes_and_edges(store)
     lines = sorted(collected(store), key=lambda entry: (entry.item, entry.noted))
     document = {
-        "nodes": nodes,
-        "edges": _edges_in_order(edge for part in parts for edge in part[1]),
+        "nodes": sorted(nodes, key=lambda node: str(node["id"])),
+        "edges": _edges_in_order(edges),
         "knowledge": [_line(entry) for entry in lines],
     }
     return json.dumps(document, indent=2) + "\n"

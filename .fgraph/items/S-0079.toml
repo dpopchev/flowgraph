@@ -1,0 +1,10 @@
+id = "S-0079"
+state = "backlog"
+title = "Raise the refusal of fgraph start of a work item under a Feature not started from naming the Feature to naming the command that starts it"
+description = "Found during T-0301 of S-0073 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. It says S-0001 cannot start: F-0001 is not started, start it first. Its Tasks are written when it is ordered."
+created = 2026-11-22 17:29:55+00:00
+
+[criterion]
+given = "a Story under a Feature in Backlog"
+when = "fgraph start of the Story is run"
+then = "it exits 2 saying fgraph start F-0001 starts it"

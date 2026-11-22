@@ -1,9 +1,10 @@
 id = "S-0068"
-state = "backlog"
+state = "started"
 title = "Raise the removed work items fgraph lists with the work item that supersedes them from none to every one"
 description = "Part of F-0004. It replaces the free text of a reason such as: refiled under F-0002 as S-0050. A remove with --reason alone stays as it is."
 parent = "F-0004"
 created = 2026-11-22 10:41:31+00:00
+started = 2026-11-22 12:14:56+00:00
 
 [criterion]
 given = "a record with two Stories in Backlog"

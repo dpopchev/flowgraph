@@ -1,10 +1,12 @@
 id = "S-0067"
-state = "started"
+state = "completed"
 title = "Raise the work items fgraph shows with the work item they were filed during from none to every one"
 description = "Part of F-0004. Every kind of work item takes --filed-during."
 parent = "F-0004"
 created = 2026-11-22 10:41:30+00:00
 started = 2026-11-22 11:58:49+00:00
+completed = 2026-11-22 12:14:55+00:00
+commit = "f37d69d"
 
 [criterion]
 given = "a record with a started Story"

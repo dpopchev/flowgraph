@@ -7,3 +7,8 @@ criteria = [
     "a developer makes the record of a directory with one command of fgraph",
     "a developer runs fgraph in any repository without the checkout of flowgraph",
 ]
+
+[[knowledge]]
+kind = "decision"
+text = "Relayed by the note of the ~/.claude session of 2026-11-22: stays in the planning skill and not in fgraph -- the notes of local/inbox/, the write guards and the attribution lint of the agent harness, the coordinator and lane protocol with burn, goal and report, the SessionStart hook, the agreement of a plan; left out as overhead -- park, which fgraph block of a Feature with --waiting-on an id and --depends-on say, the rendered files BOARD.md, KANBAN.md and csv, and a tree view; external sync is later, with no order asked."
+noted = 2026-11-22 21:04:21+00:00

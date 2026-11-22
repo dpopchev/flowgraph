@@ -9,3 +9,11 @@ created = 2026-11-22 10:41:45+00:00
 given = "a record with Features, work items, Tasks, terms and relations"
 when = "fgraph graph --format json is run"
 then = "it prints every node with its kind and every edge with its kind and its two ends, as JSON another tool reads"
+
+[[tasks]]
+id = "T-0313"
+state = "backlog"
+title = "Add tests/functional/test_graph_json.py, failing on the criterion of S-0077"
+description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_about_item.py does. Seen red, then marked a strict xfail naming S-0077 until the Task that turns it green removes the mark."
+expected_output = "created: tests/functional/test_graph_json.py states that, on a record with a Feature, a work item under it with a Task, two related terms and a work item that depends on another, fgraph graph --format json exits 0 and prints JSON holding every node with its kind and every edge with its kind and its two ends"
+created = 2026-11-22 10:48:19+00:00

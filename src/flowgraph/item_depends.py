@@ -10,7 +10,14 @@ from dataclasses import replace
 
 from flowgraph.item_id import ItemIdError, parse_item_id, parse_work_item_id_of_any_kind
 from flowgraph.parent import NONE
-from flowgraph.relation import RelationError, Standing, Waited, closes_cycle, waiting_for
+from flowgraph.relation import (
+    RelationError,
+    Standing,
+    Waited,
+    closes_cycle,
+    filed_during_it,
+    waiting_for,
+)
 from flowgraph.status import BACKLOG, COMPLETED, rows_by_id
 from flowgraph.store import Store
 from flowgraph.task import TaskId
@@ -36,7 +43,9 @@ def _bucket_of(state: str) -> str:
 def record_standing(store: Store) -> dict[str, Standing]:
     """Every work item of the record under its id as written, as the views of a relation read it."""
     return {
-        row.id: Standing(_bucket_of(row.state), row.state == COMPLETED, tuple(row.depends_on))
+        row.id: Standing(
+            _bucket_of(row.state), row.state == COMPLETED, tuple(row.depends_on), row.filed_during
+        )
         for row in rows_by_id(store).values()
     }
 
@@ -70,11 +79,32 @@ def depends_asked(
     return tuple(asked)
 
 
+def filed_during_asked(text: str | None, store: Store) -> WorkItemId | None:
+    """The work item a command asks the new one to be filed during; None when it names none.
+
+    Raises WorkItemIdError when the text is the id of no kind, WorkItemNotFoundError when the
+    record holds no such work item and RelationError when it is removed; nothing is written.
+    """
+    if text is None:
+        return None
+    asked = parse_work_item_id_of_any_kind(text)
+    named = work_item_id_text(asked)
+    record = record_standing(store)
+    if named not in record:
+        raise WorkItemNotFoundError(asked)
+    if record[named].bucket == APART:
+        raise RelationError(f"a work item cannot be filed during {named}: it is removed")
+    return asked
+
+
 def bucketed(detail: WorkItemDetail, store: Store) -> WorkItemDetail:
-    """The detail of a work item with the bucket each work item it depends on is listed in."""
+    """The detail of a work item with the bucket each work item it depends on is listed in and
+    the ids of the work items filed during it, read from the record."""
     record = record_standing(store)
     return replace(
-        detail, depends_on=[DependsRow(row.id, record[row.id].bucket) for row in detail.depends_on]
+        detail,
+        depends_on=[DependsRow(row.id, record[row.id].bucket) for row in detail.depends_on],
+        filed_here=filed_during_it(detail.id, record),
     )
 
 

@@ -2,8 +2,8 @@
 
 A relation is stored on the item that names it and never on the item it names: the other side is
 derived by a view over the record, so a write stays one file. The relations of an item are one
-value with a field per kind of relation, so a new kind is a new field. The first is `depends_on`:
-the work items it waits for, none by default.
+value with a field per kind of relation, so a new kind is a new field. `depends_on` is the work
+items it waits for, none by default; `filed_during` is the one it was found during, if any.
 
 A relation holds the ids of the items it names whatever their type, so this module needs no work
 item: the views read the record as plain data.
@@ -15,9 +15,10 @@ from dataclasses import dataclass, replace
 
 @dataclass(frozen=True)
 class Relations[Id]:
-    """What a work item names: the ids of the work items it depends on, in the order given."""
+    """What a work item names: the ids it depends on in order, the one it was filed during."""
 
     depends_on: tuple[Id, ...] = ()
+    filed_during: Id | None = None
 
 
 class RelationError(ValueError):
@@ -34,6 +35,7 @@ class Standing:
     bucket: str
     completed: bool
     depends_on: tuple[str, ...] = ()
+    filed_during: str = ""
 
 
 @dataclass(frozen=True)
@@ -44,15 +46,20 @@ class Waited:
     bucket: str
 
 
-def make_relations[Id](item: Id, depends_on: Iterable[Id] = ()) -> Relations[Id]:
-    """The relations of that work item: each work item it depends on once, in the order given.
+def make_relations[Id](
+    item: Id, depends_on: Iterable[Id] = (), filed_during: Id | None = None
+) -> Relations[Id]:
+    """The relations of that work item: each work item it depends on once, in the order given,
+    and the one it was filed during, none by default.
 
-    Raises RelationError when it names itself.
+    Raises RelationError when it names itself in either.
     """
     named = tuple(dict.fromkeys(depends_on))
     if item in named:
         raise RelationError(f"{item} cannot depend on itself")
-    return Relations(named)
+    if item == filed_during:
+        raise RelationError(f"{item} cannot be filed during itself")
+    return Relations(named, filed_during)
 
 
 def with_depends_on[Id](
@@ -63,6 +70,11 @@ def with_depends_on[Id](
     None given takes them all away. Raises RelationError when the item names itself.
     """
     return replace(relations, depends_on=make_relations(item, depends_on).depends_on)
+
+
+def filed_during_it(item: str, record: Mapping[str, Standing]) -> list[str]:
+    """The ids of the work items of the record filed during the item, in the order of the record."""
+    return [named for named, standing in record.items() if standing.filed_during == item]
 
 
 def waiting_for(item: str, record: Mapping[str, Standing]) -> list[Waited]:

@@ -30,7 +30,6 @@ COMPLETED_STORY = (
     ["complete", "S-0001", "--commit", "def5678"],
 )
 AMEND = [*ADD_STORY, "--amends", "S-0001"]
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0069: fgraph add takes --amends")
 
 
 @dataclass(frozen=True)
@@ -66,18 +65,15 @@ def runs(cwd: Path, *argvs: Sequence[str]) -> Outcome:
     return outcomes[-1]
 
 
-@XFAIL
 def test_add_story_amending_the_completed_story_exits_with_zero(tmp_path: Path) -> None:
     assert runs(tmp_path, *COMPLETED_STORY, AMEND).status == 0
 
 
-@XFAIL
 def test_show_of_the_new_story_lists_the_story_it_amends(tmp_path: Path) -> None:
     shown = runs(tmp_path, *COMPLETED_STORY, AMEND, ["show", "S-0002"]).out
     assert "  amends       S-0001\n" in shown
 
 
-@XFAIL
 def test_show_of_the_completed_story_lists_the_new_one_as_amending_it(tmp_path: Path) -> None:
     shown = runs(tmp_path, *COMPLETED_STORY, AMEND, ["show", "S-0001"]).out
     assert "  amended by   S-0002\n" in shown

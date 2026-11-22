@@ -1,6 +1,6 @@
 """The relations of a work item as its file holds them: the ids as written, in order.
 
-The work items it depends on and the one it was filed during.
+The work items it depends on, the one it was filed during and the one it amends.
 """
 
 from collections.abc import Iterable, Sequence
@@ -22,6 +22,7 @@ class RelationsFile(BaseModel):
 
     depends_on: list[str] = []
     filed_during: str = ""
+    amends: str = ""
 
 
 def id_held(text: str, kinds: Sequence[Kind]) -> WorkItemId:
@@ -48,7 +49,8 @@ def relations_held(
     """
     depends_on: Iterable[WorkItemId] = (id_held(text, kinds) for text in held.depends_on)
     filed_during = id_held(held.filed_during, kinds) if held.filed_during else None
-    return make_relations(item_id, depends_on, filed_during)
+    amends = id_held(held.amends, kinds) if held.amends else None
+    return make_relations(item_id, depends_on, filed_during, amends)
 
 
 def relations_primitives(relations: Relations[WorkItemId]) -> dict[str, object]:
@@ -57,4 +59,6 @@ def relations_primitives(relations: Relations[WorkItemId]) -> dict[str, object]:
     depends = {"depends_on": ids} if ids else {}
     named = relations.filed_during
     during = {"filed_during": work_item_id_text(named)} if named else {}
-    return {**depends, **during}
+    amended = relations.amends
+    amends = {"amends": work_item_id_text(amended)} if amended else {}
+    return {**depends, **during, **amends}

@@ -7,6 +7,7 @@ from flowgraph.relation import (
     Relations,
     Standing,
     Waited,
+    amended_by,
     closes_cycle,
     make_relations,
     superseding,
@@ -118,3 +119,22 @@ def test_a_work_item_supersedes_each_one_of_the_record_that_names_it_in_order() 
         "S-4": Standing("Removed", False, superseded_by="S-1"),
     }
     assert superseding("S-2", record) == ["S-1", "S-3"]
+
+
+def test_a_work_item_is_amended_by_each_one_of_the_record_that_names_it_in_order() -> None:
+    record = {
+        "S-1": DONE,
+        "S-2": Standing("Backlog", False, amends="S-1"),
+        "S-3": Standing("Backlog", False, amends="S-1"),
+        "S-4": Standing("Backlog", False, amends="S-2"),
+    }
+    assert amended_by("S-1", record) == ["S-2", "S-3"]
+
+
+def test_a_work_item_amends_none_by_default() -> None:
+    assert make_relations("S-2").amends is None
+
+
+def test_a_work_item_that_amends_itself_is_refused() -> None:
+    with pytest.raises(RelationError, match="S-2 cannot amend itself"):
+        make_relations("S-2", amends="S-2")

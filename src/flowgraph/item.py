@@ -123,12 +123,14 @@ def add_item(
     parent: Parent = STANDALONE,
     depends_on: tuple[WorkItemId, ...] = (),
     filed_during: WorkItemId | None = None,
+    amends: WorkItemId | None = None,
 ) -> Written:
     """Add a work item of that kind with its criterion; what the write says.
 
-    It stands alone unless a Feature is given as its parent, depends on the work items given and
-    is filed during the one given. Raises EmptyPartError when the title is blank and
-    CriterionError when the criterion is not of the form the kind takes; nothing is saved.
+    It stands alone unless a Feature is given as its parent, depends on the work items given,
+    is filed during the one given and amends the one given. Raises EmptyPartError when the title
+    is blank and CriterionError when the criterion is not of the form the kind takes; nothing is
+    saved.
     """
     added = work_item.add_work_item(
         kind=kind,
@@ -141,6 +143,7 @@ def add_item(
         parent=parent,
         depends_on=depends_on,
         filed_during=filed_during,
+        amends=amends,
     )
     text = work_item_id_text(added)
     return Written(f"added {text}\n", MESSAGE.format(f"add {text}"))

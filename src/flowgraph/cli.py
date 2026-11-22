@@ -47,7 +47,12 @@ from flowgraph.item import (
     status_item,
     write_task,
 )
-from flowgraph.item_depends import check_start_waits, depends_asked, filed_during_asked
+from flowgraph.item_depends import (
+    amends_asked,
+    check_start_waits,
+    depends_asked,
+    filed_during_asked,
+)
 from flowgraph.knowledge import DECISION, DEVIATION, FINDING
 from flowgraph.knowledge_list import show_knowledge
 from flowgraph.land import land_item
@@ -110,6 +115,7 @@ def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -
             criterion = _criterion(args)
             depends_on = depends_asked(args.depends_on, None, store) or ()
             filed_during = filed_during_asked(args.filed_during, store)
+            amends = amends_asked(args.amends, store)
             return add_item(
                 kind,
                 args.title,
@@ -120,6 +126,7 @@ def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -
                 under,
                 depends_on,
                 filed_during,
+                amends,
             )
         case "amend":
             amended = None if is_feature_id(args.id) else args.id

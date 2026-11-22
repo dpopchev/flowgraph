@@ -70,8 +70,8 @@ def _completed_on(item: WorkItemState) -> datetime | None:
             assert_never(unreachable)
 
 
-def _filed_during_text(named: WorkItemId | None) -> str:
-    """The id of the work item another was filed during as written; empty for none."""
+def _named_text(named: WorkItemId | None) -> str:
+    """The id of the work item another one names as written; empty for none."""
     return "" if named is None else work_item_id_text(named)
 
 
@@ -89,8 +89,9 @@ def work_item_row(item: WorkItemState) -> WorkItemRow:
         completed=_completed_on(item),
         tasks=[row_of(task) for task in item.tasks],
         depends_on=[work_item_id_text(each) for each in item.relations.depends_on],
-        filed_during=_filed_during_text(item.relations.filed_during),
+        filed_during=_named_text(item.relations.filed_during),
         superseded_by=superseded_by_of(item),
+        amends=_named_text(item.relations.amends),
     )
 
 
@@ -107,10 +108,12 @@ def work_item_detail(item: WorkItemState) -> WorkItemDetail:
         parent=parent_text(item.parent),
         knowledge=[knowledge_row(line) for line in item.knowledge],
         depends_on=[DependsRow(work_item_id_text(each)) for each in item.relations.depends_on],
-        filed_during=_filed_during_text(item.relations.filed_during),
+        filed_during=_named_text(item.relations.filed_during),
         filed_here=[],
         superseded_by=superseded_by_of(item),
         supersedes=[],
+        amends=_named_text(item.relations.amends),
+        amended_by=[],
         **criterion_parts(item.criterion),
     )
 
@@ -141,18 +144,19 @@ def add_work_item(
     parent: Parent = STANDALONE,
     depends_on: Iterable[WorkItemId] = (),
     filed_during: WorkItemId | None = None,
+    amends: WorkItemId | None = None,
 ) -> WorkItemId:
     """Add a work item of that kind to Backlog under its next free id and return that id.
 
-    It stands alone unless a Feature is named as its parent, depends on the work items given
-    and is filed during the one given. The rows found are those of the kind. Raises
-    EmptyPartError when the title is blank and CriterionError when the criterion is not of the
-    form the kind takes; nothing is saved.
+    It stands alone unless a Feature is named as its parent, depends on the work items given,
+    is filed during the one given and amends the one given. The rows found are those of the
+    kind. Raises EmptyPartError when the title is blank and CriterionError when the criterion is
+    not of the form the kind takes; nothing is saved.
     """
     taken = [parse_work_item_id(kind, row.id) for row in find_work_item_rows()]
     item_id = next_work_item_id(kind, taken)
     item = make_work_item(
-        item_id, title, criterion, description, now(), parent, depends_on, filed_during
+        item_id, title, criterion, description, now(), parent, depends_on, filed_during, amends
     )
     save_work_item(item)
     return item.id

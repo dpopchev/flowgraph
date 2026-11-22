@@ -213,12 +213,12 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     The criterion is listed by the parts its kind states: a Given / When / Then, what is
     observed and expected, or a hypothesis with, once it is answered, its decision under it.
     A parent, the work items it depends on each with its bucket, the work item it was filed
-    during, the work items filed during it, the work items it supersedes, a description, a commit,
-    the work item that supersedes a removed one and the reason of a removal are listed only when
-    there is one, the bucket of a Task only once it has left Backlog. A
-    blocked Task is listed in InProgress as blocked, with its reason and what it
-    waits on. The knowledge lines follow, in the order noted, each with its kind, its date and
-    its text; there is no heading without one.
+    during, the work items filed during it, the work items it supersedes, the completed one it
+    amends, the work items that amend it, a description, a commit, the work item that supersedes
+    a removed one and the reason of a removal are listed only when there is one, the bucket of a
+    Task only once it has left Backlog. A blocked Task is listed in InProgress as blocked, with
+    its reason and what it waits on. The knowledge lines follow, in the order noted, each with
+    its kind, its date and its text; there is no heading without one.
     """
     bucket = next(name for name, states in BUCKETS if detail.state in states)
     under = [f"  parent       {detail.parent}\n"] if detail.parent else []
@@ -227,6 +227,9 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     during = [f"  filed during {detail.filed_during}\n"] if detail.filed_during else []
     here = ", ".join(detail.filed_here)
     filed_here = [f"  filed here   {here}\n"] if here else []
+    amends = [f"  amends       {detail.amends}\n"] if detail.amends else []
+    amending = ", ".join(detail.amended_by)
+    amended = [f"  amended by   {amending}\n"] if amending else []
     committed = [f"  commit       {detail.commit}\n"] if detail.commit else []
     removed = [f"  reason       {detail.reason}\n"] if detail.reason else []
     superseded = [f"  superseded by {detail.superseded_by}\n"] if detail.superseded_by else []
@@ -250,6 +253,8 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
         *during,
         *filed_here,
         *supersede,
+        *amends,
+        *amended,
         *committed,
         *superseded,
         *removed,

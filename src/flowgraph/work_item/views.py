@@ -26,7 +26,8 @@ class WorkItemRow:
     once removed. Its created time orders the work items of the Backlog nobody placed, its
     started time those of InProgress, its completed time those of Completed. Its Tasks are in
     the order written, each with its own state. The ids it depends on and the one it
-    was filed during are as written, and so is the one that supersedes it once removed.
+    was filed during and the one it amends are as written, and so is the one that supersedes
+    it once removed.
     """
 
     id: str
@@ -42,6 +43,7 @@ class WorkItemRow:
     depends_on: list[str] = field(default_factory=list[str], kw_only=True)
     filed_during: str = field(default="", kw_only=True)
     superseded_by: str = field(default="", kw_only=True)
+    amends: str = field(default="", kw_only=True)
 
 
 @dataclass
@@ -72,3 +74,5 @@ class WorkItemDetail:
     filed_here: list[str] = field(default_factory=list[str])
     superseded_by: str = ""
     supersedes: list[str] = field(default_factory=list[str])
+    amends: str = ""
+    amended_by: list[str] = field(default_factory=list[str])

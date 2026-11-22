@@ -24,11 +24,12 @@ commit = "1723f07"
 
 [[tasks]]
 id = "T-0347"
-state = "backlog"
+state = "started"
 title = "Add --check to fgraph add task, kept on the Task"
 description = "Removes the xfail mark of tests/functional/test_add_task_check.py. Written on 2026-11-22 against the modules of that day, before U-0010 moves them: they are taken again when the Task starts. A module of src/ that would pass the line limit of mk/python.mk is split by one cohesive part, named in the commit."
 expected_output = "changed: a Task holds an optional check, a command as one text, written to the file of its work item and listed by fgraph show under the Task; with the development on fgraph add task without --check exits 2 naming it, and a blank one is refused; with the development off --check is refused naming development.enabled; a file whose Task holds no check is read as before; the check is carried by every move of the Task"
 created = 2026-11-22 21:02:34+00:00
+started = 2026-11-22 22:45:15+00:00
 
 [[tasks]]
 id = "T-0348"

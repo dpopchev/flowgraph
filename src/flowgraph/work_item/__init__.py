@@ -32,6 +32,7 @@ from flowgraph.work_item.file import (
     write_work_item,
 )
 from flowgraph.work_item.model import (
+    STARTED,
     CompletedWorkItem,
     FindTaskIds,
     FindWorkItemRows,
@@ -74,6 +75,7 @@ from flowgraph.work_item.tasks import (
 )
 
 __all__ = [
+    "STARTED",
     "Amendment",
     "CheckMove",
     "CompletedWorkItem",

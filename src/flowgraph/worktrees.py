@@ -14,6 +14,7 @@ from flowgraph.commit import OpenGit, kept_in
 from flowgraph.scope import scope_of, worktree_of_item
 from flowgraph.store import OpenStore, Store
 from flowgraph.work_item import (
+    STARTED,
     Kind,
     WorkItemDetail,
     WorkItemId,
@@ -21,9 +22,6 @@ from flowgraph.work_item import (
     WorkItemRow,
     parse_work_item_id,
 )
-
-# The state of a started work item, as the record writes it.
-STARTED = "started"
 
 
 def across_worktrees(store: Store, record: Path, open_git: OpenGit, open_store: OpenStore) -> Store:

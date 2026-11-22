@@ -25,13 +25,12 @@ from flowgraph.parent import feature_id_text, parse_feature_id
 from flowgraph.queue import Entry, Inside, Line, Placed, queued
 from flowgraph.store import KINDS, Store
 from flowgraph.text import status_text
-from flowgraph.work_item import WorkItemId, WorkItemRow, parse_work_item_id
+from flowgraph.work_item import STARTED, WorkItemId, WorkItemRow, parse_work_item_id
 
 # The state of a row in Backlog, as the record writes it.
 BACKLOG = "backlog"
 
-# The states of a started and of a completed row, as the record writes them.
-STARTED = "started"
+# The state of a completed row, as the record writes it.
 COMPLETED = "completed"
 
 # The row of a Feature with the time that places it in its bucket.

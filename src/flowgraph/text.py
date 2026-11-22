@@ -7,7 +7,7 @@ from flowgraph.feature import FeatureDetail, FeatureRow
 from flowgraph.story import StoryDetail, StoryRow
 from flowgraph.task import TaskRow
 from flowgraph.upkeep import UpkeepDetail, UpkeepRow
-from flowgraph.work_item import WorkItemRow
+from flowgraph.work_item import STARTED, WorkItemRow
 
 # The buckets of the flow in their order, each with the states of an item shown in it.
 BUCKETS: Sequence[tuple[str, Collection[str]]] = (
@@ -23,8 +23,7 @@ APART = "Removed"
 # The state of a blocked Task: shown in InProgress, as blocked.
 BLOCKED = "blocked"
 
-# The states of a started work item or Task and of a completed Task, as the record writes them.
-STARTED = "started"
+# The state of a completed Task, as the record writes it.
 COMPLETED = "completed"
 
 # What ends a line cut to the width of the terminal.

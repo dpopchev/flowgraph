@@ -24,11 +24,12 @@ commit = "ad337e9"
 
 [[tasks]]
 id = "T-0193"
-state = "backlog"
+state = "started"
 title = "Extend the Feature of src/flowgraph/feature.py to a completed state kept in its file with its evidence"
 description = "New code the next Task runs. The evidence is the Commit or NoCommit of src/flowgraph/criterion.py, as a completed work item holds it since S-0041."
 expected_output = "changed: src/flowgraph/feature.py holds the CompletedFeature: its started and completed times and its evidence, the commit of the completion of its last work item or none; the move from a StartedFeature to it, refused for a Feature in Backlog and for one completed already; its file holds the state line, the two times and the commit when it has one, read back whole; proved in tests/feature/"
 created = 2026-11-21 23:43:08+00:00
+started = 2026-11-22 02:05:29+00:00
 
 [[tasks]]
 id = "T-0194"

@@ -1,0 +1,11 @@
+id = "S-0071"
+state = "backlog"
+title = "Raise the kinds of relation fgraph relate keeps between two terms from 0 to 2, is-a and part-of"
+description = "Part of F-0005. A kind outside the set, a term that is not in the record or a cycle is refused, and nothing is written."
+parent = "F-0005"
+created = 2026-11-22 10:41:36+00:00
+
+[criterion]
+given = "a record with two terms"
+when = "fgraph relate is run with the first term, part-of and the second term"
+then = "fgraph show of the first lists that it is part of the second, and fgraph show of the second lists the first as its part"

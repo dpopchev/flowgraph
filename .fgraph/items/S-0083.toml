@@ -1,0 +1,11 @@
+id = "S-0083"
+state = "backlog"
+title = "Cut the commands a developer runs to put the fgraph of this checkout on the path of every repository from several to one"
+description = "The way is the reading of the agent, open on the Feature: uv tool install of the wheel make wheel builds, over a path dependency or an index."
+parent = "F-0007"
+created = 2026-11-22 21:01:44+00:00
+
+[criterion]
+given = "the checkout of flowgraph, where make check passes"
+when = "make install is run, then fgraph init and fgraph status in another directory"
+then = "each exits 0 there, run from the installed wheel and not from the checkout"

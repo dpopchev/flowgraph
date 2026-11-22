@@ -35,7 +35,8 @@ commit = "c1c07db"
 
 [[tasks]]
 id = "T-0354"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say a landing pushes under delivery.push"
 expected_output = "changed: README.md lists delivery.push among the keys and shows a landing that pushes; docs/domain-model.md, Persistence, says when the push runs and what a failed one leaves"
 created = 2026-11-22 21:02:54+00:00
+started = 2026-11-22 23:02:03+00:00

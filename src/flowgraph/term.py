@@ -3,11 +3,13 @@
 A term is the name of a thing the project talks about and what it means. Its name is its id:
 lowercase words of letters and digits joined by `-`, never one that reads as the id of an item.
 It is in no bucket and no queue, since nothing is done to it: it is added and then it stands.
+A term is related to others by a closed set of kinds, `is-a` and `part-of`; a relation is kept in
+the file of the term that names it, the first, and the other side is read from the record.
 """
 
 import re
 import tomllib
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 from pathlib import Path
 
@@ -24,6 +26,12 @@ NAME = re.compile(r"[a-z0-9]+(-[a-z0-9]+)*")
 
 # What reads as the id of an item: letters, a dash and a number, as F-0001 or S-0001.
 ITEM_ID = re.compile(r"[A-Za-z]+-\d+")
+
+
+# The kinds of relation between two terms, held once: a term is a kind of another or part of it.
+IS_A = "is-a"
+PART_OF = "part-of"
+KINDS = (IS_A, PART_OF)
 
 
 class TermError(ValueError):
@@ -47,11 +55,16 @@ class TermMismatchError(Exception):
 
 @dataclass(frozen=True)
 class Term:
-    """A term of the project: its name, what it means and the time it was added."""
+    """A term of the project: its name, what it means, the time it was added and its relations.
+
+    `is_a` names the terms it is a kind of and `part_of` those it is part of, each once, in order.
+    """
 
     name: str
     meaning: str
     added: datetime
+    is_a: tuple[str, ...] = ()
+    part_of: tuple[str, ...] = ()
 
 
 def make_term(name: str, meaning: str, added: datetime) -> Term:
@@ -69,6 +82,27 @@ def make_term(name: str, meaning: str, added: datetime) -> Term:
     return Term(name, said("meaning", meaning), added)
 
 
+def named_by(term: Term, kind: str) -> tuple[str, ...]:
+    """The names of the terms the term is related to by that kind, in order of their relating."""
+    return term.is_a if kind == IS_A else term.part_of
+
+
+def relate(term: Term, kind: str, other: str) -> Term:
+    """The term related to the other by that kind, the rest as it was.
+
+    Raises TermError when the kind is outside the set, when the term is the other and when it is
+    related so already.
+    """
+    if kind not in KINDS:
+        raise TermError(f"{kind!r} is no kind of relation: {' or '.join(KINDS)}")
+    if term.name == other:
+        raise TermError(f"{term.name} cannot be {kind} itself")
+    held = named_by(term, kind)
+    if other in held:
+        raise TermError(f"{term.name} is {kind} {other} already")
+    return replace(term, **{kind.replace("-", "_"): (*held, other)})
+
+
 def is_term_name(text: str) -> bool:
     """True when the text is written as a term name: a term is shown by it, an item by its id."""
     return NAME.fullmatch(text) is not None and ITEM_ID.fullmatch(text) is None
@@ -82,6 +116,8 @@ class _TermFile(BaseModel):
     name: str
     meaning: str
     added: datetime
+    is_a: list[str] = []
+    part_of: list[str] = []
 
 
 def term_file(record: Path, name: str) -> Path:
@@ -96,7 +132,8 @@ def _read_file(path: Path) -> Term:
     """
     try:
         held = _TermFile.model_validate(tomllib.loads(path.read_text(encoding="utf-8")))
-        return make_term(held.name, held.meaning, held.added)
+        made = make_term(held.name, held.meaning, held.added)
+        return replace(made, is_a=tuple(held.is_a), part_of=tuple(held.part_of))
     except (tomllib.TOMLDecodeError, ValidationError, TermError, EmptyPartError) as error:
         raise TermFileError(f"{path} holds no term: {error}") from error
 
@@ -128,7 +165,15 @@ def write_term(record: Path, term: Term) -> None:
     naming the file when the term read back differs; the file is then as it was before.
     """
     path = term_file(record, term.name)
-    primitives = {"name": term.name, "meaning": term.meaning, "added": term.added}
+    primitives: dict[str, object] = {
+        "name": term.name,
+        "meaning": term.meaning,
+        "added": term.added,
+    }
+    if term.is_a:
+        primitives["is_a"] = list(term.is_a)
+    if term.part_of:
+        primitives["part_of"] = list(term.part_of)
     write_checked(
         path,
         primitives,

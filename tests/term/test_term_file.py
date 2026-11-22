@@ -15,6 +15,7 @@ from flowgraph.term import (
     make_term,
     read_term,
     read_term_names,
+    relate,
     term_file,
     write_term,
 )
@@ -94,3 +95,15 @@ class TestAWriteThatReadsBackDifferent:
 
     def test_names_the_path(self, failed: tuple[Path, str]) -> None:
         assert failed[1] == f"{failed[0]}: the term written reads back different"
+
+
+def test_a_term_with_relations_is_written_with_them_and_reads_back_whole(tmp_path: Path) -> None:
+    related = relate(relate(TERM, "part-of", "lane"), "is-a", "check")
+    write_term(tmp_path, related)
+    assert read_term(tmp_path, "gate") == related
+
+
+def test_a_term_with_a_relation_is_written_with_the_names_of_its_kind(tmp_path: Path) -> None:
+    write_term(tmp_path, relate(TERM, "part-of", "lane"))
+    written = tomllib.loads((tmp_path / FILE).read_text("utf-8"))
+    assert written["part_of"] == ["lane"]

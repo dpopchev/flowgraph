@@ -42,7 +42,7 @@ means, is added with `fgraph add term`, listed by `fgraph terms` and shown by
 | the knowledge of an item        | lines noted by `fgraph note` on a work item or a Feature |
 | the knowledge of the record     | every line listed by `fgraph knowledge`, newest first    |
 | the development                 | once enabled: start branches, `fgraph land` lands        |
-| the ontology                    | started: terms, kept apart from the flow; no relations   |
+| the ontology                    | started: terms, related by is-a and part-of              |
 | flowgraph tracking its own work | its Stories are in `.fgraph/` since 0.4.0                |
 
 The model of the record -- its item types, states and rules -- is
@@ -57,6 +57,19 @@ fgraph add term gate --means "a check every deliverable passes before it lands"
 fgraph terms                # gate  a check every deliverable passes before it lands
 fgraph show gate            # the term with its meaning and the day it was added
 ```
+
+Two terms are related by one of two kinds, `is-a` or `part-of`, with `fgraph
+relate`; each side shows the relation:
+
+```sh
+fgraph add term lane --means "one work item in its own worktree"
+fgraph relate gate part-of lane
+fgraph show gate            # gate, with the line: part of  lane
+fgraph show lane            # lane, with the line: parts  gate
+```
+
+`fgraph relate gate is-a check` shows `is a  check` under `gate` and `kinds  gate`
+under `check`. Like `fgraph add term`, it is written on `main` alone.
 
 ## Use
 

@@ -10,6 +10,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
 
+from flowgraph.term import KINDS
+
 DESCRIPTION = "flowgraph keeps the record of a project's work."
 
 # The options that ask for help.
@@ -243,6 +245,10 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         help="list the lines of one kind alone: finding, decision or deviation",
     )
     terms = _command(commands, "terms", "list the terms of the record with their meanings")
+    relate = _command(commands, "relate", "relate a term to another: is-a or part-of")
+    relate.add_argument("first", metavar="TERM", help="the term that is a kind or a part")
+    relate.add_argument("kind", metavar="KIND", help=f"the kind of relation: {' or '.join(KINDS)}")
+    relate.add_argument("second", metavar="TERM", help="the term it is a kind of or part of")
     reorder = _command(
         commands, "reorder", "put a work item or a Feature of the Backlog before another"
     )
@@ -290,6 +296,7 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         "note": note,
         "knowledge": knowledge,
         "terms": terms,
+        "relate": relate,
         "reorder": reorder,
         "status": status,
         "watch": watch,

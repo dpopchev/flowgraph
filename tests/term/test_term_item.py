@@ -12,8 +12,14 @@ from flowgraph.queue import make_queue
 from flowgraph.scope import OutOfScopeError, Scope, within
 from flowgraph.store import Store, TermStore
 from flowgraph.story import make_story_id
-from flowgraph.term import Term, TermError, TermNotFoundError, make_term
-from flowgraph.term_item import TermExistsError, add_term_item, show_term, terms_text
+from flowgraph.term import Term, TermError, TermNotFoundError, make_term, relate
+from flowgraph.term_item import (
+    TermExistsError,
+    add_term_item,
+    relate_term_item,
+    show_term,
+    terms_text,
+)
 
 ADDED = datetime(2026, 1, 1, tzinfo=UTC)
 GATE = make_term("gate", "a check every deliverable passes", ADDED)
@@ -136,3 +142,86 @@ def test_a_term_saved_where_no_work_item_owns_the_branch_is_saved() -> None:
     saved: list[Term] = []
     within(store([], saved), lambda: None, never).terms.save_term(GATE)
     assert saved == [GATE]
+
+
+LANE = make_term("lane", "one work item in its own worktree", ADDED)
+
+
+@pytest.mark.command
+def test_two_terms_related_say_it_and_the_message_of_the_commit() -> None:
+    related = relate_term_item("gate", "part-of", "lane", store([GATE, LANE]))
+    assert related == Written("related gate part-of lane\n", "chore: relate gate in the record")
+
+
+@pytest.mark.command
+def test_two_terms_related_save_the_first_with_the_relation() -> None:
+    saved: list[Term] = []
+    relate_term_item("gate", "part-of", "lane", store([GATE, LANE], saved))
+    assert saved == [relate(GATE, "part-of", "lane")]
+
+
+@pytest.mark.command
+@pytest.mark.parametrize(
+    ("first", "kind", "second", "said"),
+    [
+        ("gate", "owns", "lane", "'owns' is no kind of relation: is-a or part-of"),
+        ("gate", "part-of", "gate", "gate cannot be part-of itself"),
+        ("gate", "part-of", "none", "no term 'none' in the record"),
+        ("none", "part-of", "lane", "no term 'none' in the record"),
+    ],
+    ids=["a-kind-outside-the-set", "itself", "no-second-term", "no-first-term"],
+)
+def test_a_relation_refused_says_why_and_saves_nothing(
+    first: str, kind: str, second: str, said: str
+) -> None:
+    saved: list[Term] = []
+    with pytest.raises((TermError, TermNotFoundError), match=re.escape(said)):
+        relate_term_item(first, kind, second, store([GATE, LANE], saved))
+    assert saved == []
+
+
+@pytest.mark.command
+def test_a_relation_kept_already_is_refused_and_saves_nothing() -> None:
+    saved: list[Term] = []
+    held = [relate(GATE, "part-of", "lane"), LANE]
+    with pytest.raises(TermError, match=re.escape("gate is part-of lane already")):
+        relate_term_item("gate", "part-of", "lane", store(held, saved))
+    assert saved == []
+
+
+@pytest.mark.command
+@pytest.mark.parametrize("kind", ["is-a", "part-of"])
+def test_a_relation_that_closes_a_cycle_of_its_kind_is_refused_and_saves_nothing(
+    kind: str,
+) -> None:
+    saved: list[Term] = []
+    held = [relate(LANE, kind, "work-item"), relate(WORK_ITEM, kind, "gate"), GATE]
+    with pytest.raises(TermError, match=re.escape(f"gate {kind} lane would close a cycle")):
+        relate_term_item("gate", kind, "lane", store(held, saved))
+    assert saved == []
+
+
+@pytest.mark.command
+def test_a_relation_of_another_kind_than_the_cycle_is_saved() -> None:
+    saved: list[Term] = []
+    held = [relate(LANE, "part-of", "gate"), GATE]
+    relate_term_item("gate", "is-a", "lane", store(held, saved))
+    assert saved == [relate(GATE, "is-a", "lane")]
+
+
+@pytest.mark.view
+def test_a_term_is_shown_with_what_it_is_a_and_what_it_is_part_of() -> None:
+    gate = relate(relate(GATE, "is-a", "check"), "part-of", "lane")
+    assert show_term("gate", store([gate, LANE])).splitlines()[2:4] == [
+        "  is a  check",
+        "  part of  lane",
+    ]
+
+
+@pytest.mark.view
+def test_a_term_is_shown_with_its_kinds_and_its_parts_read_from_the_others() -> None:
+    held = [relate(GATE, "part-of", "lane"), relate(WORK_ITEM, "is-a", "lane"), LANE]
+    assert show_term("lane", store(held)).splitlines()[2:4] == [
+        "  kinds  work-item",
+        "  parts  gate",
+    ]

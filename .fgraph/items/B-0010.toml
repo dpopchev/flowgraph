@@ -14,3 +14,10 @@ state = "backlog"
 title = "Probe each case of B-0010 as tests: Ctrl-C during the gate of a landing by merge-commit leaves the merge held, and the drop of a merge fails once the gate changed a file the merge brought"
 expected_output = "changed: tests/land/test_land.py and tests/branch/test_landing_git.py state each case as wanted, each seen red"
 created = 2026-11-22 07:11:36+00:00
+
+[[tasks]]
+id = "T-0236"
+state = "backlog"
+title = "Drop the merge of a landing interrupted under its gate in src/flowgraph/land.py, and drop a merge whose files the gate changed in abort_merge of src/flowgraph/branch.py"
+expected_output = "changed: src/flowgraph/land.py and src/flowgraph/branch.py; the tests of the probe pass"
+created = 2026-11-22 07:11:37+00:00

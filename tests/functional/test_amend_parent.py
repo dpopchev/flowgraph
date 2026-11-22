@@ -166,13 +166,16 @@ def test_a_story_taken_out_of_a_feature_keeps_the_place_the_queue_gave_it(tmp_pa
     ]
 
 
+def test_a_work_item_alone_is_put_under_a_started_feature_as_an_add_puts_it(
+    tmp_path: Path,
+) -> None:
+    put = runs(tmp_path, *STARTED, ADD_ALONE, ["amend", "S-0003", "--parent", "F-0001"])
+    assert (put.status, put.out) == (0, "amended S-0003\n")
+
+
 @pytest.mark.parametrize(
     ("argvs", "error"),
     [
-        (
-            [*STARTED, ADD_ALONE, ["amend", "S-0003", "--parent", "F-0001"]],
-            "S-0003 cannot be put under F-0001: F-0001 is started already",
-        ),
         (
             [*STARTED, ["amend", "S-0002", "--parent", "none"]],
             "S-0002 cannot be taken out of F-0001: F-0001 is started already",
@@ -194,13 +197,12 @@ def test_a_story_taken_out_of_a_feature_keeps_the_place_the_queue_gave_it(tmp_pa
             "no Feature F-0009 in the record",
         ),
         (
-            [ADD_FEATURE, ADD_ALONE, ["amend", "S-0001", "--parent", "S-0001"]],
-            "'S-0001' is no Feature id: it is F- and a number",
+            [ADD_FEATURE, ADD_ALONE, ["amend", "S-0001", "--parent", "None"]],
+            "'None' is neither a Feature id nor none: a Feature id is F- and a number",
         ),
         ([*STARTED, ["amend", "S-0001", "--parent", "none"]], "S-0001 is started already"),
     ],
     ids=[
-        "under-a-started-feature",
         "out-of-a-started-feature",
         "from-a-started-feature-to-another",
         "out-of-a-blocked-feature",

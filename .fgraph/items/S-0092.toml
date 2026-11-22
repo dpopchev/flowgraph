@@ -38,7 +38,8 @@ commit = "6e7e5fb"
 
 [[tasks]]
 id = "T-0360"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say the close of a Feature tags the trunk under delivery.tag"
 expected_output = "changed: README.md lists delivery.tag among the keys; docs/domain-model.md, Persistence, says which write is followed by the tag"
 created = 2026-11-22 21:03:10+00:00
+started = 2026-11-22 23:55:44+00:00

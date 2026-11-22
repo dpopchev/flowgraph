@@ -35,7 +35,8 @@ commit = "12a0349"
 
 [[tasks]]
 id = "T-0214"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say fgraph remove takes a Feature out of the Backlog with its work items"
 expected_output = "changed: README.md and docs/domain-model.md say fgraph remove takes a Feature in Backlog out of the flow with its reason, that its work items are removed with it for the same reason and nothing is deleted, how status and show list it, and what is refused; the line that names removing a Feature not built is gone, and the list of what a Feature takes says every operation of a work item"
 created = 2026-11-21 23:44:14+00:00
+started = 2026-11-22 04:11:44+00:00

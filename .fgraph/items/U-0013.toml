@@ -1,0 +1,10 @@
+id = "U-0013"
+state = "backlog"
+title = "Raise the refusal of fgraph show for a text that is no id from naming the kinds of item alone to naming the term too"
+description = "Found during T-0292 of S-0070 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. The refusal still names the kinds of item alone, held by tests/functional/test_show_wrong_id.py, while the help of fgraph show names the term. Its Tasks are written when it is ordered."
+created = 2026-11-22 16:42:22+00:00
+
+[criterion]
+given = "a record with the terms of S-0070"
+when = "fgraph show is given a text that is neither the id of an item nor the name of a term, as X-0001"
+then = "it exits 2 saying the text is no id of a Story, Upkeep, Bug, Spike or Feature nor the name of a term, and make check passes"

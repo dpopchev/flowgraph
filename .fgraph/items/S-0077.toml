@@ -24,12 +24,14 @@ commit = "a904f5b"
 
 [[tasks]]
 id = "T-0314"
-state = "started"
+state = "completed"
 title = "Add the graph command to fgraph, exporting the nodes and typed edges of the record as JSON"
 description = "Removes the xfail mark of tests/functional/test_graph_json.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph graph --format json prints one JSON document: nodes, each with its id, its kind -- feature, story, bug, spike, upkeep, task, term -- its title or meaning and its bucket where it has one; edges, each with its kind and its two ends, from and to -- under, task of, depends on, filed during, superseded by, amends, is a, part of, about; and the knowledge lines as a list of their own, each with its item, its kind, its date, its text, its terms and the files it governs; the keys and the order are fixed, by id, so two runs on one record print the same bytes; json is the one format and the default, another word refused naming it; it is a view in src/flowgraph/graph.py that writes nothing; fgraph graph --help prints its menu"
 created = 2026-11-22 10:48:20+00:00
 started = 2026-11-22 18:18:49+00:00
+completed = 2026-11-22 18:25:32+00:00
+commit = "8e3f2b5"
 
 [[tasks]]
 id = "T-0315"

@@ -17,3 +17,11 @@ title = "Add tests/functional/test_filed_during.py, failing on the criterion of 
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_complete_bug.py does. Seen red, then marked a strict xfail naming S-0067 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_filed_during.py states that, on a record with a started Story, fgraph add bug with --filed-during and the id of the Story exits 0, fgraph show of the Bug lists the Story it was filed during, and fgraph show of the Story lists the Bug as filed during it"
 created = 2026-11-22 10:47:41+00:00
+
+[[tasks]]
+id = "T-0282"
+state = "backlog"
+title = "Add --filed-during to fgraph add, shown from both sides"
+description = "Removes the xfail mark of tests/functional/test_filed_during.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
+expected_output = "changed: fgraph add of every kind of work item takes --filed-during ID once, the work item it was found during, in any state but Removed; the file of the new work item keeps it as filed_during, held in src/flowgraph/relation.py beside depends on and read back in every state; an id that is no work item of the record is refused, exit 2, nothing written; fgraph show of the new work item lists filed during with the id, and fgraph show of the other lists, as filed during it, the id of each work item that names it, read from the record and stored nowhere; fgraph amend does not take it: when a work item was found does not change"
+created = 2026-11-22 10:47:42+00:00

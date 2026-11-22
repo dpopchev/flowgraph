@@ -4,7 +4,7 @@ from collections.abc import Collection, Iterable, Sequence
 from typing import assert_never
 
 from flowgraph.feature import FeatureDetail, FeatureRow
-from flowgraph.knowledge import KnowledgeRow, about_text
+from flowgraph.knowledge import KnowledgeRow, about_text, governs_text
 from flowgraph.story import StoryDetail, StoryRow
 from flowgraph.task import TaskRow
 from flowgraph.upkeep import UpkeepDetail, UpkeepRow
@@ -175,7 +175,8 @@ def _knowledge_lines(knowledge: Sequence[KnowledgeRow]) -> list[str]:
     return [
         f"Knowledge ({len(knowledge)})\n",
         *(
-            f"  {line.kind}  {line.noted.date().isoformat()}  {line.text}{about_text(line.about)}\n"
+            f"  {line.kind}  {line.noted.date().isoformat()}  {line.text}"
+            f"{about_text(line.about)}{governs_text(line.governs)}\n"
             for line in knowledge
         ),
     ]

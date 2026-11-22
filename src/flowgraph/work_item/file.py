@@ -166,7 +166,8 @@ def read_work_item_detail(record: Path, item_id: WorkItemId) -> WorkItemDetail:
         reason=reason_held(held),
         parent=held.parent,
         knowledge=[
-            KnowledgeRow(line.kind, line.noted, line.text, line.about) for line in held.knowledge
+            KnowledgeRow(line.kind, line.noted, line.text, line.about, line.governs)
+            for line in held.knowledge
         ],
         about=held.about,
         depends_on=[DependsRow(each) for each in held.depends_on],

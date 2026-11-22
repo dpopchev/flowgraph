@@ -40,6 +40,7 @@ from flowgraph.feature_start import (
     start_feature_item,
 )
 from flowgraph.gate import RunGate, run_gate
+from flowgraph.governed import governs_asked
 from flowgraph.item import (
     Written,
     add_item,
@@ -101,10 +102,13 @@ def _criterion(args: argparse.Namespace) -> Criterion:
             return make_scenario(args.given, args.when, args.then)
 
 
-def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -> Written | None:
+def _written(
+    args: argparse.Namespace, store: Store, now: Now, config: Config, cwd: Path, open_git: OpenGit
+) -> Written | None:
     """Make the write the arguments name on the store; None when they name a view or no command.
 
-    The configuration says whether a complete needs its commit. Raises the refusal of the write;
+    The configuration says whether a complete needs its commit; the directory fgraph runs in,
+    cwd, is where the paths a note governs are taken from. Raises the refusal of the write;
     nothing is saved then.
     """
     match args.command:
@@ -178,7 +182,9 @@ def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -
                 )
                 if text is not None
             )
-            return note_named(args.id, kind, text, store, now, about_asked(args.about, store) or ())
+            about = about_asked(args.about, store) or ()
+            governs = governs_asked(args.governs, cwd, open_git)
+            return note_named(args.id, kind, text, store, now, about, governs)
         case "reorder":
             return reorder_item(args.id, args.before, store)
         case _:
@@ -228,7 +234,7 @@ def _said(
         check_start_under_feature(args.id, store)
         check_start_waits(args.id, store)
         check_parallel(args.id, store.find_work_item_rows, config)
-    written = _written(args, store, now, config)
+    written = _written(args, store, now, config, cwd, open_git)
     if written is not None:
         return commit_written(written, store, record, open_git, config)
     match args.command:

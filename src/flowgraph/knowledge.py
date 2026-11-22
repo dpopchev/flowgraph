@@ -38,12 +38,16 @@ DEVIATION = Deviation()
 
 @dataclass(frozen=True)
 class KnowledgeLine:
-    """One line of knowledge: its kind, its text, when it was noted and the terms it is about."""
+    """One line of knowledge: its kind, its text, when it was noted and the terms it is about.
+
+    It may govern files, each a path kept as written and never checked against the disk.
+    """
 
     kind: KnowledgeKind
     text: str
     noted: datetime
     about: tuple[str, ...] = ()
+    governs: tuple[str, ...] = ()
 
 
 @dataclass
@@ -54,6 +58,7 @@ class KnowledgeRow:
     noted: datetime
     text: str
     about: list[str] = field(default_factory=list[str])
+    governs: list[str] = field(default_factory=list[str])
 
 
 def kind_name(kind: KnowledgeKind) -> str:
@@ -70,20 +75,33 @@ def kind_name(kind: KnowledgeKind) -> str:
 
 
 def make_knowledge_line(
-    kind: KnowledgeKind, text: str, noted: datetime, about: tuple[str, ...] = ()
+    kind: KnowledgeKind,
+    text: str,
+    noted: datetime,
+    about: tuple[str, ...] = (),
+    governs: tuple[str, ...] = (),
 ) -> KnowledgeLine:
     """The line of that kind and text, noted at that time, kept to the second, about those terms.
 
+    It governs the files given.
+
     Raises EmptyPartError naming the text when it is blank.
     """
-    return KnowledgeLine(kind, said("text", text), noted.replace(microsecond=0), about)
+    return KnowledgeLine(kind, said("text", text), noted.replace(microsecond=0), about, governs)
 
 
 def knowledge_row(line: KnowledgeLine) -> KnowledgeRow:
     """The line as the row a view reads."""
-    return KnowledgeRow(kind_name(line.kind), line.noted, line.text, list(line.about))
+    return KnowledgeRow(
+        kind_name(line.kind), line.noted, line.text, list(line.about), list(line.governs)
+    )
 
 
 def about_text(about: Sequence[str]) -> str:
     """The terms a line is about as a view ends the line with them; empty for none."""
     return f"  (about {', '.join(about)})" if about else ""
+
+
+def governs_text(governs: Sequence[str]) -> str:
+    """The files a line governs as a view ends the line with them; empty for none."""
+    return f"  (governs {', '.join(governs)})" if governs else ""

@@ -13,23 +13,32 @@ then = "fgraph about lists the line first, as what governs the file, with the id
 
 [[tasks]]
 id = "T-0310"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_note_governs.py, failing on the criterion of S-0076"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_note_finding.py does. Seen red, then marked a strict xfail naming S-0076 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_note_governs.py states that, on a record with a Story, fgraph note of the Story with --decision, a text and --governs with a path exits 0, and fgraph about with that path lists the line first, as what governs the file, with the id of the Story"
 created = 2026-11-22 10:48:15+00:00
+started = 2026-11-22 17:55:53+00:00
+completed = 2026-11-22 17:56:23+00:00
+commit = "331ff92"
 
 [[tasks]]
 id = "T-0311"
-state = "backlog"
+state = "completed"
 title = "Add --governs to fgraph note, listed first by fgraph about of the file"
 description = "Removes the xfail mark of tests/functional/test_note_governs.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph note takes --governs PATH, once per file, kept on the knowledge line as a path from the top of the work tree, or as given outside one; fgraph about PATH lists the lines that govern the file first, under Governed by, each with its kind, its date, the id of its item and its text, before the items whose commits touched it; outside a git work tree it lists those lines alone, where S-0075 refused the path; fgraph show of the item lists each line with the files it governs; a path is not checked against the disk: a governed file may be renamed or not yet written"
 created = 2026-11-22 10:48:17+00:00
+started = 2026-11-22 17:56:25+00:00
+completed = 2026-11-22 18:09:24+00:00
+commit = "97b6759"
 
 [[tasks]]
 id = "T-0312"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a knowledge line governs a file"
 expected_output = "changed: README.md shows a decision noted with --governs and fgraph about of the file listing it first; docs/domain-model.md says what governs records, that the path is kept as written and not checked, and how about orders what governs a file and what touched it"
 created = 2026-11-22 10:48:18+00:00
+started = 2026-11-22 18:09:25+00:00
+completed = 2026-11-22 18:09:26+00:00
+commit = "e5dd7f0"

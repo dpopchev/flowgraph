@@ -602,7 +602,16 @@ its count and each linked item is one line, its id, its bucket and its title.
   its work item; a file none touched is said so in one line, exit 0. Outside a git
   work tree a path is refused, saying the answer is read from git, and so is a path
   outside the work tree of the directory, exit 2. A text that is no id, no term and
-  no file is refused, exit 2.
+  no file is refused, exit 2, unless a line of knowledge governs it (below).
+- What governs a file is read from the lines of knowledge. A text that is no id and
+  no term is read as the path of a file too when a `--governs` line of the record
+  names it, on the disk or not; outside a git work tree, or for a path outside the
+  one of the directory, a path governed by a line lists those lines alone, and one
+  governed by none is refused as above. `fgraph about` of a file lists, first,
+  under `Governed by`, the lines that govern it, last noted first, each with its
+  kind, its date, the id of its item and its text; then, as before, the completed
+  work items and Tasks whose commits changed it. A governed file no commit touched
+  lists the lines alone.
 
 ## Terms
 
@@ -661,8 +670,16 @@ criterion. It is added and then it stands.
   term`, and so is `none` given with a term; nothing is written. A term is checked
   against the terms of the record of `main`, so a term added there after a branch
   was cut is accepted on the branch.
+- A line of knowledge names the files it governs, with `--governs PATH`, once
+  per file, taken by `fgraph note`. The line stores them, as `governs`, a list of
+  paths in the order given, each once, in its `[[knowledge]]` table. A path is kept
+  as written: from the top of the git work tree of the directory fgraph runs in, or
+  as given outside one, and it is never checked against the disk, so a governed
+  file may be renamed or not yet written. A file stores nothing of it; the lines
+  that govern a file are read from the record, as the other side of a relation is.
 - `fgraph show` of an item lists `about` with its terms, and each of its lines
-  ends with `(about gate, lane)` when it has terms. `fgraph show` of a term lists,
+  ends with `(about gate, lane)` when it has terms, then `(governs src/gate.py)`
+  when it governs files. `fgraph show` of a term lists,
   after its relations, `items` with the ids of the work items and Features about
   it and `knowledge` with the lines about it, the last noted first, each with the
   id of its item; both are read from the record, the started work items where

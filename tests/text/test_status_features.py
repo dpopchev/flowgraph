@@ -79,3 +79,38 @@ def test_a_work_item_under_its_feature_counts_neither_beside_the_heading_nor_tow
         "  ... 1 more",
         "Completed (0)",
     ]
+
+
+def waiting(number: int, waiting_on: str) -> TaskRow:
+    """A blocked Task of that number, waiting on that."""
+    return TaskRow(
+        f"T-000{number}", "a held task", "an output", "", "blocked", "", "a reason", waiting_on
+    )
+
+
+def holding(*tasks: TaskRow) -> FeatureRow:
+    """A started Feature whose one started work item holds the Tasks."""
+    worked = WorkItemRow(
+        "S-0003", "a worked title", "started", parent="F-0002", created=CREATED, tasks=list(tasks)
+    )
+    return FeatureRow("F-0002", "a begun feature", "InProgress", 0, 1, started=[worked])
+
+
+def test_a_feature_whose_started_work_item_holds_a_blocked_task_is_marked_as_blocked() -> None:
+    assert status_text([holding(waiting(1, "a reviewer"))]).splitlines()[2] == (
+        "! F-0002  0/1 W  a begun feature  -- waiting on a reviewer"
+    )
+
+
+def test_a_marked_feature_ends_with_what_the_first_blocked_task_of_its_work_item_waits_on() -> None:
+    marked = holding(TASKS[0], waiting(3, "a reviewer"), waiting(4, "a release"))
+    assert status_text([marked]).splitlines()[2] == (
+        "! F-0002  0/1 W  a begun feature  -- waiting on a reviewer"
+    )
+
+
+def test_a_started_task_beside_the_blocked_one_does_not_lift_the_mark_of_the_feature() -> None:
+    marked = holding(waiting(3, "a reviewer"), TASKS[1])
+    assert status_text([marked]).splitlines()[2] == (
+        "! F-0002  0/1 W  a begun feature  -- waiting on a reviewer"
+    )

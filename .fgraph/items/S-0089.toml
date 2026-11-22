@@ -1,9 +1,10 @@
 id = "S-0089"
-state = "backlog"
+state = "started"
 title = "Cut the Tasks fgraph completes while their check fails from every one to none"
 description = "The example of the note, its words not decided."
 parent = "F-0009"
 created = 2026-11-22 21:02:38+00:00
+started = 2026-11-22 22:55:14+00:00
 depends_on = [
     "S-0088",
 ]

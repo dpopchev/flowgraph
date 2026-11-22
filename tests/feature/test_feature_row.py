@@ -8,6 +8,7 @@ from flowgraph.criterion import NO_COMMIT, make_commit
 from flowgraph.feature import (
     FeatureRow,
     FeatureState,
+    blocked_feature,
     completed_feature,
     feature_row,
     make_feature,
@@ -72,3 +73,9 @@ def test_the_row_of_a_feature_completed_in_a_commit_holds_its_sha() -> None:
 )
 def test_the_row_of_a_feature_that_has_no_commit_holds_none(feature: FeatureState) -> None:
     assert feature_row(feature, ["completed"]).commit == ""
+
+
+def test_the_row_of_a_blocked_feature_holds_its_reason_and_what_it_waits_on() -> None:
+    held = blocked_feature(STARTED, "no budget", "a sponsor", CREATED)
+    row = feature_row(held, ["started"])
+    assert (row.block_reason, row.waiting_on) == ("no budget", "a sponsor")

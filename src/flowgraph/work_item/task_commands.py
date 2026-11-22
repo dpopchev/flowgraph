@@ -50,16 +50,17 @@ def add_task(
     find_task_ids: FindTaskIds,
     save_work_item: SaveWorkItem,
     now: Now,
+    check: str | None = None,
 ) -> TaskId:
     """Write a Task for the work item of the parent id, under the next free id; return that id.
 
     Raises WorkItemNotFoundError when the record holds no such item, CompletedAlreadyError when
-    it is completed, and EmptyPartError when the title or the expected output is blank; nothing
-    is saved.
+    it is completed, and EmptyPartError when the title, the expected output or a check given is
+    blank; nothing is saved.
     """
     item = still_open(load_work_item(parent))
     taken = [parse_task_id(text) for text in find_task_ids()]
-    task = make_task(next_task_id(taken), title, expected_output, description, now())
+    task = make_task(next_task_id(taken), title, expected_output, description, now(), check)
     save_work_item(append_task(item, task))
     return task.id
 

@@ -92,7 +92,7 @@ class TestAStartedTaskBlockedWithAReasonAndWhatItWaitsOn:
             "Backlog (0)\n"
             "InProgress (1)\n"
             "  S-0001  0/1 T  a title\n"
-            "    !  T-0001  a task title  -- waiting on the reviewer\n"
+            "    !  T-0001  a task title  -- waiting on the reviewer: the review is not back\n"
             "Completed (0)\n"
         )
 

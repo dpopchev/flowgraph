@@ -20,7 +20,17 @@ NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_FEATURE = ["add", "feature", "a feature title", "--criterion", "a criterion"]
 ADD_STORY = ["add", "story", "Raise the Stories fgraph lists", *CRITERION, "--parent", "F-0001"]
-ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+ADD_TASK = [
+    "add",
+    "task",
+    "a task title",
+    "--parent",
+    "S-0001",
+    "--output",
+    "an output",
+    "--check",
+    "make test",
+]
 NOTE = ["note", "F-0001", "--finding", "the budget is not agreed"]
 LEAF = "S-0001-raise-the-stories-fgraph"
 FEATURE_FILE = ".fgraph/items/F-0001.toml"

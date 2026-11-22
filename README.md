@@ -335,6 +335,19 @@ record. In a git repository it counts across the worktrees too: the next Task
 id is one above the highest in the record of main and of every worktree, so a
 Task added on a branch never takes an id main hands out meanwhile.
 
+With the development on (`development.enabled`), a Task is added with the
+command that checks it, `--check COMMAND`, which `fgraph show` lists under the
+Task; without it the add exits 2 naming `--check`, and a blank command is
+refused. With the development off, `--check` exits 2 naming
+`development.enabled`. A Task added before holds no check and is read, started
+and completed as it was. This keeps and shows the check; it is not run yet.
+
+```sh
+fgraph add task "Add the show command" --parent S-0001 \
+  --output "changed: cli.py" --check "make test"
+# added T-0001 to S-0001
+```
+
 A work item can depend on another: `--depends-on ID` of `fgraph add` and of
 `fgraph amend`, once per work item it waits for, of any kind. The start of it
 is refused, with exit 2, while one it depends on is not completed, and the
@@ -1027,14 +1040,14 @@ fgraph show S-0001
 ```
 
 `fgraph status` lists a blocked Task under its work item too, marked `!` and
-ending with what it waits on:
+ending with what it waits on and the reason of the block:
 
 ```sh
 fgraph status
 # Backlog (0)
 # InProgress (1)
 #   S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
-#     !  T-0001  Add the show command to src/flowgraph/cli.py, listing a Story  -- waiting on the reviewer
+#     !  T-0001  Add the show command to src/flowgraph/cli.py, listing a Story  -- waiting on the reviewer: the review is not back
 # Completed (0)
 ```
 
@@ -1354,9 +1367,9 @@ fgraph status
 # Backlog (1)
 #   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (1)
-# ! F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5  -- waiting on the reviewer
+# ! F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5  -- waiting on the reviewer: the review is not back
 #     S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
-#       !  T-0001  Add the show command to src/flowgraph/cli.py, listing a Story  -- waiting on the reviewer
+#       !  T-0001  Add the show command to src/flowgraph/cli.py, listing a Story  -- waiting on the reviewer: the review is not back
 # Completed (0)
 ```
 
@@ -1534,7 +1547,7 @@ fgraph status
 # Backlog (1)
 #   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (1)
-# ! F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5  -- waiting on the sponsor
+# ! F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5  -- waiting on the sponsor: the budget is not agreed
 #     S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
 # Completed (0)
 

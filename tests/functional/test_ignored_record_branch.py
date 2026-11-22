@@ -19,7 +19,17 @@ pytestmark = pytest.mark.functional
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "Raise the Stories fgraph lists from 0 to 1", *CRITERION]
-ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+ADD_TASK = [
+    "add",
+    "task",
+    "a task title",
+    "--parent",
+    "S-0001",
+    "--output",
+    "an output",
+    "--check",
+    "make test",
+]
 BRANCH = "wi/S-0001-raise-the-stories-fgraph"
 WORKTREE = Path("project.worktrees") / "S-0001-raise-the-stories-fgraph"
 MESSAGE = "feat: land the first Story"

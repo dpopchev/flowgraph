@@ -118,6 +118,22 @@ def test_a_merge_aborted_leaves_nothing_merged(checkout: Path) -> None:
     assert git(checkout, "status", "--porcelain") == ""
 
 
+@pytest.fixture
+def changed_under_merge(checkout: Path) -> Path:
+    """The checkout holding the merge of BRANCH, `work.txt` it brought changed since by a gate."""
+    merge_uncommitted(checkout, BRANCH)
+    with (checkout / "work.txt").open("a", encoding="utf-8") as written:
+        written.write("a change of the gate\n")
+    return checkout
+
+
+def test_a_merge_whose_files_were_changed_since_is_aborted_with_them(
+    changed_under_merge: Path,
+) -> None:
+    abort_merge(changed_under_merge)
+    assert git(changed_under_merge, "status", "--porcelain") == ""
+
+
 def test_an_abort_without_a_merge_changes_nothing(checkout: Path) -> None:
     abort_merge(checkout)
     assert git(checkout, "status", "--porcelain") == ""

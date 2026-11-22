@@ -1,9 +1,11 @@
 id = "F-0003"
-state = "started"
+state = "completed"
 title = "Raise the kinds of knowledge an item of the record keeps from one, the decision of a Spike, to four"
 description = "Asked by the developer on 2026-11-22; the plan was shown and filed on the developer word: file all. Row 2 of the plan. Readings of the agent shown with the plan: a knowledge line is noted on an item in any state, Completed included, and is never amended or removed; a Task takes none; a deviation is how a change to a started item is recorded, since fgraph amend refuses one; the decision of a Spike stays where it is."
 created = 2026-11-22 10:41:22+00:00
 started = 2026-11-22 10:51:48+00:00
+completed = 2026-11-22 11:41:20+00:00
+commit = "feb2855"
 criteria = [
     "a developer notes a finding on a work item and sees it when the item is shown",
     "a developer notes a decision or a deviation the same way",

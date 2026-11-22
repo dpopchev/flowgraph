@@ -29,6 +29,11 @@ def _ignores_nothing(path: Path) -> bool:
     return False
 
 
+def _knows_no_commit(commit: str) -> None:
+    """The `changed_files` of a work tree built without it: it knows no commit."""
+    return None
+
+
 def _lands_nothing(*_: object) -> Never:
     """A step of a landing in a work tree built without them: a contract, it lands nothing."""
     raise AssertionError("a work tree built without the steps of a landing takes none")
@@ -73,7 +78,9 @@ class WorkTree:
     `ignores` is true when a rule git reads names a path. `current_branch` names the branch the
     work tree is on, empty on none; `find_branches` lists the branches matching a pattern;
     `find_worktree` is the worktree of a branch, or None; `find_worktrees` lists every worktree
-    of the repository. `landing` holds the steps only a landing takes. Each step raises GitError
+    of the repository. `changed_files` lists the files a commit changed, as paths from the top, a
+    merge commit by what it brought to its first parent, and answers None for a sha git does not
+    know. `landing` holds the steps only a landing takes. Each step raises GitError
     when git refuses it.
     """
 
@@ -85,6 +92,7 @@ class WorkTree:
     find_worktree: Callable[[str], Path | None]
     find_worktrees: Callable[[], list[Path]]
     ignores: Callable[[Path], bool] = _ignores_nothing
+    changed_files: Callable[[str], list[str] | None] = _knows_no_commit
     landing: LandingSteps = NO_LANDING
 
 
@@ -114,6 +122,7 @@ def open_git(directory: Path) -> WorkTree | None:
         find_worktree=partial(branch.worktree_of_branch, top),
         find_worktrees=partial(branch.worktrees, top),
         ignores=partial(branch.ignores, top),
+        changed_files=partial(branch.changed_files, top),
         landing=LandingSteps(
             merge=partial(branch.merge_uncommitted, top),
             abort_merge=partial(branch.abort_merge, top),

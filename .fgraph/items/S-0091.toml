@@ -1,9 +1,10 @@
 id = "S-0091"
-state = "backlog"
+state = "started"
 title = "Cut the git commands a developer runs to tag a release of the trunk from two, the tag and its push, to none"
 description = "The words of the note: release, the v* tag. The rule of the version is the reading of the agent, taken from the release rule the developer works by. Open: a version a project keeps in a file of its own, as pyproject.toml here, is not bumped by fgraph."
 parent = "F-0010"
 created = 2026-11-22 21:02:56+00:00
+started = 2026-11-22 23:10:20+00:00
 
 [criterion]
 given = "a repository whose main holds work items completed since its last v* tag"

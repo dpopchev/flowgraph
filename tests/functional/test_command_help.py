@@ -34,6 +34,7 @@ COMMANDS = [
     ("complete",),
     ("land",),
     ("note",),
+    ("verify",),
     ("knowledge",),
     ("terms",),
     ("graph",),

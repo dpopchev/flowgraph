@@ -126,6 +126,16 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     kinds.add_argument(
         "--deviation", metavar="TEXT", help="a change to what a started item was agreed to do"
     )
+    verify = new_command(
+        commands, "verify", "keep the answer of the closing of a completed Story, Bug or Upkeep"
+    )
+    verify.add_argument("id", metavar="ID", help="the id of the completed work item")
+    verify.add_argument(
+        "--yes",
+        required=True,
+        metavar="TEXT",
+        help="the criterion holds on main: what the run of it printed",
+    )
     knowledge = new_command(
         commands,
         "knowledge",
@@ -197,6 +207,7 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         "land": land,
         "remove": remove,
         "note": note,
+        "verify": verify,
         "knowledge": knowledge,
         "terms": terms,
         "graph": graph,

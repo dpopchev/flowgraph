@@ -8,8 +8,8 @@ branch of a work item carries its record, so the development needs the commits. 
 parallel` is the most work items started at once; it has no default, so left out nothing limits
 them. `[development] merge` is how a landing merges: `merge-commit` unless it names `squash` or
 `fast-forward`. `[development] gate` is the one command line a landing runs before main moves;
-it has no default either, so left out a landing runs none. Each layer is a value
-(`flowgraph.record.layers`).
+it has no default either, so left out a landing runs none. `[delivery] push = true` pushes main
+once a landing is whole; it is false by default. Each layer is a value (`flowgraph.record.layers`).
 """
 
 import json
@@ -24,6 +24,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from flowgraph.record.layers import (
     UNGATED,
     UNLIMITED,
+    Delivery,
     Development,
     Gated,
     Git,
@@ -49,6 +50,9 @@ DEVELOPMENT_PARALLEL = "development.parallel"
 # The key that turns the commits of the record off, as a refusal names it.
 GIT_COMMIT = "git.commit"
 
+# The key that pushes main once a landing is whole.
+DELIVERY_PUSH = "delivery.push"
+
 
 @dataclass(frozen=True)
 class Config:
@@ -56,6 +60,7 @@ class Config:
 
     git: Git
     development: Development
+    delivery: Delivery
 
 
 # The configuration of the record in that directory; the defaults when it holds no config.toml.
@@ -102,11 +107,18 @@ class _DevelopmentTable(_Table):
     gate: str | None = Field(default=None, pattern=r"\S")
 
 
+class _DeliveryTable(_Table):
+    """What `[delivery]` holds; a key left out is its default."""
+
+    push: bool = False
+
+
 class _ConfigFile(_Table):
     """What the file holds: a table per layer; a table left out holds its defaults."""
 
     git: _GitTable = _GitTable()
     development: _DevelopmentTable = _DevelopmentTable()
+    delivery: _DeliveryTable = _DeliveryTable()
 
 
 # What a count takes, whether its value is no whole number or one below 1.
@@ -169,7 +181,8 @@ def make_config(text: str) -> Config:
         merge=held.development.merge,
         gate=UNGATED if command is None else Gated(command),
     )
-    return Config(git=Git(commit=held.git.commit), development=development)
+    delivery = Delivery(push=held.delivery.push)
+    return Config(git=Git(commit=held.git.commit), development=development, delivery=delivery)
 
 
 def make_settings(text: str) -> dict[str, dict[str, object]]:

@@ -36,7 +36,8 @@ from flowgraph.work_item.model import (
 )
 from flowgraph.work_item.moves import started_work_item
 from flowgraph.work_item.removal import reason_of, removed_work_item, superseded_by_of
-from flowgraph.work_item.views import DependsRow, WorkItemDetail, WorkItemRow
+from flowgraph.work_item.verification import Verification
+from flowgraph.work_item.views import DependsRow, VerifiedRow, WorkItemDetail, WorkItemRow
 
 
 def _started_on(item: WorkItemState) -> datetime | None:
@@ -64,6 +65,15 @@ def _completed_on(item: WorkItemState) -> datetime | None:
 def _named_text(named: WorkItemId | None) -> str:
     """The id of the work item another one names as written; empty for none."""
     return "" if named is None else work_item_id_text(named)
+
+
+def _verified_row(item: WorkItemState) -> VerifiedRow | None:
+    """The answer of the closing of a completed work item as a row; none for any other."""
+    match item:
+        case CompletedWorkItem(verified=Verification() as answer):
+            return VerifiedRow(answer.answer, answer.text, answer.on)
+        case _:
+            return None
 
 
 def work_item_row(item: WorkItemState) -> WorkItemRow:
@@ -106,6 +116,7 @@ def work_item_detail(item: WorkItemState) -> WorkItemDetail:
         supersedes=[],
         amends=_named_text(item.relations.amends),
         amended_by=[],
+        verified=_verified_row(item),
         **criterion_parts(item.criterion),
     )
 

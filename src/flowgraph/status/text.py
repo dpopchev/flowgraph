@@ -107,7 +107,17 @@ def _feature_lines(feature: FeatureRow) -> str:
     under = "".join(f"  {line}\n" for line in started)
     line = f"{feature.id}  {progress}  {commit}{feature.title}"
     own = (feature.waiting_on, feature.block_reason)
-    return f"{_marked(line, own if feature.waiting_on else _waited_on(feature.started))}\n{under}"
+    block = own if feature.waiting_on else _waited_on(feature.started)
+    head = _marked(line, block) if block[0] else _waiting(line, feature.waits_for)
+    return f"{head}\n{under}"
+
+
+def _waiting(line: str, waits_for: Sequence[str]) -> str:
+    """The line of an item of a bucket: marked `~` and ending with the ids it depends on, if any.
+
+    The mark and the words differ from a block, `!` and `waiting on`: a block waits on a person.
+    """
+    return f"~ {line}  -- depends on {', '.join(waits_for)}" if waits_for else f"  {line}"
 
 
 def _marked(line: str, block: tuple[str, str]) -> str:
@@ -164,7 +174,7 @@ def _status_line(row: StoryRow | UpkeepRow) -> str:
     )
     if why:
         return f"  {row.id}  {row.title}  -- {why}\n"
-    return f"  {row.id}  {row.title}\n"
+    return f"{_waiting(f'{row.id}  {row.title}', row.waits_for)}\n"
 
 
 def _task_line(task: TaskRow) -> str:

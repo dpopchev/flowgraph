@@ -142,6 +142,17 @@ something, so a blank one is refused where the line is built. A line is noted
 with `fgraph note` in Backlog, started, Completed or Removed alike, and is never
 amended or removed: it is added after the lines the item keeps already.
 
+A completed Story, Bug or Upkeep also holds the answer of its closing once it
+is verified, none before. It is its own fact, a `Verification` of the
+completed work item and never a knowledge line: the answer, yes so far, the
+text the run of its criterion printed and the time. The question per kind is
+the one its criterion states: for a Story, does the Then hold on the trunk; for
+a Bug, is the expected seen; for an Upkeep, does it still hold. A Spike is not
+verified: it keeps its decision. The text says something, so a blank one is
+refused where the answer is built. An item takes one answer: a second is
+refused, never added or replaced. `fgraph verify` keeps it on a completed item
+alone, so any other state is refused.
+
 A work item in any state also keeps its relations, the references it names to
 other work items. A relation is a typed reference stored on the item that names
 it, as the `parent` is, never on the item it names: the other side is derived
@@ -498,6 +509,15 @@ and `--depends-on none` alone takes them all away.
   depends on none. The file holds the ids as `depends_on = ["S-0001"]`, only
   when there is one, read back in every state; an id of no kind, or the work
   item itself, makes the file refused when it is read.
+- `fgraph status` marks what waits, the reading of S-0085: the line of a work
+  item in Backlog that depends on one not completed starts with `~` and ends
+  `-- depends on S-0001`, with each id not completed in the order written; the
+  mark is gone once each is completed. A Feature in Backlog carries it when its
+  first work item, the one its start takes, waits, with the ids that one waits
+  for; a work item under a Feature is on no line of the Backlog. The mark is
+  not the `!` of a block, which ends `-- waiting on <who>`: a block waits on a
+  person, a dependency on a work item. A line longer than the terminal is cut
+  as any other, and `fgraph watch` draws the same line.
 
 ## Filed during
 
@@ -866,6 +886,17 @@ and its merge tool.
   nothing written. `fgraph show` lists the
   lines under `Knowledge (n)` after the Tasks, each with its kind, its date and
   its text, and no heading when there is none.
+- The answer of a closing is one `[verified]` table inside the file of a
+  completed work item, with its `answer` (`yes`), its `text` and its `on` time,
+  held only once there is one: a file without it, as every file written before,
+  is read as before, and a Spike's file holding it is refused when read.
+  `fgraph verify ID --yes TEXT` writes it as one write and one commit,
+  `chore: verify S-0001 in the record`, and says `verified S-0001`, on `main`
+  as a note of a completed item is. It is refused, exit 2 and nothing written,
+  for an item not completed, a Spike, a Feature, a Task, an id the record does
+  not hold, a blank text, a second answer and a call without `--yes`.
+  `fgraph show` lists it as `verified`, the answer, the day and the text, after
+  the commit.
 - The file of a Feature holds its lines of knowledge as a work item's does, the
   same `[[knowledge]]` tables, read back whole in every state. `fgraph note` of a
   Feature is one write and one commit, `chore: note F-0001 in the record`, and
@@ -1415,6 +1446,15 @@ development too.
   callable, `RunGate`, and `main()` binds the adapter `run_gate`, which runs
   the command line through the shell. The default of `run()` runs no gate: a
   run that lands under one is given its runner.
+- `[delivery] push` pushes `main` at a landing, `true` or `false`. It is
+  `false` by default, as S-0090 states it: a record that names
+  none pushes nothing, as a landing did before the key. It is a step of a
+  landing, so it pushes nothing with the development off, where it is held as
+  written and the landing is refused naming `development.enabled`. In the
+  model it is a value of its own layer (`Delivery`,
+  `src/flowgraph/record/layers.py`); the push is an effect, one more step of
+  the git adapter (`push`, `src/flowgraph/development/git.py`), bound by
+  `open_git`, so the core decides when it runs and never calls git itself.
 - `fgraph complete` of a started Task that holds a check runs it, answering S-0089:
   through the shell, in the worktree of the work item of the Task (the directory
   `fgraph` runs in when the item has none), before anything is written. Its
@@ -1682,6 +1722,19 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   complete: before the commit of a `merge-commit` or a `squash`, and before
   a `fast-forward` drops the merge and moves `main`. A gate that fails drops
   the merge held, and no later step is taken.
+- With `[delivery] push = true` the push of `main` is the last step of every
+  way, once the landing is whole: after the commit of the record that
+  completes the work item, the removal of the worktree and the branch landed,
+  and the branch of the next work item of a Feature. `main` is pushed to the
+  branch it tracks on its remote, and the landing says `pushed main to
+  <remote>` on a line of its own. A step refused before it takes no push.
+- A push git refuses -- a remote it cannot reach, a `main` that tracks no
+  branch of a remote -- leaves the landing as it is, the reading of the agent
+  for S-0090: `main` merged, the work item completed and committed, the
+  worktree and the branch removed, the next work item started with its
+  branch; nothing is undone, since history only moves forward. The landing
+  exits 2 naming the git command and its error, then `-- <id> is landed at
+  <sha>, main is not pushed`; the push is left to the developer.
 - A squash is not made by `git merge --squash`: that takes a change staged
   in the checkout into the commit and drops it with the squash. The merge of
   its own refuses such a checkout, and committed with one parent it holds

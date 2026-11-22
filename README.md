@@ -19,7 +19,9 @@ completing an item names the commit that holds its work, and `fgraph land`
 lands it. `fgraph config` shows the configuration and sets a key of it. A work
 item, and a Feature, keeps the findings, decisions and deviations noted on it with
 `fgraph note`, in any state, and `fgraph show` lists them. `fgraph knowledge`
-lists the lines of the whole record. A term of the project, a word with what it
+lists the lines of the whole record. The closing of a completed Story, Bug or
+Upkeep is answered with `fgraph verify`: yes, with what the run of its criterion
+printed, which `fgraph show` lists. A term of the project, a word with what it
 means, is added with `fgraph add term`, listed by `fgraph terms` and shown by
 `fgraph show` of its name. `fgraph about` answers what an item is linked to: it
 lists the Feature, the work items, the terms and the knowledge lines of a work
@@ -45,6 +47,7 @@ the typed edges of the whole record as JSON.
 | the configuration               | every key shown and set by `fgraph config`               |
 | the knowledge of an item        | lines noted by `fgraph note` on a work item or a Feature |
 | the knowledge of the record     | every line listed by `fgraph knowledge`, newest first    |
+| the closing of a work item      | `fgraph verify --yes` keeps the yes of a completed one   |
 | the development                 | once enabled: start branches, `fgraph land` lands        |
 | the links of an item            | `fgraph about` lists every relation, both sides, by id   |
 | the export of the record        | `fgraph graph` prints its nodes and edges as JSON        |
@@ -381,7 +384,18 @@ fgraph show S-0002
 #   bucket       Backlog
 #   depends on   S-0001 (Backlog)
 #   ...
+
+fgraph status
+# Backlog (2)
+#   S-0001  Add the show command
+# ~ S-0002  Raise the Stories fgraph lists under Backlog from 1 to 2  -- depends on S-0001
 ```
+
+`fgraph status` marks the line of a work item in Backlog that waits: it starts
+with `~` and ends with `-- depends on` and each id it depends on that is not
+completed. The mark is gone once each is completed; a block, marked `!`, says
+`waiting on` a person. A Feature in Backlog carries it when its first work item
+waits.
 
 `fgraph amend S-0002 --depends-on S-0003` replaces what it depends on and
 `--depends-on none` takes it all away. An id that is no work item of the
@@ -603,6 +617,43 @@ fgraph status
 # fgraph: error: /src/project/.fgraph/config.toml: development.gate is "": it takes a command line
 ```
 
+The delivery pushes a landing to the remote of `main` when the record says so:
+
+```toml
+[development]
+enabled = true
+
+[delivery]
+push = true
+```
+
+`push` is `true` or `false`, `false` by default, so a record that names none
+pushes nothing, as a landing did before the key. With it `true`, `fgraph
+land` pushes `main` to the branch it tracks on its remote as its last step:
+after the write that completes the Story, the removal of its worktree and its
+branch, and the branch of the next work item of a Feature. The landing names
+the remote on a line of its own:
+
+```sh
+fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
+# landed S-0001 at 3e9ae5c
+# pushed main to origin
+```
+
+A push git refuses -- a remote it cannot reach, a `main` that tracks no
+branch of a remote -- leaves the landing as it is: `main` is merged, the Story
+completed and committed, nothing undone, since history only moves forward.
+The landing exits 2 naming the git command and its error, then the landing
+and the push left to you, `git push` once the remote is there:
+
+```sh
+fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
+# fgraph: error: git push --quiet origin refs/heads/main:refs/heads/main failed: fatal: Could not read from remote repository. -- S-0001 is landed at 3e9ae5c, main is not pushed
+```
+
+It is a step of a landing, so it pushes nothing with the development off,
+where it is held as written and the landing is refused as above.
+
 The commits of the record are a layer the record turns off:
 
 ```toml
@@ -671,6 +722,7 @@ fgraph config show
 # development.parallel = none
 # development.merge = "merge-commit"
 # development.gate = none
+# delivery.push = false
 ```
 
 `none` is how a key that holds no value is listed: `parallel` without a
@@ -693,6 +745,7 @@ fgraph config show
 # development.parallel = none
 # development.merge = "merge-commit"
 # development.gate = "make check"
+# delivery.push = false
 ```
 
 VALUE is a text, read by what its key takes and never guessed from the text,
@@ -705,6 +758,7 @@ so `fgraph config set development.gate true` names the command `true`:
 | `development.parallel` | a whole number of 1 or more                | `fgraph config set development.parallel 2`        |
 | `development.merge`    | `merge-commit`, `squash` or `fast-forward` | `fgraph config set development.merge squash`      |
 | `development.gate`     | a command line, one argument of the shell  | `fgraph config set development.gate "make check"` |
+| `delivery.push`        | `true` or `false`                          | `fgraph config set delivery.push true`            |
 
 The whole file is read back as a configuration before it replaces the one in
 the record. A key the configuration does not have, a value the key does not
@@ -1029,6 +1083,27 @@ not hold, a blank text and a note with none or more than one of the three kinds 
 started work item is noted in its worktree, as its Tasks are written, and every
 other one, a Feature too, on `main`; the branch of a work item writes that work
 item alone, so a Feature is not noted there.
+
+A completed Story, Bug or Upkeep is closed on a question: does its criterion
+hold on `main`? The run of the criterion is the agent's; `fgraph verify` keeps
+the answer yes with what the run printed and the day, as one write and one
+commit of the record, `chore: verify S-0001 in the record`. It is a fact of the
+work item, not a knowledge line, and `fgraph show` lists it after the commit.
+It takes a work item that is completed and holds no answer yet: one that is
+not completed, a Spike, a Feature, a Task, a blank text, a second answer and a
+call without `--yes` exit 2 and write nothing. The answer no is not offered yet.
+
+```sh
+fgraph verify S-0001 --yes "make check: all checks passed"
+# verified S-0001
+
+fgraph show S-0001
+# S-0001  Add the show command to src/flowgraph/cli.py
+#   bucket       Completed
+#   commit       def5678
+#   verified     yes  2026-11-22  make check: all checks passed
+# ...
+```
 
 A started Task that cannot go on is blocked, with the reason and who or what
 it waits on. It stays in InProgress and `fgraph show` lists it as blocked:

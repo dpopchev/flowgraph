@@ -57,7 +57,12 @@ from flowgraph.work_item.model import (
     noted_work_item,
     state_name,
 )
-from flowgraph.work_item.moves import completed_work_item, started_work_item, still_open
+from flowgraph.work_item.moves import (
+    completed_work_item,
+    started_work_item,
+    still_open,
+    verified_work_item,
+)
 from flowgraph.work_item.removal import removed_work_item
 from flowgraph.work_item.task_commands import (
     LoadHolder,
@@ -74,7 +79,14 @@ from flowgraph.work_item.tasks import (
     started_task,
     unblocked_task,
 )
-from flowgraph.work_item.views import DependsRow, WorkItemDetail, WorkItemRow
+from flowgraph.work_item.verification import (
+    NotVerifiableError,
+    Verification,
+    VerifiedAlreadyError,
+    make_verification,
+)
+from flowgraph.work_item.verify import verify_work_item
+from flowgraph.work_item.views import DependsRow, VerifiedRow, WorkItemDetail, WorkItemRow
 
 __all__ = [
     "STARTED",
@@ -90,11 +102,15 @@ __all__ = [
     "LoadWorkItem",
     "NoPartError",
     "NoSuchPartError",
+    "NotVerifiableError",
     "OpenWorkItem",
     "RemovedAlreadyError",
     "RemovedWorkItem",
     "SaveWorkItem",
     "StartedWorkItem",
+    "Verification",
+    "VerifiedAlreadyError",
+    "VerifiedRow",
     "WorkItem",
     "WorkItemDetail",
     "WorkItemFileError",
@@ -117,6 +133,7 @@ __all__ = [
     "completed_work_item",
     "holder_of",
     "make_kind",
+    "make_verification",
     "make_work_item",
     "make_work_item_id",
     "next_work_item_id",
@@ -137,6 +154,8 @@ __all__ = [
     "still_open",
     "unblock_task",
     "unblocked_task",
+    "verified_work_item",
+    "verify_work_item",
     "work_item_detail",
     "work_item_id_text",
     "work_item_path",

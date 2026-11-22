@@ -19,6 +19,16 @@ class DependsRow:
 
 
 @dataclass
+class VerifiedRow:
+    """The answer of the closing of a completed work item as plain data: the answer, the text
+    the run printed and the time."""
+
+    answer: str
+    text: str
+    on: datetime
+
+
+@dataclass
 class WorkItemRow:
     """One work item as plain data, as a view reads it from the record.
 
@@ -27,7 +37,8 @@ class WorkItemRow:
     started time those of InProgress, its completed time those of Completed. Its Tasks are in
     the order written, each with its own state. The ids it depends on and the one it
     was filed during and the one it amends are as written, and so is the one that supersedes
-    it once removed.
+    it once removed. The ids it waits for are those it depends on that are not completed, set by
+    the view that lists the Backlog and empty where it is not read from the whole record.
     """
 
     id: str
@@ -44,6 +55,7 @@ class WorkItemRow:
     filed_during: str = field(default="", kw_only=True)
     superseded_by: str = field(default="", kw_only=True)
     amends: str = field(default="", kw_only=True)
+    waits_for: list[str] = field(default_factory=list[str], kw_only=True)
 
 
 @dataclass
@@ -77,3 +89,4 @@ class WorkItemDetail:
     amends: str = ""
     amended_by: list[str] = field(default_factory=list[str])
     about: list[str] = field(default_factory=list[str])
+    verified: VerifiedRow | None = None

@@ -47,6 +47,7 @@ from flowgraph.item.commands import (
     write_task,
 )
 from flowgraph.item.moves import start_item
+from flowgraph.item.verify import verify_item
 from flowgraph.knowledge import DECISION, DEVIATION, FINDING
 from flowgraph.knowledge.governed import governs_asked
 from flowgraph.knowledge.list import show_knowledge
@@ -169,6 +170,8 @@ def _written(
             about = about_asked(args.about, store) or ()
             governs = governs_asked(args.governs, cwd, open_git)
             return note_named(args.id, kind, text, store, now, about, governs)
+        case "verify":
+            return verify_item(args.id, args.yes, store, now)
         case "reorder":
             return reorder_item(args.id, args.before, store)
         case _:

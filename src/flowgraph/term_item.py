@@ -3,11 +3,15 @@
 Each runs on the store of a record, as the commands of a work item do (`flowgraph.item`).
 """
 
+from flowgraph.feature import feature_detail
 from flowgraph.item import MESSAGE, Written
+from flowgraph.knowledge_list import collected, newest_first
+from flowgraph.parent import parse_feature_id
 from flowgraph.record import Now
 from flowgraph.relation import Standing, closes_cycle
-from flowgraph.store import Store
+from flowgraph.store import KINDS, Store
 from flowgraph.term import TermError, make_term, named_by, relate
+from flowgraph.work_item import parse_work_item_id
 
 
 class TermExistsError(ValueError):
@@ -56,9 +60,47 @@ def terms_text(store: Store) -> str:
     return "".join(f"{term.name}  {term.meaning}\n" for term in terms)
 
 
+def items_about(name: str, store: Store) -> list[str]:
+    """The ids of the work items and Features of the record about the term of that name.
+
+    The work items come first, by kind and number, then the Features.
+    """
+    details = [
+        store.find_work_item_detail(parse_work_item_id(kind, row.id))
+        for kind in KINDS
+        for row in store.find_work_item_rows(kind)
+    ]
+    features = [
+        feature_detail(store.features.load_feature(parse_feature_id(text)))
+        for text in sorted(store.features.find_feature_ids())
+    ]
+    return [detail.id for detail in [*details, *features] if name in detail.about]
+
+
+def _about_lines(name: str, store: Store) -> str:
+    """What is about the term, listed after its relations: the items, then the knowledge lines.
+
+    The lines are the newest first, each with the id of its item. Nothing is listed for none.
+    """
+    items = ", ".join(items_about(name, store))
+    lines = newest_first(collected(store), None, name)
+    heading = "  knowledge\n" if lines else ""
+    return "".join(
+        [
+            f"  items  {items}\n" if items else "",
+            heading,
+            *(
+                f"    {line.item}  {line.kind}  {line.noted.date().isoformat()}  {line.text}\n"
+                for line in lines
+            ),
+        ]
+    )
+
+
 def show_term(name: str, store: Store) -> str:
     """The text of the term of that name: its meaning and the day it was added.
 
+    The items and the knowledge lines about it follow its relations, read from the record.
     Raises TermNotFoundError when the record holds no such term.
     """
     term = store.terms.load_term(name)
@@ -70,6 +112,6 @@ def show_term(name: str, store: Store) -> str:
         ("parts", ", ".join(each.name for each in others if name in each.part_of)),
     ]
     lines = "".join(f"  {label}  {named}\n" for label, named in relations if named)
-    return (
-        f"{term.name}\n  means  {term.meaning}\n{lines}  added  {term.added.date().isoformat()}\n"
-    )
+    added = term.added.date().isoformat()
+    head = f"{term.name}\n  means  {term.meaning}\n{lines}  added  {added}\n"
+    return head + _about_lines(name, store)

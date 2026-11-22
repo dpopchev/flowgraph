@@ -5,11 +5,19 @@ is listed among the decisions at the time the Spike was completed; it stays kept
 """
 
 from collections.abc import Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 
+from flowgraph.about import term_asked
 from flowgraph.feature import feature_detail
-from flowgraph.knowledge import DECISION, DEVIATION, FINDING, KnowledgeRow, kind_name
+from flowgraph.knowledge import (
+    DECISION,
+    DEVIATION,
+    FINDING,
+    KnowledgeRow,
+    about_text,
+    kind_name,
+)
 from flowgraph.parent import parse_feature_id
 from flowgraph.store import KINDS, Store
 from flowgraph.work_item import WorkItemDetail, parse_work_item_id
@@ -24,12 +32,16 @@ class KindListedError(ValueError):
 
 @dataclass(frozen=True)
 class KnowledgeEntry:
-    """One line of knowledge as the list shows it: the id of its item, its kind, time and text."""
+    """One line of knowledge as the list shows it: the id of its item, its kind, time and text.
+
+    The terms it is about follow.
+    """
 
     item: str
     kind: str
     noted: datetime
     text: str
+    about: list[str] = field(default_factory=list[str])
 
 
 def chosen_kind(kind: str | None) -> str | None:
@@ -44,7 +56,7 @@ def chosen_kind(kind: str | None) -> str | None:
 
 def entries_of(item: str, rows: Iterable[KnowledgeRow]) -> list[KnowledgeEntry]:
     """The lines of the item of that id as entries, in the order they were noted."""
-    return [KnowledgeEntry(item, row.kind, row.noted, row.text) for row in rows]
+    return [KnowledgeEntry(item, row.kind, row.noted, row.text, row.about) for row in rows]
 
 
 def decision_entries(detail: WorkItemDetail, completed: datetime | None) -> list[KnowledgeEntry]:
@@ -54,27 +66,35 @@ def decision_entries(detail: WorkItemDetail, completed: datetime | None) -> list
     return [KnowledgeEntry(detail.id, kind_name(DECISION), completed, detail.decision)]
 
 
-def newest_first(entries: Iterable[KnowledgeEntry], kind: str | None) -> list[KnowledgeEntry]:
-    """The entries of that kind, every kind for none, the last noted first.
+def newest_first(
+    entries: Iterable[KnowledgeEntry], kind: str | None, about: str | None = None
+) -> list[KnowledgeEntry]:
+    """The entries of that kind and about that term, every kind and term for none, last noted first.
 
     Of lines noted at one time the one collected last comes first, so an item's lines noted in
     one second keep their order reversed too.
     """
-    kept = [entry for entry in entries if kind is None or entry.kind == kind]
+    kept = [
+        entry
+        for entry in entries
+        if (kind is None or entry.kind == kind) and (about is None or about in entry.about)
+    ]
     return sorted(reversed(kept), key=lambda entry: entry.noted, reverse=True)
 
 
-def knowledge_text(entries: list[KnowledgeEntry], kind: str | None) -> str:
+def knowledge_text(entries: list[KnowledgeEntry], kind: str | None, about: str | None) -> str:
     """The entries as the lines fgraph knowledge writes, or one line saying there are none."""
     if not entries:
-        return f"no {kind or 'knowledge'} lines in the record\n"
+        about_it = "" if about is None else f" about {about}"
+        return f"no {kind or 'knowledge'} lines{about_it} in the record\n"
     return "".join(
-        f"{entry.noted.date().isoformat()}  {entry.kind}  {entry.item}  {entry.text}\n"
+        f"{entry.noted.date().isoformat()}  {entry.kind}  {entry.item}  {entry.text}"
+        f"{about_text(entry.about)}\n"
         for entry in entries
     )
 
 
-def _collected(store: Store) -> list[KnowledgeEntry]:
+def collected(store: Store) -> list[KnowledgeEntry]:
     """The entries of every work item and Feature of the record, the work items first."""
     entries: list[KnowledgeEntry] = []
     for kind in KINDS:
@@ -88,10 +108,13 @@ def _collected(store: Store) -> list[KnowledgeEntry]:
     return entries
 
 
-def show_knowledge(kind: str | None, store: Store) -> str:
+def show_knowledge(kind: str | None, about: str | None, store: Store) -> str:
     """The text fgraph knowledge gives: the lines of the record, of that kind when one is named.
 
-    Raises KindListedError when the kind is none of the three. Nothing is written.
+    The lines about that term alone when one is named. Raises KindListedError when the kind is
+    none of the three and TermError when the record holds no term of that name. Nothing is
+    written.
     """
     narrowed = chosen_kind(kind)
-    return knowledge_text(newest_first(_collected(store), narrowed), narrowed)
+    term = None if about is None else term_asked(about, store)
+    return knowledge_text(newest_first(collected(store), narrowed, term), narrowed, term)

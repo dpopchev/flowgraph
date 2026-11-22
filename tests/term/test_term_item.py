@@ -42,7 +42,7 @@ def store(held: list[Term], saved: list[Term] | None = None) -> Store:
         raise TermNotFoundError(name)
 
     return Store(
-        find_work_item_rows=never,
+        find_work_item_rows=lambda _: [],
         load_work_item=never,
         find_work_item_detail=never,
         find_task_ids=never,

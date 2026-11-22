@@ -13,15 +13,17 @@ from flowgraph.record import Now
 from flowgraph.store import Store
 
 
-def note_named(item: str, kind: KnowledgeKind, text: str, store: Store, now: Now) -> Written:
-    """Keep the line of that kind and text on the Feature or the work item of that id.
+def note_named(
+    item: str, kind: KnowledgeKind, text: str, store: Store, now: Now, about: tuple[str, ...] = ()
+) -> Written:
+    """Keep the line of that kind and text, about the terms given, on the Feature or work item.
 
     Returns what the write says. Raises FeatureNotFoundError when the record holds no such
     Feature and EmptyPartError when the text is blank; for any other id the refusal of
     `note_item`. Nothing is saved then.
     """
     if not is_feature_id(item):
-        return note_item(item, kind, text, store, now)
+        return note_item(item, kind, text, store, now, about)
     feature_id = parse_feature_id(item)
     note_feature(
         feature_id=feature_id,
@@ -30,6 +32,7 @@ def note_named(item: str, kind: KnowledgeKind, text: str, store: Store, now: Now
         load_feature=store.features.load_feature,
         save_feature=store.features.save_feature,
         now=now,
+        about=about,
     )
     named = feature_id_text(feature_id)
     return Written(f"noted {named}\n", MESSAGE.format(f"note {named}"))

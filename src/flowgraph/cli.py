@@ -12,6 +12,7 @@ from functools import partial
 from pathlib import Path
 from typing import Never, assert_never
 
+from flowgraph.about import about_asked
 from flowgraph.branch import check_slug_branched
 from flowgraph.commit import OpenGit, Said, commit_written, open_git
 from flowgraph.config import CONFIG, Config, LoadConfig, make_config, read_config
@@ -113,7 +114,8 @@ def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -
         case "relate":
             return relate_term_item(args.first, args.kind, args.second, store)
         case "add" if args.kind == "feature":
-            return add_feature_item(args.title, args.criterion, args.description, store, now)
+            about = about_asked(args.about, store) or ()
+            return add_feature_item(args.title, args.criterion, args.description, store, now, about)
         case "add":
             kind = kind_named(args.kind)
             under = parent_named(args.parent, store)
@@ -121,6 +123,7 @@ def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -
             depends_on = depends_asked(args.depends_on, None, store) or ()
             filed_during = filed_during_asked(args.filed_during, store)
             amends = amends_asked(args.amends, store)
+            about = about_asked(args.about, store) or ()
             return add_item(
                 kind,
                 args.title,
@@ -132,6 +135,7 @@ def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -
                 depends_on,
                 filed_during,
                 amends,
+                about,
             )
         case "amend":
             amended = None if is_feature_id(args.id) else args.id
@@ -146,6 +150,7 @@ def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -
                 args.hypothesis,
                 None if args.parent is None else parent_asked(args.parent),
                 depends_asked(args.depends_on, amended, store),
+                about_asked(args.about, store),
             )
             return amend_named(args.id, parts, args.criterion, store)
         case "complete" if is_feature_id(args.id):
@@ -172,7 +177,7 @@ def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -
                 )
                 if text is not None
             )
-            return note_named(args.id, kind, text, store, now)
+            return note_named(args.id, kind, text, store, now, about_asked(args.about, store) or ())
         case "reorder":
             return reorder_item(args.id, args.before, store)
         case _:
@@ -236,7 +241,7 @@ def _said(
                 args.id, args.message, store, now, record, open_git, config, run_gate, args.decision
             )
         case "knowledge":
-            return Said(show_knowledge(args.kind, store))
+            return Said(show_knowledge(args.kind, args.about, store))
         case "terms":
             return Said(terms_text(store))
         case "show":

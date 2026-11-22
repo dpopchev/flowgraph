@@ -65,6 +65,7 @@ class _FeatureFile(BaseModel):
     state: Literal["backlog"]
     title: str
     description: str = ""
+    about: list[str] = []
     created: datetime
     criteria: list[str]
     knowledge: list[KnowledgeFile] = []
@@ -79,6 +80,7 @@ class _StartedFeatureFile(BaseModel):
     state: Literal["started"]
     title: str
     description: str = ""
+    about: list[str] = []
     created: datetime
     started: datetime
     criteria: list[str]
@@ -94,6 +96,7 @@ class _BlockedFeatureFile(BaseModel):
     state: Literal["blocked"]
     title: str
     description: str = ""
+    about: list[str] = []
     created: datetime
     started: datetime
     since: datetime
@@ -112,6 +115,7 @@ class _CompletedFeatureFile(BaseModel):
     state: Literal["completed"]
     title: str
     description: str = ""
+    about: list[str] = []
     created: datetime
     started: datetime
     completed: datetime
@@ -129,6 +133,7 @@ class _RemovedFeatureFile(BaseModel):
     state: Literal["removed"]
     title: str
     description: str = ""
+    about: list[str] = []
     created: datetime
     removed: datetime
     reason: str
@@ -171,7 +176,8 @@ def _read_file(path: Path) -> FeatureState:
         raise FeatureFileError(f"{path} holds no Feature: {error}") from error
     try:
         built = _built(held, commit)
-        return replace(built, knowledge=tuple(knowledge_held(line) for line in held.knowledge))
+        lines = tuple(knowledge_held(line) for line in held.knowledge)
+        return replace(built, knowledge=lines, about=tuple(held.about))
     except (EmptyPartError, NoCriterionError, FeatureIdError) as error:
         raise FeatureFileError(f"{path} holds no Feature: {error}") from error
 
@@ -247,11 +253,13 @@ def write_feature(record: Path, feature: FeatureState) -> None:
     described = {"description": feature.description} if feature.description else {}
     lines = [knowledge_primitives(line) for line in feature.knowledge]
     knowledge = {"knowledge": lines} if lines else {}
+    about = {"about": list(feature.about)} if feature.about else {}
     primitives = {
         "id": feature_id_text(feature.id),
         "state": state_name(feature),
         "title": feature.title,
         **described,
+        **about,
         "created": feature.created,
         **_moves_primitives(feature),
         "criteria": list(feature.criteria),

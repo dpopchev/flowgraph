@@ -78,6 +78,7 @@ class WorkItem:
     parent: Parent = STANDALONE
     knowledge: tuple[KnowledgeLine, ...] = ()
     relations: Relations[WorkItemId] = NO_RELATIONS
+    about: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -94,6 +95,7 @@ class StartedWorkItem:
     parent: Parent = STANDALONE
     knowledge: tuple[KnowledgeLine, ...] = ()
     relations: Relations[WorkItemId] = NO_RELATIONS
+    about: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -112,6 +114,7 @@ class CompletedWorkItem:
     parent: Parent = STANDALONE
     knowledge: tuple[KnowledgeLine, ...] = ()
     relations: Relations[WorkItemId] = NO_RELATIONS
+    about: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -133,6 +136,7 @@ class RemovedWorkItem:
     knowledge: tuple[KnowledgeLine, ...] = ()
     relations: Relations[WorkItemId] = NO_RELATIONS
     superseded_by: WorkItemId | None = None
+    about: tuple[str, ...] = ()
 
 
 # A work item that still takes Tasks: in Backlog or started.
@@ -243,10 +247,12 @@ def make_work_item(
     depends_on: Iterable[WorkItemId] = (),
     filed_during: WorkItemId | None = None,
     amends: WorkItemId | None = None,
+    about: tuple[str, ...] = (),
 ) -> WorkItem:
     """A work item in Backlog, its created time kept to the second; it stands alone unless a
     Feature is named as its parent, depends on the work items given, is filed during the one given
-    and amends the one given, none by default.
+    and amends the one given, none by default. It is about the terms given, in order, none by
+    default.
 
     Raises EmptyPartError when the title is blank, CriterionError when the criterion is not of
     the form the kind of the item takes and RelationError when it names itself.
@@ -259,7 +265,7 @@ def make_work_item(
     titled = said("title", title)
     relations = make_relations(item_id, depends_on, filed_during, amends)
     return WorkItem(
-        item_id, titled, criterion, description, to_the_second, (), parent, (), relations
+        item_id, titled, criterion, description, to_the_second, (), parent, (), relations, about
     )
 
 
@@ -308,6 +314,7 @@ def started_work_item(item: WorkItemState, on: datetime) -> StartedWorkItem:
                 item.parent,
                 item.knowledge,
                 item.relations,
+                item.about,
             )
         case StartedWorkItem():
             raise StartedAlreadyError(f"{work_item_id_text(item.id)} is started already")
@@ -347,6 +354,7 @@ def completed_work_item(
                 item.parent,
                 item.knowledge,
                 item.relations,
+                about=item.about,
             )
         case CompletedWorkItem():
             raise CompletedAlreadyError(f"{work_item_id_text(item.id)} is completed already")

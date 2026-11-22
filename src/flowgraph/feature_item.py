@@ -60,9 +60,14 @@ def is_feature_id(text: str) -> bool:
 
 
 def add_feature_item(
-    title: str, criteria: Iterable[str], description: str, store: Store, now: Now
+    title: str,
+    criteria: Iterable[str],
+    description: str,
+    store: Store,
+    now: Now,
+    about: tuple[str, ...] = (),
 ) -> Written:
-    """Add a Feature with its criteria; what the write says.
+    """Add a Feature with its criteria, about the terms given; what the write says.
 
     Raises EmptyPartError when the title or a criterion is blank and NoCriterionError when it
     states none; nothing is saved.
@@ -74,6 +79,7 @@ def add_feature_item(
         find_feature_ids=store.features.find_feature_ids,
         save_feature=store.features.save_feature,
         now=now,
+        about=about,
     )
     text = feature_id_text(added)
     return Written(f"added {text}\n", MESSAGE.format(f"add {text}"))

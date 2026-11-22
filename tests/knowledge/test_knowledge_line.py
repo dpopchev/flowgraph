@@ -28,3 +28,11 @@ def test_the_time_noted_is_kept_to_the_second() -> None:
 def test_a_blank_text_is_refused_by_name() -> None:
     with pytest.raises(EmptyPartError, match=r"^text is empty$"):
         make_knowledge_line(FINDING, " ", NOTED)
+
+
+def test_a_line_is_about_no_term_by_default() -> None:
+    assert make_knowledge_line(FINDING, "a text", NOTED).about == ()
+
+
+def test_a_line_holds_the_terms_it_is_about_in_order() -> None:
+    assert make_knowledge_line(FINDING, "a text", NOTED, ("gate", "lane")).about == ("gate", "lane")

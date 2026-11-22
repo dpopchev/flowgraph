@@ -33,12 +33,14 @@ from flowgraph.work_item import Amendment, NoPartError, NoSuchPartError, work_it
 class FeatureAmendment:
     """The parts of a Feature to rewrite: each its new text, or None where it stays as it was.
 
-    Its criteria are rewritten whole: the ones given replace the ones it had.
+    Its criteria are rewritten whole: the ones given replace the ones it had, and so are the
+    terms it is about.
     """
 
     title: str | None = None
     description: str | None = None
     criteria: tuple[str, ...] | None = None
+    about: tuple[str, ...] | None = None
 
 
 def amended_feature(feature: FeatureState, amendment: FeatureAmendment) -> Feature:
@@ -63,7 +65,8 @@ def amended_feature(feature: FeatureState, amendment: FeatureAmendment) -> Featu
                 feature.description if described is None else described,
                 feature.created,
             )
-            return replace(amended, knowledge=feature.knowledge)
+            about = feature.about if amendment.about is None else amendment.about
+            return replace(amended, knowledge=feature.knowledge, about=about)
         case StartedFeature():
             raise StartedAlreadyError(f"{named} is started already")
         case BlockedFeature():
@@ -93,7 +96,7 @@ def _of_feature(named: str, parts: Amendment, criteria: Sequence[str] | None) ->
         only = "a Feature is amended by its title, its description and its criteria"
         raise NoSuchPartError(f"{named} has no {listed}: {only}")
     stated = None if criteria is None else tuple(criteria)
-    return FeatureAmendment(parts.title, parts.description, stated)
+    return FeatureAmendment(parts.title, parts.description, stated, parts.about)
 
 
 def amend_named(

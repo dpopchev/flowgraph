@@ -124,13 +124,14 @@ def add_item(
     depends_on: tuple[WorkItemId, ...] = (),
     filed_during: WorkItemId | None = None,
     amends: WorkItemId | None = None,
+    about: tuple[str, ...] = (),
 ) -> Written:
     """Add a work item of that kind with its criterion; what the write says.
 
     It stands alone unless a Feature is given as its parent, depends on the work items given,
-    is filed during the one given and amends the one given. Raises EmptyPartError when the title
-    is blank and CriterionError when the criterion is not of the form the kind takes; nothing is
-    saved.
+    is filed during the one given, amends the one given and is about the terms given. Raises
+    EmptyPartError when the title is blank and CriterionError when the criterion is not of the
+    form the kind takes; nothing is saved.
     """
     added = work_item.add_work_item(
         kind=kind,
@@ -144,6 +145,7 @@ def add_item(
         depends_on=depends_on,
         filed_during=filed_during,
         amends=amends,
+        about=about,
     )
     text = work_item_id_text(added)
     return Written(f"added {text}\n", MESSAGE.format(f"add {text}"))
@@ -194,12 +196,14 @@ def remove_item(
     return Written(f"removed {text}\n", MESSAGE.format(f"remove {text}"))
 
 
-def note_item(item: str, kind: KnowledgeKind, text: str, store: Store, now: Now) -> Written:
-    """Keep the line of that kind and text on the work item of that id, in any state.
+def note_item(
+    item: str, kind: KnowledgeKind, text: str, store: Store, now: Now, about: tuple[str, ...] = ()
+) -> Written:
+    """Keep the line of that kind and text, about the terms given, on the work item of that id.
 
-    The line goes after the lines the item keeps already, none of which is amended. Raises
-    WorkItemIdError when the text is the id of no kind, WorkItemNotFoundError when the record
-    holds no such item and EmptyPartError when the text is blank; nothing is saved.
+    It is kept in any state, after the lines the item keeps already, none of which is amended.
+    Raises WorkItemIdError when the text is the id of no kind, WorkItemNotFoundError when the
+    record holds no such item and EmptyPartError when the text is blank; nothing is saved.
     """
     item_id = parse_work_item_id_of_any_kind(item)
     work_item.note_work_item(
@@ -209,6 +213,7 @@ def note_item(item: str, kind: KnowledgeKind, text: str, store: Store, now: Now)
         load_work_item=store.load_work_item,
         save_work_item=store.save_work_item,
         now=now,
+        about=about,
     )
     text = work_item_id_text(item_id)
     return Written(f"noted {text}\n", MESSAGE.format(f"note {text}"))

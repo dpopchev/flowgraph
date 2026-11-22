@@ -13,23 +13,32 @@ then = "fgraph show of the term lists the line with the id of the Story, and fgr
 
 [[tasks]]
 id = "T-0297"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_note_about.py, failing on the criterion of S-0072"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_note_finding.py does. Seen red, then marked a strict xfail naming S-0072 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_note_about.py states that, on a record with a term and a Story, fgraph note of the Story with --decision, a text and --about with the name of the term exits 0, fgraph show of the term lists the line with the id of the Story, and fgraph show of the Story lists the term"
 created = 2026-11-22 10:48:01+00:00
+started = 2026-11-22 16:56:45+00:00
+completed = 2026-11-22 16:57:27+00:00
+commit = "c7208dc"
 
 [[tasks]]
 id = "T-0298"
-state = "backlog"
+state = "completed"
 title = "Add --about to fgraph note, fgraph add and fgraph amend, and what is about a term to its show"
 description = "Removes the xfail mark of tests/functional/test_note_about.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph note takes --about TERM, once per term, kept on the knowledge line; fgraph add of a work item or a Feature and fgraph amend of one in Backlog take --about TERM, once per term, kept on the item, and --about none of amend takes them all away; a term that is not in the record is refused naming fgraph add term, exit 2, nothing written; fgraph show of an item lists its terms, and each knowledge line with its terms; fgraph show of a term lists, after its relations, the items about it and the knowledge lines about it, each with the id of its item, read from the record; fgraph knowledge takes --about TERM and narrows its list to the lines about it"
 created = 2026-11-22 10:48:02+00:00
+started = 2026-11-22 16:57:28+00:00
+completed = 2026-11-22 17:08:18+00:00
+commit = "d6267f9"
 
 [[tasks]]
 id = "T-0299"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say what an item and a knowledge line are about"
 expected_output = "changed: README.md shows a line noted about a term, an item amended about one, and the show of the term that lists both; docs/domain-model.md says an item and a knowledge line name the terms they are about, which side is stored, and what is refused"
 created = 2026-11-22 10:48:03+00:00
+started = 2026-11-22 17:08:19+00:00
+completed = 2026-11-22 17:08:36+00:00
+commit = "549c272"

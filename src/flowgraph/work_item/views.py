@@ -76,3 +76,4 @@ class WorkItemDetail:
     supersedes: list[str] = field(default_factory=list[str])
     amends: str = ""
     amended_by: list[str] = field(default_factory=list[str])
+    about: list[str] = field(default_factory=list[str])

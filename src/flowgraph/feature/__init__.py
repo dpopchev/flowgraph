@@ -1,21 +1,19 @@
 """A Feature: a bigger outcome that groups work items, kept in the record with its criteria.
 
-Its model, its states, its file and the move of a work item under it are named here. Its commands
-run on the store of a record, which reads a Feature through this package, so each is imported
-from its own module: amend, block, complete, item, next, note, remove and start.
+Its model, its states and their moves, its file, its views and the move of a work item under it
+are named here. Its commands run on the store of a record, which reads a Feature through this
+package, so each is imported from its own module: amend, block, complete, item, next, note,
+remove and start.
 """
 
 from flowgraph.feature.file import FeatureMismatchError
 from flowgraph.feature.model import (
-    DONE,
     BlockedFeature,
     CompletedFeature,
     Feature,
-    FeatureDetail,
     FeatureFileError,
     FeatureNotFoundError,
     FeatureRemovedError,
-    FeatureRow,
     FeatureState,
     FindFeatureIds,
     LoadFeature,
@@ -25,12 +23,8 @@ from flowgraph.feature.model import (
     StartedFeature,
     add_feature,
     blocked_feature,
-    bucket_of,
     completed_feature,
-    feature_bucket,
-    feature_detail,
     feature_file,
-    feature_row,
     make_feature,
     next_feature_id,
     note_feature,
@@ -43,6 +37,15 @@ from flowgraph.feature.model import (
     write_feature,
 )
 from flowgraph.feature.move import check_move
+from flowgraph.feature.views import (
+    DONE,
+    FeatureDetail,
+    FeatureRow,
+    bucket_of,
+    feature_bucket,
+    feature_detail,
+    feature_row,
+)
 
 __all__ = [
     "DONE",

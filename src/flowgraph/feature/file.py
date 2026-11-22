@@ -1,19 +1,33 @@
 """The file of a Feature: one file of the record, `items/F-0001.toml`, read and written whole.
 
 Its state line tells the states apart, and each state holds the times and the texts of the moves
-that reached it, no other. A Feature is built from its file through its constructor and its moves
-(`flowgraph.feature.state`).
+that reached it, no other (`flowgraph.feature.held_file`). A Feature is built from its file
+through its constructor and its moves (`flowgraph.feature.state`, `flowgraph.feature.moves`).
 """
 
 import tomllib
 from dataclasses import replace
-from datetime import datetime
 from pathlib import Path
-from typing import Annotated, Literal, assert_never
+from typing import assert_never
 
-from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
+from pydantic import ValidationError
 
 from flowgraph.criterion import CommitError, EmptyPartError, Evidence, evidence_written
+from flowgraph.feature.held_file import (
+    HELD_FEATURE,
+    BlockedFeatureFile,
+    CompletedFeatureFile,
+    FeatureFile,
+    HeldFeatureFile,
+    RemovedFeatureFile,
+    StartedFeatureFile,
+)
+from flowgraph.feature.moves import (
+    blocked_feature,
+    completed_feature,
+    removed_feature,
+    started_feature,
+)
 from flowgraph.feature.state import (
     IN_BACKLOG,
     BlockedFeature,
@@ -23,15 +37,10 @@ from flowgraph.feature.state import (
     NoCriterionError,
     RemovedFeature,
     StartedFeature,
-    blocked_feature,
-    completed_feature,
     make_feature,
-    removed_feature,
-    started_feature,
     state_name,
 )
 from flowgraph.item import (
-    KnowledgeFile,
     evidence_primitives,
     knowledge_held,
     knowledge_primitives,
@@ -56,106 +65,6 @@ class FeatureMismatchError(Exception):
     """A Feature read back different from the one written; its file is as it was before."""
 
 
-class _FeatureFile(BaseModel):
-    """What the file of a Feature in Backlog holds: no Task, and no time but its created one."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    id: str
-    state: Literal["backlog"]
-    title: str
-    description: str = ""
-    about: list[str] = []
-    created: datetime
-    criteria: list[str]
-    knowledge: list[KnowledgeFile] = []
-
-
-class _StartedFeatureFile(BaseModel):
-    """What the file of a started Feature holds: its started time too."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    id: str
-    state: Literal["started"]
-    title: str
-    description: str = ""
-    about: list[str] = []
-    created: datetime
-    started: datetime
-    criteria: list[str]
-    knowledge: list[KnowledgeFile] = []
-
-
-class _BlockedFeatureFile(BaseModel):
-    """What the file of a blocked Feature holds: its started time too, and its block."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    id: str
-    state: Literal["blocked"]
-    title: str
-    description: str = ""
-    about: list[str] = []
-    created: datetime
-    started: datetime
-    since: datetime
-    reason: str
-    waiting_on: str
-    criteria: list[str]
-    knowledge: list[KnowledgeFile] = []
-
-
-class _CompletedFeatureFile(BaseModel):
-    """What the file of a completed Feature holds: its completed time too, and its commit."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    id: str
-    state: Literal["completed"]
-    title: str
-    description: str = ""
-    about: list[str] = []
-    created: datetime
-    started: datetime
-    completed: datetime
-    commit: str = ""
-    criteria: list[str]
-    knowledge: list[KnowledgeFile] = []
-
-
-class _RemovedFeatureFile(BaseModel):
-    """What the file of a removed Feature holds: its removed time and its reason, no started one."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    id: str
-    state: Literal["removed"]
-    title: str
-    description: str = ""
-    about: list[str] = []
-    created: datetime
-    removed: datetime
-    reason: str
-    criteria: list[str]
-    knowledge: list[KnowledgeFile] = []
-
-
-# The file of a Feature in any of its states.
-_HeldFeatureFile = (
-    _FeatureFile
-    | _StartedFeatureFile
-    | _BlockedFeatureFile
-    | _CompletedFeatureFile
-    | _RemovedFeatureFile
-)
-
-# The validator of a Feature file, which tells the states apart by the state line.
-_HELD_FEATURE: TypeAdapter[_HeldFeatureFile] = TypeAdapter(
-    Annotated[_HeldFeatureFile, Field(discriminator="state")]
-)
-
-
 def feature_file(record: Path, feature_id: FeatureId) -> Path:
     """The path of the file of the Feature of that id in the record."""
     return record / ITEMS / f"{feature_id_text(feature_id)}.toml"
@@ -170,8 +79,8 @@ def _read_file(path: Path) -> FeatureState:
     """
     try:
         written = tomllib.loads(path.read_text(encoding="utf-8"))
-        held = _HELD_FEATURE.validate_python({"state": IN_BACKLOG, **written})
-        commit = evidence_written(held.commit if isinstance(held, _CompletedFeatureFile) else "")
+        held = HELD_FEATURE.validate_python({"state": IN_BACKLOG, **written})
+        commit = evidence_written(held.commit if isinstance(held, CompletedFeatureFile) else "")
     except (tomllib.TOMLDecodeError, ValidationError, CommitError) as error:
         raise FeatureFileError(f"{path} holds no Feature: {error}") from error
     try:
@@ -182,7 +91,7 @@ def _read_file(path: Path) -> FeatureState:
         raise FeatureFileError(f"{path} holds no Feature: {error}") from error
 
 
-def _built(held: _HeldFeatureFile, commit: Evidence) -> FeatureState:
+def _built(held: HeldFeatureFile, commit: Evidence) -> FeatureState:
     """The Feature the content of a file holds, through its constructor and its moves.
 
     Raises the refusal of the constructor or of a move.
@@ -191,16 +100,16 @@ def _built(held: _HeldFeatureFile, commit: Evidence) -> FeatureState:
         parse_feature_id(held.id), held.title, held.criteria, held.description, held.created
     )
     match held:
-        case _FeatureFile():
+        case FeatureFile():
             return feature
-        case _StartedFeatureFile():
+        case StartedFeatureFile():
             return started_feature(feature, held.started)
-        case _BlockedFeatureFile():
+        case BlockedFeatureFile():
             begun = started_feature(feature, held.started)
             return blocked_feature(begun, held.reason, held.waiting_on, held.since)
-        case _CompletedFeatureFile():
+        case CompletedFeatureFile():
             return completed_feature(started_feature(feature, held.started), held.completed, commit)
-        case _RemovedFeatureFile():
+        case RemovedFeatureFile():
             return removed_feature(feature, held.reason, held.removed)
         case _ as unreachable:
             assert_never(unreachable)

@@ -13,12 +13,14 @@ then = "fgraph show of the Bug lists the Story it was filed during, and fgraph s
 
 [[tasks]]
 id = "T-0281"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_filed_during.py, failing on the criterion of S-0067"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_complete_bug.py does. Seen red, then marked a strict xfail naming S-0067 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_filed_during.py states that, on a record with a started Story, fgraph add bug with --filed-during and the id of the Story exits 0, fgraph show of the Bug lists the Story it was filed during, and fgraph show of the Story lists the Bug as filed during it"
 created = 2026-11-22 10:47:41+00:00
 started = 2026-11-22 11:59:47+00:00
+completed = 2026-11-22 12:00:01+00:00
+commit = "87b1508"
 
 [[tasks]]
 id = "T-0282"

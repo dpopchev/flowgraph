@@ -1468,6 +1468,14 @@ development too.
   `open_git`, so the core decides when it runs and never calls git itself.
   The same key pushes the tag `fgraph release` makes (below), with the
   development on or off, since a release is no step of a landing.
+- `[delivery] tag` tags `main` at the close of a Feature, `feature-close` or
+  `none`. It is `none` by default, as S-0092 states it: a record that names
+  none tags nothing, as a landing did before the key; any other word is
+  refused naming the two. It is a step of a landing, so it tags nothing with
+  the development off, where it is held as written. In the model it is a
+  value of the delivery layer (`TagAt`, `src/flowgraph/record/layers.py`);
+  the write that completes a Feature names it (`Written.completes`), so the
+  core decides from that plain value whether the landing tags.
 - `fgraph complete` of a started Task that holds a check runs it, answering S-0089:
   through the shell, in the worktree of the work item of the Task (the directory
   `fgraph` runs in when the item has none), before anything is written. Its
@@ -1736,7 +1744,8 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   a `fast-forward` drops the merge and moves `main`. A gate that fails drops
   the merge held, and no later step is taken.
 - With `[delivery] push = true` the push of `main` is the last step of every
-  way, once the landing is whole: after the commit of the record that
+  way but the tag at the close of a Feature (below), once the landing is
+  whole: after the commit of the record that
   completes the work item, the removal of the worktree and the branch landed,
   and the branch of the next work item of a Feature. `main` is pushed to the
   branch it tracks on its remote, and the landing says `pushed main to
@@ -1748,6 +1757,21 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   branch; nothing is undone, since history only moves forward. The landing
   exits 2 naming the git command and its error, then `-- <id> is landed at
   <sha>, main is not pushed`; the push is left to the developer.
+- With `[delivery] tag = "feature-close"` the write that completes a Feature
+  -- the commit of the record of the landing of its last work item -- is
+  followed by the tag `fgraph release` makes, made by that same code
+  (`release_trunk`), the reading of the agent for S-0092: the last step of
+  the landing, after the push of `main`, on the commit `main` is then on,
+  which completes the Feature. The landing says `tagged <version> at <sha>`
+  and, under `[delivery] push = true`, `pushed <version> to <remote>`. A
+  landing that completes no Feature tags nothing, the one of a work item that
+  stands alone among them. A tag git refuses leaves the landing whole and
+  exits 2 naming the git command, then `-- <id> is landed at <sha>, <Feature>
+  is completed`; a push of `main` git refuses makes no tag and ends `, <Feature>
+  is not tagged`, so `fgraph release` tags it once `main` is pushed. With the
+  development off a Feature closed by `fgraph complete` of its last work item
+  is not tagged, inside a git work tree or outside one: the tag is a step of
+  a landing, and `fgraph release` is the developer's.
 - A squash is not made by `git merge --squash`: that takes a change staged
   in the checkout into the commit and drops it with the squash. The merge of
   its own refuses such a checkout, and committed with one parent it holds

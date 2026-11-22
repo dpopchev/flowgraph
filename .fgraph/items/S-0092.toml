@@ -1,0 +1,14 @@
+id = "S-0092"
+state = "backlog"
+title = "Raise the closes of a Feature that tag the trunk, under delivery.tag, from none to every one"
+description = "The words of the note: delivery.tag = feature-close or none."
+parent = "F-0010"
+created = 2026-11-22 21:03:04+00:00
+depends_on = [
+    "S-0091",
+]
+
+[criterion]
+given = "delivery.tag set to feature-close and a started Feature whose last work item is started"
+when = "the last work item is landed"
+then = "main holds the next v* tag, as fgraph release makes it"

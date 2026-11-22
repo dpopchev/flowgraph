@@ -13,12 +13,14 @@ then = "fgraph about lists the line first, as what governs the file, with the id
 
 [[tasks]]
 id = "T-0310"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_note_governs.py, failing on the criterion of S-0076"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_note_finding.py does. Seen red, then marked a strict xfail naming S-0076 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_note_governs.py states that, on a record with a Story, fgraph note of the Story with --decision, a text and --governs with a path exits 0, and fgraph about with that path lists the line first, as what governs the file, with the id of the Story"
 created = 2026-11-22 10:48:15+00:00
 started = 2026-11-22 17:55:53+00:00
+completed = 2026-11-22 17:56:23+00:00
+commit = "331ff92"
 
 [[tasks]]
 id = "T-0311"

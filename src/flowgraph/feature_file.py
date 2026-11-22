@@ -6,6 +6,7 @@ that reached it, no other. A Feature is built from its file through its construc
 """
 
 import tomllib
+from dataclasses import replace
 from datetime import datetime
 from pathlib import Path
 from typing import Annotated, Literal, assert_never
@@ -29,7 +30,13 @@ from flowgraph.feature_state import (
     started_feature,
     state_name,
 )
-from flowgraph.item_file import evidence_primitives, write_checked
+from flowgraph.item_file import (
+    KnowledgeFile,
+    evidence_primitives,
+    knowledge_held,
+    knowledge_primitives,
+    write_checked,
+)
 from flowgraph.parent import FeatureId, FeatureIdError, feature_id_text, parse_feature_id
 from flowgraph.record import ITEMS
 
@@ -60,6 +67,7 @@ class _FeatureFile(BaseModel):
     description: str = ""
     created: datetime
     criteria: list[str]
+    knowledge: list[KnowledgeFile] = []
 
 
 class _StartedFeatureFile(BaseModel):
@@ -74,6 +82,7 @@ class _StartedFeatureFile(BaseModel):
     created: datetime
     started: datetime
     criteria: list[str]
+    knowledge: list[KnowledgeFile] = []
 
 
 class _BlockedFeatureFile(BaseModel):
@@ -91,6 +100,7 @@ class _BlockedFeatureFile(BaseModel):
     reason: str
     waiting_on: str
     criteria: list[str]
+    knowledge: list[KnowledgeFile] = []
 
 
 class _CompletedFeatureFile(BaseModel):
@@ -107,6 +117,7 @@ class _CompletedFeatureFile(BaseModel):
     completed: datetime
     commit: str = ""
     criteria: list[str]
+    knowledge: list[KnowledgeFile] = []
 
 
 class _RemovedFeatureFile(BaseModel):
@@ -122,6 +133,7 @@ class _RemovedFeatureFile(BaseModel):
     removed: datetime
     reason: str
     criteria: list[str]
+    knowledge: list[KnowledgeFile] = []
 
 
 # The file of a Feature in any of its states.
@@ -158,7 +170,8 @@ def _read_file(path: Path) -> FeatureState:
     except (tomllib.TOMLDecodeError, ValidationError, CommitError) as error:
         raise FeatureFileError(f"{path} holds no Feature: {error}") from error
     try:
-        return _built(held, commit)
+        built = _built(held, commit)
+        return replace(built, knowledge=tuple(knowledge_held(line) for line in held.knowledge))
     except (EmptyPartError, NoCriterionError, FeatureIdError) as error:
         raise FeatureFileError(f"{path} holds no Feature: {error}") from error
 
@@ -232,6 +245,8 @@ def write_feature(record: Path, feature: FeatureState) -> None:
     """
     path = feature_file(record, feature.id)
     described = {"description": feature.description} if feature.description else {}
+    lines = [knowledge_primitives(line) for line in feature.knowledge]
+    knowledge = {"knowledge": lines} if lines else {}
     primitives = {
         "id": feature_id_text(feature.id),
         "state": state_name(feature),
@@ -240,6 +255,7 @@ def write_feature(record: Path, feature: FeatureState) -> None:
         "created": feature.created,
         **_moves_primitives(feature),
         "criteria": list(feature.criteria),
+        **knowledge,
     }
     write_checked(
         path,

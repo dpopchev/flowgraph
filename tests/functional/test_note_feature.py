@@ -17,7 +17,6 @@ pytestmark = pytest.mark.functional
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 ADD_FEATURE = ["add", "feature", "a feature title", "--criterion", "a developer notes a Feature"]
 NOTE = ["note", "F-0001", "--decision", "keep one store"]
-NOT_YET = pytest.mark.xfail(strict=True, reason="S-0064: fgraph note takes no Feature yet")
 
 
 @dataclass(frozen=True)
@@ -47,13 +46,11 @@ def fgraph(argv: Sequence[str], cwd: Path) -> Outcome:
     return Outcome(status, "".join(out), "".join(err))
 
 
-@NOT_YET
 def test_a_decision_noted_on_a_feature_exits_with_zero(tmp_path: Path) -> None:
     fgraph(ADD_FEATURE, tmp_path)
     assert fgraph(NOTE, tmp_path).status == 0
 
 
-@NOT_YET
 def test_a_decision_noted_on_a_feature_is_listed_under_knowledge_by_show(tmp_path: Path) -> None:
     fgraph(ADD_FEATURE, tmp_path)
     fgraph(NOTE, tmp_path)

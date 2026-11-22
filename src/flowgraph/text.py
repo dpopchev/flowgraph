@@ -4,6 +4,7 @@ from collections.abc import Collection, Iterable, Sequence
 from typing import assert_never
 
 from flowgraph.feature import FeatureDetail, FeatureRow
+from flowgraph.knowledge import KnowledgeRow
 from flowgraph.story import StoryDetail, StoryRow
 from flowgraph.task import TaskRow
 from flowgraph.upkeep import UpkeepDetail, UpkeepRow
@@ -159,6 +160,19 @@ def _task_line(task: TaskRow) -> str:
     return ""
 
 
+def _knowledge_lines(knowledge: Sequence[KnowledgeRow]) -> list[str]:
+    """The knowledge lines under their heading, each with its kind, its date and its text.
+
+    There is no heading without a line.
+    """
+    if not knowledge:
+        return []
+    return [
+        f"Knowledge ({len(knowledge)})\n",
+        *(f"  {line.kind}  {line.noted.date().isoformat()}  {line.text}\n" for line in knowledge),
+    ]
+
+
 def feature_text(detail: FeatureDetail, rows: Iterable[StoryRow | UpkeepRow], bucket: str) -> str:
     """The Feature with its bucket, its criteria, then its work items with their buckets.
 
@@ -185,7 +199,7 @@ def feature_text(detail: FeatureDetail, rows: Iterable[StoryRow | UpkeepRow], bu
     for row in listed:
         held_in = next(name for name, states in BUCKETS if row.state in states)
         lines.append(f"  {row.id}  {row.title}  {held_in}\n")
-    return "".join(lines)
+    return "".join([*lines, *_knowledge_lines(detail.knowledge)])
 
 
 def show_text(detail: StoryDetail | UpkeepDetail) -> str:
@@ -236,8 +250,4 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
         lines.append(f"    expected output  {task.expected_output}\n")
         if task.description:
             lines.append(f"    description      {task.description}\n")
-    if detail.knowledge:
-        lines.append(f"Knowledge ({len(detail.knowledge)})\n")
-        for line in detail.knowledge:
-            lines.append(f"  {line.kind}  {line.noted.date().isoformat()}  {line.text}\n")
-    return "".join(lines)
+    return "".join([*lines, *_knowledge_lines(detail.knowledge)])

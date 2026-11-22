@@ -24,12 +24,14 @@ commit = "aec20cc"
 
 [[tasks]]
 id = "T-0278"
-state = "started"
+state = "completed"
 title = "Create src/flowgraph/relation.py holding the relations a work item names to other work items, depends on first"
 description = "New code the next Task runs. A relation is stored on the item that names it; the other side is derived by a view, so a write stays one file and the scope of a branch holds."
 expected_output = "created: src/flowgraph/relation.py holds the relations of a work item -- the ids of the work items it depends on, none by default -- and two views over the record given as plain data: the work items a start still waits for, each with its bucket, and whether a new dependency would close a cycle; a work item that names itself is refused; tests/relation/ states each"
 created = 2026-11-22 10:47:38+00:00
 started = 2026-11-22 11:48:07+00:00
+completed = 2026-11-22 11:52:00+00:00
+commit = "c183fd2"
 
 [[tasks]]
 id = "T-0279"

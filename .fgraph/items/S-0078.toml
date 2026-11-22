@@ -35,8 +35,10 @@ commit = "a2868c1"
 
 [[tasks]]
 id = "T-0318"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a record with a broken relation is refused when read"
 expected_output = "changed: README.md shows the refusal of a record whose file names an id that is not there; docs/domain-model.md says every relation is checked at the write and again at the read, which relations, what a cycle is, and what the refusal prints"
 created = 2026-11-22 10:48:24+00:00
 started = 2026-11-22 19:41:51+00:00
+completed = 2026-11-22 19:42:02+00:00
+commit = "2c70592"

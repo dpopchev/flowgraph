@@ -24,12 +24,14 @@ commit = "ecddf8e"
 
 [[tasks]]
 id = "T-0189"
-state = "started"
+state = "completed"
 title = "Extend the Feature of src/flowgraph/feature.py to a started state kept in its file"
 description = "New code the next Task runs. The states are types, as those of a work item: a StartedFeature carries what its state needs and nothing else."
 expected_output = "changed: src/flowgraph/feature.py holds a state of the Feature of its own: the Feature in Backlog and the StartedFeature with its started time, the move from one to the other, refused for one started already; its file holds a state line and the started time of a started one, read back whole, and a file without a state line, written before this Story, reads as a Feature in Backlog; proved in tests/feature/"
 created = 2026-11-21 23:22:06+00:00
 started = 2026-11-22 01:32:51+00:00
+completed = 2026-11-22 01:37:02+00:00
+commit = "da104d3"
 
 [[tasks]]
 id = "T-0190"

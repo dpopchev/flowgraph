@@ -24,11 +24,12 @@ commit = "e96f5d7"
 
 [[tasks]]
 id = "T-0213"
-state = "backlog"
+state = "started"
 title = "Add the remove of a Feature in Backlog to fgraph remove, its work items removed with it"
 description = "Removes the xfail mark of tests/functional/test_remove_feature.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: src/flowgraph/feature.py holds the RemovedFeature, its removed time and its reason, reached from a Feature in Backlog alone, a blank reason refused; fgraph remove takes the id of a Feature in Backlog and removes it and every work item under it for the same reason, in one write and one commit, chore: remove F-0001 in the record; a Feature that is started, blocked, completed or removed already, and one that was never started but holds a started or a completed work item, are refused; fgraph status lists a removed Feature under Removed with its reason, its work items on no line of their own, and fgraph show of it lists its reason; a removed Feature takes no start, no amend and no work item; proved in tests/feature/"
 created = 2026-11-21 23:44:13+00:00
+started = 2026-11-22 03:58:48+00:00
 
 [[tasks]]
 id = "T-0214"

@@ -31,8 +31,10 @@ commit = "d667a57"
 
 [[tasks]]
 id = "T-0252"
-state = "started"
+state = "completed"
 title = "Say in README.md and docs/domain-model.md that a work item completes on main alone, and its landing completes it"
 expected_output = "changed: README.md and docs/domain-model.md name the completion of a work item held to main"
 created = 2026-11-22 07:56:27+00:00
 started = 2026-11-22 07:59:56+00:00
+completed = 2026-11-22 08:01:56+00:00
+commit = "37f161c"

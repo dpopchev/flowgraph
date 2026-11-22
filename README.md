@@ -64,7 +64,7 @@ fgraph start --help
 # options:
 #   -h, --help   show the help of this command and exit
 #   --slug TEXT  the words of a work item's branch after its id, instead of its
-#                title's first four
+#                title's first four; read with the development on
 ```
 
 `fgraph add --help` lists the kinds it adds, and each kind prints its own:
@@ -442,7 +442,13 @@ file back as it was, a worktree refused leaves the start committed.
 
 The rules of a branch that follow are those of a record with the development
 on: with it off fgraph makes no branch `wi/<id>-<slug>` and no worktree, so
-every write is taken on `main`.
+every write is taken on `main`. A start given `--slug` then exits 2 naming the
+key, of a work item as of a Feature, and starts nothing:
+
+```sh
+fgraph start S-0001 --slug branch-on-start
+# fgraph: error: S-0001 takes no --slug: the development is off, so its start makes no branch -- set development.enabled = true in /src/project/.fgraph/config.toml
+```
 
 On the branch of a started Story, `wi/S-0001-<slug>`, fgraph writes that
 Story alone: its Tasks are added, started and completed there. A Task for

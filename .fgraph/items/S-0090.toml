@@ -9,3 +9,11 @@ created = 2026-11-22 21:02:48+00:00
 given = "a repository with an origin, the development on, delivery.push set to true and a started Story whose Tasks are completed"
 when = "fgraph land of the Story is run"
 then = "main of the origin is at the commit of the landing, with the write that completes the Story"
+
+[[tasks]]
+id = "T-0352"
+state = "backlog"
+title = "Add tests/functional/test_land_push.py, failing on the criterion of S-0090"
+description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_land_work_item.py does. Seen red, then marked a strict xfail naming S-0090 until the Task that turns it green removes the mark."
+expected_output = "created: tests/functional/test_land_push.py states that in a repository whose origin is a bare repository of tmp_path, with delivery.push true, fgraph land exits 0 and main of the origin holds the commit of the landing and the completed Story; and that with delivery.push false the origin is left as it was"
+created = 2026-11-22 21:02:50+00:00

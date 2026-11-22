@@ -1,10 +1,12 @@
 id = "S-0045"
-state = "started"
+state = "completed"
 title = "Raise the keys of the configuration fgraph shows and sets from none to every one"
 description = "Part of the developer's request of 2026-11-21 to layer fgraph by a configuration, .fgraph/config.toml: (1) the items and their lifecycle, always; (2) their commits on main, optional; (3) the development beside the source code, turned on. The plan was shown and filed on the developer's 'file only' of 2026-11-21. Its Tasks are written when it is ordered. Reading of the agent: until this Story config.toml is written by hand; fgraph config show lists every key with its value, a key the file lacks at its default, and fgraph config set writes one key and commits the file as any write of the record."
 parent = "F-0001"
 created = 2026-11-21 20:32:55+00:00
 started = 2026-11-21 23:57:20+00:00
+completed = 2026-11-22 00:14:05+00:00
+commit = "ae26d76"
 
 [criterion]
 given = "a record without config.toml"

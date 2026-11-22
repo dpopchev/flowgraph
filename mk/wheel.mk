@@ -25,6 +25,11 @@ wheel: | $(DIST) ## Build the wheel into build/dist/
 	@$(UV) build --wheel --out-dir $(DIST) >/dev/null
 	$(call log_done,wheel built: $$(ls $(DIST)/*.whl))
 
+.PHONY: install
+install: wheel ## Install the built wheel as a uv tool
+	@$(UV) tool install --force --reinstall $$(ls $(DIST)/*.whl) >/dev/null
+	$(call log_done,fgraph installed as a uv tool from $$(ls $(DIST)/*.whl))
+
 .PHONY: dist
 dist: check | $(DIST) ## Build the wheel and sdist into build/dist/
 	@rm -rf $(DIST)/*

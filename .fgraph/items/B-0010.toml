@@ -41,7 +41,8 @@ commit = "2272130"
 
 [[tasks]]
 id = "T-0238"
-state = "backlog"
+state = "started"
 title = "Say in README.md what a gate may touch: the merge it runs on is dropped when it fails or is interrupted, and the files it writes stay uncommitted in the checkout"
 expected_output = "changed: README.md names what a gate may touch"
 created = 2026-11-22 07:11:38+00:00
+started = 2026-11-22 07:17:36+00:00

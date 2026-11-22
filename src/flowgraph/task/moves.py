@@ -34,6 +34,7 @@ def started(task: TaskState, on: datetime) -> StartedTask:
                 task.description,
                 task.created,
                 on.replace(microsecond=0),
+                check=task.check,
             )
         case StartedTask():
             raise StartedAlreadyError(f"{task_id_text(task.id)} is started already")
@@ -66,6 +67,7 @@ def blocked(task: TaskState, reason: str, waiting_on: str, on: datetime) -> Bloc
                 said("reason", reason),
                 on.replace(microsecond=0),
                 said("waiting on", waiting_on),
+                task.check,
             )
         case BlockedTask():
             raise BlockedError(f"{task_id_text(task.id)} is blocked already")
@@ -89,6 +91,7 @@ def unblocked(task: TaskState) -> StartedTask:
                 task.description,
                 task.created,
                 task.started,
+                task.check,
             )
         case Task() | StartedTask() | CompletedTask():
             raise NotBlockedError(f"{task_id_text(task.id)} is not blocked")
@@ -115,6 +118,7 @@ def completed(task: TaskState, on: datetime, commit: Evidence) -> CompletedTask:
                 task.started,
                 on.replace(microsecond=0),
                 commit,
+                task.check,
             )
         case BlockedTask():
             raise BlockedError(f"{task_id_text(task.id)} is blocked: unblock it first")

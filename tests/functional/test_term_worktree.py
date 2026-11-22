@@ -20,7 +20,17 @@ pytestmark = pytest.mark.functional
 
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
-ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+ADD_TASK = [
+    "add",
+    "task",
+    "a task title",
+    "--parent",
+    "S-0001",
+    "--output",
+    "an output",
+    "--check",
+    "make test",
+]
 ADD_STORY = ["add", "story", "Raise the Stories fgraph lists from 0 to 1", *CRITERION]
 BEFORE = ["add", "term", "gate", "--means", "a check every deliverable passes"]
 AFTER = ["add", "term", "lane", "--means", "one work item in its own worktree"]

@@ -127,6 +127,8 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
         if task.commit:
             lines.append(f"    commit           {task.commit}\n")
         lines.append(f"    expected output  {task.expected_output}\n")
+        if task.check:
+            lines.append(f"    check            {task.check}\n")
         if task.description:
             lines.append(f"    description      {task.description}\n")
     return "".join([*lines, *_knowledge_lines(detail.knowledge)])

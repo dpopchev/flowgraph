@@ -28,6 +28,7 @@ class Task:
     expected_output: str
     description: str
     created: datetime
+    check: str | None = None
 
 
 @dataclass(frozen=True)
@@ -40,6 +41,7 @@ class StartedTask:
     description: str
     created: datetime
     started: datetime
+    check: str | None = None
 
 
 @dataclass(frozen=True)
@@ -55,6 +57,7 @@ class BlockedTask:
     reason: str
     since: datetime
     waiting_on: str
+    check: str | None = None
 
 
 @dataclass(frozen=True)
@@ -69,6 +72,7 @@ class CompletedTask:
     started: datetime
     completed: datetime
     commit: Evidence
+    check: str | None = None
 
 
 # A Task in any of its states, as the file of its Story keeps it.
@@ -90,6 +94,7 @@ class TaskRow:
     commit: str = ""
     reason: str = ""
     waiting_on: str = ""
+    check: str = ""
 
 
 class TaskIdError(ValueError):
@@ -172,14 +177,21 @@ def next_task_id(taken: Collection[TaskId]) -> TaskId:
 
 
 def make_task(
-    task_id: TaskId, title: str, expected_output: str, description: str, created: datetime
+    task_id: TaskId,
+    title: str,
+    expected_output: str,
+    description: str,
+    created: datetime,
+    check: str | None = None,
 ) -> Task:
-    """A Task in Backlog, its created time kept to the second.
+    """A Task in Backlog, its created time kept to the second, with the command that checks it.
 
-    Raises EmptyPartError when the title or the expected output is blank.
+    Raises EmptyPartError when the title or the expected output is blank, or the check is given
+    and blank.
     """
     parts = said("title", title), said("output", expected_output)
-    return Task(task_id, *parts, description, created.replace(microsecond=0))
+    kept = None if check is None else said("check", check)
+    return Task(task_id, *parts, description, created.replace(microsecond=0), kept)
 
 
 def task_state_name(task: TaskState) -> str:
@@ -208,6 +220,7 @@ def row_of(task: TaskState) -> TaskRow:
         task.expected_output,
         task.description,
         task_state_name(task),
+        check=task.check or "",
     )
     match task:
         case Task() | StartedTask():

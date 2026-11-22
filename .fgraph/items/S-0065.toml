@@ -13,11 +13,12 @@ then = "it lists every decision of the record, newest first, each with the id of
 
 [[tasks]]
 id = "T-0274"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_knowledge_command.py, failing on the criterion of S-0065"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_complete_spike.py does. Seen red, then marked a strict xfail naming S-0065 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_knowledge_command.py states that, on a record with knowledge lines on several items and a completed Spike, fgraph knowledge --kind decision exits 0 and lists every decision of the record, newest first, each with the id of its item, the decision of the Spike among them"
 created = 2026-11-22 10:47:33+00:00
+started = 2026-11-22 11:31:53+00:00
 
 [[tasks]]
 id = "T-0275"

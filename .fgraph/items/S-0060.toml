@@ -22,8 +22,10 @@ commit = "b80851e"
 
 [[tasks]]
 id = "T-0222"
-state = "started"
+state = "completed"
 title = "Say in README.md that a frame of fgraph watch taller than the terminal is cut to its height and names the lines it left out"
 expected_output = "changed: README.md names the cut of a frame to the height of the terminal"
 created = 2026-11-22 06:28:54+00:00
 started = 2026-11-22 06:32:27+00:00
+completed = 2026-11-22 06:34:41+00:00
+commit = "6fd5410"

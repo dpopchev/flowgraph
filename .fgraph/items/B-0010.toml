@@ -21,11 +21,13 @@ commit = "397fd6d"
 
 [[tasks]]
 id = "T-0236"
-state = "started"
+state = "completed"
 title = "Drop the merge of a landing interrupted under its gate in src/flowgraph/land.py, and drop a merge whose files the gate changed in abort_merge of src/flowgraph/branch.py"
 expected_output = "changed: src/flowgraph/land.py and src/flowgraph/branch.py; the tests of the probe pass"
 created = 2026-11-22 07:11:37+00:00
 started = 2026-11-22 07:12:25+00:00
+completed = 2026-11-22 07:14:59+00:00
+commit = "4b797eb"
 
 [[tasks]]
 id = "T-0237"

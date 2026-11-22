@@ -26,6 +26,7 @@ from flowgraph.work_item.model import (
 from flowgraph.work_item.verification import (
     TAKES,
     NotVerifiableError,
+    Verdict,
     VerifiedAlreadyError,
     make_verification,
 )
@@ -116,9 +117,11 @@ def completed_work_item(
             assert_never(unreachable)
 
 
-def verified_work_item(item: WorkItemState, text: str, on: datetime) -> CompletedWorkItem:
-    """The completed work item with the answer yes of its closing, the text the run printed and
-    the time.
+def verified_work_item(
+    item: WorkItemState, text: str, on: datetime, answer: Verdict = "yes"
+) -> CompletedWorkItem:
+    """The completed work item with the answer of its closing, yes by default, the text the run
+    printed and the time; it stays completed whatever the answer.
 
     Raises NotVerifiableError when it is not completed or is a Spike, VerifiedAlreadyError when
     it holds an answer already (a second answer is refused, never added or replaced) and
@@ -129,7 +132,7 @@ def verified_work_item(item: WorkItemState, text: str, on: datetime) -> Complete
         case CompletedWorkItem(criterion=Answer()):
             raise NotVerifiableError(f"{named} is a Spike: {TAKES}")
         case CompletedWorkItem(verified=None):
-            return replace(item, verified=make_verification("yes", text, on))
+            return replace(item, verified=make_verification(answer, text, on))
         case CompletedWorkItem():
             raise VerifiedAlreadyError(f"{named} is verified already")
         case WorkItem() | StartedWorkItem() | RemovedWorkItem():

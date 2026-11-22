@@ -28,18 +28,15 @@ from flowgraph.task.model import (
     TaskNotFoundError,
     TaskRow,
     TaskState,
-    blocked,
-    completed,
     make_task,
     make_task_id,
     next_task_id,
     parse_task_id,
     row_of,
-    started,
     task_id_text,
     task_state_name,
-    unblocked,
 )
+from flowgraph.task.moves import blocked, completed, started, unblocked
 
 __all__ = [
     "BlockedError",

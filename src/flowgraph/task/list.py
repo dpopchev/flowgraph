@@ -12,12 +12,9 @@ from flowgraph.task.model import (
     TaskInProgressError,
     TaskNotFoundError,
     TaskState,
-    blocked,
-    completed,
-    started,
     task_id_text,
-    unblocked,
 )
+from flowgraph.task.moves import blocked, completed, started, unblocked
 
 
 def task_of(tasks: Iterable[TaskState], task_id: TaskId) -> TaskState:

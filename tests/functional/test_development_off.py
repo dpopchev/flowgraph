@@ -19,10 +19,8 @@ pytestmark = pytest.mark.functional
 
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 TITLE = "Raise the Stories fgraph lists from 0 to 1"
-ADD_STORY = [
-    *("add", "story", TITLE),
-    *("--given", "a state", "--when", "an action", "--then", "another"),
-]
+CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
+ADD_STORY = ["add", "story", TITLE, *CRITERION]
 ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
 IDENTITY = {
     "GIT_AUTHOR_NAME": "a developer",
@@ -113,6 +111,33 @@ class TestAStoryStartedInARecordWithNoConfig:
 
     def test_git_lists_no_new_worktree(self, started: Outcome, checkout: Path) -> None:
         assert git(checkout, "worktree", "list", "--porcelain").count("worktree ") == 1
+
+
+@pytest.mark.parametrize(
+    ("argvs", "item"),
+    [
+        ([["start", "S-0001", "--slug", "a-slug"]], "S-0001"),
+        (
+            [
+                ["add", "feature", "a feature title", "--criterion", "a criterion"],
+                ["add", "story", "another title", *CRITERION, "--parent", "F-0001"],
+                ["add", "task", "a task title", "--parent", "S-0002", "--output", "an output"],
+                ["start", "F-0001", "--slug", "a-slug"],
+            ],
+            "F-0001",
+        ),
+    ],
+    ids=["work-item", "feature"],
+)
+def test_a_start_given_a_slug_exits_with_two_and_names_the_key_that_turns_the_development_on(
+    argvs: list[list[str]], item: str, checkout: Path
+) -> None:
+    refused = runs(checkout, *argvs)
+    assert (refused.status, refused.err.splitlines()[-1]) == (
+        2,
+        f"fgraph: error: {item} takes no --slug: the development is off, so its start makes no"
+        f" branch -- set development.enabled = true in {checkout / '.fgraph' / 'config.toml'}",
+    )
 
 
 def test_a_start_outside_a_git_work_tree_warns_of_nothing(tmp_path: Path) -> None:

@@ -12,9 +12,9 @@ from functools import partial
 from pathlib import Path
 from typing import Never, assert_never
 
-from flowgraph.branch import GitError, SlugError
+from flowgraph.branch import GitError, SlugError, check_slug_branched
 from flowgraph.commit import OpenGit, Said, commit_written, open_git
-from flowgraph.config import Config, ConfigError, LoadConfig, make_config, read_config
+from flowgraph.config import CONFIG, Config, ConfigError, LoadConfig, make_config, read_config
 from flowgraph.criterion import (
     CommitError,
     CommitNeededError,
@@ -241,6 +241,7 @@ def _said(
     off is left uncommitted. Raises the refusal of the command, a git step refused among them.
     """
     if args.command == "start":
+        check_slug_branched(args.id, args.slug, config.development.enabled, record / CONFIG)
         check_start_on_main(args.id, record, open_git)
         check_start_under_feature(args.id, store)
         check_parallel(args.id, store.find_work_item_rows, config)

@@ -9,6 +9,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
+from flowgraph.config import DEVELOPMENT_ENABLED
 from flowgraph.work_item import WorkItemId, work_item_id_text
 
 # The branch a work item is started on and lands on.
@@ -60,6 +61,22 @@ def slug_of_title(title: str) -> Slug:
     """
     words = [re.sub(r"[^a-z0-9]", "", word) for word in title.lower().split()]
     return make_slug("-".join([word for word in words if word][:SLUG_WORDS]))
+
+
+def check_slug_branched(
+    item: str, slug: str | None, development_on: bool, config_file: Path
+) -> None:
+    """Refuse a slug given to the start of the item when the start makes no branch.
+
+    Raises SlugError naming the key that turns the development on, in that file, when a slug is
+    given while the development is off.
+    """
+    if slug is not None and not development_on:
+        turn_on = f"set {DEVELOPMENT_ENABLED} = true in {config_file}"
+        raise SlugError(
+            f"{item} takes no --slug: the development is off, so its start makes no branch"
+            f" -- {turn_on}"
+        )
 
 
 def branch_of(item: WorkItemId, slug: Slug, checkout: Path) -> Branch:

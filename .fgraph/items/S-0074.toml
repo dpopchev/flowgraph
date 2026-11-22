@@ -9,3 +9,11 @@ created = 2026-11-22 10:41:41+00:00
 given = "a record where one term is part of another and a knowledge line is about the part"
 when = "fgraph about is run with the name of the whole"
 then = "it lists the line about the part, marked with the term it came through, beside what is about the whole"
+
+[[tasks]]
+id = "T-0303"
+state = "backlog"
+title = "Add tests/functional/test_about_term.py, failing on the criterion of S-0074"
+description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_about_item.py does. Seen red, then marked a strict xfail naming S-0074 until the Task that turns it green removes the mark."
+expected_output = "created: tests/functional/test_about_term.py states that, on a record where one term is part of another and a knowledge line is about the part, fgraph about with the name of the whole exits 0 and lists the line about the part, marked with the term it came through"
+created = 2026-11-22 10:48:07+00:00

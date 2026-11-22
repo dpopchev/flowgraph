@@ -1,0 +1,15 @@
+id = "S-0107"
+state = "backlog"
+title = "Cut the items of a .board/ a developer files again by hand to move a repository to fgraph from every one to none"
+description = "The words of the note: a script from a .board/ to a .fgraph/. Its Tasks are written when it is ordered."
+parent = "F-0015"
+created = 2026-11-22 21:04:15+00:00
+depends_on = [
+    "Q-0001",
+    "S-0106",
+]
+
+[criterion]
+given = "a repository with a .board/ of Epics, work items and Tasks in every state"
+when = "the migration is run on it"
+then = "it holds a .fgraph/ that fgraph status reads with exit 0, every item under its kind and its bucket with its old id as its reference"

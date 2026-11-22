@@ -35,8 +35,10 @@ commit = "244b655"
 
 [[tasks]]
 id = "T-0198"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a completion starts the next work item of its Feature"
 expected_output = "changed: README.md and docs/domain-model.md say the completion of a work item of a started Feature starts the next one, which one that is, what it branches, what the completion says, and when the next is not started; they name the alternative shown and not taken, that the developer starts each"
 created = 2026-11-21 23:43:09+00:00
 started = 2026-11-22 02:43:32+00:00
+completed = 2026-11-22 02:47:00+00:00
+commit = "dc2bc3c"

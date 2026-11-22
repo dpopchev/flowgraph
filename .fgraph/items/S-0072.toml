@@ -24,12 +24,14 @@ commit = "c7208dc"
 
 [[tasks]]
 id = "T-0298"
-state = "started"
+state = "completed"
 title = "Add --about to fgraph note, fgraph add and fgraph amend, and what is about a term to its show"
 description = "Removes the xfail mark of tests/functional/test_note_about.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph note takes --about TERM, once per term, kept on the knowledge line; fgraph add of a work item or a Feature and fgraph amend of one in Backlog take --about TERM, once per term, kept on the item, and --about none of amend takes them all away; a term that is not in the record is refused naming fgraph add term, exit 2, nothing written; fgraph show of an item lists its terms, and each knowledge line with its terms; fgraph show of a term lists, after its relations, the items about it and the knowledge lines about it, each with the id of its item, read from the record; fgraph knowledge takes --about TERM and narrows its list to the lines about it"
 created = 2026-11-22 10:48:02+00:00
 started = 2026-11-22 16:57:28+00:00
+completed = 2026-11-22 17:08:18+00:00
+commit = "d6267f9"
 
 [[tasks]]
 id = "T-0299"

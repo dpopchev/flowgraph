@@ -1,9 +1,11 @@
 id = "B-0014"
-state = "started"
+state = "completed"
 title = "Cut the starts a completion makes off main from every one to none"
 description = "Found during T-0197 of S-0053 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. The first Task is the probe that shows each case. Its Tasks are written when it is ordered."
 created = 2026-11-22 02:50:09+00:00
 started = 2026-11-22 07:56:28+00:00
+completed = 2026-11-22 08:01:57+00:00
+commit = "806b159"
 
 [criterion]
 observed = "inferred from the code during T-0197 of S-0053 and not probed: a completion run in a work tree on a branch that is neither main nor a branch of a work item starts the next work item of the Feature there and branches it at that commit, since the start a completion makes is not held to main; and fgraph complete of a work item run in its own worktree with the development on leaves it completed on its branch, so a later landing of it is refused as completed already"

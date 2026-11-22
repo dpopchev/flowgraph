@@ -27,11 +27,12 @@ commit = "64644ef"
 
 [[tasks]]
 id = "T-0338"
-state = "backlog"
+state = "started"
 title = "Name in fgraph status the next item of the Backlog that can start"
 description = "Removes the xfail mark of tests/functional/test_status_next.py. Written on 2026-11-22 against the modules of that day, before U-0010 moves them: they are taken again when the Task starts. A module of src/ that would pass the line limit of mk/python.mk is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph status names the first item of the queue that fgraph start would take -- a work item that waits for nothing, or a Feature whose first work item waits for nothing -- by a mark or a line chosen in the Task, named when the top 5 leave it out; a Backlog where nothing can start names none; no command is added"
 created = 2026-11-22 21:02:10+00:00
+started = 2026-11-22 23:19:03+00:00
 
 [[tasks]]
 id = "T-0339"

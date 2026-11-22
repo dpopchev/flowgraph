@@ -11,8 +11,10 @@ expected = "fgraph exits 2 with one line, fgraph: error: <path> holds no <kind>:
 
 [[tasks]]
 id = "T-0261"
-state = "started"
+state = "completed"
 title = "Refuse a file of the record that holds no work item, no Feature or no queue as every other refusal, exit 2 and one line fgraph: error: <path> holds no <kind>: <why>, in src/flowgraph/cli.py"
 expected_output = "changed: REFUSED of src/flowgraph/cli.py holds WorkItemFileError, FeatureFileError and QueueFileError; tests/functional/test_file_refused.py states each through fgraph status, seen red; docs/domain-model.md names the refusal"
 created = 2026-11-22 09:26:35+00:00
 started = 2026-11-22 09:41:31+00:00
+completed = 2026-11-22 09:45:06+00:00
+commit = "548208e"

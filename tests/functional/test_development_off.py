@@ -158,10 +158,8 @@ class TestAStoryLandedInARecordWithNoConfig:
     def test_land_exits_with_two(self, refused: Outcome) -> None:
         assert refused.status == 2
 
-    def test_land_names_the_key_that_turns_the_development_on(
-        self, refused: Outcome, checkout: Path
-    ) -> None:
+    def test_land_names_the_set_that_turns_the_development_on(self, refused: Outcome) -> None:
         assert refused.err.splitlines()[-1] == (
             "fgraph: error: S-0001 cannot land: the development is off"
-            f" -- set development.enabled = true in {checkout / '.fgraph' / 'config.toml'}"
+            " -- run fgraph config set development.enabled true"
         )

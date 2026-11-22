@@ -13,12 +13,14 @@ then = "its line is marked as waiting and names the work item it waits for"
 
 [[tasks]]
 id = "T-0334"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_status_waits.py, failing on the criterion of S-0085"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_depends_on.py does. Seen red, then marked a strict xfail naming S-0085 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_status_waits.py states that on a record where S-0002 in Backlog depends on S-0001 in Backlog, fgraph status exits 0 and the line of S-0002 is marked and names S-0001; and that once S-0001 is completed the line carries no mark"
 created = 2026-11-22 21:02:01+00:00
 started = 2026-11-22 22:50:51+00:00
+completed = 2026-11-22 22:53:57+00:00
+commit = "ac52af7"
 
 [[tasks]]
 id = "T-0335"

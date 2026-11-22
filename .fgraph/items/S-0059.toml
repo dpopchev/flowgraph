@@ -35,7 +35,8 @@ commit = "ad4d8e3"
 
 [[tasks]]
 id = "T-0208"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say fgraph amend moves a work item under a Feature or out of one"
 expected_output = "changed: README.md and docs/domain-model.md say fgraph amend puts a work item in Backlog under a Feature or takes it out with --parent, while both are in Backlog, and what is refused; the line that names moving a work item to another Feature not built is gone"
 created = 2026-11-21 23:44:11+00:00
+started = 2026-11-22 03:32:37+00:00

@@ -297,6 +297,13 @@ fgraph status
 # fgraph: error: /src/project/.fgraph/config.toml: development.enabled is true while git.commit is false: the development needs the commits of the record
 ```
 
+So a landing with the commits off names both keys it takes:
+
+```sh
+fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
+# fgraph: error: S-0001 cannot land: the development is off -- set development.enabled = true and git.commit = true in /src/project/.fgraph/config.toml
+```
+
 A `config.toml` fgraph refuses -- a table or a key the configuration does not
 have, a value of another type than the key takes, a `parallel` below 1, a
 `merge` that is none of its three words, an empty `gate`, a text that is no

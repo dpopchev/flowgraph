@@ -24,12 +24,14 @@ commit = "5203796"
 
 [[tasks]]
 id = "T-0288"
-state = "started"
+state = "completed"
 title = "Add --amends to fgraph add, shown from both sides"
 description = "Removes the xfail mark of tests/functional/test_amends.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph add of every kind of work item takes --amends ID once, a completed work item whose landed behavior the new one changes; the file keeps it as amends, read back in every state; an id that is no work item of the record and one that is not completed are refused, exit 2, nothing written; fgraph show of the new work item lists amends with the id, and fgraph show of the completed one lists, as amended by, the id of each work item that names it, read from the record"
 created = 2026-11-22 10:47:50+00:00
 started = 2026-11-22 12:27:34+00:00
+completed = 2026-11-22 12:34:21+00:00
+commit = "8ae7921"
 
 [[tasks]]
 id = "T-0289"

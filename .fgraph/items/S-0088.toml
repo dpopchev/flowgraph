@@ -35,7 +35,8 @@ commit = "e74400b"
 
 [[tasks]]
 id = "T-0348"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say a Task carries a check with the development on"
 expected_output = "changed: README.md shows fgraph add task --check; docs/domain-model.md lists the check among the attributes of a Task, says when it is needed and refused, and takes its first open question out as answered"
 created = 2026-11-22 21:02:36+00:00
+started = 2026-11-22 22:51:21+00:00

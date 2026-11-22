@@ -1,8 +1,9 @@
 id = "B-0016"
-state = "backlog"
+state = "started"
 title = "Cut the rules by which add and amend put a work item under a Feature from two to one"
 description = "Found during T-0207 of S-0059 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. Open: which of the two rules holds. Its Tasks are written when it is ordered."
 created = 2026-11-22 03:38:50+00:00
+started = 2026-11-22 08:10:50+00:00
 
 [criterion]
 observed = "fgraph add --parent takes a work item under a started or a blocked Feature, while fgraph amend --parent under one is refused; --parent None is refused as no Feature id with no word of none; and docs/domain-model.md, Persistence, still names blocking a Feature not built"

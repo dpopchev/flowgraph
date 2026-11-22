@@ -1017,14 +1017,14 @@ fgraph show S-0001
 ```
 
 `fgraph status` lists a blocked Task under its work item too, marked `!` and
-ending with what it waits on:
+ending with what it waits on and the reason of the block:
 
 ```sh
 fgraph status
 # Backlog (0)
 # InProgress (1)
 #   S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
-#     !  T-0001  Add the show command to src/flowgraph/cli.py, listing a Story  -- waiting on the reviewer
+#     !  T-0001  Add the show command to src/flowgraph/cli.py, listing a Story  -- waiting on the reviewer: the review is not back
 # Completed (0)
 ```
 
@@ -1344,9 +1344,9 @@ fgraph status
 # Backlog (1)
 #   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (1)
-# ! F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5  -- waiting on the reviewer
+# ! F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5  -- waiting on the reviewer: the review is not back
 #     S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
-#       !  T-0001  Add the show command to src/flowgraph/cli.py, listing a Story  -- waiting on the reviewer
+#       !  T-0001  Add the show command to src/flowgraph/cli.py, listing a Story  -- waiting on the reviewer: the review is not back
 # Completed (0)
 ```
 
@@ -1524,7 +1524,7 @@ fgraph status
 # Backlog (1)
 #   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (1)
-# ! F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5  -- waiting on the sponsor
+# ! F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5  -- waiting on the sponsor: the budget is not agreed
 #     S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
 # Completed (0)
 

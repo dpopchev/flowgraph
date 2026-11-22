@@ -31,9 +31,11 @@ commit = "a91b0d9"
 
 [[tasks]]
 id = "T-0263"
-state = "started"
+state = "completed"
 title = "Name the Feature in the refusal of fgraph amend given criteria and a text that is no id, in src/flowgraph/feature_amend.py"
 description = "Filed during T-0260 of B-0018: the path of amend given --criterion parses the id itself, before amend_item."
 expected_output = "changed: amend_named of src/flowgraph/feature_amend.py reads a text that is no Feature id through parse_amended_id; tests/functional/test_wrong_kind_id.py states 'X-1' is no Story, Upkeep, Bug, Spike or Feature id for amend --criterion, seen red"
 created = 2026-11-22 09:38:17+00:00
 started = 2026-11-22 09:38:28+00:00
+completed = 2026-11-22 09:41:08+00:00
+commit = "fea0aba"

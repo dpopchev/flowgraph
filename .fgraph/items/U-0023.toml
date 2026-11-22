@@ -1,0 +1,11 @@
+id = "U-0023"
+state = "backlog"
+title = "Cut the runs of fgraph through run() that pass every Task check without running it, unless a runner is given, from every one to none"
+description = "Found during T-0350 of S-0089 on 2026-11-23, under the burn of the goal; filed at the end of the queue and not burned. The lane chose the passing default since about 20 functional tests add a Task with --check make test and complete it without a runner. Beside it: the passage of docs/domain-model.md and of README.md on the gate still says it is no check per Task run at a complete, the reading decided when S-0042 was ordered, next to the new passage that says a complete runs the check of a Task. Its Tasks are written when it is ordered."
+created = 2026-11-22 23:15:48+00:00
+filed_during = "S-0089"
+
+[criterion]
+given = "main, where run() of src/flowgraph/cli.py takes run_check with a default that returns 0, so a caller that leaves it out never runs the check of a Task, while the default of run_gate raises"
+when = "make check runs"
+then = "it still passes with a default that refuses to run unnamed, as that of the gate does, each functional test that completes a checked Task giving its own runner"

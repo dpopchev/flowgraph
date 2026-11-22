@@ -27,7 +27,6 @@ BLOCK = ["block", "T-0001", "--reason", "the review is not back", "--waiting-on"
 ADDED = (ADD_FEATURE, ADD_STORY, ADD_TASK, ADD_OTHER)
 BLOCKED = (*ADDED, ["start", "F-0001"], ["start", "T-0001"], BLOCK)
 MARKED = "! F-0001  0/1 W  a feature title  -- waiting on the reviewer"
-NOT_MARKED_YET = "S-0055: no blocked Task marks its Feature in the status yet"
 
 
 @dataclass(frozen=True)
@@ -64,7 +63,6 @@ def status_after(cwd: Path, *argvs: Sequence[str]) -> Outcome:
     return fgraph(["status"], cwd, START + timedelta(seconds=len(argvs)))
 
 
-@pytest.mark.xfail(strict=True, reason=NOT_MARKED_YET)
 def test_status_marks_a_started_feature_whose_started_story_holds_a_blocked_task(
     tmp_path: Path,
 ) -> None:
@@ -78,7 +76,6 @@ def test_status_marks_a_started_feature_whose_started_story_holds_a_blocked_task
     )
 
 
-@pytest.mark.xfail(strict=True, reason=NOT_MARKED_YET)
 def test_a_started_task_beside_the_blocked_one_does_not_lift_the_mark_of_the_feature(
     tmp_path: Path,
 ) -> None:

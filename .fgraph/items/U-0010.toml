@@ -40,3 +40,11 @@ title = "Move the remaining modules of src/flowgraph into the subpackage of thei
 description = "Written on 2026-11-22 against the modules of that day; the list is taken again when the Task starts. A move alone: no behavior changes."
 expected_output = "changed: src/flowgraph holds two modules outside a subpackage, __init__.py and cli.py, and fgraph = flowgraph.cli:main of pyproject.toml still runs; the item and its ids, the Task, the criterion, the Bug, the Spike, the parent, the views -- status, text, terminal, watch -- the parser, and the modules the knowledge base added -- knowledge, relation, term, about, graph -- each sit in the subpackage of their aggregate or their view, named after its domain term and never after a layer; the imports between subpackages are acyclic and go through public names; make check passes, and make wheel builds a wheel that ships every subpackage"
 created = 2026-11-22 10:48:30+00:00
+
+[[tasks]]
+id = "T-0323"
+state = "backlog"
+title = "Lower MAX_LINES of mk/python.mk from 400 to 250 and break each module above it by one cohesive part"
+description = "On 2026-11-22 thirteen modules are above 250 lines, cli.py at 400 the longest; the count is taken again when the Task starts. cli.py stays the module of the entry point and is shortened as the others are."
+expected_output = "changed: mk/python.mk holds MAX_LINES := 250 and make check passes; each module that was above 250 lines is broken by one cohesive part into modules of its subpackage, each named in its commit; no name another subpackage imports changes its meaning, and every command of fgraph prints what it printed before"
+created = 2026-11-22 10:48:31+00:00

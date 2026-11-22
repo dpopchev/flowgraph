@@ -9,3 +9,8 @@ criteria = [
     "a developer limits the age of the branch of a work item",
     "a developer names who approves a landing, the agent or the developer",
 ]
+
+[[knowledge]]
+kind = "finding"
+text = "open: the note names development.branch_max and development.approver as keys alone; what an old branch does and how an approval is told to fgraph are the readings of the agent in the Stories, decided when they are ordered."
+noted = 2026-11-22 21:04:36+00:00

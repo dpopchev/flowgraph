@@ -138,3 +138,16 @@ def test_a_completed_story_file_with_a_task_not_completed_is_refused(tmp_path: P
     )
     with pytest.raises(StoryFileError, match=r"S-0001\.toml holds no Story"):
         read_story(tmp_path, make_story_id(1))
+
+
+@pytest.mark.parametrize("commit", ["def5678", "bcd2345"], ids=["of-the-story", "of-a-task"])
+def test_a_completed_file_whose_commit_is_no_sha_is_refused_naming_the_file(
+    commit: str, tmp_path: Path
+) -> None:
+    write_story(tmp_path, WHOLE)
+    text = (tmp_path / FILE).read_text("utf-8")
+    (tmp_path / FILE).write_text(text.replace(f'"{commit}"', '"xyz"'), encoding="utf-8")
+    with pytest.raises(
+        StoryFileError, match=r"S-0001\.toml holds no Story: 'xyz' is no commit: it is 7 to 40"
+    ):
+        read_story(tmp_path, make_story_id(1))

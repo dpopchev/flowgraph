@@ -21,11 +21,13 @@ commit = "241d615"
 
 [[tasks]]
 id = "T-0247"
-state = "started"
+state = "completed"
 title = "Check the Feature of the work item while the merge of a landing is held, before main moves, in src/flowgraph/land.py"
 expected_output = "changed: _check_completes of src/flowgraph/land.py; tests/land/test_land.py states a landing whose Feature the record does not hold refused with the merge dropped"
 created = 2026-11-22 07:42:11+00:00
 started = 2026-11-22 07:46:05+00:00
+completed = 2026-11-22 07:48:24+00:00
+commit = "0c13233"
 
 [[tasks]]
 id = "T-0248"

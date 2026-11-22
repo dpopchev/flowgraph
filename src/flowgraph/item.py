@@ -23,6 +23,7 @@ from flowgraph.criterion import (
     make_commit,
 )
 from flowgraph.feature_complete import complete_with_feature
+from flowgraph.feature_move import check_move
 from flowgraph.item_id import (
     ItemId,
     ItemIdError,
@@ -140,12 +141,17 @@ def add_item(
 def amend_item(item: str, parts: work_item.Amendment, store: Store) -> Written:
     """Rewrite the parts named of the work item in Backlog of that id; what the write says.
 
-    Raises WorkItemIdError when the text is the id of no kind, or the refusal of the amend.
+    A parent named puts it under that Feature or takes it out of the one it is under, both in
+    Backlog; its entry in the queue stays. Raises WorkItemIdError when the text is the id of no
+    kind, or the refusal of the amend or of the move.
     """
     item_id = parse_work_item_id_of_any_kind(item)
-    load, save = store.load_work_item, store.save_work_item
     work_item.amend_work_item(
-        item_id=item_id, amendment=parts, load_work_item=load, save_work_item=save
+        item_id=item_id,
+        amendment=parts,
+        load_work_item=store.load_work_item,
+        save_work_item=store.save_work_item,
+        check_move=partial(check_move, store.features.load_feature),
     )
     text = work_item_id_text(item_id)
     return Written(f"amended {text}\n", MESSAGE.format(f"amend {text}"))

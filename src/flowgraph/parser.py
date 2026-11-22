@@ -126,6 +126,9 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     amend.add_argument("--observed", metavar="TEXT", help="what happens, of a Bug")
     amend.add_argument("--expected", metavar="TEXT", help="what we wish to see, of a Bug")
     amend.add_argument("--hypothesis", metavar="TEXT", help="the question, of a Spike")
+    amend.add_argument(
+        "--parent", metavar="ID", help="the Feature to put it under, or none to stand alone"
+    )
     show = _command(commands, "show", "show a work item with its Tasks, or a Feature")
     show.add_argument("id", metavar="ID", help="the id of the work item or of the Feature")
     start = _command(commands, "start", "start a work item or a Task of it, or a Feature")

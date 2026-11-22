@@ -15,7 +15,7 @@ from flowgraph.task import (
     parse_task_id,
     row_of,
 )
-from flowgraph.work_item.amend import Amendment, amended_work_item
+from flowgraph.work_item.amend import Amendment, CheckMove, amended_work_item
 from flowgraph.work_item.model import (
     CompletedWorkItem,
     FindTaskIds,
@@ -186,15 +186,21 @@ def amend_work_item(
     amendment: Amendment,
     load_work_item: LoadWorkItem,
     save_work_item: SaveWorkItem,
+    check_move: CheckMove,
 ) -> None:
     """Rewrite the parts the amendment names of the work item of that id and save it whole.
 
-    Raises WorkItemNotFoundError when the record holds no such item, NoPartError when the
+    A parent named that is not the one it has is a move, checked through check_move before the
+    save. Raises WorkItemNotFoundError when the record holds no such item, NoPartError when the
     amendment names no part, EmptyPartError when the title or a part of the criterion is blank,
-    StartedAlreadyError when the item is started and CompletedAlreadyError when it is completed;
-    nothing is saved.
+    StartedAlreadyError when the item is started, CompletedAlreadyError when it is completed
+    and the refusal of the check; nothing is saved.
     """
-    save_work_item(amended_work_item(load_work_item(item_id), amendment))
+    was = load_work_item(item_id)
+    amended = amended_work_item(was, amendment)
+    if amended.parent != was.parent:
+        check_move(item_id, was.parent, amended.parent)
+    save_work_item(amended)
 
 
 def start_work_item(

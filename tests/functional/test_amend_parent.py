@@ -19,8 +19,14 @@ NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_FEATURE = ["add", "feature", "a feature title", "--criterion", "a criterion"]
 ADD_ALONE = ["add", "story", "a title", *CRITERION]
+ADD_UNDER = [*ADD_ALONE, "--parent", "F-0001"]
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
 PUT_UNDER = ["amend", "S-0001", "--parent", "F-0001"]
-NO_PARENT_YET = "S-0059: fgraph amend takes no --parent yet"
+TAKE_OUT = ["amend", "S-0001", "--parent", "none"]
+SHOW = ["show", "S-0001"]
+SHOW_FEATURE = ["show", "F-0001"]
+# A started Feature whose first Story is started and whose second is in Backlog under it.
+STARTED = (ADD_FEATURE, ADD_UNDER, ADD_TASK, ADD_UNDER, ["start", "F-0001"])
 
 
 @dataclass(frozen=True)
@@ -61,13 +67,14 @@ class TestAStoryStandingAlonePutUnderAFeatureBothInBacklog:
     def put_under(self, tmp_path: Path) -> Outcome:
         return runs(tmp_path, ADD_FEATURE, ADD_ALONE, PUT_UNDER)
 
-    @pytest.mark.xfail(strict=True, reason=NO_PARENT_YET)
     def test_amend_exits_with_zero(self, put_under: Outcome) -> None:
         assert put_under.status == 0
 
-    @pytest.mark.xfail(strict=True, reason=NO_PARENT_YET)
+    def test_amend_names_the_story(self, put_under: Outcome) -> None:
+        assert put_under.out == "amended S-0001\n"
+
     def test_show_of_the_feature_lists_the_story(self, put_under: Outcome, tmp_path: Path) -> None:
-        assert fgraph(["show", "F-0001"], tmp_path).out == (
+        assert fgraph(SHOW_FEATURE, tmp_path).out == (
             "F-0001  a feature title\n"
             "  bucket       Backlog\n"
             "Criteria (1)\n"
@@ -75,3 +82,141 @@ class TestAStoryStandingAlonePutUnderAFeatureBothInBacklog:
             "Work items (1)\n"
             "  S-0001  a title  Backlog\n"
         )
+
+    def test_show_of_the_story_names_the_feature_as_its_parent(
+        self, put_under: Outcome, tmp_path: Path
+    ) -> None:
+        assert fgraph(SHOW, tmp_path).out.splitlines()[2] == "  parent       F-0001"
+
+
+def test_a_story_taken_out_with_none_is_no_longer_listed_by_its_feature(tmp_path: Path) -> None:
+    shown = runs(tmp_path, ADD_FEATURE, ADD_UNDER, TAKE_OUT, SHOW_FEATURE).out
+    assert shown.splitlines()[-1] == "Work items (0)"
+
+
+def test_a_story_taken_out_with_none_names_no_parent(tmp_path: Path) -> None:
+    assert runs(tmp_path, ADD_FEATURE, ADD_UNDER, TAKE_OUT, SHOW).out.splitlines()[:3] == [
+        "S-0001  a title",
+        "  bucket       Backlog",
+        "  given        a state",
+    ]
+
+
+def test_a_story_is_put_under_a_feature_beside_another_part_and_keeps_its_task(
+    tmp_path: Path,
+) -> None:
+    amend = [*PUT_UNDER, "--title", "another title"]
+    assert runs(tmp_path, ADD_FEATURE, ADD_ALONE, ADD_TASK, amend, SHOW).out == (
+        "S-0001  another title\n"
+        "  bucket       Backlog\n"
+        "  parent       F-0001\n"
+        "  given        a state\n"
+        "  when         an action\n"
+        "  then         another\n"
+        "Tasks (1)\n"
+        "  T-0001  a task title\n"
+        "    expected output  an output\n"
+    )
+
+
+def test_a_story_put_under_the_feature_it_is_under_is_amended_and_stays(tmp_path: Path) -> None:
+    before = runs(tmp_path, ADD_FEATURE, ADD_UNDER, SHOW).out
+    amended = fgraph(PUT_UNDER, tmp_path)
+    assert (amended.status, amended.out, fgraph(SHOW, tmp_path).out) == (
+        0,
+        "amended S-0001\n",
+        before,
+    )
+
+
+def test_a_story_put_under_a_feature_keeps_the_place_the_queue_gave_it(tmp_path: Path) -> None:
+    runs(
+        tmp_path,
+        ADD_FEATURE,
+        ADD_UNDER,
+        ADD_ALONE,
+        ADD_ALONE,
+        ["reorder", "S-0003", "--before", "S-0002"],
+        ["amend", "S-0002", "--parent", "F-0001"],
+        ["amend", "S-0003", "--parent", "F-0001"],
+    )
+    assert fgraph(SHOW_FEATURE, tmp_path).out.splitlines()[-3:] == [
+        "  S-0003  a title  Backlog",
+        "  S-0002  a title  Backlog",
+        "  S-0001  a title  Backlog",
+    ]
+
+
+def test_a_story_taken_out_of_a_feature_keeps_the_place_the_queue_gave_it(tmp_path: Path) -> None:
+    runs(
+        tmp_path,
+        ADD_FEATURE,
+        ADD_UNDER,
+        ADD_UNDER,
+        ADD_ALONE,
+        ["reorder", "S-0002", "--before", "S-0001"],
+        ["reorder", "S-0003", "--before", "F-0001"],
+        ["amend", "S-0002", "--parent", "none"],
+    )
+    assert fgraph(["status"], tmp_path).out.splitlines()[:4] == [
+        "Backlog (3)",
+        "  S-0003  a title",
+        "  F-0001  0/1 W  a feature title",
+        "  S-0002  a title",
+    ]
+
+
+@pytest.mark.parametrize(
+    ("argvs", "error"),
+    [
+        (
+            [*STARTED, ADD_ALONE, ["amend", "S-0003", "--parent", "F-0001"]],
+            "S-0003 cannot be put under F-0001: F-0001 is started already",
+        ),
+        (
+            [*STARTED, ["amend", "S-0002", "--parent", "none"]],
+            "S-0002 cannot be taken out of F-0001: F-0001 is started already",
+        ),
+        (
+            [*STARTED, ADD_FEATURE, ["amend", "S-0002", "--parent", "F-0002"]],
+            "S-0002 cannot be taken out of F-0001: F-0001 is started already",
+        ),
+        (
+            [
+                *STARTED,
+                ["block", "F-0001", "--reason", "a reason", "--waiting-on", "the sponsor"],
+                ["amend", "S-0002", "--parent", "none"],
+            ],
+            "S-0002 cannot be taken out of F-0001: F-0001 is blocked",
+        ),
+        (
+            [ADD_FEATURE, ADD_ALONE, ["amend", "S-0001", "--parent", "F-0009"]],
+            "no Feature F-0009 in the record",
+        ),
+        (
+            [ADD_FEATURE, ADD_ALONE, ["amend", "S-0001", "--parent", "S-0001"]],
+            "'S-0001' is no Feature id: it is F- and a number",
+        ),
+        ([*STARTED, ["amend", "S-0001", "--parent", "none"]], "S-0001 is started already"),
+    ],
+    ids=[
+        "under-a-started-feature",
+        "out-of-a-started-feature",
+        "from-a-started-feature-to-another",
+        "out-of-a-blocked-feature",
+        "an-unknown-feature",
+        "no-feature-id",
+        "a-started-story",
+    ],
+)
+def test_a_parent_refused_exits_with_two_and_names_why(
+    argvs: list[list[str]], error: str, tmp_path: Path
+) -> None:
+    outcome = runs(tmp_path, *argvs)
+    assert (outcome.status, outcome.err.splitlines()[-1]) == (2, f"fgraph: error: {error}")
+
+
+def test_a_parent_refused_leaves_the_story_as_it_was(tmp_path: Path) -> None:
+    before = runs(tmp_path, *STARTED, ["show", "S-0002"]).out
+    amend = ["amend", "S-0002", "--parent", "none", "--title", "another title"]
+    assert runs(tmp_path, amend, ["show", "S-0002"]).out == before

@@ -9,3 +9,11 @@ created = 2026-11-22 10:41:28+00:00
 given = "a record with two Stories in Backlog"
 when = "fgraph amend of the second is run with --depends-on and the id of the first, then fgraph start of the second"
 then = "the start exits 2 naming the first and its bucket, and fgraph show of the second lists that it depends on the first"
+
+[[tasks]]
+id = "T-0277"
+state = "backlog"
+title = "Add tests/functional/test_depends_on.py, failing on the criterion of S-0066"
+description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_amend_work_item.py does. Seen red, then marked a strict xfail naming S-0066 until the Task that turns it green removes the mark."
+expected_output = "created: tests/functional/test_depends_on.py states that, on a record with two Stories in Backlog, each with a Task, fgraph amend of the second with --depends-on and the id of the first exits 0, fgraph start of the second exits 2 naming the first and its bucket, and fgraph show of the second lists that it depends on the first"
+created = 2026-11-22 10:47:37+00:00

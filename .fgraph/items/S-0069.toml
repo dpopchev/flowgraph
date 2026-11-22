@@ -44,3 +44,8 @@ created = 2026-11-22 10:47:51+00:00
 started = 2026-11-22 12:34:22+00:00
 completed = 2026-11-22 12:34:24+00:00
 commit = "659dbb3"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: at 2d1bd22 on main, on a fresh record with a completed Story, fgraph add story --amends S-0001 printed added S-0002, fgraph show S-0002 listed amends S-0001 and fgraph show S-0001 listed amended by S-0002; an amends of a work item not completed exit 2; make check: all checks passed"
+noted = 2026-11-22 12:37:43+00:00

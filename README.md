@@ -113,6 +113,24 @@ fgraph about S-0002
 #     gate  a check every deliverable passes before it lands
 ```
 
+`fgraph about` of a term walks the terms under it, each that is part of it or is a
+kind of it, and those under them. It lists the term with its meaning and relations,
+then the items and the lines about it and about every term under it; one reached
+through another term is marked `(via TERM)`, and each is listed once, under
+the nearest term. With `lane` part of `gate`, a line about `lane` shows in the about
+of `gate`:
+
+```sh
+fgraph about gate
+# gate
+#   means  a check every deliverable passes before it lands
+#   parts  lane
+#   added  2026-11-22
+#   items  S-0001  (via lane)
+#   knowledge
+#     S-0001  decision  2026-11-22  a lane holds one work item  (via lane)
+```
+
 ## Use
 
 `fgraph` looks for the record in the directory it runs in: `.fgraph/` first,

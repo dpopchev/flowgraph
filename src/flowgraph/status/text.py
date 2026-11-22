@@ -93,8 +93,8 @@ def _feature_lines(feature: FeatureRow) -> str:
     A completed one is listed with its commit before its title, as a completed work item is,
     after the progress every line of a Feature holds right after its id. Under it each started
     work item of it, written as one of a bucket is with its Tasks being worked, two columns
-    further in. A blocked one is marked `!` before its id and ends with what it waits on. So is
-    one whose started work item holds a blocked Task, with what the first such Task waits on, as
+    further in. A blocked one is marked `!` before its id and ends with what it waits on and why. So
+    is one whose started work item holds a blocked Task, with what the first such Task says, as
     the line of that Task does: read from the rows at each listing, and kept nowhere. The block
     of the Feature itself comes before that of a Task. A removed one is listed as a removed work
     item is, its reason ending the line, without the progress: it holds no work item any more.
@@ -106,18 +106,30 @@ def _feature_lines(feature: FeatureRow) -> str:
     started = (line for row in feature.started for line in _status_line(row).splitlines())
     under = "".join(f"  {line}\n" for line in started)
     line = f"{feature.id}  {progress}  {commit}{feature.title}"
-    return f"{_marked(line, feature.waiting_on or _waited_on(feature.started))}\n{under}"
+    own = (feature.waiting_on, feature.block_reason)
+    return f"{_marked(line, own if feature.waiting_on else _waited_on(feature.started))}\n{under}"
 
 
-def _marked(line: str, waiting_on: str) -> str:
-    """The line of an item of a bucket: marked `!` and ending with what it waits on, if any."""
-    return f"! {line}  -- waiting on {waiting_on}" if waiting_on else f"  {line}"
+def _marked(line: str, block: tuple[str, str]) -> str:
+    """The line of an item of a bucket: marked `!` and ending with the block, if any."""
+    waiting_on, _ = block
+    return f"! {line}  -- {_block_text(*block)}" if waiting_on else f"  {line}"
 
 
-def _waited_on(rows: Iterable[StoryRow | UpkeepRow]) -> str:
-    """What the first blocked Task of the work items waits on; empty when none is blocked."""
-    blocked = (task.waiting_on for row in rows for task in row.tasks if task.state == BLOCKED)
-    return next(blocked, "")
+def _block_text(waiting_on: str, reason: str) -> str:
+    """What a block says: `waiting on <who>`, then `: <reason>` when the reason is known."""
+    return f"waiting on {waiting_on}: {reason}" if reason else f"waiting on {waiting_on}"
+
+
+def _waited_on(rows: Iterable[StoryRow | UpkeepRow]) -> tuple[str, str]:
+    """What the first blocked Task of the work items waits on and why; empty when none is."""
+    blocked = (
+        (task.waiting_on, task.reason)
+        for row in rows
+        for task in row.tasks
+        if task.state == BLOCKED
+    )
+    return next(blocked, ("", ""))
 
 
 def _top_of(items: Sequence[str], top: int | None) -> list[str]:
@@ -158,10 +170,10 @@ def _status_line(row: StoryRow | UpkeepRow) -> str:
 def _task_line(task: TaskRow) -> str:
     """A Task being worked, under its work item; nothing for one in Backlog or completed.
 
-    A started Task is marked `=>`, a blocked one `!` and ends with what it waits on.
+    A started Task is marked `=>`, a blocked one `!` and ends with what it waits on and why.
     """
     if task.state == STARTED:
         return f"    => {task.id}  {task.title}\n"
     if task.state == BLOCKED:
-        return f"    !  {task.id}  {task.title}  -- waiting on {task.waiting_on}\n"
+        return f"    !  {task.id}  {task.title}  -- {_block_text(task.waiting_on, task.reason)}\n"
     return ""

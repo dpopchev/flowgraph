@@ -1,10 +1,12 @@
 id = "S-0084"
-state = "started"
+state = "completed"
 title = "Raise the blocks fgraph status lists with their reason from none to every one"
 description = "The example of the note: !  T-0001  Add x to y  -- waiting on developer, where the reason, no key, is missing; its words are not decided."
 parent = "F-0008"
 created = 2026-11-22 21:01:52+00:00
 started = 2026-11-22 22:32:23+00:00
+completed = 2026-11-22 22:46:30+00:00
+commit = "ba9a3e3"
 
 [criterion]
 given = "a started Story whose Task is blocked with the reason no key, waiting on developer, and a blocked Feature"
@@ -13,23 +15,37 @@ then = "the line of the Task and the line of the Feature each name the reason be
 
 [[tasks]]
 id = "T-0331"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_status_block_reason.py, failing on the criterion of S-0084"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_status_feature_blocked.py does. Seen red, then marked a strict xfail naming S-0084 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_status_block_reason.py states that on a record with a Task blocked with the reason no key, waiting on developer, fgraph status exits 0 and the line of the Task names no key beside developer; and the same for a blocked Feature"
 created = 2026-11-22 21:01:54+00:00
+started = 2026-11-22 22:33:47+00:00
+completed = 2026-11-22 22:36:49+00:00
+commit = "444e7f7"
 
 [[tasks]]
 id = "T-0332"
-state = "backlog"
+state = "completed"
 title = "Add the reason of a block to the lines of fgraph status"
 description = "Removes the xfail mark of tests/functional/test_status_block_reason.py. Written on 2026-11-22 against the modules of that day, before U-0010 moves them: they are taken again when the Task starts. A module of src/ that would pass the line limit of mk/python.mk is split by one cohesive part, named in the commit."
 expected_output = "changed: the line of a blocked Task and of a blocked Feature in fgraph status names its reason beside what it waits on, the words chosen in the Task and named in the commit; a line longer than the terminal is cut as before; fgraph watch draws the same line; the tests that state those lines state the new ones"
 created = 2026-11-22 21:01:56+00:00
+started = 2026-11-22 22:36:51+00:00
+completed = 2026-11-22 22:42:49+00:00
+commit = "075af59"
 
 [[tasks]]
 id = "T-0333"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph status names the reason of a block"
 expected_output = "changed: README.md shows the line of a blocked Task with its reason; docs/domain-model.md says what the line of a blocked Task and of a blocked Feature holds"
 created = 2026-11-22 21:01:58+00:00
+started = 2026-11-22 22:42:51+00:00
+completed = 2026-11-22 22:45:58+00:00
+commit = "4049e7b"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: yes -- at ba9a3e3 on main, on a scratch record with a Task blocked with the reason no key, waiting on developer, and a Feature blocked with the reason no budget, waiting on sponsor, fgraph status exit 0 printed !  T-0001  Add x to y  -- waiting on developer: no key and ! F-0001  0/1 W  Raise a from 0 to 1  -- waiting on sponsor: no budget; make check: 2403 passed, all checks passed. The lane edited files with python snippets and one sed, against the rule of Edit and Write alone; the diff of src was read by the coordinator before the landing."
+noted = 2026-11-22 22:50:08+00:00

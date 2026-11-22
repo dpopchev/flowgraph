@@ -19,10 +19,30 @@ pytestmark = pytest.mark.functional
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_ALONE = ["add", "story", "a title that stands alone", *CRITERION]
-TASK_FOR_ALONE = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+TASK_FOR_ALONE = [
+    "add",
+    "task",
+    "a task title",
+    "--parent",
+    "S-0001",
+    "--output",
+    "an output",
+    "--check",
+    "make test",
+]
 ADD_FEATURE = ["add", "feature", "a feature title", "--criterion", "a criterion"]
 ADD_STORY = ["add", "story", "Raise the Stories fgraph lists", *CRITERION, "--parent", "F-0001"]
-ADD_TASK = ["add", "task", "a task title", "--parent", "S-0002", "--output", "an output"]
+ADD_TASK = [
+    "add",
+    "task",
+    "a task title",
+    "--parent",
+    "S-0002",
+    "--output",
+    "an output",
+    "--check",
+    "make test",
+]
 ADDED = (ADD_ALONE, TASK_FOR_ALONE, ADD_FEATURE, ADD_STORY, ADD_TASK)
 LEAF = "S-0002-raise-the-stories-fgraph"
 BRANCH = f"wi/{LEAF}"

@@ -19,6 +19,7 @@ from flowgraph.development.commit import OpenGit, Said, commit_written
 from flowgraph.development.land import land_item
 from flowgraph.development.parallel import check_parallel
 from flowgraph.development.scope import check_complete_on_main, check_start_on_main
+from flowgraph.development.task_check import check_task_checked
 from flowgraph.feature.amend import amend_named
 from flowgraph.feature.block import block_named, unblock_named
 from flowgraph.feature.item import (
@@ -93,7 +94,9 @@ def _written(
     """
     match args.command:
         case "add" if args.kind == "task":
-            return write_task(args.parent, args.title, args.output, args.description, store, now)
+            return write_task(
+                args.parent, args.title, args.output, args.description, store, now, args.check
+            )
         case "add" if args.kind == "term":
             return add_term_item(args.name, args.means, store, now)
         case "relate":
@@ -200,6 +203,8 @@ def command_said(
         check_start_under_feature(args.id, store)
         check_start_waits(args.id, store)
         check_parallel(args.id, store.find_work_item_rows, config)
+    if args.command == "add" and args.kind == "task":
+        check_task_checked(args.check, config.development.enabled, record / CONFIG)
     written = _written(args, store, now, config, cwd, open_git)
     if written is not None:
         return commit_written(written, store, record, open_git, config)

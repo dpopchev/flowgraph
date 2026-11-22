@@ -120,10 +120,19 @@ every type.
 | `Bug` | id, outcome title, description, parent, observed, expected, created |
 | `Upkeep` | id, outcome title, description, parent, Given / When / Then, created |
 | `Spike` | id, outcome title, description, parent, hypothesis, created |
-| `Task` | id, output title, description, parent, expected output, created |
+| `Task` | id, output title, description, parent, expected output, check, created |
 
 `parent` is a Feature or standing alone for the four work items, and exactly
 one work item for a Task.
+
+The `check` of a Task is the command that checks it, one text, optional. With
+the development on (`development.enabled`) it is needed: `fgraph add task`
+without `--check` is refused with exit 2 naming it. With the development off it
+is refused, naming `development.enabled`. A blank one is refused where the Task
+is built. It is kept in the file of the work item, listed by `fgraph show`
+under the Task, and carried by every move of the Task. A Task written before
+holds none and is read as before. Keeping it is all that is done so far: the
+command is not run at `complete`.
 
 A work item in any state also keeps its knowledge: the lines noted on it, in
 the order noted. A line holds its kind, its text and the time it was noted; the
@@ -317,8 +326,9 @@ of work item. The developer said so on 2026-11-21.
 - Under a work item of InProgress `fgraph status` lists each Task of it being
   worked, the developer's decision of 2026-11-21, after board 1's watch: the
   started Task as `    => T-0001  <title>`, and a blocked one as
-  `    !  T-0002  <title>  -- waiting on <what>`, in the order the file holds
-  them. A Task in Backlog or completed is not listed. A Task line belongs to
+  `    !  T-0002  <title>  -- waiting on <what>: <reason>`, in the order the
+  file holds them (S-0084: the line names the reason of the block beside what
+  it waits on; with an empty reason the `: <reason>` is left out). A Task in Backlog or completed is not listed. A Task line belongs to
   its work item: it does not count toward the top 5 of the heading, nor in
   the count beside it.
 - Under a Feature of InProgress `fgraph status` lists each started work item
@@ -333,10 +343,10 @@ of work item. The developer said so on 2026-11-21.
   holds a blocked Task (S-0055), the developer's words of 2026-11-21, "a
   Feature can be blocked, or gets blocked when its child work item is
   blocked": `!` in the first column of its line, before its id, which stays
-  in its column, and `-- waiting on <what>` after its title, as the line of
-  a blocked Task ends -- `! F-0001  1/3 W  <title>  -- waiting on <what>`.
-  What is waited on is that of the first blocked Task of its started work
-  items, in the order they are listed under it and the file of each holds
+  in its column, and `-- waiting on <what>: <reason>` after its title, as the
+  line of a blocked Task ends -- `! F-0001  1/3 W  <title>  -- waiting on
+  <what>: <reason>`. What is waited on, and why, is that of the first blocked
+  Task of its started work items, in the order they are listed under it and the file of each holds
   its Tasks. The mark is derived at each listing from the rows status reads
   and kept in no file: no state of the Feature or of the work item holds it,
   and it is gone with the unblock of the Task. A started Task beside the
@@ -351,9 +361,10 @@ of work item. The developer said so on 2026-11-21.
   since the mark reads the started work items listed under the Feature and
   not its state.
 - `fgraph status` lists a `BlockedFeature` under InProgress with the same
-  look (S-0056): `!` before its id and `-- waiting on <what>` after its
-  title, `! F-0001  0/1 W  <title>  -- waiting on <what>`. Here what is
-  waited on is that of the Feature, read from its state and kept in its file
+  look (S-0056): `!` before its id and `-- waiting on <what>: <reason>` after
+  its title, `! F-0001  0/1 W  <title>  -- waiting on <what>: <reason>`. Here
+  what is waited on, and why, is that of the Feature, read from its state and
+  kept in its file
   (Persistence). The block of the Feature itself comes before that of a Task
   of its work item: while both are blocked the line of the Feature names
   what the Feature waits on, and the line of the Task under it what the Task
@@ -1700,8 +1711,6 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 
 ## Open questions
 
-- Does a Task also carry a check command that `fgraph` runs at `complete`?
-  The reading: no, its expected output and its commit are enough.
 - Must a Story under a Feature name the Feature criterion it realizes? The
   reading: no, one Story per criterion stays a rule of thumb.
 - Can a Task start before its work item is started? The reading: no.

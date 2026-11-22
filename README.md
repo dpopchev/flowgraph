@@ -2176,7 +2176,7 @@ make wheel      # build the wheel into build/dist/
 
 `make help` lists every target.
 
-`make check` holds every module under `src/` to 400 lines: `make lines`, one
+`make check` holds every module under `src/` to 250 lines: `make lines`, one
 of its checks, names each module above the limit with its lines and fails.
 The number is written once, `MAX_LINES` in `mk/python.mk`; the tests are not
 counted.
@@ -2192,6 +2192,31 @@ ruff would rewrite fails `make check` by name; `make format` rewrites it.
 | `mk/`            | the Makefile, one module per section                         |
 | `build/`         | what a make target produces; removed by `make clean`         |
 | `local/`         | machine-local inputs, scratch and tool caches; never tracked |
+
+Each subpackage of `src/flowgraph/` holds one aggregate or one command group;
+`cli.py` is the one module beside them, the entrypoint.
+
+| Subpackage     | Holds                                              |
+| -------------- | -------------------------------------------------- |
+| `about/`       | the links of an item, a term or a file             |
+| `bug/`         | the Bug kind and its ids                           |
+| `criterion/`   | the criterion of a work item and its commit        |
+| `development/` | branch, commits, scope, gate and landing           |
+| `feature/`     | the Feature, its states, moves and commands        |
+| `graph/`       | the nodes and edges of a record as one document    |
+| `item/`        | an item's file, ids and commands by id             |
+| `knowledge/`   | the findings, decisions and deviations, listed     |
+| `parent/`      | the Feature a work item is under, or none          |
+| `parser/`      | the arguments of the command line and its refusals |
+| `record/`      | the location, configuration and store of a record  |
+| `relation/`    | the relations between work items and their check   |
+| `spike/`       | the Spike kind and its ids                         |
+| `status/`      | the status text, the terminal and the watch        |
+| `story/`       | the Story kind, its file and ids                   |
+| `task/`        | a Task and the Tasks of one work item              |
+| `term/`        | a term of the project and its commands             |
+| `upkeep/`      | the Upkeep kind, its file and ids                  |
+| `work_item/`   | the work item shared by every kind                 |
 
 ## License
 

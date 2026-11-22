@@ -17,8 +17,8 @@ turns the commits of the record off, and once it turns the development on,
 starting a work item also checks out its branch in a worktree of its own,
 completing an item names the commit that holds its work, and `fgraph land`
 lands it. `fgraph config` shows the configuration and sets a key of it. A work
-item keeps the findings, decisions and deviations noted on it with `fgraph note`,
-in any state, and `fgraph show` lists them.
+item, and a Feature, keeps the findings, decisions and deviations noted on it with
+`fgraph note`, in any state, and `fgraph show` lists them.
 
 | Part                            | State                                                    |
 | ------------------------------- | -------------------------------------------------------- |
@@ -33,7 +33,7 @@ in any state, and `fgraph show` lists them.
 | git                             | every write of the record committed, unless turned off   |
 | the layers of a record          | `.fgraph/config.toml`: commits on, development off       |
 | the configuration               | every key shown and set by `fgraph config`               |
-| the knowledge of a work item    | lines noted by `fgraph note`, listed by `fgraph show`    |
+| the knowledge of an item        | lines noted by `fgraph note` on a work item or a Feature |
 | the development                 | once enabled: start branches, `fgraph land` lands        |
 | the ontology                    | not started                                              |
 | flowgraph tracking its own work | its Stories are in `.fgraph/` since 0.4.0                |
@@ -648,10 +648,27 @@ fgraph show S-0001
 #   deviation  2026-11-22  the second Task was dropped
 ```
 
+A Feature keeps knowledge lines as a work item does, in any state, and
+`fgraph show` lists them after its work items:
+
+```sh
+fgraph note F-0001 --decision "the budget is agreed"
+# noted F-0001
+
+fgraph show F-0001
+# ...
+# Work items (2)
+#   S-0001  Add the show command to src/flowgraph/cli.py  Completed
+#   S-0002  Add the note command to src/flowgraph/cli.py  Backlog
+# Knowledge (1)
+#   decision  2026-11-22  the budget is agreed
+```
+
 A line is never amended or removed. The id of a Task, an id the record does
 not hold, a blank text and a note with none or more than one of the three kinds exit 2 and write nothing. With the development on, a
 started work item is noted in its worktree, as its Tasks are written, and every
-other one on `main`.
+other one, a Feature too, on `main`; the branch of a work item writes that work
+item alone, so a Feature is not noted there.
 
 A started Task that cannot go on is blocked, with the reason and who or what
 it waits on. It stays in InProgress and `fgraph show` lists it as blocked:

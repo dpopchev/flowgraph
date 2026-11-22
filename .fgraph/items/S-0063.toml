@@ -44,3 +44,8 @@ created = 2026-11-22 10:47:29+00:00
 started = 2026-11-22 11:14:13+00:00
 completed = 2026-11-22 11:19:17+00:00
 commit = "5fb119a"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: at d4b45fe on main, on a fresh record with a started Story, fgraph note --decision then --deviation each printed noted S-0001 and fgraph show listed Knowledge (2), decision 2026-11-22 keep one store, deviation 2026-11-22 the second task was dropped; make check: 1942 passed, all checks passed"
+noted = 2026-11-22 11:22:44+00:00

@@ -1,0 +1,11 @@
+id = "S-0096"
+state = "backlog"
+title = "Raise the modes of the development from one, a branch per work item, to two: the trunk"
+description = "The words of the note: work on main, no worktree. Its Tasks are written when it is ordered."
+parent = "F-0012"
+created = 2026-11-22 21:03:41+00:00
+
+[criterion]
+given = "a record with the development on and development.mode set to trunk"
+when = "a work item is started, its Tasks completed with their commits on main, and it is completed"
+then = "no branch and no worktree was made, and it is Completed at the commit of main it names"

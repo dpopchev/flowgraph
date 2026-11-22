@@ -13,11 +13,12 @@ then = "fgraph show of the Feature lists the text under Knowledge with its kind 
 
 [[tasks]]
 id = "T-0271"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_note_feature.py, failing on the criterion of S-0064"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_feature.py does. Seen red, then marked a strict xfail naming S-0064 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_note_feature.py states that, on a record with a Feature, fgraph note of the Feature with --decision and a text exits 0 and fgraph show of the Feature lists the text under Knowledge with its kind and the date it was noted"
 created = 2026-11-22 10:47:30+00:00
+started = 2026-11-22 11:20:35+00:00
 
 [[tasks]]
 id = "T-0272"

@@ -1,8 +1,9 @@
 id = "F-0010"
-state = "backlog"
+state = "started"
 title = "Raise the steps of a delivery fgraph takes after the merge of a landing from none to two: the push and the release tag"
 description = "From the note of the ~/.claude session of 2026-11-22 on the gaps of the planning skill (outputs: delivery, and the keys delivery.push and delivery.tag of the development modes), filed and ordered on the word of the developer of that day: update the backlog and prioritize. delivery is the word of the sender for land and what follows on the trunk: land, verify, release; verify is the Feature of the yes or no closing. Reported broken in the note: fgraph land merges and completes, and nothing is pushed -- no push in land.py, commit.py or branch.py."
 created = 2026-11-22 21:02:46+00:00
+started = 2026-11-22 22:43:11+00:00
 criteria = [
     "a developer has a landing pushed to the remote of the trunk when the configuration says so",
     "a developer releases the trunk with its next v* tag by one command",

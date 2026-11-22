@@ -35,8 +35,10 @@ commit = "b3c203a"
 
 [[tasks]]
 id = "T-0305"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph about walks the terms under a term"
 expected_output = "changed: README.md shows fgraph about on a term with a part, the line reached through the part marked; docs/domain-model.md says which relations the walk follows and in which direction, how a line reached through another term is marked, and that this is what a term as a node answers and a tag could not"
 created = 2026-11-22 10:48:09+00:00
 started = 2026-11-22 17:37:59+00:00
+completed = 2026-11-22 17:38:05+00:00
+commit = "0dde4d8"

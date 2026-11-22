@@ -22,3 +22,10 @@ state = "backlog"
 title = "Say in README.md that fgraph config unset takes a key back to its default, none for development.parallel and development.gate"
 expected_output = "changed: README.md names fgraph config unset"
 created = 2026-11-22 07:20:07+00:00
+
+[[tasks]]
+id = "T-0241"
+state = "backlog"
+title = "Name fgraph config set in the refusal of a landing with the development off, in place of the key to set in the file, in src/flowgraph/land.py"
+expected_output = "changed: src/flowgraph/land.py; the tests that state the refusal and README.md name fgraph config set"
+created = 2026-11-22 07:20:08+00:00

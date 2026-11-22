@@ -11,7 +11,8 @@ expected = "the passages beside the table say a work item completes on main alon
 
 [[tasks]]
 id = "T-0262"
-state = "backlog"
+state = "started"
 title = "Say beside the table Write | Where of docs/domain-model.md that a work item completes on main alone, dropping the complete of the work item itself from the writes of its branch"
 expected_output = "changed: docs/domain-model.md, the list under the branch a work item owns; grep -c 'complete of the work item itself' docs/domain-model.md prints 0"
 created = 2026-11-22 09:26:37+00:00
+started = 2026-11-22 09:45:36+00:00

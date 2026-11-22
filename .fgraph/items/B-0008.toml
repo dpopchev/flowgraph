@@ -7,3 +7,10 @@ created = 2026-11-21 23:09:41+00:00
 [criterion]
 observed = "a completed file whose commit is no sha is refused with the bare words of the commit, 'xyz' is no commit, and not as a file that holds no work item, naming the file: read_work_item of src/flowgraph/work_item/file.py does not catch CommitError"
 expected = "the refusal names the file, as every other file that holds no work item is refused"
+
+[[tasks]]
+id = "T-0228"
+state = "backlog"
+title = "Refuse a completed file whose commit is no sha as a file that holds no work item, naming the file, in read_work_item of src/flowgraph/work_item/file.py"
+expected_output = "changed: src/flowgraph/work_item/file.py catches CommitError; tests/story/test_completed_file.py states the refusal of a wrong commit of the work item and of a Task"
+created = 2026-11-22 06:48:55+00:00

@@ -1,10 +1,12 @@
 id = "S-0094"
-state = "started"
+state = "completed"
 title = "Raise the noes of a closing that file a Bug amending the work item from none to every one"
 description = "The constraint of the note: a no at the closing of a Story, a Bug or an Upkeep moves nothing backwards: it files a Bug with --amends."
 parent = "F-0011"
 created = 2026-11-22 21:03:22+00:00
 started = 2026-11-22 23:00:55+00:00
+completed = 2026-11-22 23:27:30+00:00
+commit = "adfd653"
 depends_on = [
     "S-0093",
 ]

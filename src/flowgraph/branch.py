@@ -169,9 +169,19 @@ def _merging(work_tree: Path) -> bool:
 
 
 def abort_merge(work_tree: Path) -> None:
-    """Adapter: drop the merge held in the work tree; nothing changes when none is held."""
-    if _merging(work_tree):
-        _git(work_tree, "merge", "--abort")
+    """Adapter: drop the merge held in the work tree; nothing changes when none is held.
+
+    The files the merge brought are put back as HEAD holds them first, so a change made to one
+    of them since, as by a gate, goes with the merge, which git would refuse to drop otherwise;
+    a change to any other file stays. A merge starts from an index that HEAD holds, so the files
+    staged are those the merge brought.
+    """
+    if not _merging(work_tree):
+        return
+    brought = _git(work_tree, "diff", "--cached", "--name-only").splitlines()
+    if brought:
+        _git(work_tree, "restore", "--source=HEAD", "--staged", "--worktree", "--", *brought)
+    _git(work_tree, "merge", "--abort")
 
 
 def merge_uncommitted(work_tree: Path, branch: str) -> None:

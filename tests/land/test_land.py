@@ -593,6 +593,25 @@ def test_a_landing_whose_gate_fails_drops_the_merge_held_and_moves_main_nowhere(
     assert steps == [("merge", BRANCH), GATE_RUN, "abort merge"]
 
 
+@pytest.mark.parametrize(
+    ("config", "message"),
+    [(GATED, MESSAGE), (GATED_SQUASH, MESSAGE), (GATED_FAST_FORWARD, None)],
+    ids=WAYS,
+)
+def test_a_landing_interrupted_under_its_gate_drops_the_merge_held_and_moves_main_nowhere(
+    config: Config, message: str | None
+) -> None:
+    steps: list[object] = []
+
+    def interrupted(command: str, directory: Path) -> int:
+        steps.append(("gate", command, directory))
+        raise KeyboardInterrupt
+
+    with pytest.raises(KeyboardInterrupt):
+        land(READY, work_tree(steps), config=config, message=message, run_gate=interrupted)
+    assert steps == [("merge", BRANCH), GATE_RUN, "abort merge"]
+
+
 def test_a_landing_whose_gate_fails_saves_nothing() -> None:
     saved: list[WorkItemState] = []
     with pytest.raises(GateError):

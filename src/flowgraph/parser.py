@@ -168,7 +168,9 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         "--decision", metavar="TEXT", help="what answers the hypothesis, of a Spike"
     )
     land = _command(
-        commands, "land", "land a started work item on main: merge its branch and complete it"
+        commands,
+        "land",
+        "land a started work item on main: merge its branch, run its gate and complete it",
     )
     land.add_argument("id", metavar="ID", help="the id of the work item")
     land.add_argument(

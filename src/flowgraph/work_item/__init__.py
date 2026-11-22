@@ -2,6 +2,7 @@
 
 from flowgraph.work_item.amend import (
     Amendment,
+    CheckMove,
     NoPartError,
     NoSuchPartError,
     amended_work_item,
@@ -74,6 +75,7 @@ from flowgraph.work_item.tasks import (
 
 __all__ = [
     "Amendment",
+    "CheckMove",
     "CompletedWorkItem",
     "FindTaskIds",
     "FindWorkItemRows",

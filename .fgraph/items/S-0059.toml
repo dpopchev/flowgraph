@@ -13,23 +13,32 @@ then = "fgraph show of the Feature lists the Story"
 
 [[tasks]]
 id = "T-0206"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_amend_parent.py, failing on the criterion of S-0059"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_amend_work_item.py does. Seen red, then marked a strict xfail naming S-0059 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_amend_parent.py states that, on a record with a Feature and a Story standing alone, both in Backlog, fgraph amend of the Story with --parent naming the Feature exits 0 and fgraph show of the Feature lists the Story"
 created = 2026-11-21 23:44:11+00:00
+started = 2026-11-22 03:23:10+00:00
+completed = 2026-11-22 03:25:13+00:00
+commit = "1689f85"
 
 [[tasks]]
 id = "T-0207"
-state = "backlog"
+state = "completed"
 title = "Add --parent to fgraph amend of a work item in Backlog, a Feature or none"
 description = "The reading of S-0059 as written. Removes the xfail mark of tests/functional/test_amend_parent.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph amend of a work item in Backlog takes --parent, the id of a Feature to put it under or the word none to stand alone, alone or beside the other parts; the Feature it is put under and the one it is taken out of are in Backlog, never started: another one is refused naming it, as is a Feature the record does not hold; the work item keeps its id, its Tasks and its place in the queue; proved in tests/work_item/"
 created = 2026-11-21 23:44:11+00:00
+started = 2026-11-22 03:25:14+00:00
+completed = 2026-11-22 03:32:36+00:00
+commit = "ad4d8e3"
 
 [[tasks]]
 id = "T-0208"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph amend moves a work item under a Feature or out of one"
 expected_output = "changed: README.md and docs/domain-model.md say fgraph amend puts a work item in Backlog under a Feature or takes it out with --parent, while both are in Backlog, and what is refused; the line that names moving a work item to another Feature not built is gone"
 created = 2026-11-21 23:44:11+00:00
+started = 2026-11-22 03:32:37+00:00
+completed = 2026-11-22 03:35:28+00:00
+commit = "e9148c9"

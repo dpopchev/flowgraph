@@ -374,6 +374,24 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
 - Only a work item in Backlog is amended: a started or a completed one is
   refused, since its wording is what the work was started on. A Task is not
   amended yet.
+- Its parent is a part too, the reading of S-0059: `--parent F-0001` puts the
+  work item under that Feature and `--parent none` takes it out to stand
+  alone, alone or beside the other parts. It is still no move of the work
+  item: its id, its created time and its Tasks stay, and so does its entry in
+  the queue, which then orders it where its new parent reads it
+  (Persistence).
+- The Feature it is put under and the one it is taken out of are in Backlog,
+  as the work item is, each by its own state: one that is started, blocked or
+  completed is refused naming the work item and the Feature, `S-0003 cannot
+  be put under F-0001: F-0001 is started already`, `S-0002 cannot be taken
+  out of F-0001: F-0001 is blocked`. The one it is put under is read first,
+  so a move from one Feature to another names that one when both refuse. A
+  Feature the record does not hold is refused, `no Feature F-0009 in the
+  record`, and so is a text that is neither a Feature id nor `none`. Nothing
+  is written then, the other parts named beside it neither.
+- A parent that is the one the work item has moves it nowhere: no Feature is
+  read and the amend is taken, as one that rewrites a part to the text it
+  has.
 
 ## Evidence
 
@@ -758,7 +776,9 @@ and its merge tool.
   carries it through every move. A file without the key holds a work item
   that stands alone: standing alone is a value of `parent` in the model, and
   the files written before the Feature read as they are. `--parent` is given
-  when the work item is added and names a Feature the record holds.
+  when the work item is added and names a Feature the record holds; an amend
+  gives it again, a Feature or `none`, while the work item and the Features
+  it moves between are in Backlog (Amendment).
 - `fgraph status` lists a Feature inside its bucket, as one line in place of
   its work items, the developer's words of 2026-11-21: a Feature is an
   umbrella, part of the Backlog, that just holds a couple of work items. The
@@ -795,12 +815,12 @@ and its merge tool.
   removed work item is counted in neither number, a started or a Backlog one
   only in the second, and a Feature without a work item reads `0/0 W`. Every
   Feature is listed with it, in any bucket: `F-0001  1/3 W  <title>`.
-- Not built yet: blocking, amending or removing a Feature, and moving a work
-  item to another Feature. Starting one is built (above), so is starting its
-  next work item with the completion of the one before, so is completing one
-  with its last work item, so is reordering one, and so is the mark a blocked
-  Task of its work item gives it in the status, derived and kept in no file
-  (Order).
+- Not built yet: blocking, amending or removing a Feature. Starting one is
+  built (above), so is starting its next work item with the completion of
+  the one before, so is completing one with its last work item, so is
+  reordering one, so is the mark a blocked Task of its work item gives it in
+  the status, derived and kept in no file (Order), and so is putting a work
+  item in Backlog under one or taking it out (Amendment).
 - Each kind reads the files of its own prefix. A file with a prefix no kind
   knows is left alone; nothing reports it yet. An `items/SP-0001.toml` of an
   older record, written while a Spike was `SP-0001`, is such a file: it is
@@ -831,6 +851,13 @@ and its merge tool.
   two the reorder changes, and a file written before the queue placed a
   Feature, whose work items under a Feature were placed among those of their
   Feature, reads as it did.
+- A work item whose parent an amend changes keeps its entry in that list,
+  since the amend never writes it; the entry is read in the order its new
+  parent gives it. Put under a Feature, it is on no line of the Backlog and
+  starts where its id stands among the ids of the work items of that
+  Feature. Taken out, it is a line of the Backlog where its id stands among
+  the ids of the lines. One never placed follows the placed ones as it was
+  added, in either order.
 
 A record is layered by its configuration, the developer's request of
 2026-11-21, which names three layers: the items and their lifecycle, kept

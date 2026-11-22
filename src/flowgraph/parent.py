@@ -68,3 +68,15 @@ def parent_written(text: str) -> Parent:
     Raises FeatureIdError when the text is neither.
     """
     return parse_feature_id(text) if text else STANDALONE
+
+
+# The word that asks for standing alone, where the id of a Feature is asked for.
+NONE = "none"
+
+
+def parent_asked(text: str) -> Parent:
+    """The parent a command asks for: standing alone for `none`, else the Feature of that id.
+
+    Raises FeatureIdError when the text is neither.
+    """
+    return STANDALONE if text == NONE else parse_feature_id(text)

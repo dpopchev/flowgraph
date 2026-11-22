@@ -59,7 +59,7 @@ from flowgraph.item import (
 )
 from flowgraph.land import LandError, land_item
 from flowgraph.parallel import ParallelError, check_parallel
-from flowgraph.parent import FeatureIdError
+from flowgraph.parent import FeatureIdError, parent_asked
 from flowgraph.parser import TOP, build_command_line, help_asked
 from flowgraph.queue import NotInBacklogError, SameItemError, UnderFeatureError
 from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, Now, locate
@@ -191,6 +191,7 @@ def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -
                 args.observed,
                 args.expected,
                 args.hypothesis,
+                None if args.parent is None else parent_asked(args.parent),
             )
             return amend_item(args.id, parts, store)
         case "complete":

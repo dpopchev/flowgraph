@@ -1,9 +1,10 @@
 """The amendment of a work item: the wording of one in Backlog rewritten, part by part.
 
 It is not a move: the state of the work item stays, and so do its id, its Tasks and its place.
+Its parent is a part too: the Feature it is under, or standing alone.
 """
 
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, replace
 from typing import assert_never
 
@@ -19,6 +20,7 @@ from flowgraph.criterion import (
     make_scenario,
     said,
 )
+from flowgraph.parent import Parent
 from flowgraph.task import CompletedAlreadyError, StartedAlreadyError
 from flowgraph.work_item.model import (
     CompletedWorkItem,
@@ -26,6 +28,7 @@ from flowgraph.work_item.model import (
     RemovedWorkItem,
     StartedWorkItem,
     WorkItem,
+    WorkItemId,
     WorkItemState,
     work_item_id_text,
 )
@@ -36,6 +39,7 @@ class Amendment:
     """The parts of a work item to rewrite: each its new text, or None where it stays as it was.
 
     The parts of the criterion are those of every form; a work item takes the ones it states.
+    Its parent is the Feature to put it under, or standing alone.
     """
 
     title: str | None = None
@@ -46,6 +50,12 @@ class Amendment:
     observed: str | None = None
     expected: str | None = None
     hypothesis: str | None = None
+    parent: Parent | None = None
+
+
+# Check the move of the work item of that id from the parent it had to the one an amend names;
+# raises the refusal of the Feature that does not take it.
+CheckMove = Callable[[WorkItemId, Parent, Parent], None]
 
 
 # The parts of an amendment that belong to each form of criterion a work item in Backlog states.
@@ -64,8 +74,8 @@ class NoSuchPartError(ValueError):
     """An amendment that names a part the criterion of the work item does not have."""
 
 
-def _kept(new: str | None, was: str) -> str:
-    """The new text of a part, or the one it had when the amendment does not name it."""
+def _kept[Part](new: Part | None, was: Part) -> Part:
+    """The new value of a part, or the one it had when the amendment does not name it."""
     return was if new is None else new
 
 
@@ -120,7 +130,10 @@ def amended_work_item(item: WorkItemState, amendment: Amendment) -> WorkItem:
             criterion = _amended_criterion(named, item.criterion, amendment)
             title = said("title", _kept(amendment.title, item.title))
             description = _kept(amendment.description, item.description)
-            return replace(item, title=title, criterion=criterion, description=description)
+            parent = _kept(amendment.parent, item.parent)
+            return replace(
+                item, title=title, criterion=criterion, description=description, parent=parent
+            )
         case StartedWorkItem():
             raise StartedAlreadyError(f"{named} is started already")
         case CompletedWorkItem():

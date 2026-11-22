@@ -7,3 +7,10 @@ created = 2026-11-22 02:50:09+00:00
 [criterion]
 observed = "inferred from the code during T-0197 of S-0053 and not probed: a completion run in a work tree on a branch that is neither main nor a branch of a work item starts the next work item of the Feature there and branches it at that commit, since the start a completion makes is not held to main; and fgraph complete of a work item run in its own worktree with the development on leaves it completed on its branch, so a later landing of it is refused as completed already"
 expected = "the start a completion makes is held to main as any start of a work item, and a work item completed on its own branch can still land or is refused there"
+
+[[tasks]]
+id = "T-0250"
+state = "backlog"
+title = "Probe each case of B-0014 as functional tests: a completion on a branch that is neither main nor of a work item starts and branches the next work item there, and a work item completed on its own branch is refused as completed already at its landing"
+expected_output = "changed: tests/functional/test_start_next_branch.py and tests/functional/test_complete_feature_branch.py state each case as wanted, each seen red"
+created = 2026-11-22 07:56:27+00:00

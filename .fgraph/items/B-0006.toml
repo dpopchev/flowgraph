@@ -11,7 +11,8 @@ expected = "README.md names the eight writes fgraph commits, as docs/domain-mode
 
 [[tasks]]
 id = "T-0225"
-state = "backlog"
+state = "started"
 title = "Name in README.md the writes fgraph commits as docs/domain-model.md does: add, amend, remove, reorder, start, block, unblock, complete and config set, with the messages of a block and an unblock"
 expected_output = "changed: README.md lists remove, block and unblock among the writes fgraph commits and words their messages"
 created = 2026-11-22 06:41:38+00:00
+started = 2026-11-22 06:41:40+00:00

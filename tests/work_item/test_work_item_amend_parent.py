@@ -194,20 +194,19 @@ def test_a_move_between_features_in_backlog_passes(was: Parent, now: Parent) -> 
 
 
 @pytest.mark.view
-@pytest.mark.parametrize(
-    ("feature", "refusal", "why"),
-    [
-        (BEGUN, StartedAlreadyError, "F-0001 is started already"),
-        (STUCK, BlockedError, "F-0001 is blocked"),
-        (LANDED, CompletedAlreadyError, "F-0001 is completed already"),
-    ],
-    ids=["started", "blocked", "completed"],
-)
-def test_a_work_item_is_not_put_under_a_feature_past_backlog(
-    feature: FeatureState, refusal: type[Exception], why: str
+@pytest.mark.parametrize("feature", [BEGUN, STUCK], ids=["started", "blocked"])
+def test_a_work_item_is_put_under_a_started_or_a_blocked_feature_as_an_add_puts_it(
+    feature: FeatureState,
 ) -> None:
-    with pytest.raises(refusal, match=rf"^CH-0001 cannot be put under F-0001: {why}$"):
-        check_move(features(feature), ONE, STANDALONE, ABOVE)
+    assert check_move(features(feature), ONE, STANDALONE, ABOVE) is None
+
+
+@pytest.mark.view
+def test_a_work_item_is_not_put_under_a_completed_feature() -> None:
+    with pytest.raises(
+        CompletedAlreadyError, match=r"^CH-0001 cannot be put under F-0001: F-0001 is completed"
+    ):
+        check_move(features(LANDED), ONE, STANDALONE, ABOVE)
 
 
 @pytest.mark.view

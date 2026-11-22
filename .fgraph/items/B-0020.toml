@@ -1,8 +1,9 @@
 id = "B-0020"
-state = "backlog"
+state = "started"
 title = "Cut the passages of docs/domain-model.md that say the complete of a work item is written on its own branch from two to none"
 description = "Found during T-0258 of B-0017 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. Its Tasks are written when it is ordered."
 created = 2026-11-22 08:20:59+00:00
+started = 2026-11-22 09:45:32+00:00
 
 [criterion]
 observed = "after B-0014 a work item completes on main alone, yet docs/domain-model.md, beside its table Write | Where, still says the complete of the work item itself that would start the next one of its Feature is written on its branch, and lists the one that would complete its Feature among the writes refused there for its file"

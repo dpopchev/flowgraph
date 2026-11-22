@@ -25,3 +25,11 @@ title = "Add the files a commit changed to the WorkTree of src/flowgraph/commit.
 description = "New code the next Task runs. A read of git alone; nothing is written."
 expected_output = "changed: the WorkTree of src/flowgraph/commit.py answers which files a commit changed, as paths from the top of the work tree; a merge commit answers with what it brought to its first parent; a sha git does not know answers with none; tests/commit/ states each against the real git in tmp_path"
 created = 2026-11-22 10:48:12+00:00
+
+[[tasks]]
+id = "T-0308"
+state = "backlog"
+title = "Extend fgraph about to the path of a file, listing the items whose commits touched it"
+description = "Removes the xfail mark of tests/functional/test_about_file.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
+expected_output = "changed: fgraph about PATH, a path given from the directory fgraph runs in, lists the completed work items and Tasks whose commit changed the file, newest first, each with its id, its commit and its title, a Task under its work item; nothing is stored for a file: the answer is read from git by the commit each completed item names; a file no commit of the record touched prints one line saying so and exits 0; outside a git work tree a path is refused, saying the answer is read from git; an argument is read as an id, then as a term, then as a path, and one that is none of them is refused naming the three"
+created = 2026-11-22 10:48:13+00:00

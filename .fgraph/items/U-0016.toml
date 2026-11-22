@@ -22,3 +22,8 @@ created = 2026-11-22 21:01:49+00:00
 started = 2026-11-22 22:23:33+00:00
 completed = 2026-11-22 22:25:54+00:00
 commit = "cee8b7e"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: yes -- at 850a700 on main, make check exit 0: 2378 passed, the count before the change, all checks passed; tests/functional/completed_story.py gives the commands of a completed Story, alone and under a Feature, and 7 functional tests that begin from one take them from it; the files that spell the steps apart, with an assertion, a block or another work item between them, stay as they were, filed with U-0020. The body of the commit cee8b7e says six files where seven take the helper."
+noted = 2026-11-22 22:29:43+00:00

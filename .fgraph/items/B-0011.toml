@@ -11,7 +11,8 @@ expected = "fgraph status lists such a work item, or refuses the record naming t
 
 [[tasks]]
 id = "T-0242"
-state = "backlog"
+state = "started"
 title = "List in fgraph status a work item whose parent names a Feature the record does not hold in its own bucket, as one standing alone, in src/flowgraph/status.py"
 expected_output = "changed: status_item of src/flowgraph/status.py; tests/item/test_status_features.py states the listing of such a work item in Backlog, InProgress and Completed"
 created = 2026-11-22 07:29:26+00:00
+started = 2026-11-22 07:29:27+00:00

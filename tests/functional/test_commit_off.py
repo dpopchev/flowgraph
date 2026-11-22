@@ -126,6 +126,6 @@ def test_a_landing_with_the_commits_off_exits_with_two_and_names_both_keys(
     refused = fgraph(["land", "S-0001", "--message", "feat: land it"], checkout)
     assert (refused.status, refused.err.splitlines()[-1]) == (
         2,
-        "fgraph: error: S-0001 cannot land: the development is off -- set development.enabled"
-        f" = true and git.commit = true in {checkout / '.fgraph' / 'config.toml'}",
+        "fgraph: error: S-0001 cannot land: the development is off -- run fgraph config set"
+        " git.commit true, then fgraph config set development.enabled true",
     )

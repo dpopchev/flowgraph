@@ -172,3 +172,32 @@ def set_setting(
     save_settings(after)
     written = Written(f"set {_line(key, config)}\n", f"chore: set {name} in the record")
     return SettingSet(written, config)
+
+
+def without_setting(settings: Settings, name: str) -> Settings:
+    """The settings without the key of that name, so it reads as its default; the others kept.
+
+    A table left with no key is left out. Raises ConfigError naming the key when the
+    configuration has no such key.
+    """
+    _key_named(name)
+    table, _, inside = name.partition(".")
+    kept = {held: value for held, value in settings.get(table, {}).items() if held != inside}
+    others = {held: keys for held, keys in settings.items() if held != table}
+    return {**others, table: kept} if kept else others
+
+
+def unset_setting(
+    name: str, load_settings: LoadSettings, save_settings: SaveSettings
+) -> SettingSet:
+    """Take the key of that name back to its default among the settings of the record.
+
+    A key with no default is then none. Raises ConfigError as without_setting does; nothing is
+    saved then.
+    """
+    key = _key_named(name)
+    after = without_setting(load_settings(), name)
+    config = make_config(settings_text(after))
+    save_settings(after)
+    written = Written(f"unset {_line(key, config)}\n", f"chore: unset {name} in the record")
+    return SettingSet(written, config)

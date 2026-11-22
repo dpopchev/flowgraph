@@ -69,7 +69,7 @@ from flowgraph.scope import (
     within,
     worktree_of_item,
 )
-from flowgraph.setting import set_setting, show_config
+from flowgraph.setting import set_setting, show_config, unset_setting
 from flowgraph.store import OpenStore, Store, open_files
 from flowgraph.task import (
     BlockedError,
@@ -251,6 +251,9 @@ def _said(
     match args.command:
         case "config" if args.action == "set":
             done = set_setting(args.key, args.value, store.load_settings, store.save_settings)
+            return commit_written(done.written, store, record, open_git, done.config)
+        case "config" if args.action == "unset":
+            done = unset_setting(args.key, store.load_settings, store.save_settings)
             return commit_written(done.written, store, record, open_git, done.config)
         case "config":
             return Said(show_config(config))

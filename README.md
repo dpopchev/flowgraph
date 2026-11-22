@@ -141,14 +141,15 @@ enabled = true
 A record without the file, or without the key, has the development off. A
 start of a Story is then a write as any other: committed on `main`, with no
 branch, no worktree and no warning. Its Tasks are written on `main`, it is
-completed with `fgraph complete`, and `fgraph land` exits 2 naming the key:
+completed with `fgraph complete`, and `fgraph land` exits 2 naming the set
+that turns the development on:
 
 ```sh
 fgraph start S-0001
 # started S-0001
 
 fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
-# fgraph: error: S-0001 cannot land: the development is off -- set development.enabled = true in /src/project/.fgraph/config.toml
+# fgraph: error: S-0001 cannot land: the development is off -- run fgraph config set development.enabled true
 ```
 
 The commit is the evidence of the development, so with the development off
@@ -297,11 +298,11 @@ fgraph status
 # fgraph: error: /src/project/.fgraph/config.toml: development.enabled is true while git.commit is false: the development needs the commits of the record
 ```
 
-So a landing with the commits off names both keys it takes:
+So a landing with the commits off names both sets it takes, in their order:
 
 ```sh
 fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
-# fgraph: error: S-0001 cannot land: the development is off -- set development.enabled = true and git.commit = true in /src/project/.fgraph/config.toml
+# fgraph: error: S-0001 cannot land: the development is off -- run fgraph config set git.commit true, then fgraph config set development.enabled true
 ```
 
 A `config.toml` fgraph refuses -- a table or a key the configuration does not
@@ -382,6 +383,17 @@ fgraph config set development.enabled yes
 
 fgraph config set git.commit false
 # fgraph: error: development.enabled is true while git.commit is false: the development needs the commits of the record
+```
+
+`fgraph config unset KEY` takes a key back to its default: it removes the key
+from the file, and a table left with no key with it. A key with no default,
+`development.parallel` or `development.gate`, is then `none` again. It is
+committed as a set is, under `chore: unset development.gate in the record`,
+and a key the configuration does not have exits 2 naming it:
+
+```sh
+fgraph config unset development.gate
+# unset development.gate = none
 ```
 
 A set is a write of the record as any other. In a git repository fgraph

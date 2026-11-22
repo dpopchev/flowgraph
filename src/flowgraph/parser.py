@@ -235,7 +235,13 @@ def _config_actions(actions: Commands) -> dict[str, argparse.ArgumentParser]:
         "key", metavar="KEY", help="a key fgraph config show lists, as development.enabled"
     )
     set_key.add_argument("value", metavar="VALUE", help="the value the key takes, as a text")
-    return {"show": show, "set": set_key}
+    unset_key = _command(
+        actions, "unset", "take one key of the configuration back to its default, or none"
+    )
+    unset_key.add_argument(
+        "key", metavar="KEY", help="a key fgraph config show lists, as development.gate"
+    )
+    return {"show": show, "set": set_key, "unset": unset_key}
 
 
 def build_command_line() -> CommandLine:

@@ -114,6 +114,32 @@ def test_a_key_is_taken_back_to_its_default_by_setting_that_default(project: Pat
     ]
 
 
+class TestTheGateTakenBackWithConfigUnset:
+    @pytest.fixture
+    def unset(self, project: Path) -> Outcome:
+        (project / CONFIG).write_text(f'{LIMITED}gate = "make check"\n', encoding="utf-8")
+        return fgraph(["config", "unset", "development.gate"], project)
+
+    def test_unset_says_the_key_is_none_and_warns_of_nothing(self, unset: Outcome) -> None:
+        assert unset == Outcome(0, "unset development.gate = none\n", "")
+
+    def test_show_then_lists_development_gate_as_none(self, unset: Outcome, project: Path) -> None:
+        assert fgraph(SHOW, project).out.splitlines()[-1] == "development.gate = none"
+
+    def test_the_config_file_keeps_the_other_keys(self, unset: Outcome, project: Path) -> None:
+        assert tomllib.loads((project / CONFIG).read_text(encoding="utf-8")) == {
+            "development": {"enabled": True, "parallel": 2}
+        }
+
+
+def test_an_unset_of_no_key_of_the_configuration_exits_with_two_naming_it(project: Path) -> None:
+    outcome = fgraph(["config", "unset", "development.gates"], project)
+    assert (outcome.status, outcome.err.splitlines()[-1]) == (
+        2,
+        "fgraph: error: development.gates is no key of the configuration",
+    )
+
+
 @pytest.mark.parametrize(
     ("content", "argv", "why"),
     [

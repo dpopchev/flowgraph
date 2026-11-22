@@ -12,21 +12,30 @@ then = "fgraph config show lists development.gate as none"
 
 [[tasks]]
 id = "T-0239"
-state = "backlog"
+state = "completed"
 title = "Take a key of the configuration back to its default with fgraph config unset, none for a key that has no default, in src/flowgraph/setting.py, src/flowgraph/parser.py and src/flowgraph/cli.py"
 expected_output = "changed: unset_setting of src/flowgraph/setting.py, the unset action of src/flowgraph/parser.py and its dispatch in src/flowgraph/cli.py; tests/functional/test_config_command.py states the criterion and tests/setting states the unset"
 created = 2026-11-22 07:20:07+00:00
+started = 2026-11-22 07:20:10+00:00
+completed = 2026-11-22 07:24:37+00:00
+commit = "d84f871"
 
 [[tasks]]
 id = "T-0240"
-state = "backlog"
+state = "completed"
 title = "Say in README.md that fgraph config unset takes a key back to its default, none for development.parallel and development.gate"
 expected_output = "changed: README.md names fgraph config unset"
 created = 2026-11-22 07:20:07+00:00
+started = 2026-11-22 07:24:38+00:00
+completed = 2026-11-22 07:26:13+00:00
+commit = "17c74c1"
 
 [[tasks]]
 id = "T-0241"
-state = "backlog"
+state = "completed"
 title = "Name fgraph config set in the refusal of a landing with the development off, in place of the key to set in the file, in src/flowgraph/land.py"
 expected_output = "changed: src/flowgraph/land.py; the tests that state the refusal and README.md name fgraph config set"
 created = 2026-11-22 07:20:08+00:00
+started = 2026-11-22 07:26:14+00:00
+completed = 2026-11-22 07:29:00+00:00
+commit = "3c5d575"

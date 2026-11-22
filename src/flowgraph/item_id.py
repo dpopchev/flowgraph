@@ -4,7 +4,7 @@ import re
 from collections.abc import Callable
 from functools import partial
 
-from flowgraph.parent import FeatureIdError, parse_feature_id
+from flowgraph.parent import FeatureId, FeatureIdError, parse_feature_id
 from flowgraph.queue import Placed
 from flowgraph.store import KINDS
 from flowgraph.task import TaskId, TaskIdError, parse_task_id
@@ -83,3 +83,16 @@ def parse_shown_id(text: str) -> Placed:
     if re.fullmatch(r"F-\d+", text) is not None:
         return parse_feature_id(text)
     return parse_placed_id(text)
+
+
+def parse_moved_id(text: str) -> TaskId | FeatureId:
+    """The id of a Task, or of a Feature, as fgraph block and unblock read the text.
+
+    Raises TaskIdError or FeatureIdError when the text is written as an id of that kind that is
+    none, as `T-0000` or `F-0000`, and ItemIdError naming both kinds when it is neither.
+    """
+    if re.fullmatch(r"F-\d+", text) is not None:
+        return parse_feature_id(text)
+    if re.fullmatch(r"T-\d+", text) is not None:
+        return parse_task_id(text)
+    raise ItemIdError(f"{text!r} is no Task or Feature id")

@@ -8,30 +8,49 @@ on; its unblock starts the next one when none is started, as the completion of o
 do (`flowgraph.item`).
 """
 
+from typing import assert_never
+
 from flowgraph.config import Config
 from flowgraph.feature import blocked_feature, unblocked_feature
-from flowgraph.feature_item import is_feature_id
 from flowgraph.feature_next import NOT_STARTED, start_next
 from flowgraph.feature_start import first_in_backlog
 from flowgraph.item import MESSAGE, Written, block_item, unblock_item
-from flowgraph.parent import FeatureId, feature_id_text, parse_feature_id
+from flowgraph.item_id import parse_moved_id
+from flowgraph.parent import FeatureId, feature_id_text
 from flowgraph.record import Now
 from flowgraph.status import STARTED, rows_by_id
 from flowgraph.store import Store
+from flowgraph.task import TaskId
 from flowgraph.work_item import WorkItemId, work_item_id_text
+
+
+def _feature_of(item: str) -> FeatureId | None:
+    """The Feature the id names; None for the id of a Task.
+
+    Raises ItemIdError naming the Task and the Feature when the text is the id of neither, and
+    the refusal of an id below 1 of its kind.
+    """
+    match parse_moved_id(item):
+        case FeatureId() as feature_id:
+            return feature_id
+        case TaskId():
+            return None
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 def block_named(item: str, reason: str, waiting_on: str, store: Store, now: Now) -> Written:
     """Block the started Feature or Task of that id for the reason given; what the write says.
 
-    Raises FeatureNotFoundError when the record holds no such Feature, NotStartedError when it
-    is in Backlog, BlockedError when it is blocked already, CompletedAlreadyError when it is
-    completed and EmptyPartError when the reason or what it waits on is blank; for any other id
-    the refusal of `block_item`. Nothing is saved.
+    Raises ItemIdError when the text is the id of neither, FeatureNotFoundError when the record
+    holds no such Feature, NotStartedError when it is in Backlog, BlockedError when it is
+    blocked already, CompletedAlreadyError when it is completed and EmptyPartError when the
+    reason or what it waits on is blank; for a Task the refusal of `block_item`. Nothing is
+    saved.
     """
-    if not is_feature_id(item):
+    feature_id = _feature_of(item)
+    if feature_id is None:
         return block_item(item, reason, waiting_on, store, now)
-    feature_id = parse_feature_id(item)
     held = store.features.load_feature(feature_id)
     store.features.save_feature(blocked_feature(held, reason, waiting_on, now()))
     named = feature_id_text(feature_id)
@@ -57,13 +76,14 @@ def unblock_named(item: str, store: Store, now: Now, config: Config) -> Written:
     A Feature is started again and, when no work item of it is started, starts its next one:
     named on a line of its own after the unblock and in the message beside it, with the branch
     to check out at the commit of the write. A next work item that cannot start is named on
-    that line with why, and the unblock stands as written. Raises FeatureNotFoundError when the
-    record holds no such Feature and NotBlockedError when it is not blocked; for any other id
-    the refusal of `unblock_item`. Nothing is saved.
+    that line with why, and the unblock stands as written. Raises ItemIdError when the text is
+    the id of neither, FeatureNotFoundError when the record holds no such Feature and
+    NotBlockedError when it is not blocked; for a Task the refusal of `unblock_item`. Nothing is
+    saved.
     """
-    if not is_feature_id(item):
+    feature_id = _feature_of(item)
+    if feature_id is None:
         return unblock_item(item, store)
-    feature_id = parse_feature_id(item)
     store.features.save_feature(unblocked_feature(store.features.load_feature(feature_id)))
     named = feature_id_text(feature_id)
     unblocked = Written(f"unblocked {named}\n", MESSAGE.format(f"unblock {named}"))

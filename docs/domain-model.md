@@ -768,7 +768,10 @@ and its merge tool.
   blank reason or a blank waiting on, `reason is empty`, `waiting on is
   empty`. The unblock of a Feature that is not blocked is refused, `F-0001
   is not blocked`. No refusal is a new one: each is that of a Task, naming
-  the Feature.
+  the Feature. A text that is neither a Task id nor a Feature id is refused
+  by both commands naming the two (B-0015), `'S-0001' is no Task or Feature
+  id`, and one written `F-` or `T-` and a number below 1 as an id of its
+  kind, `a Feature id counts from 1: 0 is below 1`.
 - While a Feature is blocked no further work item of it starts, and its
   started one goes on, the reading of S-0056. `fgraph start` of a work item
   of it in Backlog is refused naming the block, `S-0002 cannot start: F-0001

@@ -179,6 +179,12 @@ class TestAStartedFeatureBlockedWhileItHoldsAStoryInBacklog:
             "no Feature F-0009 in the record",
         ),
         ([*STARTED, BLOCK, ["start", "F-0001"]], "F-0001 is blocked: unblock it first"),
+        (
+            [["block", "S-0001", "--reason", "a reason", "--waiting-on", "someone"]],
+            "'S-0001' is no Task or Feature id",
+        ),
+        ([["unblock", "X-0001"]], "'X-0001' is no Task or Feature id"),
+        ([["unblock", "F-0000"]], "a Feature id counts from 1: 0 is below 1"),
     ],
     ids=[
         "feature-in-backlog",
@@ -188,6 +194,9 @@ class TestAStartedFeatureBlockedWhileItHoldsAStoryInBacklog:
         "blank-waiting-on",
         "no-such-feature",
         "start-a-blocked-feature",
+        "block-of-a-story-id",
+        "unblock-of-no-id",
+        "unblock-of-a-feature-id-below-one",
     ],
 )
 def test_a_block_refused_exits_with_two_and_names_why(

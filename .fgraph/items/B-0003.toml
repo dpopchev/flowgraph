@@ -14,3 +14,10 @@ state = "backlog"
 title = "Refuse a wrong id of fgraph show naming every kind it takes, the Feature among them, and a Feature id below 1 as a Feature id"
 expected_output = "changed: src/flowgraph/item_id.py and src/flowgraph/item.py; tests/functional/test_show_wrong_id.py and tests/item/test_item_id.py state both refusals"
 created = 2026-11-22 06:16:12+00:00
+
+[[tasks]]
+id = "T-0218"
+state = "backlog"
+title = "Say in docs/domain-model.md what fgraph show refuses for a wrong id"
+expected_output = "changed: docs/domain-model.md names both refusals of show"
+created = 2026-11-22 06:16:13+00:00

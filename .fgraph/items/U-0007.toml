@@ -12,7 +12,8 @@ then = "it still passes"
 
 [[tasks]]
 id = "T-0230"
-state = "backlog"
+state = "started"
 title = "Name the state started of a work item once, in src/flowgraph/work_item/model.py, and import it in src/flowgraph/text.py, src/flowgraph/status.py and src/flowgraph/worktrees.py"
 expected_output = "changed: src/flowgraph/work_item/model.py holds STARTED and state_name writes it; text.py, status.py and worktrees.py import it and define none of their own"
 created = 2026-11-22 06:53:56+00:00
+started = 2026-11-22 06:53:58+00:00

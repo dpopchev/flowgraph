@@ -1,0 +1,11 @@
+id = "S-0108"
+state = "backlog"
+title = "Cut the items fgraph status names as the next to start that fgraph start would refuse for the limit of development.parallel from every one to none"
+description = "Found during T-0338 of S-0086 on 2026-11-23, under the burn of the goal; filed at the end of the queue and not burned. The next to start of S-0086 is the first line of the Backlog that waits for nothing, as its brief says; a start can also be refused for the limit of development.parallel or, under a Feature, for a started work item. Open: whether the next to start skips those too, or stays the first that waits for nothing. Its Tasks are written when it is ordered."
+created = 2026-11-22 23:40:19+00:00
+filed_during = "S-0086"
+
+[criterion]
+given = "a record with development.parallel set to 1, one work item started and a second in Backlog that waits for nothing"
+when = "fgraph status is run"
+then = "it names no next to start, since fgraph start of the second is refused for the limit"

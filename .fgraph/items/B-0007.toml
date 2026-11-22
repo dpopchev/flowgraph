@@ -7,3 +7,10 @@ created = 2026-11-21 22:49:39+00:00
 [criterion]
 observed = "under [git] commit = false fgraph land says the development is off -- set development.enabled = true, and that advice then meets the refusal of the two keys together"
 expected = "the refusal of a landing under [git] commit = false names git.commit too"
+
+[[tasks]]
+id = "T-0226"
+state = "backlog"
+title = "Name git.commit beside development.enabled in the refusal of a landing under [git] commit = false, in src/flowgraph/land.py"
+expected_output = "changed: src/flowgraph/land.py names both keys when the commits are off; tests/land/test_land.py and tests/functional/test_commit_off.py state the refusal"
+created = 2026-11-22 06:44:15+00:00

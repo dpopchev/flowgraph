@@ -62,7 +62,8 @@ class FeatureRow:
     the one it was completed in, empty while it has none; what it waits on while it is blocked;
     its reason the one it was removed for, empty unless it is removed; its block reason the one
     it was blocked for, empty unless it is blocked; the ids its first work item in Backlog waits
-    for, set by the view that lists the Backlog.
+    for, set by the view that lists the Backlog; it is the next to start when it is the first line
+    of the Backlog its start would take, set there too.
     """
 
     id: str
@@ -76,6 +77,7 @@ class FeatureRow:
     reason: str = field(default="", kw_only=True)
     block_reason: str = field(default="", kw_only=True)
     waits_for: list[str] = field(default_factory=list[str], kw_only=True)
+    next_to_start: bool = field(default=False, kw_only=True)
 
 
 def feature_detail(feature: FeatureState) -> FeatureDetail:

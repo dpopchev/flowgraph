@@ -40,16 +40,19 @@ def status_text(rows: Iterable[WorkItemRow | FeatureRow], top: int | None = None
     Removed stands apart from the flow: its heading is listed only when an item is removed. A
     Feature is one item of its bucket, listed among the work items in the order given. Under a
     top a heading lists that many of its items, the first ones given, then how many more it
-    holds; its count stays that of all of them.
+    holds; its count stays that of all of them. The next to start is marked `>`; one the top
+    leaves out is listed after the top, apart from the count of those more.
     """
     listed = list(rows)
     lines: list[str] = []
     for bucket, states in BUCKETS:
-        held = [_item_lines(row) for row in listed if _is_listed_in(row, bucket, states)]
+        in_bucket = [row for row in listed if _is_listed_in(row, bucket, states)]
+        held = [_item_lines(row) for row in in_bucket]
         if bucket == APART and not held:
             continue
+        pinned = next((at for at, row in enumerate(in_bucket) if row.next_to_start), None)
         lines.append(f"{bucket} ({len(held)})\n")
-        lines.extend(_top_of(held, top))
+        lines.extend(_top_of(held, top, pinned))
     return "".join(lines)
 
 
@@ -108,16 +111,23 @@ def _feature_lines(feature: FeatureRow) -> str:
     line = f"{feature.id}  {progress}  {commit}{feature.title}"
     own = (feature.waiting_on, feature.block_reason)
     block = own if feature.waiting_on else _waited_on(feature.started)
-    head = _marked(line, block) if block[0] else _waiting(line, feature.waits_for)
+    head = (
+        _marked(line, block)
+        if block[0]
+        else _waiting(line, feature.waits_for, next_up=feature.next_to_start)
+    )
     return f"{head}\n{under}"
 
 
-def _waiting(line: str, waits_for: Sequence[str]) -> str:
+def _waiting(line: str, waits_for: Sequence[str], *, next_up: bool = False) -> str:
     """The line of an item of a bucket: marked `~` and ending with the ids it depends on, if any.
 
     The mark and the words differ from a block, `!` and `waiting on`: a block waits on a person.
+    The next to start waits for nothing and is marked `>`.
     """
-    return f"~ {line}  -- depends on {', '.join(waits_for)}" if waits_for else f"  {line}"
+    if waits_for:
+        return f"~ {line}  -- depends on {', '.join(waits_for)}"
+    return f"> {line}" if next_up else f"  {line}"
 
 
 def _marked(line: str, block: tuple[str, str]) -> str:
@@ -142,15 +152,21 @@ def _waited_on(rows: Iterable[StoryRow | UpkeepRow]) -> tuple[str, str]:
     return next(blocked, ("", ""))
 
 
-def _top_of(items: Sequence[str], top: int | None) -> list[str]:
+def _top_of(items: Sequence[str], top: int | None, pinned: int | None = None) -> list[str]:
     """The first items up to the top, then how many more there are; every item without a top.
 
     An item is counted once, whatever the lines it is written in: a work item with its Tasks
-    being worked, a Feature with its started work items.
+    being worked, a Feature with its started work items. The pinned item, by its place, is
+    listed after the top when the top leaves it out, and is not one of those more.
     """
     if top is None or len(items) <= top:
         return list(items)
-    return [*items[:top], f"  ... {len(items) - top} more\n"]
+    shown = list(items[:top])
+    more = len(items) - top
+    if pinned is not None and pinned >= top:
+        shown.append(items[pinned])
+        more -= 1
+    return [*shown, f"  ... {more} more\n"] if more else shown
 
 
 def _status_line(row: StoryRow | UpkeepRow) -> str:
@@ -174,7 +190,7 @@ def _status_line(row: StoryRow | UpkeepRow) -> str:
     )
     if why:
         return f"  {row.id}  {row.title}  -- {why}\n"
-    return f"{_waiting(f'{row.id}  {row.title}', row.waits_for)}\n"
+    return f"{_waiting(f'{row.id}  {row.title}', row.waits_for, next_up=row.next_to_start)}\n"
 
 
 def _task_line(task: TaskRow) -> str:

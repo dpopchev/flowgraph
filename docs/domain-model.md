@@ -283,6 +283,14 @@ of work item. The developer said so on 2026-11-21.
   number, then a Feature by number.
 - A work item that leaves the Backlog leaves the queue with it, and so does a
   Feature: the other buckets are not listed by the queue.
+- The next to start is the first line of the queue that `fgraph start` would
+  take, the reading of S-0086: a work item that waits for nothing, or a Feature
+  whose first work item in Backlog waits for nothing (Depends on); a Feature
+  holding no work item in Backlog is not taken. `fgraph status` marks that line
+  `>`, and lists it after the top of the Backlog, apart from the count of
+  those more, when the top leaves it out; a Backlog where nothing can start
+  marks none. It is a view of `fgraph status`: no `next` command exists. The
+  view holds it as data on the row, beside what the row waits for.
 - A reorder names two items in Backlog; one that is not there, or the same
   one twice, is refused. A Feature in progress, completed or removed is not
   in Backlog, and is refused as a started work item is:

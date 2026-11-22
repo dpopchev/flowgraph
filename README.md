@@ -309,7 +309,7 @@ fgraph add story "Raise the Stories fgraph lists under Backlog from 0 to 1" \
 
 fgraph status
 # Backlog (1)
-#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
+# > S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
 # InProgress (0)
 # Completed (0)
 ```
@@ -392,7 +392,7 @@ fgraph show S-0002
 
 fgraph status
 # Backlog (2)
-#   S-0001  Add the show command
+# > S-0001  Add the show command
 # ~ S-0002  Raise the Stories fgraph lists under Backlog from 1 to 2  -- depends on S-0001
 ```
 
@@ -401,6 +401,13 @@ with `~` and ends with `-- depends on` and each id it depends on that is not
 completed. The mark is gone once each is completed; a block, marked `!`, says
 `waiting on` a person. A Feature in Backlog carries it when its first work item
 waits.
+
+`fgraph status` names the next to start with `>`: the first line of the Backlog
+that `fgraph start` would take, a work item that waits for nothing or a Feature
+whose first work item waits for nothing (S-0001 above, since S-0002 waits for
+it). When the top of the heading leaves it out it is listed after the top, apart
+from the count of those more; a Backlog where nothing can start marks none. No
+`next` command is added.
 
 `fgraph amend S-0002 --depends-on S-0003` replaces what it depends on and
 `--depends-on none` takes it all away. An id that is no work item of the
@@ -1333,7 +1340,7 @@ fgraph add upkeep "Cut the lines of the largest module of src/flowgraph from 106
 
 fgraph status
 # Backlog (1)
-#   U-0001  Cut the lines of the largest module of src/flowgraph from 1068 to 400
+# > U-0001  Cut the lines of the largest module of src/flowgraph from 1068 to 400
 # InProgress (0)
 # Completed (0)
 ```
@@ -1463,7 +1470,7 @@ is on no line of its own:
 ```sh
 fgraph status
 # Backlog (2)
-#   F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
+# > F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (0)
 # Completed (0)
@@ -1514,7 +1521,7 @@ under its line, indented, with its progress and its Task being worked:
 ```sh
 fgraph status
 # Backlog (1)
-#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (1)
 #   F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #     S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
@@ -1536,7 +1543,7 @@ fgraph block T-0001 --reason "the review is not back" --waiting-on "the reviewer
 
 fgraph status
 # Backlog (1)
-#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (1)
 # ! F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5  -- waiting on the reviewer: the review is not back
 #     S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
@@ -1569,7 +1576,7 @@ fgraph complete S-0001 --commit 677f9b0
 
 fgraph status
 # Backlog (1)
-#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (1)
 #   F-0001  1/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #     S-0003  0/1 T  Raise the Stories fgraph lists under Completed from 0 to 1
@@ -1625,7 +1632,7 @@ fgraph complete S-0001 --commit 677f9b0
 
 fgraph status
 # Backlog (1)
-#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (0)
 # Completed (1)
 #   F-0001  1/1 W  677f9b0  Raise the kinds of work a project tracks with fgraph from 1 to 5
@@ -1716,7 +1723,7 @@ fgraph block F-0001 --reason "the budget is not agreed" --waiting-on "the sponso
 
 fgraph status
 # Backlog (1)
-#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (1)
 # ! F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5  -- waiting on the sponsor: the budget is not agreed
 #     S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
@@ -1868,7 +1875,7 @@ another:
 ```sh
 fgraph status
 # Backlog (2)
-#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 #   U-0002  Cut the lines one kind of work item holds from 885 to 250
 # InProgress (0)
 # Completed (0)
@@ -1878,7 +1885,7 @@ fgraph reorder U-0002 --before S-0002
 
 fgraph status
 # Backlog (2)
-#   U-0002  Cut the lines one kind of work item holds from 885 to 250
+# > U-0002  Cut the lines one kind of work item holds from 885 to 250
 #   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (0)
 # Completed (0)
@@ -1895,7 +1902,7 @@ fgraph reorder S-0002 --before F-0001
 
 fgraph status
 # Backlog (2)
-#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 #   F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 # InProgress (0)
 # Completed (0)
@@ -1905,7 +1912,7 @@ fgraph reorder F-0001 --before S-0002
 
 fgraph status
 # Backlog (2)
-#   F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
+# > F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (0)
 # Completed (0)

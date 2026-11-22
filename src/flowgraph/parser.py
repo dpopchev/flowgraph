@@ -128,8 +128,10 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     amend.add_argument("--hypothesis", metavar="TEXT", help="the question, of a Spike")
     show = _command(commands, "show", "show a work item with its Tasks, or a Feature")
     show.add_argument("id", metavar="ID", help="the id of the work item or of the Feature")
-    start = _command(commands, "start", "start a work item or a Task of it")
-    start.add_argument("id", metavar="ID", help="the id of the work item or of the Task")
+    start = _command(commands, "start", "start a work item or a Task of it, or a Feature")
+    start.add_argument(
+        "id", metavar="ID", help="the id of the work item, of the Task or of the Feature"
+    )
     start.add_argument(
         "--slug",
         metavar="TEXT",

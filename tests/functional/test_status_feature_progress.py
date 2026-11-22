@@ -22,7 +22,7 @@ ADD_STORY = ["add", "story", "a title", *CRITERION, "--parent", "F-0001"]
 ADD_OTHER = ["add", "story", "another title", *CRITERION, "--parent", "F-0001"]
 ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
 COMPLETE_FIRST = [
-    ["start", "S-0001"],
+    ["start", "F-0001"],
     ["start", "T-0001"],
     ["complete", "T-0001", "--commit", "abc1234"],
     ["complete", "S-0001", "--commit", "abc1234"],

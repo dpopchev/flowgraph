@@ -13,31 +13,43 @@ then = "fgraph status lists the Feature under InProgress with its first Story st
 
 [[tasks]]
 id = "T-0188"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_start_feature.py, failing on the criterion of S-0052"
 description = "decided: S-0052: the one at a time of a Feature and [development] parallel both hold -- a Feature starts one work item at a time, and parallel counts every started work item of the record, those of a Feature among them; a start parallel refuses is refused with nothing written. Run through run() of src/flowgraph/cli.py on a record in tmp_path. Seen red, then marked a strict xfail naming S-0052 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_start_feature.py states that, on a record with a Feature in Backlog and two Stories under it, each with a Task, fgraph start of the Feature exits 0 and fgraph status lists the Feature under InProgress with its first Story started under it"
 created = 2026-11-21 23:22:06+00:00
+started = 2026-11-22 01:31:16+00:00
+completed = 2026-11-22 01:32:50+00:00
+commit = "ecddf8e"
 
 [[tasks]]
 id = "T-0189"
-state = "backlog"
+state = "completed"
 title = "Extend the Feature of src/flowgraph/feature.py to a started state kept in its file"
 description = "New code the next Task runs. The states are types, as those of a work item: a StartedFeature carries what its state needs and nothing else."
 expected_output = "changed: src/flowgraph/feature.py holds a state of the Feature of its own: the Feature in Backlog and the StartedFeature with its started time, the move from one to the other, refused for one started already; its file holds a state line and the started time of a started one, read back whole, and a file without a state line, written before this Story, reads as a Feature in Backlog; proved in tests/feature/"
 created = 2026-11-21 23:22:06+00:00
+started = 2026-11-22 01:32:51+00:00
+completed = 2026-11-22 01:37:02+00:00
+commit = "da104d3"
 
 [[tasks]]
 id = "T-0190"
-state = "backlog"
+state = "completed"
 title = "Add the start of a Feature to fgraph start, starting its first work item with it"
 description = "Removes the xfail mark of tests/functional/test_start_feature.py. The tests of other work items that start a work item under a Feature start the Feature first, named in the commit. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph start takes the id of a Feature: it starts the Feature and its first work item in one write and one commit, chore: start F-0001 in the record, with the branch and the worktree of that work item when the development is on, as any start, and on main alone; the first work item is the first of its work items in Backlog in the order of the queue, so a Feature that holds completed work items starts with the next; refused with exit 2 and nothing written: a Feature with no work item in Backlog, one whose first work item has no Task, one started already, and a start [development] parallel refuses; the start of a work item whose Feature is not started is refused naming the Feature, and the start of a work item of a started Feature beside another started work item of it is refused naming that one; fgraph status lists a started Feature under InProgress with its started work item under it, a Feature never started keeps its derived bucket, and Completed stays derived until S-0054 gives it a state"
 created = 2026-11-21 23:22:06+00:00
+started = 2026-11-22 01:37:02+00:00
+completed = 2026-11-22 01:52:01+00:00
+commit = "18a4621"
 
 [[tasks]]
 id = "T-0191"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph start takes a Feature and starts its first work item"
 expected_output = "changed: README.md and docs/domain-model.md say a Feature has a state of its own, kept in its file with its started time; that fgraph start of a Feature starts its first work item with it, which one that is and what it branches; that one work item of a Feature is started at a time and how that meets [development] parallel; what is refused; that a work item does not start before its Feature; and that a Feature file without a state line reads as in Backlog. They name the developer's words of 2026-11-21 and the principle of F-0002"
 created = 2026-11-21 23:22:07+00:00
+started = 2026-11-22 01:52:01+00:00
+completed = 2026-11-22 01:56:04+00:00
+commit = "8610a9e"

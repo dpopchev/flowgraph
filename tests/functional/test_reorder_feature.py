@@ -126,7 +126,7 @@ class TestAStoryOfAFeaturePutBeforeAnotherOfIt:
     ("argvs", "error"),
     [
         (
-            [ADD_STORY, ADD_FEATURE, ADD_INSIDE, ADD_TASK, ["start", "S-0002"], REORDER],
+            [ADD_STORY, ADD_FEATURE, ADD_INSIDE, ADD_TASK, ["start", "F-0001"], REORDER],
             "F-0001 is not in Backlog",
         ),
         ([ADD_STORY, ["reorder", "S-0001", "--before", "F-0001"]], "F-0001 is not in Backlog"),

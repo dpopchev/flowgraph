@@ -34,6 +34,13 @@ from flowgraph.feature_item import (
     parent_named,
     show_feature_item,
 )
+from flowgraph.feature_start import (
+    FeatureNotStartedError,
+    NoWorkItemError,
+    WorkItemInProgressError,
+    check_start_under_feature,
+    start_feature_item,
+)
 from flowgraph.gate import GateError, RunGate, run_gate
 from flowgraph.item import (
     ItemIdError,
@@ -108,6 +115,9 @@ REFUSED = (
     FeatureIdError,
     FeatureNotFoundError,
     NoCriterionError,
+    NoWorkItemError,
+    FeatureNotStartedError,
+    WorkItemInProgressError,
     SlugError,
     GitError,
     LandError,
@@ -186,6 +196,8 @@ def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -
             return amend_item(args.id, parts, store)
         case "complete":
             return complete_item(args.id, args.commit, store, now, config, args.decision)
+        case "start" if is_feature_id(args.id):
+            return start_feature_item(args.id, args.slug, store, now, config)
         case "start":
             return start_item(args.id, args.slug, store, now)
         case "block":
@@ -247,6 +259,7 @@ def _said(
     """
     if args.command == "start":
         check_start_on_main(args.id, record, open_git)
+        check_start_under_feature(args.id, store)
         check_parallel(args.id, store.find_work_item_rows, config)
     written = _written(args, store, now, config)
     if written is not None:

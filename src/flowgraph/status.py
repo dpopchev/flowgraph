@@ -1,14 +1,15 @@
 """The status of a record: its work items and its Features listed by bucket, read from its store.
 
 A view: it reads the rows, the queue and the Features of the record and changes nothing. A
-Feature is one item of its derived bucket, listed in place of its work items.
+Feature is one item of its bucket, listed in place of its work items: a started one of
+InProgress, any other of the bucket derived from its work items.
 """
 
 from collections.abc import Collection, Iterable, Mapping
 from dataclasses import replace
 from datetime import datetime
 
-from flowgraph.feature import Feature, FeatureRow, feature_row
+from flowgraph.feature import FeatureRow, FeatureState, feature_row
 from flowgraph.parent import feature_id_text, parse_feature_id
 from flowgraph.queue import Entry, Inside, Line, Placed, queued
 from flowgraph.store import KINDS, Store
@@ -51,7 +52,7 @@ def _last_first(rows: Iterable[WorkItemRow], state: str) -> list[WorkItemRow]:
     return sorted((row for row in rows if row.state == state), key=_reached, reverse=True)
 
 
-def _placed_feature(feature: Feature, under: Collection[WorkItemRow]) -> _PlacedFeature:
+def _placed_feature(feature: FeatureState, under: Collection[WorkItemRow]) -> _PlacedFeature:
     """The row of the Feature over its work items, with the time that places it in its bucket.
 
     The row holds its started work items, the last started first. The time is that of its last
@@ -133,7 +134,7 @@ def find_backlog(store: Store) -> list[Entry]:
 def status_item(store: Store, top: int | None = None) -> str:
     """The text of the work items standing alone and of the Features of the record, by bucket.
 
-    A Feature is listed in its derived bucket in place of its work items: those in Backlog and
+    A Feature is listed in its bucket in place of its work items: those in Backlog and
     the completed ones are on no line, the started ones under its own. The Backlog lists the
     work items and the Features placed in its queue, then the others as they were added;
     InProgress the last started first and Completed the last completed first, a Feature by its

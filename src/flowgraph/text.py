@@ -36,7 +36,7 @@ def status_text(rows: Iterable[WorkItemRow | FeatureRow], top: int | None = None
 
     A completed item is listed with its commit, a removed one with its reason. Removed stands
     apart from the flow: its heading is listed only when an item is removed. A Feature is one
-    item of its derived bucket, listed among the work items in the order given. Under a top a
+    item of its bucket, listed among the work items in the order given. Under a top a
     heading lists that many of its items, the first ones given, then how many more it holds;
     its count stays that of all of them.
     """
@@ -64,7 +64,7 @@ def cut_lines(text: str, width: int | None) -> str:
 
 
 def _is_listed_in(row: WorkItemRow | FeatureRow, bucket: str, states: Collection[str]) -> bool:
-    """True when the bucket of those states lists the row: a Feature by its derived bucket."""
+    """True when the bucket of those states lists the row: a Feature by the bucket of its row."""
     match row:
         case FeatureRow():
             return row.bucket == bucket
@@ -141,8 +141,8 @@ def _task_line(task: TaskRow) -> str:
 def feature_text(detail: FeatureDetail, rows: Iterable[StoryRow | UpkeepRow], bucket: str) -> str:
     """The Feature with its bucket, its criteria, then its work items with their buckets.
 
-    The bucket of a Feature is derived, so it is given; a description is listed only when there
-    is one.
+    The bucket of a Feature is read from its state and its work items, so it is given; a
+    description is listed only when there is one.
     """
     listed = list(rows)
     described = [f"  description  {detail.description}\n"] if detail.description else []

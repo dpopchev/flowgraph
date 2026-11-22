@@ -88,6 +88,11 @@ class TestTheHelpOfStartInAnyDirectory:
             ["--slug", "TEXT"],
         ]
 
+    def test_names_the_feature_among_the_ids_start_takes(self, helped: Outcome) -> None:
+        assert helped.out.splitlines()[3] == (
+            "  ID           the id of the work item, of the Task or of the Feature"
+        )
+
     def test_writes_nothing_on_the_error_output(self, helped: Outcome) -> None:
         assert helped.err == ""
 

@@ -20,8 +20,8 @@ from flowgraph.config import (
     write_settings,
 )
 from flowgraph.feature import (
-    Feature,
     FeatureNotFoundError,
+    FeatureState,
     FindFeatureIds,
     LoadFeature,
     SaveFeature,
@@ -81,7 +81,7 @@ def _hold_none(feature_id: FeatureId) -> Never:
     raise FeatureNotFoundError(feature_id)
 
 
-def _take_none(feature: Feature) -> Never:
+def _take_none(feature: FeatureState) -> Never:
     """The save of a store that takes no Feature."""
     raise NoFeatureStoreError(f"this store keeps no Feature: {feature.title!r} is not saved")
 
@@ -147,7 +147,7 @@ def open_files(record: Path) -> Store:
         journal = noted(journal, record / QUEUE)
         write_queue(record, KINDS, queue)
 
-    def save_feature(feature: Feature) -> None:
+    def save_feature(feature: FeatureState) -> None:
         nonlocal journal
         journal = noted(journal, feature_file(record, feature.id))
         write_feature(record, feature)

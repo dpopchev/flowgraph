@@ -1,9 +1,11 @@
 id = "F-0007"
-state = "started"
+state = "completed"
 title = "Raise the repositories a developer keeps a record in with fgraph alone from one, flowgraph, to any"
 description = "From the note of the ~/.claude session of 2026-11-22 on the gaps of the planning skill (output: reach), filed and ordered on the word of the developer of that day: update the backlog and prioritize. The first of the Features that let a planning skill in ~/.claude drive fgraph in every repository in place of the board script. Probed on 2026-11-22 with fgraph 0.15.0: in a directory with no .fgraph/, fgraph add story exits 2 with no .fgraph/ or fgraph/ in <dir>, and a mkdir .fgraph by hand makes the record; uvx --from build/dist/flowgraph-0.15.0-py3-none-any.whl fgraph --help exits 0 in another directory."
 created = 2026-11-22 21:01:36+00:00
 started = 2026-11-22 22:16:33+00:00
+completed = 2026-11-22 22:39:48+00:00
+commit = "fceb92d"
 criteria = [
     "a developer makes the record of a directory with one command of fgraph",
     "a developer runs fgraph in any repository without the checkout of flowgraph",

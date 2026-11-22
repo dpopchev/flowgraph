@@ -1,10 +1,12 @@
 id = "S-0083"
-state = "started"
+state = "completed"
 title = "Cut the commands a developer runs to put the fgraph of this checkout on the path of every repository from several to one"
 description = "The way is the reading of the agent, open on the Feature: uv tool install of the wheel make wheel builds, over a path dependency or an index."
 parent = "F-0007"
 created = 2026-11-22 21:01:44+00:00
 started = 2026-11-22 22:29:57+00:00
+completed = 2026-11-22 22:39:48+00:00
+commit = "fceb92d"
 
 [criterion]
 given = "the checkout of flowgraph, where make check passes"

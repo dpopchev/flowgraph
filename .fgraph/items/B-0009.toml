@@ -11,11 +11,13 @@ expected = "a landing refused leaves a merge the developer held as it was, and a
 
 [[tasks]]
 id = "T-0231"
-state = "started"
+state = "completed"
 title = "Probe each case of B-0009 against real git as edge tests of tests/branch/test_landing_git.py: a merge the developer holds dropped by a merge refused, and the staged change committed for a branch that brings nothing"
 expected_output = "changed: tests/branch/test_landing_git.py states each case as wanted, each seen red"
 created = 2026-11-22 06:59:17+00:00
 started = 2026-11-22 06:59:20+00:00
+completed = 2026-11-22 07:00:01+00:00
+commit = "e0ee80e"
 
 [[tasks]]
 id = "T-0232"

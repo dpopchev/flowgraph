@@ -24,12 +24,14 @@ commit = "a37b61a"
 
 [[tasks]]
 id = "T-0353"
-state = "started"
+state = "completed"
 title = "Add the key delivery.push and push the trunk at a landing"
 description = "Removes the xfail mark of tests/functional/test_land_push.py. Written on 2026-11-22 against the modules of that day, before U-0010 moves them: they are taken again when the Task starts. A module of src/ that would pass the line limit of mk/python.mk is split by one cohesive part, named in the commit."
 expected_output = "changed: the configuration takes a table delivery with push, true or false, false by default, shown, set and unset by fgraph config; with it true fgraph land pushes main to its remote after the write that completes the work item; with it false nothing is pushed, as today; a push that fails leaves the landing as it is and exits with a line that names the push as failed -- the reading of the agent, named in the commit; with the development off the key is refused as the other keys of a landing are"
 created = 2026-11-22 21:02:52+00:00
 started = 2026-11-22 22:50:41+00:00
+completed = 2026-11-22 23:01:35+00:00
+commit = "c1c07db"
 
 [[tasks]]
 id = "T-0354"

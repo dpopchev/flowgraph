@@ -1026,10 +1026,7 @@ and the refusal of that start:
 - when another work item of the Feature is started, as one started before
   its Feature was: `not started: S-0003 cannot start: F-0001 starts one work
   item at a time, started already: S-0004`;
-- when its title gives no slug to name its branch;
-- when the completion is made in the worktree of S-0001, whose branch writes
-  S-0001 alone: `not started: S-0003 is not written here: the branch
-  wi/S-0001-raise-the-stories-fgraph writes S-0001 alone`.
+- when its title gives no slug to name its branch.
 
 `fgraph start S-0003`, on main, starts it once what refused it is gone. A
 completion starts nothing when no work item of the Feature is left in
@@ -1088,13 +1085,15 @@ fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
 # completed F-0001 at 3e9ae5c
 ```
 
-The Feature is written on main, as the landing is. `fgraph complete S-0001`
-in the worktree of S-0001, whose branch writes S-0001 alone, exits 2 with
-nothing written when it would complete the Feature:
+The Feature is written on main, as the landing is. A work item completes on
+main alone, as it starts there, so the next work item its completion starts
+is started on main too: `fgraph complete S-0001` in its worktree, or on any
+branch but main, exits 2 with nothing written, naming the work tree on main,
+and its landing completes it. A Task completes anywhere:
 
 ```sh
 fgraph complete S-0001 --commit 677f9b0
-# fgraph: error: F-0001 is not written here: the branch wi/S-0001-raise-the-stories-fgraph writes S-0001 alone
+# fgraph: error: S-0001 completes on main, in /src/project: /src/project.worktrees/S-0001-raise-the-stories-fgraph is on wi/S-0001-raise-the-stories-fgraph
 ```
 
 Only a completion completes a Feature. A completion that leaves a work item

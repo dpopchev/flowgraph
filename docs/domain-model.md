@@ -711,10 +711,7 @@ and its merge tool.
   started work item of its Feature, as in a record whose work items were
   started before their Feature was: `not started: S-0002 cannot start: F-0001
   starts one work item at a time, started already: S-0003`. One whose title
-  gives no slug. One under a blocked Feature (below). And one the branch of
-  the completed work item does not write, when `fgraph complete` is run on
-  that branch: `not started: S-0002 is not written here: the branch
-  wi/S-0001-<slug> writes S-0001 alone`.
+  gives no slug. One under a blocked Feature (below).
   `fgraph start S-0002` on `main` starts it once the refusal is gone.
 - A completion starts no work item when the Feature holds none in Backlog --
   the last one completes the Feature (below) -- when the work item stands
@@ -747,11 +744,14 @@ and its merge tool.
   item while the merge is held, so a Feature the record does not hold refuses
   it before `main` moves.
 - The Feature is saved before the work item, and on `main`: the file of a
-  Feature is no file of the branch of a work item (below), so `fgraph complete`
-  of the last work item run on that branch is refused with exit 2 and nothing
-  written, naming the Feature and the branch, `F-0001 is not written here:
-  the branch wi/S-0002-<slug> writes S-0002 alone`. `fgraph land` runs on
-  `main`, where it saves both.
+  Feature is no file of the branch of a work item (below). A work item
+  completes on `main` alone, as it starts there (B-0014): `fgraph complete`
+  of a work item run on its branch, or on any branch but `main`, is refused
+  with exit 2 and nothing written, `S-0002 completes on main, in <checkout>:
+  <worktree> is on wi/S-0002-<slug>`, so the next work item its completion
+  starts is started on `main`, and a work item is never left completed on its
+  branch for its landing to refuse. A Task completes anywhere. `fgraph land`
+  runs on `main`, where it saves both.
 - A started Feature is blocked and unblocked as a Task is (S-0056), the
   developer's words of 2026-11-21, "a Feature can be blocked": `fgraph block
   F-0001 --reason <why> --waiting-on <what>` takes a `StartedFeature` to a

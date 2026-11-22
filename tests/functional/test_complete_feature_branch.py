@@ -159,12 +159,13 @@ class TestTheLastStoryOfAStartedFeatureCompletedOnItsBranch:
     def refused(self, worktree: Path) -> Outcome:
         return fgraph(["complete", "S-0001", "--commit", "abc1234"], worktree)
 
-    def test_complete_exits_with_two_naming_the_feature_the_branch_does_not_write(
-        self, refused: Outcome
+    def test_complete_exits_with_two_naming_main_and_the_work_tree_on_it(
+        self, refused: Outcome, tmp_path: Path, worktree: Path
     ) -> None:
+        on_main = f"main, in {tmp_path / 'project'}"
         assert (refused.status, refused.err.splitlines()[-1]) == (
             2,
-            f"fgraph: error: F-0001 is not written here: the branch {BRANCH} writes S-0001 alone",
+            f"fgraph: error: S-0001 completes on {on_main}: {worktree} is on {BRANCH}",
         )
 
     def test_nothing_is_written(self, refused: Outcome, worktree: Path) -> None:

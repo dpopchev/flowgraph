@@ -66,6 +66,7 @@ from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, Now, l
 from flowgraph.scope import (
     NotOnMainError,
     OutOfScopeError,
+    check_complete_on_main,
     check_start_on_main,
     scope_in,
     within,
@@ -245,6 +246,8 @@ def _said(
     configuration is committed by the configuration it leaves, so one that turns the commits
     off is left uncommitted. Raises the refusal of the command, a git step refused among them.
     """
+    if args.command == "complete":
+        check_complete_on_main(args.id, record, open_git)
     if args.command == "start":
         check_slug_branched(args.id, args.slug, config.development.enabled, record / CONFIG)
         check_start_on_main(args.id, record, open_git)

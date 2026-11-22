@@ -11,21 +11,30 @@ expected = "the start a completion makes is held to main as any start of a work 
 
 [[tasks]]
 id = "T-0250"
-state = "backlog"
+state = "completed"
 title = "Probe each case of B-0014 as functional tests: a completion on a branch that is neither main nor of a work item starts and branches the next work item there, and a work item completed on its own branch is refused as completed already at its landing"
 expected_output = "changed: tests/functional/test_start_next_branch.py and tests/functional/test_complete_feature_branch.py state each case as wanted, each seen red"
 created = 2026-11-22 07:56:27+00:00
+started = 2026-11-22 07:56:30+00:00
+completed = 2026-11-22 07:57:34+00:00
+commit = "22d0dc4"
 
 [[tasks]]
 id = "T-0251"
-state = "backlog"
+state = "completed"
 title = "Hold the completion of a work item to main, as its start is, in src/flowgraph/scope.py and src/flowgraph/cli.py"
 expected_output = "changed: check_complete_on_main of src/flowgraph/scope.py, called by src/flowgraph/cli.py; tests/scope/test_start_on_main.py states it; the tests of the probe pass"
 created = 2026-11-22 07:56:27+00:00
+started = 2026-11-22 07:57:34+00:00
+completed = 2026-11-22 07:59:55+00:00
+commit = "d667a57"
 
 [[tasks]]
 id = "T-0252"
-state = "backlog"
+state = "completed"
 title = "Say in README.md and docs/domain-model.md that a work item completes on main alone, and its landing completes it"
 expected_output = "changed: README.md and docs/domain-model.md name the completion of a work item held to main"
 created = 2026-11-22 07:56:27+00:00
+started = 2026-11-22 07:59:56+00:00
+completed = 2026-11-22 08:01:56+00:00
+commit = "37f161c"

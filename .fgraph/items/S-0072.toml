@@ -1,10 +1,12 @@
 id = "S-0072"
-state = "started"
+state = "completed"
 title = "Raise the items and knowledge lines fgraph show of a term lists as about it from none to every one"
 description = "Part of F-0005. fgraph add and fgraph amend take --about for an item too. A term that is not in the record is refused, naming fgraph add term."
 parent = "F-0005"
 created = 2026-11-22 10:41:38+00:00
 started = 2026-11-22 16:55:18+00:00
+completed = 2026-11-22 17:08:53+00:00
+commit = "4752201"
 
 [criterion]
 given = "a record with a term and a Story"

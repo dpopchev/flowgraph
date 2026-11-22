@@ -1,9 +1,11 @@
 id = "F-0011"
-state = "started"
+state = "completed"
 title = "Raise the kinds of work item fgraph closes on a yes or a no from none to four"
 description = "From the note of the ~/.claude session of 2026-11-22 on the gaps of the planning skill (outputs: yes or no closing, and verify of delivery), filed and ordered on the word of the developer of that day: update the backlog and prioritize. Every work item ends on an answer -- Story: does the Then hold on the trunk; Bug: is the expected seen; Upkeep: does it still hold; Spike: its hypothesis, yes or no, beside its decision. Today the answer is a finding that starts with verified:, 17 of the 18 knowledge lines of this record on 2026-11-22."
 created = 2026-11-22 21:03:12+00:00
 started = 2026-11-22 22:43:16+00:00
+completed = 2026-11-22 23:47:43+00:00
+commit = "c5840c1"
 criteria = [
     "a developer answers whether a completed Story, Bug or Upkeep holds on the trunk, yes or no, with what the run printed",
     "a developer sees a no move nothing backwards: it files a Bug that amends the work item",

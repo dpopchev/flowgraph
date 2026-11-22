@@ -1,10 +1,12 @@
 id = "S-0062"
-state = "started"
+state = "completed"
 title = "Raise the kinds of knowledge line fgraph note keeps on a work item from 0 to 1, the finding"
 description = "Part of F-0003. One write and one commit of the record."
 parent = "F-0003"
 created = 2026-11-22 10:41:23+00:00
 started = 2026-11-22 10:51:48+00:00
+completed = 2026-11-22 11:07:56+00:00
+commit = "f8c8b78"
 
 [criterion]
 given = "a record with a Story"

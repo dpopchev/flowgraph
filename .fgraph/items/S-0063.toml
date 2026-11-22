@@ -1,9 +1,10 @@
 id = "S-0063"
-state = "backlog"
+state = "started"
 title = "Raise the kinds of knowledge line fgraph note keeps on a work item from 1 to 3, the decision and the deviation too"
 description = "Part of F-0003."
 parent = "F-0003"
 created = 2026-11-22 10:41:24+00:00
+started = 2026-11-22 11:07:57+00:00
 
 [criterion]
 given = "a record with a started Story"

@@ -1,0 +1,9 @@
+id = "F-0015"
+state = "backlog"
+title = "Raise the board 1 records a developer converts to a record of fgraph with one command from none to all seven"
+description = "From the note of the ~/.claude session of 2026-11-22 on the gaps of the planning skill (output: migration), filed and ordered on the word of the developer of that day: update the backlog and prioritize. The data of the note: one .board/ per repository -- board.toml, one Markdown file per item under items/ with a frontmatter, ledgers; ids E-nnn, W-nnn, T-nnn; states todo, doing, blocked, done, pruned; relations parent, depends_on, filed_during, amends, pre_empted_by. Seven repositories: ~/.claude, the largest with about 48 Epics, 667 work items and 1364 Tasks, and advent-of-code-2025, chaos-to-simple, gflow, stats, surrogate-models and svrf-parser under ~/projects; read through uv run ~/.claude/skills/board/scripts/board.py --root <repo> <command>; once per repository, at its migration. The map of the kinds is docs/domain-model.md, From board 1."
+created = 2026-11-22 21:04:08+00:00
+criteria = [
+    "a developer converts the .board/ of a repository to a .fgraph/ with one command, every item kept with its state and its relations",
+    "a developer finds an item of the new record by the id it held in the old one",
+]

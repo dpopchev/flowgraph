@@ -188,6 +188,9 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     )
     remove.add_argument("id", metavar="ID", help="the id of the work item or of the Feature")
     remove.add_argument("--reason", required=True, metavar="TEXT", help="why it is removed")
+    note = _command(commands, "note", "keep a finding on a work item, in any state")
+    note.add_argument("id", metavar="ID", help="the id of the work item")
+    note.add_argument("--finding", required=True, metavar="TEXT", help="what the work learned")
     reorder = _command(
         commands, "reorder", "put a work item or a Feature of the Backlog before another"
     )
@@ -232,6 +235,7 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         "complete": complete,
         "land": land,
         "remove": remove,
+        "note": note,
         "reorder": reorder,
         "status": status,
         "watch": watch,

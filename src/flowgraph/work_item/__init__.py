@@ -15,6 +15,7 @@ from flowgraph.work_item.commands import (
     block_task,
     complete_task,
     holder_of,
+    note_work_item,
     remove_work_item,
     start_task,
     start_work_item,
@@ -44,13 +45,11 @@ from flowgraph.work_item.model import (
     SaveWorkItem,
     StartedWorkItem,
     WorkItem,
-    WorkItemDetail,
     WorkItemFileError,
     WorkItemId,
     WorkItemIdError,
     WorkItemMismatchError,
     WorkItemNotFoundError,
-    WorkItemRow,
     WorkItemState,
     append_task,
     commit_sha,
@@ -59,6 +58,7 @@ from flowgraph.work_item.model import (
     make_work_item,
     make_work_item_id,
     next_work_item_id,
+    noted_work_item,
     parse_work_item_id,
     started_work_item,
     state_name,
@@ -72,6 +72,7 @@ from flowgraph.work_item.tasks import (
     started_task,
     unblocked_task,
 )
+from flowgraph.work_item.views import WorkItemDetail, WorkItemRow
 
 __all__ = [
     "STARTED",
@@ -116,6 +117,8 @@ __all__ = [
     "make_work_item",
     "make_work_item_id",
     "next_work_item_id",
+    "note_work_item",
+    "noted_work_item",
     "parse_work_item_id",
     "read_task_ids",
     "read_work_item",

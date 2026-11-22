@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import assert_never
 
 from flowgraph.criterion import Criterion, Evidence, criterion_parts
+from flowgraph.knowledge import KnowledgeKind, knowledge_row, make_knowledge_line
 from flowgraph.parent import STANDALONE, Parent, parent_text
 from flowgraph.record import Now
 from flowgraph.task import (
@@ -26,14 +27,13 @@ from flowgraph.work_item.model import (
     SaveWorkItem,
     StartedWorkItem,
     WorkItem,
-    WorkItemDetail,
     WorkItemId,
-    WorkItemRow,
     WorkItemState,
     append_task,
     commit_sha,
     make_work_item,
     next_work_item_id,
+    noted_work_item,
     parse_work_item_id,
     started_work_item,
     state_name,
@@ -42,6 +42,7 @@ from flowgraph.work_item.model import (
 )
 from flowgraph.work_item.removal import reason_of, removed_work_item
 from flowgraph.work_item.tasks import blocked_task, completed_task, started_task, unblocked_task
+from flowgraph.work_item.views import WorkItemDetail, WorkItemRow
 
 # The work item that holds the Task of that id, whole; raises TaskNotFoundError when none does.
 LoadHolder = Callable[[TaskId], WorkItemState]
@@ -96,6 +97,7 @@ def work_item_detail(item: WorkItemState) -> WorkItemDetail:
         commit=commit_sha(item),
         reason=reason_of(item),
         parent=parent_text(item.parent),
+        knowledge=[knowledge_row(line) for line in item.knowledge],
         **criterion_parts(item.criterion),
     )
 
@@ -277,3 +279,21 @@ def complete_task(
     item = load_holder(task_id)
     save_work_item(completed_task(item, task_id, now(), commit))
     return item.id
+
+
+def note_work_item(
+    *,
+    item_id: WorkItemId,
+    kind: KnowledgeKind,
+    text: str,
+    load_work_item: LoadWorkItem,
+    save_work_item: SaveWorkItem,
+    now: Now,
+) -> None:
+    """Keep a line of that kind and text on the work item of that id, in any state, and save it.
+
+    The line goes after the lines the item keeps. Raises WorkItemNotFoundError when the record
+    holds no such item and EmptyPartError when the text is blank; nothing is saved.
+    """
+    line = make_knowledge_line(kind, text, now())
+    save_work_item(noted_work_item(load_work_item(item_id), line))

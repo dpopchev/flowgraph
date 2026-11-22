@@ -16,7 +16,9 @@ itself. A record is layered by its configuration, `.fgraph/config.toml`: it
 turns the commits of the record off, and once it turns the development on,
 starting a work item also checks out its branch in a worktree of its own,
 completing an item names the commit that holds its work, and `fgraph land`
-lands it. `fgraph config` shows the configuration and sets a key of it.
+lands it. `fgraph config` shows the configuration and sets a key of it. A work
+item keeps the findings noted on it with `fgraph note`, in any state, and
+`fgraph show` lists them.
 
 | Part                            | State                                                    |
 | ------------------------------- | -------------------------------------------------------- |
@@ -31,6 +33,7 @@ lands it. `fgraph config` shows the configuration and sets a key of it.
 | git                             | every write of the record committed, unless turned off   |
 | the layers of a record          | `.fgraph/config.toml`: commits on, development off       |
 | the configuration               | every key shown and set by `fgraph config`               |
+| the knowledge of a work item    | findings noted by `fgraph note`, listed by `fgraph show` |
 | the development                 | once enabled: start branches, `fgraph land` lands        |
 | the ontology                    | not started                                              |
 | flowgraph tracking its own work | its Stories are in `.fgraph/` since 0.4.0                |
@@ -616,6 +619,30 @@ fgraph show S-0001
 A `--commit` given with the development off is still kept as the evidence,
 and status and show list it. The file of an item completed without a commit
 holds no `commit` key.
+
+A work item keeps what the work learned as lines of knowledge. `fgraph note`
+appends a finding to a work item in any state, Completed and Removed included,
+as one write and one commit of the record; `fgraph show` lists the lines after
+the Tasks, each with its kind, the date it was noted and its text, and no
+heading when there is none:
+
+```sh
+fgraph note S-0001 --finding "the file holds the lines in the order noted"
+# noted S-0001
+
+fgraph show S-0001
+# ...
+# Tasks (1)
+#   T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
+#     expected output  changed: src/flowgraph/cli.py gains the show command
+# Knowledge (1)
+#   finding  2026-11-22  the file holds the lines in the order noted
+```
+
+A line is never amended or removed. The id of a Task, an id the record does
+not hold and a blank text exit 2 and write nothing. With the development on, a
+started work item is noted in its worktree, as its Tasks are written, and every
+other one on `main`.
 
 A started Task that cannot go on is blocked, with the reason and who or what
 it waits on. It stays in InProgress and `fgraph show` lists it as blocked:

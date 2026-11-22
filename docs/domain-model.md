@@ -125,6 +125,13 @@ every type.
 `parent` is a Feature or standing alone for the four work items, and exactly
 one work item for a Task.
 
+A work item in any state also keeps its knowledge: the lines noted on it, in
+the order noted. A line holds its kind, its text and the time it was noted; the
+finding is the one kind so far, a sum type the next kinds extend. The text says
+something, so a blank one is refused where the line is built. A line is noted
+with `fgraph note` in Backlog, started, Completed or Removed alike, and is never
+amended or removed: it is added after the lines the item keeps already.
+
 ## States are types
 
 The state of an item is its type, so an item carries only what its state
@@ -541,6 +548,16 @@ and its merge tool.
   beside the fields it had in Backlog. Only a started Story's file may hold a
   started Task; it is read back through the moves that start them, so a file
   holds no state those moves could not reach.
+- A line of knowledge is one `[[knowledge]]` table inside the file of its work
+  item, in the order noted, with its `kind`, its `text` and its `noted` time. A
+  file without the table keeps none, and the table is read back whole in every
+  state. `fgraph note` writes it as one write and one commit, `chore: note
+  S-0001 in the record`, and says `noted S-0001`. With the development on, a
+  started work item is noted in its worktree, where its Tasks are written, and
+  every other one on `main`. The id of a Task, an id the record does not hold
+  and a blank text are refused, exit 2, nothing written. `fgraph show` lists the
+  lines under `Knowledge (n)` after the Tasks, each with its kind, its date and
+  its text, and no heading when there is none.
 - A blocked Task is kept as `state = "blocked"` with its `started` time, its
   `since` time, its `reason` and its `waiting_on`. Only a started work item's
   file may hold one, and it is read back through its start and its block.

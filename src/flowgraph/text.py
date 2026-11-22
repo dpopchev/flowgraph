@@ -195,7 +195,8 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     observed and expected, or a hypothesis with, once it is answered, its decision under it.
     A parent, a description, a commit and the reason of a removal are listed only when there is
     one, the bucket of a Task only once it has left Backlog. A blocked Task is listed in
-    InProgress as blocked, with its reason and what it waits on.
+    InProgress as blocked, with its reason and what it waits on. The knowledge lines follow, in
+    the order noted, each with its kind, its date and its text; there is no heading without one.
     """
     bucket = next(name for name, states in BUCKETS if detail.state in states)
     under = [f"  parent       {detail.parent}\n"] if detail.parent else []
@@ -235,4 +236,8 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
         lines.append(f"    expected output  {task.expected_output}\n")
         if task.description:
             lines.append(f"    description      {task.description}\n")
+    if detail.knowledge:
+        lines.append(f"Knowledge ({len(detail.knowledge)})\n")
+        for line in detail.knowledge:
+            lines.append(f"  {line.kind}  {line.noted.date().isoformat()}  {line.text}\n")
     return "".join(lines)

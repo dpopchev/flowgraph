@@ -588,8 +588,8 @@ its count and each linked item is one line, its id, its bucket and its title.
   them, to any depth, nearest first. It ends on a term already reached, so a cycle ends
   it. A line or an item reached through another term is marked with that term, `(via
   lane)`; each is listed once, under the nearest term, so one about the named term
-  itself is never marked. A word that is no id and no term of the record is refused,
-  exit 2, naming both. This is what a term as a node answers and a tag could not: a
+  itself is never marked. A word that is no id, no term of the record and no file is refused,
+  exit 2, naming the three. This is what a term as a node answers and a tag could not: a
   tag is matched by its own name, a relation to the whole is not followed.
 - A text that is no id and no term name, or a term name the record holds no term of,
   is read as the path of a file when it is a file from the directory fgraph runs in.

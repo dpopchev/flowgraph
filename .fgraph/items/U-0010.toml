@@ -56,12 +56,14 @@ commit = "85a631b"
 
 [[tasks]]
 id = "T-0323"
-state = "started"
+state = "completed"
 title = "Lower MAX_LINES of mk/python.mk from 400 to 250 and break each module above it by one cohesive part"
 description = "On 2026-11-22 thirteen modules are above 250 lines, cli.py at 400 the longest; the count is taken again when the Task starts. cli.py stays the module of the entry point and is shortened as the others are."
 expected_output = "changed: mk/python.mk holds MAX_LINES := 250 and make check passes; each module that was above 250 lines is broken by one cohesive part into modules of its subpackage, each named in its commit; no name another subpackage imports changes its meaning, and every command of fgraph prints what it printed before"
 created = 2026-11-22 10:48:31+00:00
 started = 2026-11-22 21:36:26+00:00
+completed = 2026-11-22 22:09:52+00:00
+commit = "a36df27"
 
 [[tasks]]
 id = "T-0324"

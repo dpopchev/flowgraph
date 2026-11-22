@@ -160,11 +160,14 @@ def status_item(store: Store, top: int | None = None) -> str:
     last work item to reach it, a completed one by its own completed time; Removed by kind and
     number, a work item of a Feature too, then the removed Features by number. A removed
     Feature is listed in place of its work items as any other: they were removed with it, or
-    before it, and are on no line. Under a top each heading lists that many, the first ones.
+    before it, and are on no line. A work item under a Feature the record does not hold, as a
+    file edited by hand names, is listed as one standing alone, since no line of a Feature lists
+    it. Under a top each heading lists that many, the first ones.
     """
     rows = rows_by_id(store)
     features = _placed_features(store, rows.values())
-    alone = {item_id: row for item_id, row in rows.items() if not row.parent}
+    held = {row.id for _, row in features}
+    alone = {item_id: row for item_id, row in rows.items() if row.parent not in held}
     backlog = _backlog_lines(alone, features)
     started = [row for row in alone.values() if row.state == STARTED]
     completed = [row for row in alone.values() if row.state == COMPLETED]

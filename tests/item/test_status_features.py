@@ -131,6 +131,22 @@ def test_a_work_item_under_a_feature_placed_in_the_queue_is_listed_on_no_line() 
     ]
 
 
+def test_a_work_item_under_a_feature_the_record_does_not_hold_is_listed_in_its_bucket() -> None:
+    rows = [
+        story(1, "backlog", "F-0009"),
+        story(2, "started", "F-0009", started=DAY[2]),
+        story(3, "completed", "F-0009", completed=DAY[3]),
+    ]
+    assert status_item(store(rows, [])) == (
+        "Backlog (1)\n"
+        "  S-0001  title 1\n"
+        "InProgress (1)\n"
+        "  S-0002  0/0 T  title 2\n"
+        "Completed (1)\n"
+        "  S-0003  abc1234  title 3\n"
+    )
+
+
 def test_a_feature_placed_in_the_queue_that_left_the_backlog_is_listed_once_under_its_bucket() -> (
     None
 ):

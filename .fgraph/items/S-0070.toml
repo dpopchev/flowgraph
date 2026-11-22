@@ -13,11 +13,12 @@ then = "fgraph terms lists the term, and fgraph show of its name prints its mean
 
 [[tasks]]
 id = "T-0290"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_add_term.py, failing on the criterion of S-0070"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_add_story.py does. Seen red, then marked a strict xfail naming S-0070 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_add_term.py states that, on a record, fgraph add term with a name and --means with its meaning exits 0, fgraph terms lists the term, and fgraph show of its name prints its meaning"
 created = 2026-11-22 10:47:52+00:00
+started = 2026-11-22 16:18:30+00:00
 
 [[tasks]]
 id = "T-0291"

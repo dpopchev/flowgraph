@@ -26,7 +26,7 @@ A type exists because the work ends differently, never because of its size.
 |---|---|---|
 | `Story` | new behavior | the behavior is on `main` |
 | `Bug` | a behavior that fails | the fixed behavior is on `main` |
-| `Spike` | a question to answer | the decision is written |
+| `Spike` | a question to answer | the decision and the yes or no are written |
 | `Upkeep` | work that keeps the behavior and changes the inside | the behavior is proven unchanged on `main` |
 
 A `Feature` groups work items toward one bigger outcome. It is not worked on
@@ -183,7 +183,8 @@ needs. The same five exist for `Story`, `Bug`, `Spike`, `Upkeep` and `Task`;
 | `CompletedStory` | Completed | completed on, evidence |
 | `RemovedStory` | Removed | removed on, reason, superseded by or none |
 
-`CompletedSpike` also adds the decision, which answers its hypothesis.
+`CompletedSpike` also adds the decision, which answers its hypothesis, and the
+answer, yes or no, which a Spike completed before it was taken lacks.
 
 A kind whose criterion and payload match another's shares its state types and
 names them as its own: `Story` and `Upkeep` are both `WorkItem`, told apart
@@ -798,7 +799,9 @@ commit, a Task as a work item.
   or `NoCommit`, `src/flowgraph/criterion/model.py`): no commit is a value of the
   evidence, not a missing one, as standing alone is a value of `parent`.
 - A Spike is completed with its decision either way: the decision answers its
-  hypothesis and stands beside the commit or none.
+  hypothesis and stands beside the commit or none, and beside the answer, yes
+  or no. A no is a completion as a yes is: nothing is refused for it and no Bug
+  is filed.
 - `fgraph land` is part of the development and completes the work item at
   the commit the landing leaves `main` on -- its merge commit, its squash
   commit or the tip of the branch, by `[development] merge` -- so a landed
@@ -971,13 +974,21 @@ and its merge tool.
   refused when it is read.
 - A Spike is kept as `items/Q-0001.toml`, its criterion table holding its
   `hypothesis`. It is completed with the decision that answers it,
-  `fgraph complete Q-0001 --commit SHA --decision TEXT`, the commit given as
-  the development needs it (Evidence), and `fgraph land` takes `--decision`
-  the same way; the decision is kept beside the hypothesis it answers, as
-  `decision` in the criterion table. A Spike is not completed without its
-  decision, no other kind and no Task takes one, and a file that holds a
-  decision before the Spike is completed is refused. That the hypothesis
-  reads as a yes/no question is not checked.
+  `fgraph complete Q-0001 --commit SHA --decision TEXT --answer yes|no`, the
+  commit given as the development needs it (Evidence), and `fgraph land` takes
+  `--decision` and `--answer` the same way; the decision and the answer are
+  kept beside the hypothesis they answer, as `decision` and `answer` in the
+  criterion table. A Spike is not completed without its decision or its
+  answer, no other kind and no Task takes one, and a file that holds a
+  decision before the Spike is completed is refused. A file of a Spike
+  completed before the answer was taken holds none and is read as before; a
+  file that holds an answer other than yes or no is refused naming the file.
+  `fgraph show` lists the answer under the decision, and `fgraph knowledge`
+  lists the decision with its answer. The answer is a type of its own
+  (`Reply`, with the `Decision` that carries it, `src/flowgraph/criterion/model.py`),
+  not the `Verdict` of `fgraph verify`, which answers the closing of a Story, a
+  Bug or an Upkeep and refuses a Spike. That the hypothesis reads as a yes/no
+  question is not checked.
 - The Story, the Upkeep, the Bug and the Spike share one work item
   (`src/flowgraph/work_item/`): its state types (`WorkItem`,
   `StartedWorkItem`, `CompletedWorkItem`, `RemovedWorkItem`), its moves, its
@@ -987,7 +998,8 @@ and its merge tool.
   Story tells itself from an Upkeep by its id. A work item carries the
   criterion its kind takes: a `Scenario`, its Given / When / Then; a
   `Defect`, what is observed and expected; or a `Hypothesis`, which its
-  completion turns into an `Answer`, the hypothesis with its decision. Each
+  completion turns into an `Answer`, the hypothesis with its decision and its
+  yes or no. Each
   kind keeps only its kind, its id functions and those names; the kinds are
   listed once, in `src/flowgraph/record/store.py`.
 - An amend rewrites the parts of the criterion the work item has: `--given`,

@@ -100,6 +100,7 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
         "expected": detail.expected,
         "hypothesis": detail.hypothesis,
         "decision": detail.decision,
+        "answer": detail.answer,
     }
     lines = [
         f"{detail.id}  {detail.title}\n",

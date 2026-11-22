@@ -29,6 +29,7 @@ TASK_DONE = ["complete", "T-0001", "--commit", "abc1234"]
 SPIKE_DONE = [
     *("complete", "Q-0001", "--commit", "def5678"),
     *("--decision", "yes: one file per work item, its Tasks inside"),
+    *("--answer", "yes"),
 ]
 
 

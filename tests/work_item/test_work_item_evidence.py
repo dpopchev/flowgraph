@@ -10,6 +10,7 @@ from flowgraph.criterion import (
     NO_COMMIT,
     Answer,
     CommitError,
+    Decision,
     Evidence,
     Hypothesis,
     evidence_text,
@@ -66,7 +67,7 @@ SETTLED = completed_work_item(
     ),
     ON,
     NO_COMMIT,
-    "yes, one file",
+    Decision("yes, one file", "yes"),
 )
 FILE = Path("items") / "CH-0001.toml"
 
@@ -118,7 +119,7 @@ def test_a_work_item_completed_without_a_commit_names_no_sha() -> None:
 @pytest.mark.model
 def test_a_hypothesis_completed_without_a_commit_holds_its_decision_beside_none() -> None:
     assert (SETTLED.criterion, SETTLED.commit) == (
-        Answer("Can one file hold the record?", "yes, one file"),
+        Answer("Can one file hold the record?", "yes, one file", "yes"),
         NO_COMMIT,
     )
 

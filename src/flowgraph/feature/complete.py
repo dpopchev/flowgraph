@@ -10,7 +10,7 @@ Backlog leaves it started. It runs on the store of a record, as the commands of 
 from typing import assert_never
 
 from flowgraph import work_item
-from flowgraph.criterion import Evidence
+from flowgraph.criterion import Decision, Evidence
 from flowgraph.feature import (
     DONE,
     BlockedFeature,
@@ -57,7 +57,7 @@ def completed_with(done: CompletedWorkItem, store: Store) -> CompletedFeature | 
 
 
 def complete_with_feature(
-    item_id: WorkItemId, commit: Evidence, decision: str | None, store: Store, now: Now
+    item_id: WorkItemId, commit: Evidence, decision: Decision | None, store: Store, now: Now
 ) -> FeatureId | None:
     """Complete the work item of that id now, and its Feature with it when it is the last.
 

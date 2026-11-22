@@ -12,3 +12,8 @@ criteria = [
 kind = "decision"
 text = "Relayed by the note of the ~/.claude session of 2026-11-22, as the word of the developer of that day: a Feature may hold work items whose criterion is none of its criteria."
 noted = 2026-11-22 21:04:38+00:00
+
+[[knowledge]]
+kind = "finding"
+text = "open: --realizes is the word of the sender of the note; and a Feature completed while a criterion of it is realized by no work item -- refused, warned or silent -- is not decided."
+noted = 2026-11-22 21:04:41+00:00

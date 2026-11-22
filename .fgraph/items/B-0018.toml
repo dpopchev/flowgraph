@@ -1,9 +1,11 @@
 id = "B-0018"
-state = "started"
+state = "completed"
 title = "Raise the kinds the refusals of fgraph start, complete, amend and remove name for a wrong id from the work items alone to the Feature too"
 description = "Found during T-0217 of B-0003 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. Of the family of B-0003 and B-0015. Widened to fgraph complete on 2026-11-22, when its Tasks were written, on the developer's go."
 created = 2026-11-22 06:16:13+00:00
 started = 2026-11-22 09:26:42+00:00
+completed = 2026-11-22 09:41:09+00:00
+commit = "598b50c"
 
 [criterion]
 observed = "fgraph amend X-1 and fgraph remove X-1 say 'X-1' is no Story, Upkeep, Bug or Spike id, fgraph start X-1 and fgraph complete X-1 say it is no Story, Upkeep, Bug, Spike or Task id, and each says F-0000 is no work item id, though each takes a Feature since F-0002"

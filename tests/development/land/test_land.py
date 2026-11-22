@@ -11,7 +11,8 @@ import pytest
 from flowgraph.criterion import make_commit, make_scenario
 from flowgraph.development import GateError, GitError, RunGate
 from flowgraph.development.commit import LandingSteps, Said, WorkTree
-from flowgraph.development.land import LandError, land_item
+from flowgraph.development.land import land_item
+from flowgraph.development.way import LandError
 from flowgraph.feature import FeatureNotFoundError, make_feature, started_feature
 from flowgraph.item.commands import Store
 from flowgraph.parent import FeatureId, make_feature_id

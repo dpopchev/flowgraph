@@ -13,8 +13,9 @@ from functools import partial
 from pathlib import Path
 from typing import Never
 
-from flowgraph.development import branch
-from flowgraph.development.branch import GitError, branch_of
+from flowgraph.development import git
+from flowgraph.development.branch import branch_of
+from flowgraph.development.git import GitError
 from flowgraph.item.commands import ToBranch, Written
 from flowgraph.record import Config
 from flowgraph.record.store import Store
@@ -110,29 +111,29 @@ class Said:
 
 def open_git(directory: Path) -> WorkTree | None:
     """The git work tree the directory is inside, its steps run by git; None when in none."""
-    top = branch.work_tree_of(directory)
+    top = git.work_tree_of(directory)
     if top is None:
         return None
     return WorkTree(
         path=top,
-        commit_files=partial(branch.commit_files, top),
-        add_worktree=partial(branch.add_worktree, top),
-        current_branch=partial(branch.current_branch, top),
-        find_branches=partial(branch.branches_like, top),
-        find_worktree=partial(branch.worktree_of_branch, top),
-        find_worktrees=partial(branch.worktrees, top),
-        ignores=partial(branch.ignores, top),
-        changed_files=partial(branch.changed_files, top),
+        commit_files=partial(git.commit_files, top),
+        add_worktree=partial(git.add_worktree, top),
+        current_branch=partial(git.current_branch, top),
+        find_branches=partial(git.branches_like, top),
+        find_worktree=partial(git.worktree_of_branch, top),
+        find_worktrees=partial(git.worktrees, top),
+        ignores=partial(git.ignores, top),
+        changed_files=partial(git.changed_files, top),
         landing=LandingSteps(
-            merge=partial(branch.merge_uncommitted, top),
-            abort_merge=partial(branch.abort_merge, top),
-            commit_merge=partial(branch.commit_merge, top),
-            commit_squash=partial(branch.commit_squash, top),
-            can_fast_forward=partial(branch.can_fast_forward, top),
-            fast_forward=partial(branch.fast_forward, top),
-            remove_worktree=partial(branch.remove_worktree, top),
-            delete_branch=partial(branch.delete_branch, top),
-            delete_unmerged_branch=partial(branch.delete_unmerged_branch, top),
+            merge=partial(git.merge_uncommitted, top),
+            abort_merge=partial(git.abort_merge, top),
+            commit_merge=partial(git.commit_merge, top),
+            commit_squash=partial(git.commit_squash, top),
+            can_fast_forward=partial(git.can_fast_forward, top),
+            fast_forward=partial(git.fast_forward, top),
+            remove_worktree=partial(git.remove_worktree, top),
+            delete_branch=partial(git.delete_branch, top),
+            delete_unmerged_branch=partial(git.delete_unmerged_branch, top),
         ),
     )
 

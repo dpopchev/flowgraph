@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph.development.branch import GitError, add_worktree, commit_files, ignores, work_tree_of
+from flowgraph.development.git import GitError, add_worktree, commit_files, ignores, work_tree_of
 
 pytestmark = pytest.mark.edge
 

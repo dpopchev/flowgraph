@@ -8,9 +8,9 @@ from flowgraph.criterion import (
     EmptyPartError,
 )
 from flowgraph.development import GateError, GitError, SlugError
-from flowgraph.development.land import LandError
 from flowgraph.development.parallel import ParallelError
 from flowgraph.development.scope import NotOnMainError, OutOfScopeError
+from flowgraph.development.way import LandError
 from flowgraph.feature import FeatureFileError, FeatureNotFoundError, NoCriterionError
 from flowgraph.feature.item import OpenWorkItemError
 from flowgraph.feature.start import FeatureNotStartedError, NoWorkItemError, WorkItemInProgressError

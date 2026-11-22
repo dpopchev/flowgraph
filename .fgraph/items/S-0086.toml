@@ -1,0 +1,14 @@
+id = "S-0086"
+state = "backlog"
+title = "Raise the items fgraph status names as the next to start from none to one"
+description = "The words of the note: the next item that can start. A view of fgraph status: no next command is added."
+parent = "F-0008"
+created = 2026-11-22 21:02:06+00:00
+depends_on = [
+    "S-0085",
+]
+
+[criterion]
+given = "a Backlog whose first item waits for a work item that is not completed and whose second waits for nothing"
+when = "fgraph status is run"
+then = "it names the second as the next to start"

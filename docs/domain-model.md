@@ -139,9 +139,10 @@ other work items. A relation is a typed reference stored on the item that names
 it, as the `parent` is, never on the item it names: the other side is derived
 by a view over the record, so a write is one file and the scope of a branch
 holds. The relations of an item are one value with a field per kind of
-relation, so a new kind is a new field. The first is `depends on`: the work
-items of any kind it waits for, none by default, each once, in the order given.
-A work item that names itself is refused where its relations are built.
+relation, so a new kind is a new field. `depends on` is the work items of any
+kind it waits for, none by default, each once, in the order given;
+`filed during` is the one work item it was found during, none by default. A
+work item that names itself in either is refused where its relations are built.
 
 A Feature keeps its knowledge lines as a work item does, in each of its five
 states, and they stay on it through every move and every amend. A Task keeps
@@ -485,6 +486,27 @@ and `--depends-on none` alone takes them all away.
   depends on none. The file holds the ids as `depends_on = ["S-0001"]`, only
   when there is one, read back in every state; an id of no kind, or the work
   item itself, makes the file refused when it is read.
+
+## Filed during
+
+A work item names the work item it was found during, the reading of S-0067:
+`fgraph add --filed-during ID` of a Story, an Upkeep, a Bug or a Spike, one id
+of any kind of work item, in any state but Removed. A Task and a Feature take
+none.
+
+- It is given at the add alone: when a work item was found does not change, so
+  `fgraph amend` does not take `--filed-during`, and an amend keeps it.
+- The ids are checked at the add, which is refused with exit 2, nothing written:
+  an id of a kind no work item has, `no Story S-0009 in the record` for one the
+  record does not hold, `a work item cannot be filed during S-0001: it is
+  removed`.
+- Which side is stored: the work item that was found keeps the id, as
+  `filed_during = "S-0001"` in its file, only when there is one, read back in
+  every state. The other side is derived: `fgraph show` of the work item found
+  during lists `filed here` with the id of each work item that names it, in the
+  order of the record, read from the record and stored nowhere.
+- `fgraph show` of the work item that was found lists `filed during` with the
+  id, after the work items it depends on, and lists none without one.
 
 ## Evidence
 

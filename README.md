@@ -30,7 +30,7 @@ lists the lines of the whole record.
 | the kinds of work item          | Story, Upkeep, Bug, Spike                                |
 | the level above                 | a Feature groups work items, takes each operation of one |
 | the order of the Backlog        | a queue, reordered by `fgraph reorder`, Features too     |
-| the relations of a work item    | `--depends-on`: its start waits for the work items named |
+| the relations of a work item    | `--depends-on` it waits for, `--filed-during` it found   |
 | the wording of a work item      | `fgraph amend` in Backlog: parent too, a Feature's too   |
 | git                             | every write of the record committed, unless turned off   |
 | the layers of a record          | `.fgraph/config.toml`: commits on, development off       |
@@ -159,6 +159,34 @@ on it, directly or through others, are refused at the write with exit 2, and
 nothing is written. The start of a Feature starts its first work item, and the
 next work item a completion starts is that of its Feature: both are refused as
 the start of that work item is, and say so.
+
+A work item can name the one it was found during: `--filed-during ID` of
+`fgraph add`, of every kind of work item, once. The other work item has no
+say in it, and `fgraph show` lists it from both sides, the second read from the
+record:
+
+```sh
+fgraph add bug "Cut the traceback fgraph prints on a blank title from 1 to 0" \
+  --observed "it prints a traceback" --expected "it exits 2 and names the title" \
+  --filed-during S-0001
+# added B-0001
+
+fgraph show B-0001
+# B-0001  Cut the traceback fgraph prints on a blank title from 1 to 0
+#   bucket       Backlog
+#   filed during S-0001
+#   ...
+
+fgraph show S-0001
+# S-0001  ...
+#   bucket       InProgress
+#   filed here   B-0001
+#   ...
+```
+
+An id that is no work item of the record and a removed work item are refused
+with exit 2, and nothing is written. `fgraph amend` does not take it: when a
+work item was found does not change.
 
 The prefix `S` of a Story is one letter, as that of every other kind, since
 the developer's choice of 2026-11-21: `Q` for the Spike left `S` to the

@@ -24,12 +24,14 @@ commit = "54fd168"
 
 [[tasks]]
 id = "T-0291"
-state = "started"
+state = "completed"
 title = "Create src/flowgraph/term.py holding the Term and the file that keeps it"
 description = "New code the next Task runs. A term is a node of the record, not a tag on a knowledge line. It has no flow: it is in no bucket and no queue."
 expected_output = "created: src/flowgraph/term.py holds the Term -- its name, its meaning and the time it was added -- built by its constructor alone: a name is lowercase words of letters and digits joined by -, and it is the id of the term; a blank meaning and a name that reads as the id of an item, F-0001 or S-0001, are refused; one file per term, terms/<name>.toml in the record, written checked and read back whole, a file that holds no term refused naming it; tests/term/ states each"
 created = 2026-11-22 10:47:53+00:00
 started = 2026-11-22 16:18:44+00:00
+completed = 2026-11-22 16:23:09+00:00
+commit = "5784592"
 
 [[tasks]]
 id = "T-0292"

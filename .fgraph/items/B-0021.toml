@@ -24,3 +24,10 @@ title = "Carry the state of a Task on its node in fgraph graph"
 description = "Removes the xfail mark of tests/functional/test_graph_task_state.py. Written on 2026-11-22 against the modules of that day, before U-0010 moves them: they are taken again when the Task starts. A module of src/ that would pass the line limit of mk/python.mk is split by one cohesive part, named in the commit."
 expected_output = "changed: the node of a Task in fgraph graph carries its state in place of bucket null: its bucket, and whether an InProgress one is started or blocked, under keys chosen in the Task; the node of a work item, of a Feature and of a term is what it was; two runs print the same bytes"
 created = 2026-11-22 21:02:25+00:00
+
+[[tasks]]
+id = "T-0345"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to show the state of a Task node of fgraph graph"
+expected_output = "changed: README.md shows a Task node with its state; docs/domain-model.md, Graph, says what a Task node carries"
+created = 2026-11-22 21:02:26+00:00

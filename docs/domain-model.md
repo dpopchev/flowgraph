@@ -563,10 +563,24 @@ names it stores, the other side derived from the record:
 | Relation | Stored on | Derived side | Move that reads it |
 |---|---|---|---|
 | `parent` | the work item, as `parent`, the Feature it is under | the work items of a Feature | the start of the Feature, which starts its first work item |
-| `depends on` | the work item, as `depends_on` | none listed | the start of the work item, refused while one is not completed |
+| `depends on` | the work item, as `depends_on` | `depended on by` in the about of the other | the start of the work item, refused while one is not completed |
 | `filed during` | the work item, as `filed_during` | `filed here` in the show of the other | none |
 | `superseded by` | the removed work item, as `superseded_by` | `supersedes` in the show of the other | none |
 | `amends` | the work item, as `amends` | `amended by` in the show of the other | none |
+
+## About
+
+`fgraph about ID` is a view of the links of an item: it reads the record as plain data
+and writes nothing, and every other side of a relation is derived from the record, as
+`fgraph show` derives it. A relation that holds nothing is not listed. Each heading carries
+its count and each linked item is one line, its id, its bucket and its title.
+
+- A work item lists, in this order: `feature`, `depends on`, `depended on by`,
+  `filed during`, `filed here`, `supersedes`, `superseded by`, `amends`, `amended by`,
+  `terms` and `knowledge`. A term is one line of its name and its meaning, a knowledge
+  line one of its kind, its day and its text.
+- A Feature lists `work items`, `terms` and `knowledge`.
+- An id that `fgraph show` refuses is refused in the same words, exit 2.
 
 ## Terms
 

@@ -13,23 +13,32 @@ then = "it lists its Feature, what it depends on, what was filed during it, what
 
 [[tasks]]
 id = "T-0300"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_about_item.py, failing on the criterion of S-0073"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_feature.py does. Seen red, then marked a strict xfail naming S-0073 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_about_item.py states that, on a record with a Story that has a Feature, a work item it depends on, a knowledge line and a term, fgraph about with the id of the Story exits 0 and lists its Feature, what it depends on, its term and its knowledge line, each under its relation"
 created = 2026-11-22 10:48:04+00:00
+started = 2026-11-22 17:10:20+00:00
+completed = 2026-11-22 17:16:41+00:00
+commit = "d87df63"
 
 [[tasks]]
 id = "T-0301"
-state = "backlog"
+state = "completed"
 title = "Add the about command to fgraph, listing the links of an item, in src/flowgraph/about.py"
 description = "Removes the xfail mark of tests/functional/test_about_item.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph about ID lists, for a work item, each relation that holds under a heading of its own with its count: its Feature, the work items it depends on and those that depend on it, the one it was filed during and those filed during it, what it supersedes or is superseded by, what it amends or is amended by, its terms and its knowledge lines; a relation with nothing is not listed; for a Feature it lists its work items, its terms and its knowledge lines; each linked item is one line, its id, its bucket and its title; it is a view in src/flowgraph/about.py that reads the record as plain data and writes nothing; a wrong id is refused as fgraph show refuses it; fgraph about --help prints its menu"
 created = 2026-11-22 10:48:05+00:00
+started = 2026-11-22 17:16:45+00:00
+completed = 2026-11-22 17:25:51+00:00
+commit = "aa53085"
 
 [[tasks]]
 id = "T-0302"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph about lists the links of an item"
 expected_output = "changed: README.md shows fgraph about on a work item with several relations, and its Status table names the questions fgraph answers; docs/domain-model.md says what about lists for a work item and for a Feature, in which order, and that it derives every other side from the record"
 created = 2026-11-22 10:48:06+00:00
+started = 2026-11-22 17:25:52+00:00
+completed = 2026-11-22 17:29:10+00:00
+commit = "1523e6d"

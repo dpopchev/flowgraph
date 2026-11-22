@@ -8,7 +8,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass, field
 from datetime import datetime
 
-from flowgraph.about import term_asked
+from flowgraph.about_terms import term_asked
 from flowgraph.feature import feature_detail
 from flowgraph.knowledge import (
     DECISION,

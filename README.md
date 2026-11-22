@@ -21,7 +21,9 @@ item, and a Feature, keeps the findings, decisions and deviations noted on it wi
 `fgraph note`, in any state, and `fgraph show` lists them. `fgraph knowledge`
 lists the lines of the whole record. A term of the project, a word with what it
 means, is added with `fgraph add term`, listed by `fgraph terms` and shown by
-`fgraph show` of its name.
+`fgraph show` of its name. `fgraph about` answers what an item is linked to: it
+lists the Feature, the work items, the terms and the knowledge lines of a work
+item or a Feature, each under its relation.
 
 | Part                            | State                                                    |
 | ------------------------------- | -------------------------------------------------------- |
@@ -42,6 +44,7 @@ means, is added with `fgraph add term`, listed by `fgraph terms` and shown by
 | the knowledge of an item        | lines noted by `fgraph note` on a work item or a Feature |
 | the knowledge of the record     | every line listed by `fgraph knowledge`, newest first    |
 | the development                 | once enabled: start branches, `fgraph land` lands        |
+| the links of an item            | `fgraph about` lists every relation, both sides, by id   |
 | the ontology                    | started: terms, related by is-a and part-of              |
 | flowgraph tracking its own work | its Stories are in `.fgraph/` since 0.4.0                |
 
@@ -90,6 +93,24 @@ fgraph show S-0001          # about  lane, and the line: decision  2026-11-22  a
 fgraph show gate            # gate, with the lines: items  S-0001, knowledge  S-0001  decision  2026-11-22  a gate runs on main
 fgraph knowledge --about gate
 # 2026-11-22  decision  S-0001  a gate runs on main  (about gate, lane)
+```
+
+`fgraph about` lists every link of an item in one view, each relation under a
+heading with its count and each linked item on a line of its id, its bucket and
+its title. A work item with a Feature, a work item it depends on, one filed
+during it and a term:
+
+```sh
+fgraph about S-0002
+# S-0002  Hold the landing
+#   feature (1)
+#     F-0001  InProgress  Land work safely
+#   depends on (1)
+#     S-0001  Completed  Run the gate
+#   filed here (1)
+#     S-0003  Backlog  Name the lane of a landing
+#   terms (1)
+#     gate  a check every deliverable passes before it lands
 ```
 
 ## Use

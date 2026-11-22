@@ -26,6 +26,7 @@ COMMANDS = [
     ("add", "term"),
     ("amend",),
     ("show",),
+    ("about",),
     ("start",),
     ("block",),
     ("unblock",),

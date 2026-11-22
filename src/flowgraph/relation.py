@@ -94,6 +94,11 @@ def amended_by(item: str, record: Mapping[str, Standing]) -> list[str]:
     return [named for named, standing in record.items() if standing.amends == item]
 
 
+def depended_on_by(item: str, record: Mapping[str, Standing]) -> list[str]:
+    """The ids of the work items of the record that depend on the item, in the record's order."""
+    return [named for named, standing in record.items() if item in standing.depends_on]
+
+
 def superseding(item: str, record: Mapping[str, Standing]) -> list[str]:
     """The ids of the work items of the record the item supersedes, in the order of the record."""
     return [named for named, standing in record.items() if standing.superseded_by == item]

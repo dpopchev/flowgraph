@@ -27,12 +27,14 @@ commit = "7f42ce0"
 
 [[tasks]]
 id = "T-0350"
-state = "started"
+state = "completed"
 title = "Run the check of a Task at its complete and refuse a failing one"
 description = "Removes the xfail mark of tests/functional/test_complete_task_check.py. Written on 2026-11-22 against the modules of that day, before U-0010 moves them: they are taken again when the Task starts. A module of src/ that would pass the line limit of mk/python.mk is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph complete of a Task that holds a check runs it in the worktree of its work item, through a runner injected as the gate of a landing is; a status other than 0 refuses the complete with exit 2 and one line naming the Task, the command and the status, and writes nothing; what the check printed reaches the terminal; a status of 0 completes the Task as before; a Task that holds no check completes as before"
 created = 2026-11-22 21:02:42+00:00
 started = 2026-11-22 23:04:01+00:00
+completed = 2026-11-22 23:09:13+00:00
+commit = "0d1c32e"
 
 [[tasks]]
 id = "T-0351"

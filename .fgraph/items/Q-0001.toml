@@ -1,0 +1,9 @@
+id = "Q-0001"
+state = "backlog"
+title = "Settle whether every item of a board 1 record converts to an item of fgraph with nothing the planning skill reads lost"
+description = "Read the seven records through the board script, never their files. Its Tasks are written when it is ordered."
+parent = "F-0015"
+created = 2026-11-22 21:04:10+00:00
+
+[criterion]
+hypothesis = "Does every Epic, work item and Task of the seven .board/ records -- its kind, state, relations, criterion and knowledge -- map to a Feature, a work item or a Task of fgraph, with no field the planning skill reads lost?"

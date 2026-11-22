@@ -100,6 +100,7 @@ def test_every_command_kind_under_add_and_action_under_config_has_its_help() -> 
             ("land",),
             ("note",),
             ("relate",),
+            ("release",),
             ("remove",),
             ("reorder",),
             ("show",),

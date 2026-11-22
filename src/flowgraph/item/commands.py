@@ -183,9 +183,15 @@ def remove_item(
 
 
 def write_task(
-    parent: str, title: str, expected_output: str, description: str, store: Store, now: Now
+    parent: str,
+    title: str,
+    expected_output: str,
+    description: str,
+    store: Store,
+    now: Now,
+    check: str | None = None,
 ) -> Written:
-    """Write a Task for the work item named as parent; what the write says.
+    """Write a Task for the work item named as parent, with its check when given; what it says.
 
     Its id is the next free one across every kind. Raises WorkItemIdError when the parent is the
     id of no kind, WorkItemNotFoundError when the record holds no such item,
@@ -202,6 +208,7 @@ def write_task(
         find_task_ids=store.find_task_ids,
         save_work_item=store.save_work_item,
         now=now,
+        check=check,
     )
     task = task_id_text(written)
     message = MESSAGE.format(f"add {task} of {work_item_id_text(holder)}")

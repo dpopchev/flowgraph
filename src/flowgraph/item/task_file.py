@@ -33,6 +33,7 @@ class TaskFile(BaseModel):
     state: Literal["backlog"]
     title: str
     description: str = ""
+    check: str | None = None
     expected_output: str
     created: datetime
 
@@ -46,6 +47,7 @@ class StartedTaskFile(BaseModel):
     state: Literal["started"]
     title: str
     description: str = ""
+    check: str | None = None
     expected_output: str
     created: datetime
     started: datetime
@@ -60,6 +62,7 @@ class BlockedTaskFile(BaseModel):
     state: Literal["blocked"]
     title: str
     description: str = ""
+    check: str | None = None
     expected_output: str
     created: datetime
     started: datetime
@@ -77,6 +80,7 @@ class CompletedTaskFile(BaseModel):
     state: Literal["completed"]
     title: str
     description: str = ""
+    check: str | None = None
     expected_output: str
     created: datetime
     started: datetime
@@ -95,8 +99,9 @@ AnyTaskFile = TaskFile | StartedTaskFile | BlockedTaskFile | CompletedTaskFile
 
 
 def task_primitives(task: TaskState) -> dict[str, object]:
-    """The Task as the primitives its table holds; a description only when there is one."""
+    """The Task as the primitives its table holds; a description or a check only when it has one."""
     described = {"description": task.description} if task.description else {}
+    checked = {} if task.check is None else {"check": task.check}
     match task:
         case Task():
             moves: dict[str, object] = {}
@@ -122,6 +127,7 @@ def task_primitives(task: TaskState) -> dict[str, object]:
         "state": task_state_name(task),
         "title": task.title,
         **described,
+        **checked,
         "expected_output": task.expected_output,
         "created": task.created,
         **moves,
@@ -131,7 +137,12 @@ def task_primitives(task: TaskState) -> dict[str, object]:
 def backlog_task(held: AnyTaskFile) -> Task:
     """The Task a validated table holds, as it was in Backlog, built through its constructor."""
     return make_task(
-        parse_task_id(held.id), held.title, held.expected_output, held.description, held.created
+        parse_task_id(held.id),
+        held.title,
+        held.expected_output,
+        held.description,
+        held.created,
+        held.check,
     )
 
 
@@ -158,7 +169,14 @@ def task_row(held: AnyTaskFile) -> TaskRow:
 
     The commit it has once completed; its reason and what it waits on while blocked.
     """
-    row = TaskRow(held.id, held.title, held.expected_output, held.description, held.state)
+    row = TaskRow(
+        held.id,
+        held.title,
+        held.expected_output,
+        held.description,
+        held.state,
+        check=held.check or "",
+    )
     match held:
         case TaskFile() | StartedTaskFile():
             return row

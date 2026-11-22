@@ -44,3 +44,8 @@ created = 2026-11-22 21:01:58+00:00
 started = 2026-11-22 22:42:51+00:00
 completed = 2026-11-22 22:45:58+00:00
 commit = "4049e7b"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: yes -- at ba9a3e3 on main, on a scratch record with a Task blocked with the reason no key, waiting on developer, and a Feature blocked with the reason no budget, waiting on sponsor, fgraph status exit 0 printed !  T-0001  Add x to y  -- waiting on developer: no key and ! F-0001  0/1 W  Raise a from 0 to 1  -- waiting on sponsor: no budget; make check: 2403 passed, all checks passed. The lane edited files with python snippets and one sed, against the rule of Edit and Write alone; the diff of src was read by the coordinator before the landing."
+noted = 2026-11-22 22:50:08+00:00

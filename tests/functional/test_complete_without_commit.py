@@ -22,8 +22,18 @@ ADD_STORY = [
     *("add", "story", "a title"),
     *("--given", "a state", "--when", "an action", "--then", "another"),
 ]
-ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+ADD_TASK = [
+    "add",
+    "task",
+    "a task title",
+    "--parent",
+    "S-0001",
+    "--output",
+    "an output",
+]
+CHECKED_TASK = [*ADD_TASK, "--check", "make test"]
 STARTED = [ADD_STORY, ADD_TASK, ["start", "S-0001"], ["start", "T-0001"]]
+STARTED_CHECKED = [ADD_STORY, CHECKED_TASK, ["start", "S-0001"], ["start", "T-0001"]]
 TASK_DONE = ["complete", "T-0001"]
 STORY_DONE = ["complete", "S-0001"]
 TASK_DONE_IN_A_COMMIT = [*TASK_DONE, "--commit", "abc1234"]
@@ -123,7 +133,7 @@ def developed(tmp_path: Path) -> Path:
     (tmp_path / ".fgraph" / "config.toml").write_text(
         "[development]\nenabled = true\n", encoding="utf-8"
     )
-    runs(tmp_path, *STARTED)
+    runs(tmp_path, *STARTED_CHECKED)
     return tmp_path
 
 

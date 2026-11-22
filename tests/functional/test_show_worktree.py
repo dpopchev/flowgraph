@@ -21,7 +21,17 @@ NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 TITLE = "Raise the Stories fgraph lists from 0 to 1"
 ADD_STORY = ["add", "story", TITLE, *CRITERION]
-ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+ADD_TASK = [
+    "add",
+    "task",
+    "a task title",
+    "--parent",
+    "S-0001",
+    "--output",
+    "an output",
+    "--check",
+    "make test",
+]
 WORKTREE = Path("project.worktrees") / "S-0001-raise-the-stories-fgraph"
 IDENTITY = {
     "GIT_AUTHOR_NAME": "a developer",
@@ -110,9 +120,10 @@ class TestAStoryWithItsTaskCompletedInItsWorktree:
     def test_show_on_main_lists_the_task_with_its_bucket_completed_and_its_commit(
         self, shown: Outcome
     ) -> None:
-        assert shown.out.splitlines()[-4:] == [
+        assert shown.out.splitlines()[-5:] == [
             "  T-0001  a task title",
             "    bucket           Completed",
             "    commit           abc1234",
             "    expected output  an output",
+            "    check            make test",
         ]

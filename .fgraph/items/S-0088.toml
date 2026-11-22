@@ -1,10 +1,12 @@
 id = "S-0088"
-state = "started"
+state = "completed"
 title = "Raise the Tasks a developer adds with the command that checks them, with the development on, from none to every one"
 description = "The words of the note: fgraph add task --check, needed with the development on; with the development off a Task takes none."
 parent = "F-0009"
 created = 2026-11-22 21:02:30+00:00
 started = 2026-11-22 22:32:26+00:00
+completed = 2026-11-22 22:55:13+00:00
+commit = "715ccca"
 
 [criterion]
 given = "a record with the development on and a Story in Backlog"
@@ -13,23 +15,32 @@ then = "fgraph show of the Story lists the command under the Task as its check"
 
 [[tasks]]
 id = "T-0346"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_add_task_check.py, failing on the criterion of S-0088"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_add_task.py does. Seen red, then marked a strict xfail naming S-0088 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_add_task_check.py states that with the development on fgraph add task with --check make test exits 0 and fgraph show lists make test under the Task as its check; without --check it exits 2 naming --check; and with the development off --check exits 2 naming development.enabled"
 created = 2026-11-22 21:02:32+00:00
+started = 2026-11-22 22:33:55+00:00
+completed = 2026-11-22 22:36:57+00:00
+commit = "1723f07"
 
 [[tasks]]
 id = "T-0347"
-state = "backlog"
+state = "completed"
 title = "Add --check to fgraph add task, kept on the Task"
 description = "Removes the xfail mark of tests/functional/test_add_task_check.py. Written on 2026-11-22 against the modules of that day, before U-0010 moves them: they are taken again when the Task starts. A module of src/ that would pass the line limit of mk/python.mk is split by one cohesive part, named in the commit."
 expected_output = "changed: a Task holds an optional check, a command as one text, written to the file of its work item and listed by fgraph show under the Task; with the development on fgraph add task without --check exits 2 naming it, and a blank one is refused; with the development off --check is refused naming development.enabled; a file whose Task holds no check is read as before; the check is carried by every move of the Task"
 created = 2026-11-22 21:02:34+00:00
+started = 2026-11-22 22:45:15+00:00
+completed = 2026-11-22 22:51:05+00:00
+commit = "e74400b"
 
 [[tasks]]
 id = "T-0348"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a Task carries a check with the development on"
 expected_output = "changed: README.md shows fgraph add task --check; docs/domain-model.md lists the check among the attributes of a Task, says when it is needed and refused, and takes its first open question out as answered"
 created = 2026-11-22 21:02:36+00:00
+started = 2026-11-22 22:51:21+00:00
+completed = 2026-11-22 22:54:21+00:00
+commit = "bb46f97"

@@ -19,6 +19,11 @@ def add_kinds(kinds: Commands) -> dict[str, argparse.ArgumentParser]:
         "--parent", required=True, metavar="ID", help="the work item it is written for"
     )
     task.add_argument("--output", required=True, metavar="TEXT", help="the expected output")
+    task.add_argument(
+        "--check",
+        metavar="COMMAND",
+        help="the command that checks the Task; needed with the development on, refused off",
+    )
     upkeep = new_command(
         kinds, "upkeep", "work that keeps a behavior, with its one Given / When / Then"
     )

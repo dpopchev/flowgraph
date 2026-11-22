@@ -392,6 +392,30 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
 - A parent that is the one the work item has moves it nowhere: no Feature is
   read and the amend is taken, as one that rewrites a part to the text it
   has.
+- A Feature in Backlog is amended too, the reading of S-0057: `amend` of its
+  id rewrites its title, its description and its criteria, one alone or
+  several together, and a part it does not name stays as it was. `--criterion`
+  is given once per criterion, as an `add` takes it, and the ones given
+  replace the ones the Feature had, whole: none is added to them and none is
+  rewritten alone. Each part goes through the constructor an `add` uses, so a
+  blank title or a blank criterion is refused and a blank description clears
+  it.
+- It is no move of the Feature: its state stays, and so do its id, its
+  created time, its work items and its place in the queue, which the amend
+  never writes. It is one write of the file of the Feature, committed as
+  `chore: amend F-0001 in the record`, made where a Feature is written: on
+  the branch of a work item it is refused, as every write of a Feature is.
+- Only a Feature in Backlog by its own state is amended, as only a work item
+  in Backlog is: a started, a blocked or a completed one is refused, `F-0001
+  is started already`, `F-0001 is blocked`, `F-0001 is completed already`. An
+  amendment that names no part is refused, and so is a Feature the record
+  does not hold. The parts of a work item are not those of a Feature:
+  `--given`, `--when`, `--then`, `--observed`, `--expected`, `--hypothesis`
+  and `--parent` given to one are refused naming them, `F-0001 has no given,
+  then: a Feature is amended by its title, its description and its criteria`,
+  and `--criterion` given to a work item is refused the other way round,
+  `S-0001 has no criteria: only a Feature states them`. Nothing is written
+  then, the other parts named beside it neither.
 
 ## Evidence
 
@@ -815,12 +839,13 @@ and its merge tool.
   removed work item is counted in neither number, a started or a Backlog one
   only in the second, and a Feature without a work item reads `0/0 W`. Every
   Feature is listed with it, in any bucket: `F-0001  1/3 W  <title>`.
-- Not built yet: blocking, amending or removing a Feature. Starting one is
-  built (above), so is starting its next work item with the completion of
-  the one before, so is completing one with its last work item, so is
-  reordering one, so is the mark a blocked Task of its work item gives it in
-  the status, derived and kept in no file (Order), and so is putting a work
-  item in Backlog under one or taking it out (Amendment).
+- Not built yet: removing a Feature. Starting one is built (above), so is
+  starting its next work item with the completion of the one before, so is
+  completing one with its last work item, so is blocking and unblocking a
+  started one (above), so is reordering one, so is the mark a blocked Task of
+  its work item gives it in the status, derived and kept in no file (Order),
+  so is amending one in Backlog, and so is putting a work item in Backlog
+  under one or taking it out (Amendment).
 - Each kind reads the files of its own prefix. A file with a prefix no kind
   knows is left alone; nothing reports it yet. An `items/SP-0001.toml` of an
   older record, written while a Spike was `SP-0001`, is such a file: it is

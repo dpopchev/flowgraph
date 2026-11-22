@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import assert_never
 
 from flowgraph.criterion import said
+from flowgraph.relation import RelationError
 from flowgraph.task import CompletedAlreadyError, StartedAlreadyError
 from flowgraph.work_item.model import (
     CompletedWorkItem,
@@ -14,17 +15,33 @@ from flowgraph.work_item.model import (
     RemovedWorkItem,
     StartedWorkItem,
     WorkItem,
+    WorkItemId,
     WorkItemState,
     work_item_id_text,
 )
 
 
-def removed_work_item(item: WorkItemState, reason: str, on: datetime) -> RemovedWorkItem:
+def _reason_kept(reason: str, superseded_by: WorkItemId | None) -> str:
+    """The reason as kept: it says something, unless a work item supersedes the removed one."""
+    return said("reason", reason) if superseded_by is None else reason.strip()
+
+
+def _superseded_by_kept(item: WorkItemId, superseded_by: WorkItemId | None) -> WorkItemId | None:
+    """The work item that supersedes the item; raises RelationError when it is the item itself."""
+    if superseded_by == item:
+        raise RelationError(f"{work_item_id_text(item)} cannot be superseded by itself")
+    return superseded_by
+
+
+def removed_work_item(
+    item: WorkItemState, reason: str, on: datetime, superseded_by: WorkItemId | None = None
+) -> RemovedWorkItem:
     """The work item in Backlog removed on that time, kept to the second, for the reason given.
 
-    Its Tasks stay as written. Raises EmptyPartError when the reason is blank,
-    StartedAlreadyError when the item is started, CompletedAlreadyError when it is completed
-    and RemovedAlreadyError when it is removed.
+    Its Tasks stay as written. It may name the work item that supersedes it, and its reason may
+    then be blank. Raises EmptyPartError when the reason is blank with none named,
+    StartedAlreadyError when the item is started, CompletedAlreadyError when it is completed,
+    RemovedAlreadyError when it is removed and RelationError when it names itself.
     """
     match item:
         case WorkItem():
@@ -35,11 +52,12 @@ def removed_work_item(item: WorkItemState, reason: str, on: datetime) -> Removed
                 item.description,
                 item.created,
                 on.replace(microsecond=0),
-                said("reason", reason),
+                _reason_kept(reason, superseded_by),
                 item.tasks,
                 item.parent,
                 item.knowledge,
                 item.relations,
+                _superseded_by_kept(item.id, superseded_by),
             )
         case StartedWorkItem():
             raise StartedAlreadyError(f"{work_item_id_text(item.id)} is started already")
@@ -56,6 +74,17 @@ def reason_of(item: WorkItemState) -> str:
     match item:
         case RemovedWorkItem():
             return item.reason
+        case WorkItem() | StartedWorkItem() | CompletedWorkItem():
+            return ""
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def superseded_by_of(item: WorkItemState) -> str:
+    """The id of the work item that supersedes a removed one as written; empty for none."""
+    match item:
+        case RemovedWorkItem():
+            return "" if item.superseded_by is None else work_item_id_text(item.superseded_by)
         case WorkItem() | StartedWorkItem() | CompletedWorkItem():
             return ""
         case _ as unreachable:

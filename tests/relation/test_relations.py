@@ -9,6 +9,7 @@ from flowgraph.relation import (
     Waited,
     closes_cycle,
     make_relations,
+    superseding,
     waiting_for,
     with_depends_on,
 )
@@ -107,3 +108,13 @@ def test_the_ids_a_work_item_depends_on_are_taken_away_by_giving_none() -> None:
 def test_replacing_the_ids_refuses_the_work_item_that_names_itself() -> None:
     with pytest.raises(RelationError, match=r"^S-2 cannot depend on itself$"):
         with_depends_on(Relations(), "S-2", ["S-2"])
+
+
+def test_a_work_item_supersedes_each_one_of_the_record_that_names_it_in_order() -> None:
+    record = {
+        "S-1": Standing("Removed", False, superseded_by="S-2"),
+        "S-2": WAITING,
+        "S-3": Standing("Removed", False, superseded_by="S-2"),
+        "S-4": Standing("Removed", False, superseded_by="S-1"),
+    }
+    assert superseding("S-2", record) == ["S-1", "S-3"]

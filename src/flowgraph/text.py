@@ -143,8 +143,13 @@ def _status_line(row: StoryRow | UpkeepRow) -> str:
         return f"  {row.id}  {completed}/{len(row.tasks)} T  {row.title}\n{worked}"
     if row.commit:
         return f"  {row.id}  {row.commit}  {row.title}\n"
-    if row.reason:
-        return f"  {row.id}  {row.title}  -- {row.reason}\n"
+    why = ", ".join(
+        part
+        for part in (f"superseded by {row.superseded_by}" if row.superseded_by else "", row.reason)
+        if part
+    )
+    if why:
+        return f"  {row.id}  {row.title}  -- {why}\n"
     return f"  {row.id}  {row.title}\n"
 
 
@@ -208,8 +213,9 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     The criterion is listed by the parts its kind states: a Given / When / Then, what is
     observed and expected, or a hypothesis with, once it is answered, its decision under it.
     A parent, the work items it depends on each with its bucket, the work item it was filed
-    during, the work items filed during it, a description, a commit and the reason of a removal
-    are listed only when there is one, the bucket of a Task only once it has left Backlog. A
+    during, the work items filed during it, the work items it supersedes, a description, a commit,
+    the work item that supersedes a removed one and the reason of a removal are listed only when
+    there is one, the bucket of a Task only once it has left Backlog. A
     blocked Task is listed in InProgress as blocked, with its reason and what it
     waits on. The knowledge lines follow, in the order noted, each with its kind, its date and
     its text; there is no heading without one.
@@ -223,6 +229,9 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     filed_here = [f"  filed here   {here}\n"] if here else []
     committed = [f"  commit       {detail.commit}\n"] if detail.commit else []
     removed = [f"  reason       {detail.reason}\n"] if detail.reason else []
+    superseded = [f"  superseded by {detail.superseded_by}\n"] if detail.superseded_by else []
+    supersedes = ", ".join(detail.supersedes)
+    supersede = [f"  supersedes   {supersedes}\n"] if supersedes else []
     described = [f"  description  {detail.description}\n"] if detail.description else []
     stated = {
         "given": detail.given,
@@ -240,7 +249,9 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
         *depends,
         *during,
         *filed_here,
+        *supersede,
         *committed,
+        *superseded,
         *removed,
         *described,
         *(f"  {part:<13}{text}\n" for part, text in stated.items() if text),

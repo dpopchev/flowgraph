@@ -12,8 +12,10 @@ from typing import assert_never
 from flowgraph.feature import removed_feature
 from flowgraph.feature_item import is_feature_id
 from flowgraph.item import MESSAGE, Written, remove_item
+from flowgraph.item_depends import superseded_by_asked
 from flowgraph.parent import feature_id_text, parse_feature_id
 from flowgraph.record import Now
+from flowgraph.relation import RelationError
 from flowgraph.status import rows_by_id
 from flowgraph.store import Store
 from flowgraph.task import CompletedAlreadyError, StartedAlreadyError
@@ -52,20 +54,31 @@ def _removed_with(
             assert_never(unreachable)
 
 
-def remove_named(item: str, reason: str, store: Store, now: Now) -> Written:
+def remove_named(
+    item: str, reason: str | None, store: Store, now: Now, superseded_by: str | None = None
+) -> Written:
     """Remove the Feature or the work item in Backlog of that id for the reason given.
 
-    Returns what the write says. A Feature is removed with every work item under it, each for
-    the same reason, as one write; one of them removed before stays as it was. The Feature is
-    saved first, so a save of it refused, as on the branch of a work item, leaves nothing
-    written. Raises FeatureNotFoundError when the record holds no such Feature, EmptyPartError
-    when the reason is blank, StartedAlreadyError, BlockedError, CompletedAlreadyError or
-    RemovedAlreadyError when the Feature is not in Backlog, and StartedAlreadyError or
+    Returns what the write says. A work item may name the one that supersedes it in place of the
+    reason or beside it; a Feature takes the reason alone. A Feature is removed with every work
+    item under it, each for the same reason, as one write; one of them removed before stays as
+    it was. The Feature is saved first, so a save of it refused, as on the branch of a work item,
+    leaves nothing written. Raises FeatureNotFoundError when the record holds no such Feature,
+    EmptyPartError when the reason is blank, StartedAlreadyError, BlockedError,
+    CompletedAlreadyError or RemovedAlreadyError when the Feature is not in Backlog, and
+    StartedAlreadyError or
     CompletedAlreadyError when a work item of it is started or completed; for any other id the
-    refusal of `remove_item`. Nothing is saved.
+    refusal of `remove_item` or of `superseded_by_asked`. RelationError when neither is given
+    and when a Feature is given what supersedes it. Nothing is saved.
     """
+    if reason is None and superseded_by is None:
+        raise RelationError("a remove takes --reason or --superseded-by, or both")
     if not is_feature_id(item):
-        return remove_item(item, reason, store, now)
+        superseding = superseded_by_asked(superseded_by, item, store)
+        return remove_item(item, reason or "", store, now, superseding)
+    if superseded_by is not None:
+        raise RelationError(f"{item} is a Feature: it is removed with --reason alone")
+    reason = reason or ""
     feature_id = parse_feature_id(item)
     named = feature_id_text(feature_id)
     on = now()

@@ -40,7 +40,7 @@ from flowgraph.work_item.model import (
     still_open,
     work_item_id_text,
 )
-from flowgraph.work_item.removal import reason_of, removed_work_item
+from flowgraph.work_item.removal import reason_of, removed_work_item, superseded_by_of
 from flowgraph.work_item.tasks import blocked_task, completed_task, started_task, unblocked_task
 from flowgraph.work_item.views import DependsRow, WorkItemDetail, WorkItemRow
 
@@ -90,6 +90,7 @@ def work_item_row(item: WorkItemState) -> WorkItemRow:
         tasks=[row_of(task) for task in item.tasks],
         depends_on=[work_item_id_text(each) for each in item.relations.depends_on],
         filed_during=_filed_during_text(item.relations.filed_during),
+        superseded_by=superseded_by_of(item),
     )
 
 
@@ -108,6 +109,8 @@ def work_item_detail(item: WorkItemState) -> WorkItemDetail:
         depends_on=[DependsRow(work_item_id_text(each)) for each in item.relations.depends_on],
         filed_during=_filed_during_text(item.relations.filed_during),
         filed_here=[],
+        superseded_by=superseded_by_of(item),
+        supersedes=[],
         **criterion_parts(item.criterion),
     )
 
@@ -186,14 +189,17 @@ def remove_work_item(
     load_work_item: LoadWorkItem,
     save_work_item: SaveWorkItem,
     now: Now,
+    superseded_by: WorkItemId | None = None,
 ) -> None:
     """Remove the work item in Backlog of that id now, for the reason, and save it whole.
 
-    Raises WorkItemNotFoundError when the record holds no such item, EmptyPartError when the
-    reason is blank, StartedAlreadyError when the item is started, CompletedAlreadyError when it
-    is completed and RemovedAlreadyError when it is removed; nothing is saved.
+    It names the work item that supersedes it when one is given. Raises WorkItemNotFoundError
+    when the record holds no such item, EmptyPartError when the reason is blank with none named,
+    StartedAlreadyError when the item is started, CompletedAlreadyError when it is completed,
+    RemovedAlreadyError when it is removed and RelationError when it names itself; nothing is
+    saved.
     """
-    save_work_item(removed_work_item(load_work_item(item_id), reason, now()))
+    save_work_item(removed_work_item(load_work_item(item_id), reason, now(), superseded_by))
 
 
 def amend_work_item(

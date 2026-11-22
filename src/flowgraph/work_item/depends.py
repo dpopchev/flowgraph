@@ -24,7 +24,7 @@ class RelationsFile(BaseModel):
     filed_during: str = ""
 
 
-def _id_held(text: str, kinds: Sequence[Kind]) -> WorkItemId:
+def id_held(text: str, kinds: Sequence[Kind]) -> WorkItemId:
     """The id of a work item of one of the kinds written as the text.
 
     Raises WorkItemIdError naming the text when it is the id of none of them.
@@ -46,8 +46,8 @@ def relations_held(
     Raises WorkItemIdError when an id is that of no kind given and RelationError when the item
     names itself.
     """
-    depends_on: Iterable[WorkItemId] = (_id_held(text, kinds) for text in held.depends_on)
-    filed_during = _id_held(held.filed_during, kinds) if held.filed_during else None
+    depends_on: Iterable[WorkItemId] = (id_held(text, kinds) for text in held.depends_on)
+    filed_during = id_held(held.filed_during, kinds) if held.filed_during else None
     return make_relations(item_id, depends_on, filed_during)
 
 

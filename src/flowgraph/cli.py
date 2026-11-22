@@ -149,7 +149,7 @@ def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -
         case "unblock":
             return unblock_named(args.id, store, now, config)
         case "remove":
-            return remove_named(args.id, args.reason, store, now)
+            return remove_named(args.id, args.reason, store, now, args.superseded_by)
         case "note":
             kind, text = next(
                 (kind, text)

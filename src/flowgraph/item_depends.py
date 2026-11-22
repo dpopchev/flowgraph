@@ -16,6 +16,7 @@ from flowgraph.relation import (
     Waited,
     closes_cycle,
     filed_during_it,
+    superseding,
     waiting_for,
 )
 from flowgraph.status import BACKLOG, COMPLETED, rows_by_id
@@ -44,7 +45,11 @@ def record_standing(store: Store) -> dict[str, Standing]:
     """Every work item of the record under its id as written, as the views of a relation read it."""
     return {
         row.id: Standing(
-            _bucket_of(row.state), row.state == COMPLETED, tuple(row.depends_on), row.filed_during
+            _bucket_of(row.state),
+            row.state == COMPLETED,
+            tuple(row.depends_on),
+            row.filed_during,
+            row.superseded_by,
         )
         for row in rows_by_id(store).values()
     }
@@ -97,14 +102,36 @@ def filed_during_asked(text: str | None, store: Store) -> WorkItemId | None:
     return asked
 
 
+def superseded_by_asked(text: str | None, item: str, store: Store) -> WorkItemId | None:
+    """The work item a command asks the removed one to be superseded by; None when it names none.
+
+    The item is the one removed. Raises WorkItemIdError when the text is the id of no kind,
+    WorkItemNotFoundError when the record holds no such work item and RelationError when it is
+    the item itself or is removed; nothing is written.
+    """
+    if text is None:
+        return None
+    asked = parse_work_item_id_of_any_kind(text)
+    named = work_item_id_text(asked)
+    record = record_standing(store)
+    if named not in record:
+        raise WorkItemNotFoundError(asked)
+    if named == item:
+        raise RelationError(f"{item} cannot be superseded by itself")
+    if record[named].bucket == APART:
+        raise RelationError(f"a work item cannot be superseded by {named}: it is removed")
+    return asked
+
+
 def bucketed(detail: WorkItemDetail, store: Store) -> WorkItemDetail:
     """The detail of a work item with the bucket each work item it depends on is listed in and
-    the ids of the work items filed during it, read from the record."""
+    the ids of the work items filed during it and of those it supersedes, read from the record."""
     record = record_standing(store)
     return replace(
         detail,
         depends_on=[DependsRow(row.id, record[row.id].bucket) for row in detail.depends_on],
         filed_here=filed_during_it(detail.id, record),
+        supersedes=superseding(detail.id, record),
     )
 
 

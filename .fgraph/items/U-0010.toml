@@ -81,3 +81,8 @@ commit = "91e3ffd"
 kind = "deviation"
 text = "T-0322 was completed with the imports acyclic per module, as pyright checks them, and not per subpackage as its expected output says: the cycles between subpackages are filed as the Upkeep found during it, at the end of the queue; the Then of U-0010 does not name them."
 noted = 2026-11-22 21:33:59+00:00
+
+[[knowledge]]
+kind = "finding"
+text = "verified: yes -- at a709949 on main, make check exit 0 with MAX_LINES := 250 in mk/python.mk: 2378 passed, all checks passed; src/flowgraph holds __init__.py and cli.py alone outside its 19 subpackages, the longest module at 234 lines; 46 commands of fgraph run on one fixed scratch record -- the help of every command, status, knowledge, terms, graph, config show, show, about and three refusals -- printed byte for byte what the code of main at 96c0368 printed before the landing"
+noted = 2026-11-22 22:16:30+00:00

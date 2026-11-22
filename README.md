@@ -373,7 +373,18 @@ fgraph show S-0002
 #   bucket       Backlog
 #   depends on   S-0001 (Backlog)
 #   ...
+
+fgraph status
+# Backlog (2)
+#   S-0001  Add the show command
+# ~ S-0002  Raise the Stories fgraph lists under Backlog from 1 to 2  -- depends on S-0001
 ```
+
+`fgraph status` marks the line of a work item in Backlog that waits: it starts
+with `~` and ends with `-- depends on` and each id it depends on that is not
+completed. The mark is gone once each is completed; a block, marked `!`, says
+`waiting on` a person. A Feature in Backlog carries it when its first work item
+waits.
 
 `fgraph amend S-0002 --depends-on S-0003` replaces what it depends on and
 `--depends-on none` takes it all away. An id that is no work item of the

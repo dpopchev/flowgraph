@@ -25,3 +25,10 @@ title = "Extend the knowledge line of src/flowgraph/knowledge.py and fgraph note
 description = "Removes the xfail mark of tests/functional/test_note_kinds.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: the kind of a knowledge line is one of three, the finding, the decision and the deviation; fgraph note takes exactly one of --finding, --decision and --deviation with its text, none or two of them refused naming the three; the file keeps the kind of each line, and a kind it does not know is refused when read, naming the file; fgraph show lists each line with its kind"
 created = 2026-11-22 10:47:27+00:00
+
+[[tasks]]
+id = "T-0270"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to name the three kinds of knowledge line"
+expected_output = "changed: README.md shows a decision and a deviation noted and shown; docs/domain-model.md names the three kinds and what each records -- a finding what was learned, a decision what was decided, a deviation a change to what a started item was agreed to do, since fgraph amend refuses one once it is started"
+created = 2026-11-22 10:47:29+00:00

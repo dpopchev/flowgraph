@@ -120,10 +120,19 @@ every type.
 | `Bug` | id, outcome title, description, parent, observed, expected, created |
 | `Upkeep` | id, outcome title, description, parent, Given / When / Then, created |
 | `Spike` | id, outcome title, description, parent, hypothesis, created |
-| `Task` | id, output title, description, parent, expected output, created |
+| `Task` | id, output title, description, parent, expected output, check, created |
 
 `parent` is a Feature or standing alone for the four work items, and exactly
 one work item for a Task.
+
+The `check` of a Task is the command that checks it, one text, optional. With
+the development on (`development.enabled`) it is needed: `fgraph add task`
+without `--check` is refused with exit 2 naming it. With the development off it
+is refused, naming `development.enabled`. A blank one is refused where the Task
+is built. It is kept in the file of the work item, listed by `fgraph show`
+under the Task, and carried by every move of the Task. A Task written before
+holds none and is read as before. Keeping it is all that is done so far: the
+command is not run at `complete`.
 
 A work item in any state also keeps its knowledge: the lines noted on it, in
 the order noted. A line holds its kind, its text and the time it was noted; the
@@ -1700,8 +1709,6 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 
 ## Open questions
 
-- Does a Task also carry a check command that `fgraph` runs at `complete`?
-  The reading: no, its expected output and its commit are enough.
 - Must a Story under a Feature name the Feature criterion it realizes? The
   reading: no, one Story per criterion stays a rule of thumb.
 - Can a Task start before its work item is started? The reading: no.

@@ -325,6 +325,19 @@ record. In a git repository it counts across the worktrees too: the next Task
 id is one above the highest in the record of main and of every worktree, so a
 Task added on a branch never takes an id main hands out meanwhile.
 
+With the development on (`development.enabled`), a Task is added with the
+command that checks it, `--check COMMAND`, which `fgraph show` lists under the
+Task; without it the add exits 2 naming `--check`, and a blank command is
+refused. With the development off, `--check` exits 2 naming
+`development.enabled`. A Task added before holds no check and is read, started
+and completed as it was. This keeps and shows the check; it is not run yet.
+
+```sh
+fgraph add task "Add the show command" --parent S-0001 \
+  --output "changed: cli.py" --check "make test"
+# added T-0001 to S-0001
+```
+
 A work item can depend on another: `--depends-on ID` of `fgraph add` and of
 `fgraph amend`, once per work item it waits for, of any kind. The start of it
 is refused, with exit 2, while one it depends on is not completed, and the

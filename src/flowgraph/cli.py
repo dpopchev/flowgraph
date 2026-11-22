@@ -34,7 +34,7 @@ from flowgraph.feature_item import (
     add_feature_item,
     is_feature_id,
     parent_named,
-    show_feature_item,
+    show_any_item,
 )
 from flowgraph.feature_next import complete_and_start_next
 from flowgraph.feature_remove import remove_named
@@ -52,7 +52,6 @@ from flowgraph.item import (
     add_item,
     kind_named,
     reorder_item,
-    show_item,
     start_item,
     status_item,
     write_task,
@@ -274,10 +273,8 @@ def _said(
             return land_item(
                 args.id, args.message, store, now, record, open_git, config, run_gate, args.decision
             )
-        case "show" if is_feature_id(args.id):
-            return Said(show_feature_item(args.id, store))
         case "show":
-            return Said(show_item(args.id, store))
+            return Said(show_any_item(args.id, store))
         case "status":
             return Said(cut_lines(status_item(store, None if args.all else TOP), width()))
         case _:

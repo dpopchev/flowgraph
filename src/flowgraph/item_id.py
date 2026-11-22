@@ -1,5 +1,6 @@
 """The id of an item of any kind: the text a command is given, read as the id of its kind."""
 
+import re
 from collections.abc import Callable
 from functools import partial
 
@@ -71,3 +72,14 @@ def parse_placed_id(text: str) -> Placed:
             continue
     nouns = ", ".join(kind.noun for kind in KINDS)
     raise ItemIdError(f"{text!r} is no {nouns} or Feature id")
+
+
+def parse_shown_id(text: str) -> Placed:
+    """The id of a work item of any kind, or of a Feature, as fgraph show reads the text.
+
+    Raises FeatureIdError when the text is written as a Feature id that is none, as `F-0000`, and
+    ItemIdError naming every kind and the Feature when it is neither.
+    """
+    if re.fullmatch(r"F-\d+", text) is not None:
+        return parse_feature_id(text)
+    return parse_placed_id(text)

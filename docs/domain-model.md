@@ -602,6 +602,11 @@ and its merge tool.
   or more. It holds no Task. `fgraph add feature` adds one, on `main` as a
   work item is added, and `fgraph show` lists its criteria and its work items
   with their buckets.
+- `fgraph show` takes the id of a work item of any kind or of a Feature
+  (B-0003). A text that is neither is refused naming every kind and the
+  Feature, `'T-0001' is no Story, Upkeep, Bug, Spike or Feature id`; a text
+  written `F-` and a number below 1 is refused as a Feature id,
+  `a Feature id counts from 1: 0 is below 1`.
 - A Feature has a state of its own, kept in its file as that of a work item
   is (S-0052): `state = "backlog"` for a `Feature`, and `state = "started"`
   with its `started` time, kept to the second, for a `StartedFeature`. A

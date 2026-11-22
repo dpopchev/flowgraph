@@ -13,11 +13,12 @@ then = "fgraph show S-0001 lists it as verified, yes, with the text and the day"
 
 [[tasks]]
 id = "T-0361"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_verify_yes.py, failing on the criterion of S-0093"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_complete_story.py does. Seen red, then marked a strict xfail naming S-0093 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_verify_yes.py states that on a record with a completed Story fgraph verify S-0001 --yes with a text exits 0 and fgraph show S-0001 lists it as verified, yes, with the text and the day; and that fgraph verify of a Story that is not completed exits 2 and writes nothing"
 created = 2026-11-22 21:03:16+00:00
+started = 2026-11-22 22:45:05+00:00
 
 [[tasks]]
 id = "T-0362"

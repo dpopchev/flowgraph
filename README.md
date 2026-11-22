@@ -705,6 +705,17 @@ fgraph land S-0001
 Every other rule of a landing holds for each way: what it refuses, that
 nothing is merged then, and the commit of the record after it.
 
+A landing merges into a checkout of `main` that holds no merge of its own. One
+you left unconcluded there is named and left as it was, and a branch that
+brings no commit `main` lacks is refused before any commit, so nothing you
+staged is taken into the commit of a landing:
+
+```sh
+fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
+# fgraph: error: a merge is held in /src/project: commit it or abort it first
+# fgraph: error: wi/S-0001-raise-the-stories-fgraph brings nothing to merge: it holds no commit main lacks
+```
+
 A record whose `config.toml` names a `[development] gate` runs that command
 at every landing, by each way, between the merge and the commit. The gate
 runs in the checkout of `main` with the work of the branch merged in, not yet

@@ -136,6 +136,51 @@ def test_a_merge_git_refuses_leaves_nothing_merged(checkout: Path) -> None:
     assert git(checkout, "status", "--porcelain") == ""
 
 
+@pytest.fixture
+def held(checkout: Path) -> Path:
+    """The checkout on main holding the developer's merge of the branch `other`, not committed."""
+    git(checkout, "checkout", "--quiet", "-b", "other")
+    commit(checkout, "other.txt", "other work\n")
+    git(checkout, "checkout", "--quiet", "main")
+    git(checkout, "merge", "--no-ff", "--no-commit", "--quiet", "other")
+    return checkout
+
+
+def test_a_merge_while_another_is_held_raises_naming_the_one_held(held: Path) -> None:
+    with pytest.raises(GitError, match=r"^a merge is held in .+: commit it or abort it first$"):
+        merge_uncommitted(held, BRANCH)
+
+
+def test_a_merge_refused_while_another_is_held_leaves_that_one_held(held: Path) -> None:
+    with pytest.raises(GitError):
+        merge_uncommitted(held, BRANCH)
+    assert git(held, "rev-parse", "MERGE_HEAD") == git(held, "rev-parse", "other")
+
+
+@pytest.fixture
+def staged(checkout: Path) -> Path:
+    """The checkout on main with a change of the developer's staged, and a branch at main."""
+    git(checkout, "branch", "wi/CH-0002-none")
+    (checkout / "staged.txt").write_text("staged\n", encoding="utf-8")
+    git(checkout, "add", "staged.txt")
+    return checkout
+
+
+def test_a_merge_of_a_branch_that_brings_nothing_raises_naming_it(staged: Path) -> None:
+    with pytest.raises(
+        GitError, match=r"^wi/CH-0002-none brings nothing to merge: it holds no commit main lacks$"
+    ):
+        merge_uncommitted(staged, "wi/CH-0002-none")
+
+
+def test_a_merge_of_a_branch_that_brings_nothing_leaves_the_staged_change_staged(
+    staged: Path,
+) -> None:
+    with pytest.raises(GitError):
+        merge_uncommitted(staged, "wi/CH-0002-none")
+    assert git(staged, "status", "--porcelain") == "A  staged.txt"
+
+
 def test_a_merge_squashed_is_one_commit_on_main_alone_under_the_message(checkout: Path) -> None:
     head = git(checkout, "rev-parse", "HEAD")
     merge_uncommitted(checkout, BRANCH)

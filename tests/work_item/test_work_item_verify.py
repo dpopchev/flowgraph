@@ -9,6 +9,7 @@ import pytest
 from flowgraph.criterion import (
     NO_COMMIT,
     Criterion,
+    Decision,
     Defect,
     EmptyPartError,
     Hypothesis,
@@ -50,7 +51,7 @@ TEXT = "make check: all checks passed"
 TASK = make_task(make_task_id(1), "a task title", "an output", "", CREATED)
 
 
-def completed(kind: Kind, criterion: Criterion, decision: str | None = None) -> WorkItemState:
+def completed(kind: Kind, criterion: Criterion, decision: Decision | None = None) -> WorkItemState:
     """A work item of that kind with one Task, started and completed."""
     made = make_work_item(make_work_item_id(kind, 1), "a title", criterion, "", CREATED)
     item = append_task(made, TASK)
@@ -61,7 +62,7 @@ def completed(kind: Kind, criterion: Criterion, decision: str | None = None) -> 
 
 CHORE_DONE = completed(CHORE, make_scenario("a", "b", "c"))
 FAULT_DONE = completed(FAULT, make_defect("it fails", "it works"))
-PROBE_DONE = completed(PROBE, make_hypothesis("a question"), "yes")
+PROBE_DONE = completed(PROBE, make_hypothesis("a question"), Decision("yes", "yes"))
 ANSWER = Verification("yes", TEXT, ON.replace(microsecond=0))
 
 

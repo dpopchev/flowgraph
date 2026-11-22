@@ -1,10 +1,12 @@
 id = "S-0095"
-state = "started"
+state = "completed"
 title = "Raise the completed Spikes fgraph lists with the yes or no of their hypothesis beside their decision from none to every one"
 description = "The constraints of the note: the hypothesis stays on a Spike alone, and a no on a Spike is a completion."
 parent = "F-0011"
 created = 2026-11-22 21:03:31+00:00
 started = 2026-11-22 23:27:31+00:00
+completed = 2026-11-22 23:47:43+00:00
+commit = "c5840c1"
 
 [criterion]
 given = "a started Spike whose Tasks are completed"
@@ -13,23 +15,37 @@ then = "it is Completed, and fgraph show lists the answer no beside its decision
 
 [[tasks]]
 id = "T-0367"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_complete_spike_answer.py, failing on the criterion of S-0095"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_complete_spike.py does. Seen red, then marked a strict xfail naming S-0095 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_complete_spike_answer.py states that fgraph complete of a started Spike with its decision and the answer no exits 0, the Spike is Completed and fgraph show lists no beside the decision; and that with the answer left out it exits 2 naming it"
 created = 2026-11-22 21:03:33+00:00
+started = 2026-11-22 23:29:25+00:00
+completed = 2026-11-22 23:32:19+00:00
+commit = "db5df55"
 
 [[tasks]]
 id = "T-0368"
-state = "backlog"
+state = "completed"
 title = "Take the yes or no of its hypothesis at the complete of a Spike, beside its decision"
 description = "Removes the xfail mark of tests/functional/test_complete_spike_answer.py. Written on 2026-11-22 against the modules of that day, before U-0010 moves them: they are taken again when the Task starts. A module of src/ that would pass the line limit of mk/python.mk is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph complete and fgraph land of a Spike take the answer to its hypothesis, yes or no, by an option the Task names, needed beside --decision; it is written on the completed Spike and listed by fgraph show beside the decision, and by fgraph knowledge with the decision; a Spike completed before, which holds no answer, is read as before; another kind given the answer is refused"
 created = 2026-11-22 21:03:35+00:00
+started = 2026-11-22 23:32:21+00:00
+completed = 2026-11-22 23:40:45+00:00
+commit = "e6da7be"
 
 [[tasks]]
 id = "T-0369"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a Spike completes on a yes or a no"
 expected_output = "changed: README.md shows the complete of a Spike with its answer; docs/domain-model.md lists the answer among what a completed Spike holds"
 created = 2026-11-22 21:03:37+00:00
+started = 2026-11-22 23:40:47+00:00
+completed = 2026-11-22 23:44:07+00:00
+commit = "4c30f0f"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: yes -- at c5840c1 on main, on a scratch record with a started Spike whose Task is completed: fgraph complete Q-0001 --decision alone exit 2 with Q-0001 is completed with its answer: yes or no; with --decision too big --answer no exit 0 printed completed Q-0001; fgraph show Q-0001 listed bucket Completed, decision too big and answer no; fgraph knowledge --kind decision listed too big (answer no); fgraph show Q-0001 of the record of flowgraph, in Backlog, exit 0; make check on the tree of the landing, the branch merged into main at 46366d1 in a scratch clone before it landed: 2665 passed, all checks passed. The land of a Spike with its answer has a test of the parser alone: filed as U-0024."
+noted = 2026-11-22 23:48:05+00:00

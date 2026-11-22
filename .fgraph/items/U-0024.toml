@@ -1,0 +1,11 @@
+id = "U-0024"
+state = "backlog"
+title = "Raise the functional tests that land a Spike with its answer from none to one"
+description = "Found during T-0368 of S-0095 on 2026-11-23, under the burn of the goal; filed at the end of the queue and not burned. The expected output of T-0368 names both fgraph complete and fgraph land; tests/functional/test_complete_spike_answer.py states the complete. Its Tasks are written when it is ordered."
+created = 2026-11-22 23:44:51+00:00
+filed_during = "S-0095"
+
+[criterion]
+given = "main, where fgraph land of a Spike takes --answer beside --decision, proven by a test of the parser alone, the complete of a Spike sharing the code"
+when = "make check runs"
+then = "it passes with a functional test that lands a Spike with its decision and its answer on a real git repository, seen failing first"

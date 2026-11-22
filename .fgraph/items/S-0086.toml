@@ -47,3 +47,8 @@ created = 2026-11-22 21:02:12+00:00
 started = 2026-11-22 23:33:27+00:00
 completed = 2026-11-22 23:39:00+00:00
 commit = "6534379"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: yes -- at e935405 on main, on a scratch record whose first item of the Backlog waits and whose second waits for nothing, fgraph status exit 0 printed ~ S-0002  two  -- depends on S-0001 then > S-0001  one; with six waiting items ahead of it, > S-0001  one was listed after the top 5 and before ... 1 more; with every item of the Backlog waiting no line carried the mark; make check on the tree of the landing, the branch merged into main at e6aa9e3 in a scratch clone before it landed: 2640 passed, all checks passed. Two guard tests of T-0337 passed on their first run, as the hand-back of the lane says."
+noted = 2026-11-22 23:43:56+00:00

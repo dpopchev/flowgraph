@@ -22,7 +22,7 @@ from functools import partial
 from pathlib import Path
 
 from flowgraph import work_item
-from flowgraph.criterion import make_commit
+from flowgraph.criterion import Decision, make_commit
 from flowgraph.development.branch import MAIN
 from flowgraph.development.commit import OpenGit, Said, WorkTree, branch_started, commit_written
 from flowgraph.development.gate import RunGate, check_gate
@@ -62,7 +62,7 @@ def _branch_to_land(item: str, found: Sequence[str]) -> str:
     return found[0]
 
 
-def _check_completes(item_id: WorkItemId, decision: str | None, landing: Landing) -> None:
+def _check_completes(item_id: WorkItemId, decision: Decision | None, landing: Landing) -> None:
     """Check that the work item can complete as the merge held brought it; raises its refusal.
 
     The Feature it is under is read too, as its completion reads it after main has moved: one
@@ -111,13 +111,14 @@ def land_item(
     open_git: OpenGit,
     config: Config,
     run_gate: RunGate,
-    decision: str | None = None,
+    decision: Decision | None = None,
 ) -> Said:
     """Land the started work item of that id on main, by the merge of the configuration.
 
     The message words the commit a merge-commit or a squash makes. A Spike lands with the
-    decision that answers its hypothesis. The gate of the configuration, when it names one, is
-    run through run_gate at the top of the work tree while the merge is held. Raises
+    decision that answers its hypothesis, and its yes or no. The gate of the configuration, when
+    it names one, is run through run_gate at the top of the work tree while the merge is held.
+    Raises
     WorkItemIdError when the text is the id of no kind of work item, LandError when the
     development is off in the configuration, naming the fgraph config set that turns it on and,
     with the commits off, the one that turns them on first, when the merge

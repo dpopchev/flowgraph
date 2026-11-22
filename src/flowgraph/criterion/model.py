@@ -3,7 +3,7 @@
 import re
 from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import assert_never
+from typing import Literal, assert_never
 
 
 @dataclass(frozen=True)
@@ -30,12 +30,31 @@ class Hypothesis:
     question: str
 
 
+# The answer to a hypothesis.
+Reply = Literal["yes", "no"]
+
+
+@dataclass(frozen=True)
+class Decision:
+    """What completes a Spike: the decision, and the yes or no of its hypothesis.
+
+    The answer is None only when a decision is given without it, which a completion refuses.
+    """
+
+    text: str
+    answer: Reply | None
+
+
 @dataclass(frozen=True)
 class Answer:
-    """The criterion of a completed Spike: its hypothesis, and the decision that answers it."""
+    """The criterion of a completed Spike: its hypothesis, its decision and the yes or no.
+
+    A Spike completed before the answer was taken holds none.
+    """
 
     question: str
     decision: str
+    answer: Reply | None = None
 
 
 # The criterion of a work item: the one its kind takes, a hypothesis answered once completed.
@@ -121,19 +140,42 @@ def make_hypothesis(question: str) -> Hypothesis:
     return Hypothesis(said("hypothesis", question))
 
 
-def settled(criterion: Criterion, decision: str | None, named: str) -> Criterion:
+def make_decision(text: str | None, answer: Reply | None) -> Decision | None:
+    """The decision a completion is given, none when neither the text nor the answer is.
+
+    Raises DecisionError when an answer is given without its decision.
+    """
+    if text is None:
+        if answer is not None:
+            raise DecisionError("an answer is given beside its decision")
+        return None
+    return Decision(text, answer)
+
+
+def answered_before(question: str, decision: str) -> Answer:
+    """The criterion of a Spike completed before its answer was taken: the decision alone.
+
+    Raises EmptyPartError when the decision is blank.
+    """
+    return Answer(question, said("decision", decision))
+
+
+def settled(criterion: Criterion, decision: Decision | None, named: str) -> Criterion:
     """The criterion as the completion of its work item leaves it, for the item of that name.
 
-    A hypothesis is answered by the decision; every other criterion stays as it is. Raises
-    DecisionError when a hypothesis is given no decision, or another criterion is given one,
-    and EmptyPartError when the decision is blank.
+    A hypothesis is answered by the decision and its yes or no; every other criterion stays as
+    it is. Raises DecisionError when a hypothesis is given no decision or no answer, or another
+    criterion is given a decision, and EmptyPartError when the decision is blank.
     """
     match criterion:
         case Hypothesis():
             if decision is None:
                 stated = STATES[Hypothesis]
                 raise DecisionError(f"{named} is completed with its decision: it states {stated}")
-            return Answer(criterion.question, said("decision", decision))
+            text = said("decision", decision.text)
+            if decision.answer is None:
+                raise DecisionError(f"{named} is completed with its answer: yes or no")
+            return Answer(criterion.question, text, decision.answer)
         case Scenario() | Defect() | Answer():
             if decision is not None:
                 raise DecisionError(
@@ -154,7 +196,8 @@ def criterion_parts(criterion: Criterion) -> dict[str, str]:
         case Hypothesis():
             return {"hypothesis": criterion.question}
         case Answer():
-            return {"hypothesis": criterion.question, "decision": criterion.decision}
+            held = {"hypothesis": criterion.question, "decision": criterion.decision}
+            return held if criterion.answer is None else {**held, "answer": criterion.answer}
         case _ as unreachable:
             assert_never(unreachable)
 

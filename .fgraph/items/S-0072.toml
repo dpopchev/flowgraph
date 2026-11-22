@@ -1,0 +1,11 @@
+id = "S-0072"
+state = "backlog"
+title = "Raise the items and knowledge lines fgraph show of a term lists as about it from none to every one"
+description = "Part of F-0005. fgraph add and fgraph amend take --about for an item too. A term that is not in the record is refused, naming fgraph add term."
+parent = "F-0005"
+created = 2026-11-22 10:41:38+00:00
+
+[criterion]
+given = "a record with a term and a Story"
+when = "fgraph note of the Story is run with --decision, a text and --about with the name of the term"
+then = "fgraph show of the term lists the line with the id of the Story, and fgraph show of the Story lists the term"

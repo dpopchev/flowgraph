@@ -24,12 +24,14 @@ commit = "87b1508"
 
 [[tasks]]
 id = "T-0282"
-state = "started"
+state = "completed"
 title = "Add --filed-during to fgraph add, shown from both sides"
 description = "Removes the xfail mark of tests/functional/test_filed_during.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph add of every kind of work item takes --filed-during ID once, the work item it was found during, in any state but Removed; the file of the new work item keeps it as filed_during, held in src/flowgraph/relation.py beside depends on and read back in every state; an id that is no work item of the record is refused, exit 2, nothing written; fgraph show of the new work item lists filed during with the id, and fgraph show of the other lists, as filed during it, the id of each work item that names it, read from the record and stored nowhere; fgraph amend does not take it: when a work item was found does not change"
 created = 2026-11-22 10:47:42+00:00
 started = 2026-11-22 12:00:06+00:00
+completed = 2026-11-22 12:14:18+00:00
+commit = "5007959"
 
 [[tasks]]
 id = "T-0283"

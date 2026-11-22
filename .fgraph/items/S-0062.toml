@@ -24,12 +24,14 @@ commit = "02a73cb"
 
 [[tasks]]
 id = "T-0265"
-state = "started"
+state = "completed"
 title = "Create src/flowgraph/knowledge.py holding the knowledge line and its constructor"
 description = "New code the next Task runs. The kind is a sum type with one variant, so the decision and the deviation of S-0063 are new variants. The time is given as a value, never read from the clock."
 expected_output = "created: src/flowgraph/knowledge.py holds the knowledge line -- its kind, the finding alone so far, its text and the time it was noted -- built by its constructor alone, a blank text refused; tests/knowledge/ states the line built and the refusal"
 created = 2026-11-22 10:47:23+00:00
 started = 2026-11-22 10:55:51+00:00
+completed = 2026-11-22 10:58:20+00:00
+commit = "6581d59"
 
 [[tasks]]
 id = "T-0266"

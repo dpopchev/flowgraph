@@ -55,3 +55,8 @@ created = 2026-11-22 10:47:41+00:00
 started = 2026-11-22 11:57:59+00:00
 completed = 2026-11-22 11:58:33+00:00
 commit = "8b37128"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: at 000cd65 on main, on a fresh record with two Stories, fgraph amend S-0002 --depends-on S-0001 printed amended S-0002, fgraph start S-0002 exit 2 with S-0002 cannot start: it depends on S-0001, in Backlog, and fgraph show S-0002 listed depends on S-0001 (Backlog); make check: all checks passed"
+noted = 2026-11-22 12:02:01+00:00

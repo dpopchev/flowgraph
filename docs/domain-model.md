@@ -596,6 +596,23 @@ criterion. It is added and then it stands.
   worktrees: `fgraph terms` and `fgraph show` of a term there list what `main` holds
   now, a term added after the start included.
 - Every refusal is exit 2, with nothing written.
+- Two terms are related by one kind of a closed set of two, held once in
+  `src/flowgraph/term.py`: `is-a`, the first is a kind of the second, and `part-of`,
+  the first is a part of the second. A relation is stored on the file of the first
+  term alone, as `is_a` or `part_of`, a list of the names of the terms it names, so
+  a relation is one write of one file; the other side is read from the record, as
+  the work items that name one as their parent are. `fgraph relate TERM KIND TERM`
+  keeps it as one write and one commit, `chore: relate gate in the record`, and says
+  `related gate part-of lane`.
+- `fgraph show` of a term lists `is a` and `part of` with the terms it names, and
+  `kinds` and `parts` with the terms that name it by `is-a` and by `part-of`.
+- A kind outside the set, naming the two, a term the record holds none of, a term
+  related to itself, a relation kept already and a relation that would close a
+  cycle of its kind are refused, exit 2, with nothing written. A cycle is
+  found as for the work items that depend on one another: the second term reaches
+  the first through relations of the same kind.
+- `fgraph relate` is a write of a term, so it is on `main` alone as `fgraph add
+  term` is, and refused on the branch of a work item the same way.
 
 ## Evidence
 

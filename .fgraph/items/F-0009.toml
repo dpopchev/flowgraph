@@ -1,9 +1,11 @@
 id = "F-0009"
-state = "started"
+state = "completed"
 title = "Raise the Tasks fgraph completes only when their check passes, with the development on, from none to every one added with it"
 description = "From the note of the ~/.claude session of 2026-11-22 on the gaps of the planning skill (output: Task check), filed and ordered on the word of the developer of that day: update the backlog and prioritize. It answers the first open question of docs/domain-model.md, whose reading was no. A Task added before it, which holds no check, completes as it does today."
 created = 2026-11-22 21:02:28+00:00
 started = 2026-11-22 22:32:26+00:00
+completed = 2026-11-22 23:18:48+00:00
+commit = "3394360"
 criteria = [
     "a developer adds a Task with the command that checks it, needed with the development on and refused with it off",
     "a developer is refused the completion of a Task while its check fails, with the command and its exit status named",

@@ -1,9 +1,11 @@
 id = "B-0011"
-state = "started"
+state = "completed"
 title = "Cut the work items fgraph status lists on no line for a parent the record does not hold from every one to none"
 description = "Found during T-0183 of S-0050 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. No test covers it. Its Tasks are written when it is ordered."
 created = 2026-11-22 01:09:17+00:00
 started = 2026-11-22 07:29:26+00:00
+completed = 2026-11-22 07:31:42+00:00
+commit = "158e922"
 
 [criterion]
 observed = "a work item whose parent names a Feature the record does not hold is on no line of fgraph status since S-0050: it is listed neither in its bucket nor under a Feature; fgraph add checks the parent, so it takes a file edited by hand"

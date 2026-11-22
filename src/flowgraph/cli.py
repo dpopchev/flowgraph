@@ -14,7 +14,6 @@ from typing import Never, assert_never
 
 from flowgraph.about import about_item
 from flowgraph.about_terms import about_asked
-from flowgraph.config import CONFIG, Config, LoadConfig, make_config, read_config
 from flowgraph.criterion import (
     Criterion,
     make_defect,
@@ -70,11 +69,24 @@ from flowgraph.knowledge import DECISION, DEVIATION, FINDING
 from flowgraph.knowledge_list import show_knowledge
 from flowgraph.parent import parent_asked
 from flowgraph.parser import TOP, build_command_line, help_asked
-from flowgraph.record import Found, Given, GivenMissing, IsDir, NotFound, Now, locate
+from flowgraph.record import (
+    CONFIG,
+    Config,
+    Found,
+    Given,
+    GivenMissing,
+    IsDir,
+    LoadConfig,
+    NotFound,
+    Now,
+    locate,
+    make_config,
+    read_config,
+)
+from flowgraph.record.setting import set_setting, show_config, unset_setting
+from flowgraph.record.store import OpenStore, Store, open_files
 from flowgraph.refusals import REFUSED
 from flowgraph.relation_read import check_relations
-from flowgraph.setting import set_setting, show_config, unset_setting
-from flowgraph.store import OpenStore, Store, open_files
 from flowgraph.term_item import add_term_item, relate_term_item, terms_text
 from flowgraph.terminal import Height, Width, no_terminal, terminal_height, terminal_width
 from flowgraph.text import cut_lines

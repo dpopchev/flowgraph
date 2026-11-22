@@ -10,7 +10,6 @@ from functools import partial
 from typing import assert_never
 
 from flowgraph import work_item
-from flowgraph.config import DEVELOPMENT_ENABLED, Config
 from flowgraph.criterion import (
     NO_COMMIT,
     Commit,
@@ -35,10 +34,10 @@ from flowgraph.item_id import (
     parse_work_item_id_of_any_kind,
 )
 from flowgraph.parent import STANDALONE, FeatureId, Parent, feature_id_text
-from flowgraph.queue import placed_text, reorder
-from flowgraph.record import Now
+from flowgraph.record import DEVELOPMENT_ENABLED, Config, Now
+from flowgraph.record.queue import placed_text, reorder
+from flowgraph.record.store import KINDS, Store
 from flowgraph.status import BACKLOG, COMPLETED, STARTED, find_backlog, status_item
-from flowgraph.store import KINDS, Store
 from flowgraph.task import TaskId, parse_task_id, task_id_text
 from flowgraph.text import show_text
 from flowgraph.work_item import Kind, WorkItemId, parse_work_item_id, work_item_id_text

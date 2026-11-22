@@ -2,8 +2,8 @@
 
 import pytest
 
-from flowgraph.config import make_config
-from flowgraph.setting import show_config
+from flowgraph.record import make_config
+from flowgraph.record.setting import show_config
 
 pytestmark = pytest.mark.view
 

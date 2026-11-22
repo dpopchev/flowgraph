@@ -9,7 +9,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
-from flowgraph.config import DEVELOPMENT_ENABLED
+from flowgraph.record import DEVELOPMENT_ENABLED
 from flowgraph.work_item import WorkItemId, work_item_id_text
 
 # The branch a work item is started on and lands on.

@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph.config import ConfigError, read_settings, write_settings
+from flowgraph.record.config import ConfigError, read_settings, write_settings
 
 pytestmark = pytest.mark.edge
 

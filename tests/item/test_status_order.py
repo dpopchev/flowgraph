@@ -6,7 +6,7 @@ from typing import Never
 import pytest
 
 from flowgraph.item import Store, status_item
-from flowgraph.queue import Queue, make_queue
+from flowgraph.record.queue import Queue, make_queue
 from flowgraph.story import STORY, make_story_id
 from flowgraph.upkeep import UPKEEP
 from flowgraph.work_item import WorkItemRow

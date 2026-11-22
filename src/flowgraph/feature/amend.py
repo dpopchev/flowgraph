@@ -24,7 +24,7 @@ from flowgraph.feature.item import is_feature_id
 from flowgraph.item import MESSAGE, Written, amend_item
 from flowgraph.item_id import parse_amended_id
 from flowgraph.parent import feature_id_text, parse_feature_id
-from flowgraph.store import Store
+from flowgraph.record.store import Store
 from flowgraph.task import BlockedError, CompletedAlreadyError, StartedAlreadyError
 from flowgraph.work_item import Amendment, NoPartError, NoSuchPartError, work_item_id_text
 

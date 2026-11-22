@@ -11,7 +11,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import assert_never
 
-from flowgraph.config import DEVELOPMENT_GATE, Gate, Gated, Ungated
+from flowgraph.record import DEVELOPMENT_GATE, Gate, Gated, Ungated
 
 # Run a command line through the shell in a directory; the status it exits with.
 RunGate = Callable[[str, Path], int]

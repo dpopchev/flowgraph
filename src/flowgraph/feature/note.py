@@ -12,7 +12,7 @@ from flowgraph.item_id import parse_work_item_id_of_any_kind
 from flowgraph.knowledge import KnowledgeKind
 from flowgraph.parent import feature_id_text, parse_feature_id
 from flowgraph.record import Now
-from flowgraph.store import Store
+from flowgraph.record.store import Store
 from flowgraph.work_item import work_item_id_text
 
 

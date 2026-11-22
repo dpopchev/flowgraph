@@ -2,8 +2,8 @@
 
 import pytest
 
-from flowgraph.config import ConfigError
-from flowgraph.setting import without_setting
+from flowgraph.record import ConfigError
+from flowgraph.record.setting import without_setting
 
 pytestmark = pytest.mark.model
 

@@ -10,6 +10,7 @@ from dataclasses import replace
 
 from flowgraph.item_id import ItemIdError, parse_item_id, parse_work_item_id_of_any_kind
 from flowgraph.parent import NONE
+from flowgraph.record.store import Store
 from flowgraph.relation import (
     RelationError,
     Standing,
@@ -21,7 +22,6 @@ from flowgraph.relation import (
     waiting_for,
 )
 from flowgraph.status import BACKLOG, COMPLETED, rows_by_id
-from flowgraph.store import Store
 from flowgraph.task import TaskId
 from flowgraph.text import APART, BUCKETS
 from flowgraph.work_item import (

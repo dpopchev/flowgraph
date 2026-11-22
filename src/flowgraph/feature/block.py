@@ -10,16 +10,15 @@ do (`flowgraph.item`).
 
 from typing import assert_never
 
-from flowgraph.config import Config
 from flowgraph.feature import blocked_feature, unblocked_feature
 from flowgraph.feature.next import NOT_STARTED, start_next
 from flowgraph.feature.start import first_in_backlog
 from flowgraph.item import MESSAGE, Written, block_item, unblock_item
 from flowgraph.item_id import parse_moved_id
 from flowgraph.parent import FeatureId, feature_id_text
-from flowgraph.record import Now
+from flowgraph.record import Config, Now
+from flowgraph.record.store import Store
 from flowgraph.status import STARTED, rows_by_id
-from flowgraph.store import Store
 from flowgraph.task import TaskId
 from flowgraph.work_item import WorkItemId, work_item_id_text
 

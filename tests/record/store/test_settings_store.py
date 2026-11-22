@@ -5,8 +5,8 @@ from typing import Never
 
 import pytest
 
-from flowgraph.config import ConfigError
-from flowgraph.store import NoSettingsStoreError, Store, open_files
+from flowgraph.record import ConfigError
+from flowgraph.record.store import NoSettingsStoreError, Store, open_files
 
 pytestmark = pytest.mark.edge
 

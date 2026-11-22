@@ -17,8 +17,8 @@ from flowgraph.feature import feature_bucket
 from flowgraph.item_depends import record_standing
 from flowgraph.knowledge_list import KnowledgeEntry, collected
 from flowgraph.parent import parse_feature_id
+from flowgraph.record.store import Store
 from flowgraph.status import rows_by_id, rows_under
-from flowgraph.store import Store
 
 # The one format of the graph, and the default.
 JSON = "json"

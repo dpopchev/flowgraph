@@ -22,8 +22,8 @@ from flowgraph.feature import (
 )
 from flowgraph.parent import FeatureId, Standalone
 from flowgraph.record import Now
+from flowgraph.record.store import Store
 from flowgraph.status import rows_under
-from flowgraph.store import Store
 from flowgraph.work_item import CompletedWorkItem, WorkItemId
 
 

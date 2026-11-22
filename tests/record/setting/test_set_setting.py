@@ -2,9 +2,9 @@
 
 import pytest
 
-from flowgraph.config import ConfigError, Settings, make_config
 from flowgraph.item import Written
-from flowgraph.setting import set_setting
+from flowgraph.record import ConfigError, Settings, make_config
+from flowgraph.record.setting import set_setting
 
 pytestmark = pytest.mark.command
 

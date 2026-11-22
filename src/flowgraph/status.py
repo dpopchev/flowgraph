@@ -22,8 +22,8 @@ from flowgraph.feature import (
     feature_row,
 )
 from flowgraph.parent import FeatureId, feature_id_text, parse_feature_id
-from flowgraph.queue import Entry, Inside, Line, Placed, queued
-from flowgraph.store import KINDS, Store
+from flowgraph.record.queue import Entry, Inside, Line, Placed, queued
+from flowgraph.record.store import KINDS, Store
 from flowgraph.text import status_text
 from flowgraph.work_item import STARTED, WorkItemId, WorkItemRow, parse_work_item_id
 

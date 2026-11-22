@@ -11,14 +11,14 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import assert_never
 
-from flowgraph.config import Settings
 from flowgraph.development.branch import MAIN
 from flowgraph.development.commit import OpenGit, kept_in
 from flowgraph.feature import FeatureState
 from flowgraph.item import ItemIdError, parse_item_id, parse_work_item_id_of_any_kind
 from flowgraph.parent import FeatureIdError, feature_id_text, parse_feature_id
-from flowgraph.queue import Queue
-from flowgraph.store import Store
+from flowgraph.record import Settings
+from flowgraph.record.queue import Queue
+from flowgraph.record.store import Store
 from flowgraph.task import TaskId
 from flowgraph.term import Term
 from flowgraph.work_item import (

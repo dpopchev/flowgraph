@@ -11,8 +11,8 @@ from pathlib import Path
 from flowgraph.development.commit import OpenGit
 from flowgraph.governed import governed_text, governing, placed
 from flowgraph.item_id import ItemIdError
+from flowgraph.record.store import Store
 from flowgraph.status import COMPLETED, rows_by_id
-from flowgraph.store import Store
 from flowgraph.work_item import WorkItemRow
 
 # Whether a commit changed the file asked about.

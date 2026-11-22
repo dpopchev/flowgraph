@@ -8,8 +8,8 @@ import pytest
 from flowgraph.feature import make_feature
 from flowgraph.item import ItemIdError, Store, Written, reorder_item
 from flowgraph.parent import make_feature_id
-from flowgraph.queue import NotInBacklogError, Queue, UnderFeatureError, make_queue
-from flowgraph.store import FeatureStore
+from flowgraph.record.queue import NotInBacklogError, Queue, UnderFeatureError, make_queue
+from flowgraph.record.store import FeatureStore
 from flowgraph.story import STORY, make_story_id
 from flowgraph.work_item import WorkItemRow
 

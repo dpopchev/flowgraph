@@ -5,9 +5,9 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph import queue as queue_module
 from flowgraph.parent import make_feature_id
-from flowgraph.queue import (
+from flowgraph.record import queue as queue_module
+from flowgraph.record.queue import (
     QueueFileError,
     QueueMismatchError,
     make_queue,

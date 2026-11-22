@@ -11,7 +11,7 @@ from pathlib import Path
 from flowgraph.criterion import said
 from flowgraph.development.commit import OpenGit, WorkTree
 from flowgraph.knowledge_list import KnowledgeEntry, collected, newest_first
-from flowgraph.store import Store
+from flowgraph.record.store import Store
 
 
 def placed(text: str, directory: Path, work_tree: WorkTree | None) -> str | None:

@@ -36,10 +36,10 @@ from flowgraph.parent import (
     feature_id_text,
     parse_feature_id,
 )
-from flowgraph.queue import queued
 from flowgraph.record import Now
+from flowgraph.record.queue import queued
+from flowgraph.record.store import Store
 from flowgraph.status import BACKLOG, backlog_as_added, rows_under
-from flowgraph.store import Store
 from flowgraph.task import CompletedAlreadyError
 from flowgraph.term import is_term_name
 from flowgraph.term_item import show_term

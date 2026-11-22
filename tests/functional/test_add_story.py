@@ -9,7 +9,7 @@ from typing import Never
 import pytest
 
 from flowgraph.cli import Store, run
-from flowgraph.queue import make_queue
+from flowgraph.record.queue import make_queue
 from flowgraph.story import StoryState, story_row
 from flowgraph.work_item import work_item_detail
 

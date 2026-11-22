@@ -19,7 +19,7 @@ from flowgraph.knowledge import (
     kind_name,
 )
 from flowgraph.parent import parse_feature_id
-from flowgraph.store import KINDS, Store
+from flowgraph.record.store import KINDS, Store
 from flowgraph.work_item import WorkItemDetail, parse_work_item_id
 
 # The kinds a list can be narrowed to, as the record writes them.

@@ -15,9 +15,9 @@ from flowgraph.item import MESSAGE, Written, remove_item
 from flowgraph.item_depends import superseded_by_asked
 from flowgraph.parent import feature_id_text, parse_feature_id
 from flowgraph.record import Now
+from flowgraph.record.store import Store
 from flowgraph.relation import RelationError
 from flowgraph.status import rows_by_id
-from flowgraph.store import Store
 from flowgraph.task import CompletedAlreadyError, StartedAlreadyError
 from flowgraph.work_item import (
     CompletedWorkItem,

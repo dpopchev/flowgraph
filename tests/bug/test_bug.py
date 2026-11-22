@@ -14,7 +14,7 @@ from flowgraph.bug import (
     parse_bug_id,
 )
 from flowgraph.criterion import CriterionError, Defect, make_defect, make_scenario
-from flowgraph.store import KINDS
+from flowgraph.record.store import KINDS
 
 pytestmark = pytest.mark.model
 

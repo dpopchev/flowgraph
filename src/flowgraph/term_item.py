@@ -8,8 +8,8 @@ from flowgraph.item import MESSAGE, Written
 from flowgraph.knowledge_list import collected, newest_first
 from flowgraph.parent import parse_feature_id
 from flowgraph.record import Now
+from flowgraph.record.store import KINDS, Store
 from flowgraph.relation import Standing, closes_cycle
-from flowgraph.store import KINDS, Store
 from flowgraph.term import TermError, make_term, named_by, relate
 from flowgraph.work_item import parse_work_item_id
 

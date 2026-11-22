@@ -14,7 +14,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import assert_never
 
-from flowgraph.config import (
+from flowgraph.item import Written
+from flowgraph.record.config import (
     DEVELOPMENT_ENABLED,
     DEVELOPMENT_GATE,
     DEVELOPMENT_MERGE,
@@ -34,7 +35,6 @@ from flowgraph.config import (
     make_config,
     settings_text,
 )
-from flowgraph.item import Written
 
 # How a key that holds no value is listed: no value of the file.
 NONE = "none"

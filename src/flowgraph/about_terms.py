@@ -7,7 +7,7 @@ record holds none of is refused with how to add it, and nothing is written.
 from collections.abc import Sequence
 
 from flowgraph.parent import NONE
-from flowgraph.store import Store
+from flowgraph.record.store import Store
 from flowgraph.term import TermError
 
 

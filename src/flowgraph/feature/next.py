@@ -10,7 +10,6 @@ do (`flowgraph.item`).
 
 from typing import assert_never
 
-from flowgraph.config import Config
 from flowgraph.development import SlugError
 from flowgraph.development.parallel import ParallelError, check_parallel
 from flowgraph.development.scope import OutOfScopeError
@@ -29,8 +28,8 @@ from flowgraph.feature.start import (
 from flowgraph.item import MESSAGE, Written, complete_item, parse_item_id, start_item
 from flowgraph.item_depends import StartWaitsError, check_start_waits
 from flowgraph.parent import FeatureId, Standalone
-from flowgraph.record import Now
-from flowgraph.store import Store
+from flowgraph.record import Config, Now
+from flowgraph.record.store import Store
 from flowgraph.task import BlockedError, NoTaskError, TaskId
 from flowgraph.work_item import WorkItemId, work_item_id_text
 

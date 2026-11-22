@@ -17,8 +17,8 @@ from flowgraph.feature import (
 )
 from flowgraph.feature.complete import complete_with_feature
 from flowgraph.parent import STANDALONE, FeatureId, Parent, make_feature_id
-from flowgraph.queue import make_queue
-from flowgraph.store import NO_FEATURES, FeatureStore, Store
+from flowgraph.record.queue import make_queue
+from flowgraph.record.store import NO_FEATURES, FeatureStore, Store
 from flowgraph.story import STORY, make_story_id
 from flowgraph.task import OpenTaskError, make_task, make_task_id
 from flowgraph.work_item import (

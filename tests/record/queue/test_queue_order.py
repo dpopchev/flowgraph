@@ -6,7 +6,7 @@ It places the work items and the Features; a work item under a Feature among tho
 import pytest
 
 from flowgraph.parent import make_feature_id
-from flowgraph.queue import (
+from flowgraph.record.queue import (
     Entry,
     Inside,
     Line,

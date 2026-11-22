@@ -16,7 +16,7 @@ from pathlib import Path
 from flowgraph.development.branch import MAIN
 from flowgraph.development.commit import OpenGit, kept_in
 from flowgraph.development.scope import scope_of, worktree_of_item
-from flowgraph.store import KINDS, OpenStore, Store
+from flowgraph.record.store import KINDS, OpenStore, Store
 from flowgraph.term import Term
 from flowgraph.work_item import (
     STARTED,

@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph.journal import Change, changed_files, noted, restore
+from flowgraph.record.journal import Change, changed_files, noted, restore
 
 pytestmark = pytest.mark.edge
 

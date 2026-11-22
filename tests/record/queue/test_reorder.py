@@ -3,7 +3,7 @@
 import pytest
 
 from flowgraph.parent import make_feature_id
-from flowgraph.queue import Line, NotInBacklogError, Queue, make_queue, reorder
+from flowgraph.record.queue import Line, NotInBacklogError, Queue, make_queue, reorder
 from flowgraph.work_item import make_kind, make_work_item_id
 
 pytestmark = pytest.mark.command

@@ -15,7 +15,7 @@ from flowgraph.graph import Edge, nodes_and_edges
 from flowgraph.item_id import parse_work_item_id_of_any_kind
 from flowgraph.knowledge_list import collected
 from flowgraph.parent import parse_feature_id
-from flowgraph.store import Store
+from flowgraph.record.store import Store
 from flowgraph.term import term_file
 from flowgraph.work_item import work_item_path
 

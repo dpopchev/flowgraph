@@ -11,14 +11,6 @@ from typing import Never
 
 from flowgraph import work_item
 from flowgraph.bug import BUG
-from flowgraph.config import (
-    CONFIG,
-    LoadSettings,
-    SaveSettings,
-    Settings,
-    read_settings,
-    write_settings,
-)
 from flowgraph.feature import (
     FeatureNotFoundError,
     FeatureState,
@@ -30,9 +22,17 @@ from flowgraph.feature import (
     read_feature_ids,
     write_feature,
 )
-from flowgraph.journal import Change, changed_files, noted, restore
 from flowgraph.parent import FeatureId
-from flowgraph.queue import QUEUE, LoadQueue, Queue, SaveQueue, read_queue, write_queue
+from flowgraph.record.config import (
+    CONFIG,
+    LoadSettings,
+    SaveSettings,
+    Settings,
+    read_settings,
+    write_settings,
+)
+from flowgraph.record.journal import Change, changed_files, noted, restore
+from flowgraph.record.queue import QUEUE, LoadQueue, Queue, SaveQueue, read_queue, write_queue
 from flowgraph.spike import SPIKE
 from flowgraph.story import STORY
 from flowgraph.term import (

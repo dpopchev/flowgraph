@@ -5,8 +5,8 @@ from collections.abc import Callable
 from functools import partial
 
 from flowgraph.parent import FeatureId, FeatureIdError, parse_feature_id
-from flowgraph.queue import Placed
-from flowgraph.store import KINDS
+from flowgraph.record.queue import Placed
+from flowgraph.record.store import KINDS
 from flowgraph.task import TaskId, TaskIdError, parse_task_id
 from flowgraph.work_item import Kind, WorkItemId, WorkItemIdError, parse_work_item_id
 

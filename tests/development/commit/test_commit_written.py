@@ -7,10 +7,10 @@ from typing import Never
 
 import pytest
 
-from flowgraph.config import make_config
 from flowgraph.development import GitError, make_slug
 from flowgraph.development.commit import Said, WorkTree, commit_written
 from flowgraph.item import Store, ToBranch, Written
+from flowgraph.record import make_config
 from flowgraph.story import make_story_id
 
 pytestmark = pytest.mark.command

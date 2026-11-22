@@ -7,7 +7,6 @@ from typing import Never
 
 import pytest
 
-from flowgraph.config import Config, make_config
 from flowgraph.criterion import NO_COMMIT, make_scenario
 from flowgraph.development import make_slug
 from flowgraph.development.parallel import ParallelError
@@ -27,8 +26,9 @@ from flowgraph.feature.start import (
 )
 from flowgraph.item import ToBranch, Written
 from flowgraph.parent import STANDALONE, FeatureId, Parent, make_feature_id
-from flowgraph.queue import Queue, make_queue
-from flowgraph.store import FeatureStore, Store
+from flowgraph.record import Config, make_config
+from flowgraph.record.queue import Queue, make_queue
+from flowgraph.record.store import FeatureStore, Store
 from flowgraph.story import STORY, make_story_id
 from flowgraph.task import (
     CompletedAlreadyError,

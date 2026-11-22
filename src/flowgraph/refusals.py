@@ -1,6 +1,5 @@
 """The refusals of a command: each is written as a usage error, whichever command raises it."""
 
-from flowgraph.config import ConfigError
 from flowgraph.criterion import (
     CommitError,
     CommitNeededError,
@@ -20,7 +19,13 @@ from flowgraph.item import ItemIdError
 from flowgraph.item_depends import StartWaitsError
 from flowgraph.knowledge_list import KindListedError
 from flowgraph.parent import FeatureIdError
-from flowgraph.queue import NotInBacklogError, QueueFileError, SameItemError, UnderFeatureError
+from flowgraph.record import ConfigError
+from flowgraph.record.queue import (
+    NotInBacklogError,
+    QueueFileError,
+    SameItemError,
+    UnderFeatureError,
+)
 from flowgraph.relation import RelationError
 from flowgraph.relation_read import RelationReadError
 from flowgraph.task import (

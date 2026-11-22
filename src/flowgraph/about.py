@@ -21,9 +21,9 @@ from flowgraph.item_id import ItemIdError, parse_shown_id
 from flowgraph.knowledge import KnowledgeRow, about_text, governs_text
 from flowgraph.knowledge_list import collected, newest_first
 from flowgraph.parent import FeatureId, feature_id_text, parse_feature_id
+from flowgraph.record.store import Store
 from flowgraph.relation import Standing, depended_on_by
 from flowgraph.status import rows_by_id, rows_under
-from flowgraph.store import Store
 from flowgraph.term import TermNotFoundError, is_term_name
 from flowgraph.term_item import items_about, term_head
 from flowgraph.work_item import WorkItemDetail, WorkItemId

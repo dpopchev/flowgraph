@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph.config import (
+from flowgraph.record.config import (
     UNGATED,
     UNLIMITED,
     ConfigError,

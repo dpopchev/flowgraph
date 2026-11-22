@@ -13,11 +13,11 @@ from functools import partial
 from pathlib import Path
 from typing import Never
 
-from flowgraph.config import Config
 from flowgraph.development import branch
 from flowgraph.development.branch import GitError, branch_of
 from flowgraph.item import ToBranch, Written
-from flowgraph.store import Store
+from flowgraph.record import Config
+from flowgraph.record.store import Store
 from flowgraph.work_item import work_item_id_text
 
 # Where the branch of a start is checked out when the write of the record made no commit.

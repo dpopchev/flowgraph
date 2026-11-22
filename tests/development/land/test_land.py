@@ -8,7 +8,6 @@ from typing import Never
 
 import pytest
 
-from flowgraph.config import Config, make_config
 from flowgraph.criterion import make_commit, make_scenario
 from flowgraph.development import GateError, GitError, RunGate
 from flowgraph.development.commit import LandingSteps, Said, WorkTree
@@ -16,8 +15,9 @@ from flowgraph.development.land import LandError, land_item
 from flowgraph.feature import FeatureNotFoundError, make_feature, started_feature
 from flowgraph.item import Store
 from flowgraph.parent import FeatureId, make_feature_id
-from flowgraph.queue import make_queue
-from flowgraph.store import FeatureStore
+from flowgraph.record import Config, make_config
+from flowgraph.record.queue import make_queue
+from flowgraph.record.store import FeatureStore
 from flowgraph.story import STORY as STORY_KIND
 from flowgraph.story import make_story, make_story_id
 from flowgraph.task import OpenTaskError, make_task, make_task_id

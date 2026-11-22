@@ -21,11 +21,13 @@ commit = "e0ee80e"
 
 [[tasks]]
 id = "T-0232"
-state = "started"
+state = "completed"
 title = "Refuse the merge of a landing in src/flowgraph/branch.py while a merge is held, leaving it as it was, and when the branch brings nothing main lacks, before any commit"
 expected_output = "changed: merge_uncommitted of src/flowgraph/branch.py; the tests of tests/branch/test_landing_git.py pass"
 created = 2026-11-22 06:59:18+00:00
 started = 2026-11-22 07:00:01+00:00
+completed = 2026-11-22 07:02:19+00:00
+commit = "2464eaa"
 
 [[tasks]]
 id = "T-0233"

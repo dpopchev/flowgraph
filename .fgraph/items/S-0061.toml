@@ -22,10 +22,11 @@ commit = "d84f871"
 
 [[tasks]]
 id = "T-0240"
-state = "backlog"
+state = "started"
 title = "Say in README.md that fgraph config unset takes a key back to its default, none for development.parallel and development.gate"
 expected_output = "changed: README.md names fgraph config unset"
 created = 2026-11-22 07:20:07+00:00
+started = 2026-11-22 07:24:38+00:00
 
 [[tasks]]
 id = "T-0241"

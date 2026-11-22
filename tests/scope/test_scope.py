@@ -8,6 +8,7 @@ from typing import Never
 import pytest
 
 from flowgraph.commit import WorkTree
+from flowgraph.config import Settings
 from flowgraph.criterion import make_scenario
 from flowgraph.item import Store
 from flowgraph.queue import Queue, make_queue
@@ -24,6 +25,7 @@ CREATED = datetime(2026, 1, 1, tzinfo=UTC)
 SCENARIO = make_scenario("a", "b", "c")
 OWN = make_story(make_story_id(1), "a title", SCENARIO, "", CREATED)
 OTHER = make_story(make_story_id(2), "another title", SCENARIO, "", CREATED)
+SETTINGS: Settings = {"development": {"enabled": True}}
 
 
 def never(*_: object) -> Never:
@@ -126,6 +128,29 @@ def test_a_branch_no_work_item_owns_saves_the_queue() -> None:
     saved: list[WorkItemState | Queue] = []
     within(store(saved), lambda: None, never).save_queue(make_queue([]))
     assert saved == [make_queue([])]
+
+
+def test_the_settings_are_refused_naming_the_owner_of_the_branch() -> None:
+    with pytest.raises(
+        OutOfScopeError,
+        match=rf"^the configuration is not set here: the branch {BRANCH} writes S-0001 alone$",
+    ):
+        within(store([]), lambda: SCOPE, never).save_settings(SETTINGS)
+
+
+def test_the_settings_refused_are_not_saved() -> None:
+    saved: list[Settings] = []
+    taking = replace(store([]), save_settings=saved.append)
+    with pytest.raises(OutOfScopeError):
+        within(taking, lambda: SCOPE, never).save_settings(SETTINGS)
+    assert saved == []
+
+
+def test_a_branch_no_work_item_owns_saves_the_settings() -> None:
+    saved: list[Settings] = []
+    taking = replace(store([]), save_settings=saved.append)
+    within(taking, lambda: None, never).save_settings(SETTINGS)
+    assert saved == [SETTINGS]
 
 
 def test_a_read_asks_for_no_scope() -> None:

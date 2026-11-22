@@ -16,7 +16,7 @@ itself. A record is layered by its configuration, `.fgraph/config.toml`: it
 turns the commits of the record off, and once it turns the development on,
 starting a work item also checks out its branch in a worktree of its own,
 completing an item names the commit that holds its work, and `fgraph land`
-lands it.
+lands it. `fgraph config` shows the configuration and sets a key of it.
 
 | Part                            | State                                                    |
 | ------------------------------- | -------------------------------------------------------- |
@@ -30,6 +30,7 @@ lands it.
 | the wording of a work item      | rewritten by `fgraph amend` while in Backlog             |
 | git                             | every write of the record committed, unless turned off   |
 | the layers of a record          | `.fgraph/config.toml`: commits on, development off       |
+| the configuration               | every key shown and set by `fgraph config`               |
 | the development                 | once enabled: start branches, `fgraph land` lands        |
 | the ontology                    | not started                                              |
 | flowgraph tracking its own work | its Stories are in `.fgraph/` since 0.4.0                |
@@ -158,8 +159,10 @@ With `enabled = true` the start, the scoping and the landing are as the rest
 of this page shows them: wherever it names a branch, a worktree or a landing,
 the record has the development on. The start of a Story is held to `main`
 either way, and it alone: no other write is, the reading decided when S-0039
-was ordered. No command writes the file yet; it is written by hand, and the
-record of flowgraph itself holds the key.
+was ordered. The file is no longer written by hand: `fgraph config set
+development.enabled true` writes the key, as shown further down with `fgraph
+config`, and the record of flowgraph itself holds it. Each key below is shown
+as the file holds it once it is set.
 
 The development limits the work items started at once when the record says
 how many:
@@ -265,10 +268,10 @@ commit = false
 A record without the file, or without the key, has them on: inside a git work
 tree that does not ignore the record, fgraph commits every write of it, as
 shown further down. With `commit = false` no write of the record is
-committed: `add`, `amend`, `remove`, `reorder`, `start`, `block`, `unblock`
-and `complete` leave their files changed in the work tree, with no commit and
-no warning, as the write of a record git ignores. Committing them is then
-yours:
+committed: `add`, `amend`, `remove`, `reorder`, `start`, `block`, `unblock`,
+`complete` and `config set` leave their files changed in the work tree, with
+no commit and no warning, as the write of a record git ignores. Committing
+them is then yours:
 
 ```sh
 fgraph add story "Raise the Stories fgraph lists under Backlog from 0 to 1" \
@@ -302,6 +305,97 @@ fgraph status
 fgraph status
 # fgraph: error: /src/project/.fgraph/config.toml: development.parallel is 0: it takes a whole number of 1 or more
 ```
+
+The configuration is shown and set through `fgraph config`, so
+`.fgraph/config.toml` is no longer written by hand. `fgraph config show` lists
+every key of the configuration, dotted, with its value as the file writes it,
+one a line. A key the file lacks is listed at its default, so a record without
+the file lists the defaults:
+
+```sh
+fgraph config show
+# git.commit = true
+# development.enabled = false
+# development.parallel = none
+# development.merge = "merge-commit"
+# development.gate = none
+```
+
+`none` is how a key that holds no value is listed: `parallel` without a
+limit, `gate` without a command. It is no value of the file, so a gate named
+`"none"`, listed in its quotes, is not mistaken for it.
+
+`fgraph config set KEY VALUE` writes that one key into the file and keeps the
+others; a record without the file gains it:
+
+```sh
+fgraph config set development.enabled true
+# set development.enabled = true
+
+fgraph config set development.gate "make check"
+# set development.gate = "make check"
+
+fgraph config show
+# git.commit = true
+# development.enabled = true
+# development.parallel = none
+# development.merge = "merge-commit"
+# development.gate = "make check"
+```
+
+VALUE is a text, read by what its key takes and never guessed from the text,
+so `fgraph config set development.gate true` names the command `true`:
+
+| Key                    | VALUE                                      | Set as                                            |
+| ---------------------- | ------------------------------------------ | ------------------------------------------------- |
+| `git.commit`           | `true` or `false`                          | `fgraph config set git.commit false`              |
+| `development.enabled`  | `true` or `false`                          | `fgraph config set development.enabled true`      |
+| `development.parallel` | a whole number of 1 or more                | `fgraph config set development.parallel 2`        |
+| `development.merge`    | `merge-commit`, `squash` or `fast-forward` | `fgraph config set development.merge squash`      |
+| `development.gate`     | a command line, one argument of the shell  | `fgraph config set development.gate "make check"` |
+
+The whole file is read back as a configuration before it replaces the one in
+the record. A key the configuration does not have, a value the key does not
+take and a combination it refuses -- the development on with the commits off
+-- exit 2 naming the key, with nothing written:
+
+```sh
+fgraph config set development.enable true
+# fgraph: error: development.enable is no key of the configuration
+
+fgraph config set development.parallel 0
+# fgraph: error: development.parallel is 0: it takes a whole number of 1 or more
+
+fgraph config set development.enabled yes
+# fgraph: error: development.enabled is "yes": it takes true or false
+
+fgraph config set git.commit false
+# fgraph: error: development.enabled is true while git.commit is false: the development needs the commits of the record
+```
+
+A set is a write of the record as any other. In a git repository fgraph
+commits the file alone, under `chore: set development.enabled in the record`,
+and a set to the value the file writes already changes nothing and makes no
+commit. Whether a set is committed is read from the configuration it leaves:
+one that turns the commits off, `fgraph config set git.commit false`, is left
+uncommitted as every write after it, and one that turns them back on is
+committed, so fgraph never commits a `config.toml` that turns its commits
+off. On the branch of a Story the configuration is no file of its scope, and
+a set exits 2 naming the Story the branch owns; `fgraph config show` runs
+anywhere:
+
+```sh
+fgraph config set development.parallel 2
+# fgraph: error: the configuration is not set here: the branch wi/S-0001-raise-the-stories-fgraph writes S-0001 alone
+```
+
+A key is taken back to its default by setting that default, `fgraph config
+set development.merge merge-commit`: there is no unset. `parallel` and `gate`
+have no default to set, so once set they take another value by a set, and are
+taken back to none only by removing their line from the file. A set writes
+the file whole from its keys, so a comment written in it is not kept. A
+`config.toml` fgraph refuses is refused by `fgraph config` too, as by every
+command, and is mended in the file.
 
 Start a Story once it has a Task, then start its Tasks one by one. `fgraph
 start` takes a Story id or a Task id; with the development on, the start of a
@@ -899,9 +993,9 @@ move.
 
 When the record is inside a git work tree, `fgraph` commits every write of
 it, unless `[git] commit = false` of its `config.toml` turns the commits off:
-`add`, `amend`, `reorder`, `start` and `complete` each leave one commit
-that holds the files of the record the write changed, alone, under a message
-`fgraph` words. Whatever else is staged or changed stays out of it:
+`add`, `amend`, `reorder`, `start`, `complete` and `config set` each leave
+one commit that holds the files of the record the write changed, alone, under
+a message `fgraph` words. Whatever else is staged or changed stays out of it:
 
 ```sh
 fgraph add story "Raise the Stories fgraph lists under Backlog from 0 to 1" \
@@ -918,12 +1012,13 @@ git log -1 --format=%s --name-only
 The other messages follow the write: `chore: add T-0001 of S-0001 in the
 record`, `chore: amend S-0001 in the record`, `chore: reorder S-0002 before
 S-0001 in the record`, `chore: start T-0001 of S-0001 in the record`,
-`chore: complete S-0001 in the record`. A write that leaves its file as it
-was makes no commit. Outside a git work tree a write is made as before, with
-no commit and no warning, and so is every write of a record with the commits
-turned off. A commit git refuses exits 2 and names the git command, and every
-file the write changed is put back as it was. The commits of the development
-and their messages stay yours.
+`chore: complete S-0001 in the record`, `chore: set development.enabled in
+the record`. A write that leaves its file as it was makes no commit. Outside
+a git work tree a write is made as before, with no commit and no warning, and
+so is every write of a record with the commits turned off. A commit git
+refuses exits 2 and names the git command, and every file the write changed
+is put back as it was. The commits of the development and their messages stay
+yours.
 
 A record git ignores is written without a commit. When a rule of `.gitignore`
 names the record, every write is made with no commit and no warning. With the

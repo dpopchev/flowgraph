@@ -13,23 +13,32 @@ then = "fgraph config show lists development.enabled as true"
 
 [[tasks]]
 id = "T-0179"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_config_command.py, failing on the criterion of S-0045"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path. Seen red, then marked a strict xfail naming S-0045 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_config_command.py states that, on a record without config.toml, fgraph config set development.enabled true exits 0 and fgraph config show then lists development.enabled as true"
 created = 2026-11-21 22:40:56+00:00
+started = 2026-11-22 00:00:40+00:00
+completed = 2026-11-22 00:02:03+00:00
+commit = "811dd1f"
 
 [[tasks]]
 id = "T-0180"
-state = "backlog"
+state = "completed"
 title = "Add the config command to src/flowgraph/parser.py and src/flowgraph/cli.py, showing every key and setting one"
 description = "Removes the xfail mark of tests/functional/test_config_command.py. A key is taken back to its default by setting that default: an unset is not built."
 expected_output = "changed: fgraph config is a command of src/flowgraph/parser.py run by src/flowgraph/cli.py; fgraph config show lists every key of the configuration, dotted, with its value, one a line, a key config.toml lacks at its default; fgraph config set KEY VALUE writes that one key into .fgraph/config.toml and keeps the others, the whole read back through make_config before it replaces the file, so a key the configuration does not have and a value the key does not take exit 2 naming it with nothing written; the write is committed as any write of the record, chore: set <key> in the record, left uncommitted with git.commit off, and refused on the branch of a work item, whose scope it is no file of; the adapter that writes the file is proved in tests/config/"
 created = 2026-11-21 22:40:57+00:00
+started = 2026-11-22 00:02:03+00:00
+completed = 2026-11-22 00:09:34+00:00
+commit = "ff9c86a"
 
 [[tasks]]
 id = "T-0181"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say the configuration is shown and set through fgraph config"
 expected_output = "changed: README.md and docs/domain-model.md show fgraph config show and fgraph config set with every key of .fgraph/config.toml, say a key the file lacks is listed at its default, what a set writes, commits and refuses, and that the file is no longer written by hand"
 created = 2026-11-21 22:40:57+00:00
+started = 2026-11-22 00:09:35+00:00
+completed = 2026-11-22 00:12:47+00:00
+commit = "5b256f5"

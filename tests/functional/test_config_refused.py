@@ -61,8 +61,16 @@ def project(tmp_path: Path) -> Path:
 
 @pytest.mark.parametrize(
     "argv",
-    [[], ["status"], ["show", "S-0001"], ADD_STORY, ["watch", "--count", "1"]],
-    ids=["no-command", "status", "show", "add", "watch"],
+    [
+        [],
+        ["status"],
+        ["show", "S-0001"],
+        ADD_STORY,
+        ["watch", "--count", "1"],
+        ["config", "show"],
+        ["config", "set", "development.enabled", "true"],
+    ],
+    ids=["no-command", "status", "show", "add", "watch", "config-show", "config-set"],
 )
 def test_a_command_on_a_config_refused_exits_with_two_naming_the_key(
     argv: list[str], project: Path

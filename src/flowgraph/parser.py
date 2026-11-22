@@ -24,7 +24,8 @@ TOP = 5
 # The seconds watch waits between two frames, unless others are given.
 EVERY = 5
 
-# The path of a command among the commands: `()` the command line, `("add", "story")` a kind.
+# The path of a command among the commands: `()` the command line, `("add", "story")` a kind,
+# `("config", "set")` an action.
 CommandPath = tuple[str, ...]
 
 
@@ -208,6 +209,17 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     }
 
 
+def _config_actions(actions: Commands) -> dict[str, argparse.ArgumentParser]:
+    """The parser of each action `fgraph config` takes, under its name."""
+    show = _command(actions, "show", "list every key of the configuration with its value")
+    set_key = _command(actions, "set", "set one key of the configuration, in its config.toml")
+    set_key.add_argument(
+        "key", metavar="KEY", help="a key fgraph config show lists, as development.enabled"
+    )
+    set_key.add_argument("value", metavar="VALUE", help="the value the key takes, as a text")
+    return {"show": show, "set": set_key}
+
+
 def build_command_line() -> CommandLine:
     """The parser of the command line with its help text, and the parser of every command."""
     parser = argparse.ArgumentParser(
@@ -224,6 +236,8 @@ def build_command_line() -> CommandLine:
     add = _command(commands, "add", "add an item to the record")
     kinds = _add_kinds(add.add_subparsers(dest="kind", metavar="KIND", required=True))
     moves = _moves(commands)
+    config = _command(commands, "config", "show the configuration of the record, or set a key")
+    actions = _config_actions(config.add_subparsers(dest="action", metavar="ACTION", required=True))
     return CommandLine(
         parser,
         {
@@ -231,6 +245,8 @@ def build_command_line() -> CommandLine:
             ("add",): add,
             **{("add", name): kind for name, kind in kinds.items()},
             **{(name,): move for name, move in moves.items()},
+            ("config",): config,
+            **{("config", name): action for name, action in actions.items()},
         },
     )
 

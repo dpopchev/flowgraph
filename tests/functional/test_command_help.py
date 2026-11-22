@@ -34,6 +34,9 @@ COMMANDS = [
     ("reorder",),
     ("status",),
     ("watch",),
+    ("config",),
+    ("config", "show"),
+    ("config", "set"),
 ]
 
 

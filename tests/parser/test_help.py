@@ -21,6 +21,8 @@ COMMAND_LINE = build_command_line()
         (["--dir", "elsewhere", "start"], ("start",)),
         (["-d", "start", "status"], ("status",)),
         (["start", "--slug", "status"], ("start",)),
+        (["config", "show", "--help"], ("config", "show")),
+        (["config", "set", "development.gate", "status"], ("config", "set")),
     ],
     ids=[
         "nothing",
@@ -32,6 +34,8 @@ COMMAND_LINE = build_command_line()
         "after-dir",
         "a-dir-named-as-a-command",
         "an-option-value-named-as-a-command",
+        "an-action-under-config",
+        "a-value-of-config-set-named-as-a-command",
     ],
 )
 def test_the_arguments_name_the_command_by_its_path(argv: list[str], path: tuple[str, ...]) -> None:
@@ -60,7 +64,7 @@ def test_every_command_lists_its_help_option() -> None:
     assert without == []
 
 
-def test_every_command_and_every_kind_under_add_has_its_help() -> None:
+def test_every_command_kind_under_add_and_action_under_config_has_its_help() -> None:
     assert sorted(COMMAND_LINE.commands) == sorted(
         [
             (),
@@ -74,6 +78,9 @@ def test_every_command_and_every_kind_under_add_has_its_help() -> None:
             ("amend",),
             ("block",),
             ("complete",),
+            ("config",),
+            ("config", "set"),
+            ("config", "show"),
             ("land",),
             ("remove",),
             ("reorder",),

@@ -563,10 +563,10 @@ development too.
   tree that does not ignore the record `fgraph` commits every write of it, as
   the git steps below state.
 - With `commit = false` no write of the record is committed: `add`, `amend`,
-  `remove`, `reorder`, `start`, `block`, `unblock` and `complete` leave their
-  files changed in the work tree, without a commit and without a warning, as
-  the write of a record git ignores. Committing them is the developer's. The
-  start of a work item is still held to `main`.
+  `remove`, `reorder`, `start`, `block`, `unblock`, `complete` and `config
+  set` leave their files changed in the work tree, without a commit and
+  without a warning, as the write of a record git ignores. Committing them is
+  the developer's. The start of a work item is still held to `main`.
 - The layers build on each other, decided with S-0040: the branch of a work
   item carries its record, so the development needs the commits. A
   `config.toml` that sets `[development] enabled = true` with `[git] commit =
@@ -583,10 +583,61 @@ development too.
 - The configuration is read at the edge into a value of the model
   (`src/flowgraph/config.py`). Reading it is an effect: `run()` takes it as a
   callable, the defaults when none is given, and `main()` reads the file.
-- Only these five keys are built. Not built yet: a command that reads and
-  sets the configuration. Until then the file is written by hand; the record
-  of flowgraph holds `[development] enabled = true`, no `parallel`, no
-  `merge` and no `gate`.
+- Only these five keys are built: `git.commit`, `development.enabled`,
+  `development.parallel`, `development.merge` and `development.gate`, each
+  named dotted, its table and its key. The record of flowgraph holds
+  `[development] enabled = true`, no `parallel`, no `merge` and no `gate`.
+- The configuration is shown and set through `fgraph config`, the reading of
+  S-0045, so the file is no longer written by hand.
+- `fgraph config show` lists every key, dotted, with its value, one a line,
+  `<key> = <value>`. The value is written as the file writes it: `true`, `2`,
+  `"squash"`, `"make check"`. A key the file leaves out is listed at its
+  default, so a record without the file lists the five defaults.
+- A key that holds no value -- `parallel` without a limit, `gate` without a
+  command -- is listed as `none`, chosen when S-0045 was built. `none` is no
+  value of the file, so the gate `"none"`, listed in its quotes, is not
+  mistaken for it.
+- `fgraph config set KEY VALUE` writes that one key into `config.toml` and
+  keeps the others; a record without the file gains it. VALUE arrives as a
+  text and is read by what its key takes, never guessed from the text:
+  `true` or `false` for `git.commit` and `development.enabled`, a whole
+  number for `development.parallel`, the text itself for `development.merge`
+  and `development.gate`. So `fgraph config set development.gate true` names
+  the command `true`. A text that names no value of its key stays a text,
+  which the configuration refuses.
+- The whole file is read back through the constructor of the configuration
+  before it replaces the one in the record (`write_settings`,
+  `src/flowgraph/config.py`). A key the configuration does not have, a value
+  the key does not take and the development turned on with the commits off
+  are refused with exit 2 naming the key, nothing written: the file is as it
+  was, and a record without one is left without. The refusal names no file,
+  since the file is not at fault.
+- A set is a write of the record as any other: journaled by the store,
+  committed alone as the git steps below state, put back when git refuses
+  the commit, and without a commit when it leaves the file as it was.
+- Whether a set is committed is read from the configuration it leaves, not
+  from the one it found, chosen when S-0045 was built. A set that turns the
+  commits off is left uncommitted, as every write after it; a set that turns
+  them on is committed, with whatever the file held uncommitted. So `fgraph`
+  never commits a `config.toml` that turns its commits off.
+- On the branch of a work item a set is refused, as the scope of the branch
+  states below: `config.toml` is no file of the work item. In any other work
+  tree it is written, held to `main` no more than any write but the start of
+  a work item. `fgraph config show` writes nothing and runs anywhere.
+- A key is taken back to its default by setting that default; no unset is
+  built. `git.commit`, `development.enabled` and `development.merge` have a
+  default to set. `development.parallel` and `development.gate` have none:
+  once set they take another value by a set, and are taken back to none only
+  by removing their line from the file.
+- A set writes the file whole from its keys, so a comment written in it is
+  not kept. A `config.toml` that is refused is refused by `fgraph config`
+  too, as by every command: it is mended in the file.
+- In the model the keys a file writes are its settings (`Settings`,
+  `src/flowgraph/config.py`): plain data by table, a key left out left out,
+  apart from the configuration, which holds a value for every key. A set
+  loads the settings whole, sets one key by a function that returns them and
+  saves them whole (`src/flowgraph/setting.py`), where each key is listed
+  once with what it takes and the value a configuration holds under it.
 
 Who writes what with the development on, so that two branches never change
 the same file or hand out the same number. With it off no work item has a
@@ -600,6 +651,7 @@ held to `main`, and there is no landing:
 | reorder the Backlog | `main` |
 | amend a work item in Backlog | `main` |
 | remove a work item in Backlog | `main` |
+| set a key of the configuration | `main` |
 | start a work item | `main`: `fgraph` commits it and makes its branch |
 | add a Task to a started work item | its branch |
 | start, block, unblock and complete its Tasks | its branch |
@@ -614,8 +666,9 @@ branch:
   on it `fgraph` writes the file of that work item alone.
 - Refused there with exit 2, nothing written: a Task added to another work
   item, a Task of another work item started or completed, a work item added,
-  and a reorder of the Backlog, whose queue is no file of the work item. The
-  refusal names the work item the branch owns.
+  a reorder of the Backlog, whose queue is no file of the work item, and a
+  set of the configuration, whose `config.toml` is none either. The refusal
+  names the work item the branch owns.
 - A work tree on any other branch, and a record outside a git work tree,
   write as before.
 
@@ -663,10 +716,11 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 
 - `fgraph` commits every write of the record, when the record is inside a git
   work tree and its configuration leaves `[git] commit` on: `add`, `amend`,
-  `remove`, `reorder`, `start`, `block`, `unblock` and `complete`. The commit
-  holds the files of the record the write changed, alone; whatever else is
-  staged or changed stays as it was and out of the commit.
-- The commit is worded by `fgraph`, `chore: <write> <id> in the record`:
+  `remove`, `reorder`, `start`, `block`, `unblock`, `complete` and `config
+  set`. The commit holds the files of the record the write changed, alone;
+  whatever else is staged or changed stays as it was and out of the commit.
+- The commit is worded by `fgraph`, `chore: <write> <id> in the record`, a
+  set of the configuration under its key:
 
   | Write | Message |
   |---|---|
@@ -679,6 +733,7 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   | unblock | `chore: unblock T-0001 of S-0001 in the record` |
   | remove | `chore: remove S-0001 in the record` |
   | complete | `chore: complete S-0001 in the record`, `chore: complete T-0001 of S-0001 in the record` |
+  | set a key of the configuration | `chore: set development.enabled in the record` |
 
 - A write that leaves its file as it was makes no commit. With the
   development on, completing a Task names the commit of its work, so the

@@ -65,6 +65,7 @@ from flowgraph.scope import (
     within,
     worktree_of_item,
 )
+from flowgraph.setting import set_setting, show_config
 from flowgraph.store import OpenStore, Store, open_files
 from flowgraph.task import (
     BlockedError,
@@ -239,8 +240,9 @@ def _said(
 
     A write is committed once it is made. The lines of status are cut to the width, when there
     is one. The configuration says whether a start branches, how many work items are started at
-    once, whether a landing is taken and the gate it runs through run_gate. Raises the refusal
-    of the command, a git step refused among them.
+    once, whether a landing is taken and the gate it runs through run_gate. A set of the
+    configuration is committed by the configuration it leaves, so one that turns the commits
+    off is left uncommitted. Raises the refusal of the command, a git step refused among them.
     """
     if args.command == "start":
         check_start_on_main(args.id, record, open_git)
@@ -249,6 +251,11 @@ def _said(
     if written is not None:
         return commit_written(written, store, record, open_git, config)
     match args.command:
+        case "config" if args.action == "set":
+            done = set_setting(args.key, args.value, store.load_settings, store.save_settings)
+            return commit_written(done.written, store, record, open_git, done.config)
+        case "config":
+            return Said(show_config(config))
         case "land":
             return land_item(
                 args.id, args.message, store, now, record, open_git, config, run_gate, args.decision

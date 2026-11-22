@@ -13,6 +13,7 @@ from typing import assert_never
 
 from flowgraph.branch import MAIN
 from flowgraph.commit import OpenGit, kept_in
+from flowgraph.config import Settings
 from flowgraph.feature import Feature
 from flowgraph.item import ItemIdError, parse_item_id, parse_work_item_id_of_any_kind
 from flowgraph.parent import feature_id_text
@@ -107,10 +108,10 @@ def _is_started(item: WorkItemState) -> bool:
 def within(store: Store, find_scope: FindScope, find_worktree: FindItemWorktree) -> Store:
     """The store that saves within the scope found when it saves; its reads are as they were.
 
-    On the branch of a work item a save of another work item, of the queue or of a Feature raises
-    OutOfScopeError and writes nothing. On any other branch so does a Task write of a started
-    work item that has a worktree: the save of a started work item that was started already.
-    The scope and the worktree are asked for only at a save.
+    On the branch of a work item a save of another work item, of the queue, of a Feature or of
+    the settings raises OutOfScopeError and writes nothing. On any other branch so does a Task
+    write of a started work item that has a worktree: the save of a started work item that was
+    started already. The scope and the worktree are asked for only at a save.
     """
 
     def save_work_item(item: WorkItemState) -> None:
@@ -139,8 +140,20 @@ def within(store: Store, find_scope: FindScope, find_worktree: FindItemWorktree)
             raise OutOfScopeError(f"{named} is not written here: {_alone(scope)}")
         store.features.save_feature(feature)
 
+    def save_settings(settings: Settings) -> None:
+        scope = find_scope()
+        if scope is not None:
+            raise OutOfScopeError(f"the configuration is not set here: {_alone(scope)}")
+        store.save_settings(settings)
+
     features = replace(store.features, save_feature=save_feature)
-    return replace(store, save_work_item=save_work_item, save_queue=save_queue, features=features)
+    return replace(
+        store,
+        save_work_item=save_work_item,
+        save_queue=save_queue,
+        features=features,
+        save_settings=save_settings,
+    )
 
 
 def check_start_on_main(item: str, record: Path, open_git: OpenGit) -> None:

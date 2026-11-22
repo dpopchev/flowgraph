@@ -8,3 +8,11 @@ created = 2026-11-22 21:02:21+00:00
 [criterion]
 observed = "fgraph graph prints the node of a Task with bucket null, a started or a blocked one too, so no read as data says which Task is started"
 expected = "the node of a Task carries its state as fgraph show lists it: Backlog, InProgress as started or blocked, Completed or Removed"
+
+[[tasks]]
+id = "T-0343"
+state = "backlog"
+title = "Add tests/functional/test_graph_task_state.py, failing on the expected of B-0021"
+description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_graph_json.py does. Seen red, then marked a strict xfail naming B-0021 until the Task that turns it green removes the mark."
+expected_output = "created: tests/functional/test_graph_task_state.py states that on a record with a Story holding a started, a blocked, a completed Task and one in Backlog, fgraph graph exits 0 and each Task node carries its own state"
+created = 2026-11-22 21:02:23+00:00

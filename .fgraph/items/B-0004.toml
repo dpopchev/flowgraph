@@ -21,7 +21,8 @@ commit = "9f82891"
 
 [[tasks]]
 id = "T-0220"
-state = "backlog"
+state = "started"
 title = "Say in README.md that each frame of fgraph watch reaches a pipe as it is written"
 expected_output = "changed: README.md names the frames of watch written to a pipe as they come"
 created = 2026-11-22 06:24:26+00:00
+started = 2026-11-22 06:26:42+00:00

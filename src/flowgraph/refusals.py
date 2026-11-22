@@ -14,11 +14,13 @@ from flowgraph.feature_item import OpenWorkItemError
 from flowgraph.feature_start import FeatureNotStartedError, NoWorkItemError, WorkItemInProgressError
 from flowgraph.gate import GateError
 from flowgraph.item import ItemIdError
+from flowgraph.item_depends import StartWaitsError
 from flowgraph.knowledge_list import KindListedError
 from flowgraph.land import LandError
 from flowgraph.parallel import ParallelError
 from flowgraph.parent import FeatureIdError
 from flowgraph.queue import NotInBacklogError, QueueFileError, SameItemError, UnderFeatureError
+from flowgraph.relation import RelationError
 from flowgraph.scope import NotOnMainError, OutOfScopeError
 from flowgraph.task import (
     BlockedError,
@@ -89,6 +91,8 @@ REFUSED = (
     NotInBacklogError,
     SameItemError,
     UnderFeatureError,
+    RelationError,
+    StartWaitsError,
     PaceError,
     KindListedError,
 )

@@ -21,6 +21,7 @@ from flowgraph.feature import (
     started_feature,
 )
 from flowgraph.item import MESSAGE, ItemIdError, ToBranch, Written, parse_item_id
+from flowgraph.item_depends import check_first_waits
 from flowgraph.parallel import check_feature_parallel
 from flowgraph.parent import FeatureId, Standalone, feature_id_text, parse_feature_id
 from flowgraph.queue import queued
@@ -71,7 +72,8 @@ def start_feature_item(
     given, else the slug of its title. Raises FeatureIdError when the text is no Feature id,
     FeatureNotFoundError when the record holds no such Feature, StartedAlreadyError when it is
     started, CompletedAlreadyError when it is completed, RemovedAlreadyError when it is
-    removed, NoWorkItemError when it has no work item in Backlog, ParallelError when as many
+    removed, NoWorkItemError when it has no work item in Backlog, StartWaitsError naming what its
+    first work item still waits for, ParallelError when as many
     work items are started as the configuration starts at once, SlugError when the slug given
     is no slug, and NoTaskError naming the Feature when its first work item has no Task;
     nothing is saved.
@@ -83,6 +85,7 @@ def start_feature_item(
     first = first_in_backlog(feature_id, store)
     if first is None:
         raise NoWorkItemError(f"{named} has no work item in Backlog to start with")
+    check_first_waits(named, first, store)
     check_feature_parallel(feature_id, store.find_work_item_rows, config)
     held = store.load_work_item(first)
     branch = make_slug(slug) if slug is not None else slug_of_title(held.title)

@@ -90,6 +90,12 @@ def _add_kinds(kinds: Commands) -> dict[str, argparse.ArgumentParser]:
         kind.add_argument(
             "--parent", metavar="ID", help="the Feature it is under; it stands alone without one"
         )
+        kind.add_argument(
+            "--depends-on",
+            action="append",
+            metavar="ID",
+            help="a work item it waits for, which must be completed before it starts; once per id",
+        )
     feature = _command(
         kinds, "feature", "a bigger outcome that groups work items, with its criteria"
     )
@@ -134,6 +140,12 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     amend.add_argument("--hypothesis", metavar="TEXT", help="the question, of a Spike")
     amend.add_argument(
         "--parent", metavar="ID", help="the Feature to put it under, or none to stand alone"
+    )
+    amend.add_argument(
+        "--depends-on",
+        action="append",
+        metavar="ID",
+        help="a work item it waits for, once per id, in place of its own; none takes them away",
     )
     show = _command(commands, "show", "show a work item with its Tasks, or a Feature")
     show.add_argument("id", metavar="ID", help="the id of the work item or of the Feature")

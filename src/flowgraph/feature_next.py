@@ -25,6 +25,7 @@ from flowgraph.feature_start import (
     first_in_backlog,
 )
 from flowgraph.item import MESSAGE, Written, complete_item, parse_item_id, start_item
+from flowgraph.item_depends import StartWaitsError, check_start_waits
 from flowgraph.parallel import ParallelError, check_parallel
 from flowgraph.parent import FeatureId, Standalone
 from flowgraph.record import Now
@@ -39,6 +40,7 @@ NOT_STARTED = (
     ParallelError,
     WorkItemInProgressError,
     BlockedError,
+    StartWaitsError,
     OutOfScopeError,
     SlugError,
 )
@@ -71,13 +73,15 @@ def _next_of(item_id: WorkItemId, store: Store) -> WorkItemId | None:
 def start_next(item_id: WorkItemId, store: Store, now: Now, config: Config) -> Written:
     """Start the work item in Backlog of that id, as `fgraph start` of it does; what it says.
 
-    Raises one of NOT_STARTED when its Feature holds a started work item or is blocked, when as
+    Raises one of NOT_STARTED when its Feature holds a started work item or is blocked, when it
+    depends on a work item not completed, when as
     many are started as the configuration starts at once, when it has no Task, when its title
     gives no slug or when the branch written on writes another work item alone; nothing is
     saved.
     """
     named = work_item_id_text(item_id)
     check_start_under_feature(named, store)
+    check_start_waits(named, store)
     check_parallel(named, store.find_work_item_rows, config)
     return start_item(named, None, store, now)
 

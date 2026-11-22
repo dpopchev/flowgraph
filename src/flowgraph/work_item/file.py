@@ -4,6 +4,7 @@ A kind reads the files of its own prefix; a file of another prefix is left alone
 """
 
 import tomllib
+from collections.abc import Sequence
 from dataclasses import replace
 from datetime import datetime
 from pathlib import Path
@@ -33,8 +34,10 @@ from flowgraph.item_file import (
 from flowgraph.knowledge import KnowledgeRow
 from flowgraph.parent import FeatureIdError, parent_text, parent_written
 from flowgraph.record import ITEMS
+from flowgraph.relation import RelationError
 from flowgraph.task import TaskInProgressError
 from flowgraph.task_list import at_most_one_started
+from flowgraph.work_item.depends import depends_primitives, relations_held
 from flowgraph.work_item.model import (
     CompletedWorkItem,
     Kind,
@@ -43,6 +46,7 @@ from flowgraph.work_item.model import (
     WorkItem,
     WorkItemFileError,
     WorkItemId,
+    WorkItemIdError,
     WorkItemMismatchError,
     WorkItemNotFoundError,
     WorkItemState,
@@ -55,7 +59,7 @@ from flowgraph.work_item.model import (
     work_item_id_text,
 )
 from flowgraph.work_item.removal import removed_work_item
-from flowgraph.work_item.views import WorkItemDetail, WorkItemRow
+from flowgraph.work_item.views import DependsRow, WorkItemDetail, WorkItemRow
 
 
 class _ItemFile(BaseModel):
@@ -72,6 +76,7 @@ class _ItemFile(BaseModel):
     criterion: AnyCriterionFile
     tasks: list[TaskFile] = []
     knowledge: list[KnowledgeFile] = []
+    depends_on: list[str] = []
 
 
 class _StartedItemFile(BaseModel):
@@ -89,6 +94,7 @@ class _StartedItemFile(BaseModel):
     criterion: AnyCriterionFile
     tasks: list[HeldTask] = []
     knowledge: list[KnowledgeFile] = []
+    depends_on: list[str] = []
 
 
 class _CompletedItemFile(BaseModel):
@@ -108,6 +114,7 @@ class _CompletedItemFile(BaseModel):
     criterion: AnyCriterionFile
     tasks: list[CompletedTaskFile] = []
     knowledge: list[KnowledgeFile] = []
+    depends_on: list[str] = []
 
 
 class _RemovedItemFile(BaseModel):
@@ -126,6 +133,7 @@ class _RemovedItemFile(BaseModel):
     criterion: AnyCriterionFile
     tasks: list[TaskFile] = []
     knowledge: list[KnowledgeFile] = []
+    depends_on: list[str] = []
 
 
 # The file of a work item in any of its states.
@@ -227,29 +235,33 @@ def read_work_item_rows(record: Path, kind: Kind) -> list[WorkItemRow]:
             started=_started_held(held),
             completed=_completed_held(held),
             tasks=[task_row(task) for task in held.tasks],
+            depends_on=held.depends_on,
         )
         for held in _files_of(record, kind)
     ]
     return sorted(rows, key=lambda row: parse_work_item_id(kind, row.id).number)
 
 
-def read_work_item(record: Path, item_id: WorkItemId) -> WorkItemState:
+def read_work_item(record: Path, item_id: WorkItemId, kinds: Sequence[Kind] = ()) -> WorkItemState:
     """Adapter: the work item of that id in the record, whole.
 
-    Raises WorkItemNotFoundError when the record holds no such item and WorkItemFileError when
-    its file does not hold one, as when it holds more than one started Task, the criterion of
-    another kind or a commit that is no sha.
+    The ids it depends on are read as those of its own kind or of the kinds given. Raises
+    WorkItemNotFoundError when the record holds no such item and WorkItemFileError when its file
+    does not hold one, as when it holds more than one started Task, the criterion of another
+    kind, a commit that is no sha or an id it depends on that is of no kind.
     """
     path = _held_path(record, item_id)
     held = _read_file(path, item_id.kind)
     try:
-        return _item_held(held, item_id.kind)
+        return _item_held(held, item_id.kind, kinds)
     except (
         TaskInProgressError,
         CriterionError,
         DecisionError,
         FeatureIdError,
         CommitError,
+        WorkItemIdError,
+        RelationError,
     ) as error:
         raise WorkItemFileError(f"{path} holds no {item_id.kind.noun}: {error}") from error
 
@@ -271,6 +283,7 @@ def read_work_item_detail(record: Path, item_id: WorkItemId) -> WorkItemDetail:
         reason=_reason_held(held),
         parent=held.parent,
         knowledge=[KnowledgeRow(line.kind, line.noted, line.text) for line in held.knowledge],
+        depends_on=[DependsRow(each) for each in held.depends_on],
         **held.criterion.model_dump(),
     )
 
@@ -321,16 +334,18 @@ def _item_primitives(item: WorkItemState) -> dict[str, object]:
         "criterion": criterion_primitives(item.criterion),
         **tasks,
         **knowledge,
+        **depends_primitives(item.relations),
     }
 
 
-def _item_held(held: _HeldItemFile, kind: Kind) -> WorkItemState:
+def _item_held(held: _HeldItemFile, kind: Kind, kinds: Sequence[Kind] = ()) -> WorkItemState:
     """The work item of that kind a validated file holds, built through its constructors.
 
     An item and its Tasks past Backlog are built by the moves that took them there, so a file
     holds no state those moves could not reach. Raises TaskInProgressError when it holds more
     than one started Task, CriterionError when it holds the criterion of another kind or a
-    decision before it is completed, and DecisionError when its completion lacks its decision.
+    decision before it is completed, DecisionError when its completion lacks its decision,
+    WorkItemIdError when it depends on an id of none of the kinds and RelationError when on itself.
     """
     criterion = criterion_held(held.criterion)
     decision = decision_held(held.criterion)
@@ -341,7 +356,9 @@ def _item_held(held: _HeldItemFile, kind: Kind) -> WorkItemState:
     item = make_work_item(item_id, held.title, criterion, held.description, held.created, parent)
     for task in held.tasks:
         item = append_task(item, backlog_task(task))
+    relations = relations_held(item_id, held.depends_on, (kind, *kinds))
     item = replace(item, knowledge=tuple(knowledge_held(line) for line in held.knowledge))
+    item = replace(item, relations=relations)
     match held:
         case _ItemFile():
             return item
@@ -362,10 +379,11 @@ def _item_held(held: _HeldItemFile, kind: Kind) -> WorkItemState:
             assert_never(unreachable)
 
 
-def write_work_item(record: Path, item: WorkItemState) -> None:
+def write_work_item(record: Path, item: WorkItemState, kinds: Sequence[Kind] = ()) -> None:
     """Adapter: write the work item as its one file in the record.
 
-    The item is written beside its file and read back before it replaces it. Raises
+    The item is written beside its file and read back before it replaces it, the ids it depends
+    on as those of its own kind or of the kinds given. Raises
     WorkItemMismatchError naming the file when the item read back differs; the file is then as
     it was before.
     """
@@ -374,6 +392,6 @@ def write_work_item(record: Path, item: WorkItemState) -> None:
     write_checked(
         path,
         _item_primitives(item),
-        lambda beside: _item_held(_read_file(beside, kind), kind) == item,
+        lambda beside: _item_held(_read_file(beside, kind), kind, kinds) == item,
         WorkItemMismatchError(f"{path}: the {kind.noun} written reads back different"),
     )

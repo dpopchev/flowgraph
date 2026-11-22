@@ -21,6 +21,7 @@ from flowgraph.criterion import (
     said,
 )
 from flowgraph.parent import Parent
+from flowgraph.relation import with_depends_on
 from flowgraph.task import CompletedAlreadyError, StartedAlreadyError
 from flowgraph.work_item.model import (
     CompletedWorkItem,
@@ -39,7 +40,8 @@ class Amendment:
     """The parts of a work item to rewrite: each its new text, or None where it stays as it was.
 
     The parts of the criterion are those of every form; a work item takes the ones it states.
-    Its parent is the Feature to put it under, or standing alone.
+    Its parent is the Feature to put it under, or standing alone. The work items it depends on
+    replace those it had; none given takes them all away.
     """
 
     title: str | None = None
@@ -51,6 +53,7 @@ class Amendment:
     expected: str | None = None
     hypothesis: str | None = None
     parent: Parent | None = None
+    depends_on: tuple[WorkItemId, ...] | None = None
 
 
 # Check the move of the work item of that id from the parent it had to the one an amend names;
@@ -119,6 +122,7 @@ def amended_work_item(item: WorkItemState, amendment: Amendment) -> WorkItem:
 
     Raises NoPartError when it names none, NoSuchPartError when it names a part the criterion of
     the item does not have, EmptyPartError when its title or a part of its criterion is blank,
+    RelationError when it makes the item depend on itself,
     StartedAlreadyError when the item is started, CompletedAlreadyError when it is completed and
     RemovedAlreadyError when it is removed.
     """
@@ -131,8 +135,16 @@ def amended_work_item(item: WorkItemState, amendment: Amendment) -> WorkItem:
             title = said("title", _kept(amendment.title, item.title))
             description = _kept(amendment.description, item.description)
             parent = _kept(amendment.parent, item.parent)
+            relations = item.relations
+            if amendment.depends_on is not None:
+                relations = with_depends_on(relations, item.id, amendment.depends_on)
             return replace(
-                item, title=title, criterion=criterion, description=description, parent=parent
+                item,
+                title=title,
+                criterion=criterion,
+                description=description,
+                parent=parent,
+                relations=relations,
             )
         case StartedWorkItem():
             raise StartedAlreadyError(f"{named} is started already")

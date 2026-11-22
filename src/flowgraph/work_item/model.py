@@ -5,7 +5,7 @@ Upkeep and every kind that shares their Given / When / Then.
 """
 
 import re
-from collections.abc import Callable, Collection
+from collections.abc import Callable, Collection, Iterable
 from dataclasses import dataclass, replace
 from datetime import datetime
 from typing import assert_never
@@ -22,6 +22,7 @@ from flowgraph.criterion import (
 )
 from flowgraph.knowledge import KnowledgeLine
 from flowgraph.parent import STANDALONE, Parent
+from flowgraph.relation import Relations, make_relations
 from flowgraph.task import (
     BlockedTask,
     CompletedAlreadyError,
@@ -55,6 +56,14 @@ class WorkItemId:
     kind: Kind
     number: int
 
+    def __str__(self) -> str:
+        """The id as it is written, so a relation names it in a message."""
+        return work_item_id_text(self)
+
+
+# The relations of a work item that names none.
+NO_RELATIONS: Relations[WorkItemId] = Relations()
+
 
 @dataclass(frozen=True)
 class WorkItem:
@@ -68,6 +77,7 @@ class WorkItem:
     tasks: tuple[Task, ...]
     parent: Parent = STANDALONE
     knowledge: tuple[KnowledgeLine, ...] = ()
+    relations: Relations[WorkItemId] = NO_RELATIONS
 
 
 @dataclass(frozen=True)
@@ -83,6 +93,7 @@ class StartedWorkItem:
     tasks: tuple[TaskState, ...]
     parent: Parent = STANDALONE
     knowledge: tuple[KnowledgeLine, ...] = ()
+    relations: Relations[WorkItemId] = NO_RELATIONS
 
 
 @dataclass(frozen=True)
@@ -100,6 +111,7 @@ class CompletedWorkItem:
     tasks: tuple[CompletedTask, ...]
     parent: Parent = STANDALONE
     knowledge: tuple[KnowledgeLine, ...] = ()
+    relations: Relations[WorkItemId] = NO_RELATIONS
 
 
 @dataclass(frozen=True)
@@ -116,6 +128,7 @@ class RemovedWorkItem:
     tasks: tuple[Task, ...]
     parent: Parent = STANDALONE
     knowledge: tuple[KnowledgeLine, ...] = ()
+    relations: Relations[WorkItemId] = NO_RELATIONS
 
 
 # A work item that still takes Tasks: in Backlog or started.
@@ -223,12 +236,13 @@ def make_work_item(
     description: str,
     created: datetime,
     parent: Parent = STANDALONE,
+    depends_on: Iterable[WorkItemId] = (),
 ) -> WorkItem:
     """A work item in Backlog, its created time kept to the second; it stands alone unless a
-    Feature is named as its parent.
+    Feature is named as its parent, and depends on the work items given, none by default.
 
-    Raises EmptyPartError when the title is blank and CriterionError when the criterion is not
-    of the form the kind of the item takes.
+    Raises EmptyPartError when the title is blank, CriterionError when the criterion is not of
+    the form the kind of the item takes and RelationError when it depends on itself.
     """
     kind = item_id.kind
     if not isinstance(criterion, kind.takes):
@@ -236,7 +250,10 @@ def make_work_item(
         raise CriterionError(f"{kind.article} {kind.noun} states {stated}")
     to_the_second = created.replace(microsecond=0)
     titled = said("title", title)
-    return WorkItem(item_id, titled, criterion, description, to_the_second, (), parent)
+    relations = make_relations(item_id, depends_on)
+    return WorkItem(
+        item_id, titled, criterion, description, to_the_second, (), parent, (), relations
+    )
 
 
 def append_task[W: OpenWorkItem](item: W, task: Task) -> W:
@@ -283,6 +300,7 @@ def started_work_item(item: WorkItemState, on: datetime) -> StartedWorkItem:
                 item.tasks,
                 item.parent,
                 item.knowledge,
+                item.relations,
             )
         case StartedWorkItem():
             raise StartedAlreadyError(f"{work_item_id_text(item.id)} is started already")
@@ -321,6 +339,7 @@ def completed_work_item(
                 done,
                 item.parent,
                 item.knowledge,
+                item.relations,
             )
         case CompletedWorkItem():
             raise CompletedAlreadyError(f"{work_item_id_text(item.id)} is completed already")

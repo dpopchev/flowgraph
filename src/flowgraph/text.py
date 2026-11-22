@@ -207,13 +207,16 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
 
     The criterion is listed by the parts its kind states: a Given / When / Then, what is
     observed and expected, or a hypothesis with, once it is answered, its decision under it.
-    A parent, a description, a commit and the reason of a removal are listed only when there is
-    one, the bucket of a Task only once it has left Backlog. A blocked Task is listed in
-    InProgress as blocked, with its reason and what it waits on. The knowledge lines follow, in
-    the order noted, each with its kind, its date and its text; there is no heading without one.
+    A parent, the work items it depends on each with its bucket, a description, a commit and the
+    reason of a removal are listed only when there is one, the bucket of a Task only once it has
+    left Backlog. A blocked Task is listed in InProgress as blocked, with its reason and what it
+    waits on. The knowledge lines follow, in the order noted, each with its kind, its date and
+    its text; there is no heading without one.
     """
     bucket = next(name for name, states in BUCKETS if detail.state in states)
     under = [f"  parent       {detail.parent}\n"] if detail.parent else []
+    waits = ", ".join(f"{each.id} ({each.bucket})" for each in detail.depends_on)
+    depends = [f"  depends on   {waits}\n"] if waits else []
     committed = [f"  commit       {detail.commit}\n"] if detail.commit else []
     removed = [f"  reason       {detail.reason}\n"] if detail.reason else []
     described = [f"  description  {detail.description}\n"] if detail.description else []
@@ -230,6 +233,7 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
         f"{detail.id}  {detail.title}\n",
         f"  bucket       {bucket}\n",
         *under,
+        *depends,
         *committed,
         *removed,
         *described,

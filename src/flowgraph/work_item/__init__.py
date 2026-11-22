@@ -72,13 +72,14 @@ from flowgraph.work_item.tasks import (
     started_task,
     unblocked_task,
 )
-from flowgraph.work_item.views import WorkItemDetail, WorkItemRow
+from flowgraph.work_item.views import DependsRow, WorkItemDetail, WorkItemRow
 
 __all__ = [
     "STARTED",
     "Amendment",
     "CheckMove",
     "CompletedWorkItem",
+    "DependsRow",
     "FindTaskIds",
     "FindWorkItemRows",
     "Kind",

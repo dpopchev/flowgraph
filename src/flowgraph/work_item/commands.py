@@ -42,7 +42,7 @@ from flowgraph.work_item.model import (
 )
 from flowgraph.work_item.removal import reason_of, removed_work_item
 from flowgraph.work_item.tasks import blocked_task, completed_task, started_task, unblocked_task
-from flowgraph.work_item.views import WorkItemDetail, WorkItemRow
+from flowgraph.work_item.views import DependsRow, WorkItemDetail, WorkItemRow
 
 # The work item that holds the Task of that id, whole; raises TaskNotFoundError when none does.
 LoadHolder = Callable[[TaskId], WorkItemState]
@@ -83,6 +83,7 @@ def work_item_row(item: WorkItemState) -> WorkItemRow:
         started=_started_on(item),
         completed=_completed_on(item),
         tasks=[row_of(task) for task in item.tasks],
+        depends_on=[work_item_id_text(each) for each in item.relations.depends_on],
     )
 
 
@@ -98,6 +99,7 @@ def work_item_detail(item: WorkItemState) -> WorkItemDetail:
         reason=reason_of(item),
         parent=parent_text(item.parent),
         knowledge=[knowledge_row(line) for line in item.knowledge],
+        depends_on=[DependsRow(work_item_id_text(each)) for each in item.relations.depends_on],
         **criterion_parts(item.criterion),
     )
 
@@ -126,16 +128,17 @@ def add_work_item(
     save_work_item: SaveWorkItem,
     now: Now,
     parent: Parent = STANDALONE,
+    depends_on: Iterable[WorkItemId] = (),
 ) -> WorkItemId:
     """Add a work item of that kind to Backlog under its next free id and return that id.
 
-    It stands alone unless a Feature is named as its parent. The rows found are those of the
-    kind. Raises EmptyPartError when the title is blank and CriterionError when the criterion is
-    not of the form the kind takes; nothing is saved.
+    It stands alone unless a Feature is named as its parent, and depends on the work items
+    given. The rows found are those of the kind. Raises EmptyPartError when the title is blank
+    and CriterionError when the criterion is not of the form the kind takes; nothing is saved.
     """
     taken = [parse_work_item_id(kind, row.id) for row in find_work_item_rows()]
     item_id = next_work_item_id(kind, taken)
-    item = make_work_item(item_id, title, criterion, description, now(), parent)
+    item = make_work_item(item_id, title, criterion, description, now(), parent, depends_on)
     save_work_item(item)
     return item.id
 

@@ -44,3 +44,8 @@ created = 2026-11-22 10:48:00+00:00
 started = 2026-11-22 16:53:10+00:00
 completed = 2026-11-22 16:55:06+00:00
 commit = "4a98983"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: at ac31ce0 on main, on a fresh record with two terms, fgraph relate gate part-of lane printed related gate part-of lane, fgraph show gate listed part of lane and fgraph show lane listed parts gate; a cycle and the kind uses exit 2; make check: all checks passed"
+noted = 2026-11-22 16:58:57+00:00

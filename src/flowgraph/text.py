@@ -91,16 +91,17 @@ def _feature_lines(feature: FeatureRow) -> str:
     A completed one is listed with its commit before its title, as a completed work item is,
     after the progress every line of a Feature holds right after its id. Under it each started
     work item of it, written as one of a bucket is with its Tasks being worked, two columns
-    further in. One whose started work item holds a blocked Task is marked `!` before its id and
-    ends with what the first such Task waits on, as the line of that Task does: read from the
-    rows at each listing, and kept nowhere.
+    further in. A blocked one is marked `!` before its id and ends with what it waits on. So is
+    one whose started work item holds a blocked Task, with what the first such Task waits on, as
+    the line of that Task does: read from the rows at each listing, and kept nowhere. The block
+    of the Feature itself comes before that of a Task.
     """
     progress = f"{feature.completed}/{feature.held} W"
     commit = f"{feature.commit}  " if feature.commit else ""
     started = (line for row in feature.started for line in _status_line(row).splitlines())
     under = "".join(f"  {line}\n" for line in started)
     line = f"{feature.id}  {progress}  {commit}{feature.title}"
-    return f"{_marked(line, _waited_on(feature.started))}\n{under}"
+    return f"{_marked(line, feature.waiting_on or _waited_on(feature.started))}\n{under}"
 
 
 def _marked(line: str, waiting_on: str) -> str:
@@ -159,14 +160,17 @@ def feature_text(detail: FeatureDetail, rows: Iterable[StoryRow | UpkeepRow], bu
     """The Feature with its bucket, its criteria, then its work items with their buckets.
 
     The bucket of a Feature is read from its state and its work items, so it is given; a
-    commit and a description are listed only when there is one.
+    commit and a description are listed only when there is one. A blocked Feature is listed in
+    its bucket as blocked, with its reason and what it waits on.
     """
     listed = list(rows)
     committed = [f"  commit       {detail.commit}\n"] if detail.commit else []
     described = [f"  description  {detail.description}\n"] if detail.description else []
+    held = [f"  reason       {detail.reason}\n", f"  waiting on   {detail.waiting_on}\n"]
     lines = [
         f"{detail.id}  {detail.title}\n",
-        f"  bucket       {bucket}\n",
+        f"  bucket       {bucket}{', blocked' if detail.waiting_on else ''}\n",
+        *(held if detail.waiting_on else []),
         *committed,
         *described,
         f"Criteria ({len(detail.criteria)})\n",

@@ -219,6 +219,17 @@ def commit_sha(feature: FeatureState) -> str:
             assert_never(unreachable)
 
 
+def block_of(feature: FeatureState) -> tuple[str, str]:
+    """The reason of a blocked Feature and what it waits on; both empty for one not blocked."""
+    match feature:
+        case BlockedFeature():
+            return feature.reason, feature.waiting_on
+        case Feature() | StartedFeature() | CompletedFeature():
+            return "", ""
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
 def state_name(feature: FeatureState) -> str:
     """The state of a Feature as the record writes it."""
     match feature:

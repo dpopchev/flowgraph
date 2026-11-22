@@ -3,8 +3,9 @@
 A Feature is to its work items what a work item is to its Tasks: it starts them one by one. The
 completion of a work item under a started Feature starts the first of its work items in Backlog
 in the order of the queue, in the same write, as `fgraph start` of that work item would. A next
-work item that cannot start leaves the completion as it is, and the completion says why. It
-runs on the store of a record, as the commands of a work item do (`flowgraph.item`).
+work item that cannot start leaves the completion as it is, and the completion says why: a
+blocked Feature starts none. It runs on the store of a record, as the commands of a work item
+do (`flowgraph.item`).
 """
 
 from typing import assert_never
@@ -23,19 +24,27 @@ from flowgraph.parent import FeatureId, Standalone
 from flowgraph.record import Now
 from flowgraph.scope import OutOfScopeError
 from flowgraph.store import Store
-from flowgraph.task import NoTaskError, TaskId
+from flowgraph.task import BlockedError, NoTaskError, TaskId
 from flowgraph.work_item import WorkItemId, work_item_id_text
 
 # What leaves the next work item in Backlog: each refusal of its start, the completion standing.
-NOT_STARTED = (NoTaskError, ParallelError, WorkItemInProgressError, OutOfScopeError, SlugError)
+NOT_STARTED = (
+    NoTaskError,
+    ParallelError,
+    WorkItemInProgressError,
+    BlockedError,
+    OutOfScopeError,
+    SlugError,
+)
 
 
 def _next_of(item_id: WorkItemId, store: Store) -> WorkItemId | None:
     """The work item the completion of that one starts; None when it starts none.
 
-    It is the first work item in Backlog of the started Feature the work item is under. A work
-    item standing alone starts none, and neither does one under a Feature never started or
-    completed, with that completion or before it.
+    It is the first work item in Backlog of the started Feature the work item is under: of a
+    blocked one too, whose block then refuses its start. A work item standing alone starts
+    none, and neither does one under a Feature never started or completed, with that completion
+    or before it.
     """
     match store.load_work_item(item_id).parent:
         case Standalone():
@@ -53,12 +62,13 @@ def _next_of(item_id: WorkItemId, store: Store) -> WorkItemId | None:
             assert_never(unreachable)
 
 
-def _started(item_id: WorkItemId, store: Store, now: Now, config: Config) -> Written:
+def start_next(item_id: WorkItemId, store: Store, now: Now, config: Config) -> Written:
     """Start the work item in Backlog of that id, as `fgraph start` of it does; what it says.
 
-    Raises one of NOT_STARTED when its Feature holds a started work item, when as many are
-    started as the configuration starts at once, when it has no Task, when its title gives no
-    slug or when the branch written on writes another work item alone; nothing is saved.
+    Raises one of NOT_STARTED when its Feature holds a started work item or is blocked, when as
+    many are started as the configuration starts at once, when it has no Task, when its title
+    gives no slug or when the branch written on writes another work item alone; nothing is
+    saved.
     """
     named = work_item_id_text(item_id)
     check_start_under_feature(named, store)
@@ -88,7 +98,7 @@ def complete_and_start_next(
     if following is None:
         return completed
     try:
-        started = _started(following, store, now, config)
+        started = start_next(following, store, now, config)
     except NOT_STARTED as error:
         return Written(f"{completed.out}not started: {error}\n", completed.message)
     both = f"complete {work_item_id_text(item_id)} and start {work_item_id_text(following)}"

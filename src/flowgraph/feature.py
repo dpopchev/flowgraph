@@ -25,6 +25,7 @@ from flowgraph.feature_state import (
     FeatureState,
     NoCriterionError,
     StartedFeature,
+    block_of,
     blocked_feature,
     commit_sha,
     completed_feature,
@@ -66,13 +67,18 @@ BEGUN = frozenset({"started", COMPLETED})
 
 @dataclass
 class FeatureDetail:
-    """One Feature as plain data, as a view reads it from the record; a commit once it has one."""
+    """One Feature as plain data, as a view reads it from the record; a commit once it has one.
+
+    Its reason and what it waits on while it is blocked, both empty otherwise.
+    """
 
     id: str
     title: str
     description: str
     criteria: list[str]
     commit: str = ""
+    reason: str = ""
+    waiting_on: str = ""
 
 
 @dataclass
@@ -81,7 +87,7 @@ class FeatureRow:
 
     Its progress is the work items completed of those it holds; a removed one is not held. Its
     started work items are the rows a list writes under it, in the order given. Its commit is
-    the one it was completed in, empty while it has none.
+    the one it was completed in, empty while it has none; what it waits on while it is blocked.
     """
 
     id: str
@@ -91,6 +97,7 @@ class FeatureRow:
     held: int
     started: list[WorkItemRow] = field(default_factory=list[WorkItemRow], kw_only=True)
     commit: str = field(default="", kw_only=True)
+    waiting_on: str = field(default="", kw_only=True)
 
 
 # The Feature of that id, whole; raises FeatureNotFoundError when the record holds none.
@@ -131,6 +138,7 @@ def feature_detail(feature: FeatureState) -> FeatureDetail:
         feature.description,
         list(feature.criteria),
         commit_sha(feature),
+        *block_of(feature),
     )
 
 
@@ -181,6 +189,7 @@ def feature_row(feature: FeatureState, states: Collection[str]) -> FeatureRow:
         completed,
         held,
         commit=commit_sha(feature),
+        waiting_on=block_of(feature)[1],
     )
 
 

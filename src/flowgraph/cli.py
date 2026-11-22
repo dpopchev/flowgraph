@@ -28,6 +28,7 @@ from flowgraph.criterion import (
     make_scenario,
 )
 from flowgraph.feature import FeatureNotFoundError, NoCriterionError
+from flowgraph.feature_block import block_named, unblock_named
 from flowgraph.feature_item import (
     add_feature_item,
     is_feature_id,
@@ -48,14 +49,12 @@ from flowgraph.item import (
     Written,
     add_item,
     amend_item,
-    block_item,
     kind_named,
     remove_item,
     reorder_item,
     show_item,
     start_item,
     status_item,
-    unblock_item,
     write_task,
 )
 from flowgraph.land import LandError, land_item
@@ -201,9 +200,9 @@ def _written(args: argparse.Namespace, store: Store, now: Now, config: Config) -
         case "start":
             return start_item(args.id, args.slug, store, now)
         case "block":
-            return block_item(args.id, args.reason, args.waiting_on, store, now)
+            return block_named(args.id, args.reason, args.waiting_on, store, now)
         case "unblock":
-            return unblock_item(args.id, store)
+            return unblock_named(args.id, store, now, config)
         case "remove":
             return remove_item(args.id, args.reason, store, now)
         case "reorder":

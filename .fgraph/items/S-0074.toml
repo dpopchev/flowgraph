@@ -1,0 +1,11 @@
+id = "S-0074"
+state = "backlog"
+title = "Raise the terms fgraph about walks from a term from itself alone to every term under it"
+description = "Part of F-0006. A term that is one of another is walked as a part is."
+parent = "F-0006"
+created = 2026-11-22 10:41:41+00:00
+
+[criterion]
+given = "a record where one term is part of another and a knowledge line is about the part"
+when = "fgraph about is run with the name of the whole"
+then = "it lists the line about the part, marked with the term it came through, beside what is about the whole"

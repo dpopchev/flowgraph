@@ -1,0 +1,11 @@
+id = "S-0078"
+state = "backlog"
+title = "Cut the relations naming no item or closing a cycle that fgraph reads without a refusal from every one to none"
+description = "Part of F-0006. Row 7 of the plan: the parent of a work item is checked this way today."
+parent = "F-0006"
+created = 2026-11-22 10:41:46+00:00
+
+[criterion]
+given = "a record whose file was edited by hand or by a merge to name an id that is not in the record, or to close a cycle of what depends on what"
+when = "any fgraph command is run"
+then = "it exits 2 naming the file and the id, without a traceback, and writes nothing"

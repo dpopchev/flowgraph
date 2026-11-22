@@ -141,8 +141,10 @@ by a view over the record, so a write is one file and the scope of a branch
 holds. The relations of an item are one value with a field per kind of
 relation, so a new kind is a new field. `depends on` is the work items of any
 kind it waits for, none by default, each once, in the order given;
-`filed during` is the one work item it was found during, none by default. A
-work item that names itself in either is refused where its relations are built.
+`filed during` is the one work item it was found during, none by default;
+`amends` is the one completed work item whose landed behavior it changes, none
+by default. A work item that names itself in any is refused where its relations
+are built. The relations are listed in one table under Relations below.
 
 A Feature keeps its knowledge lines as a work item does, in each of its five
 states, and they stay on it through every move and every amend. A Task keeps
@@ -532,6 +534,39 @@ state, with its removed time, not to every state.
 - `fgraph status` lists a removed work item as `-- superseded by S-0002`,
   before the reason given beside it, joined by a comma; `fgraph show` of it
   lists `superseded by` before `reason`.
+
+## Amends
+
+A work item names the completed work item whose landed behavior it changes, the
+reading of S-0069: `fgraph add --amends ID` of a Story, an Upkeep, a Bug or a
+Spike, one id of any kind of work item that is Completed. A Task and a Feature
+take none.
+
+- It is given at the add alone: which work item the new one changes does not
+  change, so `fgraph amend` does not take `--amends`, and an amend keeps it.
+- The ids are checked at the add, which is refused with exit 2, nothing written:
+  an id of a kind no work item has, `no Story S-0009 in the record` for one the
+  record does not hold, `a work item cannot amend S-0001: it is not completed`.
+- Which side is stored: the work item that amends keeps the id, as
+  `amends = "S-0001"` in its file, only when there is one, read back in every
+  state. The other side is derived: `fgraph show` of the completed work item
+  lists `amended by` with the id of each work item that names it, in the order
+  of the record, read from the record and stored nowhere.
+- `fgraph show` of the work item that amends lists `amends` with the id, after
+  the work items it supersedes, and lists none without one.
+
+## Relations
+
+The five typed relations of a work item, each a reference the work item that
+names it stores, the other side derived from the record:
+
+| Relation | Stored on | Derived side | Move that reads it |
+|---|---|---|---|
+| `parent` | the work item, as `parent`, the Feature it is under | the work items of a Feature | the start of the Feature, which starts its first work item |
+| `depends on` | the work item, as `depends_on` | none listed | the start of the work item, refused while one is not completed |
+| `filed during` | the work item, as `filed_during` | `filed here` in the show of the other | none |
+| `superseded by` | the removed work item, as `superseded_by` | `supersedes` in the show of the other | none |
+| `amends` | the work item, as `amends` | `amended by` in the show of the other | none |
 
 ## Evidence
 

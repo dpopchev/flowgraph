@@ -21,7 +21,8 @@ commit = "7993a42"
 
 [[tasks]]
 id = "T-0216"
-state = "backlog"
+state = "started"
 title = "Say in README.md that fgraph status and fgraph show on main read a started work item from main when its worktree holds no file of it"
 expected_output = "changed: README.md names the fallback of status and show to the record of main"
 created = 2026-11-22 06:10:50+00:00
+started = 2026-11-22 06:13:19+00:00

@@ -1,10 +1,12 @@
 id = "S-0082"
-state = "started"
+state = "completed"
 title = "Cut the commands outside fgraph a developer runs to make the record of a directory from one, mkdir, to none"
 description = "Reported broken in the note: no command makes a record."
 parent = "F-0007"
 created = 2026-11-22 21:01:37+00:00
 started = 2026-11-22 22:16:33+00:00
+completed = 2026-11-22 22:29:57+00:00
+commit = "f737b8e"
 
 [criterion]
 given = "a directory that holds no .fgraph/ and no fgraph/"

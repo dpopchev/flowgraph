@@ -119,6 +119,9 @@ OpenWorkItem = WorkItem | StartedWorkItem
 # A work item in any of its states, as the record keeps it.
 WorkItemState = WorkItem | StartedWorkItem | CompletedWorkItem | RemovedWorkItem
 
+# The state of a started work item or Task, as the record writes it: its one name.
+STARTED = "started"
+
 
 @dataclass
 class WorkItemRow:
@@ -367,7 +370,7 @@ def state_name(item: WorkItemState | TaskState) -> str:
         case WorkItem() | Task():
             return "backlog"
         case StartedWorkItem() | StartedTask():
-            return "started"
+            return STARTED
         case BlockedTask():
             return "blocked"
         case CompletedWorkItem() | CompletedTask():

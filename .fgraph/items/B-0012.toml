@@ -11,11 +11,13 @@ expected = "the help of fgraph reorder names the Feature beside the work item"
 
 [[tasks]]
 id = "T-0244"
-state = "started"
+state = "completed"
 title = "Name the Feature beside the work item in the help of fgraph reorder, in src/flowgraph/parser.py"
 expected_output = "changed: src/flowgraph/parser.py; tests/functional/test_command_help.py states the help of reorder naming the Feature"
 created = 2026-11-22 07:36:19+00:00
 started = 2026-11-22 07:36:21+00:00
+completed = 2026-11-22 07:38:38+00:00
+commit = "6a7860b"
 
 [[tasks]]
 id = "T-0245"

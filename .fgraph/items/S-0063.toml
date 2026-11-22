@@ -35,7 +35,8 @@ commit = "7ed5b54"
 
 [[tasks]]
 id = "T-0270"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to name the three kinds of knowledge line"
 expected_output = "changed: README.md shows a decision and a deviation noted and shown; docs/domain-model.md names the three kinds and what each records -- a finding what was learned, a decision what was decided, a deviation a change to what a started item was agreed to do, since fgraph amend refuses one once it is started"
 created = 2026-11-22 10:47:29+00:00
+started = 2026-11-22 11:14:13+00:00

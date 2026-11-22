@@ -249,23 +249,66 @@ class TestAStoryOfAStartedFeatureCompletedOnItsBranchWhileTheNextIsInBacklog:
         return tmp_path / "project.worktrees" / LEAF
 
     @pytest.fixture
-    def completed(self, worktree: Path) -> Outcome:
+    def refused(self, worktree: Path) -> Outcome:
         return fgraph(["complete", "S-0001", "--commit", "abc1234"], worktree)
 
-    def test_complete_names_the_next_story_not_started_for_the_branch_writes_its_own_alone(
-        self, completed: Outcome
+    def test_complete_exits_with_two_naming_main_and_the_work_tree_on_it(
+        self, refused: Outcome, tmp_path: Path, worktree: Path
     ) -> None:
-        alone = f"the branch {BRANCH} writes S-0001 alone"
-        assert (completed.status, completed.out) == (
-            0,
-            f"completed S-0001 at abc1234\nnot started: S-0002 is not written here: {alone}\n",
+        on_main = f"main, in {tmp_path / 'project'}"
+        assert (refused.status, refused.err.splitlines()[-1]) == (
+            2,
+            f"fgraph: error: S-0001 completes on {on_main}: {worktree} is on {BRANCH}",
         )
 
-    def test_the_complete_is_committed_on_the_branch_with_the_file_of_the_story_alone(
-        self, completed: Outcome, worktree: Path
-    ) -> None:
+    def test_nothing_is_written_on_the_branch(self, refused: Outcome, worktree: Path) -> None:
         assert (
             git(worktree, "status", "--porcelain"),
             git(worktree, "log", "-1", "--format=%s"),
-            git(worktree, "show", "--name-only", "--format=", "HEAD"),
-        ) == ("", "chore: complete S-0001 in the record", STORY_FILE)
+        ) == (
+            "",
+            "chore: complete T-0001 of S-0001 in the record",
+        )
+
+    def test_its_landing_then_lands_it(self, refused: Outcome, tmp_path: Path) -> None:
+        assert fgraph(LAND, tmp_path / "project").status == 0
+
+
+@pytest.fixture
+def on_another_branch(tmp_path: Path) -> Path:
+    """The checkout on the branch `other`, its S-0001 ready to complete there, the next in Backlog.
+
+    S-0001 is worked on main with the development off, so its record is the one of the checkout;
+    the development is then turned on and the branch `other` checked out.
+    """
+    checkout = tmp_path / "project"
+    checkout.mkdir()
+    git(checkout, "init", "--quiet", "--initial-branch", "main")
+    (checkout / ".fgraph").mkdir()
+    (checkout / "README").write_text("a project\n", encoding="utf-8")
+    git(checkout, "add", "README")
+    git(checkout, "commit", "--quiet", "--message", "first")
+    worked = (
+        ["start", "F-0001"],
+        ["start", "T-0001"],
+        ["complete", "T-0001", "--commit", "abc1234"],
+    )
+    for argv in (*TWO_STORIES, *worked, ["config", "set", "development.enabled", "true"]):
+        fgraph(argv, checkout)
+    git(checkout, "checkout", "--quiet", "-b", "other")
+    return checkout
+
+
+def test_a_completion_on_another_branch_exits_with_two_naming_main(on_another_branch: Path) -> None:
+    refused = fgraph(["complete", "S-0001", "--commit", "abc1234"], on_another_branch)
+    assert (refused.status, refused.err.splitlines()[-1]) == (
+        2,
+        f"fgraph: error: S-0001 completes on main: {on_another_branch} is on other",
+    )
+
+
+def test_a_completion_on_another_branch_starts_no_next_work_item_there(
+    on_another_branch: Path,
+) -> None:
+    fgraph(["complete", "S-0001", "--commit", "abc1234"], on_another_branch)
+    assert git(on_another_branch, *ALL_BRANCHES) == ""

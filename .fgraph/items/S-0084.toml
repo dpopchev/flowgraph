@@ -35,8 +35,10 @@ commit = "075af59"
 
 [[tasks]]
 id = "T-0333"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph status names the reason of a block"
 expected_output = "changed: README.md shows the line of a blocked Task with its reason; docs/domain-model.md says what the line of a blocked Task and of a blocked Feature holds"
 created = 2026-11-22 21:01:58+00:00
 started = 2026-11-22 22:42:51+00:00
+completed = 2026-11-22 22:45:58+00:00
+commit = "4049e7b"

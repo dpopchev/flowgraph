@@ -1,0 +1,10 @@
+id = "U-0010"
+state = "backlog"
+title = "Cut the modules of src/flowgraph outside a subpackage from 40 to 2 and the lines of its longest module from 400 to 250"
+description = "The request of the developer of 2026-11-22: refactor the codebase, reorganizing all in subpackages and breaking the long modules; filed at the end of the Backlog, after the four Features of the knowledge base. The numbers are the reading of the agent: the two modules left outside a subpackage are __init__.py and the module of the entry point, and 250 lines leaves 13 modules of today to break."
+created = 2026-11-22 10:41:47+00:00
+
+[criterion]
+given = "main, where make check passes and every command of fgraph runs"
+when = "make check runs"
+then = "it still passes, with the line limit of mk/python.mk lowered from 400 to 250, and every command of fgraph prints what it printed before"

@@ -11,11 +11,13 @@ expected = "fgraph show falls back to the record of main as status does, and a t
 
 [[tasks]]
 id = "T-0215"
-state = "started"
+state = "completed"
 title = "Fall back to the record of main in the reads of a started work item whose worktree holds no file of it, in src/flowgraph/worktrees.py"
 expected_output = "changed: src/flowgraph/worktrees.py returns the detail of main when the worktree holds no file of the work item; tests/worktrees/test_started_detail.py and tests/worktrees/test_started_rows.py each state the fallback"
 created = 2026-11-22 06:10:50+00:00
 started = 2026-11-22 06:10:58+00:00
+completed = 2026-11-22 06:13:19+00:00
+commit = "7993a42"
 
 [[tasks]]
 id = "T-0216"

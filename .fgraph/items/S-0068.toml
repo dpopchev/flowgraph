@@ -9,3 +9,11 @@ created = 2026-11-22 10:41:31+00:00
 given = "a record with two Stories in Backlog"
 when = "fgraph remove of the first is run with --superseded-by and the id of the second"
 then = "fgraph status lists the first under Removed as superseded by the second, and fgraph show of the second lists that it supersedes the first"
+
+[[tasks]]
+id = "T-0284"
+state = "backlog"
+title = "Add tests/functional/test_superseded_by.py, failing on the criterion of S-0068"
+description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_remove_work_item.py does. Seen red, then marked a strict xfail naming S-0068 until the Task that turns it green removes the mark."
+expected_output = "created: tests/functional/test_superseded_by.py states that, on a record with two Stories in Backlog, fgraph remove of the first with --superseded-by and the id of the second exits 0, fgraph status lists the first under Removed as superseded by the second, and fgraph show of the second lists that it supersedes the first"
+created = 2026-11-22 10:47:44+00:00

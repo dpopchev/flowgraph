@@ -12,3 +12,11 @@ depends_on = [
 given = "a completed Story"
 when = "fgraph verify S-0001 --no is run with what the run printed"
 then = "the record holds a new Bug in Backlog that amends S-0001, its observed what the run printed, and S-0001 stays Completed, listed as verified, no"
+
+[[tasks]]
+id = "T-0364"
+state = "backlog"
+title = "Add tests/functional/test_verify_no.py, failing on the criterion of S-0094"
+description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_amends.py does. Seen red, then marked a strict xfail naming S-0094 until the Task that turns it green removes the mark."
+expected_output = "created: tests/functional/test_verify_no.py states that on a record with a completed Story fgraph verify S-0001 --no with a text exits 0 and prints the id of a new Bug; fgraph show of the Bug lists amends S-0001 and the text as its observed; and fgraph show S-0001 lists it Completed and verified, no"
+created = 2026-11-22 21:03:24+00:00

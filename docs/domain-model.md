@@ -1466,6 +1466,8 @@ development too.
   `src/flowgraph/record/layers.py`); the push is an effect, one more step of
   the git adapter (`push`, `src/flowgraph/development/git.py`), bound by
   `open_git`, so the core decides when it runs and never calls git itself.
+  The same key pushes the tag `fgraph release` makes (below), with the
+  development on or off, since a release is no step of a landing.
 - `fgraph complete` of a started Task that holds a check runs it, answering S-0089:
   through the shell, in the worktree of the work item of the Task (the directory
   `fgraph` runs in when the item has none), before anything is written. Its
@@ -1760,11 +1762,47 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   another status than 0, or git refuses the commit or the fast-forward. A
   step git refuses after `main` moved exits 2 saying how far the landing
   came.
+- `fgraph release` tags the trunk, the reading of the agent for S-0091 of
+  the release rule the developer works by. Run in the checkout of `main`, it
+  makes an annotated tag on the head of `main`, under the message `release
+  <version>`, and says `tagged <version> at <sha>`. A version is
+  `v<major>.<minor>.<patch>`, each a whole number with no leading zero, built
+  by its smart constructor `make_version`
+  (`src/flowgraph/development/version.py`); the last tag is the highest
+  version among the `v*` tags, a tag that writes none passed over.
+- The version is computed, a pure function of the last tag and the kinds of
+  the work items completed since it: the next minor, the patch back to 0,
+  when a Story or a Bug is among them -- a new behavior or a fixed one --
+  else the next patch for an Upkeep or a Spike alone; `v0.1.0` when no tag
+  writes a version, every completed work item counted then. `--version`
+  names the version in place of the computed one, a major among them.
+- A work item is completed since the last tag unless that tag holds it. A
+  work item that names a commit -- the merge of its landing, or the commit
+  given to `fgraph complete` -- is held when the commit of the tag is that
+  commit or comes after it (`git merge-base --is-ancestor`), so one landed
+  just before the tag is held whatever the clocks say. One that names no
+  commit, as one completed with the development off, or a commit git does
+  not know, is held when its completed time is at or before the time the tag
+  was made. A Feature is no work item and counts for nothing.
+- A tag is never moved or deleted. A release is refused, exiting 2 with no
+  tag made, when the record is outside a git work tree, when the work tree it
+  runs in is not on `main`, named as a start names it, when `--version` is
+  no version or names a tag that exists, and when nothing is completed since
+  the last tag, or nothing at all without one. Git refuses an existing tag
+  too, so no step of `fgraph` moves one.
+- With `[delivery] push = true` the tag is pushed to the remote `main`
+  tracks, once it is made, and the release says `pushed <version> to
+  <remote>`. A push git refuses leaves the tag made and exits 2 naming the
+  git command, then `-- <version> is tagged at <sha>, it is not pushed`. The
+  tags are read, made and pushed by steps of the git adapter
+  (`src/flowgraph/development/tag_git.py`), bound by `open_git`.
+- A version a project keeps in a file of its own, as `pyproject.toml`, is not
+  bumped by `fgraph release`: left open by S-0091.
 - `fgraph` makes the commits of the record; the commits of the development
   and their messages stay the developer's, the merge commit and the squash
   commit of a landing among them: `fgraph` makes it, the developer words it.
-  Whether the work tree is on `main` is checked by a landing and by the start
-  of a work item.
+  Whether the work tree is on `main` is checked by a landing, by the start
+  of a work item and by a release.
 
 ## Left out
 

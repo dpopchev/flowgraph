@@ -33,6 +33,7 @@ COMMANDS = [
     ("unblock",),
     ("complete",),
     ("land",),
+    ("release",),
     ("note",),
     ("verify",),
     ("knowledge",),
@@ -167,6 +168,14 @@ def test_the_help_of_reorder_names_the_feature_beside_the_work_item() -> None:
     assert [line for line in helped if line.startswith(("  ID ", "  --before"))] == [
         "  ID           the id of the work item or of the Feature to move",
         "  --before ID  the work item or the Feature it is listed right above",
+    ]
+
+
+def test_the_help_of_release_names_the_version_it_may_be_given() -> None:
+    helped = fgraph(["release", "--help"]).out.splitlines()
+    assert [line.split()[0:2] for line in helped if line.startswith("  -")] == [
+        ["-h,", "--help"],
+        ["--version", "VERSION"],
     ]
 
 

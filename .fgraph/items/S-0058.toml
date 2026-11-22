@@ -13,11 +13,12 @@ then = "fgraph status lists the Feature under Removed with its reason"
 
 [[tasks]]
 id = "T-0212"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_remove_feature.py, failing on the criterion of S-0058"
 description = "decided: S-0058: the work items of a removed Feature are removed with it, under the same reason -- a Feature is to its work items what a work item is to its Tasks, and a removed work item keeps its Tasks within it; nothing is deleted. Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_remove_work_item.py does. Seen red, then marked a strict xfail naming S-0058 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_remove_feature.py states that, on a record with a Feature in Backlog and a Story under it, fgraph remove of the Feature with a reason exits 0 and fgraph status lists the Feature under Removed with its reason"
 created = 2026-11-21 23:44:13+00:00
+started = 2026-11-22 03:56:44+00:00
 
 [[tasks]]
 id = "T-0213"

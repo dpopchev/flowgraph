@@ -3,6 +3,8 @@
 import pytest
 
 from flowgraph.item import ItemIdError, parse_item_id, parse_work_item_id_of_any_kind
+from flowgraph.item_id import parse_placed_id
+from flowgraph.parent import make_feature_id
 from flowgraph.story import make_story_id
 from flowgraph.task import make_task_id
 from flowgraph.upkeep import make_upkeep_id
@@ -34,3 +36,24 @@ def test_a_text_that_is_no_work_item_id_of_any_kind_is_refused_naming_every_kind
 ) -> None:
     with pytest.raises(WorkItemIdError, match=f"^'{text}' is no Story, Upkeep, Bug or Spike id$"):
         parse_work_item_id_of_any_kind(text)
+
+
+@pytest.mark.parametrize(
+    ("text", "placed"),
+    [("U-0002", make_upkeep_id(2)), ("F-0003", make_feature_id(3))],
+    ids=["upkeep", "feature"],
+)
+def test_an_id_the_queue_places_is_read_as_that_of_a_work_item_or_of_a_feature(
+    text: str, placed: object
+) -> None:
+    assert parse_placed_id(text) == placed
+
+
+@pytest.mark.parametrize("text", ["T-0001", "F-0000"], ids=["a-task", "below-one"])
+def test_a_text_that_is_no_id_the_queue_places_is_refused_naming_every_kind_and_the_feature(
+    text: str,
+) -> None:
+    with pytest.raises(
+        ItemIdError, match=f"^'{text}' is no Story, Upkeep, Bug, Spike or Feature id$"
+    ):
+        parse_placed_id(text)

@@ -9,10 +9,11 @@ from flowgraph.feature import Feature, FeatureNotFoundError, make_feature
 from flowgraph.feature_item import add_feature_item, parent_named, show_feature_item
 from flowgraph.item import Written
 from flowgraph.parent import STANDALONE, FeatureId, FeatureIdError, make_feature_id
+from flowgraph.queue import Queue, make_queue
 from flowgraph.scope import OutOfScopeError, Scope, within
 from flowgraph.store import NO_FEATURES, FeatureStore, Store
 from flowgraph.story import STORY, make_story_id
-from flowgraph.upkeep import UPKEEP
+from flowgraph.upkeep import UPKEEP, make_upkeep_id
 from flowgraph.work_item import WorkItemRow
 
 CREATED = datetime(2026, 1, 1, tzinfo=UTC)
@@ -22,14 +23,16 @@ ROWS = {
     STORY: [
         WorkItemRow("S-0001", "a story", "started", parent="F-0001", created=CREATED),
         WorkItemRow("S-0002", "a story alone", "backlog", created=CREATED),
+        WorkItemRow("S-0003", "a later story", "backlog", parent="F-0001", created=CREATED),
     ],
     UPKEEP: [WorkItemRow("U-0001", "an upkeep", "backlog", parent="F-0001", created=CREATED)],
 }
+NO_QUEUE = make_queue([])
 
 
 def never(*_: object) -> Never:
     """A read or a write of the record that a Feature never asks for."""
-    raise AssertionError("a Feature reads the rows of the work items and its own file alone")
+    raise AssertionError("a Feature reads the rows of the work items, the queue and its own file")
 
 
 def held(feature_id: FeatureId) -> Feature:
@@ -39,8 +42,8 @@ def held(feature_id: FeatureId) -> Feature:
     return FEATURE
 
 
-def store(saved: list[Feature] | None = None) -> Store:
-    """The store of a record holding FEATURE and ROWS; it notes the Features it saves."""
+def store(saved: list[Feature] | None = None, queue: Queue = NO_QUEUE) -> Store:
+    """The store of a record holding FEATURE, ROWS and that queue; it notes a Feature it saves."""
     kept = [] if saved is None else saved
     return Store(
         find_work_item_rows=lambda kind: ROWS.get(kind, []),
@@ -48,7 +51,7 @@ def store(saved: list[Feature] | None = None) -> Store:
         find_work_item_detail=never,
         find_task_ids=never,
         save_work_item=never,
-        load_queue=never,
+        load_queue=lambda: queue,
         save_queue=never,
         find_changed_files=never,
         restore_files=never,
@@ -78,10 +81,21 @@ def test_a_feature_is_shown_with_its_criteria_and_its_work_items_by_bucket() -> 
         "Criteria (2)\n"
         "  a criterion\n"
         "  another\n"
-        "Work items (2)\n"
+        "Work items (3)\n"
         "  S-0001  a story  InProgress\n"
+        "  S-0003  a later story  Backlog\n"
         "  U-0001  an upkeep  Backlog\n"
     )
+
+
+@pytest.mark.view
+def test_the_work_items_in_backlog_of_a_feature_are_shown_in_the_order_the_queue_gives() -> None:
+    placed = make_queue([make_upkeep_id(1), make_story_id(2), make_story_id(3)])
+    assert show_feature_item("F-0001", store(queue=placed)).splitlines()[-3:] == [
+        "  S-0001  a story  InProgress",
+        "  U-0001  an upkeep  Backlog",
+        "  S-0003  a later story  Backlog",
+    ]
 
 
 @pytest.mark.view

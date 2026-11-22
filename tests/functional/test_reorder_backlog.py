@@ -103,7 +103,7 @@ class TestAStoryPutBeforeAnotherInBacklog:
         ),
         (
             [ADD_STORY, ["reorder", "T-0001", "--before", "S-0001"]],
-            "'T-0001' is no Story, Upkeep, Bug or Spike id",
+            "'T-0001' is no Story, Upkeep, Bug, Spike or Feature id",
         ),
     ],
     ids=["unknown-item", "unknown-before", "before-a-started-story", "before-itself", "no-id"],

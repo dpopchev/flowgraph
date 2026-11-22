@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from flowgraph import queue as queue_module
+from flowgraph.parent import make_feature_id
 from flowgraph.queue import (
     QueueFileError,
     QueueMismatchError,
@@ -20,14 +21,16 @@ pytestmark = pytest.mark.edge
 CHORE = make_kind("Chore", "a", "CH")
 ERRAND = make_kind("Errand", "an", "ER")
 KINDS = (CHORE, ERRAND)
-QUEUE = make_queue([make_work_item_id(ERRAND, 2), make_work_item_id(CHORE, 1)])
+QUEUE = make_queue([make_work_item_id(ERRAND, 2), make_feature_id(1), make_work_item_id(CHORE, 1)])
 FILE = "queue.toml"
 
 
-def test_a_queue_is_written_as_the_ids_placed_in_their_order(tmp_path: Path) -> None:
+def test_a_queue_is_written_as_the_ids_of_the_work_items_and_the_features_placed_in_their_order(
+    tmp_path: Path,
+) -> None:
     write_queue(tmp_path, KINDS, QUEUE)
     written = tomllib.loads((tmp_path / FILE).read_text("utf-8"))
-    assert written == {"backlog": ["ER-0002", "CH-0001"]}
+    assert written == {"backlog": ["ER-0002", "F-0001", "CH-0001"]}
 
 
 def test_a_queue_reads_back_whole(tmp_path: Path) -> None:
@@ -45,7 +48,7 @@ def test_a_record_without_a_queue_file_holds_the_empty_queue(tmp_path: Path) -> 
         ("not a queue", "queue.toml holds no queue"),
         (
             'backlog = ["XY-0001"]\n',
-            "queue.toml holds no queue: 'XY-0001' is no Chore or Errand id",
+            "queue.toml holds no queue: 'XY-0001' is no Chore, Errand or Feature id",
         ),
         (
             'backlog = ["CH-0001", "CH-0001"]\n',

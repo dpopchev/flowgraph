@@ -10,7 +10,7 @@ from datetime import datetime
 
 from flowgraph.feature import Feature, FeatureRow, feature_row
 from flowgraph.parent import feature_id_text, parse_feature_id
-from flowgraph.queue import queued
+from flowgraph.queue import Entry, Inside, Line, Placed, queued
 from flowgraph.store import KINDS, Store
 from flowgraph.text import status_text
 from flowgraph.work_item import WorkItemId, WorkItemRow, parse_work_item_id
@@ -98,12 +98,44 @@ def _with_features(
     return [row for _, row in sorted(placed, key=lambda each: each[0], reverse=last_first)]
 
 
+def _backlog_lines(
+    alone: Mapping[WorkItemId, WorkItemRow], features: Iterable[_PlacedFeature]
+) -> dict[Placed, WorkItemRow | FeatureRow]:
+    """The lines of the Backlog under the id of each, in the order added.
+
+    They are the work items standing alone given that are in Backlog, and the Features in
+    Backlog. Those added at one time keep the order given, the work items before the Features.
+    """
+    added: list[tuple[datetime, Placed, WorkItemRow | FeatureRow]] = [
+        *((alone[item_id].created, item_id, alone[item_id]) for item_id in backlog_as_added(alone)),
+        *((at, parse_feature_id(row.id), row) for at, row in features if row.bucket == "Backlog"),
+    ]
+    return {placed: row for _, placed, row in sorted(added, key=lambda each: each[0])}
+
+
+def find_backlog(store: Store) -> list[Entry]:
+    """The Backlog of the record as its queue places it, read anew.
+
+    Its lines in the order added, then the work items in Backlog under a Feature in the order
+    added, each inside its Feature: the Feature may have left the Backlog.
+    """
+    rows = rows_by_id(store)
+    features = _placed_features(store, rows.values())
+    alone = {item_id: row for item_id, row in rows.items() if not row.parent}
+    under = {item_id: row for item_id, row in rows.items() if row.parent}
+    inside = [
+        Inside(item_id, parse_feature_id(under[item_id].parent))
+        for item_id in backlog_as_added(under)
+    ]
+    return [*(Line(placed) for placed in _backlog_lines(alone, features)), *inside]
+
+
 def status_item(store: Store, top: int | None = None) -> str:
     """The text of the work items standing alone and of the Features of the record, by bucket.
 
     A Feature is listed in its derived bucket in place of its work items: those in Backlog and
     the completed ones are on no line, the started ones under its own. The Backlog lists the
-    work items placed in its queue, then the others and the Features as they were added;
+    work items and the Features placed in its queue, then the others as they were added;
     InProgress the last started first and Completed the last completed first, a Feature by its
     last work item to reach it; Removed by kind and number, a work item of a Feature too. Under
     a top each heading lists that many, the first ones.
@@ -111,16 +143,12 @@ def status_item(store: Store, top: int | None = None) -> str:
     rows = rows_by_id(store)
     features = _placed_features(store, rows.values())
     alone = {item_id: row for item_id, row in rows.items() if not row.parent}
-    queue = store.load_queue()
-    backlog = queued(queue, backlog_as_added(alone))
-    placed = [alone[item_id] for item_id in backlog if item_id in queue.placed]
-    added = [alone[item_id] for item_id in backlog if item_id not in queue.placed]
+    backlog = _backlog_lines(alone, features)
     started = [row for row in alone.values() if row.state == STARTED]
     completed = [row for row in alone.values() if row.state == COMPLETED]
     removed = [row for row in rows.values() if row.state not in (BACKLOG, STARTED, COMPLETED)]
     listed = [
-        *placed,
-        *_with_features(added, features, "Backlog", last_first=False),
+        *(backlog[placed] for placed in queued(store.load_queue(), backlog)),
         *_with_features(started, features, "InProgress", last_first=True),
         *_with_features(completed, features, "Completed", last_first=True),
         *removed,

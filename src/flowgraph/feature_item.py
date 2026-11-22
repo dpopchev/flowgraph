@@ -14,8 +14,10 @@ from flowgraph.parent import (
     feature_id_text,
     parse_feature_id,
 )
+from flowgraph.queue import queued
 from flowgraph.record import Now
-from flowgraph.store import KINDS, Store
+from flowgraph.status import BACKLOG, backlog_as_added, rows_by_id
+from flowgraph.store import Store
 from flowgraph.text import feature_text
 
 
@@ -51,13 +53,17 @@ def add_feature_item(
 def show_feature_item(feature: str, store: Store) -> str:
     """The text of the Feature of that id: its criteria, then its work items with their buckets.
 
-    Its bucket is derived from the states of those work items. Raises FeatureIdError when the
-    text is no Feature id and FeatureNotFoundError when the record holds no such Feature.
+    Its bucket is derived from the states of those work items. They are listed by kind and
+    number, those in Backlog among them in the order the queue gives: the one they start in.
+    Raises FeatureIdError when the text is no Feature id and FeatureNotFoundError when the
+    record holds no such Feature.
     """
     detail = feature_detail(store.features.load_feature(parse_feature_id(feature)))
-    rows = [
-        row for kind in KINDS for row in store.find_work_item_rows(kind) if row.parent == detail.id
-    ]
+    held = {item_id: row for item_id, row in rows_by_id(store).items() if row.parent == detail.id}
+    in_backlog = backlog_as_added(held)
+    start_order = queued(store.load_queue(), in_backlog)
+    next_started = iter(sorted(in_backlog, key=start_order.index))
+    rows = [held[next(next_started)] if row.state == BACKLOG else row for row in held.values()]
     return feature_text(detail, rows, bucket_of([row.state for row in rows]))
 
 

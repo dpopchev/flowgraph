@@ -27,19 +27,13 @@ from flowgraph.item_id import (
     ItemIdError,
     kind_named,
     parse_item_id,
+    parse_placed_id,
     parse_work_item_id_of_any_kind,
 )
 from flowgraph.parent import STANDALONE, Parent
-from flowgraph.queue import reorder
+from flowgraph.queue import placed_text, reorder
 from flowgraph.record import Now
-from flowgraph.status import (
-    BACKLOG,
-    COMPLETED,
-    STARTED,
-    backlog_as_added,
-    rows_by_id,
-    status_item,
-)
+from flowgraph.status import BACKLOG, COMPLETED, STARTED, find_backlog, status_item
 from flowgraph.store import KINDS, Store
 from flowgraph.task import TaskId, parse_task_id, task_id_text
 from flowgraph.text import show_text
@@ -84,21 +78,23 @@ class Written:
 
 
 def reorder_item(item: str, before: str, store: Store) -> Written:
-    """Put the work item right before the other in the queue of the Backlog; what the write says.
+    """Put the work item or the Feature right before the other in the queue of the Backlog.
 
-    Raises WorkItemIdError when a text is the id of no kind, NotInBacklogError when one of the
-    two is not in Backlog and SameItemError when they are one work item; nothing is saved.
+    Returns what the write says. Raises ItemIdError when a text is the id of neither,
+    NotInBacklogError when one of the two is not in Backlog, SameItemError when they are one
+    item and UnderFeatureError when one is under a Feature the other is not under; nothing is
+    saved.
     """
-    moved = parse_work_item_id_of_any_kind(item)
-    other = parse_work_item_id_of_any_kind(before)
+    moved = parse_placed_id(item)
+    other = parse_placed_id(before)
     reorder(
         item=moved,
         before=other,
-        find_backlog=lambda: backlog_as_added(rows_by_id(store)),
+        find_backlog=partial(find_backlog, store),
         load_queue=store.load_queue,
         save_queue=store.save_queue,
     )
-    placed = f"{work_item_id_text(moved)} before {work_item_id_text(other)}"
+    placed = f"{placed_text(moved)} before {placed_text(other)}"
     return Written(f"moved {placed}\n", MESSAGE.format(f"reorder {placed}"))
 
 

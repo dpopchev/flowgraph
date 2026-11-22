@@ -1,8 +1,9 @@
 id = "B-0013"
-state = "backlog"
+state = "started"
 title = "Cut the started Features left at n/n W with no way to Completed from every one to none"
 description = "Found during T-0194 of S-0054 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. Beside it: the filter of the rows under a Feature is written three times, in feature_start.py, feature_item.py and feature_complete.py, and complete_work_item of src/flowgraph/work_item/commands.py is called by tests alone. Its Tasks are written when it is ordered."
 created = 2026-11-22 02:28:45+00:00
+started = 2026-11-22 07:42:13+00:00
 
 [criterion]
 observed = "a started Feature whose last work item in Backlog is removed stays under InProgress at n/n W with no command that completes it: only a work item added under it and completed does; and a Feature file deleted by hand refuses the completion of its work item inside fgraph land after main has moved"

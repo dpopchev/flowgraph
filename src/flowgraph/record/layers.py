@@ -1,7 +1,8 @@
 """The layers a configuration turns on, each a value: the commits, the development, the delivery.
 
 The development holds its keys as values too: the limit of the work items started at once, how
-a landing merges and the gate it runs. The delivery holds the steps a landing takes after it.
+a landing merges and the gate it runs. The delivery holds the steps a landing takes after it:
+the push of main and the tag at the close of a Feature.
 """
 
 from dataclasses import dataclass
@@ -75,11 +76,20 @@ class Development:
     gate: Gate
 
 
+class TagAt(Enum):
+    """Which closes a landing tags main at; each is its word in the file."""
+
+    FEATURE_CLOSE = "feature-close"
+    NONE = "none"
+
+
 @dataclass(frozen=True)
 class Delivery:
-    """What a landing takes after the write that completes its work item: main pushed, or not.
+    """What a landing takes after the write that completes its work item.
 
-    A step of a landing, so it says nothing while the development is off.
+    Main pushed, or not; and main tagged with its next version when that write completes a
+    Feature, or never. A step of a landing, so it says nothing while the development is off.
     """
 
     push: bool
+    tag: TagAt

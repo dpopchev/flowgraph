@@ -17,6 +17,7 @@ from typing import assert_never
 from flowgraph.item.commands import Written
 from flowgraph.record.config import (
     DELIVERY_PUSH,
+    DELIVERY_TAG,
     DEVELOPMENT_ENABLED,
     DEVELOPMENT_GATE,
     DEVELOPMENT_MERGE,
@@ -103,6 +104,7 @@ KEYS = (
     Key(DEVELOPMENT_MERGE, Takes.TEXT, lambda config: config.development.merge.value),
     Key(DEVELOPMENT_GATE, Takes.TEXT, lambda config: _command(config.development.gate)),
     Key(DELIVERY_PUSH, Takes.TRUTH, lambda config: config.delivery.push),
+    Key(DELIVERY_TAG, Takes.TEXT, lambda config: config.delivery.tag.value),
 )
 
 

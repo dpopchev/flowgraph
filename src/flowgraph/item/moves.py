@@ -141,7 +141,7 @@ def _completed(named: str, evidence: Evidence, feature: FeatureId | None = None)
         return Written(f"completed {named}{at}\n", MESSAGE.format(f"complete {named}"))
     with_it = feature_id_text(feature)
     out = f"completed {named}{at}\ncompleted {with_it}{at}\n"
-    return Written(out, MESSAGE.format(f"complete {named} and {with_it}"))
+    return Written(out, MESSAGE.format(f"complete {named} and {with_it}"), completes=feature)
 
 
 def complete_item(

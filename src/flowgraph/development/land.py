@@ -12,11 +12,14 @@ before main moves.
 `[development] gate` names one command a landing runs while that merge is held, once the work
 item is checked to complete: a gate that fails drops the merge, so main is where it was.
 
-`[delivery] push` pushes main to the branch it tracks as the last step, once the landing is
-whole: a push that fails leaves the landing as it is, since history is never undone.
+`[delivery] push` pushes main to the branch it tracks once the landing is whole: a push that
+fails leaves the landing as it is, since history is never undone. `[delivery] tag` at
+feature-close then tags main, the last step, when the landing completes a Feature: the tag
+`fgraph release` makes (`flowgraph.development.release`), on the commit main is on, pushed after
+main under `[delivery] push`. A tag that fails leaves the landing as it is too.
 """
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, replace
 from functools import partial
 from pathlib import Path
@@ -27,16 +30,19 @@ from flowgraph.development.branch import MAIN
 from flowgraph.development.commit import OpenGit, Said, WorkTree, branch_started, commit_written
 from flowgraph.development.gate import RunGate, check_gate
 from flowgraph.development.git import GitError
+from flowgraph.development.release import ReleaseError, release_trunk
 from flowgraph.development.way import Check, LandError, make_way, merged_by, removed_by
 from flowgraph.feature.complete import completed_with
 from flowgraph.feature.next import complete_and_start_next
-from flowgraph.item.commands import ToBranch, parse_work_item_id_of_any_kind
+from flowgraph.item.commands import ToBranch, Written, parse_work_item_id_of_any_kind
+from flowgraph.parent import FeatureId, feature_id_text
 from flowgraph.record import (
     DEVELOPMENT_ENABLED,
     GIT_COMMIT,
     Config,
     Now,
 )
+from flowgraph.record.layers import TagAt
 from flowgraph.record.store import Store
 from flowgraph.work_item import WorkItemId, work_item_id_text
 
@@ -90,16 +96,40 @@ def _without_branch(started: ToBranch | None) -> str:
     return f"; {work_item_id_text(started.item)} is started, its branch is not"
 
 
-def _pushed(item: str, sha: str, work_tree: WorkTree) -> str:
+def _pushed(item: str, sha: str, work_tree: WorkTree, untagged: FeatureId | None) -> str:
     """Push main once the landing is whole; the line that names the remote it is pushed to.
 
-    Raises GitError saying the work item is landed and main is not pushed when git refuses it.
+    Raises GitError saying the work item is landed and main is not pushed when git refuses it,
+    and that the Feature is not tagged when the landing completes one it was to tag.
     """
     try:
         remote = work_tree.landing.push(MAIN)
     except GitError as error:
-        raise GitError(f"{error} -- {item} is landed at {sha}, {MAIN} is not pushed") from error
+        landed = f"{item} is landed at {sha}, {MAIN} is not pushed"
+        if untagged is not None:
+            landed += f", {feature_id_text(untagged)} is not tagged"
+        raise GitError(f"{error} -- {landed}") from error
     return f"pushed {MAIN} to {remote}\n"
+
+
+def _to_tag(config: Config, written: Written) -> FeatureId | None:
+    """The Feature whose close a landing tags main at; None when it tags nothing.
+
+    It is the Feature the write of the landing completes, under `delivery.tag` feature-close.
+    """
+    return written.completes if config.delivery.tag is TagAt.FEATURE_CLOSE else None
+
+
+def _tagged(item: str, sha: str, feature: FeatureId, release: Callable[[], Said]) -> str:
+    """Tag main as `fgraph release` does, once the landing is whole; what the release says.
+
+    Raises the refusal of the release saying the work item is landed and the Feature completed.
+    """
+    try:
+        return release().out
+    except (GitError, ReleaseError) as error:
+        completed = f"{item} is landed at {sha}, {feature_id_text(feature)} is completed"
+        raise type(error)(f"{error} -- {completed}") from error
 
 
 def land_item(
@@ -131,8 +161,12 @@ def land_item(
     Feature completes the Feature in that commit of the record, named after the landing. Any
     other starts the next work item of the Feature in that commit, named after the landing too,
     and its branch is checked out at it, in a worktree of its own, once the landing is whole.
-    With the push of the delivery on, main is pushed to the branch it tracks after that, the
-    last step: a push git refuses leaves the landing whole and says main is not pushed.
+    With the push of the delivery on, main is pushed to the branch it tracks after that: a push
+    git refuses leaves the landing whole and says main is not pushed. With the tag of the
+    delivery at feature-close, a landing that completes a Feature then tags main as `fgraph
+    release` does, the last step, the tag pushed under the push of the delivery: a tag refused
+    leaves the landing whole and says the Feature is completed; a push of main refused makes
+    no tag and says so.
     """
     item_id = parse_work_item_id_of_any_kind(item)
     text = work_item_id_text(item_id)
@@ -169,6 +203,10 @@ def land_item(
     said = f"landed {text} at {sha}\n{with_it}"
     if written.branch is not None:
         said += branch_started(written.branch, work_tree)
+    feature = _to_tag(config, written)
     if config.delivery.push:
-        said += _pushed(text, sha, work_tree)
+        said += _pushed(text, sha, work_tree, feature)
+    if feature is not None:
+        release = partial(release_trunk, None, store, record, lambda _: work_tree, config)
+        said += _tagged(text, sha, feature, release)
     return Said(said)

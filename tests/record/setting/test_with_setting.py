@@ -9,6 +9,7 @@ pytestmark = pytest.mark.model
 
 ENABLED = {"development": {"enabled": True}}
 TAKES_A_COUNT = "it takes a whole number of 1 or more"
+TAKES_A_TAG = "it takes feature-close or none"
 
 
 @pytest.mark.parametrize(
@@ -23,6 +24,8 @@ TAKES_A_COUNT = "it takes a whole number of 1 or more"
         ("development.gate", "true", {"development": {"gate": "true"}}),
         ("development.gate", "1", {"development": {"gate": "1"}}),
         ("delivery.push", "true", {"delivery": {"push": True}}),
+        ("delivery.tag", "feature-close", {"delivery": {"tag": "feature-close"}}),
+        ("delivery.tag", "none", {"delivery": {"tag": "none"}}),
     ],
     ids=[
         "false",
@@ -34,6 +37,8 @@ TAKES_A_COUNT = "it takes a whole number of 1 or more"
         "a-command-named-true",
         "a-command-named-one",
         "a-push",
+        "a-tag-at-the-close-of-a-feature",
+        "no-tag",
     ],
 )
 def test_the_text_of_a_value_is_read_as_the_value_its_key_takes(
@@ -97,6 +102,8 @@ def test_a_key_the_configuration_does_not_have_is_refused_naming_it(key: str) ->
         ("development.gate", "", 'development.gate is "": it takes a command line'),
         ("development.gate", "  ", 'development.gate is "  ": it takes a command line'),
         ("delivery.push", "yes", 'delivery.push is "yes": it takes true or false'),
+        ("delivery.tag", "sometimes", f'delivery.tag is "sometimes": {TAKES_A_TAG}'),
+        ("delivery.tag", "true", f'delivery.tag is "true": {TAKES_A_TAG}'),
     ],
     ids=[
         "another-word-for-false",
@@ -111,6 +118,8 @@ def test_a_key_the_configuration_does_not_have_is_refused_naming_it(key: str) ->
         "an-empty-gate",
         "a-blank-gate",
         "another-word-for-a-push",
+        "no-word-of-a-tag",
+        "a-truth-for-a-tag",
     ],
 )
 def test_a_value_its_key_does_not_take_is_refused_naming_the_key(

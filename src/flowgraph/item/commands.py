@@ -21,7 +21,7 @@ from flowgraph.item.id import (
     parse_placed_id,
     parse_work_item_id_of_any_kind,
 )
-from flowgraph.parent import STANDALONE, Parent
+from flowgraph.parent import STANDALONE, FeatureId, Parent
 from flowgraph.record import Now
 from flowgraph.record.queue import placed_text, reorder
 from flowgraph.record.store import Store
@@ -61,11 +61,14 @@ class Written:
     """What a write of the record says, and the message of the commit that holds it.
 
     `branch` names the branch to check out at that commit: set by the start of a work item only.
+    `completes` names the Feature the write completes: set by the completion of the last work
+    item of a started Feature only, which a landing tags main at under `delivery.tag`.
     """
 
     out: str
     message: str
     branch: ToBranch | None = None
+    completes: FeatureId | None = None
 
 
 def reorder_item(item: str, before: str, store: Store) -> Written:

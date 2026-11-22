@@ -149,3 +149,17 @@ def test_the_help_menu_says_a_landing_runs_its_gate() -> None:
     assert summary == (
         "land a started work item on main: merge its branch, run its gate and complete it"
     )
+
+
+def test_the_help_of_reorder_names_the_feature_beside_the_work_item() -> None:
+    helped = fgraph(["reorder", "--help"]).out.splitlines()
+    assert [line for line in helped if line.startswith(("  ID ", "  --before"))] == [
+        "  ID           the id of the work item or of the Feature to move",
+        "  --before ID  the work item or the Feature it is listed right above",
+    ]
+
+
+def test_the_help_menu_says_reorder_puts_a_work_item_or_a_feature_before_another() -> None:
+    menu = " ".join(fgraph(["--help"]).out.split())
+    summary = menu.split(" reorder ", 1)[1].split(" status ", 1)[0]
+    assert summary == "put a work item or a Feature of the Backlog before another"

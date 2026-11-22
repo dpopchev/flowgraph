@@ -184,10 +184,17 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     )
     remove.add_argument("id", metavar="ID", help="the id of the work item or of the Feature")
     remove.add_argument("--reason", required=True, metavar="TEXT", help="why it is removed")
-    reorder = _command(commands, "reorder", "put a work item of the Backlog before another")
-    reorder.add_argument("id", metavar="ID", help="the id of the work item to move")
+    reorder = _command(
+        commands, "reorder", "put a work item or a Feature of the Backlog before another"
+    )
     reorder.add_argument(
-        "--before", required=True, metavar="ID", help="the work item it is listed right above"
+        "id", metavar="ID", help="the id of the work item or of the Feature to move"
+    )
+    reorder.add_argument(
+        "--before",
+        required=True,
+        metavar="ID",
+        help="the work item or the Feature it is listed right above",
     )
     status = _command(commands, "status", "list the items of the record by bucket")
     status.add_argument(

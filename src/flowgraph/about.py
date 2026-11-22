@@ -13,12 +13,12 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import assert_never
 
-from flowgraph.about_file import about_file, is_file_here
+from flowgraph.about_file import about_file, is_file_here, is_governed
 from flowgraph.commit import OpenGit
 from flowgraph.feature import FeatureDetail, feature_bucket, feature_detail
 from flowgraph.item_depends import bucketed, record_standing
 from flowgraph.item_id import ItemIdError, parse_shown_id
-from flowgraph.knowledge import KnowledgeRow, about_text
+from flowgraph.knowledge import KnowledgeRow, about_text, governs_text
 from flowgraph.knowledge_list import collected, newest_first
 from flowgraph.parent import FeatureId, feature_id_text, parse_feature_id
 from flowgraph.relation import Standing, depended_on_by
@@ -45,7 +45,8 @@ def _terms(names: Sequence[str], store: Store) -> list[str]:
 def _knowledge(rows: Sequence[KnowledgeRow]) -> list[str]:
     """The knowledge lines, each as a line: its kind, its day and its text, then its terms."""
     return [
-        f"{row.kind}  {row.noted.date().isoformat()}  {row.text}{about_text(row.about)}"
+        f"{row.kind}  {row.noted.date().isoformat()}  {row.text}"
+        f"{about_text(row.about)}{governs_text(row.governs)}"
         for row in rows
     ]
 
@@ -151,20 +152,25 @@ def _term_about(items: Sequence[str], knowledge: Sequence[str]) -> str:
     )
 
 
+def _is_path(text: str, directory: Path, store: Store, open_git: OpenGit) -> bool:
+    """True when the text is a file on the disk or one a line of the record governs."""
+    return is_file_here(text, directory) or is_governed(text, directory, store, open_git)
+
+
 def about_item(item: str, store: Store, directory: Path, open_git: OpenGit) -> str:
     """The text fgraph about gives of what is named: a work item, a Feature, a term or a file.
 
     The text is read as an id, then as a term, then as the path of a file from the directory
-    fgraph runs in, read from the git work tree of the directory. Raises FeatureIdError for a
-    Feature id below 1, ItemIdError for a text that is none of them or a path git cannot answer
-    for, and the refusal of `fgraph show` for an id the record holds no item of. Nothing is
-    written.
+    fgraph runs in, read from the git work tree of the directory: a file on the disk, or one a
+    line of the record governs. Raises FeatureIdError for a Feature id below 1, ItemIdError for a
+    text that is none of them or a path git cannot answer for and no line governs, and the refusal
+    of `fgraph show` for an id the record holds no item of. Nothing is written.
     """
     if is_term_name(item):
         try:
             return _term_text(item, store)
         except TermNotFoundError as error:
-            if is_file_here(item, directory):
+            if _is_path(item, directory, store, open_git):
                 return about_file(item, directory, store, open_git)
             raise ItemIdError(
                 f"{item!r} is no Story, Upkeep, Bug, Spike or Feature id, no term in the record"
@@ -173,7 +179,7 @@ def about_item(item: str, store: Store, directory: Path, open_git: OpenGit) -> s
     try:
         placed = parse_shown_id(item)
     except ItemIdError:
-        if is_file_here(item, directory):
+        if _is_path(item, directory, store, open_git):
             return about_file(item, directory, store, open_git)
         raise
     match placed:

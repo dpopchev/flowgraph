@@ -34,7 +34,7 @@ class KindListedError(ValueError):
 class KnowledgeEntry:
     """One line of knowledge as the list shows it: the id of its item, its kind, time and text.
 
-    The terms it is about follow.
+    The terms it is about follow, then the files it governs.
     """
 
     item: str
@@ -42,6 +42,7 @@ class KnowledgeEntry:
     noted: datetime
     text: str
     about: list[str] = field(default_factory=list[str])
+    governs: list[str] = field(default_factory=list[str])
 
 
 def chosen_kind(kind: str | None) -> str | None:
@@ -56,7 +57,9 @@ def chosen_kind(kind: str | None) -> str | None:
 
 def entries_of(item: str, rows: Iterable[KnowledgeRow]) -> list[KnowledgeEntry]:
     """The lines of the item of that id as entries, in the order they were noted."""
-    return [KnowledgeEntry(item, row.kind, row.noted, row.text, row.about) for row in rows]
+    return [
+        KnowledgeEntry(item, row.kind, row.noted, row.text, row.about, row.governs) for row in rows
+    ]
 
 
 def decision_entries(detail: WorkItemDetail, completed: datetime | None) -> list[KnowledgeEntry]:

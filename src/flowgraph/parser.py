@@ -241,6 +241,9 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     )
     note.add_argument("id", metavar="ID", help="the id of the work item")
     note.add_argument("--about", action="append", metavar="TERM", help="a term the line is about")
+    note.add_argument(
+        "--governs", action="append", metavar="PATH", help="a file the line governs; once per file"
+    )
     kinds = note.add_mutually_exclusive_group(required=True)
     kinds.add_argument("--finding", metavar="TEXT", help="what the work learned")
     kinds.add_argument("--decision", metavar="TEXT", help="what was decided")

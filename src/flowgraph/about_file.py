@@ -9,6 +9,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from flowgraph.commit import OpenGit
+from flowgraph.governed import governed_text, governing, placed
 from flowgraph.item_id import ItemIdError
 from flowgraph.status import COMPLETED, rows_by_id
 from flowgraph.store import Store
@@ -26,34 +27,43 @@ def is_file_here(text: str, directory: Path) -> bool:
     return (directory / text).is_file()
 
 
-def about_file(text: str, directory: Path, store: Store, open_git: OpenGit) -> str:
-    """The completed work items and Tasks whose commit changed the file, newest first.
+def is_governed(text: str, directory: Path, store: Store, open_git: OpenGit) -> bool:
+    """True when a line of the record governs the file the text names, on the disk or not."""
+    return bool(governing(text, directory, store, open_git))
 
-    The path is taken from the directory fgraph runs in. A work item is listed with its commit
-    when its own commit changed the file, with none when only a Task of it did, and a Task is
-    listed under its work item. A file no commit of the record touched is said so in one line.
-    Raises ItemIdError outside a git work tree, or for a path outside the one of the directory.
+
+def about_file(text: str, directory: Path, store: Store, open_git: OpenGit) -> str:
+    """The lines that govern the file, then the completed items whose commit changed it.
+
+    The path is taken from the directory fgraph runs in. The lines come first under Governed by,
+    newest first. A work item is listed with its commit when its own commit changed the file, with
+    none when only a Task of it did, and a Task is listed under its work item. A file no commit of
+    the record touched and no line governs is said so in one line. Outside a git work tree, or for
+    a path outside the one of the directory, the lines that govern it alone are listed.
+    Raises ItemIdError there when no line governs it.
     """
     work_tree = open_git(directory)
-    if work_tree is None:
+    governed = governed_text(governing(text, directory, store, open_git))
+    file = placed(text, directory, work_tree)
+    if work_tree is None or file is None:
+        if governed:
+            return governed
+        if work_tree is None:
+            raise ItemIdError(
+                f"{text!r} is a file: the answer for a file is read from git, and {directory}"
+                " is inside no git work tree"
+            )
         raise ItemIdError(
-            f"{text!r} is a file: the answer for a file is read from git, and {directory}"
-            " is inside no git work tree"
+            f"{text!r} is outside the git work tree {work_tree.path.resolve()}: the answer for a"
+            " file is read from git"
         )
-    top = work_tree.path.resolve()
-    try:
-        file = (directory / text).resolve().relative_to(top).as_posix()
-    except ValueError as error:
-        raise ItemIdError(
-            f"{text!r} is outside the git work tree {top}: the answer for a file is read from git"
-        ) from error
 
     def touched(commit: str) -> bool:
         return bool(commit) and file in (work_tree.changed_files(commit) or [])
 
     done = [row for row in rows_by_id(store).values() if row.state == COMPLETED]
     lines = "".join(_lines(row, touched) for row in sorted(done, key=_completed, reverse=True))
-    return lines or f"no commit of the record touched {text}\n"
+    return governed + lines or f"no commit of the record touched {text}\n"
 
 
 def _completed(row: WorkItemRow) -> datetime:

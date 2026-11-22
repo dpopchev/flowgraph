@@ -76,17 +76,12 @@ def fgraph(argv: Sequence[str], saved: dict[str, StoryState]) -> Outcome:
     return Outcome(status, "".join(out), "".join(err))
 
 
-STRICT = pytest.mark.xfail(strict=True, reason="S-0076: fgraph note takes no --governs yet")
-
-
-@STRICT
 def test_a_decision_noted_with_governs_exits_with_zero() -> None:
     saved: dict[str, StoryState] = {}
     fgraph(ADD_STORY, saved)
     assert fgraph(NOTE, saved).status == 0
 
 
-@STRICT
 def test_about_the_governed_path_lists_the_line_first_with_the_id_of_the_story() -> None:
     saved: dict[str, StoryState] = {}
     fgraph(ADD_STORY, saved)

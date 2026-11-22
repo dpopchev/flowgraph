@@ -11,10 +11,11 @@ expected = "a landing interrupted or refused under its gate leaves main and its 
 
 [[tasks]]
 id = "T-0235"
-state = "backlog"
+state = "started"
 title = "Probe each case of B-0010 as tests: Ctrl-C during the gate of a landing by merge-commit leaves the merge held, and the drop of a merge fails once the gate changed a file the merge brought"
 expected_output = "changed: tests/land/test_land.py and tests/branch/test_landing_git.py state each case as wanted, each seen red"
 created = 2026-11-22 07:11:36+00:00
+started = 2026-11-22 07:11:40+00:00
 
 [[tasks]]
 id = "T-0236"

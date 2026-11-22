@@ -1,9 +1,11 @@
 id = "B-0003"
-state = "started"
+state = "completed"
 title = "Raise the kinds the refusal of fgraph show names for a wrong id from four to every one it takes"
 description = "Found during T-0149 of B-0001 on 2026-11-21, under the burn of the Backlog; filed at the end of the queue and not burned. Since B-0001 a work item id below 1, S-0000, is refused in the every-kind words as well, as parse_item_id refuses it. Its Tasks are written when it is ordered."
 created = 2026-11-21 21:49:02+00:00
 started = 2026-11-22 06:16:13+00:00
+completed = 2026-11-22 06:23:59+00:00
+commit = "98216be"
 
 [criterion]
 observed = "fgraph show X-0001 and fgraph show T-0001 say the text is no Story, Upkeep, Bug or Spike id, though show takes a Feature too; fgraph show F-0000 says the same and not that a Feature id counts from 1"

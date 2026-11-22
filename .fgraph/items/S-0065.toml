@@ -35,7 +35,8 @@ commit = "2a08145"
 
 [[tasks]]
 id = "T-0276"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say fgraph knowledge lists the knowledge of the record"
 expected_output = "changed: README.md shows fgraph knowledge and its --kind on a record with lines of each kind, and its Status table says the knowledge lines are listed; docs/domain-model.md says what the list holds, how it is ordered, and that the decision of a Spike is listed and stays where it is kept"
 created = 2026-11-22 10:47:36+00:00
+started = 2026-11-22 11:40:50+00:00

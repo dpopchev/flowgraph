@@ -67,10 +67,11 @@ commit = "a36df27"
 
 [[tasks]]
 id = "T-0324"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to name the subpackages of src/flowgraph"
 expected_output = "changed: README.md, Develop, lists the subpackages of src/flowgraph with what each holds and names the line limit of 250; docs/domain-model.md names each module by its new path wherever it names one"
 created = 2026-11-22 10:48:32+00:00
+started = 2026-11-22 22:10:42+00:00
 
 [[knowledge]]
 kind = "deviation"

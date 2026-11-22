@@ -116,7 +116,7 @@ class TestAStartedTaskBlockedWithAReasonAndWhatItWaitsOn:
         ),
         (
             [*STARTED, ["block", "S-0001", "--reason", "a reason", "--waiting-on", "someone"]],
-            "'S-0001' is no Task id: it is T- and a number",
+            "'S-0001' is no Task or Feature id",
         ),
         (
             [*STARTED, ["block", "T-0009", "--reason", "a reason", "--waiting-on", "someone"]],

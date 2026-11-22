@@ -12,13 +12,14 @@ from typing import Annotated, Literal, assert_never
 
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
 
-from flowgraph.criterion import CommitError, evidence_written
+from flowgraph.criterion import CommitError, EmptyPartError, Evidence, evidence_written
 from flowgraph.feature_state import (
     IN_BACKLOG,
     BlockedFeature,
     CompletedFeature,
     Feature,
     FeatureState,
+    NoCriterionError,
     RemovedFeature,
     StartedFeature,
     blocked_feature,
@@ -29,7 +30,7 @@ from flowgraph.feature_state import (
     state_name,
 )
 from flowgraph.item_file import evidence_primitives, write_checked
-from flowgraph.parent import FeatureId, feature_id_text, parse_feature_id
+from flowgraph.parent import FeatureId, FeatureIdError, feature_id_text, parse_feature_id
 from flowgraph.record import ITEMS
 
 
@@ -147,7 +148,8 @@ def _read_file(path: Path) -> FeatureState:
     """The Feature one file holds, built through its constructor and its moves.
 
     A file without a state line, as every one written before a Feature had a state, holds a
-    Feature in Backlog. Raises FeatureFileError, for a commit that is no sha too.
+    Feature in Backlog. Raises FeatureFileError, for a commit that is no sha too, and for a part
+    its constructor or its moves refuse, as a blank reason.
     """
     try:
         written = tomllib.loads(path.read_text(encoding="utf-8"))
@@ -155,6 +157,17 @@ def _read_file(path: Path) -> FeatureState:
         commit = evidence_written(held.commit if isinstance(held, _CompletedFeatureFile) else "")
     except (tomllib.TOMLDecodeError, ValidationError, CommitError) as error:
         raise FeatureFileError(f"{path} holds no Feature: {error}") from error
+    try:
+        return _built(held, commit)
+    except (EmptyPartError, NoCriterionError, FeatureIdError) as error:
+        raise FeatureFileError(f"{path} holds no Feature: {error}") from error
+
+
+def _built(held: _HeldFeatureFile, commit: Evidence) -> FeatureState:
+    """The Feature the content of a file holds, through its constructor and its moves.
+
+    Raises the refusal of the constructor or of a move.
+    """
     feature = make_feature(
         parse_feature_id(held.id), held.title, held.criteria, held.description, held.created
     )

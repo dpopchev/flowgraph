@@ -193,3 +193,12 @@ def test_a_file_whose_state_line_and_the_block_it_holds_disagree_is_refused_nami
     keep(tmp_path, f"{lines}{WRITTEN_BEFORE}")
     with pytest.raises(FeatureFileError, match=r"F-0001.toml holds no Feature: "):
         read_feature(tmp_path, ONE)
+
+
+@pytest.mark.edge
+def test_a_blocked_file_with_a_blank_reason_is_refused_naming_it(tmp_path: Path) -> None:
+    keep(
+        tmp_path, f'state = "blocked"\n{SINCE_LINE}reason = " "\n{WAITING_ON_LINE}{WRITTEN_BEFORE}'
+    )
+    with pytest.raises(FeatureFileError, match=r"F-0001\.toml holds no Feature: reason is empty$"):
+        read_feature(tmp_path, ONE)

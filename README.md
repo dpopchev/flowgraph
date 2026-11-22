@@ -16,10 +16,12 @@ itself. A record is layered by its configuration, `.fgraph/config.toml`: it
 turns the commits of the record off, and once it turns the development on,
 starting a work item also checks out its branch in a worktree of its own,
 completing an item names the commit that holds its work, and `fgraph land`
-lands it. `fgraph config` shows the configuration and sets a key of it. A work
-item, and a Feature, keeps the findings, decisions and deviations noted on it with
-`fgraph note`, in any state, and `fgraph show` lists them. `fgraph knowledge`
-lists the lines of the whole record. The closing of a completed Story, Bug or
+lands it. `fgraph release` tags `main` with its next `v*` version, from the
+work completed since the last one. `fgraph config` shows the configuration
+and sets a key of it. A work item, and a Feature, keeps the findings,
+decisions and deviations noted on it with `fgraph note`, in any state, and
+`fgraph show` lists them. `fgraph knowledge` lists the lines of the whole
+record. The closing of a completed Story, Bug or
 Upkeep is answered with `fgraph verify`: yes, with what the run of its criterion
 printed, which `fgraph show` lists. A term of the project, a word with what it
 means, is added with `fgraph add term`, listed by `fgraph terms` and shown by
@@ -49,6 +51,7 @@ the typed edges of the whole record as JSON.
 | the knowledge of the record     | every line listed by `fgraph knowledge`, newest first    |
 | the closing of a work item      | `fgraph verify --yes` keeps the yes of a completed one   |
 | the development                 | once enabled: start branches, `fgraph land` lands        |
+| the release of the trunk        | `fgraph release` tags `main` with its next `v*` version  |
 | the links of an item            | `fgraph about` lists every relation, both sides, by id   |
 | the export of the record        | `fgraph graph` prints its nodes and edges as JSON        |
 | the ontology                    | started: terms, related by is-a and part-of              |
@@ -634,6 +637,58 @@ fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
 
 It is a step of a landing, so it pushes nothing with the development off,
 where it is held as written and the landing is refused as above.
+
+`fgraph release` tags the trunk: it makes an annotated `v*` tag on the head of
+`main`, in the checkout of `main`, and prints it. The version is the next
+minor when a Story or a Bug was completed since the last `v*` tag, else the
+next patch, and `v0.1.0` when the repository holds no `v*` tag yet:
+
+```sh
+fgraph land S-0002 --message "feat: land the Stories listed under InProgress"
+# landed S-0002 at 85c8d69
+
+fgraph release
+# tagged v0.2.0 at 3becb1b
+
+git tag -n1
+# v0.1.0          release v0.1.0
+# v0.2.0          release v0.2.0
+```
+
+An Upkeep or a Spike alone since the last tag tags the next patch, `v0.2.1`
+after `v0.2.0`. A work item is completed since the last tag unless that tag
+holds the commit it is completed at, so one landed just before the tag is
+never counted again; one that names no commit, as one completed with the
+development off, is taken by its completed time against the time of the tag.
+`--version` names the version in place of the next one, as `--version v1.0.0`
+for a major.
+
+A tag is never moved or deleted: a version that is tagged already is refused,
+and so is a release with nothing completed since the last tag. Each exits 2
+and tags nothing, and so does a release run off the checkout of `main`, as a
+start is:
+
+```sh
+fgraph release
+# fgraph: error: nothing is completed since v0.2.1: no release -- complete a work item first
+
+fgraph release --version v0.2.1
+# fgraph: error: v0.2.1 is tagged already: a tag is never moved or deleted -- name another with --version
+```
+
+With `[delivery] push = true` the tag is pushed to the remote `main` tracks,
+once it is made, on a line of its own. A push git refuses leaves the tag as
+it is, made and not pushed, and exits 2 saying so: `git push origin v0.2.2`
+is left to you.
+
+```sh
+fgraph release
+# tagged v0.2.2 at 94959ae
+# pushed v0.2.2 to origin
+```
+
+A version the project keeps in a file of its own, as `pyproject.toml`, is not
+bumped by `fgraph release`.
 
 The commits of the record are a layer the record turns off:
 

@@ -161,12 +161,12 @@ def _committed(work_tree: WorkTree, branch: str, check: Check, commit: Callable[
     Raises the refusal of the check, or GitError when git refuses the merge or the commit; the
     merge held is dropped then.
     """
-    work_tree.merge(branch)
+    work_tree.landing.merge(branch)
     try:
         check()
         return commit()
     except NOT_COMMITTED:
-        work_tree.abort_merge()
+        work_tree.landing.abort_merge()
         raise
 
 
@@ -177,12 +177,12 @@ def _fast_forwarded(work_tree: WorkTree, branch: str, check: Check) -> str:
     and at the tree the gate runs on before main moves. Raises the refusal of the check, or
     GitError when git refuses a step; main is where it was then.
     """
-    work_tree.merge(branch)
+    work_tree.landing.merge(branch)
     try:
         check()
     finally:
-        work_tree.abort_merge()
-    return work_tree.fast_forward(branch)
+        work_tree.landing.abort_merge()
+    return work_tree.landing.fast_forward(branch)
 
 
 def _merged(way: Way, item: str, branch: str, work_tree: WorkTree, check: Check) -> str:
@@ -191,13 +191,14 @@ def _merged(way: Way, item: str, branch: str, work_tree: WorkTree, check: Check)
     Raises LandError when a fast-forward finds a commit on main that the branch lacks, the
     refusal of the check, or GitError when git refuses a step; nothing is merged then.
     """
+    steps = work_tree.landing
     match way:
         case MergeCommit(message):
-            return _committed(work_tree, branch, check, partial(work_tree.commit_merge, message))
+            return _committed(work_tree, branch, check, partial(steps.commit_merge, message))
         case Squash(message):
-            return _committed(work_tree, branch, check, partial(work_tree.commit_squash, message))
+            return _committed(work_tree, branch, check, partial(steps.commit_squash, message))
         case FastForward():
-            if not work_tree.can_fast_forward(branch):
+            if not steps.can_fast_forward(branch):
                 bring = f"rebase {branch} on {MAIN} or merge {MAIN} into it"
                 lacks = f"{MAIN} holds a commit {branch} lacks"
                 raise LandError(f"{item} cannot land by fast-forward: {lacks} -- {bring}")
@@ -213,12 +214,12 @@ def _removed(way: Way, work_tree: WorkTree, branch: str) -> None:
     """
     worktree = work_tree.find_worktree(branch)
     if worktree is not None:
-        work_tree.remove_worktree(worktree)
+        work_tree.landing.remove_worktree(worktree)
     match way:
         case MergeCommit() | FastForward():
-            work_tree.delete_branch(branch)
+            work_tree.landing.delete_branch(branch)
         case Squash():
-            work_tree.delete_unmerged_branch(branch)
+            work_tree.landing.delete_unmerged_branch(branch)
         case _ as unreachable:
             assert_never(unreachable)
 

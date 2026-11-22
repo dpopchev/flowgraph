@@ -12,7 +12,10 @@ then = "it still passes"
 
 [[tasks]]
 id = "T-0234"
-state = "backlog"
+state = "completed"
 title = "Move the nine steps only a landing takes out of WorkTree into LandingSteps of src/flowgraph/commit.py, a field of WorkTree whose default refuses every step, read by src/flowgraph/land.py"
 expected_output = "changed: src/flowgraph/commit.py and src/flowgraph/land.py; tests/land/test_land.py builds its LandingSteps and no fake work tree of another test file names a step of a landing"
 created = 2026-11-22 07:04:46+00:00
+started = 2026-11-22 07:04:48+00:00
+completed = 2026-11-22 07:08:45+00:00
+commit = "015dead"

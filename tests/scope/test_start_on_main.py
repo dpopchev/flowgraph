@@ -29,16 +29,7 @@ def work_tree(branch: str, home: Path | None = HOME) -> WorkTree:
         add_worktree=never,
         current_branch=lambda: branch,
         find_branches=never,
-        merge=never,
-        abort_merge=never,
-        commit_merge=never,
-        commit_squash=never,
-        can_fast_forward=never,
-        fast_forward=never,
         find_worktree=lambda _: home,
-        remove_worktree=never,
-        delete_branch=never,
-        delete_unmerged_branch=never,
         find_worktrees=never,
     )
 

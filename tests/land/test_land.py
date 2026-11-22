@@ -1,6 +1,6 @@
 """The landing of a work item: its git steps in order and what it refuses, with fakes."""
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
@@ -9,7 +9,7 @@ from typing import Never
 import pytest
 
 from flowgraph.branch import GitError
-from flowgraph.commit import Said, WorkTree
+from flowgraph.commit import LandingSteps, Said, WorkTree
 from flowgraph.config import Config, make_config
 from flowgraph.criterion import make_commit, make_scenario
 from flowgraph.feature import make_feature, started_feature
@@ -112,18 +112,25 @@ def work_tree(steps: list[object]) -> WorkTree:
         add_worktree=never,
         current_branch=lambda: "main",
         find_branches=lambda _: [BRANCH],
-        merge=lambda branch: steps.append(("merge", branch)),
-        abort_merge=lambda: steps.append("abort merge"),
-        commit_merge=commit_merge,
-        commit_squash=commit_squash,
-        can_fast_forward=lambda _: True,
-        fast_forward=fast_forward,
         find_worktree=lambda _: WORKTREE,
-        remove_worktree=lambda path: steps.append(("remove worktree", path)),
-        delete_branch=lambda branch: steps.append(("delete branch", branch)),
-        delete_unmerged_branch=lambda branch: steps.append(("delete unmerged branch", branch)),
         find_worktrees=never,
+        landing=LandingSteps(
+            merge=lambda branch: steps.append(("merge", branch)),
+            abort_merge=lambda: steps.append("abort merge"),
+            commit_merge=commit_merge,
+            commit_squash=commit_squash,
+            can_fast_forward=lambda _: True,
+            fast_forward=fast_forward,
+            remove_worktree=lambda path: steps.append(("remove worktree", path)),
+            delete_branch=lambda branch: steps.append(("delete branch", branch)),
+            delete_unmerged_branch=lambda branch: steps.append(("delete unmerged branch", branch)),
+        ),
     )
+
+
+def with_step(tree: WorkTree, **steps: Callable[..., object]) -> WorkTree:
+    """The work tree with those steps of its landing in place of its own."""
+    return replace(tree, landing=replace(tree.landing, **steps))
 
 
 def no_gate(*_: object) -> Never:
@@ -314,7 +321,7 @@ def test_a_worktree_git_refuses_to_remove_says_the_next_work_item_has_no_branch_
         match=r"^git failed: refused -- S-0001 is landed at 3e9ae5c, its worktree and its branch"
         r" are not removed; S-0002 is started, its branch is not$",
     ):
-        land_first(replace(branching([]), remove_worktree=refuse))
+        land_first(with_step(branching([]), remove_worktree=refuse))
 
 
 def test_a_branch_without_a_worktree_is_deleted_alone() -> None:
@@ -336,14 +343,14 @@ def test_a_landing_with_a_task_not_completed_aborts_the_merge() -> None:
 def test_a_merge_commit_git_refuses_aborts_the_merge() -> None:
     steps: list[object] = []
     with pytest.raises(GitError):
-        land(READY, replace(work_tree(steps), commit_merge=refuse))
+        land(READY, with_step(work_tree(steps), commit_merge=refuse))
     assert steps == [("merge", BRANCH), "abort merge"]
 
 
 def test_a_merge_git_refuses_takes_no_other_step() -> None:
     steps: list[object] = []
     with pytest.raises(GitError):
-        land(READY, replace(work_tree(steps), merge=refuse))
+        land(READY, with_step(work_tree(steps), merge=refuse))
     assert steps == []
 
 
@@ -401,7 +408,7 @@ def test_a_worktree_git_refuses_to_remove_says_the_work_item_is_landed() -> None
         match=r"^git failed: refused -- S-0001 is landed at 3e9ae5c,"
         r" its worktree and its branch are not removed$",
     ):
-        land(READY, replace(work_tree([]), remove_worktree=refuse))
+        land(READY, with_step(work_tree([]), remove_worktree=refuse))
 
 
 @pytest.mark.parametrize(
@@ -459,7 +466,7 @@ def test_a_landing_by_squash_with_a_task_not_completed_aborts_the_merge() -> Non
 def test_a_squash_commit_git_refuses_takes_no_step_of_the_record() -> None:
     steps: list[object] = []
     with pytest.raises(GitError):
-        land(READY, replace(work_tree(steps), commit_squash=refuse), config=SQUASH)
+        land(READY, with_step(work_tree(steps), commit_squash=refuse), config=SQUASH)
     assert steps == [("merge", BRANCH), "abort merge"]
 
 
@@ -513,7 +520,7 @@ def test_a_landing_by_fast_forward_refused_with_a_message_takes_no_git_step() ->
 
 
 def test_a_landing_by_fast_forward_is_refused_when_main_holds_a_commit_the_branch_lacks() -> None:
-    ahead = replace(work_tree([]), can_fast_forward=lambda _: False)
+    ahead = with_step(work_tree([]), can_fast_forward=lambda _: False)
     with pytest.raises(LandError) as error:
         land(READY, ahead, config=FAST_FORWARD, message=None)
     assert str(error.value) == (
@@ -524,7 +531,7 @@ def test_a_landing_by_fast_forward_is_refused_when_main_holds_a_commit_the_branc
 
 def test_a_landing_by_fast_forward_refused_for_a_commit_of_main_merges_nothing() -> None:
     steps: list[object] = []
-    ahead = replace(work_tree(steps), can_fast_forward=lambda _: False)
+    ahead = with_step(work_tree(steps), can_fast_forward=lambda _: False)
     with pytest.raises(LandError):
         land(READY, ahead, config=FAST_FORWARD, message=None)
     assert steps == []
@@ -535,7 +542,7 @@ def test_a_fast_forward_git_refuses_takes_no_step_of_the_record() -> None:
     with pytest.raises(GitError):
         land(
             READY,
-            replace(work_tree(steps), fast_forward=refuse),
+            with_step(work_tree(steps), fast_forward=refuse),
             config=FAST_FORWARD,
             message=None,
         )

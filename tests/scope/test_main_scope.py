@@ -65,16 +65,7 @@ def work_tree(branches: list[str], worktree: Path | None) -> WorkTree:
         add_worktree=never,
         current_branch=never,
         find_branches=lambda pattern: branches if pattern == "wi/S-0001-*" else [],
-        merge=never,
-        abort_merge=never,
-        commit_merge=never,
-        commit_squash=never,
-        can_fast_forward=never,
-        fast_forward=never,
         find_worktree=lambda _: worktree,
-        remove_worktree=never,
-        delete_branch=never,
-        delete_unmerged_branch=never,
         find_worktrees=never,
     )
 

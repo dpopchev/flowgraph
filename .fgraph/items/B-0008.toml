@@ -21,8 +21,10 @@ commit = "9c872b2"
 
 [[tasks]]
 id = "T-0229"
-state = "started"
+state = "completed"
 title = "Say in the docstrings of status_text and _status_line of src/flowgraph/text.py that a completed item is listed with its commit when it holds one"
 expected_output = "changed: src/flowgraph/text.py, the docstrings of status_text and _status_line"
 created = 2026-11-22 06:48:55+00:00
 started = 2026-11-22 06:51:13+00:00
+completed = 2026-11-22 06:53:08+00:00
+commit = "f57b45d"

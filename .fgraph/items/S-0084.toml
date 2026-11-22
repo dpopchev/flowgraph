@@ -1,10 +1,12 @@
 id = "S-0084"
-state = "started"
+state = "completed"
 title = "Raise the blocks fgraph status lists with their reason from none to every one"
 description = "The example of the note: !  T-0001  Add x to y  -- waiting on developer, where the reason, no key, is missing; its words are not decided."
 parent = "F-0008"
 created = 2026-11-22 21:01:52+00:00
 started = 2026-11-22 22:32:23+00:00
+completed = 2026-11-22 22:46:30+00:00
+commit = "ba9a3e3"
 
 [criterion]
 given = "a started Story whose Task is blocked with the reason no key, waiting on developer, and a blocked Feature"

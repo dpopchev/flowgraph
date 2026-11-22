@@ -1,10 +1,10 @@
 """A Feature: a bigger outcome that groups work items, with the criteria the user experiences.
 
-It is not worked on directly, so it holds no Task. Its state is its own, in Backlog, started or
-completed, as that of a work item is (`flowgraph.feature_state`); a started one is in
-InProgress and a completed one in Completed, and every other bucket a list shows it in is still
-derived from the states of its work items. It is kept as one file of the record,
-`items/F-0001.toml`.
+It is not worked on directly, so it holds no Task. Its state is its own, in Backlog, started,
+blocked or completed, as that of a work item is (`flowgraph.feature_state`); a started one is
+in InProgress, blocked or not, and a completed one in Completed, and every other bucket a list
+shows it in is still derived from the states of its work items. It is kept as one file of the
+record, `items/F-0001.toml`.
 """
 
 import tomllib
@@ -19,16 +19,19 @@ from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
 from flowgraph.criterion import CommitError, evidence_written
 from flowgraph.feature_state import (
     IN_BACKLOG,
+    BlockedFeature,
     CompletedFeature,
     Feature,
     FeatureState,
     NoCriterionError,
     StartedFeature,
+    blocked_feature,
     commit_sha,
     completed_feature,
     make_feature,
     started_feature,
     state_name,
+    unblocked_feature,
 )
 from flowgraph.item_file import evidence_primitives, write_checked
 from flowgraph.parent import FeatureId, feature_id_text, make_feature_id, parse_feature_id
@@ -37,14 +40,17 @@ from flowgraph.work_item import WorkItemRow
 
 # The states of a Feature and its moves live in feature_state.py; they stay importable from here.
 __all__ = [
+    "BlockedFeature",
     "CompletedFeature",
     "Feature",
     "FeatureState",
     "NoCriterionError",
     "StartedFeature",
+    "blocked_feature",
     "completed_feature",
     "make_feature",
     "started_feature",
+    "unblocked_feature",
 ]
 
 # The states of a completed and of a removed work item, as the record writes them.
@@ -144,16 +150,16 @@ def bucket_of(states: Collection[str]) -> str:
 def feature_bucket(feature: FeatureState, states: Collection[str]) -> str:
     """The bucket a list shows the Feature in, given the states of its work items.
 
-    A started Feature is in InProgress and a completed one in Completed, each by its own state:
-    only the completion of its last work item completes a started Feature, so one whose work
-    items are all completed or removed stays in InProgress. Every bucket of a Feature never
-    started stays derived, as that of one whose work items were started before a Feature had a
-    state.
+    A started Feature is in InProgress, blocked or not, and a completed one in Completed, each
+    by its own state: only the completion of its last work item completes a started Feature, so
+    one whose work items are all completed or removed stays in InProgress. Every bucket of a
+    Feature never started stays derived, as that of one whose work items were started before a
+    Feature had a state.
     """
     match feature:
         case Feature():
             return bucket_of(states)
-        case StartedFeature():
+        case StartedFeature() | BlockedFeature():
             return "InProgress"
         case CompletedFeature():
             return "Completed"
@@ -225,6 +231,23 @@ class _StartedFeatureFile(BaseModel):
     criteria: list[str]
 
 
+class _BlockedFeatureFile(BaseModel):
+    """What the file of a blocked Feature holds: its started time too, and its block."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    state: Literal["blocked"]
+    title: str
+    description: str = ""
+    created: datetime
+    started: datetime
+    since: datetime
+    reason: str
+    waiting_on: str
+    criteria: list[str]
+
+
 class _CompletedFeatureFile(BaseModel):
     """What the file of a completed Feature holds: its completed time too, and its commit."""
 
@@ -242,7 +265,7 @@ class _CompletedFeatureFile(BaseModel):
 
 
 # The file of a Feature in any of its states.
-_HeldFeatureFile = _FeatureFile | _StartedFeatureFile | _CompletedFeatureFile
+_HeldFeatureFile = _FeatureFile | _StartedFeatureFile | _BlockedFeatureFile | _CompletedFeatureFile
 
 # The validator of a Feature file, which tells the states apart by the state line.
 _HELD_FEATURE: TypeAdapter[_HeldFeatureFile] = TypeAdapter(
@@ -275,6 +298,9 @@ def _read_file(path: Path) -> FeatureState:
             return feature
         case _StartedFeatureFile():
             return started_feature(feature, held.started)
+        case _BlockedFeatureFile():
+            begun = started_feature(feature, held.started)
+            return blocked_feature(begun, held.reason, held.waiting_on, held.since)
         case _CompletedFeatureFile():
             return completed_feature(started_feature(feature, held.started), held.completed, commit)
         case _ as unreachable:
@@ -288,6 +314,9 @@ def _moves_primitives(feature: FeatureState) -> dict[str, object]:
             return {}
         case StartedFeature():
             return {"started": feature.started}
+        case BlockedFeature():
+            block = {"reason": feature.reason, "waiting_on": feature.waiting_on}
+            return {"started": feature.started, "since": feature.since, **block}
         case CompletedFeature():
             times = {"started": feature.started, "completed": feature.completed}
             return {**times, **evidence_primitives(feature.commit)}

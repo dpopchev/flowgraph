@@ -11,7 +11,13 @@ from typing import assert_never
 from flowgraph import work_item
 from flowgraph.branch import make_slug, slug_of_title
 from flowgraph.config import Config
-from flowgraph.feature import CompletedFeature, Feature, StartedFeature, started_feature
+from flowgraph.feature import (
+    BlockedFeature,
+    CompletedFeature,
+    Feature,
+    StartedFeature,
+    started_feature,
+)
 from flowgraph.item import MESSAGE, ItemIdError, ToBranch, Written, parse_item_id
 from flowgraph.parallel import check_feature_parallel
 from flowgraph.parent import FeatureId, Standalone, feature_id_text, parse_feature_id
@@ -140,7 +146,7 @@ def check_start_under_feature(item: str, store: Store) -> None:
             raise FeatureNotStartedError(
                 f"{named} cannot start: {feature} is not started, start it first"
             )
-        case StartedFeature():
+        case StartedFeature() | BlockedFeature():
             rows = _under(feature_id, store).values()
             already = ", ".join(row.id for row in rows if row.state == STARTED)
             if already:

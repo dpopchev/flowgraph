@@ -11,7 +11,7 @@ from typing import assert_never
 
 from flowgraph.branch import SlugError
 from flowgraph.config import Config
-from flowgraph.feature import CompletedFeature, Feature, StartedFeature
+from flowgraph.feature import BlockedFeature, CompletedFeature, Feature, StartedFeature
 from flowgraph.feature_start import (
     WorkItemInProgressError,
     check_start_under_feature,
@@ -47,7 +47,7 @@ def _next_of(item_id: WorkItemId, store: Store) -> WorkItemId | None:
     match feature:
         case Feature() | CompletedFeature():
             return None
-        case StartedFeature():
+        case StartedFeature() | BlockedFeature():
             return first_in_backlog(feature_id, store)
         case _ as unreachable:
             assert_never(unreachable)

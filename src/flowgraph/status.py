@@ -12,6 +12,7 @@ from datetime import datetime
 from typing import assert_never
 
 from flowgraph.feature import (
+    BlockedFeature,
     CompletedFeature,
     Feature,
     FeatureRow,
@@ -74,7 +75,7 @@ def _placed_feature(feature: FeatureState, under: Collection[WorkItemRow]) -> _P
     match feature:
         case CompletedFeature():
             return feature.completed, row
-        case Feature() | StartedFeature():
+        case Feature() | StartedFeature() | BlockedFeature():
             reached = [_reached(each) for each in started or _last_first(under, COMPLETED)]
             return max(reached, default=feature.created), row
         case _ as unreachable:

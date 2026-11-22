@@ -13,6 +13,7 @@ from flowgraph import work_item
 from flowgraph.criterion import Evidence
 from flowgraph.feature import (
     DONE,
+    BlockedFeature,
     CompletedFeature,
     Feature,
     StartedFeature,
@@ -28,11 +29,11 @@ from flowgraph.work_item import CompletedWorkItem, WorkItemId
 def completed_with(done: CompletedWorkItem, store: Store) -> CompletedFeature | None:
     """The Feature the completion of the work item completes, completed; None when it does none.
 
-    It is the started Feature the work item is under, once each other work item of it is
-    completed or removed, at the completed time and in the commit of the work item. A work item
-    standing alone completes none, and neither does one under a Feature never started, whose
-    bucket stays derived, or under one completed already. Raises FeatureNotFoundError when the
-    record holds no Feature of the id the work item names.
+    It is the started Feature the work item is under, blocked or not, once each other work item
+    of it is completed or removed, at the completed time and in the commit of the work item. A
+    work item standing alone completes none, and neither does one under a Feature never
+    started, whose bucket stays derived, or under one completed already. Raises
+    FeatureNotFoundError when the record holds no Feature of the id the work item names.
     """
     match done.parent:
         case Standalone():
@@ -44,7 +45,7 @@ def completed_with(done: CompletedWorkItem, store: Store) -> CompletedFeature | 
     match feature:
         case Feature() | CompletedFeature():
             return None
-        case StartedFeature():
+        case StartedFeature() | BlockedFeature():
             named = feature_id_text(feature_id)
             others = [
                 row

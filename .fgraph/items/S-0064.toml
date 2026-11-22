@@ -44,3 +44,8 @@ created = 2026-11-22 10:47:32+00:00
 started = 2026-11-22 11:27:51+00:00
 completed = 2026-11-22 11:30:33+00:00
 commit = "000c9f0"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: at 86d3665 on main, on a fresh record fgraph note F-0001 --decision printed noted F-0001 and fgraph show F-0001 listed Knowledge (1), decision 2026-11-22 keep one store; make check: all checks passed"
+noted = 2026-11-22 11:33:33+00:00

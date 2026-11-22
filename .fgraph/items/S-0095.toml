@@ -35,7 +35,8 @@ commit = "e6da7be"
 
 [[tasks]]
 id = "T-0369"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say a Spike completes on a yes or a no"
 expected_output = "changed: README.md shows the complete of a Spike with its answer; docs/domain-model.md lists the answer among what a completed Spike holds"
 created = 2026-11-22 21:03:37+00:00
+started = 2026-11-22 23:40:47+00:00

@@ -35,8 +35,10 @@ commit = "8ae7921"
 
 [[tasks]]
 id = "T-0289"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to list the five typed relations of a work item"
 expected_output = "changed: README.md shows --amends and the show of each side; docs/domain-model.md lists the five typed relations of a work item in one table -- parent, depends on, filed during, superseded by, amends -- with where each is stored, which side is derived and which move reads it"
 created = 2026-11-22 10:47:51+00:00
 started = 2026-11-22 12:34:22+00:00
+completed = 2026-11-22 12:34:24+00:00
+commit = "659dbb3"

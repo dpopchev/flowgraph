@@ -51,7 +51,8 @@ class LandingSteps:
     holds every commit the work tree is on; `fast_forward` moves the work tree to the tip of a
     branch with no commit and returns its short sha; `remove_worktree` and `delete_branch`
     remove the worktree and the branch, `delete_unmerged_branch` a branch whose commits the work
-    tree does not hold. Each step raises GitError when git refuses it.
+    tree does not hold; `push` pushes a branch to the one it tracks and returns the name of the
+    remote. Each step raises GitError when git refuses it.
     """
 
     merge: Callable[[str], None]
@@ -63,11 +64,12 @@ class LandingSteps:
     remove_worktree: Callable[[Path], None]
     delete_branch: Callable[[str], None]
     delete_unmerged_branch: Callable[[str], None]
+    push: Callable[[str], str]
 
 
 # The steps of a landing in a work tree built without them: each one refuses, as no such work
 # tree lands.
-NO_LANDING = LandingSteps(*([_lands_nothing] * 9))
+NO_LANDING = LandingSteps(*([_lands_nothing] * 10))
 
 
 @dataclass(frozen=True)
@@ -134,6 +136,7 @@ def open_git(directory: Path) -> WorkTree | None:
             remove_worktree=partial(git.remove_worktree, top),
             delete_branch=partial(git.delete_branch, top),
             delete_unmerged_branch=partial(git.delete_unmerged_branch, top),
+            push=partial(git.push, top),
         ),
     )
 

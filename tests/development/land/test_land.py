@@ -42,6 +42,8 @@ GATE = 'gate = "make check"\n'
 GATED = make_config(f"[development]\nenabled = true\n{GATE}")
 GATED_SQUASH = make_config(f'[development]\nenabled = true\nmerge = "squash"\n{GATE}')
 GATED_FAST_FORWARD = make_config(f'[development]\nenabled = true\nmerge = "fast-forward"\n{GATE}')
+PUSH = "[delivery]\npush = true\n"
+PUSHED = make_config(f"[development]\nenabled = true\n{PUSH}")
 WAYS = ["merge-commit", "squash", "fast-forward"]
 RECORD_COMMIT = ("commit", [".fgraph/items/S-0001.toml"], "chore: complete S-0001 in the record")
 TOP = Path("/src/project")
@@ -106,6 +108,10 @@ def work_tree(steps: list[object]) -> WorkTree:
         steps.append(("fast-forward", branch))
         return "9f8e7d6"
 
+    def push(branch: str) -> str:
+        steps.append(("push", branch))
+        return "origin"
+
     return WorkTree(
         path=TOP,
         commit_files=commit_files,
@@ -124,6 +130,7 @@ def work_tree(steps: list[object]) -> WorkTree:
             remove_worktree=lambda path: steps.append(("remove worktree", path)),
             delete_branch=lambda branch: steps.append(("delete branch", branch)),
             delete_unmerged_branch=lambda branch: steps.append(("delete unmerged branch", branch)),
+            push=push,
         ),
     )
 
@@ -293,10 +300,10 @@ def branching(steps: list[object]) -> WorkTree:
     return replace(work_tree(steps), add_worktree=add_worktree)
 
 
-def land_first(tree: WorkTree) -> Said:
+def land_first(tree: WorkTree, config: Config = ON) -> Said:
     """Land S-0001, the first work item of the started Feature of `first_of_a_started_feature`."""
     kept = first_of_a_started_feature()
-    return land_item("S-0001", MESSAGE, kept, lambda: NOW, RECORD, lambda _: tree, ON, no_gate)
+    return land_item("S-0001", MESSAGE, kept, lambda: NOW, RECORD, lambda _: tree, config, no_gate)
 
 
 def test_a_landing_that_starts_the_next_work_item_names_it_and_its_branch_after_the_work_item() -> (
@@ -642,3 +649,71 @@ def test_a_landing_with_a_task_not_completed_runs_no_gate() -> None:
     with pytest.raises(OpenTaskError):
         land(OPEN, work_tree(steps), config=GATED, run_gate=gate(steps))
     assert steps == [("merge", BRANCH), "abort merge"]
+
+
+def test_a_landing_with_delivery_push_true_pushes_main_once_the_landing_is_whole() -> None:
+    steps: list[object] = []
+    land(READY, work_tree(steps), config=PUSHED)
+    assert steps == [
+        ("merge", BRANCH),
+        ("commit merge", MESSAGE),
+        RECORD_COMMIT,
+        ("remove worktree", WORKTREE),
+        ("delete branch", BRANCH),
+        ("push", "main"),
+    ]
+
+
+def test_a_landing_pushed_names_the_remote_main_is_pushed_to() -> None:
+    assert land(READY, work_tree([]), config=PUSHED) == Said(
+        "landed S-0001 at 3e9ae5c\npushed main to origin\n"
+    )
+
+
+def test_a_landing_with_delivery_push_false_pushes_nothing() -> None:
+    steps: list[object] = []
+    unpushed = make_config("[development]\nenabled = true\n[delivery]\npush = false\n")
+    land(READY, work_tree(steps), config=unpushed)
+    assert ("push", "main") not in steps
+
+
+def test_a_landing_that_starts_the_next_work_item_pushes_main_after_its_branch_is_made() -> None:
+    steps: list[object] = []
+    land_first(branching(steps), PUSHED)
+    assert steps[-2:] == [("add worktree", NEXT_BRANCH, NEXT_WORKTREE, "HEAD"), ("push", "main")]
+
+
+def test_a_push_git_refuses_says_the_work_item_is_landed_and_main_is_not_pushed() -> None:
+    with pytest.raises(
+        GitError, match=r"^git failed: refused -- S-0001 is landed at 3e9ae5c, main is not pushed$"
+    ):
+        land(READY, with_step(work_tree([]), push=refuse), config=PUSHED)
+
+
+def test_a_push_git_refuses_leaves_the_landing_whole() -> None:
+    steps: list[object] = []
+    with pytest.raises(GitError):
+        land(READY, with_step(work_tree(steps), push=refuse), config=PUSHED)
+    assert steps == [
+        ("merge", BRANCH),
+        ("commit merge", MESSAGE),
+        RECORD_COMMIT,
+        ("remove worktree", WORKTREE),
+        ("delete branch", BRANCH),
+    ]
+
+
+def test_a_push_git_refuses_leaves_the_work_item_completed_at_the_merge_commit() -> None:
+    saved: list[WorkItemState] = []
+    with pytest.raises(GitError):
+        land(READY, with_step(work_tree([]), push=refuse), saved, PUSHED)
+    assert [item.commit for item in saved if isinstance(item, CompletedWorkItem)] == [
+        make_commit("3e9ae5c")
+    ]
+
+
+def test_a_landing_with_the_development_off_and_delivery_push_true_takes_no_git_step() -> None:
+    steps: list[object] = []
+    with pytest.raises(LandError):
+        land(READY, work_tree(steps), config=make_config(PUSH))
+    assert steps == []

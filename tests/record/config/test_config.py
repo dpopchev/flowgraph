@@ -121,6 +121,23 @@ def test_gate_is_held_as_written_with_the_development_off() -> None:
 
 
 @pytest.mark.parametrize(
+    "text",
+    ["", "[delivery]\n", "[delivery]\npush = false\n", ENABLED],
+    ids=["no-table", "no-key", "written-off", "development-on"],
+)
+def test_a_landing_pushes_nothing_unless_delivery_push_is_set(text: str) -> None:
+    assert make_config(text).delivery.push is False
+
+
+def test_delivery_push_set_pushes_a_landing() -> None:
+    assert make_config(f"{ENABLED}[delivery]\npush = true\n").delivery.push is True
+
+
+def test_delivery_push_is_held_as_written_with_the_development_off() -> None:
+    assert make_config("[delivery]\npush = true\n").delivery.push is True
+
+
+@pytest.mark.parametrize(
     "value",
     ['""', '"  "', "1", "true", '["make", "check"]'],
     ids=["empty", "blank", "number", "true", "words"],
@@ -178,6 +195,9 @@ def test_the_development_enabled_with_the_commits_off_is_refused_naming_both_key
         ("[git]\ncommits = false\n", "git.commits is no key of the configuration"),
         ('[git]\ncommit = "no"\n', 'git.commit is "no": it takes true or false'),
         ("git = false\n", "git is false: it takes a table"),
+        ("[delivery]\npushes = true\n", "delivery.pushes is no key of the configuration"),
+        ('[delivery]\npush = "yes"\n', 'delivery.push is "yes": it takes true or false'),
+        ("delivery = true\n", "delivery is true: it takes a table"),
     ],
     ids=[
         "table",
@@ -189,6 +209,9 @@ def test_the_development_enabled_with_the_commits_off_is_refused_naming_both_key
         "key-of-git",
         "text-value-of-git",
         "value-for-git",
+        "key-of-delivery",
+        "text-value-of-delivery",
+        "value-for-delivery",
     ],
 )
 def test_a_text_refused_names_the_key(text: str, why: str) -> None:

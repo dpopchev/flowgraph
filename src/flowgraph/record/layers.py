@@ -1,7 +1,7 @@
-"""The layers a configuration turns on, each a value: the commits of the record, the development.
+"""The layers a configuration turns on, each a value: the commits, the development, the delivery.
 
 The development holds its keys as values too: the limit of the work items started at once, how
-a landing merges and the gate it runs.
+a landing merges and the gate it runs. The delivery holds the steps a landing takes after it.
 """
 
 from dataclasses import dataclass
@@ -73,3 +73,13 @@ class Development:
     parallel: Limit
     merge: Merge
     gate: Gate
+
+
+@dataclass(frozen=True)
+class Delivery:
+    """What a landing takes after the write that completes its work item: main pushed, or not.
+
+    A step of a landing, so it says nothing while the development is off.
+    """
+
+    push: bool

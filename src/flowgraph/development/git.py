@@ -1,7 +1,7 @@
 """The git steps of the development: each an adapter that runs git in a work tree.
 
-The commit of a write, the worktree of a branch, the merges of a landing and the cleanup after
-it; each raises GitError naming the command and its error output when git refuses it.
+The commit of a write, the worktree of a branch, the merges of a landing, the cleanup after it
+and its push; each raises GitError naming the command and its error output when git refuses it.
 """
 
 import subprocess
@@ -226,3 +226,16 @@ def delete_unmerged_branch(work_tree: Path, branch: str) -> None:
     The step of a branch landed by squash, whose commits main never holds.
     """
     _git(work_tree, "branch", "--quiet", "-D", branch)
+
+
+def push(work_tree: Path, branch: str) -> str:
+    """Adapter: push the branch to the branch it tracks on its remote; the name of the remote.
+
+    Raises GitError when it tracks none, and naming the command when git refuses the push.
+    """
+    tracks = "--format=%(upstream:remotename) %(upstream:remoteref)"
+    remote, _, ref = _git(work_tree, "for-each-ref", tracks, f"refs/heads/{branch}").partition(" ")
+    if not remote:
+        raise GitError(f"{branch} tracks no branch of a remote to push to")
+    _git(work_tree, "push", "--quiet", remote, f"refs/heads/{branch}:{ref}")
+    return remote

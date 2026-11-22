@@ -576,6 +576,17 @@ take none.
   of the record, read from the record and stored nowhere.
 - `fgraph show` of the work item that amends lists `amends` with the id, after
   the work items it supersedes, and lists none without one.
+- A no files the Bug, the decision of F-0011: `fgraph verify ID --no TEXT` of a
+  completed Story, Bug or Upkeep keeps the answer no on it and adds, in the same
+  write, a Bug in Backlog that amends it, as `fgraph add bug --amends ID` would:
+  the next Bug id, its observed the text, its expected the Then of a Story or
+  an Upkeep or the expected of a Bug, its title `No at the verify of ID:` and
+  the title of the work item. It joins the Feature of the work item while that
+  Feature is not completed, by the rules of an add, else it stands alone.
+- No move goes backwards: the work item stays Completed with its answer, and
+  the Bug carries the work that remains. The Bug is saved first, then the work
+  item; both are one commit, `chore: verify S-0001 no and add B-0001 in the
+  record`, and a failure after the first save puts every file back as it was.
 
 ## Relations
 

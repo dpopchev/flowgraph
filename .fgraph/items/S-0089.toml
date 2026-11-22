@@ -16,11 +16,12 @@ then = "it exits 2 with a line as T-0001 cannot complete: its check \"make test\
 
 [[tasks]]
 id = "T-0349"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_complete_task_check.py, failing on the criterion of S-0089"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_land_gate.py does. Seen red, then marked a strict xfail naming S-0089 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_complete_task_check.py states that fgraph complete of a started Task whose check exits 2 exits 2 naming the Task, the command and the status 2 and leaves the Task started; and that with a check that exits 0 it completes the Task"
 created = 2026-11-22 21:02:40+00:00
+started = 2026-11-22 23:00:14+00:00
 
 [[tasks]]
 id = "T-0350"

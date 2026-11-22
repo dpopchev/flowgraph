@@ -21,11 +21,13 @@ commit = "4e42e7d"
 
 [[tasks]]
 id = "T-0256"
-state = "started"
+state = "completed"
 title = "Name none in the refusal of a text fgraph amend --parent takes as neither a Feature id nor none, in parent_asked of src/flowgraph/parent.py"
 expected_output = "changed: src/flowgraph/parent.py; tests/functional/test_amend_parent.py states the refusal naming none"
 created = 2026-11-22 08:10:49+00:00
 started = 2026-11-22 08:13:50+00:00
+completed = 2026-11-22 08:17:45+00:00
+commit = "fce90db"
 
 [[tasks]]
 id = "T-0257"

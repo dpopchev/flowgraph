@@ -24,12 +24,14 @@ commit = "14df292"
 
 [[tasks]]
 id = "T-0326"
-state = "started"
+state = "completed"
 title = "Add the init command to fgraph, making the record of a directory"
 description = "Removes the xfail mark of tests/functional/test_init_record.py. Written on 2026-11-22 against the modules of that day, before U-0010 moves them: they are taken again when the Task starts. A module of src/ that would pass the line limit of mk/python.mk is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph init makes .fgraph/ in the directory it runs in, or the directory --dir names, and prints the path of the record it made; it is the one command that runs with no record located; what it writes inside -- a config.toml at the defaults, since git commits no empty directory -- is chosen in the Task and named in the commit; in a git work tree what it wrote is committed as every write of the record is; a directory that holds .fgraph/ or fgraph/ is refused with exit 2 naming it; the refusal of a command with no record names fgraph init beside --dir; fgraph init --help prints its menu"
 created = 2026-11-22 21:01:41+00:00
 started = 2026-11-22 22:20:22+00:00
+completed = 2026-11-22 22:26:22+00:00
+commit = "cbc8de1"
 
 [[tasks]]
 id = "T-0327"

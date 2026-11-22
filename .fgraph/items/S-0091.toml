@@ -24,12 +24,14 @@ commit = "93216dd"
 
 [[tasks]]
 id = "T-0356"
-state = "started"
+state = "completed"
 title = "Add the release command to fgraph, tagging the trunk"
 description = "Removes the xfail mark of tests/functional/test_release.py. Written on 2026-11-22 against the modules of that day, before U-0010 moves them: they are taken again when the Task starts. A module of src/ that would pass the line limit of mk/python.mk is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph release makes an annotated tag on the head of main and prints it: the next minor when a Story or a Bug was completed since the last v* tag, else the next patch, v0.1.0 when there is no tag, and the version --version names when one is given; with delivery.push true the tag is pushed; a tag is never moved or deleted: one that exists is refused; nothing completed since the last tag is refused; run off the checkout of main it is refused as a start is; fgraph release --help prints its menu"
 created = 2026-11-22 21:03:00+00:00
 started = 2026-11-22 23:20:47+00:00
+completed = 2026-11-22 23:29:30+00:00
+commit = "18598ba"
 
 [[tasks]]
 id = "T-0357"

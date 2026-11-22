@@ -13,23 +13,32 @@ then = "it holds .fgraph/, fgraph add story exits 0 there and fgraph status list
 
 [[tasks]]
 id = "T-0325"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_init_record.py, failing on the criterion of S-0082"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_locate_record.py does. Seen red, then marked a strict xfail naming S-0082 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_init_record.py states that in a directory with no record fgraph init exits 0 and prints the record it made, fgraph add story then exits 0 and fgraph status lists the Story under Backlog; and that fgraph init in a directory that holds a record exits 2 naming it and writes nothing"
 created = 2026-11-22 21:01:39+00:00
+started = 2026-11-22 22:17:48+00:00
+completed = 2026-11-22 22:20:21+00:00
+commit = "14df292"
 
 [[tasks]]
 id = "T-0326"
-state = "backlog"
+state = "completed"
 title = "Add the init command to fgraph, making the record of a directory"
 description = "Removes the xfail mark of tests/functional/test_init_record.py. Written on 2026-11-22 against the modules of that day, before U-0010 moves them: they are taken again when the Task starts. A module of src/ that would pass the line limit of mk/python.mk is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph init makes .fgraph/ in the directory it runs in, or the directory --dir names, and prints the path of the record it made; it is the one command that runs with no record located; what it writes inside -- a config.toml at the defaults, since git commits no empty directory -- is chosen in the Task and named in the commit; in a git work tree what it wrote is committed as every write of the record is; a directory that holds .fgraph/ or fgraph/ is refused with exit 2 naming it; the refusal of a command with no record names fgraph init beside --dir; fgraph init --help prints its menu"
 created = 2026-11-22 21:01:41+00:00
+started = 2026-11-22 22:20:22+00:00
+completed = 2026-11-22 22:26:22+00:00
+commit = "cbc8de1"
 
 [[tasks]]
 id = "T-0327"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph init makes the record"
 expected_output = "changed: README.md, Use, starts from fgraph init and its Status table names it; docs/domain-model.md, Persistence, says what init writes and what it commits"
 created = 2026-11-22 21:01:42+00:00
+started = 2026-11-22 22:26:24+00:00
+completed = 2026-11-22 22:29:10+00:00
+commit = "95586b6"

@@ -95,7 +95,8 @@ class TestWithoutARecord:
 
     def test_names_both_directories_and_the_flag(self, outcome: Outcome) -> None:
         assert outcome.err.endswith(
-            "fgraph: error: no .fgraph/ or fgraph/ in /work -- pass --dir PATH\n"
+            "fgraph: error: no .fgraph/ or fgraph/ in /work"
+            " -- run fgraph init, or pass --dir PATH\n"
         )
 
     def test_writes_no_output(self, outcome: Outcome) -> None:

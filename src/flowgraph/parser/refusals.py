@@ -19,6 +19,7 @@ from flowgraph.item.commands import ItemIdError
 from flowgraph.knowledge.list import KindListedError
 from flowgraph.parent import FeatureIdError
 from flowgraph.record import ConfigError
+from flowgraph.record.init import NoDirectoryError, RecordHeldError
 from flowgraph.record.queue import NotInBacklogError, SameItemError, UnderFeatureError
 from flowgraph.record.queue_file import QueueFileError
 from flowgraph.relation import RelationError
@@ -51,8 +52,11 @@ from flowgraph.work_item import (
 
 # The refusals of a command, each written as a usage error; a git step refused among them, and
 # a file of the record that holds no work item, no Feature or no queue (B-0019), and a relation
-# that names nothing or closes a cycle when the record is read (S-0078).
+# that names nothing or closes a cycle when the record is read (S-0078), and making a record where
+# one is held or in no directory (S-0082).
 REFUSED = (
+    RecordHeldError,
+    NoDirectoryError,
     ConfigError,
     WorkItemFileError,
     FeatureFileError,

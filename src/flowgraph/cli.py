@@ -33,6 +33,7 @@ from flowgraph.record import (
     make_config,
     read_config,
 )
+from flowgraph.record.init import MakeDir, init_record
 from flowgraph.record.store import OpenStore, Store, open_files
 from flowgraph.relation.read import check_relations
 from flowgraph.status.terminal import Height, Width, no_terminal, terminal_height, terminal_width
@@ -56,6 +57,11 @@ def _no_config(record: Path) -> Config:
 def _no_gate(command: str, directory: Path) -> Never:
     """The gate of a run given none to run it: a contract, such a run lands under no gate."""
     raise AssertionError(f"run() was given no run_gate to run {command!r} in {directory}")
+
+
+def _no_dir(path: Path) -> Never:
+    """The make_dir of a run given none: a contract, such a run makes no record."""
+    raise AssertionError(f"run() was given no make_dir to make {path}")
 
 
 def _watch(
@@ -91,11 +97,13 @@ def run(
     wait: Wait = _no_wait,
     load_config: LoadConfig = _no_config,
     run_gate: RunGate = _no_gate,
+    make_dir: MakeDir = _no_dir,
 ) -> int:
     """Read the arguments, locate the record in cwd, run the command and return the exit status.
 
     The help option needs no record, after a command as alone: it prints the help of the command
-    the arguments name. Every other call fails with 2 when there is no record. A write finds the
+    the arguments name; so does init, which makes the record through make_dir and fails with 2
+    where one is held. Every other call fails with 2 when there is no record. A write finds the
     git work tree of the record through open_git and is committed there. The lines of status are
     cut to the width of the terminal; without one, as by default, they are whole. Watch writes
     its frames as it goes, each cut to the height of the terminal too, and waits between two by
@@ -114,6 +122,14 @@ def run(
         write(asked)
         return 0
     args = parser.parse_args(argv)
+    if args.command == "init":
+        try:
+            made = init_record(cwd, args.dir, is_dir, make_dir, open_store, open_git)
+        except REFUSED as error:
+            write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
+            return 2
+        write(made.out)
+        return 0
     match locate(cwd, args.dir, is_dir):
         case Found(path) | Given(path):
             store = within(
@@ -142,7 +158,7 @@ def run(
         case NotFound(searched, tried):
             names = " or ".join(f"{name}/" for name in tried)
             write_error(f"{parser.format_usage()}fgraph: error: no {names} in {searched}")
-            write_error(" -- pass --dir PATH\n")
+            write_error(" -- run fgraph init, or pass --dir PATH\n")
             return 2
         case GivenMissing(path):
             write_error(f"{parser.format_usage()}fgraph: error: --dir {path} is no directory\n")
@@ -171,6 +187,7 @@ def main() -> None:
             wait=time.sleep,
             load_config=read_config,
             run_gate=run_gate,
+            make_dir=Path.mkdir,
         )
     )
 

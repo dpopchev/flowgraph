@@ -815,6 +815,14 @@ since history is not rewritten, and map to the new ids by the number.
 The record is plain TOML files tracked by git: git is its history, its backup
 and its merge tool.
 
+- `fgraph init` makes the record of a directory: `.fgraph/` in the directory it
+  runs in, or in the one `--dir` names. Inside it writes `config.toml` alone,
+  at the defaults (`[git] commit = true`, `[development] enabled = false`),
+  since git commits no empty directory; `items/` comes with the first write. In
+  a git work tree it commits that file as one write of the record, `chore: make
+  the record`, unless git ignores the record. A directory that holds `.fgraph/`
+  or `fgraph/` is refused, exit 2, naming it, and nothing is written; init is
+  the one command that runs with no record located.
 - One directory, `items/`, holds every item: one file per work item with its
   Tasks inside it, named by its id, `items/S-0001.toml`. The prefix of the id
   is the one place that says the kind, so there is no directory per kind.

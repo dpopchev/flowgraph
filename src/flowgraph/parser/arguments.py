@@ -62,6 +62,11 @@ def build_command_line() -> CommandLine:
         help="the record directory, instead of .fgraph/ or else fgraph/ in this directory",
     )
     commands = parser.add_subparsers(dest="command", metavar="COMMAND")
+    init = new_command(
+        commands,
+        "init",
+        "make the record: .fgraph/ in this directory, or in the --dir one, which holds none",
+    )
     add = new_command(commands, "add", "add an item to the record")
     kinds = add_kinds(add.add_subparsers(dest="kind", metavar="KIND", required=True))
     moves = item_commands(commands)
@@ -71,6 +76,7 @@ def build_command_line() -> CommandLine:
         parser,
         {
             (): parser,
+            ("init",): init,
             ("add",): add,
             **{("add", name): kind for name, kind in kinds.items()},
             **{(name,): move for name, move in moves.items()},

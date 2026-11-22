@@ -24,7 +24,14 @@ from typing import assert_never
 from flowgraph import work_item
 from flowgraph.branch import MAIN, GitError
 from flowgraph.commit import OpenGit, Said, WorkTree, branch_started, commit_written
-from flowgraph.config import CONFIG, DEVELOPMENT_ENABLED, DEVELOPMENT_MERGE, Config, Merge
+from flowgraph.config import (
+    CONFIG,
+    DEVELOPMENT_ENABLED,
+    DEVELOPMENT_MERGE,
+    GIT_COMMIT,
+    Config,
+    Merge,
+)
 from flowgraph.criterion import DecisionError, EmptyPartError, make_commit
 from flowgraph.feature_next import complete_and_start_next
 from flowgraph.gate import GateError, RunGate, check_gate
@@ -240,7 +247,8 @@ def land_item(
     decision that answers its hypothesis. The gate of the configuration, when it names one, is
     run through run_gate at the top of the work tree while the merge is held. Raises
     WorkItemIdError when the text is the id of no kind of work item, LandError when the
-    development is off in the configuration, naming the key that turns it on, when the merge
+    development is off in the configuration, naming the key that turns it on and, with the
+    commits off, the key that turns them on too, when the merge
     makes a commit and no message is given or makes none and one is, when the record is outside
     a git work tree, when the work tree is not on main, when the work item has no branch or
     several or when a fast-forward finds a commit on main that the branch lacks, the refusal of
@@ -255,7 +263,8 @@ def land_item(
     item_id = parse_work_item_id_of_any_kind(item)
     text = work_item_id_text(item_id)
     if not config.development.enabled:
-        turn_on = f"set {DEVELOPMENT_ENABLED} = true in {record / CONFIG}"
+        commits = "" if config.git.commit else f" and {GIT_COMMIT} = true"
+        turn_on = f"set {DEVELOPMENT_ENABLED} = true{commits} in {record / CONFIG}"
         raise LandError(f"{text} cannot land: the development is off -- {turn_on}")
     way = make_way(text, config.development.merge, message)
     work_tree = open_git(record)

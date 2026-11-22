@@ -114,3 +114,18 @@ class TestAStoryAddedWithTheCommitsOff:
         assert git(checkout, "status", "--porcelain", "--untracked-files=all") == (
             f"?? {STORY_FILE}"
         )
+
+
+def test_a_landing_with_the_commits_off_exits_with_two_and_names_both_keys(
+    checkout: Path,
+) -> None:
+    task = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+    for argv in (ADD_STORY, task, ["start", "S-0001"], ["start", "T-0001"]):
+        fgraph(argv, checkout)
+    fgraph(["complete", "T-0001"], checkout)
+    refused = fgraph(["land", "S-0001", "--message", "feat: land it"], checkout)
+    assert (refused.status, refused.err.splitlines()[-1]) == (
+        2,
+        "fgraph: error: S-0001 cannot land: the development is off -- set development.enabled"
+        f" = true and git.commit = true in {checkout / '.fgraph' / 'config.toml'}",
+    )

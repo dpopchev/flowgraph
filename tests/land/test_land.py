@@ -163,6 +163,15 @@ def test_a_landing_with_the_development_off_is_refused_naming_the_key() -> None:
     )
 
 
+def test_a_landing_with_the_commits_off_is_refused_naming_both_keys() -> None:
+    with pytest.raises(LandError) as error:
+        land(READY, work_tree([]), config=make_config("[git]\ncommit = false\n"))
+    assert str(error.value) == (
+        "S-0001 cannot land: the development is off -- set development.enabled = true and"
+        " git.commit = true in /src/project/.fgraph/config.toml"
+    )
+
+
 def test_a_landing_with_the_development_off_takes_no_git_step() -> None:
     steps: list[object] = []
     with pytest.raises(LandError):

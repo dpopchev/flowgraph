@@ -1066,13 +1066,13 @@ on the Spike. A record with no line prints one line saying so:
 ```sh
 fgraph knowledge
 # 2026-11-24  deviation  S-0001  the second Task was dropped
-# 2026-11-23  decision  Q-0001  yes: one file per work item
+# 2026-11-23  decision  Q-0001  one file per work item (answer yes)
 # 2026-11-22  decision  F-0001  the budget is agreed
 # 2026-11-22  decision  S-0001  keep one store
 # 2026-11-22  finding  S-0001  the file holds the lines in the order noted
 
 fgraph knowledge --kind decision
-# 2026-11-23  decision  Q-0001  yes: one file per work item
+# 2026-11-23  decision  Q-0001  one file per work item (answer yes)
 # 2026-11-22  decision  F-0001  the budget is agreed
 # 2026-11-22  decision  S-0001  keep one store
 
@@ -1329,8 +1329,8 @@ criterion; `--given` on a Bug, or `--observed` on a Story, exits 2. A Bug is
 kept as `items/B-0001.toml`.
 
 A Spike is a question to answer. Its criterion is a hypothesis, a yes/no
-question, and it is completed with the decision that answers it. Its id
-counts on its own, `Q-0001`, Q for question:
+question, and it is completed with the decision that answers it and the yes
+or no of the hypothesis. Its id counts on its own, `Q-0001`, Q for question:
 
 ```sh
 fgraph add spike "Settle whether one file per item can hold the record" \
@@ -1338,7 +1338,7 @@ fgraph add spike "Settle whether one file per item can hold the record" \
 # added Q-0001
 
 fgraph complete Q-0001 --commit 677f9b0 \
-  --decision "yes: one file per work item, its Tasks inside"
+  --decision "one file per work item, its Tasks inside" --answer yes
 # completed Q-0001 at 677f9b0
 
 fgraph show Q-0001
@@ -1346,14 +1346,19 @@ fgraph show Q-0001
 #   bucket       Completed
 #   commit       677f9b0
 #   hypothesis   Can one file per item hold the record?
-#   decision     yes: one file per work item, its Tasks inside
+#   decision     one file per work item, its Tasks inside
+#   answer       yes
 # ...
 ```
 
 A Spike takes Tasks and moves as a Story does, and `fgraph land` takes
-`--decision` as `fgraph complete` does. A Spike completed without its
-decision exits 2, and so does a decision given for any other kind or for a
-Task. With the development off a Spike is completed with its decision and no
+`--decision` and `--answer` as `fgraph complete` does. `--answer` is `yes` or
+`no`, and a no completes the Spike as a yes does: nothing is refused for it and
+no Bug is filed. A Spike completed without its decision or without its answer
+exits 2, and so does a decision or an answer given for any other kind or for a
+Task. A Spike completed before the answer was taken holds none and is shown as
+before. `fgraph knowledge --kind decision` lists the decision with its answer.
+With the development off a Spike is completed with its decision and no
 commit, as any other kind is. `fgraph amend Q-0001 --hypothesis "..."` rewrites the hypothesis while
 the Spike is in Backlog. A Spike is kept as `items/Q-0001.toml`.
 

@@ -13,12 +13,14 @@ then = "each exits 0 there, run from the installed wheel and not from the checko
 
 [[tasks]]
 id = "T-0328"
-state = "started"
+state = "completed"
 title = "Add the install target to mk/wheel.mk, installing the built wheel as a uv tool"
 description = "The check installs into a temporary tool directory, never into the one of the developer."
 expected_output = "changed: mk/wheel.mk gains install, which builds the wheel and installs it with uv tool install, in place of an older one; make help lists it; with UV_TOOL_DIR and UV_TOOL_BIN_DIR set to a temporary directory, make install leaves an fgraph there that runs init and status in another directory with exit 0"
 created = 2026-11-22 21:01:45+00:00
 started = 2026-11-22 22:33:45+00:00
+completed = 2026-11-22 22:36:46+00:00
+commit = "05aa2f3"
 
 [[tasks]]
 id = "T-0329"

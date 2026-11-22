@@ -14,3 +14,10 @@ state = "backlog"
 title = "Refuse a --slug given to fgraph start with the development off, naming development.enabled, and say in the help of --slug that it is read with the development on"
 expected_output = "changed: src/flowgraph/branch.py refuses the slug, src/flowgraph/cli.py checks it before a start and src/flowgraph/parser.py words the help; tests/branch/test_branch.py and tests/functional/test_development_off.py state the refusal of a work item and of a Feature"
 created = 2026-11-22 06:35:30+00:00
+
+[[tasks]]
+id = "T-0224"
+state = "backlog"
+title = "Say in README.md that a --slug given to fgraph start with the development off is refused"
+expected_output = "changed: README.md names the refusal of --slug with the development off"
+created = 2026-11-22 06:35:31+00:00

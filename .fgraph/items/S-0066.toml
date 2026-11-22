@@ -46,7 +46,8 @@ commit = "d0f26a6"
 
 [[tasks]]
 id = "T-0280"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say a work item depends on another and waits for it"
 expected_output = "changed: README.md shows --depends-on, the refused start and the show that lists it; docs/domain-model.md says a relation is a typed reference stored on the item that names it, what depends on refuses and when it stops refusing, and what is refused at the write"
 created = 2026-11-22 10:47:41+00:00
+started = 2026-11-22 11:57:59+00:00

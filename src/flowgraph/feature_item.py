@@ -10,6 +10,8 @@ from flowgraph.feature import (
     BlockedFeature,
     CompletedFeature,
     Feature,
+    FeatureRemovedError,
+    RemovedFeature,
     StartedFeature,
     add_feature,
     feature_bucket,
@@ -82,7 +84,8 @@ def parent_named(parent: str | None, store: Store) -> Parent:
     """The parent a work item is added under: standing alone when none is named.
 
     Raises FeatureIdError when the name is no Feature id, FeatureNotFoundError when the record
-    holds no such Feature and CompletedAlreadyError when that Feature is completed.
+    holds no such Feature, CompletedAlreadyError when that Feature is completed and
+    RemovedAlreadyError when it is removed.
     """
     if parent is None:
         return STANDALONE
@@ -92,5 +95,7 @@ def parent_named(parent: str | None, store: Store) -> Parent:
             return feature_id
         case CompletedFeature():
             raise CompletedAlreadyError(f"{feature_id_text(feature_id)} is completed already")
+        case RemovedFeature():
+            raise FeatureRemovedError(feature_id)
         case _ as unreachable:
             assert_never(unreachable)

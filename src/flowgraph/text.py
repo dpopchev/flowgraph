@@ -94,8 +94,11 @@ def _feature_lines(feature: FeatureRow) -> str:
     further in. A blocked one is marked `!` before its id and ends with what it waits on. So is
     one whose started work item holds a blocked Task, with what the first such Task waits on, as
     the line of that Task does: read from the rows at each listing, and kept nowhere. The block
-    of the Feature itself comes before that of a Task.
+    of the Feature itself comes before that of a Task. A removed one is listed as a removed work
+    item is, its reason ending the line, without the progress: it holds no work item any more.
     """
+    if feature.reason:
+        return f"  {feature.id}  {feature.title}  -- {feature.reason}\n"
     progress = f"{feature.completed}/{feature.held} W"
     commit = f"{feature.commit}  " if feature.commit else ""
     started = (line for row in feature.started for line in _status_line(row).splitlines())
@@ -161,16 +164,18 @@ def feature_text(detail: FeatureDetail, rows: Iterable[StoryRow | UpkeepRow], bu
 
     The bucket of a Feature is read from its state and its work items, so it is given; a
     commit and a description are listed only when there is one. A blocked Feature is listed in
-    its bucket as blocked, with its reason and what it waits on.
+    its bucket as blocked, with its reason and what it waits on; a removed one with its reason.
     """
     listed = list(rows)
     committed = [f"  commit       {detail.commit}\n"] if detail.commit else []
     described = [f"  description  {detail.description}\n"] if detail.description else []
-    held = [f"  reason       {detail.reason}\n", f"  waiting on   {detail.waiting_on}\n"]
+    reason = [f"  reason       {detail.reason}\n"] if detail.reason else []
+    waited = [f"  waiting on   {detail.waiting_on}\n"] if detail.waiting_on else []
     lines = [
         f"{detail.id}  {detail.title}\n",
         f"  bucket       {bucket}{', blocked' if detail.waiting_on else ''}\n",
-        *(held if detail.waiting_on else []),
+        *reason,
+        *waited,
         *committed,
         *described,
         f"Criteria ({len(detail.criteria)})\n",

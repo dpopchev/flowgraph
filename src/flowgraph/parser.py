@@ -174,8 +174,10 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         help="the message of the commit the landing makes: needed unless it lands by fast-forward",
     )
     land.add_argument("--decision", metavar="TEXT", help="what answers the hypothesis, of a Spike")
-    remove = _command(commands, "remove", "remove a work item in Backlog, kept with its reason")
-    remove.add_argument("id", metavar="ID", help="the id of the work item")
+    remove = _command(
+        commands, "remove", "remove a work item or a Feature in Backlog, kept with its reason"
+    )
+    remove.add_argument("id", metavar="ID", help="the id of the work item or of the Feature")
     remove.add_argument("--reason", required=True, metavar="TEXT", help="why it is removed")
     reorder = _command(commands, "reorder", "put a work item of the Backlog before another")
     reorder.add_argument("id", metavar="ID", help="the id of the work item to move")

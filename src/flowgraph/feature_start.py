@@ -15,6 +15,8 @@ from flowgraph.feature import (
     BlockedFeature,
     CompletedFeature,
     Feature,
+    FeatureRemovedError,
+    RemovedFeature,
     StartedFeature,
     started_feature,
 )
@@ -75,10 +77,11 @@ def start_feature_item(
     The work item names the branch to check out at the commit of the start: its slug is the one
     given, else the slug of its title. Raises FeatureIdError when the text is no Feature id,
     FeatureNotFoundError when the record holds no such Feature, StartedAlreadyError when it is
-    started, CompletedAlreadyError when it is completed, NoWorkItemError when it has no work
-    item in Backlog, ParallelError when as many work items are started as the configuration
-    starts at once, SlugError when the slug given is no slug, and NoTaskError naming the
-    Feature when its first work item has no Task; nothing is saved.
+    started, CompletedAlreadyError when it is completed, RemovedAlreadyError when it is
+    removed, NoWorkItemError when it has no work item in Backlog, ParallelError when as many
+    work items are started as the configuration starts at once, SlugError when the slug given
+    is no slug, and NoTaskError naming the Feature when its first work item has no Task;
+    nothing is saved.
     """
     feature_id = parse_feature_id(feature)
     named = feature_id_text(feature_id)
@@ -122,11 +125,11 @@ def check_start_under_feature(item: str, store: Store) -> None:
 
     Raises FeatureNotStartedError naming the Feature when it is not started,
     WorkItemInProgressError naming each started work item of it when one is, BlockedError
-    naming it and what it waits on when it is blocked, which starts no further work item, and
-    CompletedAlreadyError naming it when it is completed. A work item standing alone passes,
-    and so does one that is not in Backlog, which the start refuses; a Task, a Feature and a
-    text that is no id are not read. Raises WorkItemNotFoundError when the record holds no such
-    work item, as its start does.
+    naming it and what it waits on when it is blocked, which starts no further work item,
+    CompletedAlreadyError naming it when it is completed and RemovedAlreadyError naming it when
+    it is removed. A work item standing alone passes, and so does one that is not in Backlog,
+    which the start refuses; a Task, a Feature and a text that is no id are not read. Raises
+    WorkItemNotFoundError when the record holds no such work item, as its start does.
     """
     try:
         item_id = parse_item_id(item)
@@ -160,5 +163,7 @@ def check_start_under_feature(item: str, store: Store) -> None:
             raise BlockedError(f"{named} cannot start: {held}: unblock it first")
         case CompletedFeature():
             raise CompletedAlreadyError(f"{named} cannot start: {feature} is completed already")
+        case RemovedFeature():
+            raise FeatureRemovedError(feature_id, f"{named} cannot start: ")
         case _ as unreachable:
             assert_never(unreachable)

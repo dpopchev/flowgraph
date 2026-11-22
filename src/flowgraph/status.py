@@ -17,6 +17,7 @@ from flowgraph.feature import (
     Feature,
     FeatureRow,
     FeatureState,
+    RemovedFeature,
     StartedFeature,
     feature_row,
 )
@@ -66,15 +67,17 @@ def _placed_feature(feature: FeatureState, under: Collection[WorkItemRow]) -> _P
     """The row of the Feature over its work items, with the time that places it in its bucket.
 
     The row holds its started work items, the last started first. A completed Feature is placed
-    by its own completed time. For any other the time is that of its last started work item;
-    with none started that of its last completed one, as under Completed; with neither the time
-    it was added, as in Backlog.
+    by its own completed time and a removed one by its removed time. For any other the time is
+    that of its last started work item; with none started that of its last completed one, as
+    under Completed; with neither the time it was added, as in Backlog.
     """
     started = _last_first(under, STARTED)
     row = replace(feature_row(feature, [each.state for each in under]), started=started)
     match feature:
         case CompletedFeature():
             return feature.completed, row
+        case RemovedFeature():
+            return feature.removed, row
         case Feature() | StartedFeature() | BlockedFeature():
             reached = [_reached(each) for each in started or _last_first(under, COMPLETED)]
             return max(reached, default=feature.created), row
@@ -156,8 +159,9 @@ def status_item(store: Store, top: int | None = None) -> str:
     work items and the Features placed in its queue, then the others as they were added;
     InProgress the last started first and Completed the last completed first, a Feature by its
     last work item to reach it, a completed one by its own completed time; Removed by kind and
-    number, a work item of a Feature too. Under a top each heading lists that many, the first
-    ones.
+    number, a work item of a Feature too, then the removed Features by number. A removed
+    Feature is listed in place of its work items as any other: they were removed with it, or
+    before it, and are on no line. Under a top each heading lists that many, the first ones.
     """
     rows = rows_by_id(store)
     features = _placed_features(store, rows.values())
@@ -165,11 +169,18 @@ def status_item(store: Store, top: int | None = None) -> str:
     backlog = _backlog_lines(alone, features)
     started = [row for row in alone.values() if row.state == STARTED]
     completed = [row for row in alone.values() if row.state == COMPLETED]
-    removed = [row for row in rows.values() if row.state not in (BACKLOG, STARTED, COMPLETED)]
+    gone = [row for _, row in features if row.bucket == "Removed"]
+    with_them = {row.id for row in gone}
+    removed = [
+        row
+        for row in rows.values()
+        if row.state not in (BACKLOG, STARTED, COMPLETED) and row.parent not in with_them
+    ]
     listed = [
         *(backlog[placed] for placed in queued(store.load_queue(), backlog)),
         *_with_features(started, features, "InProgress", last_first=True),
         *_with_features(completed, features, "Completed", last_first=True),
         *removed,
+        *gone,
     ]
     return status_text(listed, top)

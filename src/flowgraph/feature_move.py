@@ -11,7 +11,9 @@ from flowgraph.feature import (
     BlockedFeature,
     CompletedFeature,
     Feature,
+    FeatureRemovedError,
     LoadFeature,
+    RemovedFeature,
     StartedFeature,
 )
 from flowgraph.parent import FeatureId, Parent, Standalone, feature_id_text
@@ -40,6 +42,8 @@ def _check_in_backlog(moved: str, parent: Parent, load_feature: LoadFeature) -> 
             raise BlockedError(f"{moved} {named}: {named} is blocked")
         case CompletedFeature():
             raise CompletedAlreadyError(f"{moved} {named}: {named} is completed already")
+        case RemovedFeature():
+            raise FeatureRemovedError(parent, f"{moved} {named}: ")
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -48,8 +52,9 @@ def check_move(load_feature: LoadFeature, item_id: WorkItemId, was: Parent, now:
     """Check that the Feature the work item is put under and the one it leaves are in Backlog.
 
     The one it is put under is read first. Raises FeatureNotFoundError when the record holds no
-    such Feature, and StartedAlreadyError, BlockedError or CompletedAlreadyError naming the
-    work item and the Feature that is started, blocked or completed.
+    such Feature, and StartedAlreadyError, BlockedError, CompletedAlreadyError or
+    RemovedAlreadyError naming the work item and the Feature that is started, blocked,
+    completed or removed.
     """
     named = work_item_id_text(item_id)
     _check_in_backlog(f"{named} cannot be put under", now, load_feature)

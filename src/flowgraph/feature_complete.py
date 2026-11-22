@@ -16,6 +16,7 @@ from flowgraph.feature import (
     BlockedFeature,
     CompletedFeature,
     Feature,
+    RemovedFeature,
     StartedFeature,
     completed_feature,
 )
@@ -32,7 +33,7 @@ def completed_with(done: CompletedWorkItem, store: Store) -> CompletedFeature | 
     It is the started Feature the work item is under, blocked or not, once each other work item
     of it is completed or removed, at the completed time and in the commit of the work item. A
     work item standing alone completes none, and neither does one under a Feature never
-    started, whose bucket stays derived, or under one completed already. Raises
+    started, whose bucket stays derived, or under one completed or removed already. Raises
     FeatureNotFoundError when the record holds no Feature of the id the work item names.
     """
     match done.parent:
@@ -43,7 +44,7 @@ def completed_with(done: CompletedWorkItem, store: Store) -> CompletedFeature | 
         case _ as unreachable:
             assert_never(unreachable)
     match feature:
-        case Feature() | CompletedFeature():
+        case Feature() | CompletedFeature() | RemovedFeature():
             return None
         case StartedFeature() | BlockedFeature():
             named = feature_id_text(feature_id)

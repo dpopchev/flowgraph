@@ -13,23 +13,32 @@ then = "it lists every decision of the record, newest first, each with the id of
 
 [[tasks]]
 id = "T-0274"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_knowledge_command.py, failing on the criterion of S-0065"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_complete_spike.py does. Seen red, then marked a strict xfail naming S-0065 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_knowledge_command.py states that, on a record with knowledge lines on several items and a completed Spike, fgraph knowledge --kind decision exits 0 and lists every decision of the record, newest first, each with the id of its item, the decision of the Spike among them"
 created = 2026-11-22 10:47:33+00:00
+started = 2026-11-22 11:31:53+00:00
+completed = 2026-11-22 11:35:10+00:00
+commit = "71e325f"
 
 [[tasks]]
 id = "T-0275"
-state = "backlog"
+state = "completed"
 title = "Add the knowledge command to fgraph, listing the knowledge lines of the whole record"
 description = "Removes the xfail mark of tests/functional/test_knowledge_command.py. A module of src/ that would pass 400 lines is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph knowledge lists every knowledge line of the record, of the work items and of the Features, newest first, each with its date, its kind, the id of its item and its text; the decision of a completed Spike is listed among the decisions, at the time the Spike was completed; --kind finding, decision or deviation narrows the list to that kind, another word refused naming the three; a record with no line prints one line saying so and exits 0; it is a view in a module of its own that reads the record as plain data and writes nothing; fgraph knowledge --help prints its menu"
 created = 2026-11-22 10:47:35+00:00
+started = 2026-11-22 11:35:11+00:00
+completed = 2026-11-22 11:40:49+00:00
+commit = "2a08145"
 
 [[tasks]]
 id = "T-0276"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph knowledge lists the knowledge of the record"
 expected_output = "changed: README.md shows fgraph knowledge and its --kind on a record with lines of each kind, and its Status table says the knowledge lines are listed; docs/domain-model.md says what the list holds, how it is ordered, and that the decision of a Spike is listed and stays where it is kept"
 created = 2026-11-22 10:47:36+00:00
+started = 2026-11-22 11:40:50+00:00
+completed = 2026-11-22 11:41:06+00:00
+commit = "ae5b09d"

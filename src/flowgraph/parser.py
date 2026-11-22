@@ -198,6 +198,16 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     kinds.add_argument(
         "--deviation", metavar="TEXT", help="a change to what a started item was agreed to do"
     )
+    knowledge = _command(
+        commands,
+        "knowledge",
+        "list the knowledge lines of every work item and Feature, newest first",
+    )
+    knowledge.add_argument(
+        "--kind",
+        metavar="KIND",
+        help="list the lines of one kind alone: finding, decision or deviation",
+    )
     reorder = _command(
         commands, "reorder", "put a work item or a Feature of the Backlog before another"
     )
@@ -243,6 +253,7 @@ def _moves(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         "land": land,
         "remove": remove,
         "note": note,
+        "knowledge": knowledge,
         "reorder": reorder,
         "status": status,
         "watch": watch,

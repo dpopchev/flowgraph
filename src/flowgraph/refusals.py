@@ -14,6 +14,7 @@ from flowgraph.feature_item import OpenWorkItemError
 from flowgraph.feature_start import FeatureNotStartedError, NoWorkItemError, WorkItemInProgressError
 from flowgraph.gate import GateError
 from flowgraph.item import ItemIdError
+from flowgraph.knowledge_list import KindListedError
 from flowgraph.land import LandError
 from flowgraph.parallel import ParallelError
 from flowgraph.parent import FeatureIdError
@@ -89,4 +90,5 @@ REFUSED = (
     SameItemError,
     UnderFeatureError,
     PaceError,
+    KindListedError,
 )

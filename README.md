@@ -19,7 +19,9 @@ completing an item names the commit that holds its work, and `fgraph land`
 lands it. `fgraph config` shows the configuration and sets a key of it. A work
 item, and a Feature, keeps the findings, decisions and deviations noted on it with
 `fgraph note`, in any state, and `fgraph show` lists them. `fgraph knowledge`
-lists the lines of the whole record.
+lists the lines of the whole record. A term of the project, a word with what it
+means, is added with `fgraph add term`, listed by `fgraph terms` and shown by
+`fgraph show` of its name.
 
 | Part                            | State                                                    |
 | ------------------------------- | -------------------------------------------------------- |
@@ -40,13 +42,21 @@ lists the lines of the whole record.
 | the knowledge of an item        | lines noted by `fgraph note` on a work item or a Feature |
 | the knowledge of the record     | every line listed by `fgraph knowledge`, newest first    |
 | the development                 | once enabled: start branches, `fgraph land` lands        |
-| the ontology                    | not started                                              |
+| the ontology                    | started: terms, kept apart from the flow; no relations   |
 | flowgraph tracking its own work | its Stories are in `.fgraph/` since 0.4.0                |
 
 The model of the record -- its item types, states and rules -- is
 `docs/domain-model.md`. flowgraph keeps its own work in `.fgraph/`, with the
 development turned on: run `uv run fgraph status` in the checkout to see what
 is next.
+
+A term is a node of the record with no flow, kept by its name:
+
+```sh
+fgraph add term gate --means "a check every deliverable passes before it lands"
+fgraph terms                # gate  a check every deliverable passes before it lands
+fgraph show gate            # the term with its meaning and the day it was added
+```
 
 ## Use
 

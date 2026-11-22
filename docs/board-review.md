@@ -73,7 +73,8 @@ the last column is what would reopen it.
 ## Open questions
 
 - What is a term's relation to an item: a tag on a knowledge line as today, or
-  a first-class node that items, files and other terms link to? Group 6 turns
-  on this.
+  a first-class node that items, files and other terms link to? Answered: a
+  node. flowgraph keeps a term as a file of its own, `terms/NAME.toml`, with no
+  flow; how a term links to items, files and other terms is still open.
 - Which groups must exist before flowgraph can track itself? The map's reading is
   1, 2, a part of 3 and `status` from 7.

@@ -568,6 +568,35 @@ names it stores, the other side derived from the record:
 | `superseded by` | the removed work item, as `superseded_by` | `supersedes` in the show of the other | none |
 | `amends` | the work item, as `amends` | `amended by` in the show of the other | none |
 
+## Terms
+
+A term is a word of the project and what it means, the first node of its ontology.
+It is a node of the record of its own, not a tag on a line of knowledge, and it has
+no flow: it is in no bucket and no queue, and it has no state, no Tasks and no
+criterion. It is added and then it stands.
+
+- A term holds its name, its meaning and the time it was added. Its name is its id:
+  lowercase words of letters and digits joined by `-`, as `gate` or `work-item`.
+  A name that reads as the id of an item, as `S-0001` or `F-0001`, is refused, so
+  an id names one thing, and so is a name that is no such words.
+- A meaning says something: a blank one is refused naming the part, as the
+  blank part of an item is.
+- One file per term, `terms/gate.toml` in the record, with `name`, `meaning` and
+  `added`. It is written beside its path and read back whole before it replaces
+  it, and a file that holds no term is refused when read, naming the file.
+- `fgraph add term NAME --means TEXT` adds it as one write and one commit, `chore:
+  add term gate in the record`, and says `added gate`. The name of a term the record
+  holds already is refused. `fgraph terms` lists every term by name with its meaning,
+  or says in one line that the record holds none, and `fgraph show NAME` prints
+  the term with its meaning; a name that is no term of the record is refused.
+- A term is written on `main` alone, the developer's decision of 2026-11-22. On
+  the branch of a work item `fgraph add term` is refused, exit 2, naming the work
+  item the branch owns, and writes nothing. The worktree of a started work item
+  reads the terms of the record of `main`, as the Task ids are read across the
+  worktrees: `fgraph terms` and `fgraph show` of a term there list what `main` holds
+  now, a term added after the start included.
+- Every refusal is exit 2, with nothing written.
+
 ## Evidence
 
 A completed item carries the proof that it is completed. For a work item,

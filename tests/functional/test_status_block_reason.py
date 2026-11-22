@@ -27,9 +27,6 @@ BLOCK_TASK = ["block", "T-0001", "--reason", "no key", "--waiting-on", "develope
 BLOCK_FEATURE = ["block", "F-0001", "--reason", "no budget", "--waiting-on", "sponsor"]
 TASK_BLOCKED = (*ADDED, ["start", "F-0001"], ["start", "T-0001"], BLOCK_TASK)
 FEATURE_BLOCKED = (*ADDED, ["start", "F-0001"], BLOCK_FEATURE)
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="S-0084: the line of a block does not name its reason yet"
-)
 
 
 @dataclass(frozen=True)
@@ -70,7 +67,6 @@ def test_status_exits_with_zero_on_a_record_with_a_blocked_task(tmp_path: Path) 
     assert status_after(tmp_path, *TASK_BLOCKED).status == 0
 
 
-@XFAIL
 def test_the_line_of_a_blocked_task_names_its_reason_beside_what_it_waits_on(
     tmp_path: Path,
 ) -> None:
@@ -79,7 +75,6 @@ def test_the_line_of_a_blocked_task_names_its_reason_beside_what_it_waits_on(
     )
 
 
-@XFAIL
 def test_the_line_of_a_blocked_feature_names_its_reason_beside_what_it_waits_on(
     tmp_path: Path,
 ) -> None:

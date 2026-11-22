@@ -26,7 +26,7 @@ ADD_OTHER = ["add", "task", "another task", "--parent", "S-0001", "--output", "a
 BLOCK = ["block", "T-0001", "--reason", "the review is not back", "--waiting-on", "the reviewer"]
 ADDED = (ADD_FEATURE, ADD_STORY, ADD_TASK, ADD_OTHER)
 BLOCKED = (*ADDED, ["start", "F-0001"], ["start", "T-0001"], BLOCK)
-MARKED = "! F-0001  0/1 W  a feature title  -- waiting on the reviewer"
+MARKED = "! F-0001  0/1 W  a feature title  -- waiting on the reviewer: the review is not back"
 
 
 @dataclass(frozen=True)
@@ -71,7 +71,7 @@ def test_status_marks_a_started_feature_whose_started_story_holds_a_blocked_task
         "InProgress (1)\n"
         f"{MARKED}\n"
         "    S-0001  0/2 T  a title\n"
-        "      !  T-0001  a task title  -- waiting on the reviewer\n"
+        "      !  T-0001  a task title  -- waiting on the reviewer: the review is not back\n"
         "Completed (0)\n"
     )
 
@@ -82,5 +82,5 @@ def test_a_started_task_beside_the_blocked_one_does_not_lift_the_mark_of_the_fea
     assert status_after(tmp_path, *BLOCKED, ["start", "T-0002"]).out.splitlines()[2:5] == [
         MARKED,
         "    S-0001  0/2 T  a title",
-        "      !  T-0001  a task title  -- waiting on the reviewer",
+        "      !  T-0001  a task title  -- waiting on the reviewer: the review is not back",
     ]

@@ -21,7 +21,6 @@ from flowgraph.cli import open_files, open_git, read_config, run
 
 pytestmark = pytest.mark.functional
 
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0129: the complexity is not asked yet")
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 DRIVEN_BY_AN_AGENT = '[development]\nenabled = true\ndriver = "agent"\n'
@@ -163,7 +162,6 @@ class TestStatusAsJsonDrivenByADeveloper:
         assert document["can_start"] == ["S-0001", "S-0002"]
 
 
-@XFAIL
 def test_a_start_with_no_complexity_is_refused_naming_it_and_the_amend(
     agent_checkout: Path,
 ) -> None:

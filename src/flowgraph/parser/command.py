@@ -10,6 +10,7 @@ from pathlib import Path
 from flowgraph.development import RunGate, check_slug_branched
 from flowgraph.development.commit import OpenGit, Said, commit_written
 from flowgraph.development.land import land_item
+from flowgraph.development.driver import check_complexity
 from flowgraph.development.parallel import check_parallel
 from flowgraph.development.release import release_trunk
 from flowgraph.development.scope import check_complete_on_main, check_start_on_main
@@ -210,6 +211,7 @@ def command_said(
         check_start_under_feature(args.id, store)
         check_start_waits(args.id, store)
         check_parallel(args.id, store.find_work_item_rows, config)
+        check_complexity(args.id, store.load_work_item, config)
     if args.command == "add" and args.kind == "task":
         check_task_checked(args.check, config.development.enabled, record / CONFIG)
     if args.command == "hand":

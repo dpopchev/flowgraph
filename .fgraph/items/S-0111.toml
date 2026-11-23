@@ -27,3 +27,12 @@ description = "Removes the xfail mark of tests/functional/test_start_feature_par
 check = "uv run pytest tests/functional/test_start_feature_parallel.py tests/functional/test_start_feature.py tests/feature/test_feature_start.py tests/feature/test_feature_next.py -q --runxfail"
 expected_output = "changed: fgraph start of a work item in Backlog under a started Feature is no longer refused because another of it is started; only development.parallel, what it depends on, its Task and its slug refuse it. The completion of a work item under a started Feature still starts the first in Backlog of it beside the started ones, by the same rules. The unblock of a Feature still starts one only when none of it is started. WorkItemInProgressError and the message starts one work item at a time are gone from src"
 created = 2026-11-23 07:16:09+00:00
+
+[[tasks]]
+id = "T-0378"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say a Feature starts its work items side by side up to development.parallel"
+description = "The passages of docs/domain-model.md, by their lines on main at the plan: 1094-1106 (the principle: one is started at a time), 1128-1139 (the rule and Both rules), 1140-1150 (the same rules, the one at a time), 1161-1171 (the not started case beside another started work item), 1232-1233 (its started one goes on), 1247-1257 (the unblock, reason only), 1314-1323 (the one at a time and parallel both hold), and 1459-1471 if it needs rewording. In README.md: lines 1668-1669, 1712-1713, 1930-1946 and 1961. Keep the historical quotes of 2026-11-21 as history and add the replacement."
+check = "! grep -q 'one work item at a time' README.md docs/domain-model.md"
+expected_output = "changed: docs/domain-model.md states that work items of a started Feature start side by side, limited by development.parallel alone, that a completion starts the next beside those started, and that this replaces the decision of 2026-11-21 on the word of 2026-11-23; README.md shows fgraph start of a second Story of a started Feature succeeding with its branch, and the refusal under development.parallel"
+created = 2026-11-23 07:16:11+00:00

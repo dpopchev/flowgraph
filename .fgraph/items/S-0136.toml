@@ -9,3 +9,8 @@ created = 2026-11-23 12:01:52+00:00
 given = "a record whose configuration says the backlog lists two lines and the completed three, and that fgraph watch shows the backlog and in-progress alone"
 when = "fgraph status and fgraph watch --count 1 are run"
 then = "status lists two lines of the backlog and three of the completed, and the frame of watch holds the backlog and in-progress and no other bucket"
+
+[[knowledge]]
+kind = "decision"
+text = "The developer decided on 2026-11-23, asked before its Tasks were drafted: the keys are status.backlog, status.in-progress, status.completed and status.removed, a count of lines or all, and watch.buckets naming the buckets fgraph watch shows; a flag of a command wins over a key for that run."
+noted = 2026-11-23 20:31:05+00:00

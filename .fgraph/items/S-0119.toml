@@ -18,3 +18,12 @@ description = "A term is written on main alone, the decision on F-0005; the coor
 check = "uv run fgraph terms | grep -cE '^(record|work-item|feature|story|bug|spike|upkeep|task|criterion|bucket|backlog|in-progress|completed|removed|knowledge-line|term|development|landing|gate|delivery|planned|blocked)  ' | grep -qx 22"
 expected_output = "created: the terms of the record on main hold 22 terms with their meanings: record, work-item, feature, story, bug, spike, upkeep, task, criterion, bucket, backlog, in-progress, completed, removed, knowledge-line, term, development, landing, gate, delivery, planned and blocked"
 created = 2026-11-23 12:05:07+00:00
+
+[[tasks]]
+id = "T-0420"
+state = "backlog"
+title = "Relate the terms of the record of main by the 22 relations the developer agreed"
+description = "Written on main by the coordinator, as fgraph relate is a write of a term. The commit named is the last relate commit on main."
+check = "uv run fgraph graph | grep -cE 'kind.: .(is a|part of).,' | grep -qx 22"
+expected_output = "changed: the terms of the record on main hold 22 relations: story, bug, spike and upkeep is-a work-item; backlog, in-progress, completed and removed is-a bucket; task part-of work-item; work-item part-of feature and record; feature, term and development part-of record; criterion part-of work-item, feature and task; knowledge-line part-of work-item and feature; landing part-of development; gate and delivery part-of landing"
+created = 2026-11-23 12:05:09+00:00

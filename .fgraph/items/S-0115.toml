@@ -15,12 +15,13 @@ then = "fgraph config show lists it, and a record that leaves the key out works 
 
 [[tasks]]
 id = "T-0398"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_development_driver.py, failing on the criterion of S-0115"
 description = "Run through run() of src/flowgraph/cli.py. For the config tests, copy fgraph, Outcome and the project fixture from tests/functional/test_config_command.py (open_git returns None, read_config). For the guard class, copy the helpers fgraph, git, environment and checkout from tests/functional/test_start_agent.py, on a real git repository in tmp_path. The red tests are the exit of the set, the show line after it and the default line of show. Today each fails because development.driver is no key of the configuration (exit 2, line missing). Each red test carries its own strict xfail naming S-0115; there is no module mark. The guard tests pass today and carry no xfail. functional stays the pytestmark of the module. One assert per test. No source changes."
 check = "uv run pytest tests/functional/test_development_driver.py -q"
 expected_output = "created: tests/functional/test_development_driver.py states that on a record whose config.toml holds [development] enabled = true, fgraph config set development.driver agent exits 0 and fgraph config show then lists development.driver = agent in quotes; that the same record leaving the key out lists development.driver = developer in quotes; and, as guards, that on that record a Story added without --complexity and started without --agent exits 0"
 created = 2026-11-23 09:10:59+00:00
+started = 2026-11-23 09:15:04+00:00
 
 [[tasks]]
 id = "T-0399"

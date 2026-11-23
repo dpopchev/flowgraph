@@ -99,7 +99,7 @@ def _in_backlog(row: Line) -> bool:
 
 
 def _planned(line: Line) -> bool:
-    """True when the line is planned: a work item holds a Task, a Feature's Backlog items each do."""
+    """True when the line is planned: a work item holds a Task, a Feature's Backlog ones each do."""
     match line:
         case WorkItemRow():
             return bool(line.tasks)

@@ -1,0 +1,11 @@
+id = "S-0131"
+state = "backlog"
+title = "Raise the work items of the backlog fgraph status lists with their count of Tasks in brackets from none to every one"
+description = "Filed on the word of the developer of 2026-11-23, from the frame drawn that day. Its Tasks are written when it is ordered. Today a work item of the backlog is listed with its id and its title alone."
+parent = "F-0017"
+created = 2026-11-23 12:01:38+00:00
+
+[criterion]
+given = "a record whose backlog holds a Story with three Tasks and a Story with none"
+when = "fgraph status is run"
+then = "the line of the first reads its id, [3 T] and its title, and the line of the second its id, [] and its title"

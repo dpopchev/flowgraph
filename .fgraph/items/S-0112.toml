@@ -8,6 +8,11 @@ started = 2026-11-23 08:08:31+00:00
 completed = 2026-11-23 08:23:15+00:00
 commit = "f553162"
 
+[verified]
+answer = "yes"
+text = "at f553162 on main, on a throwaway record: fgraph add story --complexity high exit 0 printed added S-0001 and fgraph show S-0001 listed complexity high under its bucket; a Story added with none and amended with --complexity low was amended; fgraph status --format json carried complexity high and complexity low on the two items; --complexity huge on add was refused with --complexity 'huge' is none of low, medium, high and no third item file was written; make check on main at 8399b03: 2919 passed, all checks passed. Worked whole by one subagent on sonnet beside S-0110; it corrected in T-0388 two expectations of its own test of T-0386, which had read nothing written as part of the refusal line. src/flowgraph/work_item/model.py is at 248 of 250 lines. The landing started S-0113 by itself."
+on = 2026-11-23 08:28:26+00:00
+
 [criterion]
 given = "a record with a Story in Backlog"
 when = "the Story is added or amended with the complexity high"

@@ -47,12 +47,13 @@ commit = "393c111"
 
 [[tasks]]
 id = "T-0374"
-state = "backlog"
+state = "started"
 title = "List the gaps of the conversion with what closes each in docs/domain-model.md"
 description = "No item is filed by this Task: what is not filed is listed for the developer with the decision of the Spike."
 check = "grep -q '^### Gaps' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, From board 1, holds a list Gaps: each field or item the Field map or the Probe found lost or refused, with how many items of the seven records hold it and what would close it -- an item of the Backlog that exists, by its id, or one not filed; and the answer the evidence gives to the hypothesis of Q-0001, yes or no"
 created = 2026-11-23 04:57:49+00:00
+started = 2026-11-23 06:05:42+00:00
 
 [[tasks]]
 id = "T-0375"

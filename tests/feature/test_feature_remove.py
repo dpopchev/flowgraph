@@ -1,7 +1,7 @@
 """The remove of a Feature: one in Backlog is removed with its reason, its work items with it."""
 
 import tomllib
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
@@ -22,6 +22,7 @@ from flowgraph.feature import (
     feature_detail,
     feature_row,
     make_feature,
+    noted_feature,
     read_feature,
     removed_feature,
     started_feature,
@@ -34,13 +35,13 @@ from flowgraph.feature.move import check_move
 from flowgraph.feature.remove import remove_named
 from flowgraph.feature.start import check_start_under_feature
 from flowgraph.item.commands import Written
+from flowgraph.knowledge import FINDING, make_knowledge_line
 from flowgraph.parent import STANDALONE, FeatureId, Parent, make_feature_id
 from flowgraph.record.queue import make_queue
 from flowgraph.record.store import FeatureStore, Store
 from flowgraph.status import status_text
 from flowgraph.story import STORY, make_story_id
 from flowgraph.task import (
-    BlockedError,
     CompletedAlreadyError,
     NotBlockedError,
     StartedAlreadyError,
@@ -72,12 +73,21 @@ STARTED = started_feature(FEATURE, BEGUN)
 BLOCKED = blocked_feature(STARTED, "a reason", "someone", BEGUN)
 COMPLETED = completed_feature(STARTED, BEGUN, NO_COMMIT)
 GONE = removed_feature(FEATURE, REASON, ON)
+NOTED = noted_feature(
+    make_feature(ONE, "a title", ["a criterion"], "why", CREATED, ("lane",)),
+    make_knowledge_line(FINDING, "a text", CREATED),
+)
 FILE = Path("items") / "F-0001.toml"
 WRITTEN_BEFORE = (
     'id = "F-0001"\ntitle = "a title"\ncreated = 2026-01-01 12:30:15+00:00\n'
     'criteria = ["a criterion"]\n'
 )
 REMOVED_ALREADY = r"^F-0001 is removed already$"
+
+
+def blocked_in_progress(feature: FeatureState, on: datetime) -> FeatureState:
+    """The Feature started and then blocked."""
+    return blocked_feature(started_feature(feature, on), "a reason", "someone", on)
 
 
 def never(*_: object) -> Never:
@@ -166,14 +176,12 @@ def test_a_feature_in_backlog_is_removed_with_its_reason_and_its_time_to_the_sec
 @pytest.mark.parametrize(
     ("feature", "refusal", "error"),
     [
-        (STARTED, StartedAlreadyError, r"^F-0001 is started already$"),
-        (BLOCKED, BlockedError, r"^F-0001 is blocked$"),
         (COMPLETED, CompletedAlreadyError, r"^F-0001 is completed already$"),
         (GONE, RemovedAlreadyError, REMOVED_ALREADY),
     ],
-    ids=["started", "blocked", "completed", "removed"],
+    ids=["completed", "removed"],
 )
-def test_a_feature_that_is_not_in_backlog_is_not_removed(
+def test_a_completed_or_removed_feature_is_not_removed(
     feature: FeatureState, refusal: type[Exception], error: str
 ) -> None:
     with pytest.raises(refusal, match=error):
@@ -184,6 +192,22 @@ def test_a_feature_that_is_not_in_backlog_is_not_removed(
 def test_a_remove_with_a_blank_reason_is_refused() -> None:
     with pytest.raises(EmptyPartError, match=r"^reason is empty$"):
         removed_feature(FEATURE, " ", ON)
+
+
+@pytest.mark.model
+@pytest.mark.parametrize(
+    "begun", [started_feature, blocked_in_progress], ids=["started", "blocked"]
+)
+def test_a_feature_in_progress_with_a_line_and_a_term_is_removed_as_one_in_backlog_is(
+    begun: Callable[[FeatureState, datetime], FeatureState],
+) -> None:
+    assert removed_feature(begun(NOTED, BEGUN), REASON, ON) == removed_feature(NOTED, REASON, ON)
+
+
+@pytest.mark.model
+def test_a_remove_of_a_started_feature_with_a_blank_reason_is_refused() -> None:
+    with pytest.raises(EmptyPartError, match=r"^reason is empty$"):
+        removed_feature(STARTED, " ", ON)
 
 
 @pytest.mark.model
@@ -324,6 +348,44 @@ def test_a_feature_without_a_work_item_is_removed_alone() -> None:
 
 
 @pytest.mark.command
+@pytest.mark.parametrize("feature", [STARTED, BLOCKED], ids=["started", "blocked"])
+def test_a_feature_in_progress_keeps_its_completed_work_item_and_one_removed_before(
+    feature: FeatureState,
+) -> None:
+    before = removed_work_item(story(2), "superseded", BEGUN)
+    saved = remove([completed(1), before], feature)
+    assert (saved.features, saved.items) == ([removed_feature(feature, REASON, ON)], [])
+
+
+@pytest.mark.command
+def test_a_started_feature_is_removed_with_its_work_item_in_backlog_beside_a_completed_one() -> (
+    None
+):
+    saved = remove([completed(1), story(2)], STARTED)
+    assert (saved.features, saved.items) == (
+        [removed_feature(STARTED, REASON, ON)],
+        [removed_work_item(story(2), REASON, ON)],
+    )
+
+
+@pytest.mark.command
+def test_a_started_feature_without_a_work_item_is_removed_alone() -> None:
+    saved = remove([], STARTED)
+    assert (saved.features, saved.items) == ([removed_feature(STARTED, REASON, ON)], [])
+
+
+@pytest.mark.command
+@pytest.mark.parametrize("feature", [STARTED, BLOCKED], ids=["started", "blocked"])
+def test_a_feature_in_progress_that_holds_a_started_work_item_is_refused_and_saves_nothing(
+    feature: FeatureState,
+) -> None:
+    saved = Saved()
+    with pytest.raises(StartedAlreadyError, match=r"^F-0001 cannot be removed: S-0002 is started"):
+        remove_named("F-0001", REASON, store([story(1), started(2)], feature, saved), lambda: ON)
+    assert (saved.features, saved.items) == ([], [])
+
+
+@pytest.mark.command
 @pytest.mark.parametrize(
     ("items", "refusal", "error"),
     [
@@ -352,7 +414,7 @@ def test_a_feature_never_started_that_holds_a_work_item_begun_is_not_removed(
     ("items", "feature", "reason"),
     [
         ([story(1), started(2)], FEATURE, REASON),
-        ([story(1)], STARTED, REASON),
+        ([started(1)], STARTED, REASON),
         ([story(1)], FEATURE, " "),
     ],
     ids=["a-started-work-item", "a-started-feature", "a-blank-reason"],

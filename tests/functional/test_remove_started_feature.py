@@ -41,10 +41,6 @@ STARTED_APART = (*STARTED_DONE, REMOVE_OTHER)
 GONE = "F-0001 is removed already"
 HELD = "F-0001 cannot be removed: S-0001 is started already"
 
-red = pytest.mark.xfail(
-    strict=True, reason="S-0125: a started or blocked Feature is not removed yet"
-)
-
 
 @dataclass(frozen=True)
 class Outcome:
@@ -84,15 +80,12 @@ class TestABlockedFeatureTakenApartRemovedWithAReason:
     def removed(self, tmp_path: Path) -> Outcome:
         return runs(tmp_path, *BLOCKED_APART, REMOVE)
 
-    @red
     def test_remove_exits_with_zero(self, removed: Outcome) -> None:
         assert removed.status == 0
 
-    @red
     def test_remove_names_the_feature(self, removed: Outcome) -> None:
         assert removed.out == "removed F-0001\n"
 
-    @red
     def test_status_lists_it_alone_under_removed_with_its_reason(
         self, removed: Outcome, tmp_path: Path
     ) -> None:
@@ -104,7 +97,6 @@ class TestABlockedFeatureTakenApartRemovedWithAReason:
             "  F-0001  a feature title  -- pivoted\n"
         )
 
-    @red
     def test_show_of_it_lists_its_reason_and_its_two_work_items(
         self, removed: Outcome, tmp_path: Path
     ) -> None:
@@ -119,7 +111,6 @@ class TestABlockedFeatureTakenApartRemovedWithAReason:
             "  S-0002  another title  Removed\n"
         )
 
-    @red
     def test_status_json_lists_it_under_removed_with_its_progress_and_work_items(
         self, removed: Outcome, tmp_path: Path
     ) -> None:
@@ -149,7 +140,6 @@ class TestABlockedFeatureTakenApartRemovedWithAReason:
         assert "  reason       superseded" in fgraph(["show", "S-0002"], tmp_path).out
 
 
-@red
 def test_a_started_feature_taken_apart_is_removed(tmp_path: Path) -> None:
     removed = runs(tmp_path, *STARTED_APART, REMOVE)
     assert (removed.status, removed.out) == (0, "removed F-0001\n")
@@ -160,11 +150,9 @@ class TestABlockedFeatureRemovedWithItsStoryInBacklog:
     def removed(self, tmp_path: Path) -> Outcome:
         return runs(tmp_path, *BLOCKED_DONE, REMOVE)
 
-    @red
     def test_remove_exits_with_zero(self, removed: Outcome) -> None:
         assert removed.status == 0
 
-    @red
     def test_its_story_in_backlog_is_removed_for_the_reason_of_the_feature(
         self, removed: Outcome, tmp_path: Path
     ) -> None:
@@ -182,13 +170,12 @@ BLOCKED_HOLDING = (*FILED, BLOCK, REMOVE)
 @pytest.mark.parametrize(
     ("argvs", "error"),
     [
-        pytest.param(STARTED_HOLDING, HELD, marks=red, id="a-started-feature-holding-a-story"),
-        pytest.param(BLOCKED_HOLDING, HELD, marks=red, id="a-blocked-feature-holding-a-story"),
-        pytest.param((*BLOCKED_APART, REMOVE, REMOVE), GONE, marks=red, id="removed-twice"),
+        pytest.param(STARTED_HOLDING, HELD, id="a-started-feature-holding-a-story"),
+        pytest.param(BLOCKED_HOLDING, HELD, id="a-blocked-feature-holding-a-story"),
+        pytest.param((*BLOCKED_APART, REMOVE, REMOVE), GONE, id="removed-twice"),
         pytest.param(
             (*BLOCKED_APART, ["remove", "F-0001", "--reason", " "]),
             "reason is empty",
-            marks=red,
             id="blank-reason",
         ),
         pytest.param(
@@ -208,9 +195,9 @@ def test_a_remove_refused_exits_with_two_and_names_why(
 @pytest.mark.parametrize(
     ("move", "error"),
     [
-        pytest.param(["complete", "F-0001"], GONE, marks=red, id="complete"),
-        pytest.param(ADD_UNDER, GONE, marks=red, id="add-under"),
-        pytest.param(["unblock", "F-0001"], "F-0001 is not blocked", marks=red, id="unblock"),
+        pytest.param(["complete", "F-0001"], GONE, id="complete"),
+        pytest.param(ADD_UNDER, GONE, id="add-under"),
+        pytest.param(["unblock", "F-0001"], "F-0001 is not blocked", id="unblock"),
     ],
 )
 def test_a_move_of_a_feature_removed_from_in_progress_exits_with_two(

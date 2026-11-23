@@ -413,7 +413,9 @@ from the count of those more; a Backlog where nothing can start marks none. No
 tool reads, such as the SessionStart hook of an agent harness: each bucket with
 its count and every item of it, not the top 5, the Tasks of each work item with
 their state, the reason and what a block waits on, the ids a work item waits for,
-and the next to start. `text` is the default and prints what `fgraph status` has
+and the next to start. A Feature holds in `work_items` every work item under it,
+in any state -- Backlog, started, blocked, completed or removed -- where the text
+lists the started ones alone. `text` is the default and prints what `fgraph status` has
 always printed; another word is refused naming both, with exit 2. `--all` changes
 nothing for JSON, which lists every item anyway, and `fgraph watch` stays text.
 The keys are sorted, so two runs on one record print the same bytes; every key is

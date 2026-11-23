@@ -10,6 +10,7 @@ from flowgraph.status.terminal import (
     terminal_width,
 )
 from flowgraph.status.text import APART, BUCKETS, cut_lines, status_text
+from flowgraph.status.under import in_show_order
 from flowgraph.status.view import (
     BACKLOG,
     COMPLETED,
@@ -41,6 +42,7 @@ __all__ = [
     "feature_text",
     "find_backlog",
     "framed",
+    "in_show_order",
     "make_pace",
     "no_terminal",
     "rows_by_id",

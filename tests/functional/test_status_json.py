@@ -174,3 +174,39 @@ class TestARecordWithAnItemInEveryBucket:
             "--format 'xml' is not text or json"
             in fgraph(["status", "--format", "xml"], recorded).err
         )
+
+
+FEATURE_RECORD = [
+    ["add", "feature", "a feature title", "--criterion", "a developer sees it"],
+    story("the completed one", "--parent", "F-0001"),
+    story("the started one", "--parent", "F-0001"),
+    story("the one in backlog", "--parent", "F-0001"),
+    task("S-0001"),
+    task("S-0002"),
+    ["start", "F-0001"],
+    ["start", "T-0001"],
+    ["complete", "T-0001", "--commit", "abc1234"],
+    ["complete", "S-0001", "--commit", "def5678"],
+]
+
+
+class TestAFeatureWithACompletedAStartedAndABacklogWorkItem:
+    @pytest.fixture
+    def feature(self, tmp_path: Path) -> dict[str, Any]:
+        for argv in FEATURE_RECORD:
+            assert fgraph(argv, tmp_path).status == 0
+        return item(json.loads(fgraph(["status", "--format", "json"], tmp_path).out), "F-0001")
+
+    def test_status_lists_every_work_item_of_the_feature_with_its_state(
+        self, feature: dict[str, Any]
+    ) -> None:
+        assert [(each["id"], each["state"]) for each in feature["work_items"]] == [
+            ("S-0001", "completed"),
+            ("S-0002", "started"),
+            ("S-0003", "backlog"),
+        ]
+
+    def test_status_counts_the_work_items_of_the_feature_as_before(
+        self, feature: dict[str, Any]
+    ) -> None:
+        assert feature["progress"] == {"completed": 1, "total": 3}

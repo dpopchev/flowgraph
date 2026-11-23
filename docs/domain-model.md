@@ -799,9 +799,11 @@ that holds nothing is `null`, never an empty text; a list that holds nothing is 
 - Feature (kind `feature`): `id`; `kind`; `title`; `commit`; `reason`, the one it was
   removed for; `progress`, an object `completed` and `total`, its work items completed of
   those it holds; `waits_for`, what its first work item in Backlog waits for; `block`, an
-  object `reason` and `waiting_on` while it is blocked, else `null`; `work_items`, its
-  started work items as work items above. Those in Backlog and the completed ones are in
-  no list of it, as on no line of the text.
+  object `reason` and `waiting_on` while it is blocked, else `null`; `work_items`, every
+  work item under it as a work item above, in any state -- Backlog, started, blocked,
+  completed or removed -- in the order `fgraph show` of the Feature lists them (the reading
+  of T-0370: the hook that parses the document cannot ask again). The text lists the
+  started ones alone; the document lists all of them, and `progress` counts them as before.
 
 The block of a Task is its own state and is carried by the Task: a Feature does not copy
 it, as the text line of a Feature does. `fgraph graph` prints `"bucket": null` for a Task;

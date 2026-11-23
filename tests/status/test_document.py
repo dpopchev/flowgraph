@@ -159,10 +159,26 @@ def test_a_feature_holds_the_ids_its_first_work_item_waits_for() -> None:
     assert only(feature(waits_for=["S-0009"]))["waits_for"] == ["S-0009"]
 
 
-def test_a_feature_holds_its_started_work_items() -> None:
-    started = story("S-0004", "started", tasks=[task("T-0001", "started")])
-    held = only(feature(bucket="InProgress", started=[started]))["work_items"]
-    assert [(each["id"], each["tasks"][0]["state"]) for each in held] == [("S-0004", "started")]
+def test_a_feature_holds_every_work_item_under_it_with_its_state_in_the_order_given() -> None:
+    held = [
+        story("S-0003", "completed"),
+        story("S-0004", "started", tasks=[task("T-0001", "started")]),
+        story("S-0005", "backlog", waits_for=["S-0004"]),
+        story("S-0006", "removed"),
+    ]
+    listed = only(feature(bucket="InProgress", work_items=held))["work_items"]
+    assert [(each["id"], each["state"]) for each in listed] == [
+        ("S-0003", "completed"),
+        ("S-0004", "started"),
+        ("S-0005", "backlog"),
+        ("S-0006", "removed"),
+    ]
+
+
+def test_a_work_item_of_a_feature_holds_its_tasks_and_the_ids_it_waits_for() -> None:
+    held = [story("S-0005", "backlog", waits_for=["S-0004"], tasks=[task("T-0001", "backlog")])]
+    listed = only(feature(work_items=held))["work_items"][0]
+    assert (listed["tasks"][0]["id"], listed["waits_for"]) == ("T-0001", ["S-0004"])
 
 
 def test_a_blocked_feature_holds_its_reason_and_what_it_waits_on() -> None:

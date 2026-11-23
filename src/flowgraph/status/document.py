@@ -8,7 +8,9 @@ line marked as such or null. A work item holds its `id`, `kind`, `title`, `state
 its `tasks` and the ids it `waits_for`. A Task holds its `id`, `title`, `state`, `commit`,
 `reason` and `waiting_on`. A Feature holds its `id`, `kind`, `title`, `commit`, `reason`,
 `progress` (its work items `completed` of `total`), the ids its first work item `waits_for`, its
-`block` -- the `reason` and what it is `waiting_on`, or null -- and its started `work_items`.
+`block` -- the `reason` and what it is `waiting_on`, or null -- and its `work_items`: every work
+item under it, in any state, shaped as a work item of a bucket, in the order `fgraph show` of
+the Feature lists them.
 """
 
 import json
@@ -113,7 +115,7 @@ def _task(task: TaskRow) -> Item:
 
 
 def _feature(row: FeatureRow) -> Item:
-    """A Feature with its started work items; its block when it waits on someone."""
+    """A Feature with every work item under it; its block when it waits on someone."""
     block = {"reason": row.block_reason, "waiting_on": row.waiting_on} if row.waiting_on else None
     return {
         "id": row.id,
@@ -124,5 +126,5 @@ def _feature(row: FeatureRow) -> Item:
         "progress": {"completed": row.completed, "total": row.held},
         "waits_for": list(row.waits_for),
         "block": block,
-        "work_items": [_work_item(each) for each in row.started],
+        "work_items": [_work_item(each) for each in row.work_items],
     }

@@ -27,6 +27,7 @@ from flowgraph.record.store import KINDS, Store
 from flowgraph.status.document import JSON, chosen_format, status_json
 from flowgraph.status.next import with_next
 from flowgraph.status.text import cut_lines, status_text
+from flowgraph.status.under import in_show_order
 from flowgraph.status.waits import with_waits
 from flowgraph.work_item import STARTED, WorkItemId, WorkItemRow, parse_work_item_id
 
@@ -114,9 +115,10 @@ def _placed_features(store: Store, rows: Collection[WorkItemRow]) -> list[_Place
 def _waiting_features(
     features: Iterable[_PlacedFeature], rows: Mapping[WorkItemId, WorkItemRow], store: Store
 ) -> list[_PlacedFeature]:
-    """The Features given, each in Backlog carrying what its first work item in Backlog waits for.
+    """The Features given, each carrying its work items and, in Backlog, what its first waits for.
 
     The first work item is the one its start takes: the first in the queue among those in Backlog.
+    Its work items are every one under it, in the order `fgraph show` of it lists them.
     """
     queue = store.load_queue()
     waiting: list[_PlacedFeature] = []
@@ -126,7 +128,8 @@ def _waiting_features(
         first = min(in_backlog, key=queued(queue, in_backlog).index, default=None)
         listed = first is not None and row.bucket == BACKLOG_BUCKET
         waits_for = under[first].waits_for if listed and first is not None else []
-        waiting.append((at, replace(row, waits_for=waits_for)))
+        work_items = in_show_order(under, in_backlog, queue)
+        waiting.append((at, replace(row, waits_for=waits_for, work_items=work_items)))
     return waiting
 
 

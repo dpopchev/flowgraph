@@ -3,7 +3,11 @@ state = "backlog"
 title = "Cut the marks of a line of fgraph status that a paste into Markdown or a search must escape from two, > and ?, to none"
 description = "Chosen by the developer on 2026-11-23 from three sets drawn that day: the set with nothing to escape. Today the line that can start is marked > and the one ready for review ?. Weighed: at the start of a line pasted into Markdown > becomes a quote, and * + - become bullets; ^ ? * + . are special in a search by a regular expression; = ~ ! @ and => are neither. About twenty test files and the README pin >; the tests of S-0114 pin ?. The JSON carries can_start and ready_for_review and no mark, so a client that reads it is not touched. Its Tasks are written when it is ordered."
 parent = "F-0017"
+complexity = "low"
 created = 2026-11-23 12:05:15+00:00
+depends_on = [
+    "S-0137",
+]
 
 [criterion]
 given = "a record with a line that can start, a started work item whose Tasks are all completed, a blocked one, one that waits for another and a Task being worked"

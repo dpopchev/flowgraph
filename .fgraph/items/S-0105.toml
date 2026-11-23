@@ -2,7 +2,13 @@ id = "S-0105"
 state = "backlog"
 title = "Raise the things a frame of fgraph watch shows beyond fgraph status from none to two: the progress and a clock"
 description = "From the note of the ~/.claude session of 2026-11-22 on the gaps of the planning skill (output: watch for a person), filed and ordered on the word of the developer of that day: update the backlog and prioritize. Today the frame is fgraph status byte for byte. Its Tasks are written when it is ordered."
+complexity = "low"
 created = 2026-11-22 21:04:06+00:00
+depends_on = [
+    "S-0136",
+    "S-0137",
+    "S-0139",
+]
 
 [criterion]
 given = "a record with items in every bucket"

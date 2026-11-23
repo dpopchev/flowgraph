@@ -1,0 +1,3 @@
+name = "bucket"
+meaning = "Where an item stands in the flow, backlog, in-progress, completed or removed, derived from the type of its state and never a stored field."
+added = 2026-11-23 12:06:31.561815+00:00

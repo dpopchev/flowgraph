@@ -17,12 +17,13 @@ then = "status marks the first as able to start and not the second, and fgraph s
 
 [[tasks]]
 id = "T-0421"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_planned_complexity.py, failing on the criterion of S-0129"
 description = "Run through run() of src/flowgraph/cli.py. Copy the helpers Outcome, fgraph, git, marked, environment, story and task (with --check make test) from tests/functional/test_planned_start.py; story gains a keyword complexity that appends --complexity and the word when one is given. Two config texts: the development on with driver = \"agent\", and the development on alone. One checkout fixture per config, each a git repository on main whose first commit holds the config.toml, then story(\"title 1\", complexity=\"low\"), story(\"title 2\"), task(\"S-0001\"), task(\"S-0002\"). Classes and tests: TestStatusAsTextDrivenByAnAgent, the marked ids; TestStatusAsJsonDrivenByAnAgent, can_start; TestStatusAsTextDrivenByADeveloper and TestStatusAsJsonDrivenByADeveloper, the same two facts with both ids; test_a_start_with_no_complexity_is_refused_naming_it_and_the_amend, on the pair (exit, last line of the error output); test_a_start_of_the_one_with_a_complexity_exits_with_zero; test_a_start_once_amended_with_a_complexity_exits_with_zero; test_a_start_driven_by_a_developer_exits_with_zero, parametrized on S-0001 and S-0002, each on a fresh checkout. Keep the word Status out of every name but the four Status classes. The red tests are three: the two Status tests driven by an agent and the refused start; each carries its own strict xfail naming S-0129 (XFAIL = pytest.mark.xfail(strict=True, reason=\"S-0129: ...\")). Every other test passes today: they are guards and carry no xfail. See each marked test xfail and each guard pass before the commit. functional is the pytestmark. One assert per test. No source changes."
 check = "uv run pytest tests/functional/test_planned_complexity.py -q"
 expected_output = "created: tests/functional/test_planned_complexity.py states that, in a git repository with [development] enabled = true and driver = \"agent\", parallel left out, holding S-0001 with a Task and the complexity low and S-0002 with a Task and no complexity, neither waiting: fgraph status marks S-0001 alone; the JSON lists can_start as S-0001 alone; fgraph start S-0002 exits 2 and its last error line is fgraph: error: S-0002 has no complexity to start with: set it with fgraph amend S-0002 --complexity low, medium or high; fgraph start S-0001 exits 0; fgraph start S-0002 exits 0 once fgraph amend S-0002 --complexity medium has run. On the same record with the driver left out, status marks S-0001 and S-0002, can_start lists both, and the start of each exits 0"
 created = 2026-11-23 13:08:48+00:00
+started = 2026-11-23 13:11:40+00:00
 
 [[tasks]]
 id = "T-0422"

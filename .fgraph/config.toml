@@ -1,2 +1,3 @@
 [development]
 enabled = true
+parallel = 3

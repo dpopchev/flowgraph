@@ -55,13 +55,15 @@ commit = "37868ffe35d7df3d2985b85afddc13eaf296311c"
 
 [[tasks]]
 id = "T-0404"
-state = "started"
+state = "completed"
 title = "Print the brief of a work item as JSON with fgraph brief ID --format json, keys sorted and null for nothing"
 description = "New src/flowgraph/brief/document.py, pure: brief_json(brief), shaped as status_json in status/document.py but neither importing it nor changing it (S-0114 changes it). BriefFormatError and chosen_brief_format live beside it. noted is the full isoformat, as fgraph graph writes it. waits_for holds the ids in depends_on whose bucket is not Completed. kind comes from the id prefix through KINDS of flowgraph.record.store. In read.py, brief_output(item, format_, store, record, open_git) picks the format before any read. parser/brief.py adds --format as the status parser does. parser/refusals.py imports BriefFormatError and lists it right after StatusFormatError, not at the end of REFUSED. Write tests/brief/test_document.py red first: a started brief; nulls for a brief with no Feature and no worktree; the criterion of a Bug and of a Spike; the same bytes on two calls."
 check = "uv run pytest tests/functional/test_brief.py tests/brief -q --runxfail"
 expected_output = "changed: fgraph brief takes --format text or json, text the default. The JSON holds agent, branch, bucket, complexity, criterion (answer, decision, expected, given, hypothesis, observed, then, when), depends_on (each with id and bucket), description, feature (id, title, bucket, description, knowledge) or null, governed_by (each with item, kind, noted, text, about, governs), id, kind, knowledge, state, tasks (each with id, title, state, expected_output, check, description, commit, reason, waiting_on), terms (each with name and meaning), title, waits_for and worktree. A key that holds nothing is null and an empty list is []. Keys are sorted, the indent is two and the text ends with a newline. A format that is neither is refused naming both, exit 2. No strict xfail mark is left in tests/functional/test_brief.py"
 created = 2026-11-23 09:11:45+00:00
 started = 2026-11-23 09:23:38+00:00
+completed = 2026-11-23 09:26:42+00:00
+commit = "9d43f3e3337d79d83d56e919da06c4686daf233c"
 
 [[tasks]]
 id = "T-0405"

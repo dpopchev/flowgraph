@@ -3,7 +3,12 @@ state = "backlog"
 title = "Raise the buckets whose lines fgraph status lists, and whose place in fgraph watch, the configuration sets from none to all four"
 description = "Filed on the word of the developer of 2026-11-23, from the frame drawn that day. Its Tasks are written when it is ordered. The words: there should be configs about the backlog, in-progress, completed and removed in .fgraph/config.toml, and which are shown by fgraph watch should be a config. Open: the names of the tables and of the keys, and what the flag of a command does over a key."
 parent = "F-0017"
+complexity = "medium"
 created = 2026-11-23 12:01:52+00:00
+depends_on = [
+    "S-0099",
+    "S-0135",
+]
 
 [criterion]
 given = "a record whose configuration says the backlog lists two lines and the completed three, and that fgraph watch shows the backlog and in-progress alone"

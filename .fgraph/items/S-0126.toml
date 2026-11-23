@@ -53,13 +53,15 @@ commit = "1bfb541"
 
 [[tasks]]
 id = "T-0418"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph hand hands a started work item to an agent where its Tasks are written"
 description = "Find the passages by grep, not by line number. Add no row to the table of parts at the top of README.md. Touch no other section."
 check = "grep -q fgraph.hand README.md && grep -q chore:.hand docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, in Persistence: a bullet right after the passage on fgraph start --agent states fgraph hand, its form, where it is written, its refusals, the agent replaced with no history kept but the commits, and the development off; the sentence naming the hand as a later Story is replaced; the table of writes gains hand a started work item to an agent, on its branch, right after the row of its Tasks; hand joins the list of the writes fgraph commits; the table of messages gains a row hand right after start. README.md: after the example of fgraph start --agent, a paragraph and an example of fgraph hand, run in the worktree and from main with --dir, and the refusal on main"
 created = 2026-11-23 10:15:32+00:00
 started = 2026-11-23 10:38:03+00:00
+completed = 2026-11-23 10:38:48+00:00
+commit = "27b5f8d"
 
 [[knowledge]]
 kind = "decision"

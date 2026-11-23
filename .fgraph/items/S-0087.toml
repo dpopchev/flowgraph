@@ -1,10 +1,12 @@
 id = "S-0087"
-state = "started"
+state = "completed"
 title = "Raise the formats fgraph status prints in from one, text, to two: JSON"
 description = "The words of the note: the counts, and --format json; read by the SessionStart hook."
 parent = "F-0008"
 created = 2026-11-22 21:02:14+00:00
 started = 2026-11-22 23:43:00+00:00
+completed = 2026-11-23 00:05:18+00:00
+commit = "555de70"
 depends_on = [
     "S-0084",
     "S-0085",

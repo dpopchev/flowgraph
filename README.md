@@ -472,7 +472,10 @@ item waits for nothing, which takes one place. With `parallel = 3` and one work
 item started, two lines are marked `>` (S-0003 and S-0004 below: S-0002 waits for
 S-0004, and the limit leaves out S-0005). With `parallel` left out
 every one that waits for nothing is marked; with the development off the next to
-start alone, as before. A marked line the top of the heading leaves out is listed
+start alone, as before. With the development on a line is marked only once
+planned: a work item holds a Task, and a Feature's work items in Backlog each
+hold one; a line not planned is unmarked, with no suffix, and with the
+development off the Tasks are not read. A marked line the top of the heading leaves out is listed
 after the top, apart from the count of those more; a Backlog where nothing can
 start marks none. No `next` command is added. This replaces the next to start
 alone of S-0086.
@@ -2045,6 +2048,9 @@ branch made:
   `F-0001 has no work item in Backlog to start with`;
 - when its first work item has no Task:
   `F-0001 cannot start: S-0001 has no Task to start with`;
+- with the development on, when a work item of it in Backlog has no Task, the
+  first in start order named:
+  `F-0001 cannot start: S-0002 has no Task to start with`;
 - when `[development] parallel` refuses one more started work item:
   `F-0001 cannot start: development.parallel = 1, started already: S-0002`.
 

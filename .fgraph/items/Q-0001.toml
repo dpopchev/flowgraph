@@ -34,3 +34,12 @@ description = "The scratch record is under the scratchpad of the session or loca
 check = "grep -q '^### Probe' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, From board 1, holds a passage Probe: which items of a sample of one of the seven records fgraph took by its commands on a scratch record, an item of every kind and state among them, and each one it refused with the line of the refusal"
 created = 2026-11-23 04:57:47+00:00
+
+[[tasks]]
+id = "T-0374"
+state = "backlog"
+title = "List the gaps of the conversion with what closes each in docs/domain-model.md"
+description = "No item is filed by this Task: what is not filed is listed for the developer with the decision of the Spike."
+check = "grep -q '^### Gaps' docs/domain-model.md"
+expected_output = "changed: docs/domain-model.md, From board 1, holds a list Gaps: each field or item the Field map or the Probe found lost or refused, with how many items of the seven records hold it and what would close it -- an item of the Backlog that exists, by its id, or one not filed; and the answer the evidence gives to the hypothesis of Q-0001, yes or no"
+created = 2026-11-23 04:57:49+00:00

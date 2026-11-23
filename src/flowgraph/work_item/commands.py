@@ -13,6 +13,7 @@ from flowgraph.parent import STANDALONE, Parent, parent_text
 from flowgraph.record import Now
 from flowgraph.task import row_of
 from flowgraph.work_item.amend import Amendment, CheckMove, amended_work_item
+from flowgraph.work_item.complexity import Complexity
 from flowgraph.work_item.id import (
     Kind,
     WorkItemId,
@@ -85,6 +86,7 @@ def work_item_row(item: WorkItemState) -> WorkItemRow:
         commit_sha(item),
         reason_of(item),
         parent_text(item.parent),
+        complexity=item.complexity or "",
         created=item.created,
         started=_started_on(item),
         completed=_completed_on(item),
@@ -107,6 +109,7 @@ def work_item_detail(item: WorkItemState) -> WorkItemDetail:
         commit=commit_sha(item),
         reason=reason_of(item),
         parent=parent_text(item.parent),
+        complexity=item.complexity or "",
         knowledge=[knowledge_row(line) for line in item.knowledge],
         about=list(item.about),
         depends_on=[DependsRow(work_item_id_text(each)) for each in item.relations.depends_on],
@@ -135,11 +138,13 @@ def add_work_item(
     filed_during: WorkItemId | None = None,
     amends: WorkItemId | None = None,
     about: tuple[str, ...] = (),
+    complexity: Complexity | None = None,
 ) -> WorkItemId:
     """Add a work item of that kind to Backlog under its next free id and return that id.
 
     It stands alone unless a Feature is named as its parent, depends on the work items given,
-    is filed during the one given, amends the one given and is about the terms given. The rows
+    is filed during the one given, amends the one given, is about the terms given and carries the
+    complexity given, none by default. The rows
     found are those of the kind. Raises EmptyPartError when the title is blank and CriterionError
     when the criterion is not of the form the kind takes; nothing is saved.
     """
@@ -156,6 +161,7 @@ def add_work_item(
         filed_during,
         amends,
         about,
+        complexity,
     )
     save_work_item(item)
     return item.id

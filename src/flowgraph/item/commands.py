@@ -28,7 +28,7 @@ from flowgraph.record.store import Store
 from flowgraph.relation.depends import bucketed
 from flowgraph.status import BACKLOG, COMPLETED, STARTED, find_backlog, show_text, status_item
 from flowgraph.task import task_id_text
-from flowgraph.work_item import Kind, WorkItemId, work_item_id_text
+from flowgraph.work_item import Complexity, Kind, WorkItemId, work_item_id_text
 
 # The ids of an item live in id.py and the listing of the status in flowgraph.status; both stay
 # importable from here.
@@ -114,11 +114,13 @@ def add_item(
     filed_during: WorkItemId | None = None,
     amends: WorkItemId | None = None,
     about: tuple[str, ...] = (),
+    complexity: Complexity | None = None,
 ) -> Written:
     """Add a work item of that kind with its criterion; what the write says.
 
     It stands alone unless a Feature is given as its parent, depends on the work items given,
-    is filed during the one given, amends the one given and is about the terms given. Raises
+    is filed during the one given, amends the one given, is about the terms given and carries the
+    complexity given, none by default. Raises
     EmptyPartError when the title is blank and CriterionError when the criterion is not of the
     form the kind takes; nothing is saved.
     """
@@ -135,6 +137,7 @@ def add_item(
         filed_during=filed_during,
         amends=amends,
         about=about,
+        complexity=complexity,
     )
     text = work_item_id_text(added)
     return Written(f"added {text}\n", MESSAGE.format(f"add {text}"))

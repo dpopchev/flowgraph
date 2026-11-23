@@ -96,6 +96,15 @@ def test_a_blank_title_or_part_of_the_criterion_is_refused(amendment: Amendment,
         amended_work_item(ITEM, amendment)
 
 
+def test_an_amend_gives_the_complexity() -> None:
+    assert amended_work_item(ITEM, Amendment(complexity="high")).complexity == "high"
+
+
+def test_an_amend_of_another_part_keeps_the_complexity() -> None:
+    rated = replace(ITEM, complexity="low")
+    assert amended_work_item(rated, Amendment(title="another")).complexity == "low"
+
+
 def test_an_amendment_naming_no_part_is_refused() -> None:
     with pytest.raises(NoPartError, match=r"^amend rewrites no part of CH-0001: name one$"):
         amended_work_item(ITEM, Amendment())

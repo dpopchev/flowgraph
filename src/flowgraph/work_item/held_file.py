@@ -16,6 +16,7 @@ from flowgraph.item import (
     KnowledgeFile,
     TaskFile,
 )
+from flowgraph.work_item.complexity import Complexity
 from flowgraph.work_item.depends import RelationsFile
 from flowgraph.work_item.verification import Verdict
 
@@ -31,6 +32,7 @@ class ItemFile(RelationsFile, BaseModel):
     description: str = ""
     parent: str = ""
     about: list[str] = []
+    complexity: Complexity | None = None
     created: datetime
     criterion: AnyCriterionFile
     tasks: list[TaskFile] = []
@@ -48,6 +50,7 @@ class StartedItemFile(RelationsFile, BaseModel):
     description: str = ""
     parent: str = ""
     about: list[str] = []
+    complexity: Complexity | None = None
     created: datetime
     started: datetime
     criterion: AnyCriterionFile
@@ -79,6 +82,7 @@ class CompletedItemFile(RelationsFile, BaseModel):
     description: str = ""
     parent: str = ""
     about: list[str] = []
+    complexity: Complexity | None = None
     created: datetime
     started: datetime
     completed: datetime
@@ -100,6 +104,7 @@ class RemovedItemFile(RelationsFile, BaseModel):
     description: str = ""
     parent: str = ""
     about: list[str] = []
+    complexity: Complexity | None = None
     created: datetime
     removed: datetime
     reason: str = ""

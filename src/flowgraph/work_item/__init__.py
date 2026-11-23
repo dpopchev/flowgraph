@@ -16,6 +16,12 @@ from flowgraph.work_item.commands import (
     work_item_detail,
     work_item_row,
 )
+from flowgraph.work_item.complexity import (
+    COMPLEXITIES,
+    Complexity,
+    ComplexityError,
+    make_complexity,
+)
 from flowgraph.work_item.file import (
     read_task_ids,
     read_work_item,
@@ -89,10 +95,13 @@ from flowgraph.work_item.verify import JoinParent, verify_work_item, verify_work
 from flowgraph.work_item.views import DependsRow, VerifiedRow, WorkItemDetail, WorkItemRow
 
 __all__ = [
+    "COMPLEXITIES",
     "STARTED",
     "Amendment",
     "CheckMove",
     "CompletedWorkItem",
+    "Complexity",
+    "ComplexityError",
     "DependsRow",
     "FindTaskIds",
     "FindWorkItemRows",
@@ -133,6 +142,7 @@ __all__ = [
     "completed_task",
     "completed_work_item",
     "holder_of",
+    "make_complexity",
     "make_kind",
     "make_verification",
     "make_work_item",

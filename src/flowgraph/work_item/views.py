@@ -48,6 +48,7 @@ class WorkItemRow:
     commit: str = ""
     reason: str = ""
     parent: str = ""
+    complexity: str = field(default="", kw_only=True)
     created: datetime = field(kw_only=True)
     started: datetime | None = field(default=None, kw_only=True)
     completed: datetime | None = field(default=None, kw_only=True)
@@ -83,6 +84,7 @@ class WorkItemDetail:
     commit: str = ""
     reason: str = ""
     parent: str = ""
+    complexity: str = ""
     knowledge: list[KnowledgeRow] = field(default_factory=list[KnowledgeRow])
     depends_on: list[DependsRow] = field(default_factory=list[DependsRow])
     filed_during: str = ""

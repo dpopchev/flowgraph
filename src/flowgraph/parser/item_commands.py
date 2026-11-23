@@ -23,6 +23,7 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     amend.add_argument("id", metavar="ID", help="the id of the work item or of the Feature")
     amend.add_argument("--title", metavar="TEXT", help="what is true once it is completed")
     amend.add_argument("--description", metavar="TEXT", help="free text; a blank one clears it")
+    amend.add_argument("--complexity", metavar="WORD", help="low, medium or high, in Backlog alone")
     amend.add_argument(
         "--criterion",
         action="append",

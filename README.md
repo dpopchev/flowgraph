@@ -45,6 +45,7 @@ the typed edges of the whole record as JSON.
 |                                 | `--amends` the completed one it changes, `fgraph remove` |
 |                                 | `--superseded-by` the one that replaces it               |
 | the wording of a work item      | `fgraph amend` in Backlog: parent too, a Feature's too   |
+| the complexity of a work item   | `--complexity low`, `medium` or `high`, on add and amend |
 | git                             | every write of the record committed, unless turned off   |
 | the layers of a record          | `.fgraph/config.toml`: commits on, development off       |
 | the configuration               | every key shown and set by `fgraph config`               |
@@ -104,6 +105,23 @@ fgraph show S-0001          # about  lane, and the line: decision  2026-11-22  a
 fgraph show gate            # gate, with the lines: items  S-0001, knowledge  S-0001  decision  2026-11-22  a gate runs on main
 fgraph knowledge --about gate
 # 2026-11-22  decision  S-0001  a gate runs on main  (about gate, lane)
+```
+
+A Story, an Upkeep, a Bug and a Spike carry a complexity, `low`, `medium` or
+`high`, none when it is left out: `fgraph add` takes `--complexity`, and `fgraph
+amend` takes it in Backlog alone, in place of the one the item had. Every move
+carries it. `fgraph show` lists it, after the terms, only when there is one, and
+every work item of `fgraph status --format json` holds `complexity`, the word or
+`null`; the text of `fgraph status` does not change. Any other word exits 2,
+names the three and writes nothing. Which model a complexity maps to stays
+outside fgraph, with whoever hands the item to an agent:
+
+```sh
+fgraph add story "Hold the landing" --given a --when b --then c --complexity high
+fgraph amend S-0001 --complexity medium
+fgraph show S-0001          # the line: complexity  medium
+fgraph add story "Hold" --given a --when b --then c --complexity huge
+# fgraph: error: --complexity 'huge' is none of low, medium, high
 ```
 
 `fgraph about` lists every link of an item in one view, each relation under a
@@ -445,6 +463,7 @@ fgraph status --format json
 #       "items": [
 #         {
 #           "commit": null,
+#           "complexity": null,
 #           "id": "S-0001",
 #           "kind": "story",
 #           "progress": {

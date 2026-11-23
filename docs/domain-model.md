@@ -1572,6 +1572,11 @@ development too.
   confirmed. It has no default: left out, a landing runs no gate. It is a
   key of the development, so it gates nothing with the development off,
   where it is held as written.
+- `development.driver` names who drives the development, `developer` by default
+  or `agent`: the enum `Driver` (`src/flowgraph/record/layers.py`), a value of the
+  development and held as written with it off. No command reads it in S-0115;
+  S-0127 and S-0117 are its first readers, and which model a complexity maps to
+  stays outside fgraph.
 - `fgraph land` runs the gate through the shell at the top of the work tree
   of `main`, once the work of the branch is merged there, the merge held
   uncommitted, and before the landing is committed or the work item

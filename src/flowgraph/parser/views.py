@@ -1,0 +1,33 @@
+"""The views a command line asks for: knowledge, terms, graph, about and show, each its text."""
+
+import argparse
+from pathlib import Path
+
+from flowgraph.about import about_item
+from flowgraph.development.commit import OpenGit, Said
+from flowgraph.feature.item import show_any_item
+from flowgraph.graph import graph_text
+from flowgraph.knowledge.list import show_knowledge
+from flowgraph.record.store import Store
+from flowgraph.term.item import terms_text
+
+
+def view_said(args: argparse.Namespace, store: Store, cwd: Path, open_git: OpenGit) -> Said | None:
+    """Say the text of the view the arguments name; None when they name none.
+
+    The directory fgraph runs in, cwd, is where the path of fgraph about a file is taken from.
+    Raises the refusal of the view; nothing is written.
+    """
+    match args.command:
+        case "knowledge":
+            return Said(show_knowledge(args.kind, args.about, store))
+        case "terms":
+            return Said(terms_text(store))
+        case "graph":
+            return Said(graph_text(args.format, store))
+        case "about":
+            return Said(about_item(args.id, store, cwd, open_git))
+        case "show":
+            return Said(show_any_item(args.id, store))
+        case _:
+            return None

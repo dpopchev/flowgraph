@@ -7,7 +7,6 @@ command, which the command line writes as a usage error.
 import argparse
 from pathlib import Path
 
-from flowgraph.about import about_item
 from flowgraph.development import RunGate, check_slug_branched
 from flowgraph.development.commit import OpenGit, Said, commit_written
 from flowgraph.development.land import land_item
@@ -23,7 +22,6 @@ from flowgraph.feature.item import (
     complete_feature_item,
     is_feature_id,
     parent_named,
-    show_any_item,
 )
 from flowgraph.feature.next import complete_and_start_next
 from flowgraph.feature.note import note_named
@@ -32,7 +30,6 @@ from flowgraph.feature.start import (
     check_start_under_feature,
     start_feature_item,
 )
-from flowgraph.graph import graph_text
 from flowgraph.item.commands import (
     Written,
     add_item,
@@ -44,10 +41,10 @@ from flowgraph.item.moves import start_item
 from flowgraph.item.verify import verify_item, verify_item_no
 from flowgraph.knowledge import DECISION, DEVIATION, FINDING
 from flowgraph.knowledge.governed import governs_asked
-from flowgraph.knowledge.list import show_knowledge
 from flowgraph.parent import parent_asked
 from flowgraph.parser.item_commands import TOP
 from flowgraph.parser.stated import criterion_added, decision_given
+from flowgraph.parser.views import view_said
 from flowgraph.record import CONFIG, Config, Now
 from flowgraph.record.setting import set_setting, show_config, unset_setting
 from flowgraph.record.store import Store
@@ -61,7 +58,7 @@ from flowgraph.status import status_output
 from flowgraph.status.next import start_limit
 from flowgraph.status.terminal import Width
 from flowgraph.term.about import about_asked
-from flowgraph.term.item import add_term_item, relate_term_item, terms_text
+from flowgraph.term.item import add_term_item, relate_term_item
 from flowgraph.work_item import (
     Amendment,
     Complexity,
@@ -231,20 +228,10 @@ def command_said(
             )
         case "release":
             return release_trunk(args.version, store, record, open_git, config)
-        case "knowledge":
-            return Said(show_knowledge(args.kind, args.about, store))
-        case "terms":
-            return Said(terms_text(store))
-        case "graph":
-            return Said(graph_text(args.format, store))
-        case "about":
-            return Said(about_item(args.id, store, cwd, open_git))
-        case "show":
-            return Said(show_any_item(args.id, store))
         case "status":
             limit = start_limit(config.development)
             return Said(
                 status_output(store, None if args.all else TOP, args.format, width(), limit)
             )
         case _:
-            return None
+            return view_said(args, store, cwd, open_git)

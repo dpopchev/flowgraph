@@ -104,7 +104,7 @@ def _feature_lines(feature: FeatureRow) -> str:
     is one whose started work item holds a blocked Task, with what the first such Task says, as
     the line of that Task does: read from the rows at each listing, and kept nowhere. The block
     of the Feature itself comes before that of a Task. A removed one is listed as a removed work
-    item is, its reason ending the line, without the progress: it holds no work item any more.
+    item is, its reason ending the line, without the progress: its work items have no line.
     """
     if feature.reason:
         return f"  {feature.id}  {feature.title}  -- {feature.reason}\n"

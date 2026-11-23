@@ -195,7 +195,7 @@ def status_rows(store: Store, limit: StartLimit = NEXT_ONLY) -> list[WorkItemRow
     completed first, a Feature by its last work item to reach it, a completed one by its own
     completed time; Removed by kind and number, a work item of a Feature too, then the removed
     Features by number. A removed Feature is listed in place of its work items as any other:
-    they were removed with it, or before it, and are on no line. A work item under a Feature
+    they are on no line: removed with it or before, or completed. A work item under a Feature
     the record does not hold, as a file edited by hand names, is listed as one standing alone,
     since no line of a Feature lists it.
     """

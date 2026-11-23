@@ -39,12 +39,13 @@ commit = "6b8996f4f786b3808d9517a2e16d5da3a1ac8dc6"
 
 [[tasks]]
 id = "T-0400"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say the key development.driver names who drives the development"
 description = "Find the passages by grep, not by line number: the config show blocks and the table of keys in README.md; in docs/domain-model.md, the bullets starting [development] gate and [delivery] tag. The spec bullet says that S-0127 and S-0117 read the key, and that which model a complexity maps to stays outside fgraph. Do not touch the feature table at the top of README.md or the status and help passages, and do not correct the passages that say no unset is built or that five keys are built: they are filed as a Bug of their own."
 check = "grep -q development.driver README.md && grep -q development.driver docs/domain-model.md"
 expected_output = "changed: README.md, in its configuration passage, lists development.driver in both config show examples and in the table of keys, and has a paragraph saying it names a developer or an agent, that it is developer by default, that it is held as written with the development off, and that a record leaving it out works as before. docs/domain-model.md, Persistence, adds a bullet on development.driver beside the keys of the development (Driver, src/flowgraph/record/layers.py)"
 created = 2026-11-23 09:11:05+00:00
+started = 2026-11-23 09:20:57+00:00
 
 [[knowledge]]
 kind = "decision"

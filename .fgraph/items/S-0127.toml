@@ -54,12 +54,13 @@ commit = "d640659ef3512e46853206670b17cf7859a80f85"
 
 [[tasks]]
 id = "T-0414"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say an item of the Backlog is marked and started, with the development on, only once planned"
 description = "Find the passages by grep, not by line number. In README.md: the paragraph starting fgraph status marks with, and the list after The start of a Feature exits 2. In docs/domain-model.md: the bullet starting fgraph status marks every work item, the bullet The start of a Feature is refused, and A next work item that cannot start. Keep each edit inside its paragraph. Do not touch the table at the top of README.md, the command and help passages, or the bullet on development.driver: S-0117 edits around them, and the complexity under the driver is S-0129."
 check = "grep -q F-0001.cannot.start:.S-0002.has.no.Task README.md && grep -q F-0001.cannot.start:.S-0002.has.no.Task docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, Order: the bullet on what fgraph status marks gains the planned rule and that with the development off the Tasks are not read. Persistence: the refusals of the start of a Feature gain F-0001 cannot start: S-0002 has no Task to start with, with the development on, and the bullet on a next work item that cannot start says one added after the start with no Task waits. README.md: the paragraph on what status marks gains the rule, and the list of refusals of the start of a Feature gains the same line"
 created = 2026-11-23 10:14:55+00:00
+started = 2026-11-23 10:24:53+00:00
 
 [[knowledge]]
 kind = "decision"

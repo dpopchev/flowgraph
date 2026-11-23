@@ -43,3 +43,8 @@ created = 2026-11-22 21:02:26+00:00
 started = 2026-11-23 00:13:35+00:00
 completed = 2026-11-23 00:16:02+00:00
 commit = "93599fa"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: yes -- at 09e3c08 on main, on a scratch record with a Story holding a Task in Backlog, a blocked one, a started one and a completed one, fgraph graph exit 0 printed each Task node with its bucket and its state -- Backlog backlog, InProgress blocked, InProgress started, Completed completed -- the same bytes on two runs, the node of the Story as it was; on the record of flowgraph none of 370 Task nodes holds bucket null; make check on main at fb00c4b: 2783 passed, all checks passed"
+noted = 2026-11-23 00:18:51+00:00

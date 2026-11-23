@@ -1,0 +1,11 @@
+id = "S-0124"
+state = "backlog"
+title = "Cut the term names fgraph add term takes that read as an id, as f15 or s3, from every one to none"
+description = "From the plan of S-0118, on the go of the developer of 2026-11-23: once f15 is read as F-0015, a term named f15 or s3 is shadowed by the id in fgraph show and fgraph about. The plan found that make_term also runs when the files of the terms are read (src/flowgraph/term/model.py), so widening the pattern there alone would refuse a record that holds one. Its Tasks are written when it is ordered."
+created = 2026-11-23 07:16:38+00:00
+filed_during = "S-0118"
+
+[criterion]
+given = "a record of fgraph"
+when = "fgraph add term f15 is run with its meaning"
+then = "it exits 2 saying the name reads as the id F-0015, and a record that holds such a term already is read as before"

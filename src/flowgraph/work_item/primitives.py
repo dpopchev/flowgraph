@@ -86,6 +86,7 @@ def item_primitives(item: WorkItemState) -> dict[str, object]:
     lines = [knowledge_primitives(line) for line in item.knowledge]
     knowledge = {"knowledge": lines} if lines else {}
     about = {"about": list(item.about)} if item.about else {}
+    rated = {"complexity": item.complexity} if item.complexity else {}
     return {
         "id": work_item_id_text(item.id),
         "state": state_name(item),
@@ -93,6 +94,7 @@ def item_primitives(item: WorkItemState) -> dict[str, object]:
         **described,
         **under,
         **about,
+        **rated,
         "created": item.created,
         **_moves_primitives(item),
         "criterion": criterion_primitives(item.criterion),
@@ -132,7 +134,14 @@ def item_held(held: HeldItemFile, kind: Kind, kinds: Sequence[Kind] = ()) -> Wor
     parent = parent_written(held.parent)
     about = tuple(held.about)
     item = make_work_item(
-        item_id, held.title, criterion, held.description, held.created, parent, about=about
+        item_id,
+        held.title,
+        criterion,
+        held.description,
+        held.created,
+        parent,
+        about=about,
+        complexity=held.complexity,
     )
     for task in held.tasks:
         item = append_task(item, backlog_task(task))

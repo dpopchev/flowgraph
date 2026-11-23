@@ -28,6 +28,7 @@ from flowgraph.task import (
     Task,
     TaskState,
 )
+from flowgraph.work_item.complexity import Complexity
 from flowgraph.work_item.id import WorkItemId, work_item_id_text
 from flowgraph.work_item.verification import Verification
 from flowgraph.work_item.views import WorkItemRow
@@ -47,6 +48,7 @@ class WorkItem:
     created: datetime
     tasks: tuple[Task, ...]
     parent: Parent = STANDALONE
+    complexity: Complexity | None = None
     knowledge: tuple[KnowledgeLine, ...] = ()
     relations: Relations[WorkItemId] = NO_RELATIONS
     about: tuple[str, ...] = ()
@@ -64,6 +66,7 @@ class StartedWorkItem:
     started: datetime
     tasks: tuple[TaskState, ...]
     parent: Parent = STANDALONE
+    complexity: Complexity | None = None
     knowledge: tuple[KnowledgeLine, ...] = ()
     relations: Relations[WorkItemId] = NO_RELATIONS
     about: tuple[str, ...] = ()
@@ -86,6 +89,7 @@ class CompletedWorkItem:
     commit: Evidence
     tasks: tuple[CompletedTask, ...]
     parent: Parent = STANDALONE
+    complexity: Complexity | None = None
     knowledge: tuple[KnowledgeLine, ...] = ()
     relations: Relations[WorkItemId] = NO_RELATIONS
     about: tuple[str, ...] = ()
@@ -108,6 +112,7 @@ class RemovedWorkItem:
     reason: str
     tasks: tuple[Task, ...]
     parent: Parent = STANDALONE
+    complexity: Complexity | None = None
     knowledge: tuple[KnowledgeLine, ...] = ()
     relations: Relations[WorkItemId] = NO_RELATIONS
     superseded_by: WorkItemId | None = None
@@ -171,11 +176,12 @@ def make_work_item(
     filed_during: WorkItemId | None = None,
     amends: WorkItemId | None = None,
     about: tuple[str, ...] = (),
+    complexity: Complexity | None = None,
 ) -> WorkItem:
     """A work item in Backlog, its created time kept to the second; it stands alone unless a
     Feature is named as its parent, depends on the work items given, is filed during the one given
     and amends the one given, none by default. It is about the terms given, in order, none by
-    default.
+    default, and carries the complexity given, none by default.
 
     Raises EmptyPartError when the title is blank, CriterionError when the criterion is not of
     the form the kind of the item takes and RelationError when it names itself.
@@ -188,7 +194,17 @@ def make_work_item(
     titled = said("title", title)
     relations = make_relations(item_id, depends_on, filed_during, amends)
     return WorkItem(
-        item_id, titled, criterion, description, to_the_second, (), parent, (), relations, about
+        item_id,
+        titled,
+        criterion,
+        description,
+        to_the_second,
+        (),
+        parent,
+        complexity,
+        (),
+        relations,
+        about,
     )
 
 

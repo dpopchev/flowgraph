@@ -54,6 +54,7 @@ def removed_work_item(
                 _reason_kept(reason, superseded_by),
                 item.tasks,
                 item.parent,
+                item.complexity,
                 item.knowledge,
                 item.relations,
                 _superseded_by_kept(item.id, superseded_by),

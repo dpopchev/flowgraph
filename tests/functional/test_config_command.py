@@ -88,7 +88,8 @@ def test_show_lists_every_key_at_its_default_on_a_record_without_a_config_file(
         "development.parallel = none\n"
         'development.merge = "merge-commit"\n'
         "development.gate = none\n"
-        "delivery.push = false\n",
+        "delivery.push = false\n"
+        'delivery.tag = "none"\n',
         "",
     )
 
@@ -135,7 +136,7 @@ class TestTheGateTakenBackWithConfigUnset:
 
 def test_the_push_of_a_landing_set_is_listed_by_show_as_true(project: Path) -> None:
     fgraph(["config", "set", "delivery.push", "true"], project)
-    assert fgraph(SHOW, project).out.splitlines()[-1] == "delivery.push = true"
+    assert "delivery.push = true" in fgraph(SHOW, project).out.splitlines()
 
 
 def test_the_push_of_a_landing_unset_is_back_to_false_with_no_delivery_table(

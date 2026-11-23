@@ -10,7 +10,7 @@ pytestmark = pytest.mark.view
 EVERY_KEY = (
     "[git]\ncommit = true\n"
     '[development]\nenabled = true\nparallel = 2\nmerge = "squash"\ngate = "make check"\n'
-    "[delivery]\npush = true\n"
+    '[delivery]\npush = true\ntag = "feature-close"\n'
 )
 # The line of the gate among the keys listed.
 GATE_LINE = 4
@@ -24,6 +24,7 @@ def test_a_configuration_without_a_key_written_lists_every_key_at_its_default() 
         'development.merge = "merge-commit"\n'
         "development.gate = none\n"
         "delivery.push = false\n"
+        'delivery.tag = "none"\n'
     )
 
 
@@ -35,6 +36,7 @@ def test_a_configuration_with_every_key_written_lists_each_as_the_file_writes_it
         'development.merge = "squash"\n'
         'development.gate = "make check"\n'
         "delivery.push = true\n"
+        'delivery.tag = "feature-close"\n'
     )
 
 

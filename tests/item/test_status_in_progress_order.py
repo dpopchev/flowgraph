@@ -1,5 +1,6 @@
 """The InProgress of status: the last started first, by kind and number when at one time."""
 
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from typing import Never
 
@@ -9,7 +10,7 @@ from flowgraph.item.commands import Store, status_item
 from flowgraph.record.queue import make_queue
 from flowgraph.story import STORY
 from flowgraph.upkeep import UPKEEP
-from flowgraph.work_item import WorkItemRow
+from flowgraph.work_item import Kind, WorkItemRow
 
 pytestmark = pytest.mark.view
 
@@ -31,10 +32,10 @@ def never(*_: object) -> Never:
     raise AssertionError("status reads the rows and the queue only")
 
 
-def store() -> Store:
-    """The store of a record holding ROWS and no queue."""
+def store(rows: Mapping[Kind, list[WorkItemRow]] = ROWS) -> Store:
+    """The store of a record holding those rows, ROWS by default, and no queue."""
     return Store(
-        find_work_item_rows=lambda kind: ROWS.get(kind, []),
+        find_work_item_rows=lambda kind: rows.get(kind, []),
         load_work_item=never,
         find_work_item_detail=never,
         find_task_ids=never,
@@ -50,6 +51,29 @@ def test_in_progress_is_listed_the_last_started_first() -> None:
     assert status_item(store()).splitlines()[2:6:2] == [
         "  S-0002  0/0 T  a last story",
         "  S-0001  0/0 T  a story",
+    ]
+
+
+def test_a_blocked_work_item_keeps_the_place_of_its_started_time_and_is_listed_once() -> None:
+    held = WorkItemRow(
+        "S-0002",
+        "a blocked story",
+        "blocked",
+        created=CREATED,
+        started=LATE,
+        block_reason="no key",
+        waiting_on="developer",
+    )
+    rows = {
+        STORY: [WorkItemRow("S-0001", "a story", "started", created=CREATED, started=EARLY), held],
+        UPKEEP: [WorkItemRow("U-0001", "an upkeep", "started", created=CREATED, started=EARLY)],
+    }
+    assert status_item(store(rows)).splitlines()[1:] == [
+        "InProgress (3)",
+        "! S-0002  0/0 T  a blocked story  -- waiting on developer: no key",
+        "  S-0001  0/0 T  a story",
+        "  U-0001  0/0 T  an upkeep",
+        "Completed (0)",
     ]
 
 

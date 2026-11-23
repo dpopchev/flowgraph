@@ -86,7 +86,6 @@ class TestAStartedStoryBlocked:
     def test_block_names_the_story(self, blocked: Outcome) -> None:
         assert blocked.out == "blocked S-0001\n"
 
-    @RED
     def test_status_lists_it_under_inprogress_with_the_mark_and_what_it_waits_on(
         self, blocked: Outcome, tmp_path: Path
     ) -> None:
@@ -121,7 +120,6 @@ class TestAStartedStoryBlocked:
             {"reason": "no key", "waiting_on": "developer"},
         )
 
-    @RED
     def test_its_started_task_is_listed_right_under_it(self, tmp_path: Path) -> None:
         runs(tmp_path, *STARTED, START_TASK, BLOCK)
         assert fgraph(["status"], tmp_path, LATER).out.splitlines()[2:4] == [
@@ -186,7 +184,6 @@ def test_a_work_item_of_another_kind_is_blocked(added: list[str], id_: str, tmp_
     assert blocked.out == f"blocked {id_}\n"
 
 
-@RED
 def test_a_feature_is_marked_by_its_blocked_story(tmp_path: Path) -> None:
     runs(
         tmp_path,

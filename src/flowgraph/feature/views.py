@@ -31,7 +31,7 @@ REMOVED = "removed"
 DONE = frozenset({COMPLETED, REMOVED})
 
 # The states of a work item that say work on it has begun.
-BEGUN = frozenset({"started", COMPLETED})
+BEGUN = frozenset({"started", "blocked", COMPLETED})
 
 
 @dataclass

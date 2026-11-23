@@ -12,7 +12,7 @@ from flowgraph.status.review import ready_for_review, review_ids
 from flowgraph.story import StoryRow
 from flowgraph.task import TaskRow
 from flowgraph.upkeep import UpkeepRow
-from flowgraph.work_item import STARTED, WorkItemRow
+from flowgraph.work_item import IN_PROGRESS, STARTED, WorkItemRow
 
 # The buckets of the flow in their order, each with the states of an item shown in it.
 BUCKETS: Sequence[tuple[str, Collection[str]]] = (
@@ -101,9 +101,10 @@ def _feature_lines(feature: FeatureRow) -> str:
     after the progress every line of a Feature holds right after its id. Under it each started
     work item of it, written as one of a bucket is with its Tasks being worked, two columns
     further in. A blocked one is marked `!` before its id and ends with what it waits on and why. So
-    is one whose started work item holds a blocked Task, with what the first such Task says, as
-    the line of that Task does: read from the rows at each listing, and kept nowhere. The block
-    of the Feature itself comes before that of a Task. A removed one is listed as a removed work
+    is one whose work item is blocked or holds a blocked Task, with what the first such says, as
+    the line of it does: read from the rows at each listing, and kept nowhere. The block of the
+    Feature itself comes first, then that of a work item, then that of a Task. A removed one is
+    listed as a removed work
     item is, its reason ending the line, without the progress: its work items have no line.
     """
     if feature.reason:
@@ -149,12 +150,19 @@ def _block_text(waiting_on: str, reason: str) -> str:
 
 
 def _waited_on(rows: Iterable[StoryRow | UpkeepRow]) -> tuple[str, str]:
-    """What the first blocked Task of the work items waits on and why; empty when none is."""
+    """What the first block of the work items waits on and why; empty when none is blocked.
+
+    Per work item in the order given, its own block comes first, then that of its first blocked
+    Task.
+    """
     blocked = (
-        (task.waiting_on, task.reason)
+        block
         for row in rows
-        for task in row.tasks
-        if task.state == BLOCKED
+        for block in (
+            (row.waiting_on, row.block_reason),
+            *((task.waiting_on, task.reason) for task in row.tasks if task.state == BLOCKED),
+        )
+        if block[0]
     )
     return next(blocked, ("", ""))
 
@@ -178,18 +186,22 @@ def _top_of(items: Sequence[str], top: int | None, pinned: Collection[int] = ())
 def _status_line(row: StoryRow | UpkeepRow) -> str:
     """One item of a bucket: its id and title, with its commit or the reason it was removed.
 
-    A started one is marked `?` before its id when it is ready for review. It is listed with
+    A started one is marked `?` before its id when it is ready for review; a blocked one `!`,
+    ending with what it waits on and why, as a blocked Task. Each is listed with
     its Tasks completed of all, between its id and its title, then
     the agent it is handed to in brackets, if any, and under it each Task of it being worked on a
     line of its own, in the order written. A completed one holds a commit or not: one it holds
     stands before the title, so a line cut to a width keeps it; a reason ends the line.
     """
-    if row.state == STARTED:
+    if row.state in IN_PROGRESS:
         completed = sum(task.state == COMPLETED for task in row.tasks)
         worked = "".join(_task_line(task) for task in row.tasks)
         handed = f"[{row.agent}]  " if row.agent else ""
+        line = f"{row.id}  {completed}/{len(row.tasks)} T  {handed}{row.title}"
+        if row.waiting_on:
+            return f"{_marked(line, (row.waiting_on, row.block_reason))}\n{worked}"
         mark = "? " if ready_for_review(row) else "  "
-        return f"{mark}{row.id}  {completed}/{len(row.tasks)} T  {handed}{row.title}\n{worked}"
+        return f"{mark}{line}\n{worked}"
     if row.commit:
         return f"  {row.id}  {row.commit}  {row.title}\n"
     why = ", ".join(

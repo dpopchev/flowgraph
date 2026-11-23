@@ -42,6 +42,10 @@ def test_the_row_of_a_feature_without_a_work_item_is_in_backlog() -> None:
     assert feature_row(FEATURE, []).bucket == "Backlog"
 
 
+def test_the_row_of_a_feature_never_started_over_a_blocked_work_item_is_in_progress() -> None:
+    assert feature_row(FEATURE, ["blocked", "backlog"]).bucket == "InProgress"
+
+
 @pytest.mark.parametrize(
     "states",
     [

@@ -169,6 +169,26 @@ def test_a_started_feature_is_listed_under_in_progress_though_no_work_item_of_it
     )
 
 
+def test_a_blocked_work_item_of_a_started_feature_is_listed_under_it() -> None:
+    held = WorkItemRow(
+        "S-0001",
+        "title 1",
+        "blocked",
+        parent="F-0001",
+        created=DAY[1],
+        started=DAY[2],
+        block_reason="no key",
+        waiting_on="developer",
+    )
+    assert status_item(store([held], [started_feature(feature(1), DAY[2])])) == (
+        "Backlog (0)\n"
+        "InProgress (1)\n"
+        "! F-0001  0/1 W  feature 1  -- waiting on developer: no key\n"
+        "  ! S-0001  0/0 T  title 1  -- waiting on developer: no key\n"
+        "Completed (0)\n"
+    )
+
+
 def test_a_feature_added_at_the_time_of_a_work_item_is_listed_after_it() -> None:
     assert status_item(store([story(1, "backlog")], [feature(1)])).splitlines()[1:3] == [
         "> S-0001  title 1",

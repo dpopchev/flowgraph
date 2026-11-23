@@ -1,7 +1,7 @@
 id = "S-0127"
 state = "backlog"
-title = "Cut the work items fgraph status lists as able to start now that hold no Task from every one to none"
-description = "Filed on the go of the developer of 2026-11-23, from the plan of the Story it depends on. Its Tasks are written when it is ordered. The next to start has never read the Tasks, and fgraph start refuses a work item with none: S-0001 has no Task to start with. Open: whether the line of such a work item says it waits for its Tasks, so a coordinator sees what to plan next."
+title = "Cut the items of the Backlog fgraph pulls or lists as able to start before they are planned from every one to none: a work item holds a Task, a Feature holds work items that each hold one"
+description = "The rule of the developer of 2026-11-23: an item of the Backlog can be pulled when it is planned -- a Feature has work items, a work item has Tasks, so the work items of a Feature have their Tasks already. It widens the Story filed that day from the plan of S-0110, which named the work item with no Task alone. Today: fgraph start refuses a work item with no Task and a Feature with no work item in Backlog or whose first work item has no Task; a Feature whose later work items hold none starts; and the list of fgraph status reads no Task -- on 2026-11-23 it marked S-0114, S-0115 and S-0116, none with a Task. Open: whether, with the development driven by an agent (S-0115), planned also means its complexity is set, which amend takes in Backlog alone; whether the line of an item not planned says what it lacks; whether a work item added to a Feature already started, with no Task, is refused or waits; and that Tasks written for every work item before the first starts age as the earlier ones land -- the Tasks of S-0113 named lines and modules S-0112 had moved. Its Tasks are written when it is ordered."
 parent = "F-0016"
 created = 2026-11-23 08:08:24+00:00
 depends_on = [
@@ -9,6 +9,6 @@ depends_on = [
 ]
 
 [criterion]
-given = "a record with the development on and two work items in Backlog that wait for nothing, the first with no Task and the second with one"
-when = "fgraph status is run, as text and as JSON"
-then = "it marks the second as able to start now and not the first, which fgraph start would refuse for its Task"
+given = "a record with a work item in Backlog that holds no Task, a Feature that holds no work item, a Feature whose second work item holds no Task, and a work item and a Feature planned whole, none waiting for another"
+when = "fgraph status is run, as text and as JSON, and fgraph start of each is run"
+then = "status marks the two planned whole as able to start and no other, and fgraph start refuses each of the three others naming what it lacks"

@@ -1723,8 +1723,9 @@ the record, or one completed or removed. A work item added alone is put
 under a Feature later, by the same rule, and one under a Feature taken out
 while that one is in Backlog, with `fgraph amend --parent` (below). The
 wording of a Feature in Backlog is rewritten with
-`fgraph amend` too, and a Feature in Backlog is removed with `fgraph remove`,
-its work items with it (below). A Feature is kept as `items/F-0001.toml`.
+`fgraph amend` too, and a Feature in Backlog, or a started or blocked Feature
+once no work item of it is started, is removed with `fgraph remove`, its work
+items in Backlog with it (below). A Feature is kept as `items/F-0001.toml`.
 
 `fgraph status` lists a Feature inside its bucket, as one line in place of
 its work items: its id, its progress and its title. Here a Story that stands
@@ -1949,7 +1950,8 @@ started too: that Feature stays under InProgress, `F-0001  1/1 W  <title>`. A
 removed work item holds nothing back and is counted in neither number.
 `fgraph complete F-0001` then completes it, now, at the commit of its last
 completed work item, none when none is, committed as `chore: complete F-0001
-in the record`:
+in the record`. `fgraph remove F-0001` is the way out of a started or blocked Feature
+whose criteria were not met (below), as `fgraph complete F-0001` is of one whose were:
 
 ```sh
 fgraph complete F-0001
@@ -2518,11 +2520,14 @@ alone, and is refused `--superseded-by`.
 A Feature still in Backlog is removed the same way, `fgraph remove` with its
 id and the reason, and its work items are removed with it, each for the same
 reason: a Feature is to its work items what a work item is to its Tasks, and
-a removed work item keeps its Tasks. Nothing is deleted. `fgraph status`
-lists the Feature under Removed with its reason, after the removed work
-items, and its work items on no line of their own; `fgraph show` of it lists
-its bucket, its reason and its work items. Here F-0001 holds S-0001 and
-S-0004, both in Backlog:
+a removed work item keeps its Tasks. A started or blocked Feature is removed
+the same way once no work item of it is started: its started time and its
+block are dropped, a work item of it in Backlog is removed with it for the
+same reason, and a completed one stays as it is, still Completed under it.
+Nothing is deleted. `fgraph status` lists the Feature under Removed with its
+reason, after the removed work items, and its work items on no line of their
+own; `fgraph show` of it lists its bucket, its reason and its work items,
+each in its own state. Here F-0001 holds S-0001 and S-0004, both in Backlog:
 
 ```sh
 fgraph remove F-0001 --reason "dropped from the plan"
@@ -2548,30 +2553,31 @@ fgraph show F-0001
 #   S-0004  Raise the Stories fgraph lists under InProgress from 0 to 1  Removed
 ```
 
-The line of a removed Feature holds no progress: it holds no work item any
-more. The Feature and its work items are one write and one commit of the
+The line of a removed Feature holds no progress: its reason stands in its
+place. The Feature and its work items are one write and one commit of the
 record, `chore: remove F-0001 in the record`. A work item of it that was
-removed before stays as it was, with the reason it had, and is listed on no
-line of its own either once its Feature is removed. A work item removed
+removed before stays as it was, with the reason it had, and a completed one
+stays Completed; neither is listed on a line of its own once its Feature is
+removed. A work item removed
 under a Feature that is not removed keeps its line under Removed.
 
 A remove of a Feature exits 2 and names why, with nothing written:
 
 - when the reason is blank;
-- when the Feature is started, blocked, completed or removed already: only
-  one in Backlog is removed, as only a work item in Backlog is;
-- when a work item of it is started or completed, as under a Feature whose
-  work items were started before a Feature had a state: its work items are
-  all in Backlog, or removed already;
+- when the Feature is completed or removed already: a started or blocked
+  Feature is removed as one in Backlog is;
+- when a work item of it is started, naming the first such one, or completed
+  under a Feature never started, as under a Feature whose work items were
+  started before a Feature had a state;
 - when the record does not hold it;
 - in the worktree of a work item, whose branch writes that work item alone.
 
 ```sh
 fgraph remove F-0001 --reason "dropped from the plan"
-# fgraph: error: F-0001 is started already
+# fgraph: error: F-0001 cannot be removed: S-0001 is started already
 
 fgraph remove F-0001 --reason "dropped from the plan"
-# fgraph: error: F-0001 cannot be removed: S-0001 is completed already
+# fgraph: error: F-0001 is completed already
 ```
 
 A removed Feature takes no move, no amend and no work item, added under it

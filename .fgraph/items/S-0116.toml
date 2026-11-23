@@ -1,0 +1,15 @@
+id = "S-0116"
+state = "backlog"
+title = "Raise the parts of a work item one command prints as the brief of an agent from none to every one it works from"
+description = "Filed on the plan the developer agreed on 2026-11-23. Its Tasks are written when it is ordered. It is the input a coordinator hands a subagent with the whole work item; the name of the command is the Task's."
+parent = "F-0016"
+created = 2026-11-23 07:02:19+00:00
+depends_on = [
+    "S-0112",
+    "S-0113",
+]
+
+[criterion]
+given = "a started work item under a Feature, with Tasks that hold checks, a work item it depends on, a term it is about and a knowledge line that governs a file"
+when = "the brief of the work item is printed with one command, as text and as JSON"
+then = "it prints its criterion, its Tasks with their outputs and checks, its worktree and its branch, its Feature, what it waits for, its complexity, its agent, and the knowledge lines and the terms about it"

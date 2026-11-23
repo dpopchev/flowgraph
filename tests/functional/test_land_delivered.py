@@ -49,7 +49,6 @@ IDENTITY = {
     "GIT_COMMITTER_NAME": "a developer",
     "GIT_COMMITTER_EMAIL": "developer@example.com",
 }
-RED = pytest.mark.xfail(strict=True, reason="S-0123: a landing tags before it completes")
 
 
 @dataclass(frozen=True)
@@ -147,7 +146,6 @@ def tag_by_hand(checkout: Path) -> None:
     git(checkout, "tag", "--annotate", "--message", "release v0.1.0", "v0.1.0", "main")
 
 
-@RED
 class TestAStoryThatStandsAloneLanded:
     @pytest.fixture
     def checkout(self, tmp_path: Path, origin: Path) -> Path:
@@ -190,7 +188,6 @@ class TestAStoryThatStandsAloneLanded:
         )
 
 
-@RED
 @pytest.mark.parametrize(
     ("added", "argv", "expected"),
     [(ALONE, LAND, "v0.2.0"), (AN_UPKEEP, LAND_UPKEEP, "v0.1.1")],
@@ -209,7 +206,6 @@ def test_the_version_follows_the_kind_of_the_work_item(
     assert git(checkout, "tag", "--list", "--points-at", "main~1") == expected
 
 
-@RED
 def test_a_story_under_a_feature_that_is_not_its_last_tags_nothing(
     tmp_path: Path, origin: Path
 ) -> None:
@@ -218,7 +214,6 @@ def test_a_story_under_a_feature_that_is_not_its_last_tags_nothing(
     assert (landed.status, git(checkout, "tag", "--list")) == (0, "")
 
 
-@RED
 def test_the_last_story_of_a_feature_is_tagged_at_its_close(tmp_path: Path, origin: Path) -> None:
     checkout = ready(tmp_path, origin, CLOSE, ONE_STORY)
     fgraph(LAND, checkout)

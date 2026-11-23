@@ -18,7 +18,8 @@ that completes the work item. A first push that fails leaves the work item start
 and `fgraph land` run again takes it up; a last push that fails leaves the landing as it is,
 since history is never undone. `[delivery] tag` at feature-close tags main between the two, after
 the first push and before anything of the record is written, when the landing completes a
-Feature: the tag of the landing (`flowgraph.development.release`), on the commit of the merge,
+Feature, and at close a work item that stands alone too: the tag of the landing
+(`flowgraph.development.release`), on the commit of the merge,
 pushed under `[delivery] push`. A tag or its push that fails leaves the work item started and
 merged, as the first push does, and `fgraph land` run again takes it up.
 """
@@ -35,19 +36,19 @@ from flowgraph.development.branch import MAIN
 from flowgraph.development.commit import OpenGit, Said, WorkTree, branch_started, commit_written
 from flowgraph.development.gate import RunGate, check_gate
 from flowgraph.development.git import GitError
-from flowgraph.development.release import release_landing
+from flowgraph.development.release import release_landing, tags_landing
 from flowgraph.development.way import Check, LandError, make_way, merged_by, removed_by
 from flowgraph.feature import CompletedFeature
 from flowgraph.feature.complete import completed_with
 from flowgraph.feature.next import complete_and_start_next
 from flowgraph.item.commands import ToBranch, parse_work_item_id_of_any_kind
+from flowgraph.parent import Standalone
 from flowgraph.record import (
     DEVELOPMENT_ENABLED,
     GIT_COMMIT,
     Config,
     Now,
 )
-from flowgraph.record.layers import TagAt
 from flowgraph.record.store import Store
 from flowgraph.work_item import WorkItemId, work_item_id_text
 
@@ -99,11 +100,12 @@ def _tag_at_merge(
 ) -> str:
     """The lines of the tag a landing makes once merged, before the write that completes.
 
-    Under `delivery.tag` feature-close it tags main when the completion will complete a Feature;
-    nothing else is tagged, and no line is said.
+    What it tags is `tags_landing`: under `delivery.tag` feature-close the completion that will
+    complete a Feature, under close a work item standing alone too; no line is said otherwise.
     """
     closes = _completed_feature(item_id, decision, landing) is not None
-    if config.delivery.tag is not TagAt.FEATURE_CLOSE or not closes:
+    alone = isinstance(landing.store.load_work_item(item_id).parent, Standalone)
+    if not tags_landing(config.delivery.tag, alone, closes):
         return ""
     tag = partial(release_landing, item_id.kind, sha, landing.store, landing.work_tree.release)
     return delivery.tagged_at_merge(work_item_id_text(item_id), sha, partial(tag, config))
@@ -161,10 +163,11 @@ def land_item(
     started and merged, and says so; `fgraph land` run again takes it up at the commit main is on.
     Main is pushed again as the last step, to carry the write that completes the work item: that
     push refused leaves the landing whole and says main is not pushed. With the tag of the
-    delivery at feature-close, a landing that completes a Feature tags main between the two
-    pushes, before anything of the record is written, the tag pushed under the push of the
-    delivery: a tag or its push refused leaves the work item started and merged, as the first
-    push does, and says so; a push of main refused makes no tag.
+    delivery at feature-close, a landing that completes a Feature tags main, and at close one
+    of a work item that stands alone does too, between the two pushes, before anything of the
+    record is written, the tag pushed under the push of the delivery: a tag or its push refused
+    leaves the work item started and merged, as the first push does, and says so; a push of
+    main refused makes no tag.
     """
     item_id = parse_work_item_id_of_any_kind(item)
     text = work_item_id_text(item_id)

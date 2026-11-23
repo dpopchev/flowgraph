@@ -42,6 +42,7 @@ ENABLED = "[development]\nenabled = true\n"
 FEATURE_CLOSE = '[delivery]\ntag = "feature-close"\n'
 TAGGED = make_config(f"{ENABLED}{FEATURE_CLOSE}")
 TAGGED_AND_PUSHED = make_config(f"{ENABLED}{FEATURE_CLOSE}push = true\n")
+CLOSE = make_config(f'{ENABLED}[delivery]\ntag = "close"\n')
 UNTAGGED = make_config(f'{ENABLED}[delivery]\ntag = "none"\n')
 TOP = Path("/src/project")
 RECORD = TOP / ".fgraph"
@@ -215,6 +216,24 @@ def test_a_landing_tags_nothing_unless_it_completes_a_feature_under_feature_clos
     steps: list[object] = []
     land(work_tree(steps), config, parent)
     assert TAG_MADE not in steps
+
+
+def test_a_work_item_standing_alone_landed_under_close_makes_the_tag() -> None:
+    steps: list[object] = []
+    land(work_tree(steps), CLOSE, STANDALONE)
+    assert TAG_MADE in steps
+
+
+def test_a_work_item_standing_alone_landed_under_close_says_the_tag() -> None:
+    assert land(work_tree([]), CLOSE, STANDALONE) == Said(
+        f"landed S-0001 at {MERGE}\ntagged v0.1.0 at {HEAD}\n"
+    )
+
+
+def test_a_landing_that_completes_a_feature_under_close_makes_the_tag_too() -> None:
+    steps: list[object] = []
+    land(work_tree(steps), CLOSE)
+    assert TAG_MADE in steps
 
 
 def test_a_tag_git_refuses_says_the_work_item_is_merged_and_not_completed() -> None:

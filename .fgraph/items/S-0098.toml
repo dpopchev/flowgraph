@@ -3,7 +3,13 @@ state = "backlog"
 title = "Cut the branches older than development.branch_max that fgraph lists with no word of it from every one to none"
 description = "Open: the note names the key alone; whether an old branch is said or a move of it is refused. Its Tasks are written when it is ordered."
 parent = "F-0012"
+complexity = "medium"
 created = 2026-11-22 21:03:45+00:00
+depends_on = [
+    "B-0026",
+    "S-0096",
+    "S-0141",
+]
 
 [criterion]
 given = "development.branch_max set to 1d and a work item started two days ago"

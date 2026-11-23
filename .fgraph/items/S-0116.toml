@@ -31,12 +31,13 @@ commit = "775f1f07d19eeb6c12a69643a178de7aa61b792b"
 
 [[tasks]]
 id = "T-0402"
-state = "backlog"
+state = "started"
 title = "Move the views of knowledge, terms, graph, about and show out of src/flowgraph/parser/command.py into src/flowgraph/parser/views.py"
 description = "A refactor under green: no new test, and the existing functional tests are the guard. view_said(args, store, cwd, open_git) returns Said or None and holds the cases knowledge, terms, graph, about and show, moved as they are. The last case of the second match of command_said returns it. Keep the config, land, release and status cases in command.py: S-0114 works on fgraph status beside this Story, so those lines must not move. Leave _written and the checks at the top of command_said untouched. Give views.py a one-line module docstring. src/flowgraph/parser/command.py is at 250 of 250 lines: this Task comes before any line is added to it."
 check = "grep -q def.view_said src/flowgraph/parser/views.py && ! grep -q show_any_item src/flowgraph/parser/command.py && uv run pytest tests/functional/test_about_item.py tests/functional/test_show_worktree.py tests/functional/test_knowledge_command.py tests/functional/test_graph_json.py tests/functional/test_add_term.py tests/parser -q"
 expected_output = "changed: command_said of src/flowgraph/parser/command.py hands every command its matches leave to view_said of the new src/flowgraph/parser/views.py, which says the text of fgraph knowledge, terms, graph, about and show as before; command.py drops their imports and has room for the next Task; nothing a command prints changes"
 created = 2026-11-23 09:11:39+00:00
+started = 2026-11-23 09:17:38+00:00
 
 [[tasks]]
 id = "T-0403"

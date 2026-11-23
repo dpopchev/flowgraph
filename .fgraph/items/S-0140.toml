@@ -9,6 +9,11 @@ completed = 2026-11-23 14:23:12+00:00
 agent = "sonnet"
 commit = "a56623d"
 
+[verified]
+answer = "yes"
+text = "at a56623d on main, in a scratch checkout of main tracking a bare origin, with the development on, delivery.push true and a started Story whose one Task is completed: with the url of origin naming no repository, fgraph land S-0001 exit 2, its error ending -- main is not pushed -- S-0001 is merged at eb5805c and not completed -- run fgraph land S-0001 again; fgraph show S-0001 listed bucket InProgress, main was on eb5805c feat: land the first Story with no commit of the record after it, and the branch wi/S-0001-a-title stood; with the url put back, fgraph land S-0001 exit 0 printed landed S-0001 at eb5805c and pushed main to origin; show listed bucket Completed, main of the origin and of the checkout were on e4d8fe0 chore: complete S-0001 in the record, and no branch wi/S-0001-* was left; make check on main at fe86157, with S-0129 and S-0125 landed too: 3325 passed, all checks passed. Worked whole by one subagent on sonnet from fgraph brief, stopped once at T-0430 on three tests that held before the work and resumed on the deviation noted; its diff held the files its four Tasks name alone; all 14 tests of the criterion were seen red first; it wrote two test files with shell heredocs, against the rule of Edit and Write alone, and tightened the fakes of the land tests of T-0431, which would have passed before the work. Not probed: a merge that changes a file mode alone, and a fast-forward taken up after main moved on."
+on = 2026-11-23 14:31:26+00:00
+
 [criterion]
 given = "a record with the development on, delivery.push true, a remote main tracks that refuses the push, and a started work item whose Tasks are completed"
 when = "fgraph land of the work item is run, and run again once the remote takes the push"

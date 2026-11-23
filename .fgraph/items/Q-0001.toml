@@ -53,9 +53,10 @@ created = 2026-11-23 04:57:49+00:00
 
 [[tasks]]
 id = "T-0375"
-state = "backlog"
+state = "started"
 title = "Correct the passage on continues of Records measured in docs/domain-model.md"
 description = "Filed by the coordinator on 2026-11-23 after the hand-back of T-0372, whose Field map corrects the reading of T-0371; the output of a completed Task is changed by a Task of its own."
 check = "! grep -q 'a relation of its own' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, Records measured, says of the column Continues what the Field map found: continues is printed on the successor of a pruned item, the other side of pruned.successor, stored by neither; the passage that calls it a relation of its own is gone and the counts stay as they are"
 created = 2026-11-23 05:25:15+00:00
+started = 2026-11-23 05:25:39+00:00

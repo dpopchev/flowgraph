@@ -1,13 +1,17 @@
 id = "Q-0001"
-state = "started"
+state = "completed"
 title = "Settle whether every item of a board 1 record converts to an item of fgraph with nothing the planning skill reads lost"
 description = "Read the seven records through the board script, never their files. Its Tasks are written when it is ordered."
 parent = "F-0015"
 created = 2026-11-22 21:04:10+00:00
 started = 2026-11-23 04:57:51+00:00
+completed = 2026-11-23 06:29:25+00:00
+commit = "7ac8023"
 
 [criterion]
 hypothesis = "Does every Epic, work item and Task of the seven .board/ records -- its kind, state, relations, criterion and knowledge -- map to a Feature, a work item or a Task of fgraph, with no field the planning skill reads lost?"
+decision = "No. Counted on the seven records on 2026-11-23 (docs/domain-model.md, From board 1: Records measured, Field map, Probe, Gaps): every record that holds items holds fields fgraph has no place for -- the Hypothesis and Outcome of all 108 Epics, the reasoning of all 1,335 work items, the expected result of 2,832 of 2,915 Checks -- and five of the six hold states the read of fgraph refuses, 309 items: a pruned Task, a work item that holds one, a work item pruned after it was started. A conversion writes item files, not commands: no command takes a date, and a completed Task keeps its check only where it passes today. Only gflow and advent-of-code-2025 convert without a change of the model or the drop of a pruned Task. Gaps splits what is lost three ways -- held by every record, held by some, lost by a decision taken -- each with its count and the item of the Backlog that closes it or not filed; what is built for it, and the kind of the 601 issues that hold no then, are for the developer to decide."
+answer = "no"
 
 [[tasks]]
 id = "T-0371"

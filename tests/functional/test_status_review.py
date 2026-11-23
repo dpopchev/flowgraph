@@ -169,7 +169,6 @@ class TestStatusAsJson:
     def test_status_exits_with_zero(self, printed: Outcome) -> None:
         assert printed.status == 0
 
-    @pytest.mark.xfail(strict=True, reason="S-0114: ready_for_review is not in the document yet")
     def test_ready_for_review_lists_the_work_item_alone(self, document: dict[str, Any]) -> None:
         assert document["ready_for_review"] == ["S-0001"]
 

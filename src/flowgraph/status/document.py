@@ -13,7 +13,8 @@ A Feature holds its `id`, `kind`, `title`, `commit`, `reason`,
 `block` -- the `reason` and what it is `waiting_on`, or null -- and its `work_items`: every work
 item under it, in any state, shaped as a work item of a bucket, in the order `fgraph show` of
 the Feature lists them. `can_start` lists the ids of every line marked as able to start now, in
-order, and `next_to_start` is the first of them.
+order, and `next_to_start` is the first of them. `ready_for_review` lists the ids of the work
+items marked `?` in the text, in the order it lists them.
 """
 
 import json
@@ -23,6 +24,7 @@ from typing import Any, assert_never
 from flowgraph.feature import FeatureRow
 from flowgraph.record.store import KINDS
 from flowgraph.status.next import start_now_ids
+from flowgraph.status.review import review_ids
 from flowgraph.status.text import BUCKETS, is_listed_in
 from flowgraph.task import TaskRow
 from flowgraph.work_item import WorkItemRow
@@ -75,6 +77,7 @@ def status_json(rows: Iterable[Row]) -> str:
         "buckets": buckets,
         "can_start": can_start,
         "next_to_start": can_start[0] if can_start else None,
+        "ready_for_review": review_ids(listed),
     }
     return json.dumps(document, indent=2, sort_keys=True) + "\n"
 

@@ -12,6 +12,11 @@ depends_on = [
     "S-0140",
 ]
 
+[verified]
+answer = "yes"
+text = "at 80ae9b3 on main, in a scratch checkout of main tracking a bare origin, with the development on, gate test -f work.txt, delivery.push true and delivery.tag close, a started Story standing alone whose Task is completed: fgraph land S-0001 exit 0 printed landed S-0001 at 56bdb35, pushed main to origin, tagged v0.1.0 at 56bdb35 and pushed v0.1.0 to origin; fgraph show S-0001 listed bucket Completed; main of the origin and of the checkout were on 420ff35 chore: complete S-0001 in the record; the origin held v0.1.0, an annotated tag, on 56bdb35, the commit of the landing, main~1; with the gate set to exit 3, fgraph land S-0002 exit 2 with S-0002 cannot land: development.gate = \"exit 3\" exited with status 3, show listed bucket InProgress, no second tag was made and main had not moved; make check on main at 79a9963: 3372 passed, all checks passed. Worked whole by one subagent on sonnet from fgraph brief; its diff held the files its four Tasks name alone, land.py going from 234 to 212 lines with the delivery moved to delivery.py; it reports no write but by its edit tools; the 14 marked tests of the criterion were seen red first; three rows of tags_landing that expect False were seen red at the import alone. Not covered by a test: under close, a work item under a Feature never started tags nothing. Not run here: a tag or its push refused, which tests/functional/test_land_delivered.py states."
+on = 2026-11-23 15:40:34+00:00
+
 [criterion]
 given = "a record with the development on, a remote that main tracks and a started work item whose Tasks are completed"
 when = "fgraph land of the work item is run"

@@ -1,3 +1,6 @@
 name = "knowledge-line"
 meaning = "A finding, a decision or a deviation noted on a work item or a Feature, with its text and the time it was noted, never amended or removed."
 added = 2026-11-23 12:06:54.831422+00:00
+part_of = [
+    "work-item",
+]

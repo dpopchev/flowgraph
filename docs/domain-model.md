@@ -371,6 +371,15 @@ of work item. The developer said so on 2026-11-21.
   it waits on; with an empty reason the `: <reason>` is left out). A Task in Backlog or completed is not listed. A Task line belongs to
   its work item: it does not count toward the top 5 of the heading, nor in
   the count beside it.
+- `fgraph status` marks `?` a started work item that holds a Task with every Task
+  completed, as ready for review, the reading of S-0114: the mark stands in the first
+  column of its line, beside `>`, `~`, `!` and `=>`, alone in InProgress or under a
+  started Feature, with the development on or off, and `fgraph watch` shows it the same.
+  It is read from the rows as status reads them, from the worktree of the work item with
+  the development on, derived at each listing and kept in no file, so no field of a row
+  holds it. A work item with no Task is not marked, nor is one whose Task is in Backlog,
+  started or blocked, nor a completed one; the line of a Feature carries no mark. A marked
+  line the top leaves out is listed after it, apart from the count of those more.
 - Under a Feature of InProgress `fgraph status` lists each started work item
   of it, the developer's words of 2026-11-21 -- a Feature is to its work
   items what a work item is to its Tasks: the work item as one of InProgress
@@ -819,7 +828,9 @@ that holds nothing is `null`, never an empty text; a list that holds nothing is 
   (Backlog, InProgress, Completed, Removed; Removed too when empty); `can_start`, the ids
   of every work item that can start now, in the order they take their places, the work
   items of a started Feature first (S-0110, which adds it to the reading of S-0087), `[]`
-  for none; `next_to_start`, the first of them, or `null`.
+  for none; `next_to_start`, the first of them, or `null`; `ready_for_review`, the ids of
+  every work item the text marks `?`, in the order it lists them, a work item under a
+  started Feature in its place (S-0114), `[]` for none.
 - Bucket: `name`; `count`, the number of its items; `items`, every one of them, in the
   order the text lists them.
 - Work item (an item of kind `story`, `upkeep`, `bug` or `spike`): `id`; `kind`; `title`;

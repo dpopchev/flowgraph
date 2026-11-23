@@ -476,7 +476,9 @@ listed in `docs/domain-model.md`, section Status as JSON.
 
 The document lists in `can_start` the ids of every work item that can start now, in
 the order `fgraph status` marks them with `>`, and `[]` for none; `next_to_start`
-stays, the first of them or `null`.
+stays, the first of them or `null`. It lists in `ready_for_review` the ids of every work
+item marked `?`, in the order the text lists them, and `[]` for none; no item holds a key
+for it.
 
 ```sh
 fgraph status --format json
@@ -516,7 +518,8 @@ fgraph status --format json
 #     }
 #   ],
 #   "can_start": [],
-#   "next_to_start": null
+#   "next_to_start": null,
+#   "ready_for_review": []
 # }
 ```
 
@@ -1055,6 +1058,22 @@ still to be completed; a started or a blocked Task is not completed yet.
 Under it comes the Task being worked, marked `=>`: the started Task of the
 work item. A Task in Backlog or completed is not listed, and a Task line does
 not count toward the top 5 of a heading (below).
+
+A started work item that holds a Task, with every Task completed, is ready for
+review, and `fgraph status` marks it `?` in the first column of its line, beside
+`>`, `~` and `!`. `fgraph watch` shows it the same, with the development on or
+off, alone or under a started Feature. A work item with no Task, or with a Task
+still in Backlog, started or blocked, is not marked, and nor is the line of a
+Feature. The mark is read from the Tasks at each listing and kept in no file:
+
+```sh
+fgraph status
+# Backlog (0)
+# InProgress (2)
+# ? S-0001  1/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
+#   S-0002  1/2 T  Add the show command to src/flowgraph/cli.py
+# Completed (0)
+```
 
 When the record is inside a git work tree, starting a Story commits its file
 alone as `chore: start S-0001 in the record`, as fgraph commits every write

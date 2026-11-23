@@ -10,6 +10,11 @@ completed = 2026-11-23 09:35:06+00:00
 agent = "sonnet-1"
 commit = "7e09b4a"
 
+[verified]
+answer = "yes"
+text = "at 7e09b4a on main, in a scratch git repository with the development on: S-0001 started with --agent sonnet-1 and its one Task completed in its worktree, S-0002 started with one Task of two completed: fgraph status exit 0 listed ? S-0001  1/1 T  [sonnet-1] and its title, and S-0002  1/2 T unmarked; fgraph status --format json held ready_for_review S-0001 alone; fgraph watch --count 1 marked one line; on the record of flowgraph status marked ? S-0116  5/5 T  [sonnet-2], its Tasks completed in its worktree; make check on main at bfe487c, with S-0115 landed too: 3076 passed, all checks passed. Worked whole by one subagent on sonnet beside S-0115 and S-0116; its diff held the files its Tasks name and nothing else, and it reported no rule broken."
+on = 2026-11-23 09:40:15+00:00
+
 [criterion]
 given = "a record with two started work items, every Task of the first completed and one Task of the second in Backlog"
 when = "fgraph status is run, as text and as JSON"

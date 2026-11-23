@@ -1,3 +1,6 @@
 name = "upkeep"
 meaning = "A work item that keeps the behavior and changes the inside, completed when the behavior is proven unchanged on main."
 added = 2026-11-23 12:06:17.081502+00:00
+is_a = [
+    "work-item",
+]

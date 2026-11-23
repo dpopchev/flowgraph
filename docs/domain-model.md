@@ -1725,14 +1725,16 @@ development too.
   `open_git`, so the core decides when it runs and never calls git itself.
   The same key pushes the tag `fgraph release` makes (below), with the
   development on or off, since a release is no step of a landing.
-- `[delivery] tag` tags `main` at the close of a Feature, `feature-close` or
-  `none`. It is `none` by default, as S-0092 states it: a record that names
-  none tags nothing, as a landing did before the key; any other word is
-  refused naming the two. It is a step of a landing, so it tags nothing with
-  the development off, where it is held as written. In the model it is a
+- `[delivery] tag` tags `main` at a landing, `feature-close`, `close` or
+  `none`: the close of a Feature alone, that and a work item that stands alone
+  (S-0123), or never. It is `none` by default, as S-0092 states it: a record
+  that names none tags nothing, as a landing did before the key; any other word
+  is refused naming the three. It is a step of a landing, so it tags nothing
+  with the development off, where it is held as written. In the model it is a
   value of the delivery layer (`TagAt`, `src/flowgraph/record/layers.py`);
-  the write that completes a Feature names it (`Written.completes`), so the
-  core decides from that plain value whether the landing tags.
+  the landing decides from it, from whether the work item stands alone and
+  from whether its completion completes a Feature (`tags_landing`,
+  `src/flowgraph/development/release.py`), a pure function of the three.
 - `fgraph complete` of a started Task that holds a check runs it, answering S-0089:
   through the shell, in the worktree of the work item of the Task (the directory
   `fgraph` runs in when the item has none), before anything is written. Its
@@ -2005,7 +2007,7 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   the merge held, and no later step is taken.
 - With `[delivery] push = true` `main` is pushed right after the merge,
   before anything of the record is written, and again as the last step of
-  every way but the tag at the close of a Feature (below), once the landing is
+  every way, with the tag between them (below), once the landing is
   whole: after the commit of the record that
   completes the work item, the removal of the worktree and the branch landed,
   and the branch of the next work item of a Feature. `main` is pushed to the
@@ -2032,21 +2034,29 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   `main` is on, then pushes and removes as a landing does. A fast-forward
   taken up after `main` moved on is refused as a fast-forward is, `main`
   holding a commit the branch lacks.
-- With `[delivery] tag = "feature-close"` the write that completes a Feature
-  -- the commit of the record of the landing of its last work item -- is
-  followed by the tag `fgraph release` makes, made by that same code
-  (`release_trunk`), the reading of the agent for S-0092: the last step of
-  the landing, after the push of `main`, on the commit `main` is then on,
-  which completes the Feature. The landing says `tagged <version> at <sha>`
-  and, under `[delivery] push = true`, `pushed <version> to <remote>`. A
-  landing that completes no Feature tags nothing, the one of a work item that
-  stands alone among them. A tag git refuses leaves the landing whole and
-  exits 2 naming the git command, then `-- <id> is landed at <sha>, <Feature>
-  is completed`; a push of `main` git refuses makes no tag and ends `, <Feature>
-  is not tagged`, so `fgraph release` tags it once `main` is pushed. With the
-  development off a Feature closed by `fgraph complete` of its last work item
-  is not tagged, inside a git work tree or outside one: the tag is a step of
-  a landing, and `fgraph release` is the developer's.
+- With `[delivery] tag = "feature-close"` the landing that will complete a
+  Feature -- the one of its last work item -- tags `main`, and with
+  `tag = "close"` so does the landing of a work item that stands alone
+  (S-0123). The tag is on the commit of the landing, made after the first
+  push of `main` and before the write that completes the work item
+  (`release_landing`, `src/flowgraph/development/release.py`), so the record
+  at the tag lists the work item InProgress, the cost of completing after the
+  tag. The version counts the kind of the work item landed, which the record
+  does not list completed yet, with the kinds completed since the last `v*`
+  tag: the next minor for a Story or a Bug, else the next patch. A landing
+  taken up whose commit the last `v*` tag is on makes no second tag and
+  pushes that one. The landing says `tagged <version> at <sha>` and, under
+  `[delivery] push = true`, `pushed <version> to <remote>`. A work item under
+  a Feature that is not its last tags nothing. A tag made by a landing bumps
+  no version in a file of the project, `pyproject.toml` among them. A tag git
+  refuses, or its push, leaves the work item started and merged, as a first
+  push does, and exits 2 naming the git command, then `-- main is not tagged
+  <version>` or `-- <version> is tagged at <sha>, it is not pushed`, then `--
+  <id> is merged at <sha> and not completed -- run fgraph land <id> again`; a
+  push of `main` git refuses makes no tag. With the development off a Feature
+  closed by `fgraph complete` of its last work item is not tagged, inside a
+  git work tree or outside one: the tag is a step of a landing, and `fgraph
+  release` is the developer's.
 - A squash is not made by `git merge --squash`: that takes a change staged
   in the checkout into the commit and drops it with the squash. The merge of
   its own refuses such a checkout, and committed with one parent it holds
@@ -2618,7 +2628,7 @@ and `fgraph config show`:
 | `branch max 1d` | all but cts | S-0098: "the line of the work item says its branch is older than 1d" |
 | `approver agent`, `approver developer` | all seven | S-0099: "it exits 2 saying the landing waits for the developer" |
 | `gate`, `lanes 3` | c, cts; c, sv | `development.gate`, `development.parallel`, kept |
-| `tag epic-close`; `tag root-close`; `tag none` | five; c; st | `delivery.tag`, `feature-close` or `none`; the tag of a standalone root, not filed |
+| `tag epic-close`; `tag root-close`; `tag none` | five; c; st | `delivery.tag`, `feature-close`, `close` or `none`; `close` tags a standalone root, S-0123 |
 | `ci pipeline`, `branch ids remote` | g, sv; sv | not filed; external sync is later (F-0007) |
 
 The work in flight a conversion must carry, by the composed state of `full`:

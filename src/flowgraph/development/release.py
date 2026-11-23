@@ -13,17 +13,23 @@ or a commit git does not know, is held when it was completed by the time the tag
 
 `[delivery] push` pushes the tag to the remote main tracks once it is made: a push that fails
 leaves the tag as it is, since a tag is never deleted.
+
+A landing tags main too (`release_landing`), before the write that completes its work item: the
+version counts the kinds completed since the last tag and the kind landed, and a tag that holds
+the commit of the landing, as a landing taken up finds, is the tag of it and is not made again.
 """
 
 from collections.abc import Iterator
 from datetime import datetime
 from pathlib import Path
+from typing import assert_never
 
 from flowgraph.development.branch import MAIN
 from flowgraph.development.commit import OpenGit, ReleaseSteps, Said
 from flowgraph.development.git import GitError
 from flowgraph.development.scope import check_on_main
 from flowgraph.development.version import (
+    Bump,
     Version,
     bump_of,
     is_released,
@@ -33,6 +39,7 @@ from flowgraph.development.version import (
     version_text,
 )
 from flowgraph.record import Config
+from flowgraph.record.layers import TagAt
 from flowgraph.record.store import KINDS, Store
 from flowgraph.work_item import Kind
 
@@ -75,6 +82,20 @@ def _nothing_since(last: Version | None) -> str:
     return f"nothing is completed{since}: no release -- complete a work item first"
 
 
+def _pushed_tag(steps: ReleaseSteps, tag: str, sha: str, config: Config) -> str:
+    """Push the tag of the commit under the push of the delivery; the line that names the remote.
+
+    Nothing is said without the push. Raises GitError saying the tag is made and not pushed.
+    """
+    if not config.delivery.push:
+        return ""
+    try:
+        remote = steps.push_tag(MAIN, tag)
+    except GitError as error:
+        raise GitError(f"{error} -- {tag} is tagged at {sha}, it is not pushed") from error
+    return f"pushed {tag} to {remote}\n"
+
+
 def release_trunk(
     asked: str | None, store: Store, record: Path, open_git: OpenGit, config: Config
 ) -> Said:
@@ -103,11 +124,43 @@ def release_trunk(
         raise ReleaseError(_nothing_since(last))
     tag = version_text(next_version(last, bump) if named is None else named)
     sha = steps.make_tag(tag, f"release {tag}", MAIN)
-    said = f"tagged {tag} at {sha}\n"
-    if config.delivery.push:
+    return Said(f"tagged {tag} at {sha}\n{_pushed_tag(steps, tag, sha, config)}")
+
+
+def tags_landing(tag: TagAt, alone: bool, closes: bool) -> bool:
+    """Whether a landing tags main under that word of `delivery.tag`.
+
+    `alone` says the work item stands alone, under no Feature; `closes` that its completion
+    completes a Feature. A work item under a Feature that it does not close never tags.
+    """
+    match tag:
+        case TagAt.NONE:
+            return False
+        case TagAt.FEATURE_CLOSE:
+            return closes
+        case TagAt.CLOSE:
+            return closes or alone
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def release_landing(kind: Kind, sha: str, store: Store, steps: ReleaseSteps, config: Config) -> str:
+    """Tag main for the landing of a work item of that kind at that commit; the lines it says.
+
+    The tag the last v* tag is when it holds the commit, as a landing taken up finds it: none is
+    made. Otherwise the next version is made on main, counting the kinds completed since the last
+    tag and the kind landed, which the record does not list completed yet. Under the push of the
+    delivery the tag is pushed, a tag taken up again. Raises GitError saying main is not tagged
+    when git refuses the tag, and that the tag is made and not pushed when it refuses the push.
+    """
+    last = last_version(steps.find_tags(RELEASE_TAGS))
+    if last is not None and steps.holds_commit(version_text(last), sha):
+        tag, at = version_text(last), sha
+    else:
+        bump = bump_of([*_kinds_since(store, last, steps), kind])
+        tag = version_text(next_version(last, bump or Bump.PATCH))
         try:
-            remote = steps.push_tag(MAIN, tag)
+            at = steps.make_tag(tag, f"release {tag}", MAIN)
         except GitError as error:
-            raise GitError(f"{error} -- {tag} is tagged at {sha}, it is not pushed") from error
-        said += f"pushed {tag} to {remote}\n"
-    return Said(said)
+            raise GitError(f"{error} -- {MAIN} is not tagged {tag}") from error
+    return f"tagged {tag} at {at}\n{_pushed_tag(steps, tag, at, config)}"

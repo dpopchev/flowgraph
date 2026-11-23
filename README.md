@@ -888,38 +888,48 @@ fgraph release
 A version the project keeps in a file of its own, as `pyproject.toml`, is not
 bumped by `fgraph release`.
 
-The delivery tags `main` at the close of a Feature when the record says so:
+The delivery tags `main` at a landing when the record says so:
 
 ```toml
 [delivery]
-tag = "feature-close"
+push = true
+tag = "close"
 ```
 
-`tag` is `feature-close` or `none`, `none` by default, so a record that names
-none tags nothing, as a landing did before the key. With `feature-close`, the
-landing of the last work item of a started Feature -- the write that completes
-the Feature -- is followed by the tag `fgraph release` makes, on the commit
-`main` is on once the landing is whole, as its last step: after the push of
-`main` under `push = true`, and pushed itself under the same key. A landing
-that completes no Feature, as one of a work item that stands alone, tags
-nothing:
+`tag` is `feature-close`, `close` or `none`, `none` by default, so a record
+that names none tags nothing, as a landing did before the key. With
+`feature-close`, the landing of the last work item of a started Feature -- the
+write that completes the Feature -- is tagged with the tag `fgraph release`
+makes; with `close` so is the landing of a work item that stands alone, and a
+work item under a Feature that is not its last tags nothing under either. The
+version is the next minor for a Story or a Bug and the next patch for an Upkeep
+or a Spike, counted with the work completed since the last `v*` tag, and
+`v0.1.0` when there is none. The tag is on the commit of the landing, made
+after the first push of `main` and before the write that completes the work
+item, and pushed itself under `push = true`; so the record inside the tagged
+tree still lists the work item InProgress, the cost of completing after the
+tag. A tag made by a landing bumps no version in a file of the project:
 
 ```sh
-fgraph land S-0002 --message "feat: land the Stories listed under InProgress"
-# landed S-0002 at 880059e
-# completed F-0001 at 880059e
+fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
+# landed S-0001 at 3e9ae5c
 # pushed main to origin
-# tagged v0.1.0 at 9cbc107
+# tagged v0.1.0 at 3e9ae5c
 # pushed v0.1.0 to origin
 ```
 
-A tag git refuses leaves the landing as it is, the Feature completed, and
-exits 2 saying so; a push of `main` git refuses makes no tag and says the
-Feature is not tagged, so `git push` then `fgraph release` is left to you. It
-is a step of a landing, so with the development off it tags nothing: `fgraph
+A landing of the last Story of a Feature says the Feature completed after the
+first line, as `completed F-0001 at 3e9ae5c`. A tag git refuses, or its push,
+leaves the Story merged and not completed, as a push of `main` refused does,
+and exits 2 ending with its line, `-- v0.1.0 is tagged at 3e9ae5c, it is not
+pushed -- S-0001 is merged at 3e9ae5c and not completed -- run fgraph land
+S-0001 again`; the Feature stays as it was. Run `fgraph land` again once the
+cause is gone: a landing taken up whose commit the last `v*` tag is on makes no
+second tag and pushes that one. A push of `main` refused makes no tag. It is a
+step of a landing, so with the development off it tags nothing: `fgraph
 complete` of the last work item completes the Feature with no tag, and
-`fgraph release` tags it. Any other value is refused naming the two,
-`delivery.tag is "sometimes": it takes feature-close or none`.
+`fgraph release` tags it. Any other value is refused naming the three,
+`delivery.tag is "sometimes": it takes feature-close, close or none`.
 
 The commits of the record are a layer the record turns off:
 
@@ -1040,7 +1050,7 @@ so `fgraph config set development.gate true` names the command `true`:
 | `development.gate`     | a command line, one argument of the shell  | `fgraph config set development.gate "make check"` |
 | `development.driver`   | `developer` or `agent`                     | `fgraph config set development.driver agent`      |
 | `delivery.push`        | `true` or `false`                          | `fgraph config set delivery.push true`            |
-| `delivery.tag`         | `feature-close` or `none`                  | `fgraph config set delivery.tag feature-close`    |
+| `delivery.tag`         | `feature-close`, `close` or `none`         | `fgraph config set delivery.tag close`            |
 
 The whole file is read back as a configuration before it replaces the one in
 the record. A key the configuration does not have, a value the key does not

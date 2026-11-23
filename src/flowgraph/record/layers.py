@@ -85,9 +85,14 @@ class Development:
 
 
 class TagAt(Enum):
-    """Which closes a landing tags main at; each is its word in the file."""
+    """Which closes a landing tags main at; each is its word in the file.
+
+    `feature-close` tags the close of a Feature alone; `close` tags that and a work item that
+    stands alone at its landing; `none` tags nothing.
+    """
 
     FEATURE_CLOSE = "feature-close"
+    CLOSE = "close"
     NONE = "none"
 
 
@@ -95,8 +100,9 @@ class TagAt(Enum):
 class Delivery:
     """What a landing takes after the write that completes its work item.
 
-    Main pushed, or not; and main tagged with its next version when that write completes a
-    Feature, or never. A step of a landing, so it says nothing while the development is off.
+    Main pushed, or not; and main tagged with its next version at the close its `tag` names: a
+    Feature, a work item that stands alone too, or never. A step of a landing, so it says
+    nothing while the development is off.
     """
 
     push: bool

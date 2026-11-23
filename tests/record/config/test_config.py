@@ -15,7 +15,7 @@ UNCOMMITTED = "[git]\ncommit = false\n"
 TAKES_A_COUNT = "it takes a whole number of 1 or more"
 TAKES_A_WAY = "it takes merge-commit, squash or fast-forward"
 TAKES_A_COMMAND = "it takes a command line"
-TAKES_A_TAG = "it takes feature-close or none"
+TAKES_A_TAG = "it takes feature-close, close or none"
 TAKES_A_DRIVER = "it takes developer or agent"
 
 
@@ -186,6 +186,10 @@ def test_delivery_tag_feature_close_tags_the_close_of_a_feature() -> None:
     )
 
 
+def test_delivery_tag_close_is_held_as_written() -> None:
+    assert make_config(f'{ENABLED}[delivery]\ntag = "close"\n').delivery.tag.value == "close"
+
+
 def test_delivery_tag_is_held_as_written_with_the_development_off() -> None:
     assert make_config('[delivery]\ntag = "feature-close"\n').delivery.tag.value == (
         "feature-close"
@@ -197,7 +201,7 @@ def test_delivery_tag_is_held_as_written_with_the_development_off() -> None:
     [('"sometimes"', '"sometimes"'), ('"Feature-Close"', '"Feature-Close"'), ("true", "true")],
     ids=["another-word", "another-case", "a-truth"],
 )
-def test_a_tag_that_is_no_word_of_it_is_refused_naming_the_two(value: str, written: str) -> None:
+def test_a_tag_that_is_no_word_of_it_is_refused_naming_the_three(value: str, written: str) -> None:
     with pytest.raises(ConfigError) as error:
         make_config(f"[delivery]\ntag = {value}\n")
     assert str(error.value) == f"delivery.tag is {written}: {TAKES_A_TAG}"

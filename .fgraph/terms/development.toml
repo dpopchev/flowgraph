@@ -1,0 +1,3 @@
+name = "development"
+meaning = "The layer of a record beside the source code, turned on by development.enabled: the branch and the worktree of a start, the scoping of a branch and the landing."
+added = 2026-11-23 12:07:03.314640+00:00

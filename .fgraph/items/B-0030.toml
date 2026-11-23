@@ -2,6 +2,7 @@ id = "B-0030"
 state = "backlog"
 title = "Cut the passages of README.md and docs/domain-model.md that say fgraph config has no unset or five keys from four to none"
 description = "Found by the planner of S-0115 on 2026-11-23 while reading the configuration; filed at the end of the queue and left out of S-0115 on purpose. Its Tasks are written when it is ordered."
+complexity = "low"
 created = 2026-11-23 09:12:23+00:00
 filed_during = "S-0115"
 

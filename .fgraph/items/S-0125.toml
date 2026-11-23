@@ -9,6 +9,11 @@ completed = 2026-11-23 13:34:04+00:00
 agent = "sonnet"
 commit = "50ab462"
 
+[verified]
+answer = "yes"
+text = "at 50ab462 on main, on a scratch record with the development off: a blocked Feature F-0001 whose Story S-0001 is completed and whose Story S-0002 is removed as superseded: fgraph remove F-0001 --reason pivoted exit 0 printed removed F-0001; fgraph status listed InProgress (0) and Removed (1) with the one line F-0001  a feature title  -- pivoted; fgraph show F-0001 listed bucket Removed, reason pivoted, S-0001  a title  Completed and S-0002  another title  Removed; fgraph show S-0001 listed bucket Completed and parent F-0001; on a second record a started Feature holding a started Story: fgraph remove F-0001 --reason pivoted exit 2 with F-0001 cannot be removed: S-0001 is started already, the Feature still in InProgress; make check on main at 13b8ff8, with S-0129 landed too: 3296 passed, all checks passed. Worked whole by one subagent on sonnet from fgraph brief; its diff held the files its three Tasks name alone; no test its first Task calls red passed before the work and no guard failed. remove.py tells a Feature in Backlog from a started one with isinstance, not a match."
+on = 2026-11-23 13:40:23+00:00
+
 [criterion]
 given = "a started or blocked Feature whose work is taken apart: one work item of it completed, the others removed as superseded, none started or in Backlog"
 when = "fgraph remove of the Feature is run with its reason"

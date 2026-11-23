@@ -63,7 +63,17 @@ from flowgraph.term.about import about_asked
 from flowgraph.term.item import add_term_item, relate_term_item, terms_text
 from flowgraph.work_item import (
     Amendment,
+    Complexity,
+    make_complexity,
 )
+
+
+def _complexity_asked(word: str | None) -> Complexity | None:
+    """The complexity the option names; None when it is not given.
+
+    Raises ComplexityError naming the three words when it is none of them.
+    """
+    return None if word is None else make_complexity(word)
 
 
 def _written(
@@ -107,6 +117,7 @@ def _written(
                 filed_during,
                 amends,
                 about,
+                _complexity_asked(args.complexity),
             )
         case "amend":
             amended = None if is_feature_id(args.id) else args.id
@@ -122,6 +133,7 @@ def _written(
                 None if args.parent is None else parent_asked(args.parent),
                 depends_asked(args.depends_on, amended, store),
                 about_asked(args.about, store),
+                _complexity_asked(args.complexity),
             )
             return amend_named(args.id, parts, args.criterion, store)
         case "complete" if is_feature_id(args.id):

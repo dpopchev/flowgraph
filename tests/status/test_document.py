@@ -94,6 +94,14 @@ def test_an_item_holds_its_kind_by_the_prefix_of_its_id(item: str, kind: str) ->
     assert only(story(item))["kind"] == kind
 
 
+def test_a_work_item_holds_its_complexity_as_the_word() -> None:
+    assert only(story("S-0001", complexity="high"))["complexity"] == "high"
+
+
+def test_a_work_item_without_a_complexity_holds_null() -> None:
+    assert only(story("S-0001"))["complexity"] is None
+
+
 def test_a_feature_holds_the_kind_feature() -> None:
     assert only(feature())["kind"] == "feature"
 

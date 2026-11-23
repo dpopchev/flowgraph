@@ -70,7 +70,8 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     Task only once it has left Backlog. A blocked Task is listed in InProgress as blocked, with
     its reason and what it waits on. The knowledge lines follow, in the order noted, each with
     its kind, its date and its text, then the terms it is about; there is no heading without one.
-    The terms the item is about are listed after its description, only when there are some.
+    The terms the item is about are listed after its description, only when there are some, and
+    its complexity after them, only when it has one.
     """
     bucket = next(name for name, states in BUCKETS if detail.state in states)
     under = [f"  parent       {detail.parent}\n"] if detail.parent else []
@@ -92,6 +93,7 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     supersede = [f"  supersedes   {supersedes}\n"] if supersedes else []
     described = [f"  description  {detail.description}\n"] if detail.description else []
     about = [f"  about        {', '.join(detail.about)}\n"] if detail.about else []
+    rated = [f"  complexity   {detail.complexity}\n"] if detail.complexity else []
     stated = {
         "given": detail.given,
         "when": detail.when,
@@ -118,6 +120,7 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
         *removed,
         *described,
         *about,
+        *rated,
         *(f"  {part:<13}{text}\n" for part, text in stated.items() if text),
         f"Tasks ({len(detail.tasks)})\n",
     ]

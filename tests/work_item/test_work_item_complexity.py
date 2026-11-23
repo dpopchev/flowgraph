@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from flowgraph.criterion import make_commit, make_scenario
+from flowgraph.status import show_text
 from flowgraph.task import completed, make_task, make_task_id, started
 from flowgraph.work_item import (
     COMPLEXITIES,
@@ -21,9 +22,13 @@ from flowgraph.work_item import (
     make_work_item,
     make_work_item_id,
     read_work_item,
+    read_work_item_detail,
+    read_work_item_rows,
     removed_work_item,
     started_work_item,
+    work_item_detail,
     work_item_path,
+    work_item_row,
     write_work_item,
 )
 
@@ -117,3 +122,45 @@ def test_a_file_holding_another_word_is_refused_naming_it(tmp_path: Path) -> Non
     path.write_text(path.read_text(encoding="utf-8").replace("high", "huge"), encoding="utf-8")
     with pytest.raises(WorkItemFileError, match=r"CH-0001\.toml holds no Chore"):
         read_work_item(tmp_path, ID)
+
+
+@pytest.mark.view
+def test_the_row_of_a_work_item_holds_its_complexity_as_the_word() -> None:
+    assert work_item_row(HIGH).complexity == "high"
+
+
+@pytest.mark.view
+def test_the_row_of_a_work_item_without_one_holds_it_empty() -> None:
+    assert work_item_row(make_work_item(ID, "a title", SCENARIO, "", CREATED)).complexity == ""
+
+
+@pytest.mark.view
+def test_the_detail_of_a_work_item_holds_its_complexity_as_the_word() -> None:
+    assert work_item_detail(HIGH).complexity == "high"
+
+
+@pytest.mark.edge
+def test_the_rows_read_from_the_file_hold_the_complexity_as_the_word(tmp_path: Path) -> None:
+    write_work_item(tmp_path, HIGH)
+    assert read_work_item_rows(tmp_path, CHORE)[0].complexity == "high"
+
+
+@pytest.mark.edge
+def test_the_detail_read_from_the_file_holds_the_complexity_as_the_word(tmp_path: Path) -> None:
+    write_work_item(tmp_path, HIGH)
+    assert read_work_item_detail(tmp_path, ID).complexity == "high"
+
+
+@pytest.mark.view
+def test_show_lists_the_complexity_after_the_terms_it_is_about() -> None:
+    about = replace(HIGH, about=("gate",))
+    assert show_text(work_item_detail(about)).splitlines()[2:4] == [
+        "  about        gate",
+        "  complexity   high",
+    ]
+
+
+@pytest.mark.view
+def test_show_lists_no_complexity_line_for_a_work_item_without_one() -> None:
+    bare = make_work_item(ID, "a title", SCENARIO, "", CREATED)
+    assert "complexity" not in show_text(work_item_detail(bare))

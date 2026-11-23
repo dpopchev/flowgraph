@@ -45,6 +45,7 @@ from flowgraph.task import (
 from flowgraph.term import TermError, TermFileError, TermNotFoundError
 from flowgraph.term.item import TermExistsError
 from flowgraph.work_item import (
+    ComplexityError,
     NoPartError,
     NoSuchPartError,
     NotVerifiableError,
@@ -116,6 +117,7 @@ REFUSED = (
     StartWaitsError,
     PaceError,
     KindListedError,
+    ComplexityError,
     FormatError,
     StatusFormatError,
     TermError,

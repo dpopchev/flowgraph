@@ -23,6 +23,7 @@ from flowgraph.criterion import (
 from flowgraph.parent import Parent
 from flowgraph.relation import with_depends_on
 from flowgraph.task import CompletedAlreadyError, StartedAlreadyError
+from flowgraph.work_item.complexity import Complexity
 from flowgraph.work_item.id import WorkItemId, work_item_id_text
 from flowgraph.work_item.model import (
     CompletedWorkItem,
@@ -41,7 +42,7 @@ class Amendment:
     The parts of the criterion are those of every form; a work item takes the ones it states.
     Its parent is the Feature to put it under, or standing alone. The work items it depends on
     replace those it had; none given takes them all away. The terms it is about replace those it
-    had too, none given as well.
+    had too, none given as well. The complexity given replaces the one it had; none given keeps it.
     """
 
     title: str | None = None
@@ -55,6 +56,7 @@ class Amendment:
     parent: Parent | None = None
     depends_on: tuple[WorkItemId, ...] | None = None
     about: tuple[str, ...] | None = None
+    complexity: Complexity | None = None
 
 
 # Check the move of the work item of that id from the parent it had to the one an amend names;
@@ -137,6 +139,7 @@ def amended_work_item(item: WorkItemState, amendment: Amendment) -> WorkItem:
             description = _kept(amendment.description, item.description)
             parent = _kept(amendment.parent, item.parent)
             about = _kept(amendment.about, item.about)
+            complexity = _kept(amendment.complexity, item.complexity)
             relations = item.relations
             if amendment.depends_on is not None:
                 relations = with_depends_on(relations, item.id, amendment.depends_on)
@@ -148,6 +151,7 @@ def amended_work_item(item: WorkItemState, amendment: Amendment) -> WorkItem:
                 parent=parent,
                 relations=relations,
                 about=about,
+                complexity=complexity,
             )
         case StartedWorkItem():
             raise StartedAlreadyError(f"{named} is started already")

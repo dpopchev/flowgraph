@@ -28,10 +28,8 @@ AMEND_HUGE = ["amend", "S-0001", "--complexity", "huge"]
 SHOW = ["show", "S-0001"]
 STATUS = ["status", "--format", "json"]
 LINE = "  complexity   high\n"
-HUGE = "fgraph: error: --complexity 'huge' is none of low, medium, high, nothing written"
+HUGE = "fgraph: error: --complexity 'huge' is none of low, medium, high"
 STARTED = "fgraph: error: S-0001 is started already"
-
-red = pytest.mark.xfail(strict=True, reason="S-0112: complexity is not carried yet")
 
 
 @dataclass(frozen=True)
@@ -82,15 +80,12 @@ class TestAStoryAddedWithComplexityHigh:
     def added(self, tmp_path: Path) -> Outcome:
         return runs(tmp_path, ADD_HIGH)
 
-    @red
     def test_add_exits_with_zero(self, added: Outcome) -> None:
         assert added.status == 0
 
-    @red
     def test_show_lists_the_complexity(self, added: Outcome, tmp_path: Path) -> None:
         assert LINE in fgraph(SHOW, tmp_path).out
 
-    @red
     def test_status_carries_the_complexity_in_json(self, added: Outcome, tmp_path: Path) -> None:
         assert complexity(tmp_path) == "high"
 
@@ -100,15 +95,12 @@ class TestAStoryAmendedWithComplexityHighInBacklog:
     def amended(self, tmp_path: Path) -> Outcome:
         return runs(tmp_path, ADD, AMEND_HIGH)
 
-    @red
     def test_amend_exits_with_zero(self, amended: Outcome) -> None:
         assert amended.status == 0
 
-    @red
     def test_show_lists_the_complexity(self, amended: Outcome, tmp_path: Path) -> None:
         assert LINE in fgraph(SHOW, tmp_path).out
 
-    @red
     def test_status_carries_the_complexity_in_json(self, amended: Outcome, tmp_path: Path) -> None:
         assert complexity(tmp_path) == "high"
 
@@ -121,7 +113,6 @@ class TestAStoryGivenNoComplexity:
     def test_show_lists_no_complexity(self, added: Outcome, tmp_path: Path) -> None:
         assert "complexity" not in fgraph(SHOW, tmp_path).out
 
-    @red
     def test_status_carries_null_in_json(self, added: Outcome, tmp_path: Path) -> None:
         assert complexity(tmp_path) is None
 
@@ -131,11 +122,9 @@ class TestAStartedStoryGivenComplexityHigh:
     def started(self, tmp_path: Path) -> Outcome:
         return runs(tmp_path, ADD_HIGH, ADD_TASK, START)
 
-    @red
     def test_show_keeps_the_complexity(self, started: Outcome, tmp_path: Path) -> None:
         assert LINE in fgraph(SHOW, tmp_path).out
 
-    @red
     def test_status_keeps_the_complexity_in_json(self, started: Outcome, tmp_path: Path) -> None:
         assert complexity(tmp_path) == "high"
 
@@ -148,7 +137,6 @@ class TestAStartedStoryAmendedWithComplexity:
     def test_amend_exits_with_two(self, refused: Outcome) -> None:
         assert refused.status == 2
 
-    @red
     def test_amend_says_the_story_is_started_already(self, refused: Outcome) -> None:
         assert refused.err.splitlines()[-1] == STARTED
 
@@ -161,7 +149,6 @@ class TestAStoryAddedWithAComplexityThatIsNoneOfThree:
     def test_add_exits_with_two(self, refused: Outcome) -> None:
         assert refused.status == 2
 
-    @red
     def test_add_names_the_three_words(self, refused: Outcome) -> None:
         assert refused.err.splitlines()[-1] == HUGE
 
@@ -177,7 +164,6 @@ class TestAStoryAmendedWithAComplexityThatIsNoneOfThree:
     def test_amend_exits_with_two(self, refused: Outcome) -> None:
         assert refused.status == 2
 
-    @red
     def test_amend_names_the_three_words(self, refused: Outcome) -> None:
         assert refused.err.splitlines()[-1] == HUGE
 

@@ -45,6 +45,11 @@ def add_kinds(kinds: Commands) -> dict[str, argparse.ArgumentParser]:
             "--parent", metavar="ID", help="the Feature it is under; it stands alone without one"
         )
         kind.add_argument(
+            "--complexity",
+            metavar="WORD",
+            help="low, medium or high, read by the one who hands it to an agent; none by default",
+        )
+        kind.add_argument(
             "--depends-on",
             action="append",
             metavar="ID",

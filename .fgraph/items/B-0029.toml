@@ -8,3 +8,8 @@ filed_during = "Q-0001"
 [criterion]
 observed = "fgraph complete T-0001 --commit c6e0f15 exits 0 and prints completed T-0001 of S-0001 at c6e0f15 in a repository where git cat-file -t c6e0f15 says Not a valid object name; seen by the coordinator with the development off, and by the subagent with it on, completed T-0013 of S-0001 at c6e0f15"
 expected = "with the development on, a commit the repository does not hold is refused, as docs/domain-model.md, Evidence, says the commit that holds its work"
+
+[[knowledge]]
+kind = "decision"
+text = "The developer decided on 2026-11-23, asked before its Tasks were drafted: with the development on, a completion given a commit the repository does not hold is refused, exit 2 naming the commit, nothing written; with the development off the commit is taken as today."
+noted = 2026-11-23 19:41:33+00:00

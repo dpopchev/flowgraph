@@ -3,6 +3,7 @@ state = "backlog"
 title = "Raise the criteria fgraph show of a Feature lists as met from none to k of n"
 description = "Its Tasks are written when it is ordered."
 parent = "F-0013"
+complexity = "low"
 created = 2026-11-22 21:03:54+00:00
 depends_on = [
     "S-0100",

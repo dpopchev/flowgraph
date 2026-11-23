@@ -211,7 +211,9 @@ class TestAStoryOfAStartedFeatureLandedWhileTheNextIsInBacklog:
 class TestAStoryLandedWhileTheNextOfItsStartedFeatureHasNoTask:
     @pytest.fixture
     def checkout(self, tmp_path: Path) -> Path:
-        return ready_to_land(tmp_path, SECOND_WITHOUT_A_TASK)
+        path = ready_to_land(tmp_path, (ADD_FEATURE, ADD_STORY, ADD_TASK))
+        fgraph(ADD_OTHER, path)
+        return path
 
     @pytest.fixture
     def landed(self, checkout: Path) -> Outcome:

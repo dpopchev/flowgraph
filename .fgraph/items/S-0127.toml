@@ -18,39 +18,51 @@ then = "status marks the two planned whole as able to start and no other, and fg
 
 [[tasks]]
 id = "T-0411"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_planned_start.py, failing on the criterion of S-0127"
 description = "Run through run() of src/flowgraph/cli.py. Copy the helpers fgraph, git, marked, environment, checkout and task (with --check make test) from tests/functional/test_status_start_now.py. Its config.toml is the development on with no parallel key. Classes and tests: TestStatusAsText, the marked ids; TestStatusAsJson, can_start and next_to_start; test_a_start_refused_exits_with_two_and_names_what_it_lacks, parametrized on the exit and the last line of the error output -- S-0001: fgraph: error: S-0001 has no Task to start with; F-0001: fgraph: error: F-0001 has no work item in Backlog to start with; F-0002: fgraph: error: F-0002 cannot start: S-0004 has no Task to start with; test_a_start_of_one_planned_whole_exits_with_zero, parametrized on S-0002 and F-0003, each on a fresh checkout. Keep the word status out of every name but the two Status classes. The red tests are the three Status tests and the F-0002 parameter; each carries its own strict xfail naming S-0127, the F-0002 one through the marks of pytest.param. The other parameters pass today: they are guards and carry no xfail. functional is the pytestmark. One assert per test. No source changes."
 check = "uv run pytest tests/functional/test_planned_start.py -q"
 expected_output = "created: tests/functional/test_planned_start.py states that, in a git repository with [development] enabled = true and parallel left out, holding S-0001 alone with no Task, S-0002 alone with a Task, F-0001 with no work item, F-0002 with S-0003 with a Task and S-0004 without, and F-0003 with S-0005 and S-0006 each with a Task: fgraph status marks S-0002 and F-0003 alone; the JSON lists can_start as S-0002, F-0003 with next_to_start S-0002; fgraph start refuses S-0001, F-0001 and F-0002 with exit 2, naming what each lacks; fgraph start of S-0002 and of F-0003 exits 0"
 created = 2026-11-23 10:14:49+00:00
+started = 2026-11-23 10:17:30+00:00
+completed = 2026-11-23 10:18:49+00:00
+commit = "ad43e5dbfe2da2145cda197e990e366f360fcb30"
 
 [[tasks]]
 id = "T-0412"
-state = "backlog"
+state = "completed"
 title = "Mark in fgraph status, with the development on, only the planned lines: a work item holding a Task, a Feature whose every work item in Backlog holds one"
 description = "Change src/flowgraph/status/next.py only: add a pure _planned(line), a WorkItemRow with tasks or a FeatureRow whose work_items in state backlog all hold tasks; in with_start_now the lines asked are those of _can_start and _planned; _startable_under adds the tasks of the item to its test; _can_start and with_next stay as they are, so NextOnly is unchanged. Leave status/view.py (247 of 250 lines), text.py and document.py untouched. Tests red first. In tests/status/test_start_now.py: a work item with no Task takes no place under NoLimit; a Feature in Backlog whose second work item has no Task takes no place; the guard that NextOnly still marks a work item with no Task. In tests/status/test_start_now_feature.py: a work item with no Task under a started Feature takes no place, and the next one takes it. Existing tests that change: the helpers row of tests/status/test_start_now.py and story of tests/status/test_start_now_feature.py gain one TaskRow by default through a tasks keyword, which keeps their 12 tests that expect a mark as written."
 check = "uv run pytest tests/status tests/functional/test_status_start_now.py tests/functional/test_planned_start.py -q && uv run pytest tests/functional/test_planned_start.py -q --runxfail -k Status"
 expected_output = "changed: with the development on, fgraph status, fgraph watch and can_start mark no work item in Backlog that holds no Task, a line of the Backlog and a work item under a started Feature alike; a Feature in Backlog is marked only when each of its work items in Backlog holds a Task; a line that is not planned is just unmarked, with no suffix; with the development off the next to start is marked as before. The xfail marks of the Status classes of tests/functional/test_planned_start.py are removed"
 created = 2026-11-23 10:14:51+00:00
+started = 2026-11-23 10:18:56+00:00
+completed = 2026-11-23 10:22:00+00:00
+commit = "d1cd5c97b8f0beee2635d2c561969e331930b0aa"
 
 [[tasks]]
 id = "T-0413"
-state = "backlog"
+state = "completed"
 title = "Refuse fgraph start of a Feature, with the development on, while a work item of it in Backlog holds no Task"
 description = "Change src/flowgraph/feature/start.py: add first_unplanned(feature, store) beside first_in_backlog, with the same rows_under, backlog_as_added and queued order, giving the first work item in Backlog whose row has no tasks, or none; in start_feature_item, right after the NoWorkItemError, when config.development.enabled, raise NoTaskError naming the Feature, cannot start:, the id, has no Task to start with; update the docstring of the function and the module docstring. Keep the names first_in_backlog, backlog_as_added and rows_under as they are: S-0117 reads the same order beside this Story. Leave feature/next.py, parser/command.py and the add commands alone: a work item added to a started Feature with no Task is not refused at the add, it waits, and the completion already says not started. Tests seen red first, in tests/feature/test_feature_start.py: a configuration with [development] enabled = true; a refused row of a Feature whose second Story has no Task under it, with its id; a guard that the same items start with the development off. Existing test that changes: tests/functional/test_start_next_branch.py, the class TestAStoryLandedWhileTheNextOfItsStartedFeatureHasNoTask, whose Feature would now be refused at its start: its fixture starts the Feature with its first Story planned and adds the second Story on the checkout before the land; drop its constant for the second Story without a Task if it is left unused. Remove the remaining xfail of the first Task."
 check = "uv run pytest tests/feature tests/functional/test_planned_start.py tests/functional/test_start_next_branch.py tests/functional/test_start_feature.py tests/functional/test_start_next.py -q && ! grep -q xfail tests/functional/test_planned_start.py"
 expected_output = "changed: with the development on, fgraph start F-0002 exits 2, writes nothing and says F-0002 cannot start: S-0004 has no Task to start with, naming the first such work item in start order; with the development off a Feature starts as before. No xfail mark is left in tests/functional/test_planned_start.py"
 created = 2026-11-23 10:14:53+00:00
+started = 2026-11-23 10:22:07+00:00
+completed = 2026-11-23 10:24:47+00:00
+commit = "d640659ef3512e46853206670b17cf7859a80f85"
 
 [[tasks]]
 id = "T-0414"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say an item of the Backlog is marked and started, with the development on, only once planned"
 description = "Find the passages by grep, not by line number. In README.md: the paragraph starting fgraph status marks with, and the list after The start of a Feature exits 2. In docs/domain-model.md: the bullet starting fgraph status marks every work item, the bullet The start of a Feature is refused, and A next work item that cannot start. Keep each edit inside its paragraph. Do not touch the table at the top of README.md, the command and help passages, or the bullet on development.driver: S-0117 edits around them, and the complexity under the driver is S-0129."
 check = "grep -q F-0001.cannot.start:.S-0002.has.no.Task README.md && grep -q F-0001.cannot.start:.S-0002.has.no.Task docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, Order: the bullet on what fgraph status marks gains the planned rule and that with the development off the Tasks are not read. Persistence: the refusals of the start of a Feature gain F-0001 cannot start: S-0002 has no Task to start with, with the development on, and the bullet on a next work item that cannot start says one added after the start with no Task waits. README.md: the paragraph on what status marks gains the rule, and the list of refusals of the start of a Feature gains the same line"
 created = 2026-11-23 10:14:55+00:00
+started = 2026-11-23 10:24:53+00:00
+completed = 2026-11-23 10:25:17+00:00
+commit = "40ed194a6e20c82bf539ec9b6d3c617beaa16052"
 
 [[knowledge]]
 kind = "decision"

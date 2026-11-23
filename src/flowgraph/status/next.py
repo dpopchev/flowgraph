@@ -98,18 +98,29 @@ def _in_backlog(row: Line) -> bool:
             assert_never(unreachable)
 
 
+def _planned(line: Line) -> bool:
+    """True when the line is planned: a work item holds a Task, a Feature's Backlog ones each do."""
+    match line:
+        case WorkItemRow():
+            return bool(line.tasks)
+        case FeatureRow():
+            return all(item.tasks for item in line.work_items if item.state == BACKLOG)
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
 def _startable_under(row: Line) -> list[int]:
     """The places, in the order held, of the work items of a started Feature that can start.
 
-    One in Backlog that waits for nothing. A Feature not started, a blocked one included, and a
-    work item standing alone give none.
+    One in Backlog that waits for nothing and holds a Task. A Feature not started, a blocked one
+    included, and a work item standing alone give none.
     """
     match row:
         case FeatureRow(is_started=True):
             return [
                 at
                 for at, item in enumerate(row.work_items)
-                if item.state == BACKLOG and not item.waits_for
+                if item.state == BACKLOG and not item.waits_for and item.tasks
             ]
         case FeatureRow() | WorkItemRow():
             return []
@@ -137,8 +148,8 @@ def with_start_now(rows: Sequence[Line], limit: StartLimit, started: int) -> lis
 
     Under a limit the places are those it leaves after the work items started. The first to take
     them are the work items in Backlog of the started Features, in the order the rows hold the
-    Features, then the lines of the Backlog in their order; a line that waits is skipped. Off,
-    the first line of the Backlog that can start is marked alone.
+    Features, then the lines of the Backlog in their order; a line that waits or is not planned
+    is skipped. Off, the first line of the Backlog that can start is marked alone, planned or not.
     """
     match limit:
         case NextOnly():
@@ -155,7 +166,9 @@ def with_start_now(rows: Sequence[Line], limit: StartLimit, started: int) -> lis
         (at, item) for at, row in enumerate(rows) for item in _startable_under(row)
     ]
     lines: list[_Place] = [
-        (at, None) for at, row in enumerate(rows) if _in_backlog(row) and _can_start(row)
+        (at, None)
+        for at, row in enumerate(rows)
+        if _in_backlog(row) and _can_start(row) and _planned(row)
     ]
     places = [*under, *lines][:room]
     return [_marked(at, row, places) for at, row in enumerate(rows)]

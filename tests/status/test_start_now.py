@@ -16,6 +16,7 @@ from flowgraph.status.next import (
     with_next,
     with_start_now,
 )
+from flowgraph.task import TaskRow
 from flowgraph.work_item import WorkItemRow
 
 pytestmark = pytest.mark.view
@@ -23,14 +24,21 @@ pytestmark = pytest.mark.view
 CREATED = datetime(2026, 1, 1, tzinfo=UTC)
 
 
-def row(item: str, waits_for: list[str] | None = None) -> WorkItemRow:
-    """A work item in Backlog waiting for those ids."""
-    return WorkItemRow(item, "a title", "backlog", created=CREATED, waits_for=waits_for or [])
+def row(item: str, waits_for: list[str] | None = None, *, tasks: int = 1) -> WorkItemRow:
+    """A work item in Backlog waiting for those ids, holding that many Tasks."""
+    return WorkItemRow(
+        item,
+        "a title",
+        "backlog",
+        created=CREATED,
+        waits_for=waits_for or [],
+        tasks=[TaskRow(f"T-{at:04}", "a task", "an output", "", "todo") for at in range(tasks)],
+    )
 
 
-def feature(item: str, held: int) -> FeatureRow:
+def feature(item: str, held: int, work_items: list[WorkItemRow] | None = None) -> FeatureRow:
     """A Feature in Backlog holding that many work items, its first waiting for nothing."""
-    return FeatureRow(item, "a feature", "Backlog", 0, held)
+    return FeatureRow(item, "a feature", "Backlog", 0, held, work_items=work_items or [])
 
 
 def development(*, enabled: bool, parallel: Parallel | Unlimited) -> Development:
@@ -87,6 +95,20 @@ def test_a_feature_without_a_work_item_in_backlog_takes_no_place() -> None:
     assert start_now_ids(with_start_now([feature("F-0001", 0), row("S-0001")], NoLimit(), 0)) == [
         "S-0001"
     ]
+
+
+def test_a_work_item_with_no_task_takes_no_place_under_no_limit() -> None:
+    lines = [row("S-0001", tasks=0), row("S-0002")]
+    assert start_now_ids(with_start_now(lines, NoLimit(), 0)) == ["S-0002"]
+
+
+def test_a_feature_whose_second_work_item_has_no_task_takes_no_place() -> None:
+    items = [row("S-0001"), row("S-0002", tasks=0)]
+    assert start_now_ids(with_start_now([feature("F-0001", 2, items)], NoLimit(), 0)) == []
+
+
+def test_next_only_still_marks_a_work_item_with_no_task() -> None:
+    assert start_now_ids(with_start_now([row("S-0001", tasks=0)], NextOnly(), 0)) == ["S-0001"]
 
 
 def test_the_lines_are_given_back_in_the_order_given() -> None:

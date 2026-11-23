@@ -6,6 +6,7 @@ import pytest
 
 from flowgraph.feature import FeatureRow
 from flowgraph.status.next import NextOnly, NoLimit, Within, start_now_ids, with_start_now
+from flowgraph.task import TaskRow
 from flowgraph.work_item import WorkItemRow
 
 pytestmark = pytest.mark.view
@@ -13,9 +14,18 @@ pytestmark = pytest.mark.view
 CREATED = datetime(2026, 1, 1, tzinfo=UTC)
 
 
-def story(item: int, state: str = "backlog", waits_for: list[str] | None = None) -> WorkItemRow:
-    """A Story in that state waiting for those ids."""
-    return WorkItemRow(f"S-{item:04}", "a title", state, created=CREATED, waits_for=waits_for or [])
+def story(
+    item: int, state: str = "backlog", waits_for: list[str] | None = None, *, tasks: int = 1
+) -> WorkItemRow:
+    """A Story in that state waiting for those ids, holding that many Tasks."""
+    return WorkItemRow(
+        f"S-{item:04}",
+        "a title",
+        state,
+        created=CREATED,
+        waits_for=waits_for or [],
+        tasks=[TaskRow(f"T-{at:04}", "a task", "an output", "", "todo") for at in range(tasks)],
+    )
 
 
 def feature(
@@ -69,6 +79,13 @@ def test_the_work_items_of_the_first_started_feature_come_before_those_of_the_se
 def test_a_work_item_that_waits_takes_no_place() -> None:
     under = [story(1, waits_for=["S-0002"]), story(2)]
     assert start_now_ids(with_start_now([feature(1, under)], NoLimit(), 0)) == ["S-0002"]
+
+
+def test_a_work_item_with_no_task_under_a_started_feature_takes_no_place_and_the_next_does() -> (
+    None
+):
+    under = [story(1, tasks=0), story(2)]
+    assert start_now_ids(with_start_now([feature(1, under)], Within(1), 0)) == ["S-0002"]
 
 
 def test_a_started_work_item_is_not_marked() -> None:

@@ -308,7 +308,11 @@ of work item. The developer said so on 2026-11-21.
   leaves out the rest. A Feature holding no work item in Backlog, a blocked
   Feature and one never started give none. With `parallel` left out every one
   that waits for nothing is marked; with the development off the next to start
-  alone, the first such line of the queue, as before. Each marked line the top
+  alone, the first such line of the queue, as before. With the development on
+  a line is marked only once planned (S-0127): a work item holds a Task, a
+  Feature's work items in Backlog each hold one, under a started Feature as in
+  the Backlog; a line not planned is unmarked, with no suffix. With the
+  development off the Tasks are not read. Each marked line the top
   of the Backlog leaves out is listed after the top, apart from the count of
   those more; a Backlog where nothing can start marks none. It is a view of
   `fgraph status` and `fgraph watch`: no `next` command exists. The view holds
@@ -1266,6 +1270,8 @@ and its merge tool.
   `F-0001 is removed already`; one with no work item in Backlog,
   `F-0001 has no work item in Backlog to start with`; one whose first work
   item has no Task, `F-0001 cannot start: S-0001 has no Task to start with`;
+  with the development on, one whose work item in Backlog has no Task, the
+  first in start order named, `F-0001 cannot start: S-0002 has no Task to start with`;
   and a start `[development] parallel` refuses (below).
 - A work item does not start before its Feature: the start of a work item in
   Backlog under a Feature that is not started is refused with exit 2, naming
@@ -1315,7 +1321,8 @@ and its merge tool.
   without a Task: `not started: S-0002 has no Task to start with`. One
   `[development] parallel` refuses: `not started: S-0002 cannot start:
   development.parallel = 1, started already: S-0003`. One whose title
-  gives no slug. One under a blocked Feature (below).
+  gives no slug. One under a blocked Feature (below). One added to a started
+  Feature with no Task waits: the add does not refuse it.
   `fgraph start S-0002` on `main` starts it once the refusal is gone.
 - A completion starts no work item when the Feature holds none in Backlog --
   the last one completes the Feature (below) -- when the work item stands

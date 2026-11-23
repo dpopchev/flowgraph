@@ -60,6 +60,7 @@ COMPLETED = completed_feature(STARTED, DAY[6], NO_COMMIT)
 NO_QUEUE = make_queue([])
 UNLIMITED = make_config("")
 ONE_AT_ONCE = make_config("[development]\nenabled = true\nparallel = 1\n")
+DEVELOPED = make_config("[development]\nenabled = true\n")
 
 
 def never(*_: object) -> Never:
@@ -208,6 +209,13 @@ REFUSED = [
         NoTaskError,
         "F-0001 cannot start: S-0001 has no Task to start with",
     ),
+    (
+        [story(1), story(2, tasks=0)],
+        FEATURE,
+        DEVELOPED,
+        NoTaskError,
+        "F-0001 cannot start: S-0002 has no Task to start with",
+    ),
     ([story(1)], STARTED, UNLIMITED, StartedAlreadyError, "F-0001 is started already"),
     ([story(1)], COMPLETED, UNLIMITED, CompletedAlreadyError, "F-0001 is completed already"),
     (
@@ -222,6 +230,7 @@ REFUSALS = [
     "no-work-item",
     "no-work-item-in-backlog",
     "first-work-item-without-a-task",
+    "second-work-item-without-a-task-with-the-development-on",
     "started-already",
     "completed-already",
     "beside-as-many-started-as-parallel",
@@ -252,6 +261,11 @@ def test_a_feature_start_refused_saves_nothing(
     with pytest.raises(error):
         start_feature_item("F-0001", None, store(items, feature, saved=saved), lambda: NOW, config)
     assert (saved.features, saved.items) == ([], [])
+
+
+def test_a_feature_whose_second_work_item_has_no_task_starts_with_the_development_off() -> None:
+    written, _ = start([story(1), story(2, tasks=0)])
+    assert written.out == "started F-0001 with S-0001\n"
 
 
 def test_a_feature_the_record_does_not_hold_is_not_started() -> None:

@@ -2,8 +2,9 @@
 
 A Feature is to its work items what a work item is to its Tasks: it starts with its first work
 item and not without one, a work item of it does not start before it or while it is blocked, and
-the work items of it started at once are limited by `development.parallel` alone. Each runs on
-the store of a record, as the commands of a work item do (`flowgraph.item.commands`).
+the work items of it started at once are limited by `development.parallel` alone. With the
+development on it starts only once planned: each work item of it in Backlog holds a Task. Each
+runs on the store of a record, as the commands of a work item do (`flowgraph.item.commands`).
 """
 
 from typing import assert_never
@@ -60,6 +61,18 @@ def first_in_backlog(feature: FeatureId, store: Store) -> WorkItemId | None:
     return min(in_backlog, key=start_order.index, default=None)
 
 
+def first_unplanned(feature: FeatureId, store: Store) -> WorkItemId | None:
+    """The work item in Backlog of the Feature that holds no Task and starts first; else None.
+
+    The order is the one of `first_in_backlog`: the queue over the order added.
+    """
+    rows = rows_under(feature, store)
+    in_backlog = backlog_as_added(rows)
+    start_order = queued(store.load_queue(), in_backlog)
+    bare = [item for item in in_backlog if not rows[item].tasks]
+    return min(bare, key=start_order.index, default=None)
+
+
 def start_feature_item(
     feature: str,
     slug: str | None,
@@ -78,7 +91,8 @@ def start_feature_item(
     removed, NoWorkItemError when it has no work item in Backlog, StartWaitsError naming what its
     first work item still waits for, ParallelError when as many
     work items are started as the configuration starts at once, SlugError when the slug given
-    is no slug, and NoTaskError naming the Feature when its first work item has no Task;
+    is no slug, and NoTaskError naming the Feature when its first work item has no Task or, with
+    the development on, when a work item of it in Backlog has none, the first in start order named;
     nothing is saved.
     """
     feature_id = parse_feature_id(feature)
@@ -88,6 +102,11 @@ def start_feature_item(
     first = first_in_backlog(feature_id, store)
     if first is None:
         raise NoWorkItemError(f"{named} has no work item in Backlog to start with")
+    unplanned = first_unplanned(feature_id, store) if config.development.enabled else None
+    if unplanned is not None:
+        raise NoTaskError(
+            f"{named} cannot start: {work_item_id_text(unplanned)} has no Task to start with"
+        )
     check_first_waits(named, first, store)
     check_feature_parallel(feature_id, store.find_work_item_rows, config)
     held = store.load_work_item(first)

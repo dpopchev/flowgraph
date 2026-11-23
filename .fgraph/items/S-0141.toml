@@ -9,3 +9,8 @@ amends = "S-0035"
 given = "a repository with the development on, two work items started in their worktrees with a Task being worked in each, and a work item added on main after both starts"
 when = "fgraph watch draws a frame on main and in the worktree of each of the two work items"
 then = "the three frames list the same: both work items in InProgress, each with its Task being worked, and the work item added on main in Backlog"
+
+[[knowledge]]
+kind = "decision"
+text = "The developer decided on 2026-11-23, asked before its Tasks were drafted: fgraph status and fgraph watch alone change -- run in the worktree of a work item they read the record of main, each started work item taken from its own worktree; fgraph show, every other read and every write stay as they are."
+noted = 2026-11-23 19:41:26+00:00

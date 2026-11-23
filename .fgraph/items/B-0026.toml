@@ -2,6 +2,7 @@ id = "B-0026"
 state = "backlog"
 title = "Cut the item files with a day alone as a time that end fgraph status and fgraph knowledge in a traceback from every one to none"
 description = "Found by the subagent of T-0373 of Q-0001 on 2026-11-23, on a scratch record (docs/domain-model.md, Probe, once Q-0001 lands); filed at the end of the queue and not burned. Its Tasks are written when it is ordered. Run again by the subagent after the restart of the session with the same line."
+complexity = "medium"
 created = 2026-11-23 06:04:29+00:00
 filed_during = "Q-0001"
 

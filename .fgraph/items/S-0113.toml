@@ -9,3 +9,12 @@ created = 2026-11-23 07:02:00+00:00
 given = "a record with the development on and a work item in Backlog that waits for nothing"
 when = "it is started with the agent it is handed to named"
 then = "fgraph status lists the agent beside the started work item, fgraph show lists it and the JSON carries it"
+
+[[tasks]]
+id = "T-0390"
+state = "backlog"
+title = "Add tests/functional/test_start_agent.py, failing on the criterion of S-0113"
+description = "Run through run() of src/flowgraph/cli.py on a real git repository in tmp_path, with open_git and read_config, the identity from the environment and no git config. Copy the helpers fgraph, runs, git, environment and checkout from tests/functional/test_start_branch.py; the config.toml of the record holds [development] enabled = true. Write one class with one fixture that runs the start with --agent sonnet-a1, and one assert per test: the exit status of the start; the exact status line (two spaces, S-0001, two spaces, 0/1 T, two spaces, [sonnet-a1], two spaces, the title); the exact show line (two spaces, agent, eight spaces, sonnet-a1); the agent key of S-0001 in the parsed JSON. Functional stays the pytestmark of the module. Each test carries its own strict xfail naming S-0113, not one module mark: the next Task turns the exit and show tests green and the Task after turns the status tests green. Seen red first: argparse refuses --agent as an unrecognized argument (SystemExit 2), so every test fails today and none is a guard. No source changes."
+check = "uv run pytest tests/functional/test_start_agent.py -q"
+expected_output = "created: tests/functional/test_start_agent.py states that in a git repository with the development on, a Story in Backlog with one Task that waits for nothing, started on main with fgraph start S-0001 --agent sonnet-a1, exits 0; that fgraph status lists its line under InProgress as S-0001, 0/1 T, [sonnet-a1], then its title; that fgraph show S-0001 lists the line agent sonnet-a1; and that fgraph status --format json holds agent sonnet-a1 on the item S-0001"
+created = 2026-11-23 08:07:58+00:00

@@ -19,48 +19,75 @@ then = "it prints its criterion, its Tasks with their outputs and checks, its wo
 
 [[tasks]]
 id = "T-0401"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_brief.py, failing on the criterion of S-0116"
 description = "Run through run() of src/flowgraph/cli.py on a real git repository in tmp_path with open_files, open_git and read_config, the identity from the environment and no git config. Copy the helpers fgraph (it catches the SystemExit of argparse as exit 2), runs, git, environment and checkout from tests/functional/test_start_agent.py. Parse the JSON inside each test body, never in a fixture: today the output is empty, and a fixture that fails to parse errors the setup instead of failing under the xfail. One fixture builds the record on main with the development off: add the term gate meaning a check every deliverable passes before it lands; add F-0001 and note a decision on it; add S-0001 with one Task, then start and complete the Task and S-0001; note S-0001 --decision the gate holds no state --governs src/gate.py; add S-0002 --parent F-0001 --depends-on S-0001 --about gate --complexity medium, with one Task --output changed: src/gate.py holds the gate --check make test, and a decision noted on it; add S-0003, standalone with no Task; run fgraph config set development.enabled true, then fgraph start F-0001 --slug brief-me --agent sonnet-a1. One assert per test, each test under its own strict xfail naming S-0116. TestTheBriefAsText, on S-0002: exit 0; the output starts with the output of fgraph show S-0002; it holds the line Worktree, then two spaces, branch, seven spaces, wi/S-0002-brief-me; then two spaces, path, nine spaces, the worktree path built as tests/functional/test_start_branch.py builds it; the line Feature, then two spaces, F-0001, two spaces, InProgress, two spaces and its title; then two spaces and Knowledge (1), then four spaces, decision, two spaces, the date, two spaces and the text; the line Governed by, then two spaces and decision, the date, S-0001 and the gate holds no state, each pair joined by two spaces; the line Terms (1), then two spaces, gate, two spaces and its meaning. TestTheBriefOfBacklogAsText: fgraph brief S-0003 prints exactly what fgraph show S-0003 prints. TestTheBriefRefusedAsText: F-0001 and T-0001 each write is no Story, Upkeep, Bug or Spike id on the error output; assert the message, not exit 2, since argparse already exits 2 today. TestTheBriefAsJson, on S-0002: branch; worktree; agent sonnet-a1; complexity medium; criterion given; depends_on is one object with bucket Completed and id S-0001; waits_for is empty; feature id F-0001; the text of the feature knowledge; governed_by item S-0001; the terms; the check and expected_output of the first Task; the output equals json.dumps of its own parse with indent 2, sorted keys and a newline. TestTheBriefOfBacklogAsJson, on S-0003: branch, worktree and feature are null. TestTheFormatRefused: --format xml writes is not text or json, the two formats of brief. No guards: every test fails today on the unknown command. No source changes."
 check = "uv run pytest tests/functional/test_brief.py -q"
 expected_output = "created: tests/functional/test_brief.py states that in a git repository where S-0001 is completed and governed by a line on src/gate.py, and S-0002 under F-0001 depends on S-0001, is about the term gate, has complexity medium and a Task whose output names src/gate.py, and is started through F-0001 with --slug brief-me --agent sonnet-a1, fgraph brief S-0002 prints, as text and as JSON, its show text, branch, worktree, Feature with its decision, the governing line and the term; S-0003 in Backlog is briefed with no worktree; a Feature id, a Task id and an unknown format are refused naming why"
 created = 2026-11-23 09:11:37+00:00
+started = 2026-11-23 09:15:13+00:00
+completed = 2026-11-23 09:17:30+00:00
+commit = "775f1f07d19eeb6c12a69643a178de7aa61b792b"
 
 [[tasks]]
 id = "T-0402"
-state = "backlog"
+state = "completed"
 title = "Move the views of knowledge, terms, graph, about and show out of src/flowgraph/parser/command.py into src/flowgraph/parser/views.py"
 description = "A refactor under green: no new test, and the existing functional tests are the guard. view_said(args, store, cwd, open_git) returns Said or None and holds the cases knowledge, terms, graph, about and show, moved as they are. The last case of the second match of command_said returns it. Keep the config, land, release and status cases in command.py: S-0114 works on fgraph status beside this Story, so those lines must not move. Leave _written and the checks at the top of command_said untouched. Give views.py a one-line module docstring. src/flowgraph/parser/command.py is at 250 of 250 lines: this Task comes before any line is added to it."
 check = "grep -q def.view_said src/flowgraph/parser/views.py && ! grep -q show_any_item src/flowgraph/parser/command.py && uv run pytest tests/functional/test_about_item.py tests/functional/test_show_worktree.py tests/functional/test_knowledge_command.py tests/functional/test_graph_json.py tests/functional/test_add_term.py tests/parser -q"
 expected_output = "changed: command_said of src/flowgraph/parser/command.py hands every command its matches leave to view_said of the new src/flowgraph/parser/views.py, which says the text of fgraph knowledge, terms, graph, about and show as before; command.py drops their imports and has room for the next Task; nothing a command prints changes"
 created = 2026-11-23 09:11:39+00:00
+started = 2026-11-23 09:17:38+00:00
+completed = 2026-11-23 09:18:59+00:00
+commit = "d71b2e8bbab0e0593bdefd8a95be02a797fb729b"
 
 [[tasks]]
 id = "T-0403"
-state = "backlog"
+state = "completed"
 title = "Print the brief of a work item with fgraph brief ID: the text of fgraph show, then its worktree, its Feature, the lines that govern the files its Tasks name and its terms"
 description = "New package src/flowgraph/brief/, all imported directly and none through the __init__ of another package. model.py, pure: plain dataclasses Brief (detail, branch, worktree, feature, governed_by, terms), FeatureBrief and TermLine; governing(entries, tasks) keeps an entry when one of its governs paths stands as a whole path in the expected output or the description of a Task: no letter, digit, slash, dot, underscore or hyphen before it, and no letter, digit, slash, underscore or hyphen after it, so src/gate.py matches in changed: src/gate.py holds, but not in tests/src/gate.py or src/gate.pyi. text.py, pure: brief_text(brief) is show_text of src/flowgraph/status/show.py followed by the sections; do not change show.py; use governed_text of knowledge/governed.py for the Governed by block. read.py, the shell: brief_of(item, store, record, open_git) parses the id with parse_work_item_id_of_any_kind; reads the detail with find_work_item_detail and passes it through bucketed; reads the Feature with parse_feature_id, feature_detail, and feature_bucket over the states of rows_under, rebuilt the way _feature_line of about/view.py does, which is private and not imported; reads the governing lines by passing collected(store) through governing; reads the terms with store.terms.load_term; reads the branch with kept_in(record, open_git) and find_branches of wi/ID-*, the first branch with a worktree, else the first branch, else none. Do not touch development/scope.py, which is at 238 lines. New src/flowgraph/parser/brief.py, brief_command(commands), shaped as parser/start.py. item_commands.py builds it right after about and adds it to the dict. parser/views.py gains the case brief and a record parameter, which command.py passes. Add brief after about in COMMANDS of tests/functional/test_command_help.py. Write the unit tests red first, under the view marker: tests/brief/test_governing.py and tests/brief/test_text.py; in test_text.py a brief with no branch, no Feature, no governing line and no term is exactly show_text."
 check = "uv run pytest tests/functional/test_brief.py -q --runxfail -k AsText && uv run pytest tests/brief tests/functional/test_command_help.py -q"
 expected_output = "changed: fgraph brief ID takes a work item of any kind in any state and prints the text fgraph show ID prints, then Worktree with the branch and worktree path git holds for it; Feature with its id, bucket, title, description and knowledge lines; Governed by with every line of the record that governs a path a Task of it names, newest first; and Terms (n) with each term it or its Feature is about and its meaning, each once. A section with nothing in it is left out. A Feature id, a Task id and an id the record does not hold are refused, exit 2. The xfail marks of the AsText classes in tests/functional/test_brief.py are removed"
 created = 2026-11-23 09:11:42+00:00
+started = 2026-11-23 09:19:23+00:00
+completed = 2026-11-23 09:23:16+00:00
+commit = "37868ffe35d7df3d2985b85afddc13eaf296311c"
 
 [[tasks]]
 id = "T-0404"
-state = "backlog"
+state = "completed"
 title = "Print the brief of a work item as JSON with fgraph brief ID --format json, keys sorted and null for nothing"
 description = "New src/flowgraph/brief/document.py, pure: brief_json(brief), shaped as status_json in status/document.py but neither importing it nor changing it (S-0114 changes it). BriefFormatError and chosen_brief_format live beside it. noted is the full isoformat, as fgraph graph writes it. waits_for holds the ids in depends_on whose bucket is not Completed. kind comes from the id prefix through KINDS of flowgraph.record.store. In read.py, brief_output(item, format_, store, record, open_git) picks the format before any read. parser/brief.py adds --format as the status parser does. parser/refusals.py imports BriefFormatError and lists it right after StatusFormatError, not at the end of REFUSED. Write tests/brief/test_document.py red first: a started brief; nulls for a brief with no Feature and no worktree; the criterion of a Bug and of a Spike; the same bytes on two calls."
 check = "uv run pytest tests/functional/test_brief.py tests/brief -q --runxfail"
 expected_output = "changed: fgraph brief takes --format text or json, text the default. The JSON holds agent, branch, bucket, complexity, criterion (answer, decision, expected, given, hypothesis, observed, then, when), depends_on (each with id and bucket), description, feature (id, title, bucket, description, knowledge) or null, governed_by (each with item, kind, noted, text, about, governs), id, kind, knowledge, state, tasks (each with id, title, state, expected_output, check, description, commit, reason, waiting_on), terms (each with name and meaning), title, waits_for and worktree. A key that holds nothing is null and an empty list is []. Keys are sorted, the indent is two and the text ends with a newline. A format that is neither is refused naming both, exit 2. No strict xfail mark is left in tests/functional/test_brief.py"
 created = 2026-11-23 09:11:45+00:00
+started = 2026-11-23 09:23:38+00:00
+completed = 2026-11-23 09:26:42+00:00
+commit = "9d43f3e3337d79d83d56e919da06c4686daf233c"
 
 [[tasks]]
 id = "T-0405"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph brief prints the brief of a work item, as text and as JSON"
 description = "Find the passages by grep, not by line number: S-0114 and S-0115 land in between. Touch no other section. S-0114 edits Order and Status as JSON, and S-0115 edits the development in Persistence and the configuration in README."
 check = "grep -q fgraph.brief README.md && grep -q governed_by docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md holds a new section Brief between About and Terms. It states which work items brief takes and in what states; the text form (the show text, then Worktree, Feature, Governed by and Terms, each left out when empty); how a governed path is matched in a Task; the JSON keys as a contract (sorted, null for nothing, the same bytes on two runs); and the refusals. README.md adds a row after the links of an item in the table, and a paragraph with an example after the about-of-a-file examples"
 created = 2026-11-23 09:11:48+00:00
+started = 2026-11-23 09:26:49+00:00
+completed = 2026-11-23 09:27:16+00:00
+commit = "f609aa671b5be61b458185451329e2518103d85d"
+
+[[tasks]]
+id = "T-0406"
+state = "completed"
+title = "Name brief among the commands of tests/parser/test_help.py"
+description = "Added on 2026-11-23 on the agreement of the developer, after the hand-back of S-0116 stopped at this test: it pins the whole set of commands, the plan named tests/functional/test_command_help.py alone, and the subagent left the line unwritten as its brief says. One line and nothing else in the file."
+check = "uv run pytest tests/parser/test_help.py -q"
+expected_output = "changed: tests/parser/test_help.py names brief among the commands in test_every_command_kind_under_add_and_action_under_config_has_its_help, one line right after about, so the list of every command holds the new one"
+created = 2026-11-23 09:48:06+00:00
+started = 2026-11-23 09:48:36+00:00
+completed = 2026-11-23 09:48:55+00:00
+commit = "f6fd8c08e8fe26032c085ee8144b246fb4a77f4c"
 
 [[knowledge]]
 kind = "decision"

@@ -710,6 +710,44 @@ its count and each linked item is one line, its id, its bucket and its title.
   work items and Tasks whose commits changed it. A governed file no commit touched
   lists the lines alone.
 
+## Brief
+
+`fgraph brief ID` prints the whole brief of a work item, the input a coordinator hands an agent
+that develops it. It reads the record and git as plain data and writes nothing. It takes a work
+item of any kind -- Story, Upkeep, Bug or Spike -- in any state, Backlog, InProgress, Completed
+or Removed. The id of a Feature, the id of a Task and an id of no kind are refused, exit 2,
+naming the four kinds; so is an id the record holds no work item of. It holds data alone: no
+sentence on how the work is done.
+
+The text is the text of `fgraph show ID`, then four sections, each left out when it has nothing,
+so the brief of a work item that has none of them is exactly the text of `show`:
+
+- `Worktree`: the branch `wi/ID-*` and the path of the worktree git holds for it, the first
+  branch with a worktree, else the first branch alone; none for a record outside a git work tree
+  or one git ignores.
+- `Feature`: its id, its bucket, its title, its description and its knowledge lines.
+- `Governed by`: every knowledge line of the record that governs a path one of the Tasks of the
+  work item names, last noted first, as `fgraph about` of a file lists them.
+- `Terms (n)`: each term the work item or its Feature is about, with its meaning, each once.
+
+A governed path is named by a Task when it stands as a whole path in the expected output or the
+description of the Task: no letter, digit, slash, dot, underscore or hyphen before it, and no
+letter, digit, slash, underscore or hyphen after it. `src/gate.py` is named in `changed:
+src/gate.py holds the gate`, and is not named in `tests/src/gate.py` or in `src/gate.pyi`.
+
+`--format json` prints the same as one JSON document, a contract: the keys are sorted, the
+indent is two, the text ends with a newline, a key that holds nothing is `null` and a list that
+holds nothing is `[]`, so two runs on one record print the same bytes. The keys are `agent`,
+`branch`, `bucket`, `complexity`, `criterion` (`answer`, `decision`, `expected`, `given`,
+`hypothesis`, `observed`, `then`, `when`), `depends_on` (each with `id` and `bucket`),
+`description`, `feature` (`id`, `title`, `bucket`, `description`, `knowledge`, or `null`),
+`governed_by` (each with `item`, `kind`, `noted`, `text`, `about`, `governs`), `id`, `kind`,
+`knowledge`, `state`, `tasks` (each with `id`, `title`, `state`, `expected_output`, `check`,
+`description`, `commit`, `reason`, `waiting_on`), `terms` (each with `name` and `meaning`),
+`title`, `waits_for` -- the ids of `depends_on` whose bucket is not Completed -- and
+`worktree`. `noted` is the full ISO time. A format that is neither `text` nor `json` is refused
+naming both, exit 2.
+
 ## Terms
 
 A term is a word of the project and what it means, the first node of its ontology.

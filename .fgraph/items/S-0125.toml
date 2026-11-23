@@ -2,6 +2,7 @@ id = "S-0125"
 state = "backlog"
 title = "Raise the Features in InProgress fgraph remove takes from none to every one whose work is taken apart, its work items completed or removed"
 description = "The words of the developer of 2026-11-23: allow InProgress to be removed when work is being disintegrated, as in this case, where some items are completed and others are superseded and thus removed. The case is F-0015: Q-0001 is Completed, S-0106 and S-0107 are Removed, superseded by S-0120, and the Feature is blocked because fgraph remove takes an item in Backlog alone, while completing it would say its criteria were met. Open: whether a started work item whose Tasks are partly completed is removed the same way, its completed Tasks kept -- B-0025 names that move among those the tables list and fgraph does not make; and whether a removed Feature names what supersedes it, as a removed work item does. Its Tasks are written when it is ordered."
+complexity = "medium"
 created = 2026-11-23 07:36:48+00:00
 
 [criterion]

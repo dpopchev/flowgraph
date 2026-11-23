@@ -4,7 +4,8 @@ A Feature is to its work items what a work item is to its Tasks: it starts them 
 completion of a work item under a started Feature starts the first of its work items in Backlog
 in the order of the queue, beside those of it still started, in the same write, as `fgraph
 start` of that work item would. A next work item that cannot start leaves the completion as it
-is, and the completion says why: a blocked Feature starts none. It runs on the store of a
+is, and the completion says why: a blocked Feature starts none, and neither does a next work
+item with no complexity while an agent drives the development. It runs on the store of a
 record, as the commands of a work item do (`flowgraph.item.commands`).
 """
 
@@ -12,6 +13,7 @@ from typing import assert_never
 
 from flowgraph.criterion import Decision
 from flowgraph.development import SlugError
+from flowgraph.development.driver import NoComplexityError, check_complexity
 from flowgraph.development.parallel import ParallelError, check_parallel
 from flowgraph.development.scope import OutOfScopeError
 from flowgraph.feature import (
@@ -34,6 +36,7 @@ from flowgraph.work_item import WorkItemId, work_item_id_text
 # What leaves the next work item in Backlog: each refusal of its start, the completion standing.
 NOT_STARTED = (
     NoTaskError,
+    NoComplexityError,
     ParallelError,
     BlockedError,
     StartWaitsError,
@@ -71,13 +74,14 @@ def start_next(item_id: WorkItemId, store: Store, now: Now, config: Config) -> W
 
     Raises one of NOT_STARTED when its Feature is blocked, when it depends on a work item not
     completed, when as many are started as the configuration starts at once, when it has no
-    Task, when its title gives no slug or when the branch written on writes another work item
-    alone; nothing is saved.
+    Task, when it holds no complexity and an agent drives the development, when its title gives
+    no slug or when the branch written on writes another work item alone; nothing is saved.
     """
     named = work_item_id_text(item_id)
     check_start_under_feature(named, store)
     check_start_waits(named, store)
     check_parallel(named, store.find_work_item_rows, config)
+    check_complexity(named, store.load_work_item, config)
     return start_item(named, None, store, now)
 
 

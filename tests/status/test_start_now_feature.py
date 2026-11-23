@@ -5,6 +5,7 @@ from datetime import UTC, datetime
 import pytest
 
 from flowgraph.feature import FeatureRow
+from flowgraph.record.layers import Driver
 from flowgraph.status.next import NextOnly, NoLimit, Within, start_now_ids, with_start_now
 from flowgraph.task import TaskRow
 from flowgraph.work_item import WorkItemRow
@@ -15,14 +16,20 @@ CREATED = datetime(2026, 1, 1, tzinfo=UTC)
 
 
 def story(
-    item: int, state: str = "backlog", waits_for: list[str] | None = None, *, tasks: int = 1
+    item: int,
+    state: str = "backlog",
+    waits_for: list[str] | None = None,
+    *,
+    tasks: int = 1,
+    complexity: str = "",
 ) -> WorkItemRow:
-    """A Story in that state waiting for those ids, holding that many Tasks."""
+    """A Story in that state waiting for those ids, holding that many Tasks and a complexity."""
     return WorkItemRow(
         f"S-{item:04}",
         "a title",
         state,
         created=CREATED,
+        complexity=complexity,
         waits_for=waits_for or [],
         tasks=[TaskRow(f"T-{at:04}", "a task", "an output", "", "todo") for at in range(tasks)],
     )
@@ -86,6 +93,14 @@ def test_a_work_item_with_no_task_under_a_started_feature_takes_no_place_and_the
 ):
     under = [story(1, tasks=0), story(2)]
     assert start_now_ids(with_start_now([feature(1, under)], Within(1), 0)) == ["S-0002"]
+
+
+def test_a_work_item_with_no_complexity_under_a_started_feature_takes_no_place_by_an_agent() -> (
+    None
+):
+    under = [story(1), story(2, complexity="low")]
+    marked = with_start_now([feature(1, under)], NoLimit(Driver.AGENT), 0)
+    assert start_now_ids(marked) == ["S-0002"]
 
 
 def test_a_started_work_item_is_not_marked() -> None:

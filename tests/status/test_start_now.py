@@ -6,7 +6,7 @@ import pytest
 
 from flowgraph.feature import FeatureRow
 from flowgraph.record import Parallel, Unlimited
-from flowgraph.record.layers import UNGATED, Development, Merge
+from flowgraph.record.layers import UNGATED, Development, Driver, Merge
 from flowgraph.status.next import (
     NextOnly,
     NoLimit,
@@ -24,13 +24,16 @@ pytestmark = pytest.mark.view
 CREATED = datetime(2026, 1, 1, tzinfo=UTC)
 
 
-def row(item: str, waits_for: list[str] | None = None, *, tasks: int = 1) -> WorkItemRow:
-    """A work item in Backlog waiting for those ids, holding that many Tasks."""
+def row(
+    item: str, waits_for: list[str] | None = None, *, tasks: int = 1, complexity: str = ""
+) -> WorkItemRow:
+    """A work item in Backlog waiting for those ids, holding that many Tasks and a complexity."""
     return WorkItemRow(
         item,
         "a title",
         "backlog",
         created=CREATED,
+        complexity=complexity,
         waits_for=waits_for or [],
         tasks=[TaskRow(f"T-{at:04}", "a task", "an output", "", "todo") for at in range(tasks)],
     )
@@ -41,9 +44,17 @@ def feature(item: str, held: int, work_items: list[WorkItemRow] | None = None) -
     return FeatureRow(item, "a feature", "Backlog", 0, held, work_items=work_items or [])
 
 
-def development(*, enabled: bool, parallel: Parallel | Unlimited) -> Development:
-    """The development, on or off, with that limit."""
-    return Development(enabled=enabled, parallel=parallel, merge=Merge.MERGE_COMMIT, gate=UNGATED)
+def development(
+    *, enabled: bool, parallel: Parallel | Unlimited, driver: Driver = Driver.DEVELOPER
+) -> Development:
+    """The development, on or off, with that limit, driven by that driver."""
+    return Development(
+        enabled=enabled,
+        parallel=parallel,
+        merge=Merge.MERGE_COMMIT,
+        gate=UNGATED,
+        driver=driver,
+    )
 
 
 FOUR = [row("S-0001"), row("S-0002", ["S-0004"]), row("S-0003"), row("S-0004")]
@@ -59,6 +70,41 @@ def test_the_development_on_without_a_limit_has_no_limit() -> None:
 
 def test_the_development_on_with_parallel_3_is_within_3() -> None:
     assert start_limit(development(enabled=True, parallel=Parallel(3))) == Within(3)
+
+
+def test_the_development_on_driven_by_an_agent_has_no_limit_driven_by_an_agent() -> None:
+    on = development(enabled=True, parallel=Unlimited(), driver=Driver.AGENT)
+    assert start_limit(on) == NoLimit(Driver.AGENT)
+
+
+def test_the_development_on_driven_by_an_agent_with_parallel_3_is_within_3_by_an_agent() -> None:
+    on = development(enabled=True, parallel=Parallel(3), driver=Driver.AGENT)
+    assert start_limit(on) == Within(3, Driver.AGENT)
+
+
+def test_the_development_off_driven_by_an_agent_limits_to_the_next_to_start_alone() -> None:
+    off = development(enabled=False, parallel=Unlimited(), driver=Driver.AGENT)
+    assert start_limit(off) == NextOnly()
+
+
+def test_a_work_item_with_no_complexity_takes_no_place_under_no_limit_driven_by_an_agent() -> None:
+    lines = [row("S-0001"), row("S-0002", complexity="low")]
+    assert start_now_ids(with_start_now(lines, NoLimit(Driver.AGENT), 0)) == ["S-0002"]
+
+
+def test_the_next_line_with_a_complexity_takes_the_place_within_1_driven_by_an_agent() -> None:
+    lines = [row("S-0001"), row("S-0002", complexity="low")]
+    assert start_now_ids(with_start_now(lines, Within(1, Driver.AGENT), 0)) == ["S-0002"]
+
+
+def test_a_feature_whose_second_work_item_has_no_complexity_takes_no_place() -> None:
+    items = [row("S-0001", complexity="low"), row("S-0002")]
+    marked = with_start_now([feature("F-0001", 2, items)], NoLimit(Driver.AGENT), 0)
+    assert start_now_ids(marked) == []
+
+
+def test_no_limit_still_marks_a_work_item_with_no_complexity() -> None:
+    assert start_now_ids(with_start_now([row("S-0001")], NoLimit(), 0)) == ["S-0001"]
 
 
 def test_next_only_marks_what_with_next_marks() -> None:

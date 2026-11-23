@@ -9,6 +9,7 @@ from flowgraph.criterion import (
     EmptyPartError,
 )
 from flowgraph.development import GateError, GitError, SlugError
+from flowgraph.development.driver import NoComplexityError
 from flowgraph.development.parallel import ParallelError
 from flowgraph.development.release import ReleaseError
 from flowgraph.development.scope import NotOnMainError, OutOfScopeError
@@ -104,6 +105,7 @@ REFUSED = (
     TaskIdError,
     TaskNotFoundError,
     NoTaskError,
+    NoComplexityError,
     NotStartedError,
     StartedAlreadyError,
     BlockedError,

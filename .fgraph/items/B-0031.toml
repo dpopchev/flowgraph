@@ -1,0 +1,10 @@
+id = "B-0031"
+state = "backlog"
+title = "Cut the work items a /goal line of fgraph goal names that no start takes, for no Task or no complexity, from every one to none"
+description = "Found by the planner of S-0129 on 2026-11-23, reading src/flowgraph/goal/read.py, and run again by the coordinator that day; filed at the end of the Backlog on the word of the developer. fgraph goal was built by S-0117 before the planned rule of S-0127 and of S-0129. The fix suggested: refuse, in the words the start of a Feature has, F-0001 cannot start: S-0002 has no Task to start with and its line for the complexity, through first_unplanned and first_without_complexity of src/flowgraph/feature/start.py. Open: whether the goal is refused or worded over the planned work items alone. Its Tasks are written when it is ordered."
+created = 2026-11-23 14:02:21+00:00
+filed_during = "S-0129"
+
+[criterion]
+observed = "on the record of flowgraph on 2026-11-23, with the development on and development.driver agent, fgraph goal F-0017 exits 0 and words a /goal line that names S-0130, S-0131, S-0132, S-0133, S-0134, S-0135, S-0136, S-0137 and S-0139, none of which holds a Task or a complexity, so fgraph start of the Feature refuses and no coordinator can meet the goal"
+expected = "fgraph goal of a Feature that holds a work item in Backlog not planned -- no Task, or no complexity with the development driven by an agent -- exits 2 and names the first such work item in start order and what it lacks; a Feature planned whole is worded as today"

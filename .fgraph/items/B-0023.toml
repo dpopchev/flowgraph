@@ -2,6 +2,7 @@ id = "B-0023"
 state = "backlog"
 title = "Cut the landings fgraph merges before saying main tracks no remote to push to, under delivery.push, from every one to none"
 description = "Found during T-0353 of S-0090 on 2026-11-23, under the burn of the goal; filed at the end of the queue and not burned. Reported by the lane; the brief of T-0353 asked only that a failed push leave the landing whole, so this is an amendment and not a miss. Beside it: when the branch of the next work item fails after a landing with delivery.push true, no push runs and the error does not say that main is not pushed. Its Tasks are written when it is ordered."
+complexity = "low"
 created = 2026-11-22 23:10:13+00:00
 filed_during = "S-0090"
 

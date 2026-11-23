@@ -1167,6 +1167,25 @@ fgraph start T-0001 --agent sonnet-a1
 # fgraph: error: --agent names the agent of a work item: T-0001 is a Task
 ```
 
+A started work item is handed to another agent, or to one when it holds none,
+with `fgraph hand ID --agent NAME`, the name required. It says `handed S-0001
+to opus-b2` and commits `chore: hand S-0001 to opus-b2 in the record`; the agent
+is replaced and the file keeps no history of the ones before it. With the
+development on it is written where the Tasks of the work item are: in its
+worktree, or from main with `--dir` on the `.fgraph` of that worktree. On main
+without it, the refusal of main names the worktree. It exits 2 and writes
+nothing for a work item in Backlog, completed or removed, for a Task or a
+Feature, for a name that is no agent and with the development off:
+
+```sh
+fgraph hand S-0001 --agent opus-b2    # in the worktree of S-0001
+# handed S-0001 to opus-b2
+fgraph --dir /src/project.worktrees/S-0001-raise-the-stories-fgraph/.fgraph hand S-0001 --agent opus-b2
+# handed S-0001 to opus-b2
+fgraph hand S-0001 --agent opus-b2    # on main
+# fgraph: error: S-0001 is started: its Tasks are written in its worktree, /src/project.worktrees/S-0001-raise-the-stories-fgraph
+```
+
 On the branch of a started Story, `wi/S-0001-<slug>`, fgraph writes that
 Story alone: its Tasks are added, started and completed there. A Task for
 another Story, a new Story or a reorder of the Backlog exits 2 there and

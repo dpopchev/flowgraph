@@ -31,6 +31,7 @@ COMMANDS = [
     ("brief",),
     ("goal",),
     ("start",),
+    ("hand",),
     ("block",),
     ("unblock",),
     ("complete",),

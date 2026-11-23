@@ -17,39 +17,51 @@ then = "fgraph status lists the new agent beside each, and fgraph show of the se
 
 [[tasks]]
 id = "T-0415"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_hand.py, failing on the criterion of S-0126"
 description = "Run through run() of src/flowgraph/cli.py on a real git repository in tmp_path, with open_files, open_git and read_config, the identity from the environment and no git config. Copy from tests/functional/test_start_agent.py: the helpers fgraph (it catches the SystemExit of argparse), runs, git, enable_development and environment; the fixture repository; and the constants ADD_FEATURE_STORIES and LAND. Add S-0003 standalone, titled a third title, with one Task whose --check is make test. The fixture, in order: start F-0001 with no agent; start S-0003 --agent sonnet-a1; in the worktree of S-0001, start T-0001, commit a file and complete T-0001 at that commit, as TestTheStartALandingMakesWhileTheFirstStoryHoldsAnAgent does; land S-0001, which starts S-0002 in project.worktrees/S-0002-another-title; from the checkout of main, with --dir on the .fgraph of that worktree, hand S-0002 --agent haiku-b1; in project.worktrees/S-0003-a-third-title, hand S-0003 --agent opus-b2. One assert per test: the exit status of each hand; the output of the hand of S-0003; for S-0002 and for S-0003 the text of the status line on main that names the id, from the id on -- id, two spaces, 0/1 T, two spaces, the agent in brackets, two spaces, the title; the lines of show S-0003 on main that start with two spaces and agent, exactly one, agent opus-b2; git log -1 of the worktree of S-0003. A test of its own: on main, hand S-0003 --agent opus-b2 gives exit 2 and the last error line S-0003 is started: its Tasks are written in its worktree, then the path; assert the status and the line as one tuple. A class of its own: its fixture goes on after the hands -- in the worktree of S-0003, start T-0003, commit a file, complete T-0003, then land S-0003 from main -- and its one test asserts that the lines of show S-0003 starting with bucket or agent are bucket Completed and agent opus-b2. Every test carries its own strict xfail naming S-0126; every one fails today on the unknown command, so none is a guard. The fixtures call fgraph, which never raises, and git only for steps that succeed today. No source changes."
 check = "uv run pytest tests/functional/test_hand.py -q"
 expected_output = "created: tests/functional/test_hand.py states that in a git repository with the development on, S-0002 started by the landing of S-0001 with no agent, and S-0003 started with --agent sonnet-a1, are handed with fgraph hand: S-0002 from the checkout of main with --dir on the record of its worktree, and S-0003 in its worktree. Each hand exits 0 and says handed ID to NAME. fgraph status on main lists [haiku-b1] beside S-0002 and [opus-b2] beside S-0003. fgraph show S-0003 on main lists agent opus-b2 alone. The branch of S-0003 holds the commit chore: hand S-0003 to opus-b2 in the record. The hand run on main in place of the worktree is refused, naming the worktree. S-0003, once landed, is Completed with agent opus-b2"
 created = 2026-11-23 10:15:25+00:00
+started = 2026-11-23 10:31:23+00:00
+completed = 2026-11-23 10:33:22+00:00
+commit = "3fb2eb3"
 
 [[tasks]]
 id = "T-0416"
-state = "backlog"
+state = "completed"
 title = "Hand a started work item to an agent in the model: handed_over and hand_work_item in src/flowgraph/work_item/handed.py"
 description = "handed_over is an exhaustive match closed by assert_never; its started case calls handed_work_item. Import NotStartedError and CompletedAlreadyError from flowgraph.task; take RemovedAlreadyError, LoadWorkItem and SaveWorkItem from where the rest of the code imports them today. hand_work_item takes keyword-only arguments, shaped as start_work_item. Export nothing through work_item/__init__.py: callers import from handed.py directly. Do not touch work_item/moves.py, work_item/commands.py or item/moves.py. Tests are seen red first. Under the model marker: a started work item with no agent is handed and holds it; one with an agent holds the new one; the handed item equals the started one but for its agent; Backlog, completed and removed are each refused with their error and message. Under the command marker: hand_work_item saves the handed item through a recording list append; a refused hand saves nothing. Build the items as tests/work_item/test_work_item_agent.py does."
 check = "uv run pytest tests/work_item/test_work_item_hand.py -q"
 expected_output = "changed: src/flowgraph/work_item/handed.py adds two functions. handed_over(item, agent) returns the started work item holding the agent in place of the one it held, its Tasks, started time and the rest as they were; it raises NotStartedError for a work item in Backlog (the message names the id and says its start names the agent with --agent), CompletedAlreadyError for a completed one and RemovedAlreadyError for a removed one. hand_work_item(item_id, agent, load_work_item, save_work_item) loads the item, hands it over and saves it whole; nothing is saved on a refusal. created: tests/work_item/test_work_item_hand.py proves them"
 created = 2026-11-23 10:15:28+00:00
+started = 2026-11-23 10:33:26+00:00
+completed = 2026-11-23 10:34:51+00:00
+commit = "d949d00"
 
 [[tasks]]
 id = "T-0417"
-state = "backlog"
+state = "completed"
 title = "Hand a started work item to an agent with fgraph hand ID --agent NAME, written where its Tasks are written"
 description = "Read each module as it is now: S-0117, which adds the command goal, lands before this Story starts. New src/flowgraph/item/hand.py: hand_item(item, agent, store) returns a Written; it parses the id with parse_work_item_id_of_any_kind, builds the agent with make_agent and calls hand_work_item with store.load_work_item and store.save_work_item. New src/flowgraph/parser/hand.py: hand_command(commands), shaped as parser/start.py, the positional id and --agent required with the metavar NAME. Register it in src/flowgraph/parser/arguments.py, not in item_commands.py: in build_command_line, hand_command right after the line that builds the moves of item_commands, its entry in the dict right after the moves, and the module docstring names where hand is built. In src/flowgraph/parser/item_commands.py change the docstring alone, to say all but add, config, goal and hand. In src/flowgraph/parser/command.py: in _written add the case hand right after the case unblock; in command_said, right after the check of add task and before the write is computed, call check_agent_taken with the id, the agent, whether the development is on and the path of config.toml when the command is hand; the import of hand_item goes right after the imports of item.commands; leave the start block and its checks untouched. Say the line count of command.py in the hand-back: it was 237 before S-0117. Do not touch development/scope.py, parser/refusals.py or parser/start.py. New tests/functional/test_hand_refused.py, shaped as tests/functional/test_start_agent_refused.py: no git, the development on in config.toml, Tasks added with --check make test; one parametrized table of cases, each exiting 2 with the last error line naming why and writing nothing -- Backlog; completed (start, start T-0001, complete T-0001 and S-0001 each with --commit 1234567); removed; T-0001; F-0001; two words as the name; the development off, with the start made with it off. Tests are seen red first. tests/parser/test_help.py: add the hand entry right after the start entry in test_every_command_kind_under_add_and_action_under_config_has_its_help, and nothing else. tests/functional/test_command_help.py: add the hand entry right after the start entry in COMMANDS, and nothing else. Remove every xfail mark in tests/functional/test_hand.py."
 check = "uv run pytest tests/functional/test_hand.py tests/functional/test_hand_refused.py tests/work_item/test_work_item_hand.py tests/parser/test_help.py tests/functional/test_command_help.py -q --runxfail && ! grep -q xfail tests/functional/test_hand.py"
 expected_output = "changed: fgraph hand ID --agent NAME, with --agent required, hands a started work item of any kind to the agent named, in place of the one it held. It says handed ID to NAME and commits chore: hand ID to NAME in the record. With the development on it is written where the Tasks of the work item are: in its worktree, or with --dir on the record of that worktree; on main it is refused by the scope of main, naming the worktree; with no worktree, or a record outside git, it is written in the record itself. It is refused with exit 2 and nothing written for a work item in Backlog, completed or removed, a Task id, a Feature id, a name that is no agent, and the development off, naming development.enabled. No strict xfail mark is left in tests/functional/test_hand.py"
 created = 2026-11-23 10:15:30+00:00
+started = 2026-11-23 10:34:54+00:00
+completed = 2026-11-23 10:37:57+00:00
+commit = "1bfb541"
 
 [[tasks]]
 id = "T-0418"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph hand hands a started work item to an agent where its Tasks are written"
 description = "Find the passages by grep, not by line number. Add no row to the table of parts at the top of README.md. Touch no other section."
 check = "grep -q fgraph.hand README.md && grep -q chore:.hand docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, in Persistence: a bullet right after the passage on fgraph start --agent states fgraph hand, its form, where it is written, its refusals, the agent replaced with no history kept but the commits, and the development off; the sentence naming the hand as a later Story is replaced; the table of writes gains hand a started work item to an agent, on its branch, right after the row of its Tasks; hand joins the list of the writes fgraph commits; the table of messages gains a row hand right after start. README.md: after the example of fgraph start --agent, a paragraph and an example of fgraph hand, run in the worktree and from main with --dir, and the refusal on main"
 created = 2026-11-23 10:15:32+00:00
+started = 2026-11-23 10:38:03+00:00
+completed = 2026-11-23 10:38:48+00:00
+commit = "27b5f8d"
 
 [[knowledge]]
 kind = "decision"

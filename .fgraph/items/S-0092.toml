@@ -47,3 +47,8 @@ created = 2026-11-22 21:03:10+00:00
 started = 2026-11-22 23:55:44+00:00
 completed = 2026-11-23 00:01:16+00:00
 commit = "a72f2cc"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: yes -- at 5de0f13 on main, in a throwaway repository with the development on and delivery.tag set to feature-close: the landing of the first of two work items of a Feature exit 0 made no tag; the landing of the last exit 0 printed landed S-0002 at 6d60807, completed F-0001 at 6d60807 and tagged v0.1.0 at b3e6594, an annotated tag with the message release v0.1.0 on the commit main is on, chore: complete S-0002 and F-0001 in the record; the landing of S-0092 itself closed F-0010 in the record of flowgraph, where delivery.tag is none, and made no tag: 16 tags before and after; make check on the tree of the landing, the branch with main merged at 31f8055: 2705 passed, all checks passed"
+noted = 2026-11-23 00:02:32+00:00

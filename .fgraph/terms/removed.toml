@@ -1,0 +1,3 @@
+name = "removed"
+meaning = "The bucket of the items taken out of the flow, each with its reason or the item that supersedes it, ordered by the time each was removed; nothing leaves it."
+added = 2026-11-23 12:06:50.452525+00:00

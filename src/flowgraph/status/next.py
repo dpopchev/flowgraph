@@ -4,7 +4,8 @@ Plain data read from the work items of the started Features and the lines of the
 the order of its queue, kept in one place for every view that lists it. It follows
 `flowgraph.status.waits`, which sets what each line waits for. The limit is a sum type mapped
 from the configuration here, since `flowgraph.development` imports this package and may not
-be imported by it.
+be imported by it. With the development driven by an agent, a work item is planned only once
+it holds a complexity beside its Task; the limit carries the driver.
 """
 
 from collections.abc import Collection, Iterable, Sequence
@@ -13,7 +14,7 @@ from typing import assert_never
 
 from flowgraph.feature import FeatureRow
 from flowgraph.record import Parallel, Unlimited
-from flowgraph.record.layers import Development
+from flowgraph.record.layers import Development, Driver
 from flowgraph.work_item import WorkItemRow
 
 type Line = WorkItemRow | FeatureRow
@@ -35,11 +36,14 @@ class Within:
     """At most that many work items are started at once, those started counted."""
 
     most: int
+    driver: Driver = Driver.DEVELOPER
 
 
 @dataclass(frozen=True)
 class NoLimit:
     """The development is on and limits nothing: every line that waits for nothing is marked."""
+
+    driver: Driver = Driver.DEVELOPER
 
 
 # How many lines status marks as able to start now.
@@ -55,9 +59,9 @@ def start_limit(development: Development) -> StartLimit:
         return NextOnly()
     match development.parallel:
         case Unlimited():
-            return NoLimit()
+            return NoLimit(development.driver)
         case Parallel(most):
-            return Within(most)
+            return Within(most, development.driver)
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -98,29 +102,50 @@ def _in_backlog(row: Line) -> bool:
             assert_never(unreachable)
 
 
-def _planned(line: Line) -> bool:
-    """True when the line is planned: a work item holds a Task, a Feature's Backlog ones each do."""
-    match line:
-        case WorkItemRow():
-            return bool(line.tasks)
-        case FeatureRow():
-            return all(item.tasks for item in line.work_items if item.state == BACKLOG)
+def _asked(item: WorkItemRow, driver: Driver) -> bool:
+    """True when the work item holds what the driver asks: nothing of a developer, a complexity."""
+    match driver:
+        case Driver.DEVELOPER:
+            return True
+        case Driver.AGENT:
+            return bool(item.complexity)
         case _ as unreachable:
             assert_never(unreachable)
 
 
-def _startable_under(row: Line) -> list[int]:
+def _planned(line: Line, driver: Driver) -> bool:
+    """True when the line is planned: a work item holds a Task and what the driver asks.
+
+    A Feature's work items in Backlog each do.
+    """
+    match line:
+        case WorkItemRow():
+            return bool(line.tasks) and _asked(line, driver)
+        case FeatureRow():
+            return all(
+                item.tasks and _asked(item, driver)
+                for item in line.work_items
+                if item.state == BACKLOG
+            )
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def _startable_under(row: Line, driver: Driver) -> list[int]:
     """The places, in the order held, of the work items of a started Feature that can start.
 
-    One in Backlog that waits for nothing and holds a Task. A Feature not started, a blocked one
-    included, and a work item standing alone give none.
+    One in Backlog that waits for nothing and holds a Task and what the driver asks. A Feature
+    not started, a blocked one included, and a work item standing alone give none.
     """
     match row:
         case FeatureRow(is_started=True):
             return [
                 at
                 for at, item in enumerate(row.work_items)
-                if item.state == BACKLOG and not item.waits_for and item.tasks
+                if item.state == BACKLOG
+                and not item.waits_for
+                and item.tasks
+                and _asked(item, driver)
             ]
         case FeatureRow() | WorkItemRow():
             return []
@@ -149,26 +174,27 @@ def with_start_now(rows: Sequence[Line], limit: StartLimit, started: int) -> lis
     Under a limit the places are those it leaves after the work items started. The first to take
     them are the work items in Backlog of the started Features, in the order the rows hold the
     Features, then the lines of the Backlog in their order; a line that waits or is not planned
-    is skipped. Off, the first line of the Backlog that can start is marked alone, planned or not.
+    is skipped; planned asks a complexity of each work item when the driver is an agent. Off,
+    the first line of the Backlog that can start is marked alone, planned or not.
     """
     match limit:
         case NextOnly():
             at_backlog = [at for at, row in enumerate(rows) if _in_backlog(row)]
             marked = dict(zip(at_backlog, with_next([rows[at] for at in at_backlog]), strict=True))
             return [marked.get(at, row) for at, row in enumerate(rows)]
-        case NoLimit():
+        case NoLimit(driver):
             room = None
-        case Within(most):
+        case Within(most, driver):
             room = max(most - started, 0)
         case _ as unreachable:
             assert_never(unreachable)
     under: list[_Place] = [
-        (at, item) for at, row in enumerate(rows) for item in _startable_under(row)
+        (at, item) for at, row in enumerate(rows) for item in _startable_under(row, driver)
     ]
     lines: list[_Place] = [
         (at, None)
         for at, row in enumerate(rows)
-        if _in_backlog(row) and _can_start(row) and _planned(row)
+        if _in_backlog(row) and _can_start(row) and _planned(row, driver)
     ]
     places = [*under, *lines][:room]
     return [_marked(at, row, places) for at, row in enumerate(rows)]

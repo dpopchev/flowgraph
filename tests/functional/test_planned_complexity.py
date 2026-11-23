@@ -136,13 +136,11 @@ def developer_checkout(tmp_path: Path) -> Path:
 
 
 class TestStatusAsTextDrivenByAnAgent:
-    @XFAIL
     def test_the_work_item_with_a_complexity_is_marked_alone(self, agent_checkout: Path) -> None:
         assert marked(fgraph(["status"], agent_checkout).out) == ["S-0001"]
 
 
 class TestStatusAsJsonDrivenByAnAgent:
-    @XFAIL
     def test_can_start_lists_the_work_item_with_a_complexity_alone(
         self, agent_checkout: Path
     ) -> None:

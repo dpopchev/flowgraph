@@ -11,3 +11,8 @@ depends_on = [
 given = "a record with the development on, a remote that main tracks and a started work item whose Tasks are completed"
 when = "fgraph land of the work item is run"
 then = "it is listed Completed only once its branch is merged into main, the gate of the record has passed, main is tagged with its version and main and the tag are pushed; a step that fails leaves it not Completed and the line names the step"
+
+[[knowledge]]
+kind = "decision"
+text = "The developer gave the go on 2026-11-23 to the breakdown shown that day: its Then needs the write that completes to come after the push and the tag, and a second fgraph land that takes up a landing already merged; the push and the way back in are filed as S-0140, which S-0123 depends on, and S-0123 keeps the tag. Its Tasks are written once S-0140 is landed, on the shape land.py then has. Open, for when it is ordered: the word of the new value of delivery.tag, close in the draft; that the tag sits on the commit of the landing, where the record still lists the work item InProgress; and that a tag made by a landing bumps no version in pyproject.toml, which the releases of flowgraph do by hand."
+noted = 2026-11-23 13:09:45+00:00

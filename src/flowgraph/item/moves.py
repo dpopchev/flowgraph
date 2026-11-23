@@ -26,6 +26,7 @@ from flowgraph.record import DEVELOPMENT_ENABLED, Config, Now
 from flowgraph.record.store import KINDS, Store
 from flowgraph.task import TaskId, parse_task_id, task_id_text
 from flowgraph.work_item import WorkItemId, parse_work_item_id, work_item_id_text
+from flowgraph.work_item.agent import AgentError, make_agent
 
 
 def load_holder(store: Store) -> work_item.LoadHolder:
@@ -42,22 +43,28 @@ def load_holder(store: Store) -> work_item.LoadHolder:
     return holder
 
 
-def start_item(item: str, slug: str | None, store: Store, now: Now) -> Written:
+def start_item(
+    item: str, slug: str | None, store: Store, now: Now, agent: str | None = None
+) -> Written:
     """Start the work item or the Task of that id; what the write says.
 
     A work item names the branch to check out at the commit of its start: its slug is the one
-    given, else the slug of its title. Raises ItemIdError when the text is no id, SlugError when
-    the slug is none or is given for a Task, or the refusal of the start; nothing is saved.
+    given, else the slug of its title; it is handed to the agent given, none by default. Raises
+    ItemIdError when the text is no id, SlugError when the slug is none or is given for a Task,
+    AgentError when the agent is none or is given for a Task, or the refusal of the start;
+    nothing is saved.
     """
     match parse_item_id(item):
         case WorkItemId() as item_id:
             title = store.load_work_item(item_id).title
             named = make_slug(slug) if slug is not None else slug_of_title(title)
+            handed = None if agent is None else make_agent(agent)
             work_item.start_work_item(
                 item_id=item_id,
                 load_work_item=store.load_work_item,
                 save_work_item=store.save_work_item,
                 now=now,
+                agent=handed,
             )
             text = work_item_id_text(item_id)
             message = MESSAGE.format(f"start {text}")
@@ -65,6 +72,8 @@ def start_item(item: str, slug: str | None, store: Store, now: Now) -> Written:
         case TaskId() as task_id:
             if slug is not None:
                 raise SlugError(f"--slug names the branch of a work item: {item} is a Task")
+            if agent is not None:
+                raise AgentError(f"--agent names the agent of a work item: {item} is a Task")
             holder = work_item.start_task(
                 task_id=task_id,
                 load_holder=load_holder(store),

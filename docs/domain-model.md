@@ -188,9 +188,9 @@ needs. The same five exist for `Story`, `Bug`, `Spike`, `Upkeep` and `Task`;
 | Type | Bucket | Adds |
 |---|---|---|
 | `Story` | Backlog | the attributes of its kind, above |
-| `StartedStory` | InProgress | started |
+| `StartedStory` | InProgress | started, the agent it is handed to or none |
 | `BlockedStory` | InProgress, shown as blocked | reason, since, waiting on |
-| `CompletedStory` | Completed | completed on, evidence |
+| `CompletedStory` | Completed | completed on, evidence, the agent it had or none |
 | `RemovedStory` | Removed | removed on, reason, superseded by or none |
 
 `CompletedSpike` also adds the decision, which answers its hypothesis, and the
@@ -841,6 +841,9 @@ that holds nothing is `null`, never an empty text; a list that holds nothing is 
   of T-0370: the hook that parses the document cannot ask again). The text lists the
   started ones alone; the document lists all of them, and `progress` counts them as before.
 
+A work item holds its `agent` on every item of a bucket and in the `work_items` of a
+Feature, the reading of S-0113: the name it is handed to, else `null`.
+
 The block of a Task is its own state and is carried by the Task: a Feature does not copy
 it, as the text line of a Feature does. The node of a Task in `fgraph graph` carries the
 same `state`, with its bucket (see Graph).
@@ -1003,6 +1006,21 @@ and its merge tool.
   before, is read as none, and a file holding any other word is refused when
   read, naming the file. `fgraph show` lists it as `complexity`, after the terms
   the item is about, only when there is one.
+- `fgraph start S-0001 --agent sonnet-a1` names the agent a started work item is
+  handed to, the reading of S-0113: one opaque word of at most 32 letters, digits
+  and `. _ : / -`, built by `make_agent`, which fgraph does not interpret. The
+  started work item holds it and the completed one keeps it; its file holds the
+  key `agent` only when there is one, so a file without it, as every file written
+  before, is read as none, and a file holding a name that is no agent is refused
+  when read, naming the file. `fgraph show` lists it as `agent`, before the
+  commit, only when there is one, and `fgraph status` lists it as `[agent]`
+  between the progress and the title. `fgraph start F-0001 --agent sonnet-a1`
+  hands the agent to the first work item the Feature starts. The start is refused,
+  exit 2 and nothing written, for a Task, for a name that is no agent and with
+  the development off, naming `development.enabled`. The start a completion, a
+  landing or an unblock makes names no agent, and `fgraph start` of a work item
+  started already stays refused: handing a started work item to another agent is
+  a later Story (S-0126). The output line `started S-0001` is as before.
 - The file of a Feature holds its lines of knowledge as a work item's does, the
   same `[[knowledge]]` tables, read back whole in every state. `fgraph note` of a
   Feature is one write and one commit, `chore: note F-0001 in the record`, and

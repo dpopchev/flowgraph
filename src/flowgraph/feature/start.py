@@ -37,6 +37,8 @@ from flowgraph.work_item import (
     WorkItemState,
     work_item_id_text,
 )
+from flowgraph.work_item.agent import make_agent
+from flowgraph.work_item.handed import handed_work_item
 
 
 class NoWorkItemError(ValueError):
@@ -59,12 +61,18 @@ def first_in_backlog(feature: FeatureId, store: Store) -> WorkItemId | None:
 
 
 def start_feature_item(
-    feature: str, slug: str | None, store: Store, now: Now, config: Config
+    feature: str,
+    slug: str | None,
+    store: Store,
+    now: Now,
+    config: Config,
+    agent: str | None = None,
 ) -> Written:
     """Start the Feature of that id and its first work item with it; what the one write says.
 
     The work item names the branch to check out at the commit of the start: its slug is the one
-    given, else the slug of its title. Raises FeatureIdError when the text is no Feature id,
+    given, else the slug of its title; it is handed to the agent given, none by default, which
+    raises AgentError when it is no agent. Raises FeatureIdError when the text is no Feature id,
     FeatureNotFoundError when the record holds no such Feature, StartedAlreadyError when it is
     started, CompletedAlreadyError when it is completed, RemovedAlreadyError when it is
     removed, NoWorkItemError when it has no work item in Backlog, StartWaitsError naming what its
@@ -84,8 +92,9 @@ def start_feature_item(
     check_feature_parallel(feature_id, store.find_work_item_rows, config)
     held = store.load_work_item(first)
     branch = make_slug(slug) if slug is not None else slug_of_title(held.title)
+    handed = None if agent is None else make_agent(agent)
     try:
-        begun = work_item.started_work_item(held, on)
+        begun = handed_work_item(work_item.started_work_item(held, on), handed)
     except NoTaskError as error:
         raise NoTaskError(f"{named} cannot start: {error}") from error
     store.features.save_feature(started)

@@ -89,23 +89,27 @@ class TestTheHelpOfStartInAnyDirectory:
         assert helped.status == 0
 
     def test_prints_the_usage_of_start(self, helped: Outcome) -> None:
-        assert helped.out.splitlines()[0] == "usage: fgraph start [-h] [--slug TEXT] ID"
+        assert helped.out.splitlines()[0] == (
+            "usage: fgraph start [-h] [--slug TEXT] [--agent NAME] ID"
+        )
 
     def test_prints_the_options_of_start(self, helped: Outcome) -> None:
         assert [line.split()[0:2] for line in helped.out.splitlines() if "--" in line][1:] == [
             ["-h,", "--help"],
             ["--slug", "TEXT"],
+            ["--agent", "NAME"],
         ]
 
     def test_names_the_feature_among_the_ids_start_takes(self, helped: Outcome) -> None:
         assert helped.out.splitlines()[3] == (
-            "  ID           the id of the work item, of the Task or of the Feature"
+            "  ID            the id of the work item, of the Task or of the Feature"
         )
 
     def test_says_the_slug_names_the_branch_of_a_work_item_or_of_the_first_of_a_feature(
         self, helped: Outcome
     ) -> None:
-        assert " ".join(helped.out.split("--slug TEXT")[-1].split()) == (
+        before_the_agent = helped.out.split("  --agent NAME")[0]
+        assert " ".join(before_the_agent.split("--slug TEXT")[-1].split()) == (
             "the words of a work item's branch after its id, instead of its title's first four;"
             " of a Feature, those of its first work item; read with the development on"
         )
@@ -137,7 +141,7 @@ def test_the_help_of_a_command_is_printed_wherever_the_option_stands(argv: list[
     outcome = fgraph(argv)
     assert (outcome.status, outcome.out.splitlines()[:1]) == (
         0,
-        ["usage: fgraph start [-h] [--slug TEXT] ID"],
+        ["usage: fgraph start [-h] [--slug TEXT] [--agent NAME] ID"],
     )
 
 

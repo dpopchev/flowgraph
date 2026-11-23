@@ -53,6 +53,7 @@ class StartedItemFile(RelationsFile, BaseModel):
     complexity: Complexity | None = None
     created: datetime
     started: datetime
+    agent: str = ""
     criterion: AnyCriterionFile
     tasks: list[HeldTask] = []
     knowledge: list[KnowledgeFile] = []
@@ -86,6 +87,7 @@ class CompletedItemFile(RelationsFile, BaseModel):
     created: datetime
     started: datetime
     completed: datetime
+    agent: str = ""
     commit: str = ""
     verified: VerifiedFile | None = None
     criterion: AnyCriterionFile
@@ -152,6 +154,17 @@ def started_held(held: HeldItemFile) -> datetime | None:
             return held.started
         case ItemFile() | CompletedItemFile() | RemovedItemFile():
             return None
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def agent_held(held: HeldItemFile) -> str:
+    """The agent a validated file of a started or completed item holds; empty for none."""
+    match held:
+        case StartedItemFile() | CompletedItemFile():
+            return held.agent
+        case ItemFile() | RemovedItemFile():
+            return ""
         case _ as unreachable:
             assert_never(unreachable)
 

@@ -55,6 +55,7 @@ from flowgraph.work_item import (
     WorkItemIdError,
     WorkItemNotFoundError,
 )
+from flowgraph.work_item.agent import AgentError
 
 # The refusals of a command, each written as a usage error; a git step refused among them, and
 # a file of the record that holds no work item, no Feature or no queue (B-0019), and a relation
@@ -76,6 +77,7 @@ REFUSED = (
     NoWorkItemError,
     FeatureNotStartedError,
     SlugError,
+    AgentError,
     GitError,
     LandError,
     GateError,

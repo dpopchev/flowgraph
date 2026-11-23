@@ -301,16 +301,19 @@ record:
 
 ```sh
 fgraph start --help
-# usage: fgraph start [-h] [--slug TEXT] ID
+# usage: fgraph start [-h] [--slug TEXT] [--agent NAME] ID
 #
 # positional arguments:
-#   ID           the id of the work item, of the Task or of the Feature
+#   ID            the id of the work item, of the Task or of the Feature
 #
 # options:
-#   -h, --help   show the help of this command and exit
-#   --slug TEXT  the words of a work item's branch after its id, instead of its
-#                title's first four; of a Feature, those of its first work item;
-#                read with the development on
+#   -h, --help    show the help of this command and exit
+#   --slug TEXT   the words of a work item's branch after its id, instead of its
+#                 title's first four; of a Feature, those of its first work
+#                 item; read with the development on
+#   --agent NAME  the agent a work item is handed to, one word of at most 32
+#                 letters, digits and . _ : / -; of a Feature, its first work
+#                 item; read with the development on
 ```
 
 `fgraph add --help` lists the kinds it adds, and each kind prints its own:
@@ -483,6 +486,7 @@ fgraph status --format json
 #       "count": 1,
 #       "items": [
 #         {
+#           "agent": null,
 #           "commit": null,
 #           "complexity": null,
 #           "id": "S-0001",
@@ -1071,6 +1075,25 @@ key, of a work item as of a Feature, and starts nothing:
 ```sh
 fgraph start S-0001 --slug branch-on-start
 # fgraph: error: S-0001 takes no --slug: the development is off, so its start makes no branch -- set development.enabled = true in /src/project/.fgraph/config.toml
+```
+
+A start can name the agent the work item is handed to, with `--agent`: one
+opaque word of at most 32 letters, digits and `. _ : / -`, which fgraph does
+not interpret. The started work item holds it, the completed one keeps it,
+`fgraph show` lists it on a line `agent`, `fgraph status` lists it as
+`[sonnet-a1]` between the progress and the title, and every work item of
+`fgraph status --format json` holds `agent`, the name or `null`. On a Feature
+the agent goes to the first work item the Feature starts. The start is read
+with the development on: it exits 2 and writes nothing for a Task, for a name
+that is no agent and with the development off, naming the key. The start a
+completion, a landing or an unblock makes names no agent:
+
+```sh
+fgraph start S-0001 --agent sonnet-a1
+fgraph status               # the line:  S-0001  0/1 T  [sonnet-a1]  Raise the Stories fgraph lists
+fgraph show S-0001          # the line: agent  sonnet-a1
+fgraph start T-0001 --agent sonnet-a1
+# fgraph: error: --agent names the agent of a work item: T-0001 is a Task
 ```
 
 On the branch of a started Story, `wi/S-0001-<slug>`, fgraph writes that

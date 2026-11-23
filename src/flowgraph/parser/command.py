@@ -67,6 +67,7 @@ from flowgraph.work_item import (
     Complexity,
     make_complexity,
 )
+from flowgraph.work_item.agent import check_agent_taken
 
 
 def _complexity_asked(word: str | None) -> Complexity | None:
@@ -143,9 +144,9 @@ def _written(
             decision = decision_given(args)
             return complete_and_start_next(args.id, args.commit, store, now, config, decision)
         case "start" if is_feature_id(args.id):
-            return start_feature_item(args.id, args.slug, store, now, config)
+            return start_feature_item(args.id, args.slug, store, now, config, args.agent)
         case "start":
-            return start_item(args.id, args.slug, store, now)
+            return start_item(args.id, args.slug, store, now, args.agent)
         case "block":
             return block_named(args.id, args.reason, args.waiting_on, store, now)
         case "unblock":
@@ -204,6 +205,7 @@ def command_said(
         check_task_run(args.id, store, record, open_git, cwd, run_check)
     if args.command == "start":
         check_slug_branched(args.id, args.slug, config.development.enabled, record / CONFIG)
+        check_agent_taken(args.id, args.agent, config.development.enabled, record / CONFIG)
         check_start_on_main(args.id, record, open_git)
         check_start_under_feature(args.id, store)
         check_start_waits(args.id, store)

@@ -1,127 +1,34 @@
-"""The views and the commands of a work item: each command loads it whole, moves it, saves it.
+"""The commands of a work item: each loads it whole, moves it, saves it.
 
-The commands on a Task of a work item are in flowgraph.work_item.task_commands.
+The row and the detail a view reads are in flowgraph.work_item.projection, the commands on a Task
+of a work item in flowgraph.work_item.task_commands.
 """
 
 from collections.abc import Iterable
-from datetime import datetime
-from typing import assert_never
 
-from flowgraph.criterion import Criterion, criterion_parts
-from flowgraph.knowledge import KnowledgeKind, knowledge_row, make_knowledge_line
-from flowgraph.parent import STANDALONE, Parent, parent_text
+from flowgraph.criterion import Criterion
+from flowgraph.knowledge import KnowledgeKind, make_knowledge_line
+from flowgraph.parent import STANDALONE, Parent
 from flowgraph.record import Now
-from flowgraph.task import row_of
+from flowgraph.work_item.agent import Agent
 from flowgraph.work_item.amend import Amendment, CheckMove, amended_work_item
 from flowgraph.work_item.complexity import Complexity
+from flowgraph.work_item.handed import handed_work_item
 from flowgraph.work_item.id import (
     Kind,
     WorkItemId,
     next_work_item_id,
     parse_work_item_id,
-    work_item_id_text,
 )
 from flowgraph.work_item.model import (
-    CompletedWorkItem,
     FindWorkItemRows,
     LoadWorkItem,
-    RemovedWorkItem,
     SaveWorkItem,
-    StartedWorkItem,
-    WorkItem,
-    WorkItemState,
-    commit_sha,
     make_work_item,
     noted_work_item,
-    state_name,
 )
 from flowgraph.work_item.moves import started_work_item
-from flowgraph.work_item.removal import reason_of, removed_work_item, superseded_by_of
-from flowgraph.work_item.verification import Verification
-from flowgraph.work_item.views import DependsRow, VerifiedRow, WorkItemDetail, WorkItemRow
-
-
-def _started_on(item: WorkItemState) -> datetime | None:
-    """The started time of a started work item; none in any other state, as its file reads."""
-    match item:
-        case StartedWorkItem():
-            return item.started
-        case WorkItem() | CompletedWorkItem() | RemovedWorkItem():
-            return None
-        case _ as unreachable:
-            assert_never(unreachable)
-
-
-def _completed_on(item: WorkItemState) -> datetime | None:
-    """The completed time of a completed work item; none for one not completed."""
-    match item:
-        case CompletedWorkItem():
-            return item.completed
-        case WorkItem() | StartedWorkItem() | RemovedWorkItem():
-            return None
-        case _ as unreachable:
-            assert_never(unreachable)
-
-
-def _named_text(named: WorkItemId | None) -> str:
-    """The id of the work item another one names as written; empty for none."""
-    return "" if named is None else work_item_id_text(named)
-
-
-def _verified_row(item: WorkItemState) -> VerifiedRow | None:
-    """The answer of the closing of a completed work item as a row; none for any other."""
-    match item:
-        case CompletedWorkItem(verified=Verification() as answer):
-            return VerifiedRow(answer.answer, answer.text, answer.on)
-        case _:
-            return None
-
-
-def work_item_row(item: WorkItemState) -> WorkItemRow:
-    """The work item as the row a view reads, whole: the row its file is read as."""
-    return WorkItemRow(
-        work_item_id_text(item.id),
-        item.title,
-        state_name(item),
-        commit_sha(item),
-        reason_of(item),
-        parent_text(item.parent),
-        complexity=item.complexity or "",
-        created=item.created,
-        started=_started_on(item),
-        completed=_completed_on(item),
-        tasks=[row_of(task) for task in item.tasks],
-        depends_on=[work_item_id_text(each) for each in item.relations.depends_on],
-        filed_during=_named_text(item.relations.filed_during),
-        superseded_by=superseded_by_of(item),
-        amends=_named_text(item.relations.amends),
-    )
-
-
-def work_item_detail(item: WorkItemState) -> WorkItemDetail:
-    """The work item with its criterion and its Tasks as the plain data a view reads."""
-    return WorkItemDetail(
-        id=work_item_id_text(item.id),
-        title=item.title,
-        state=state_name(item),
-        description=item.description,
-        tasks=[row_of(task) for task in item.tasks],
-        commit=commit_sha(item),
-        reason=reason_of(item),
-        parent=parent_text(item.parent),
-        complexity=item.complexity or "",
-        knowledge=[knowledge_row(line) for line in item.knowledge],
-        about=list(item.about),
-        depends_on=[DependsRow(work_item_id_text(each)) for each in item.relations.depends_on],
-        filed_during=_named_text(item.relations.filed_during),
-        filed_here=[],
-        superseded_by=superseded_by_of(item),
-        supersedes=[],
-        amends=_named_text(item.relations.amends),
-        amended_by=[],
-        verified=_verified_row(item),
-        **criterion_parts(item.criterion),
-    )
+from flowgraph.work_item.removal import removed_work_item
 
 
 def add_work_item(
@@ -211,15 +118,21 @@ def amend_work_item(
 
 
 def start_work_item(
-    *, item_id: WorkItemId, load_work_item: LoadWorkItem, save_work_item: SaveWorkItem, now: Now
+    *,
+    item_id: WorkItemId,
+    load_work_item: LoadWorkItem,
+    save_work_item: SaveWorkItem,
+    now: Now,
+    agent: Agent | None = None,
 ) -> None:
-    """Start the work item of that id now and save it whole.
+    """Start the work item of that id now, handed to the agent when one is given, and save it.
 
     Raises WorkItemNotFoundError when the record holds no such item, NoTaskError when it has no
     Task, StartedAlreadyError when it is started and CompletedAlreadyError when it is completed;
     nothing is saved.
     """
-    save_work_item(started_work_item(load_work_item(item_id), now()))
+    begun = started_work_item(load_work_item(item_id), now())
+    save_work_item(handed_work_item(begun, agent))
 
 
 def note_work_item(

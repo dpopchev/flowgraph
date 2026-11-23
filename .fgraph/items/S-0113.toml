@@ -13,39 +13,51 @@ then = "fgraph status lists the agent beside the started work item, fgraph show 
 
 [[tasks]]
 id = "T-0390"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_start_agent.py, failing on the criterion of S-0113"
 description = "Run through run() of src/flowgraph/cli.py on a real git repository in tmp_path, with open_git and read_config, the identity from the environment and no git config. Copy the helpers fgraph, runs, git, environment and checkout from tests/functional/test_start_branch.py; the config.toml of the record holds [development] enabled = true. Write one class with one fixture that runs the start with --agent sonnet-a1, and one assert per test: the exit status of the start; the exact status line (two spaces, S-0001, two spaces, 0/1 T, two spaces, [sonnet-a1], two spaces, the title); the exact show line (two spaces, agent, eight spaces, sonnet-a1); the agent key of S-0001 in the parsed JSON. Functional stays the pytestmark of the module. Each test carries its own strict xfail naming S-0113, not one module mark: the next Task turns the exit and show tests green and the Task after turns the status tests green. Seen red first: argparse refuses --agent as an unrecognized argument (SystemExit 2), so every test fails today and none is a guard. No source changes."
 check = "uv run pytest tests/functional/test_start_agent.py -q"
 expected_output = "created: tests/functional/test_start_agent.py states that in a git repository with the development on, a Story in Backlog with one Task that waits for nothing, started on main with fgraph start S-0001 --agent sonnet-a1, exits 0; that fgraph status lists its line under InProgress as S-0001, 0/1 T, [sonnet-a1], then its title; that fgraph show S-0001 lists the line agent sonnet-a1; and that fgraph status --format json holds agent sonnet-a1 on the item S-0001"
 created = 2026-11-23 08:07:58+00:00
+started = 2026-11-23 08:24:17+00:00
+completed = 2026-11-23 08:24:58+00:00
+commit = "fe0622b"
 
 [[tasks]]
 id = "T-0391"
-state = "backlog"
+state = "completed"
 title = "Start a work item with --agent, kept by the started and the completed work item and listed by fgraph show"
 description = "New src/flowgraph/work_item/agent.py: a frozen Agent(name), make_agent raising AgentError, agent_written(text) giving None for empty, and check_agent_taken(item, agent, development_on, config_file), shaped as check_slug_branched in development/branch.py. New src/flowgraph/work_item/handed.py: handed_work_item(started, agent) and agent_text(item), empty for none. In model.py add agent: Agent or None as field(default=None, kw_only=True) right after started of StartedWorkItem and right after completed of CompletedWorkItem. In moves.py completed_work_item pass agent=item.agent before about=item.about; leave the constructor of started_work_item untouched. In held_file.py add agent: str = empty right after started of StartedItemFile and after completed of CompletedItemFile, and add agent_held after started_held. In primitives.py write agent in _moves_primitives only when there is one, and read it back in item_held through handed_work_item. In file.py read_work_item put AgentError first in the except tuple, and in read_work_item_detail add agent after commit. In views.py add agent after commit in WorkItemDetail. In work_item/commands.py, work_item_detail gets agent after commit, and start_work_item gets an agent parameter. In status/show.py put the agent line right before the commit line. Move the start parser into a new src/flowgraph/parser/start.py: item_commands.py is near its limit of 250 lines. Wire args.agent in parser/command.py into start_item and start_feature_item, and call check_agent_taken after check_slug_branched. Add AgentError after SlugError in parser/refusals.py. Import from the two new modules directly, not through work_item/__init__.py. Insert next to started, completed and commit, never next to parent or about: S-0112 added the complexity there. Remove the xfail marks of the exit and show tests only. Add to test_start_agent.py, unmarked: fgraph start F-0001 --agent hands its first work item, and the start of the next one by a completion lists no agent. Tests seen red first. tests/functional/test_command_help.py changes for the usage line, the options list and the ID help line, whose column widens by one."
 check = "uv run pytest tests/functional/test_start_agent.py tests/functional/test_start_agent_refused.py tests/work_item/test_work_item_agent.py tests/functional/test_command_help.py -q"
 expected_output = "changed: fgraph start of a work item, and of a Feature for its first work item, takes --agent NAME, one word of at most 32 letters, digits and . _ : / -; the started work item holds it in its file as agent, the completed one keeps it, and fgraph show lists it on a line agent; a start without --agent writes no agent and lists no line. The start is refused with exit 2 and nothing written for a Task, for a name that is no agent, and with the development off, naming development.enabled; the start a completion, a landing or an unblock makes names no agent"
 created = 2026-11-23 08:08:00+00:00
+started = 2026-11-23 08:25:05+00:00
+completed = 2026-11-23 08:32:25+00:00
+commit = "0404077"
 
 [[tasks]]
 id = "T-0392"
-state = "backlog"
+state = "completed"
 title = "List the agent of a started work item in fgraph status and in its JSON"
 description = "In views.py add agent: str as field(default=empty, kw_only=True) right after started of WorkItemRow. In file.py read_work_item_rows and in work_item/commands.py work_item_row, add agent right after started. In status/text.py, only the started branch of _status_line changes. In status/document.py, _work_item gets agent: row.agent or None as its first key, before id, and one sentence in the module docstring. The worktree read in development/worktrees.py passes rows whole, so the agent of a started work item comes from its worktree with no change. New tests seen red: tests/status/text/test_status_agent.py (the line with an agent; the line under a Feature; the cut to a width keeps it; the line without one is a guard) and tests/status/test_document_agent.py (the name; null when none, red today by KeyError; inside work_items). Remove the remaining xfail marks."
 check = "uv run pytest tests/functional/test_start_agent.py tests/status/text/test_status_agent.py tests/status/test_document_agent.py -q --runxfail"
 expected_output = "changed: fgraph status lists a work item handed to an agent with [agent] between its progress and its title, in InProgress and under a started Feature, so a line cut to the width of the terminal keeps it; fgraph status --format json holds agent on every work item, the name or null, in buckets and in the work_items of a Feature; a work item without one is listed as before. No strict xfail mark is left in tests/functional/test_start_agent.py"
 created = 2026-11-23 08:08:03+00:00
+started = 2026-11-23 08:32:27+00:00
+completed = 2026-11-23 08:36:35+00:00
+commit = "10344bb"
 
 [[tasks]]
 id = "T-0393"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a start names the agent it is handed to"
 description = "The passages are found by grep, since S-0110 and S-0112 land before this Story and move the lines. README.md: the help block of fgraph start (the columns shift by one), the JSON example (add agent before commit), and the start passage. docs/domain-model.md: the table of States are types; Persistence, the start of a work item with the development on and the start a completion makes; and Status as JSON, as a sentence of its own after the list there, not inside the Work item bullet."
 check = "test $(grep -l -e --agent README.md docs/domain-model.md | wc -l) -eq 2"
 expected_output = "changed: docs/domain-model.md adds the agent to the started and completed rows of States are types; Persistence states fgraph start --agent, its form, its refusals, the Feature start handing its first work item, the automatic start naming none, the file key agent and the hand-over to another agent as a later Story; Status as JSON states agent on a work item, null when none. README.md shows fgraph start S-0001 --agent sonnet-a1, the status line with [sonnet-a1], the show line agent, agent null in the JSON example and the help of start with --agent"
 created = 2026-11-23 08:08:05+00:00
+started = 2026-11-23 08:36:38+00:00
+completed = 2026-11-23 08:37:23+00:00
+commit = "eadacce"
 
 [[knowledge]]
 kind = "decision"

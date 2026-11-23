@@ -6,7 +6,7 @@ flowgraph.work_item.id, the moves between the states in flowgraph.work_item.move
 """
 
 from collections.abc import Callable, Iterable
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from datetime import datetime
 from typing import assert_never
 
@@ -28,8 +28,21 @@ from flowgraph.task import (
     Task,
     TaskState,
 )
+from flowgraph.work_item.agent import Agent
 from flowgraph.work_item.complexity import Complexity
-from flowgraph.work_item.id import WorkItemId, work_item_id_text
+from flowgraph.work_item.errors import (
+    RemovedAlreadyError as RemovedAlreadyError,
+)
+from flowgraph.work_item.errors import (
+    WorkItemFileError as WorkItemFileError,
+)
+from flowgraph.work_item.errors import (
+    WorkItemMismatchError as WorkItemMismatchError,
+)
+from flowgraph.work_item.errors import (
+    WorkItemNotFoundError as WorkItemNotFoundError,
+)
+from flowgraph.work_item.id import WorkItemId
 from flowgraph.work_item.verification import Verification
 from flowgraph.work_item.views import WorkItemRow
 
@@ -64,6 +77,7 @@ class StartedWorkItem:
     description: str
     created: datetime
     started: datetime
+    agent: Agent | None = field(default=None, kw_only=True)
     tasks: tuple[TaskState, ...]
     parent: Parent = STANDALONE
     complexity: Complexity | None = None
@@ -86,6 +100,7 @@ class CompletedWorkItem:
     created: datetime
     started: datetime
     completed: datetime
+    agent: Agent | None = field(default=None, kw_only=True)
     commit: Evidence
     tasks: tuple[CompletedTask, ...]
     parent: Parent = STANDALONE
@@ -140,29 +155,6 @@ LoadWorkItem = Callable[[WorkItemId], WorkItemState]
 
 # Save the work item whole.
 SaveWorkItem = Callable[[WorkItemState], None]
-
-
-class WorkItemNotFoundError(Exception):
-    """A record that holds no work item of the id asked for; `item_id` is that id."""
-
-    def __init__(self, item_id: WorkItemId) -> None:
-        super().__init__(f"no {item_id.kind.noun} {work_item_id_text(item_id)} in the record")
-        self.item_id = item_id
-
-
-class RemovedAlreadyError(ValueError):
-    """A removed work item moved, amended or given a Task; the message names it."""
-
-    def __init__(self, item_id: WorkItemId) -> None:
-        super().__init__(f"{work_item_id_text(item_id)} is removed already")
-
-
-class WorkItemFileError(Exception):
-    """A file named as a work item in a record that does not hold one; names its path."""
-
-
-class WorkItemMismatchError(Exception):
-    """A work item read back different from the one written; its file is as it was before."""
 
 
 def make_work_item(

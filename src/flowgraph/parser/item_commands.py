@@ -4,6 +4,7 @@ import argparse
 
 from flowgraph.graph import JSON
 from flowgraph.parser.base import Commands, new_command
+from flowgraph.parser.start import start_command
 from flowgraph.status import document
 from flowgraph.term import KINDS
 
@@ -61,18 +62,7 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         commands, "about", "list the links of a work item or a Feature, by relation"
     )
     about.add_argument("id", metavar="ID", help="the id of the work item or of the Feature")
-    start = new_command(commands, "start", "start a work item or a Task of it, or a Feature")
-    start.add_argument(
-        "id", metavar="ID", help="the id of the work item, of the Task or of the Feature"
-    )
-    start.add_argument(
-        "--slug",
-        metavar="TEXT",
-        help=(
-            "the words of a work item's branch after its id, instead of its title's first four;"
-            " of a Feature, those of its first work item; read with the development on"
-        ),
-    )
+    start = start_command(commands)
     block = new_command(commands, "block", "block a started Task or Feature that cannot go on")
     block.add_argument("id", metavar="ID", help="the id of the Task or of the Feature")
     block.add_argument("--reason", required=True, metavar="TEXT", help="why it cannot go on")

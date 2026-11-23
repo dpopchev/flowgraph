@@ -17,9 +17,11 @@ from flowgraph.parent import FeatureIdError
 from flowgraph.record import ITEMS
 from flowgraph.relation import RelationError
 from flowgraph.task import TaskInProgressError
+from flowgraph.work_item.agent import AgentError
 from flowgraph.work_item.held_file import (
     HELD_ITEM,
     HeldItemFile,
+    agent_held,
     commit_held,
     completed_held,
     reason_held,
@@ -89,6 +91,7 @@ def read_work_item_rows(record: Path, kind: Kind) -> list[WorkItemRow]:
             complexity=held.complexity or "",
             created=held.created,
             started=started_held(held),
+            agent=agent_held(held),
             completed=completed_held(held),
             tasks=[task_row(task) for task in held.tasks],
             depends_on=held.depends_on,
@@ -107,13 +110,14 @@ def read_work_item(record: Path, item_id: WorkItemId, kinds: Sequence[Kind] = ()
     The ids it depends on are read as those of its own kind or of the kinds given. Raises
     WorkItemNotFoundError when the record holds no such item and WorkItemFileError when its file
     does not hold one, as when it holds more than one started Task, the criterion of another
-    kind, a commit that is no sha or an id it depends on that is of no kind.
+    kind, a commit that is no sha, an agent that is none or an id it depends on that is of no kind.
     """
     path = _held_path(record, item_id)
     held = _read_file(path, item_id.kind)
     try:
         return item_held(held, item_id.kind, kinds)
     except (
+        AgentError,
         TaskInProgressError,
         CriterionError,
         DecisionError,
@@ -140,6 +144,7 @@ def read_work_item_detail(record: Path, item_id: WorkItemId) -> WorkItemDetail:
         description=held.description,
         tasks=[task_row(task) for task in held.tasks],
         commit=commit_held(held),
+        agent=agent_held(held),
         reason=reason_held(held),
         parent=held.parent,
         complexity=held.complexity or "",

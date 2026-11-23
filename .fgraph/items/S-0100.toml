@@ -3,7 +3,11 @@ state = "backlog"
 title = "Raise the work items under a Feature that name the criterion of it they realize from none to every one given it"
 description = "A work item under a Feature without it is taken as before. Its Tasks are written when it is ordered."
 parent = "F-0013"
+complexity = "medium"
 created = 2026-11-22 21:03:52+00:00
+depends_on = [
+    "B-0026",
+]
 
 [criterion]
 given = "a Feature with two criteria"

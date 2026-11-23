@@ -1982,6 +1982,165 @@ The `landing:` line of each record, as `status` prints it:
 - `svrf-parser`: `pr, approver agent, branch ids remote, tag epic-close, ci
   pipeline, worktree ../svrf-parser.worktrees, branch max 1d, lanes 3`
 
+### Field map
+
+The fields of a board 1 item, read on 2026-11-23 by the board script alone:
+`show <id> --detail full` on, in `surrogate-models`, the Epics E-007
+(pruned), E-018 (done), E-019 (doing) and E-020 (todo), the issues W-045
+(pruned), W-187 (done) and W-197 (doing), the spikes W-044 (pruned), W-061
+(todo) and W-195 (done), the bugs W-181 (todo), W-185 and W-188 (done), the
+Tasks T-118 (todo), T-476 (done), T-492 (pruned) and T-493 (blocked); in
+`~/.claude` W-141, W-143, W-145, W-153, W-664 and T-311; in `svrf-parser`
+W-008; beside `sections`, `status`, `tree E-019`, `knowledge --search` and
+`config show`. `--detail full` prints no `reasoning`, `created`,
+`filed_during`, `amends`, `remote` or `pre_empted_by`, so `--detail raw` was
+read too: on E-002, W-185, W-187, T-492 and T-493 of `surrogate-models`, on
+W-143, W-153, W-157, W-159, W-161 and W-664 of `~/.claude`, and on W-008 and
+W-125 of `svrf-parser`. Raw prints the file of the checkout: for T-492 and
+T-493, worked on the branch of W-197, it still reads `doing` and `todo`
+where `full` reads pruned and blocked. No bug is doing and no work item is
+blocked in any record today; W-008 of `svrf-parser` was blocked once, by its
+History. An id alone below is of `surrogate-models`, `(c)` marks
+`~/.claude` and `(s)` `svrf-parser`. The fgraph side is this file, the help
+of `fgraph` and the state types of `src/flowgraph` on this branch. A field
+fgraph could hold only as free text in a description is `lost`: a
+description carries no meaning the planning skill reads. An item of the
+Backlog that aims at a gap is named in its row; the field is lost today.
+
+Every item:
+
+| Field | Seen on | In fgraph | Verdict |
+|---|---|---|---|
+| id `E-nnn`, `W-nnn`, `T-nnn` | every item | a new id by kind, `F-`, `S-`, `U-`, `B-`, `Q-`, `T-` and four digits (Ids); the old id has no place (S-0106) | converted: a new id; the old one lost |
+| title | every item | the title | kept |
+| `created`, a day | raw W-187, T-492 | `created`, a time | converted: the day becomes a time |
+| the external token, `W-008 (AB#3128)`, and `remote:` -- `token`, `synced`, `pushed`, `text`, `parent` | raw W-008 (s), W-125 (s) | none; no item of the Backlog names it | lost |
+
+An Epic:
+
+| Field | Seen on | In fgraph | Verdict |
+|---|---|---|---|
+| `parent: root` | E-019 | a Feature is the top level (Levels) | kept |
+| `## Hypothesis` | E-019 | none: a Feature holds a title, a description and its criteria (Attributes) | lost |
+| `## Outcome` | E-019 | none | lost |
+| a criterion `ACn Given ... When ... Then ...` | E-019 AC1 to AC8, E-007 AC2, AC3 | `--criterion`, free text (Acceptance criteria) | converted: its text a criterion; its label `ACn` dropped |
+| the work item a criterion names, `-> W-189` | E-019 | none (F-0013, S-0100) | lost |
+| a criterion nested under another, `ACn.k` | on no item read; E-035 (c) AC3 states the form | none: the criteria are a flat list | lost |
+| `relations.depends_on` | E-007 on E-006 | none: `--depends-on` is refused on a Feature (Depends on) | lost |
+| `relations.pre_empted_by`, set by a park | raw E-002, empty; its park in E-002#v4 | none: no park | lost |
+| its ledger, `ledgers/E-nnn.md` | E-018 evidence | none | lost |
+
+A work item, of every kind:
+
+| Field | Seen on | In fgraph | Verdict |
+|---|---|---|---|
+| `kind: spike`, `kind: bug` | W-195, W-188 | `Spike`, `Bug` (From board 1) | kept |
+| `kind: issue` with `issue.then: behavior` | raw W-187 | `Story` | converted: the kind from `then` |
+| `kind: issue` with `issue.then: step` | raw W-664 (c) | `Upkeep` | converted: the kind from `then` |
+| `kind: issue` with no `then` | raw W-153 (c) | unknown | unknown: settled by a rule for its kind, the developer's |
+| `parent`, an Epic or empty | W-187, raw W-153 (c) | `parent`, a Feature or standing alone | kept |
+| `reasoning` | raw W-187 `deductive`, W-125 (s) `abductive` | none | lost |
+| `## Hypothesis` of an issue or a bug | W-187, W-188 | none: a Story, an Upkeep and a Bug take none | lost |
+| `tasks` | W-197 | the Tasks in the file of the work item | kept |
+| no `tasks` line | W-044, W-045, both pruned | a work item holds a tuple of Tasks (`src/flowgraph/work_item/model.py`) | unknown: whether the record reads one with none; the Probe settles it |
+| the branch of a doing one, `wi/W-197-no-review-mark-is` | `status` | the branch `fgraph start` cuts (`--slug`) | unknown: whether fgraph takes a branch it did not cut; S-0107 settles it |
+
+An issue, a spike and a bug, by kind:
+
+| Field | Seen on | In fgraph | Verdict |
+|---|---|---|---|
+| issue `## Outcome`, one Given / When / Then sentence | W-187 | `--given`, `--when`, `--then` | converted: the sentence split at its three words |
+| `issue.description` | W-187 | the description | kept |
+| spike `## Hypothesis`, a yes/no question | W-195, W-061 | `--hypothesis` | kept |
+| `spike.research_question`, printed `question` | W-195, raw W-125 (s) | none | lost |
+| `spike.hypothesis`, printed `conjecture` | W-195, raw W-125 (s) | none | lost |
+| spike `## Outcome`, the Given / When / Then of its decision | W-195 | none | lost |
+| `spike.decision` | W-195 | the decision of a `CompletedSpike`, `complete --decision`; no answer, which a Spike completed before the answer was taken lacks (States are types) | kept |
+| `bug.actual` | W-188 | `--observed` | kept |
+| `bug.expected` | W-188 | `--expected` | kept |
+| bug `## Outcome`, a Given / When / Then | W-185, where it differs from `expected` | none | lost |
+| `bug.input` | W-188 | none | lost |
+| `bug.steps` | W-188 | none | lost |
+| `bug.technical` | W-188 | none | lost |
+
+A Task:
+
+| Field | Seen on | In fgraph | Verdict |
+|---|---|---|---|
+| title `<Verb> <object> -> <output>` | T-476 | the title, an output title (Titles) | kept |
+| `parent`, a work item | T-476 | the work item whose file holds it | kept |
+| `## Action` | T-476 | `--description`, the one free text of a Task | converted: the brief becomes the description |
+| `## Output` | T-476 | `--output`, the expected output | kept |
+| `## Check`, the command before ` -- ` or ` -> ` | T-476, T-492 | `--check`, run by `complete` | converted: the command alone |
+| `## Check`, the expected result, `prints 2` | T-492, T-476 `prints "1 passed"` | none: `complete` judges the exit status alone (Persistence, S-0089) | lost |
+| `relations.depends_on` | raw T-492, T-493, empty on both | none: a Task takes none | lost |
+| a Finding of a Task, `T-023: fact:` on its work item | W-008 (s) | a knowledge line of the work item (Attributes) | kept |
+
+The payload of each state:
+
+| Field | Seen on | In fgraph | Verdict |
+|---|---|---|---|
+| `todo`, no payload | T-118, E-020, W-061 | the bare type, in Backlog | kept |
+| `doing`, no payload | W-197, E-019 | `started`, a time | converted: the day of the `doing` History line |
+| `blocked` of a Task: `reason`, `since`, `waiting_on` | T-493 | a `BlockedTask`: `reason`, `since`, `waiting_on` (`fgraph block`) | kept; `since` a day read as a time |
+| `blocked` of a work item | on none today; W-008 (s) History | none: the block of a work item is not built (Persistence, `fgraph block --help`) | lost |
+| `blocked` of an Epic | on none | a `BlockedFeature` | kept |
+| `done.on` | W-187, T-476, E-018 | `completed`, a time | converted: the day becomes a time |
+| `done.evidence` of a work item | W-187 `merged into main at f184dc1`, W-008 (s) `PR 339; merged d4cba3e; build 1806 succeeded; ...` | `commit`, a sha of 7 to 40 hex digits (Evidence) | converted: the sha; the rest of the text lost |
+| `done.evidence` of a Task | T-476 `65312dd; make test ...: [DONE] tests passed` | `commit` | converted: the sha; what the check printed lost |
+| `done.evidence` of an Epic | E-018, a ledger, the ACs, a tag | the commit of its last work item (Evidence) | converted: that commit; the text lost |
+| `pruned.on`, `pruned.reason` of a work item in todo | W-044, W-045 | `removed`, `reason` (`fgraph remove`) | kept |
+| `pruned` of a work item from doing | W-143 (c), its History `doing` then `pruned` | none: the remove of a started work item is not built (Persistence) | lost |
+| `pruned` of a Task | T-492, T-311 (c) | none: a Task has no removed state, and a completed work item holds completed Tasks alone (`src/flowgraph/task/model.py`, `work_item/model.py`) | lost |
+| the done Tasks of a pruned work item | W-143 (c), T-314 and T-315 | none: a removed work item holds Tasks in Backlog alone | lost |
+| `pruned.on`, `pruned.reason` of an Epic | E-007 | a `RemovedFeature`: removed on, reason | kept |
+
+The relations:
+
+| Field | Seen on | In fgraph | Verdict |
+|---|---|---|---|
+| `depends_on`, work item to work item | W-061 on W-059, W-129, W-164 | `depends_on` (Depends on) | kept |
+| `depends_on` naming a pruned work item | W-045 on W-044 | refused at the write, `it is removed` (Depends on) | unknown: whether a conversion may write it; the Probe settles it |
+| `filed_during`, a work item | raw W-185 on W-173 | `filed_during` (Filed during) | kept |
+| `filed_during`, a Task | raw W-187 on T-456 | none: it names a work item alone | converted: the work item of the Task, W-174 |
+| `amends`, a work item | raw W-185 on W-173 | `amends`, a completed work item (Amends) | kept |
+| `amends`, a criterion of an Epic, `E-011/AC3` | raw W-161 (c), W-157 (c), W-159 (c) | none | lost |
+| `pruned.successor`, work item to work item | W-143 (c) to W-145, W-141 (c) to W-153 | `superseded_by` (Superseded by), from Backlog alone | kept |
+| `pruned.successor` of a Task, to a Task or a work item | T-492 to T-518, T-311 (c) to W-153 | none: only a removed work item names one | lost |
+| `continues`, printed on the successor | W-145 (c) on W-143, W-144; W-153 (c) on T-311, T-312, W-141 | `supersedes`, derived (Superseded by) | kept: derived from `successor`, stored by neither |
+
+The knowledge lines:
+
+| Field | Seen on | In fgraph | Verdict |
+|---|---|---|---|
+| a Finding, `<day> <text>` | E-018, W-187 | `fgraph note --finding`, its text and the time noted | converted: the day becomes a time |
+| the type of a Finding, `fact`, `open`, `standing` | E-018 | none (F-0014, S-0102) | lost |
+| `supersedes: <ref>` ending a Finding or a Decision | E-018, W-187, W-195 | none (F-0014, S-0103) | lost |
+| the ref of a line, `<item>#<k>`, `#d<k>`, `#v<k>` | `knowledge --search` (c), W-143#d3 in W-143 (c) | none: a line holds no ref | lost |
+| `about: <term>` ending a line, of `[knowledge] terms` | on no item read; ledger E-044 (c); `config show knowledge` (c) | `--about TERM`, of a term the record holds (Terms) | converted: each word a term added first |
+| a Decision, `<day>: <text>` | E-019, W-195 | `--decision` | converted: the day becomes a time |
+| the burn Decision, `burn: ... (stop after 8 hours)` | E-019, W-664 (c) | a decision line; no command reads its stop | converted: the text alone |
+| a Deviation, `<day>: <text>`, on a root | E-018, E-019, W-143 (c) | `--deviation`, on any work item or Feature | converted: the day becomes a time |
+| the Deviations a checkpoint moved to the ledger | SKILL.md, checkpoint; on no item read | none | lost |
+
+The History lines:
+
+| Field | Seen on | In fgraph | Verdict |
+|---|---|---|---|
+| `todo`, `doing`, `done`, `pruned` | W-187, T-492 | `created`, `started`, `completed`, `removed` of the state | converted: the day of each a time; `pruned` of a Task lost |
+| `blocked` | T-493 | `since` of the `BlockedTask` | converted: the day becomes a time |
+| `unblocked: <why>` | W-008 (s) | none: `fgraph unblock` takes no why | lost |
+| `progress: <text>`, `re-aim`, `halt at` | E-019 | none | lost |
+| `progress: red: <line>` | T-476 | none | lost |
+| `progress: structure: ...` | W-197, W-187 | none | lost |
+| `progress: verified: ...` of an issue or a bug | W-187, W-188 | `fgraph verify --yes`, the `Verification` (Attributes) | converted: the answer yes with its text |
+| `progress: verified: ...` of a spike | W-195 | none: a Spike is not verified (Attributes) | lost |
+| `progress: verified: ...` of an Epic | E-018 | none: a Feature is not verified | lost |
+| `progress: burn started ...`, `burn stopped ...` | E-018, E-019 | none | lost |
+| `progress: tagged v0.14.0 at 1437f75` | E-018 | none in the record: the tag is in git (`fgraph release`) | lost |
+| `note: re-parented ...`, `note: amended depends_on`, `note: rewrote finding ...` | W-188, W-061, E-018 | none: each write of fgraph is a commit in git (Persistence) | lost |
+| a `draft:` block, an imported item | on no item read; SKILL.md, V13 | none | lost |
+
 ## Open questions
 
 - Must a Story under a Feature name the Feature criterion it realizes? The

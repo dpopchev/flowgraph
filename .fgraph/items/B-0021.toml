@@ -12,12 +12,14 @@ expected = "the node of a Task carries its state as fgraph show lists it: Backlo
 
 [[tasks]]
 id = "T-0343"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_graph_task_state.py, failing on the expected of B-0021"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_graph_json.py does. Seen red, then marked a strict xfail naming B-0021 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_graph_task_state.py states that on a record with a Story holding a started, a blocked, a completed Task and one in Backlog, fgraph graph exits 0 and each Task node carries its own state"
 created = 2026-11-22 21:02:23+00:00
 started = 2026-11-23 00:06:23+00:00
+completed = 2026-11-23 00:10:55+00:00
+commit = "6d7114a"
 
 [[tasks]]
 id = "T-0344"

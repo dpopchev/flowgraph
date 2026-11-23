@@ -27,3 +27,12 @@ description = "Create the pure module src/flowgraph/status/review.py, imported d
 check = "uv run pytest tests/status/test_review.py tests/status/text tests/functional/test_status_review.py tests/functional/test_land_gate.py tests/functional/test_watch.py -q"
 expected_output = "changed: fgraph status and fgraph watch mark ? in the first column of the line of a started work item that holds at least one Task with every Task completed, standing alone in InProgress or under a started Feature, with the development on or off; one with no Task, one with a Task in Backlog, started or blocked, a completed work item and the line of a Feature are not marked; a marked line the top of InProgress leaves out is listed after the top, apart from the count of those more; the new src/flowgraph/status/review.py holds the rule"
 created = 2026-11-23 09:10:34+00:00
+
+[[tasks]]
+id = "T-0396"
+state = "backlog"
+title = "Add ready_for_review to the JSON of fgraph status, the ids of the work items marked ready for review"
+description = "In src/flowgraph/status/document.py, status_json adds ready_for_review: review_ids(listed) from flowgraph.status.review to the document, beside can_start. json.dumps sorts it after next_to_start. Add one sentence at the end of the module docstring. No fact is computed in document.py: the rule stays in review.py. Leave _work_item, _task and _feature alone and add no key to an item. Write the tests red first in a new tests/status/test_document_review.py, marker view: the ids of the ready rows in the order given; [] when none is ready; the id of a ready work item under a Feature; a work item with no Task is not listed. Remove the last strict xfail mark of tests/functional/test_status_review.py. Without --runxfail, a mark left on a passing test fails the check as a strict XPASS."
+check = "uv run pytest tests/status/test_document_review.py tests/status/test_document.py tests/functional/test_status_review.py tests/functional/test_status_json.py -q"
+expected_output = "changed: fgraph status --format json holds the top-level key ready_for_review, the ids of every work item marked ? in the order the text lists them, one under a started Feature in its place, [] for none; buckets, can_start, next_to_start and every item are as before; no strict xfail mark is left in tests/functional/test_status_review.py"
+created = 2026-11-23 09:10:37+00:00

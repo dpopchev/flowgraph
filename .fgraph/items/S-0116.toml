@@ -79,12 +79,13 @@ commit = "f609aa671b5be61b458185451329e2518103d85d"
 
 [[tasks]]
 id = "T-0406"
-state = "backlog"
+state = "started"
 title = "Name brief among the commands of tests/parser/test_help.py"
 description = "Added on 2026-11-23 on the agreement of the developer, after the hand-back of S-0116 stopped at this test: it pins the whole set of commands, the plan named tests/functional/test_command_help.py alone, and the subagent left the line unwritten as its brief says. One line and nothing else in the file."
 check = "uv run pytest tests/parser/test_help.py -q"
 expected_output = "changed: tests/parser/test_help.py names brief among the commands in test_every_command_kind_under_add_and_action_under_config_has_its_help, one line right after about, so the list of every command holds the new one"
 created = 2026-11-23 09:48:06+00:00
+started = 2026-11-23 09:48:36+00:00
 
 [[knowledge]]
 kind = "decision"

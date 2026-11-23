@@ -16,6 +16,7 @@ from flowgraph.work_item import (
     WorkItemRow,
     WorkItemState,
     append_task,
+    blocked_work_item,
     completed_task,
     completed_work_item,
     make_kind,
@@ -44,6 +45,7 @@ BARE = make_work_item(make_work_item_id(CHORE, 1), "a title", SCENARIO, "", CREA
 TASK = make_task(make_task_id(3), "a task title", "an output", "", CREATED)
 ITEM = append_task(BARE, TASK)
 HALF = started_task(started_work_item(ITEM, ON), make_task_id(3), ON)
+STUCK = blocked_work_item(HALF, "no key", "developer", ON)
 WHOLE = completed_work_item(completed_task(HALF, make_task_id(3), ON, COMMIT), ON, COMMIT)
 FILE = Path("items") / "CH-0001.toml"
 
@@ -59,7 +61,7 @@ def test_a_work_item_is_written_as_its_one_file_named_by_its_id(tmp_path: Path) 
     }
 
 
-@pytest.mark.parametrize("item", [BARE, ITEM, HALF, WHOLE])
+@pytest.mark.parametrize("item", [BARE, ITEM, HALF, STUCK, WHOLE])
 def test_a_work_item_in_any_state_reads_back_whole(tmp_path: Path, item: WorkItemState) -> None:
     write_work_item(tmp_path, item)
     assert read_work_item(tmp_path, make_work_item_id(CHORE, 1)) == item
@@ -94,7 +96,9 @@ def test_a_started_work_item_is_read_as_a_row_with_its_started_time_and_its_task
     ]
 
 
-@pytest.mark.parametrize("item", [ITEM, HALF, WHOLE], ids=["with-a-task", "started", "completed"])
+@pytest.mark.parametrize(
+    "item", [ITEM, HALF, STUCK, WHOLE], ids=["with-a-task", "started", "blocked", "completed"]
+)
 def test_the_row_read_from_the_file_is_the_row_of_the_work_item(
     tmp_path: Path, item: WorkItemState
 ) -> None:

@@ -10,7 +10,7 @@ from pathlib import Path
 
 from pydantic import ValidationError
 
-from flowgraph.criterion import CommitError, CriterionError, DecisionError
+from flowgraph.criterion import CommitError, CriterionError, DecisionError, EmptyPartError
 from flowgraph.item import task_row, write_checked
 from flowgraph.knowledge import KnowledgeRow
 from flowgraph.parent import FeatureIdError
@@ -22,6 +22,7 @@ from flowgraph.work_item.held_file import (
     HELD_ITEM,
     HeldItemFile,
     agent_held,
+    block_held,
     commit_held,
     completed_held,
     reason_held,
@@ -92,6 +93,8 @@ def read_work_item_rows(record: Path, kind: Kind) -> list[WorkItemRow]:
             created=held.created,
             started=started_held(held),
             agent=agent_held(held),
+            block_reason=block_held(held)[0],
+            waiting_on=block_held(held)[1],
             completed=completed_held(held),
             tasks=[task_row(task) for task in held.tasks],
             depends_on=held.depends_on,
@@ -110,7 +113,8 @@ def read_work_item(record: Path, item_id: WorkItemId, kinds: Sequence[Kind] = ()
     The ids it depends on are read as those of its own kind or of the kinds given. Raises
     WorkItemNotFoundError when the record holds no such item and WorkItemFileError when its file
     does not hold one, as when it holds more than one started Task, the criterion of another
-    kind, a commit that is no sha, an agent that is none or an id it depends on that is of no kind.
+    kind, a commit that is no sha, an agent that is none, an id it depends on that is of no kind
+    or a blank title or reason.
     """
     path = _held_path(record, item_id)
     held = _read_file(path, item_id.kind)
@@ -125,6 +129,7 @@ def read_work_item(record: Path, item_id: WorkItemId, kinds: Sequence[Kind] = ()
         CommitError,
         WorkItemIdError,
         RelationError,
+        EmptyPartError,
     ) as error:
         raise WorkItemFileError(f"{path} holds no {item_id.kind.noun}: {error}") from error
 
@@ -137,6 +142,7 @@ def read_work_item_detail(record: Path, item_id: WorkItemId) -> WorkItemDetail:
     """
     held = _read_file(_held_path(record, item_id), item_id.kind)
     answer = verified_held(held)
+    block_reason, waiting_on = block_held(held)
     return WorkItemDetail(
         id=held.id,
         title=held.title,
@@ -145,7 +151,8 @@ def read_work_item_detail(record: Path, item_id: WorkItemId) -> WorkItemDetail:
         tasks=[task_row(task) for task in held.tasks],
         commit=commit_held(held),
         agent=agent_held(held),
-        reason=reason_held(held),
+        reason=block_reason or reason_held(held),
+        waiting_on=waiting_on,
         parent=held.parent,
         complexity=held.complexity or "",
         knowledge=[

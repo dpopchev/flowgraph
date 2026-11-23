@@ -25,9 +25,11 @@ from flowgraph.item import (
 from flowgraph.parent import parent_text, parent_written
 from flowgraph.task import at_most_one_started
 from flowgraph.work_item.agent import agent_written
+from flowgraph.work_item.block import blocked_work_item
 from flowgraph.work_item.depends import id_held, relations_held, relations_primitives
 from flowgraph.work_item.handed import agent_text, handed_work_item
 from flowgraph.work_item.held_file import (
+    BlockedItemFile,
     CompletedItemFile,
     HeldItemFile,
     ItemFile,
@@ -175,11 +177,13 @@ def item_held(held: HeldItemFile, kind: Kind, kinds: Sequence[Kind] = ()) -> Wor
                 id_held(held.superseded_by, (kind, *kinds)) if held.superseded_by else None
             )
             return removed_work_item(item, held.reason, held.removed, superseded_by)
-        case StartedItemFile() | CompletedItemFile():
+        case StartedItemFile() | BlockedItemFile() | CompletedItemFile():
             tasks = at_most_one_started(tuple(task_held(task) for task in held.tasks))
             begun = replace(started_work_item(item, held.started), tasks=tasks)
             begun = handed_work_item(begun, agent_written(held.agent))
             match held:
+                case BlockedItemFile():
+                    return blocked_work_item(begun, held.reason, held.waiting_on, held.since)
                 case CompletedItemFile():
                     commit = evidence_written(held.commit)
                     question = begun.criterion

@@ -1,9 +1,11 @@
 id = "S-0140"
-state = "backlog"
+state = "started"
 title = "Cut the work items fgraph land lists Completed after a push of main it was to make is refused, under delivery.push, from every one to none"
 description = "Filed on the go of the developer of 2026-11-23, from the plan of S-0123 shown that day: S-0123 is broken down, and this Story is its first part, the push and the way back in; S-0123 keeps the tag and depends on it. Today the push runs after the write that completes, so a push git refuses leaves the work item Completed, and a second fgraph land is refused, S-0001 has no branch wi/S-0001-* to land. The rulings agreed: with delivery.push true a landing pushes main right after the merge and before anything of the record is written, and again as its last step to carry the write that completes; a first push refused leaves the work item started and merged, its branch and its worktree as they were; fgraph land run again takes it up at the commit main is on, by merge-commit, squash and fast-forward, running the gate again on the tree of main; the refusal that a branch brings nothing to merge goes; with delivery.push false nothing changes. Left to B-0023: a record whose main tracks no remote, refused before the merge."
 complexity = "medium"
 created = 2026-11-23 13:06:17+00:00
+started = 2026-11-23 13:10:09+00:00
+agent = "sonnet"
 
 [criterion]
 given = "a record with the development on, delivery.push true, a remote main tracks that refuses the push, and a started work item whose Tasks are completed"

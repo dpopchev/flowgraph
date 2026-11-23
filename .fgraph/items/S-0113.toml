@@ -8,6 +8,11 @@ started = 2026-11-23 08:23:16+00:00
 completed = 2026-11-23 08:42:18+00:00
 commit = "6db2315"
 
+[verified]
+answer = "yes"
+text = "at 6db2315 on main, in a scratch git repository with the development on and development.parallel = 3: fgraph start S-0004 --agent sonnet-a1 exit 0 printed started S-0004; fgraph status listed S-0004  0/1 T  [sonnet-a1]  and its title under InProgress; fgraph show S-0004 listed agent sonnet-a1 under its bucket; fgraph status --format json held agent sonnet-a1 on S-0004 and null on the work items in Backlog; fgraph start F-0001 --agent opus-lead handed its first work item, S-0001, listed [opus-lead]; --agent on T-0004 exit 2 with --agent names the agent of a work item: T-0004 is a Task; --agent 'two words' exit 2 with is no agent; in the same run the JSON carried complexity medium and can_start S-0002, the one place parallel left; make check on main at 6a69424, with S-0110 and S-0112 landed too: 3030 passed, all checks passed. Worked whole by one subagent on sonnet, started by the landing of S-0112; it split three modules for the line limit -- the errors of work_item/model.py to errors.py, the rows of work_item/commands.py to projection.py, the start parser to parser/start.py -- and rewrote parts of one test file with a python heredoc, against the rule of Edit and Write alone. src/flowgraph/parser/command.py is at 246 of 250 lines."
+on = 2026-11-23 08:47:06+00:00
+
 [criterion]
 given = "a record with the development on and a work item in Backlog that waits for nothing"
 when = "it is started with the agent it is handed to named"

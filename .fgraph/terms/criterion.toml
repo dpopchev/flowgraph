@@ -4,4 +4,5 @@ added = 2026-11-23 12:06:26.631500+00:00
 part_of = [
     "work-item",
     "feature",
+    "task",
 ]

@@ -11,12 +11,13 @@ hypothesis = "Does every Epic, work item and Task of the seven .board/ records -
 
 [[tasks]]
 id = "T-0371"
-state = "backlog"
+state = "started"
 title = "Count the items of the seven board 1 records by kind and state in docs/domain-model.md"
 description = "Read with uv run ~/.claude/skills/board/scripts/board.py --root <repo> <command>, a read command alone (status, tree, show, knowledge, check, sections, config show); never the files of a .board/, never a write to one. The seven: ~/.claude and advent-of-code-2025, chaos-to-simple, gflow, stats, surrogate-models, svrf-parser under ~/projects."
 check = "grep -q '^### Records measured' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, From board 1, holds a table Records measured with one row per repository of the seven: its Epics, its work items by kind and its Tasks, each by state, as the board script prints them on the day of the Task"
 created = 2026-11-23 04:57:43+00:00
+started = 2026-11-23 04:58:03+00:00
 
 [[tasks]]
 id = "T-0372"

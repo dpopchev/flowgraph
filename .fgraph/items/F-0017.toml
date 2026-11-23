@@ -13,3 +13,8 @@ criteria = [
     "a developer sets in the configuration how many lines each bucket lists and which buckets fgraph watch shows",
     "a developer reads the buckets as backlog, in-progress, completed and removed, in the text and in the JSON",
 ]
+
+[[knowledge]]
+kind = "decision"
+text = "The developer decided on 2026-11-23: the frame is filed whole but for the marks of a line, chosen from three sets shown first; the buckets are named in kebab case by fgraph itself; a work item with no Task reads []; what a line adds is put on a line below, under the id of who has it; which buckets fgraph watch shows is a key of the configuration."
+noted = 2026-11-23 12:01:59+00:00

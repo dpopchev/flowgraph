@@ -12,3 +12,8 @@ depends_on = [
 given = "a record with a started work item"
 when = "fgraph block of the work item is run with its reason and who it waits on, then fgraph unblock of it"
 then = "fgraph status lists it blocked with its reason, and after the unblock as started again"
+
+[[knowledge]]
+kind = "decision"
+text = "The developer gave the go on 2026-11-23 to the order shown that day: S-0138 waits for S-0125, both changing _removed_with of src/flowgraph/feature/remove.py, and for S-0140, both changing src/flowgraph/development/way.py and tests/development/land/test_land.py; its Tasks are written once the two are landed. Planned that day as eight Tasks of high complexity: a blocked work item is a fifth variant of the state of a work item, a case in 31 exhaustive matches of 9 modules. Open, for when it is ordered: whether fgraph block stops taking a Task, kept in the draft; whether a Task of a blocked work item moves, refused in the draft while a block of a Feature holds back a start and never a completion; whether a blocked work item counts against development.parallel, counted in the draft."
+noted = 2026-11-23 13:09:48+00:00

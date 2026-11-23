@@ -28,6 +28,15 @@ check = "uv run pytest tests/functional/test_development_driver.py tests/functio
 expected_output = "changed: development.driver takes developer or agent and is developer by default. fgraph config show lists it after development.gate. fgraph config set and unset write it and take it back to developer. Any other word is refused, exit 2, naming the key, the word and that it takes developer or agent. With the development off it is held as written. The configuration holds it as Driver in Development, and no command reads it yet. No xfail mark is left in tests/functional/test_development_driver.py"
 created = 2026-11-23 09:11:02+00:00
 
+[[tasks]]
+id = "T-0400"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say the key development.driver names who drives the development"
+description = "Find the passages by grep, not by line number: the config show blocks and the table of keys in README.md; in docs/domain-model.md, the bullets starting [development] gate and [delivery] tag. The spec bullet says that S-0127 and S-0117 read the key, and that which model a complexity maps to stays outside fgraph. Do not touch the feature table at the top of README.md or the status and help passages, and do not correct the passages that say no unset is built or that five keys are built: they are filed as a Bug of their own."
+check = "grep -q development.driver README.md && grep -q development.driver docs/domain-model.md"
+expected_output = "changed: README.md, in its configuration passage, lists development.driver in both config show examples and in the table of keys, and has a paragraph saying it names a developer or an agent, that it is developer by default, that it is held as written with the development off, and that a record leaving it out works as before. docs/domain-model.md, Persistence, adds a bullet on development.driver beside the keys of the development (Driver, src/flowgraph/record/layers.py)"
+created = 2026-11-23 09:11:05+00:00
+
 [[knowledge]]
 kind = "decision"
 text = "The developer ruled on 2026-11-23: the complexity matters when the development is driven by an agent, so the coordinator can evaluate a work item and use the proper model for it. So with the key set to an agent, a work item is planned only once its complexity is set, beside its Tasks (S-0127); with the key left out no command asks for one. Which model a complexity maps to stays outside fgraph, with the coordinator."

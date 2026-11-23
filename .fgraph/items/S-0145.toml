@@ -1,0 +1,10 @@
+id = "S-0145"
+state = "backlog"
+title = "Raise the started work items and Features fgraph amend takes from none to every one amended with its deviation"
+description = "Filed on the word of the developer of 2026-11-23, picked from the map made that day of what the skills and rules of ~/.claude ask of board 1 that fgraph does not do and no Backlog item builds, so that those skills can call fgraph in its place. In board 1: board amend and board criterion of a doing item, each with a Deviation on the root. Its Tasks are written when it is ordered."
+created = 2026-11-23 20:38:54+00:00
+
+[criterion]
+given = "a record with a started work item and a started Feature"
+when = "fgraph amend of each is run with a part to rewrite and the text of a deviation, and without that text"
+then = "with the text the part is rewritten and the deviation is kept on the item in the same write; without it the amend is refused, exit 2, naming the deviation it needs"

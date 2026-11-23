@@ -36,3 +36,12 @@ description = "In views.py add agent: str as field(default=empty, kw_only=True) 
 check = "uv run pytest tests/functional/test_start_agent.py tests/status/text/test_status_agent.py tests/status/test_document_agent.py -q --runxfail"
 expected_output = "changed: fgraph status lists a work item handed to an agent with [agent] between its progress and its title, in InProgress and under a started Feature, so a line cut to the width of the terminal keeps it; fgraph status --format json holds agent on every work item, the name or null, in buckets and in the work_items of a Feature; a work item without one is listed as before. No strict xfail mark is left in tests/functional/test_start_agent.py"
 created = 2026-11-23 08:08:03+00:00
+
+[[tasks]]
+id = "T-0393"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say a start names the agent it is handed to"
+description = "The passages are found by grep, since S-0110 and S-0112 land before this Story and move the lines. README.md: the help block of fgraph start (the columns shift by one), the JSON example (add agent before commit), and the start passage. docs/domain-model.md: the table of States are types; Persistence, the start of a work item with the development on and the start a completion makes; and Status as JSON, as a sentence of its own after the list there, not inside the Work item bullet."
+check = "test $(grep -l -e --agent README.md docs/domain-model.md | wc -l) -eq 2"
+expected_output = "changed: docs/domain-model.md adds the agent to the started and completed rows of States are types; Persistence states fgraph start --agent, its form, its refusals, the Feature start handing its first work item, the automatic start naming none, the file key agent and the hand-over to another agent as a later Story; Status as JSON states agent on a work item, null when none. README.md shows fgraph start S-0001 --agent sonnet-a1, the status line with [sonnet-a1], the show line agent, agent null in the JSON example and the help of start with --agent"
+created = 2026-11-23 08:08:05+00:00

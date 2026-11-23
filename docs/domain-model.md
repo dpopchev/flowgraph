@@ -2315,6 +2315,164 @@ The four rows left unknown:
   item started with no branch, its rerun refused `S-0004 is started
   already`, and its Tasks then start on main.
 
+### Gaps
+
+Counted on 2026-11-23 by the board script alone: `show <id> --detail raw`
+and `show <id> --detail full` on every id of the six records that hold
+items, 4,358 ids and 8,716 calls run by `xargs -P 16`, each output saved
+once to the scratchpad of the session and counted there by a small Python
+script, a pattern per gap (a key of the frontmatter, a `## ` section, the
+prefix of a line); `knowledge --search " "` on each record for the ledgers,
+whose lines it prints with their path; `status` for the landing line. The
+ids have gaps: `~/.claude` holds no W-077 (`no item W-077 on this board`)
+and holds W-668, so its 667 work items run to W-668; the other records run
+from 001 to their totals. `raw` of T-518 of `surrogate-models`, made on the
+branch of W-197, fails (`.board/items/T-518.md not found`); its state, check
+and evidence are from `full`. The Backlog was read by `fgraph status --all`
+and `fgraph show`; B-0025 to B-0029 and S-0109, filed on main during this
+Spike, by `fgraph show` in the checkout of main. The records below: c
+`~/.claude`, cts `chaos-to-simple`, g `gflow`, st `stats`, sm
+`surrogate-models`, sv `svrf-parser`; `advent-of-code-2025` holds no item.
+A count is of items unless it says lines. Closed by names an item with the
+words of its criterion that close the gap, `part` where they close a part of
+it, or `not filed`.
+
+Held by every record that holds items:
+
+| Gap | Items that hold it | Closed by |
+|---|---|---|
+| the old id | 4,358, every item | S-0106: "fgraph show of the item lists W-0123 as its reference" |
+| the days of an item: `created`, `done.on`, `pruned.on`, `since`, the History and knowledge lines; no command takes one (Probe) | 4,358 hold `created` | part, S-0107: "every item under its kind and its bucket"; no word of a date |
+| Epic `## Hypothesis` | 108, every Epic: c 48, cts 20, g 1, st 3, sm 20, sv 16 | not filed |
+| Epic `## Outcome` | 108, every Epic | not filed |
+| a criterion naming its work item, `-> W-nnn` | 611 criteria on all 108 Epics: c 213, cts 164, g 3, st 21, sm 114, sv 96 | S-0100, from the work item: "lists the second criterion of F-0001 as the one it realizes"; S-0101: "lists its criteria as met 1 of 2" |
+| `reasoning` | 1,335, every work item | not filed |
+| `## Hypothesis` of an issue | 822, every issue: c 378, cts 156, g 3, st 26, sm 149, sv 110 | not filed |
+| the expected result of a Check, after ` -- ` or ` -> ` | 2,832 of 2,915 Tasks: c 1,281, cts 520, g 12, st 88, sm 518, sv 413 | not filed |
+| `done.evidence` beyond a bare sha | 4,046, every done item: Epics 104, work items 1,248, Tasks 2,694 | not filed |
+| the type of a Finding | 991 lines: fact 505, open 186, standing 300; g 10 | part, S-0102: "a finding is noted on it as open ... list the line with its mark"; a `fact` would be a line with no mark, whether it is live left open (S-0104, description) |
+| `supersedes:` ending a line | 593 lines: in Findings 454, Decisions 111, Deviations 28; g 3 | S-0103: "lists the first as superseded by the later" |
+| the ref of a line, `#k`, `#dk`, `#vk` | every knowledge line, 2,711: Findings 991, Decisions 1,213, Deviations 507 | not filed; S-0103 needs one, its form not stated |
+
+Held by some records:
+
+| Gap | Items that hold it | Closed by |
+|---|---|---|
+| a pruned Task, a state the read refuses | 186: c 68, cts 8, st 1, sm 77, sv 32 | part, B-0025: "each move a table lists is one fgraph makes, or the table marks it as not built" |
+| a work item that holds a pruned Task | 123: c 51, cts 7, st 1, sm 40, sv 24; of them done 74, pruned 48, doing 1 (W-197) | part, B-0025 |
+| a work item pruned after `doing` | 6: c 2, cts 1, sv 3, each holding a pruned Task | part, B-0025 |
+| the done Tasks of a pruned work item | 3 work items: c 1, sv 2 | not filed |
+| a blocked work item | 0 today; 67 `blocked` History lines on work items | part, B-0025 |
+| the successor of a pruned Task | 49: c 26, cts 4, sm 14, sv 5 | not filed |
+| an issue with no `then` | 601: c 281, cts 156, g 3, sm 90, sv 71 | not filed: its kind is a rule of the developer (Probe) |
+| spike `research_question`, `hypothesis`, `## Outcome` | 61 each, every spike: c 24, cts 4, sm 13, sv 20 | not filed |
+| bug `## Hypothesis`, `## Outcome`, `input`, `steps` | 452 each, every bug: c 265, cts 76, st 13, sm 43, sv 55 | not filed |
+| bug `technical` | 392: c 245, cts 46, st 12, sm 42, sv 47 | not filed |
+| `depends_on` of a Task | 494: c 277, cts 5, g 9, sm 138, sv 65 | not filed |
+| a knowledge section of a Task's own | 19: c 8, cts 2, g 1, sm 6, sv 2 | not filed: `fgraph note` takes a work item, so its lines move to it |
+| `filed_during` a Task | 553: c 260, cts 91, st 16, sm 112, sv 74 | not filed: the work item of the Task is kept (Probe), the Task lost |
+| `amends` a criterion of an Epic | 8: c 4, sm 4 | not filed |
+| `depends_on` of an Epic | 5: c 1, sm 4 | not filed |
+| a nested criterion `ACn.k` | 9 on E-001 and E-003 of st | not filed |
+| done with no sha in its evidence | 58: Tasks 53 (c 38, sm 15), work items 5 (c 4, sm 1) | not filed |
+| a Check in prose, no ` -- ` or ` -> ` | 83, all of c | not filed |
+| the Deviations a checkpoint moved to a ledger | 27 sections in 13 ledgers: c 5 in 4, st 1 in 1, sm 5 in 3, sv 16 in 5 | not filed |
+| the branch of the doing work item, named by its old id | 1, W-197 of sm | part, B-0027: "or leaves a way to make the branch of the started work item"; the rename not filed |
+| `depends_on` a pruned item | 39: c 14, sm 23, sv 2 | none needed: written before the removal, or by a file (Probe) |
+
+Lost by a decision taken, or of no use once converted. The decisions are
+quoted; `reading` marks a judgment of this Task, not a fact:
+
+| Gap | Items that hold it | Why |
+|---|---|---|
+| the external token, `remote:` | 614, every item of sv | decision on F-0007: "external sync is later, with no order asked"; `docs/board-review.md`, group 8, "drop for now" |
+| a `draft:` block | 0 seen | the same |
+| `pre_empted_by`, a park | 2 Epics of sm; 9 park sections in ledgers | decision on F-0007: "left out as overhead -- park" |
+| the stop of a burn Decision | 243 burn Decisions, 147 burn History lines | decision on F-0007: burn "stays in the planning skill and not in fgraph"; the line converts as text |
+| a ledger as an archive | 106: c 48, cts 20, g 1, st 3, sm 18, sv 16 | reading: a view rebuilt from the items (`docs/board-review.md`, group 7); its checkpoint Deviations are not, above |
+| `note:` and `progress: tagged` History lines | 1,133 and 348 lines | reading: git holds each write and each tag (Field map) |
+| `progress: red:` | 1,366 lines | reading: the red proof gates a close in board 1; nothing reads it of a done Task, and no Task in flight holds one |
+| `progress: structure:`, the other progress lines, `unblocked: <why>` | 654, 339 and 174 lines | reading: a story of the work, read by no gate; not filed |
+| `progress: verified:` of a spike, of an Epic | 20 and 58 lines | reading: a Spike keeps its decision and answer, and S-0101 shows a Feature met k of n; not filed as such |
+
+The configuration, the `landing:` line of Records measured against F-0012
+and `fgraph config show`:
+
+| Board 1 | Records | Closed by |
+|---|---|---|
+| `main`, no branches | cts | S-0096: "no branch and no worktree was made" |
+| `pr` | g, sv | S-0097: "its branch is pushed with a pull request opened" |
+| `branch max 1d` | all but cts | S-0098: "the line of the work item says its branch is older than 1d" |
+| `approver agent`, `approver developer` | all seven | S-0099: "it exits 2 saying the landing waits for the developer" |
+| `gate`, `lanes 3` | c, cts; c, sv | `development.gate`, `development.parallel`, kept |
+| `tag epic-close`; `tag root-close`; `tag none` | five; c; st | `delivery.tag`, `feature-close` or `none`; the tag of a standalone root, not filed |
+| `ci pipeline`, `branch ids remote` | g, sv; sv | not filed; external sync is later (F-0007) |
+
+The work in flight a conversion must carry, by the composed state of `full`:
+
+| Record | Epics | Work items | Tasks |
+|---|---|---|---|
+| c | none | 2 bugs todo, W-666 and W-668 | 2 todo |
+| st | none | 1 issue and 1 bug todo | 2 todo |
+| sm | E-019 doing, E-020 todo | W-197 doing; 13 issues, 6 bugs, 2 spikes todo | 30 todo, T-493 blocked |
+| cts, g, sv, advent-of-code-2025 | none | none | none |
+
+Two results the migration rests on, from the Probe:
+
+- By files, not by commands. No command takes a date, so every converted
+  item would carry the time of the run; with the development off a Task
+  takes no `--check`, and with it on `complete` runs the old check and
+  refuses when it fails today, and a work item reaches Completed by `land`
+  at its merge commit, not at the old sha. Files with the old times, the
+  old checks and the old shas were read with exit 0. A file must write each
+  time with its offset: a day alone ends `status` and `knowledge` in a
+  traceback (B-0026). Whether the 2,694 done Tasks would pass their checks
+  today was not counted: it means running every old check in its
+  repository.
+- States the read refuses, whatever writes them: a removed Task, a blocked
+  work item, a removed work item with `started` or a Task out of Backlog
+  (Probe); and, from the model, a completed or started work item that holds
+  a Task no state of fgraph takes (Field map, a pruned Task). Items in such
+  a state: c 119 (68 Tasks, 51 work items), cts 15 (8, 7), g 0, st 2 (1,
+  1), sm 117 (77, 40), sv 56 (32, 24), 309 in all; advent-of-code-2025 0.
+  No work item is blocked today. Only `gflow` and `advent-of-code-2025`
+  convert without a change of the model or the drop of a pruned Task.
+
+Against the passages above: the Field map rows `done.evidence` of a work
+item and of a Task, "converted: the sha", fail on the 58 done items whose
+evidence holds no sha, as T-010 of c, `scratch t010: make check exit 0, ...`;
+the row `## Check`, "converted: the command alone", cannot cut the 83 Checks
+of c in prose, as `... returns nothing`, by a rule, the pattern being a word
+of a result with no separator; the row of a nested criterion, "on no item
+read", meets 9 on E-001 and E-003 of `stats`; and the row of a Finding of a
+Task, kept on its work item, leaves out the 19 Tasks that hold a section of
+their own. Every count by kind and state agrees with Records measured.
+
+The answer to Q-0001: no. Every record that holds items holds fields fgraph
+has no place for -- the Hypothesis and Outcome of all 108 Epics, the
+`reasoning` of all 1,335 work items, the expected result of 2,832 Checks --
+and five of the six hold states the read of fgraph refuses, 309 items.
+
+The gaps split three ways; which records hold each is observed, and that a
+gap must close is the reading of the hypothesis itself, no field the
+planning skill reads lost, with F-0015's "every item kept with its state and
+its relations". The decision of what to build is the developer's.
+
+- Before any record converts, held by all six: the write path by files with
+  times (S-0107), the old id (S-0106), the criterion link (S-0100, S-0101),
+  the type of a Finding (S-0102, part) and `supersedes` (S-0103); not
+  filed: the Epic Hypothesis and Outcome, `reasoning`, the Hypothesis of an
+  issue, the expected result of a Check, the evidence beyond its sha, the
+  ref of a knowledge line.
+- For some records: the refused states, 309 items in c, cts, st, sm and sv
+  (B-0025, part); the rest of the second table, each with its records. On
+  top of the first list `gflow` holds 3 issues with no `then`, 9 Tasks with
+  `depends_on` and 1 Task with knowledge of its own, and no refused state.
+- Lost by a decision taken: the external token and `draft:` (sync later),
+  the park, the stop of a burn. Of no use once converted, a reading: the
+  ledger as a view, the `note:`, `tagged`, `red:`, `structure:`, other
+  progress and `unblocked:` History lines.
+
 ## Open questions
 
 - Must a Story under a Feature name the Feature criterion it realizes? The

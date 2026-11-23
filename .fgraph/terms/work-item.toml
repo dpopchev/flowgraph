@@ -1,0 +1,3 @@
+name = "work-item"
+meaning = "A Story, a Bug, a Spike or an Upkeep: the level that holds its Tasks and stands alone or under one Feature; its type says how the work ends, never its size."
+added = 2026-11-23 12:05:53.600759+00:00

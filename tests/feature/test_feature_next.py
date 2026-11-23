@@ -26,6 +26,7 @@ from flowgraph.work_item import (
     append_task,
     completed_task,
     completed_work_item,
+    make_complexity,
     make_work_item,
     removed_work_item,
     started_task,
@@ -45,6 +46,7 @@ STARTED = started_feature(FEATURE, DAY[5])
 NO_QUEUE = make_queue([])
 UNLIMITED = make_config("")
 ONE_AT_ONCE = make_config("[development]\nenabled = true\nparallel = 1\n")
+DRIVEN_BY_AN_AGENT = make_config('[development]\nenabled = true\ndriver = "agent"\n')
 COMPLETED_ALONE = "completed S-0001 at abc1234\n"
 
 
@@ -53,11 +55,23 @@ def never(*_: object) -> Never:
     raise AssertionError("a completion reads the rows, the queue, the work items and the Feature")
 
 
-def story(number: int, parent: Parent = F1, *, tasks: int = 1) -> WorkItem:
-    """The Story of that number in Backlog, added on the day of its number, with that many Tasks."""
+def story(
+    number: int, parent: Parent = F1, *, tasks: int = 1, complexity: str | None = None
+) -> WorkItem:
+    """The Story of that number in Backlog, added on the day of its number.
+
+    It holds that many Tasks and that complexity, none by default.
+    """
     criterion = make_scenario("a state", "an action", "another")
+    held = None if complexity is None else make_complexity(complexity)
     item = make_work_item(
-        make_story_id(number), f"title {number}", criterion, "", DAY[number], parent
+        make_story_id(number),
+        f"title {number}",
+        criterion,
+        "",
+        DAY[number],
+        parent,
+        complexity=held,
     )
     for _ in range(tasks):
         task = make_task(make_task_id(number), "a task title", "an output", "", DAY[number])
@@ -181,6 +195,16 @@ def test_the_next_work_item_is_saved_started_beside_a_started_one_of_its_feature
     ]
 
 
+def test_a_next_work_item_with_a_complexity_is_started_driven_by_an_agent() -> None:
+    written, _ = complete([ready(1), story(2, complexity="low")], config=DRIVEN_BY_AN_AGENT)
+    assert written.out == f"{COMPLETED_ALONE}started S-0002\n"
+
+
+def test_a_next_work_item_with_no_complexity_is_started_with_the_driver_left_out() -> None:
+    written, _ = complete([ready(1), story(2)])
+    assert written.out == f"{COMPLETED_ALONE}started S-0002\n"
+
+
 NOT_STARTED = [
     ([ready(1), story(2, tasks=0)], UNLIMITED, (), "S-0002 has no Task to start with"),
     (
@@ -188,6 +212,13 @@ NOT_STARTED = [
         ONE_AT_ONCE,
         (),
         "S-0002 cannot start: development.parallel = 1, started already: S-0003",
+    ),
+    (
+        [ready(1), story(2)],
+        DRIVEN_BY_AN_AGENT,
+        (),
+        "S-0002 has no complexity to start with: "
+        "set it with fgraph amend S-0002 --complexity low, medium or high",
     ),
     ([ready(1), story(2)], UNLIMITED, (S2,), "S-0002 is not written here"),
     (
@@ -200,6 +231,7 @@ NOT_STARTED = [
 WHY_NOT = [
     "without-a-task",
     "beside-as-many-as-parallel-starts",
+    "without-a-complexity-driven-by-an-agent",
     "out-of-the-scope-of-the-branch",
     "a-title-that-gives-no-slug",
 ]

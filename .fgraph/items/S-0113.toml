@@ -1,9 +1,10 @@
 id = "S-0113"
-state = "backlog"
+state = "started"
 title = "Raise the started work items that name the agent they are handed to from none to every one given it"
 description = "Filed on the plan the developer agreed on 2026-11-23. Its Tasks are written when it is ordered. The option that names the agent is the Task's. Open: whether a started work item is handed to another agent after a refuted hand-back, and what the name holds -- a model, an id, both."
 parent = "F-0016"
 created = 2026-11-23 07:02:00+00:00
+started = 2026-11-23 08:23:16+00:00
 
 [criterion]
 given = "a record with the development on and a work item in Backlog that waits for nothing"

@@ -770,6 +770,39 @@ fgraph release
 A version the project keeps in a file of its own, as `pyproject.toml`, is not
 bumped by `fgraph release`.
 
+The delivery tags `main` at the close of a Feature when the record says so:
+
+```toml
+[delivery]
+tag = "feature-close"
+```
+
+`tag` is `feature-close` or `none`, `none` by default, so a record that names
+none tags nothing, as a landing did before the key. With `feature-close`, the
+landing of the last work item of a started Feature -- the write that completes
+the Feature -- is followed by the tag `fgraph release` makes, on the commit
+`main` is on once the landing is whole, as its last step: after the push of
+`main` under `push = true`, and pushed itself under the same key. A landing
+that completes no Feature, as one of a work item that stands alone, tags
+nothing:
+
+```sh
+fgraph land S-0002 --message "feat: land the Stories listed under InProgress"
+# landed S-0002 at 880059e
+# completed F-0001 at 880059e
+# pushed main to origin
+# tagged v0.1.0 at 9cbc107
+# pushed v0.1.0 to origin
+```
+
+A tag git refuses leaves the landing as it is, the Feature completed, and
+exits 2 saying so; a push of `main` git refuses makes no tag and says the
+Feature is not tagged, so `git push` then `fgraph release` is left to you. It
+is a step of a landing, so with the development off it tags nothing: `fgraph
+complete` of the last work item completes the Feature with no tag, and
+`fgraph release` tags it. Any other value is refused naming the two,
+`delivery.tag is "sometimes": it takes feature-close or none`.
+
 The commits of the record are a layer the record turns off:
 
 ```toml
@@ -839,6 +872,7 @@ fgraph config show
 # development.merge = "merge-commit"
 # development.gate = none
 # delivery.push = false
+# delivery.tag = "none"
 ```
 
 `none` is how a key that holds no value is listed: `parallel` without a
@@ -862,6 +896,7 @@ fgraph config show
 # development.merge = "merge-commit"
 # development.gate = "make check"
 # delivery.push = false
+# delivery.tag = "none"
 ```
 
 VALUE is a text, read by what its key takes and never guessed from the text,
@@ -875,6 +910,7 @@ so `fgraph config set development.gate true` names the command `true`:
 | `development.merge`    | `merge-commit`, `squash` or `fast-forward` | `fgraph config set development.merge squash`      |
 | `development.gate`     | a command line, one argument of the shell  | `fgraph config set development.gate "make check"` |
 | `delivery.push`        | `true` or `false`                          | `fgraph config set delivery.push true`            |
+| `delivery.tag`         | `feature-close` or `none`                  | `fgraph config set delivery.tag feature-close`    |
 
 The whole file is read back as a configuration before it replaces the one in
 the record. A key the configuration does not have, a value the key does not

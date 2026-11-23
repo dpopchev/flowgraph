@@ -9,10 +9,11 @@ parallel` is the most work items started at once; it has no default, so left out
 them. `[development] merge` is how a landing merges: `merge-commit` unless it names `squash` or
 `fast-forward`. `[development] gate` is the one command line a landing runs before main moves;
 it has no default either, so left out a landing runs none. `[delivery] push = true` pushes main
-once a landing is whole; it is false by default. Each layer is a value (`flowgraph.record.layers`).
+once a landing is whole; it is false by default. `[delivery] tag = "feature-close"` tags main
+with its next version once a landing completes a Feature; it is `none` by default. Each layer is
+a value (`flowgraph.record.layers`); what a file refused says is `flowgraph.record.config_refusal`.
 """
 
-import json
 import tomllib
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
@@ -21,6 +22,7 @@ from pathlib import Path
 import tomli_w
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
+from flowgraph.record.config_refusal import refusal
 from flowgraph.record.layers import (
     UNGATED,
     UNLIMITED,
@@ -30,6 +32,7 @@ from flowgraph.record.layers import (
     Git,
     Merge,
     Parallel,
+    TagAt,
 )
 
 # The file of the configuration inside a record.
@@ -52,6 +55,9 @@ GIT_COMMIT = "git.commit"
 
 # The key that pushes main once a landing is whole.
 DELIVERY_PUSH = "delivery.push"
+
+# The key that tags main at the close of a Feature.
+DELIVERY_TAG = "delivery.tag"
 
 
 @dataclass(frozen=True)
@@ -111,6 +117,8 @@ class _DeliveryTable(_Table):
     """What `[delivery]` holds; a key left out is its default."""
 
     push: bool = False
+    # Not strict, so that the word of the file is read as the closes it names.
+    tag: TagAt = Field(default=TagAt.NONE, strict=False)
 
 
 class _ConfigFile(_Table):
@@ -121,53 +129,20 @@ class _ConfigFile(_Table):
     delivery: _DeliveryTable = _DeliveryTable()
 
 
-# What a count takes, whether its value is no whole number or one below 1.
-_COUNT = "a whole number of 1 or more"
-
-# What a way of merging takes: one of the words of Merge.
-_WORDS = [merge.value for merge in Merge]
-_WAY = f"{', '.join(_WORDS[:-1])} or {_WORDS[-1]}"
-
-# What a gate takes, whether its value is no text or a blank one.
-_COMMAND = "a command line"
-
-# What the value of a key takes, by the type of the error pydantic reports of it.
-_TAKES = {
-    "bool_type": "true or false",
-    "model_type": "a table",
-    "int_type": _COUNT,
-    "greater_than_equal": _COUNT,
-    "enum": _WAY,
-    "string_type": _COMMAND,
-    "string_pattern_mismatch": _COMMAND,
-}
-
-
-def _refusal(error: ValidationError) -> str:
-    """What the first error of a file refused says: its key, dotted, and why it is refused."""
-    first = error.errors()[0]
-    key = ".".join(str(part) for part in first["loc"])
-    if first["type"] == "extra_forbidden":
-        return f"{key} is no {'table' if len(first['loc']) == 1 else 'key'} of the configuration"
-    written = json.dumps(first["input"], default=str)
-    takes = _TAKES.get(first["type"])
-    return f"{key} is {written}: {first['msg'] if takes is None else f'it takes {takes}'}"
-
-
 def make_config(text: str) -> Config:
     """The configuration the text of a config.toml holds; a key it leaves out is its default.
 
     Raises ConfigError naming the first table or key the configuration does not have, or whose
-    value is of another type than the key takes, a count below 1, no way of merging or a blank
-    gate, and when the text is no TOML; naming both keys when it turns the development on with
-    the commits off.
+    value is of another type than the key takes, a count below 1, no way of merging, a blank
+    gate or no word of a tag, and when the text is no TOML; naming both keys when it turns the
+    development on with the commits off.
     """
     try:
         held = _ConfigFile.model_validate(tomllib.loads(text))
     except tomllib.TOMLDecodeError as error:
         raise ConfigError(f"no TOML: {error}") from error
     except ValidationError as error:
-        raise ConfigError(_refusal(error)) from error
+        raise ConfigError(refusal(error)) from error
     if held.development.enabled and not held.git.commit:
         raise ConfigError(
             f"{DEVELOPMENT_ENABLED} is true while {GIT_COMMIT} is false:"
@@ -181,7 +156,7 @@ def make_config(text: str) -> Config:
         merge=held.development.merge,
         gate=UNGATED if command is None else Gated(command),
     )
-    delivery = Delivery(push=held.delivery.push)
+    delivery = Delivery(push=held.delivery.push, tag=held.delivery.tag)
     return Config(git=Git(commit=held.git.commit), development=development, delivery=delivery)
 
 

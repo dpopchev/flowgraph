@@ -255,3 +255,30 @@ def test_a_completion_that_starts_no_work_item_says_what_the_completion_says(
 ) -> None:
     written, _ = complete(items, feature, item=item)
     assert (written.out, written.branch) == (said, None)
+
+
+def test_the_completion_of_the_last_work_item_of_a_feature_names_the_feature_it_completes() -> None:
+    written, _ = complete([ready(1), removed(2)])
+    assert written.completes == F1
+
+
+@pytest.mark.parametrize(
+    ("items", "feature", "item"),
+    [
+        ([ready(1), story(2)], STARTED, "S-0001"),
+        ([ready(1, STANDALONE), story(2)], STARTED, "S-0001"),
+        ([ready(1), removed(2)], FEATURE, "S-0001"),
+        ([started(1), removed(2)], STARTED, "T-0001"),
+    ],
+    ids=[
+        "the-first-of-two",
+        "a-work-item-standing-alone",
+        "under-a-feature-never-started",
+        "a-task",
+    ],
+)
+def test_a_completion_that_completes_no_feature_names_none(
+    items: list[WorkItemState], feature: FeatureState, item: str
+) -> None:
+    written, _ = complete(items, feature, item=item)
+    assert written.completes is None

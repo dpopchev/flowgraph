@@ -15,6 +15,7 @@ UNCOMMITTED = "[git]\ncommit = false\n"
 TAKES_A_COUNT = "it takes a whole number of 1 or more"
 TAKES_A_WAY = "it takes merge-commit, squash or fast-forward"
 TAKES_A_COMMAND = "it takes a command line"
+TAKES_A_TAG = "it takes feature-close or none"
 
 
 @pytest.mark.parametrize(
@@ -135,6 +136,38 @@ def test_delivery_push_set_pushes_a_landing() -> None:
 
 def test_delivery_push_is_held_as_written_with_the_development_off() -> None:
     assert make_config("[delivery]\npush = true\n").delivery.push is True
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["", "[delivery]\n", '[delivery]\ntag = "none"\n', ENABLED],
+    ids=["no-table", "no-key", "written-none", "development-on"],
+)
+def test_the_close_of_a_feature_tags_nothing_unless_delivery_tag_is_set(text: str) -> None:
+    assert make_config(text).delivery.tag.value == "none"
+
+
+def test_delivery_tag_feature_close_tags_the_close_of_a_feature() -> None:
+    assert make_config(f'{ENABLED}[delivery]\ntag = "feature-close"\n').delivery.tag.value == (
+        "feature-close"
+    )
+
+
+def test_delivery_tag_is_held_as_written_with_the_development_off() -> None:
+    assert make_config('[delivery]\ntag = "feature-close"\n').delivery.tag.value == (
+        "feature-close"
+    )
+
+
+@pytest.mark.parametrize(
+    ("value", "written"),
+    [('"sometimes"', '"sometimes"'), ('"Feature-Close"', '"Feature-Close"'), ("true", "true")],
+    ids=["another-word", "another-case", "a-truth"],
+)
+def test_a_tag_that_is_no_word_of_it_is_refused_naming_the_two(value: str, written: str) -> None:
+    with pytest.raises(ConfigError) as error:
+        make_config(f"[delivery]\ntag = {value}\n")
+    assert str(error.value) == f"delivery.tag is {written}: {TAKES_A_TAG}"
 
 
 @pytest.mark.parametrize(

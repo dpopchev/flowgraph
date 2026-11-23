@@ -27,6 +27,11 @@ def test_the_tag_of_the_close_of_a_feature_taken_back_keeps_the_push() -> None:
     assert without_setting(delivery, "delivery.tag") == {"delivery": {"push": True}}
 
 
+def test_the_driver_taken_back_keeps_the_development_enabled() -> None:
+    driven = {"development": {"enabled": True, "driver": "agent"}}
+    assert without_setting(driven, "development.driver") == {"development": {"enabled": True}}
+
+
 def test_a_key_the_settings_do_not_hold_is_taken_back_to_the_settings_as_they_were() -> None:
     assert without_setting(GATED, "development.parallel") == GATED
 

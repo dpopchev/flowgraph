@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from flowgraph.record.config import ConfigError, make_config, read_config
-from flowgraph.record.layers import UNGATED, UNLIMITED, Gated, Merge, Parallel
+from flowgraph.record.layers import UNGATED, UNLIMITED, Driver, Gated, Merge, Parallel
 
 pytestmark = pytest.mark.edge
 
@@ -16,6 +16,7 @@ TAKES_A_COUNT = "it takes a whole number of 1 or more"
 TAKES_A_WAY = "it takes merge-commit, squash or fast-forward"
 TAKES_A_COMMAND = "it takes a command line"
 TAKES_A_TAG = "it takes feature-close or none"
+TAKES_A_DRIVER = "it takes developer or agent"
 
 
 @pytest.mark.parametrize(
@@ -119,6 +120,38 @@ def test_gate_is_held_as_written_with_the_development_off() -> None:
     assert make_config('[development]\ngate = "make check"\n').development.gate == Gated(
         "make check"
     )
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["", "[development]\n", ENABLED],
+    ids=["no-table", "no-key", "development-on"],
+)
+def test_a_development_is_driven_by_a_developer_unless_driver_is_set(text: str) -> None:
+    assert make_config(text).development.driver is Driver.DEVELOPER
+
+
+def test_a_driver_developer_written_is_a_developer() -> None:
+    assert make_config(f'{ENABLED}driver = "developer"\n').development.driver is Driver.DEVELOPER
+
+
+def test_a_driver_agent_set_is_an_agent() -> None:
+    assert make_config(f'{ENABLED}driver = "agent"\n').development.driver is Driver.AGENT
+
+
+def test_driver_is_held_as_written_with_the_development_off() -> None:
+    assert make_config('[development]\ndriver = "agent"\n').development.driver is Driver.AGENT
+
+
+@pytest.mark.parametrize(
+    ("value", "written"),
+    [('"robot"', '"robot"'), ('"Agent"', '"Agent"'), ("true", "true")],
+    ids=["another-word", "another-case", "a-truth"],
+)
+def test_a_driver_that_is_no_word_of_it_is_refused_naming_the_key(value: str, written: str) -> None:
+    with pytest.raises(ConfigError) as error:
+        make_config(f"[development]\ndriver = {value}\n")
+    assert str(error.value) == f"development.driver is {written}: {TAKES_A_DRIVER}"
 
 
 @pytest.mark.parametrize(

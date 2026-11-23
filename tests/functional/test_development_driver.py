@@ -22,7 +22,6 @@ SET_AGENT = ["config", "set", "development.driver", "agent"]
 SHOW = ["config", "show"]
 CONFIG = Path(".fgraph") / "config.toml"
 ENABLED = "[development]\nenabled = true\n"
-XFAIL_S0115 = pytest.mark.xfail(strict=True, reason="S-0115: development.driver is no key yet")
 ADD_STORY = [
     *("add", "story", "Raise the Stories fgraph lists from 0 to 1"),
     *("--given", "a state", "--when", "an action", "--then", "another"),
@@ -114,11 +113,9 @@ class TestTheDriverSetToAnAgentOnARecordWithTheDevelopmentOn:
     def set_agent(self, project: Path) -> Outcome:
         return fgraph(SET_AGENT, project)
 
-    @XFAIL_S0115
     def test_set_exits_with_zero(self, set_agent: Outcome) -> None:
         assert set_agent.status == 0
 
-    @XFAIL_S0115
     def test_show_then_lists_the_driver_as_agent_in_quotes(
         self, set_agent: Outcome, project: Path
     ) -> None:
@@ -126,7 +123,6 @@ class TestTheDriverSetToAnAgentOnARecordWithTheDevelopmentOn:
 
 
 class TestTheDriverLeftOutOfARecordWithTheDevelopmentOn:
-    @XFAIL_S0115
     def test_show_lists_the_driver_as_developer_in_quotes(self, project: Path) -> None:
         assert 'development.driver = "developer"' in fgraph(SHOW, project).out.splitlines()
 

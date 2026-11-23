@@ -8,7 +8,8 @@ branch of a work item carries its record, so the development needs the commits. 
 parallel` is the most work items started at once; it has no default, so left out nothing limits
 them. `[development] merge` is how a landing merges: `merge-commit` unless it names `squash` or
 `fast-forward`. `[development] gate` is the one command line a landing runs before main moves;
-it has no default either, so left out a landing runs none. `[delivery] push = true` pushes main
+it has no default either, so left out a landing runs none. `[development] driver` names who
+drives the development: `developer` unless it names `agent`. `[delivery] push = true` pushes main
 once a landing is whole; it is false by default. `[delivery] tag = "feature-close"` tags main
 with its next version once a landing completes a Feature; it is `none` by default. Each layer is
 a value (`flowgraph.record.layers`); what a file refused says is `flowgraph.record.config_refusal`.
@@ -28,6 +29,7 @@ from flowgraph.record.layers import (
     UNLIMITED,
     Delivery,
     Development,
+    Driver,
     Gated,
     Git,
     Merge,
@@ -49,6 +51,9 @@ DEVELOPMENT_MERGE = "development.merge"
 
 # The key that limits the work items started at once, as a refusal names it.
 DEVELOPMENT_PARALLEL = "development.parallel"
+
+# The key that names who drives the development, as a refusal names it.
+DEVELOPMENT_DRIVER = "development.driver"
 
 # The key that turns the commits of the record off, as a refusal names it.
 GIT_COMMIT = "git.commit"
@@ -111,6 +116,8 @@ class _DevelopmentTable(_Table):
     merge: Merge = Field(default=Merge.MERGE_COMMIT, strict=False)
     # A text that holds a character other than a blank: an empty command line runs nothing.
     gate: str | None = Field(default=None, pattern=r"\S")
+    # Not strict, so that the word of the file is read as the driver it names.
+    driver: Driver = Field(default=Driver.DEVELOPER, strict=False)
 
 
 class _DeliveryTable(_Table):
@@ -155,6 +162,7 @@ def make_config(text: str) -> Config:
         parallel=UNLIMITED if most is None else Parallel(most),
         merge=held.development.merge,
         gate=UNGATED if command is None else Gated(command),
+        driver=held.development.driver,
     )
     delivery = Delivery(push=held.delivery.push, tag=held.delivery.tag)
     return Config(git=Git(commit=held.git.commit), development=development, delivery=delivery)

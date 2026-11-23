@@ -748,6 +748,36 @@ holds nothing is `[]`, so two runs on one record print the same bytes. The keys 
 `worktree`. `noted` is the full ISO time. A format that is neither `text` nor `json` is refused
 naming both, exit 2.
 
+## Goal
+
+`fgraph goal F-ID [--hours N]` prints one line, the `/goal` a developer pastes into Claude Code
+to start the agent-driven development of a Feature. It reads the record and writes nothing;
+fgraph never sets the goal, it words it. The scope is the Feature alone: its work items in
+Backlog, named in the order they start. The output is text only, the line and its newline.
+
+The line holds, in this order: the Feature and its end state, `fgraph show F-ID lists` the ids
+as `a`, `a and b` or `a, b and c` `Completed`; the bound, `or stop after N hours`; the
+coordinator, one whole work item handed to one subagent, at most `development.parallel` at once,
+or as many as can start when `development.parallel` sets no limit; and the halt, the goal is met
+as well when the session prints `[HALT] <id>: <the decision needed>` on a change to a criterion,
+a Task or the scope of a work item, or a removal, that the developer has not agreed. It says
+nothing of models, review, landing or findings: that protocol stays in the skill of the
+coordinator.
+
+From the record come the ids of the Feature and of its work items in Backlog and
+`development.parallel`; from the option come the hours, 8 by default. Everything else is fixed
+text.
+
+It is refused, exit 2, naming why: for a record whose development is off, naming
+`development.enabled`; for one whose driver is a developer, naming `development.driver`; each
+message says how to set the key with `fgraph config set`. A Feature with no work item in
+Backlog is refused saying it holds none. Hours that are not a whole number of 1 or more are
+refused saying so.
+
+The wording follows the page of the documentation of Claude Code on `/goal`
+(code.claude.com/docs/en/goal): one measurable end state, a stated check, the constraints that
+matter and a bound, in a condition of at most 4,000 characters; the line is under that.
+
 ## Terms
 
 A term is a word of the project and what it means, the first node of its ontology.

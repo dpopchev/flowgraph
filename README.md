@@ -933,6 +933,7 @@ fgraph config show
 # development.parallel = none
 # development.merge = "merge-commit"
 # development.gate = none
+# development.driver = "developer"
 # delivery.push = false
 # delivery.tag = "none"
 ```
@@ -940,6 +941,11 @@ fgraph config show
 `none` is how a key that holds no value is listed: `parallel` without a
 limit, `gate` without a command. It is no value of the file, so a gate named
 `"none"`, listed in its quotes, is not mistaken for it.
+
+`development.driver` names who drives the development: `developer`, the default,
+or `agent`. It is held as written with the development off, and a record that
+leaves it out works as before: no command asks for a complexity, an agent or a
+goal.
 
 `fgraph config set KEY VALUE` writes that one key into the file and keeps the
 others; a record without the file gains it:
@@ -957,6 +963,7 @@ fgraph config show
 # development.parallel = none
 # development.merge = "merge-commit"
 # development.gate = "make check"
+# development.driver = "developer"
 # delivery.push = false
 # delivery.tag = "none"
 ```
@@ -971,6 +978,7 @@ so `fgraph config set development.gate true` names the command `true`:
 | `development.parallel` | a whole number of 1 or more                | `fgraph config set development.parallel 2`        |
 | `development.merge`    | `merge-commit`, `squash` or `fast-forward` | `fgraph config set development.merge squash`      |
 | `development.gate`     | a command line, one argument of the shell  | `fgraph config set development.gate "make check"` |
+| `development.driver`   | `developer` or `agent`                     | `fgraph config set development.driver agent`      |
 | `delivery.push`        | `true` or `false`                          | `fgraph config set delivery.push true`            |
 | `delivery.tag`         | `feature-close` or `none`                  | `fgraph config set delivery.tag feature-close`    |
 

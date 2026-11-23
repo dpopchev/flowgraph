@@ -88,6 +88,7 @@ def test_show_lists_every_key_at_its_default_on_a_record_without_a_config_file(
         "development.parallel = none\n"
         'development.merge = "merge-commit"\n'
         "development.gate = none\n"
+        'development.driver = "developer"\n'
         "delivery.push = false\n"
         'delivery.tag = "none"\n',
         "",

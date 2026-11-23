@@ -5,7 +5,7 @@ a landing merges and the gate it runs. The delivery holds the steps a landing ta
 the push of main and the tag at the close of a Feature.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 
 
@@ -43,6 +43,13 @@ class Merge(Enum):
     FAST_FORWARD = "fast-forward"
 
 
+class Driver(Enum):
+    """Who drives the development: a developer by default, or an agent; each is its file word."""
+
+    DEVELOPER = "developer"
+    AGENT = "agent"
+
+
 @dataclass(frozen=True)
 class Gated:
     """The gate of a landing: one command line, run through the shell, never a blank one."""
@@ -66,14 +73,15 @@ Gate = Gated | Ungated
 class Development:
     """The development beside the source code: turned on, or off, and its keys as written.
 
-    The limit, the merge and the gate are keys of the development: none says anything while it
-    is off.
+    The limit, the merge, the gate and the driver are keys of the development: none says anything
+    while it is off.
     """
 
     enabled: bool
     parallel: Limit
     merge: Merge
     gate: Gate
+    driver: Driver = field(default=Driver.DEVELOPER, kw_only=True)
 
 
 class TagAt(Enum):

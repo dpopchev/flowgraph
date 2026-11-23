@@ -1,3 +1,6 @@
 name = "backlog"
 meaning = "The bucket of the items not yet started: an ordered list the developer arranges; a new item joins its end, and work is pulled from its top, the first item that is planned and waits for nothing."
 added = 2026-11-23 12:06:37.828563+00:00
+is_a = [
+    "bucket",
+]

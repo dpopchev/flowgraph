@@ -5,7 +5,8 @@ computed here. The document holds `buckets`, each with its `name`, its `count` a
 its `items`, in the order of the flow and of the rows given, and `next_to_start`, the id of the
 line marked as such or null. A work item holds its `id`, `kind`, `title`, `state`, `commit`,
 `reason` and `superseded_by` (null while empty), `progress` (its Tasks `completed` of `total`),
-its `tasks` and the ids it `waits_for`. A work item holds its `complexity` too, the word or null.
+its `tasks` and the ids it `waits_for`. A work item holds its `complexity` too, the word or null,
+and its `agent`, the name or null.
 A Task holds its `id`, `title`, `state`, `commit`, `reason` and `waiting_on`.
 A Feature holds its `id`, `kind`, `title`, `commit`, `reason`,
 `progress` (its work items `completed` of `total`), the ids its first work item `waits_for`, its
@@ -87,6 +88,7 @@ def _work_item(row: WorkItemRow) -> Item:
     """A work item with its Tasks; its kind is that of the prefix of its id."""
     kinds = {kind.prefix: kind.noun.lower() for kind in KINDS}
     return {
+        "agent": row.agent or None,
         "id": row.id,
         "kind": kinds[row.id.partition("-")[0]],
         "complexity": row.complexity or None,

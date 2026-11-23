@@ -74,6 +74,7 @@ def work_item_row(item: WorkItemState) -> WorkItemRow:
         complexity=item.complexity or "",
         created=item.created,
         started=_started_on(item),
+        agent=agent_text(item),
         completed=_completed_on(item),
         tasks=[row_of(task) for task in item.tasks],
         depends_on=[work_item_id_text(each) for each in item.relations.depends_on],

@@ -32,9 +32,10 @@ class VerifiedRow:
 class WorkItemRow:
     """One work item as plain data, as a view reads it from the record.
 
-    A started time while started, a completed time and the commit it has once completed, a reason
-    once removed. Its created time orders the work items of the Backlog nobody placed, its
-    started time those of InProgress, its completed time those of Completed. Its Tasks are in
+    A started time while started, the agent it is handed to once started, when it is, a completed
+    time and the commit it has once completed, a reason once removed. Its created time orders the
+    work items of the Backlog nobody placed, its started time those of InProgress, its completed
+    time those of Completed. Its Tasks are in
     the order written, each with its own state. The ids it depends on and the one it
     was filed during and the one it amends are as written, and so is the one that supersedes
     it once removed. The ids it waits for are those it depends on that are not completed, set by
@@ -51,6 +52,7 @@ class WorkItemRow:
     complexity: str = field(default="", kw_only=True)
     created: datetime = field(kw_only=True)
     started: datetime | None = field(default=None, kw_only=True)
+    agent: str = field(default="", kw_only=True)
     completed: datetime | None = field(default=None, kw_only=True)
     tasks: list[TaskRow] = field(default_factory=list[TaskRow], kw_only=True)
     depends_on: list[str] = field(default_factory=list[str], kw_only=True)

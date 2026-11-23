@@ -52,8 +52,6 @@ IDENTITY = {
     "GIT_COMMITTER_EMAIL": "developer@example.com",
 }
 
-red_status = pytest.mark.xfail(strict=True, reason="S-0113: status lists no agent yet")
-
 
 @dataclass(frozen=True)
 class Outcome:
@@ -159,7 +157,6 @@ class TestAStoryStartedWithAnAgent:
     def test_start_exits_with_zero(self, started: Outcome) -> None:
         assert started.status == 0
 
-    @red_status
     def test_status_lists_the_agent_between_the_progress_and_the_title(
         self, started: Outcome, checkout: Path
     ) -> None:
@@ -168,7 +165,6 @@ class TestAStoryStartedWithAnAgent:
     def test_show_lists_the_agent(self, started: Outcome, checkout: Path) -> None:
         assert AGENT_LINE in fgraph(["show", "S-0001"], checkout).out
 
-    @red_status
     def test_the_json_of_status_holds_the_agent(self, started: Outcome, checkout: Path) -> None:
         assert agent_of(checkout) == "sonnet-a1"
 

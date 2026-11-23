@@ -172,15 +172,16 @@ def _top_of(items: Sequence[str], top: int | None, pinned: int | None = None) ->
 def _status_line(row: StoryRow | UpkeepRow) -> str:
     """One item of a bucket: its id and title, with its commit or the reason it was removed.
 
-    A started one is listed with its Tasks completed of all, between its id and its title, and
-    under it each Task of it being worked on a line of its own, in the order written. A completed
-    one holds a commit or not: one it holds stands before the title, so a line cut to a width
-    keeps it; a reason ends the line.
+    A started one is listed with its Tasks completed of all, between its id and its title, then
+    the agent it is handed to in brackets, if any, and under it each Task of it being worked on a
+    line of its own, in the order written. A completed one holds a commit or not: one it holds
+    stands before the title, so a line cut to a width keeps it; a reason ends the line.
     """
     if row.state == STARTED:
         completed = sum(task.state == COMPLETED for task in row.tasks)
         worked = "".join(_task_line(task) for task in row.tasks)
-        return f"  {row.id}  {completed}/{len(row.tasks)} T  {row.title}\n{worked}"
+        handed = f"[{row.agent}]  " if row.agent else ""
+        return f"  {row.id}  {completed}/{len(row.tasks)} T  {handed}{row.title}\n{worked}"
     if row.commit:
         return f"  {row.id}  {row.commit}  {row.title}\n"
     why = ", ".join(

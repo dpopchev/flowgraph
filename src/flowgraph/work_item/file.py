@@ -91,6 +91,7 @@ def read_work_item_rows(record: Path, kind: Kind) -> list[WorkItemRow]:
             complexity=held.complexity or "",
             created=held.created,
             started=started_held(held),
+            agent=agent_held(held),
             completed=completed_held(held),
             tasks=[task_row(task) for task in held.tasks],
             depends_on=held.depends_on,

@@ -37,9 +37,8 @@ from flowgraph.parent import (
     parse_feature_id,
 )
 from flowgraph.record import Now
-from flowgraph.record.queue import queued
 from flowgraph.record.store import Store
-from flowgraph.status import BACKLOG, backlog_as_added, feature_text, rows_under
+from flowgraph.status import BACKLOG, backlog_as_added, feature_text, in_show_order, rows_under
 from flowgraph.task import CompletedAlreadyError
 from flowgraph.term import is_term_name
 from flowgraph.term.item import show_term
@@ -96,10 +95,7 @@ def show_feature_item(feature: str, store: Store) -> str:
     shown = store.features.load_feature(feature_id)
     detail = feature_detail(shown)
     held = rows_under(feature_id, store)
-    in_backlog = backlog_as_added(held)
-    start_order = queued(store.load_queue(), in_backlog)
-    next_started = iter(sorted(in_backlog, key=start_order.index))
-    rows = [held[next(next_started)] if row.state == BACKLOG else row for row in held.values()]
+    rows = in_show_order(held, backlog_as_added(held), store.load_queue())
     return feature_text(detail, rows, feature_bucket(shown, [row.state for row in rows]))
 
 

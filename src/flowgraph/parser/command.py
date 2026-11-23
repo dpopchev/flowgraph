@@ -38,7 +38,6 @@ from flowgraph.item.commands import (
     add_item,
     kind_named,
     reorder_item,
-    status_item,
     write_task,
 )
 from flowgraph.item.moves import start_item
@@ -58,8 +57,8 @@ from flowgraph.relation.depends import (
     depends_asked,
     filed_during_asked,
 )
+from flowgraph.status import status_output
 from flowgraph.status.terminal import Width
-from flowgraph.status.text import cut_lines
 from flowgraph.term.about import about_asked
 from flowgraph.term.item import add_term_item, relate_term_item, terms_text
 from flowgraph.work_item import (
@@ -228,6 +227,6 @@ def command_said(
         case "show":
             return Said(show_any_item(args.id, store))
         case "status":
-            return Said(cut_lines(status_item(store, None if args.all else TOP), width()))
+            return Said(status_output(store, None if args.all else TOP, args.format, width()))
         case _:
             return None

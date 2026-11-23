@@ -18,23 +18,44 @@ then = "it prints one JSON document with the count of each bucket and every item
 
 [[tasks]]
 id = "T-0340"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_status_json.py, failing on the criterion of S-0087"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_graph_json.py does. Seen red, then marked a strict xfail naming S-0087 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_status_json.py states that on a record with items in every bucket, a blocked Task and a waiting Story, fgraph status --format json exits 0 and prints one JSON document that holds the count of each bucket, the blocked Task with its reason and what it waits on, the waiting Story with the id it waits for and the next to start; two runs print the same bytes; --format xml exits 2"
 created = 2026-11-22 21:02:16+00:00
+started = 2026-11-22 23:44:45+00:00
+completed = 2026-11-22 23:48:33+00:00
+commit = "5efd612"
 
 [[tasks]]
 id = "T-0341"
-state = "backlog"
+state = "completed"
 title = "Add --format json to fgraph status"
 description = "Removes the xfail mark of tests/functional/test_status_json.py. Written on 2026-11-22 against the modules of that day, before U-0010 moves them: they are taken again when the Task starts. A module of src/ that would pass the line limit of mk/python.mk is split by one cohesive part, named in the commit."
 expected_output = "changed: fgraph status --format json prints one JSON document: each bucket with its count and every item of it, not the top 5 -- its id, kind and title, its progress, its Tasks with their state, the reason and the waiting on of a block, the ids it waits for -- and the next to start; a Feature holds its work items; the keys are sorted and two runs print the same bytes; --format text is the default and prints what it printed before; another format exits 2 naming the two, as fgraph graph refuses one"
 created = 2026-11-22 21:02:18+00:00
+started = 2026-11-22 23:48:34+00:00
+completed = 2026-11-22 23:53:42+00:00
+commit = "4a5bb8a"
 
 [[tasks]]
 id = "T-0342"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph status prints JSON"
 expected_output = "changed: README.md shows fgraph status --format json with its document; docs/domain-model.md lists the keys of the document"
 created = 2026-11-22 21:02:20+00:00
+started = 2026-11-22 23:53:44+00:00
+completed = 2026-11-22 23:58:55+00:00
+commit = "96f575e"
+
+[[tasks]]
+id = "T-0370"
+state = "completed"
+title = "List every work item of a Feature in the JSON of fgraph status, each with its state"
+description = "Filed on 2026-11-23 on the word of the coordinator, after the hand-back of T-0341: the JSON listed the started work items of a Feature alone. The check names the new test, so it fails until that test is there and green."
+check = "uv run pytest tests/functional/test_status_json.py -q -k every_work_item"
+expected_output = "changed: in fgraph status --format json the work_items of a Feature hold every work item under it, not the started ones alone -- those in Backlog, started, blocked, completed and removed -- each shaped as a work item of a bucket, with its state, its Tasks and the ids it waits for, in the order fgraph show of the Feature lists them; the progress of the Feature counts them as before; the text of fgraph status is what it was; tests/functional/test_status_json.py states it for a Feature with a completed, a started and a Backlog work item, and README.md and docs/domain-model.md say work_items holds every work item of the Feature"
+created = 2026-11-23 00:00:15+00:00
+started = 2026-11-23 00:00:18+00:00
+completed = 2026-11-23 00:04:38+00:00
+commit = "126c0ce"

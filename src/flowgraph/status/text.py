@@ -46,7 +46,7 @@ def status_text(rows: Iterable[WorkItemRow | FeatureRow], top: int | None = None
     listed = list(rows)
     lines: list[str] = []
     for bucket, states in BUCKETS:
-        in_bucket = [row for row in listed if _is_listed_in(row, bucket, states)]
+        in_bucket = [row for row in listed if is_listed_in(row, bucket, states)]
         held = [_item_lines(row) for row in in_bucket]
         if bucket == APART and not held:
             continue
@@ -68,7 +68,7 @@ def cut_lines(text: str, width: int | None) -> str:
     return "".join(f"{line}\n" for line in lines)
 
 
-def _is_listed_in(row: WorkItemRow | FeatureRow, bucket: str, states: Collection[str]) -> bool:
+def is_listed_in(row: WorkItemRow | FeatureRow, bucket: str, states: Collection[str]) -> bool:
     """True when the bucket of those states lists the row: a Feature by the bucket of its row."""
     match row:
         case FeatureRow():

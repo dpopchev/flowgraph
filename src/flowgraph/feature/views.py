@@ -63,7 +63,8 @@ class FeatureRow:
     its reason the one it was removed for, empty unless it is removed; its block reason the one
     it was blocked for, empty unless it is blocked; the ids its first work item in Backlog waits
     for, set by the view that lists the Backlog; it is the next to start when it is the first line
-    of the Backlog its start would take, set there too.
+    of the Backlog its start would take, set there too. Its work items are every one under it, in
+    any state, in the order `fgraph show` of it lists them, set by that view.
     """
 
     id: str
@@ -72,6 +73,7 @@ class FeatureRow:
     completed: int
     held: int
     started: list[WorkItemRow] = field(default_factory=list[WorkItemRow], kw_only=True)
+    work_items: list[WorkItemRow] = field(default_factory=list[WorkItemRow], kw_only=True)
     commit: str = field(default="", kw_only=True)
     waiting_on: str = field(default="", kw_only=True)
     reason: str = field(default="", kw_only=True)

@@ -24,8 +24,10 @@ from flowgraph.feature import (
 from flowgraph.parent import FeatureId, feature_id_text, parse_feature_id
 from flowgraph.record.queue import Entry, Inside, Line, Placed, queued
 from flowgraph.record.store import KINDS, Store
+from flowgraph.status.document import JSON, chosen_format, status_json
 from flowgraph.status.next import with_next
-from flowgraph.status.text import status_text
+from flowgraph.status.text import cut_lines, status_text
+from flowgraph.status.under import in_show_order
 from flowgraph.status.waits import with_waits
 from flowgraph.work_item import STARTED, WorkItemId, WorkItemRow, parse_work_item_id
 
@@ -113,9 +115,10 @@ def _placed_features(store: Store, rows: Collection[WorkItemRow]) -> list[_Place
 def _waiting_features(
     features: Iterable[_PlacedFeature], rows: Mapping[WorkItemId, WorkItemRow], store: Store
 ) -> list[_PlacedFeature]:
-    """The Features given, each in Backlog carrying what its first work item in Backlog waits for.
+    """The Features given, each carrying its work items and, in Backlog, what its first waits for.
 
     The first work item is the one its start takes: the first in the queue among those in Backlog.
+    Its work items are every one under it, in the order `fgraph show` of it lists them.
     """
     queue = store.load_queue()
     waiting: list[_PlacedFeature] = []
@@ -125,7 +128,8 @@ def _waiting_features(
         first = min(in_backlog, key=queued(queue, in_backlog).index, default=None)
         listed = first is not None and row.bucket == BACKLOG_BUCKET
         waits_for = under[first].waits_for if listed and first is not None else []
-        waiting.append((at, replace(row, waits_for=waits_for)))
+        work_items = in_show_order(under, in_backlog, queue)
+        waiting.append((at, replace(row, waits_for=waits_for, work_items=work_items)))
     return waiting
 
 
@@ -180,19 +184,20 @@ def find_backlog(store: Store) -> list[Entry]:
     return [*(Line(placed) for placed in _backlog_lines(alone, features)), *inside]
 
 
-def status_item(store: Store, top: int | None = None) -> str:
-    """The text of the work items standing alone and of the Features of the record, by bucket.
+def status_rows(store: Store) -> list[WorkItemRow | FeatureRow]:
+    """The work items standing alone and the Features of the record, in the order of the buckets.
 
-    A Feature is listed in its bucket in place of its work items: those in Backlog and
-    the completed ones are on no line, the started ones under its own. The Backlog lists the
-    work items and the Features placed in its queue, then the others as they were added;
-    InProgress the last started first and Completed the last completed first, a Feature by its
-    last work item to reach it, a completed one by its own completed time; Removed by kind and
-    number, a work item of a Feature too, then the removed Features by number. A removed
-    Feature is listed in place of its work items as any other: they were removed with it, or
-    before it, and are on no line. A work item under a Feature the record does not hold, as a
-    file edited by hand names, is listed as one standing alone, since no line of a Feature lists
-    it. Under a top each heading lists that many, the first ones.
+    The plain data every format of status writes, each fact set on its row: what an item waits
+    for, the next to start, the block of a Feature. A Feature is listed in its bucket in place of
+    its work items: those in Backlog and the completed ones are on no line, the started ones
+    under its own. The Backlog lists the work items and the Features placed in its queue, then
+    the others as they were added; InProgress the last started first and Completed the last
+    completed first, a Feature by its last work item to reach it, a completed one by its own
+    completed time; Removed by kind and number, a work item of a Feature too, then the removed
+    Features by number. A removed Feature is listed in place of its work items as any other:
+    they were removed with it, or before it, and are on no line. A work item under a Feature
+    the record does not hold, as a file edited by hand names, is listed as one standing alone,
+    since no line of a Feature lists it.
     """
     rows = with_waits(rows_by_id(store))
     features = _waiting_features(_placed_features(store, rows.values()), rows, store)
@@ -217,4 +222,24 @@ def status_item(store: Store, top: int | None = None) -> str:
         *removed,
         *gone,
     ]
-    return status_text(listed, top)
+    return listed
+
+
+def status_item(store: Store, top: int | None = None) -> str:
+    """The text of the work items standing alone and of the Features of the record, by bucket.
+
+    Under a top each heading lists that many, the first ones; the rows are those of
+    `status_rows`.
+    """
+    return status_text(status_rows(store), top)
+
+
+def status_output(store: Store, top: int | None, format_: str, width: int | None) -> str:
+    """The status of the record in the format asked for: text cut to the width, or the document.
+
+    The document lists every item, whatever the top, and is never cut. Raises StatusFormatError
+    when the format is neither; the record is not read then.
+    """
+    if chosen_format(format_) == JSON:
+        return status_json(status_rows(store))
+    return cut_lines(status_item(store, top), width)

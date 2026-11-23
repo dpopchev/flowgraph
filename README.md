@@ -489,7 +489,9 @@ S-0004, and the limit leaves out S-0005). With `parallel` left out
 every one that waits for nothing is marked; with the development off the next to
 start alone, as before. With the development on a line is marked only once
 planned: a work item holds a Task, and a Feature's work items in Backlog each
-hold one; a line not planned is unmarked, with no suffix, and with the
+hold one; with `development.driver` set to `agent` planned also means each
+work item holds a complexity, and with the driver a developer the Tasks alone
+decide; a line not planned is unmarked, with no suffix, and with the
 development off the Tasks are not read. A marked line the top of the heading leaves out is listed
 after the top, apart from the count of those more; a Backlog where nothing can
 start marks none. No `next` command is added. This replaces the next to start
@@ -992,7 +994,11 @@ limit, `gate` without a command. It is no value of the file, so a gate named
 `development.driver` names who drives the development: `developer`, the default,
 or `agent`. It is held as written with the development off, and a record that
 leaves it out works as before: no command asks for a complexity, an agent or a
-goal.
+goal. Set to `agent` with the development on, it asks a complexity of every work
+item to start: `fgraph start S-0002` of one in Backlog that holds a Task and no
+complexity exits 2 with `S-0002 has no complexity to start with: set it with
+fgraph amend S-0002 --complexity low, medium or high`, and `fgraph status`
+marks no such work item.
 
 `fgraph config set KEY VALUE` writes that one key into the file and keeps the
 others; a record without the file gains it:
@@ -1870,6 +1876,8 @@ S-0001 in the record`, and names why on the line after it, as `not started:`
 and the refusal of that start:
 
 - when it has no Task: `not started: S-0003 has no Task to start with`;
+- with `development.driver` set to `agent`, when it has no complexity:
+  `not started: S-0003 has no complexity to start with: set it with fgraph amend S-0003 --complexity low, medium or high`;
 - when `[development] parallel` refuses one more started work item:
   `not started: S-0003 cannot start: development.parallel = 1, started already: S-0002`;
 - when its title gives no slug to name its branch.
@@ -2085,6 +2093,9 @@ branch made:
 - with the development on, when a work item of it in Backlog has no Task, the
   first in start order named:
   `F-0001 cannot start: S-0002 has no Task to start with`;
+- with `development.driver` set to `agent`, when a work item of it in Backlog
+  has no complexity, the first in start order named:
+  `F-0001 cannot start: S-0002 has no complexity to start with: set it with fgraph amend S-0002 --complexity low, medium or high`;
 - when `[development] parallel` refuses one more started work item:
   `F-0001 cannot start: development.parallel = 1, started already: S-0002`.
 

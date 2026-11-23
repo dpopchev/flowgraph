@@ -311,7 +311,9 @@ of work item. The developer said so on 2026-11-21.
   alone, the first such line of the queue, as before. With the development on
   a line is marked only once planned (S-0127): a work item holds a Task, a
   Feature's work items in Backlog each hold one, under a started Feature as in
-  the Backlog; a line not planned is unmarked, with no suffix. With the
+  the Backlog; with `development.driver` agent planned also means each work
+  item holds a complexity (S-0129), and with the driver a developer the Tasks
+  alone decide; a line not planned is unmarked, with no suffix. With the
   development off the Tasks are not read. Each marked line the top
   of the Backlog leaves out is listed after the top, apart from the count of
   those more; a Backlog where nothing can start marks none. It is a view of
@@ -1285,7 +1287,10 @@ and its merge tool.
   item has no Task, `F-0001 cannot start: S-0001 has no Task to start with`;
   with the development on, one whose work item in Backlog has no Task, the
   first in start order named, `F-0001 cannot start: S-0002 has no Task to start with`;
-  and a start `[development] parallel` refuses (below).
+  with the development on and `development.driver` agent, one whose work item
+  in Backlog has no complexity, the first in start order named, `F-0001 cannot
+  start: S-0002 has no complexity to start with: set it with fgraph amend
+  S-0002 --complexity low, medium or high`; and a start `[development] parallel` refuses (below).
 - A work item does not start before its Feature: the start of a work item in
   Backlog under a Feature that is not started is refused with exit 2, naming
   the Feature, `S-0001 cannot start: F-0001 is not started, start it first`.
@@ -1331,8 +1336,10 @@ and its merge tool.
   stands: it is never refused or put back for it. It exits 0, its commit is
   that of a completion alone, `chore: complete S-0001 in the record`, and the
   line after it says `not started:` and the refusal of that start. One
-  without a Task: `not started: S-0002 has no Task to start with`. One
-  `[development] parallel` refuses: `not started: S-0002 cannot start:
+  without a Task: `not started: S-0002 has no Task to start with`. One with
+  no complexity, `development.driver` agent: `not started: S-0002 has no
+  complexity to start with: set it with fgraph amend S-0002 --complexity low,
+  medium or high`. One `[development] parallel` refuses: `not started: S-0002 cannot start:
   development.parallel = 1, started already: S-0003`. One whose title
   gives no slug. One under a blocked Feature (below). One added to a started
   Feature with no Task waits: the add does not refuse it.
@@ -1673,9 +1680,12 @@ development too.
   where it is held as written.
 - `development.driver` names who drives the development, `developer` by default
   or `agent`: the enum `Driver` (`src/flowgraph/record/layers.py`), a value of the
-  development and held as written with it off. No command reads it in S-0115;
-  S-0127 and S-0117 are its first readers, and which model a complexity maps to
-  stays outside fgraph.
+  development and held as written with it off. `fgraph goal` (S-0117) and the
+  planned rule (S-0129) read it. With the development on and the driver
+  `agent`, the start of a work item in Backlog that holds a Task and no
+  complexity is refused with exit 2, nothing written: `S-0002 has no complexity
+  to start with: set it with fgraph amend S-0002 --complexity low, medium or
+  high`. Which model a complexity maps to stays outside fgraph.
 - `fgraph land` runs the gate through the shell at the top of the work tree
   of `main`, once the work of the branch is merged there, the merge held
   uncommitted, and before the landing is committed or the work item

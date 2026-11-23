@@ -12,6 +12,11 @@ depends_on = [
     "S-0113",
 ]
 
+[verified]
+answer = "yes"
+text = "at 12e91a9 on main, in a scratch git repository with the development on: S-0002 started by the landing of S-0001, naming no agent, and S-0003 started with --agent sonnet-a1: fgraph hand S-0003 --agent opus-b2 on main exit 2 with S-0003 is started: its Tasks are written in its worktree, and its path; fgraph --dir of the record of the worktree of S-0002, hand S-0002 --agent haiku-b1, printed handed S-0002 to haiku-b1; fgraph hand S-0003 --agent opus-b2 in its worktree printed handed S-0003 to opus-b2; fgraph status on main then listed [haiku-b1] beside S-0002 and [opus-b2] beside S-0003; fgraph show S-0003 listed agent opus-b2 alone; the branch of S-0003 held chore: hand S-0003 to opus-b2 in the record; the landing of S-0126 completed F-0016 at 12e91a9; make check on main at f479fb0: 3225 passed, all checks passed. Worked whole by one subagent on sonnet, started by the landing of S-0117, from fgraph brief; its diff held the files its Tasks name alone and it reported no rule broken; src/flowgraph/parser/command.py is at 242 of 250 lines. Seven tests of the refusals that write nothing passed before any code, as an unknown command writes nothing."
+on = 2026-11-23 10:50:23+00:00
+
 [criterion]
 given = "a record with the development on and two started work items, one that names no agent, started by the completion of another, and one that names an agent"
 when = "each is handed to an agent named, by one command"

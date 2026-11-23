@@ -1,0 +1,10 @@
+id = "S-0122"
+state = "backlog"
+title = "Raise the order fgraph status lists Removed in from kind and number to the last removed first"
+description = "The UX request of the developer of 2026-11-23, filed as asked; ordered by the developer. Its Tasks are written when it is ordered. The words: removed also shows the last, the most recent one, being removed. Seen on 2026-11-23: Removed lists S-0046, S-0047, S-0106, S-0107, S-0108, by number, while S-0108 was removed before S-0107 and S-0106. InProgress lists the last started first and the first started at the bottom, and Completed the last completed first, as the request asks: S-0030 and S-0029. The JSON lists a bucket in the order of the text."
+created = 2026-11-23 07:13:13+00:00
+
+[criterion]
+given = "a record where S-0002 was removed and then S-0001"
+when = "fgraph status is run"
+then = "it lists S-0001 above S-0002 under Removed, the last removed first"

@@ -1,0 +1,3 @@
+name = "record"
+meaning = "The plain TOML files tracked by git that hold the items of a project, their knowledge and its terms; git is its history, its backup and its merge tool."
+added = 2026-11-23 12:05:48.929677+00:00

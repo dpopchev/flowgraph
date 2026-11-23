@@ -10,6 +10,11 @@ completed = 2026-11-23 09:29:36+00:00
 agent = "haiku-1"
 commit = "6939f28"
 
+[verified]
+answer = "yes"
+text = "at 6939f28 on main, on a scratch record: fgraph config show listed development.driver = developer in quotes with the key left out; fgraph config set development.driver agent exit 0 printed set development.driver = agent and show then listed it; set development.driver robot exit 2 with development.driver is robot: it takes developer or agent; fgraph config unset development.driver printed unset development.driver = developer; a Story added on that record with no complexity was added as before; the config.toml of the record of flowgraph holds no driver; make check on main at eb71932: 3048 passed, all checks passed. Worked whole by one subagent on haiku, the first Story of code handed to it here: its diff held the four modules and the tests its Tasks name and nothing else; it redirected the output of make to two log files with a shell redirect, against the rule of Edit and Write alone, and saw the unit tests of the enum red on a missing import."
+on = 2026-11-23 09:34:56+00:00
+
 [criterion]
 given = "a record with the development on"
 when = "the key of the configuration that names who drives the development is set to an agent"

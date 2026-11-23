@@ -49,13 +49,15 @@ commit = "9114625"
 
 [[tasks]]
 id = "T-0385"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph status marks every work item that can start now within development.parallel"
 description = "The passages, by their lines on main at the plan. docs/domain-model.md: 287-294 (the next to start, the reading of S-0086); the bullet Document of Status as JSON at 793-795, keeping the edit inside that bullet since S-0112 and S-0113 change the bullet Work item at 798-803; one sentence in [development] parallel at 1476-1488. README.md: rewrite 420-425; add a new paragraph after 437 instead of editing 427-437, which S-0112 and S-0113 extend; in the example add can_start: [] between the close of buckets and next_to_start at 473-474, keys sorted, and leave the example item at 446-469 alone. Keep S-0086 and S-0087 as history and say what replaces them, as S-0111 did."
 check = "grep -q can_start docs/domain-model.md && grep -q can_start README.md"
 expected_output = "changed: docs/domain-model.md, section Order, states that fgraph status marks every work item that can start now within development.parallel: the work items of a started Feature first, then the lines of the Backlog, a Feature in Backlog one place, the limit counting the started work items, every one with parallel left out, the next to start alone with the development off, and that this takes over S-0108; section Status as JSON lists can_start and next_to_start as its first; README.md shows two lines marked > under parallel = 3 and can_start in the JSON example"
 created = 2026-11-23 08:06:52+00:00
 started = 2026-11-23 08:18:19+00:00
+completed = 2026-11-23 08:18:54+00:00
+commit = "2580080"
 
 [[knowledge]]
 kind = "decision"

@@ -2,7 +2,12 @@ id = "U-0026"
 state = "backlog"
 title = "Cut the lines of the two largest modules of src/flowgraph/status, view.py and text.py, from 247 and 226 to 130 and 100 or fewer, the buckets, the lines of an item, the rows and the placed Features each taken into a module of their own"
 description = "Found on 2026-11-23 while the Tasks of F-0017 were planned: its Stories, S-0122 and S-0105 each add to src/flowgraph/status/view.py or text.py, which have no room. Filed on the word of the developer of that day to plan as many items as one goal takes; the first Story of F-0017 waits for it. It waits itself for S-0121 and S-0098, whose Tasks name the two modules as they are today. A move with no change of behavior."
+complexity = "low"
 created = 2026-11-23 21:02:39+00:00
+depends_on = [
+    "S-0098",
+    "S-0121",
+]
 
 [criterion]
 given = "main, where make check passes, src/flowgraph/status/view.py holds 247 and src/flowgraph/status/text.py 226 of the 250 lines mk/python.mk allows, and the eleven Stories of the frame (S-0130 to S-0137, S-0139, S-0122, S-0105) each add to one of the two"

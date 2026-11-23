@@ -45,3 +45,8 @@ description = "The passages, by their lines on main at the plan. docs/domain-mod
 check = "grep -q can_start docs/domain-model.md && grep -q can_start README.md"
 expected_output = "changed: docs/domain-model.md, section Order, states that fgraph status marks every work item that can start now within development.parallel: the work items of a started Feature first, then the lines of the Backlog, a Feature in Backlog one place, the limit counting the started work items, every one with parallel left out, the next to start alone with the development off, and that this takes over S-0108; section Status as JSON lists can_start and next_to_start as its first; README.md shows two lines marked > under parallel = 3 and can_start in the JSON example"
 created = 2026-11-23 08:06:52+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer gave the go on 2026-11-23 to the Tasks and the rulings shown that day: next_to_start stays in the JSON, the first of the new list or null, and can_start is added beside it; > marks each line that can start; the work items in Backlog of a started Feature are listed ahead of the lines of the Backlog, a Feature in Backlog takes one place, a blocked Feature gives none; with the development off status marks the next to start alone, as before, and on with development.parallel left out every one; a work item with no Task is still listed, its own Story S-0127."
+noted = 2026-11-23 08:08:07+00:00

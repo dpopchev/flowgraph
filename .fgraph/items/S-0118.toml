@@ -8,3 +8,12 @@ created = 2026-11-23 07:02:23+00:00
 given = "a record that holds F-0015"
 when = "fgraph show is run with f15, with f-15, with F15 and with f-0015"
 then = "each shows F-0015, and a text that names no item is refused as before"
+
+[[tasks]]
+id = "T-0379"
+state = "backlog"
+title = "Add tests/functional/test_id_spellings.py, failing on the criterion of S-0118"
+description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_show_wrong_id.py and tests/functional/test_feature.py do; the record gets F-0015 by fifteen fgraph add feature runs. One assert per test, parametrized over the spellings. Seen red, then the spelling tests are marked a strict xfail naming S-0118. The three refusal tests pass today and stay unmarked, since a strict xfail on them would fail: they pin that a text naming no item is refused as before, its text echoed as typed (x15: no term x15 in the record; sp-15 and f-0: is no Story, Upkeep, Bug, Spike or Feature id)."
+check = "uv run pytest tests/functional/test_id_spellings.py -q"
+expected_output = "created: tests/functional/test_id_spellings.py states that on a record holding F-0015, fgraph show of f15, f-15, F15 and f-0015 each exits 0 and shows F-0015, and that f99 is refused as F-99 is, naming no Feature F-0099 in the record; and that x15, sp-15 and f-0 are refused as before, each with its refusal of today"
+created = 2026-11-23 07:16:30+00:00

@@ -9,3 +9,12 @@ created = 2026-11-23 07:02:25+00:00
 given = "the record of flowgraph, where fgraph terms prints no terms in the record"
 when = "fgraph terms is run"
 then = "it lists the twenty-two terms the developer agreed on 2026-11-23 -- record, work-item, feature, story, bug, spike, upkeep, task, criterion, bucket, backlog, in-progress, completed, removed, knowledge-line, term, development, landing, gate, delivery, planned, blocked -- each with its meaning, and fgraph show of one lists what it is part of or is"
+
+[[tasks]]
+id = "T-0419"
+state = "backlog"
+title = "Add the 22 terms the developer agreed to the record of main, each with its meaning"
+description = "A term is written on main alone, the decision on F-0005; the coordinator adds them in the checkout of main and the worktree of S-0119 reads them there. The meanings are those the developer read and agreed on 2026-11-23. The commit named is the last add term commit on main."
+check = "uv run fgraph terms | grep -cE '^(record|work-item|feature|story|bug|spike|upkeep|task|criterion|bucket|backlog|in-progress|completed|removed|knowledge-line|term|development|landing|gate|delivery|planned|blocked)  ' | grep -qx 22"
+expected_output = "created: the terms of the record on main hold 22 terms with their meanings: record, work-item, feature, story, bug, spike, upkeep, task, criterion, bucket, backlog, in-progress, completed, removed, knowledge-line, term, development, landing, gate, delivery, planned and blocked"
+created = 2026-11-23 12:05:07+00:00

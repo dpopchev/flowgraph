@@ -45,3 +45,8 @@ description = "The passages are found by grep, since S-0110 and S-0112 land befo
 check = "test $(grep -l -e --agent README.md docs/domain-model.md | wc -l) -eq 2"
 expected_output = "changed: docs/domain-model.md adds the agent to the started and completed rows of States are types; Persistence states fgraph start --agent, its form, its refusals, the Feature start handing its first work item, the automatic start naming none, the file key agent and the hand-over to another agent as a later Story; Status as JSON states agent on a work item, null when none. README.md shows fgraph start S-0001 --agent sonnet-a1, the status line with [sonnet-a1], the show line agent, agent null in the JSON example and the help of start with --agent"
 created = 2026-11-23 08:08:05+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer gave the go on 2026-11-23 to the Tasks and the rulings shown that day: fgraph start takes --agent, one opaque word; the completed work item keeps it; on a Feature it goes to the first work item it starts; it is refused on a Task and with the development off; the JSON holds the key agent, the name or null; the text lists [agent] between the progress and the title. The start a completion makes names no agent, and the hand of a started work item to an agent is a Story of its own, S-0126. S-0113 starts once S-0112 is landed, the two sharing about ten modules."
+noted = 2026-11-23 08:08:11+00:00

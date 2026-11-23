@@ -269,6 +269,14 @@ fgraph                      # uses ./.fgraph/, else ./fgraph/
 fgraph --dir path/to/record # uses the directory given, without a search
 ```
 
+A command reads an id in any case, with its dash and its leading zeros left
+out: `fgraph show f15`, `f-15`, `F15` and `f-0015` each show F-0015. What
+`fgraph` prints is always the canonical form.
+
+```sh
+fgraph show f15             # shows F-0015, as fgraph show F-0015 does
+```
+
 `fgraph --help` prints the menu of the commands, and every command prints its
 own help, its usage and its options, with `--help` or `-h`. Neither needs a
 record:

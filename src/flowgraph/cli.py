@@ -20,6 +20,7 @@ from flowgraph.development.worktrees import across_worktrees, held_elsewhere
 from flowgraph.item.commands import status_item
 from flowgraph.parser import REFUSED, TOP, build_command_line, help_asked
 from flowgraph.parser.command import command_said
+from flowgraph.parser.ids import ids_read
 from flowgraph.record import (
     Config,
     Found,
@@ -129,7 +130,7 @@ def run(
     if asked is not None:
         write(asked)
         return 0
-    args = parser.parse_args(argv)
+    args = ids_read(parser.parse_args(argv))
     if args.command == "init":
         try:
             made = init_record(cwd, args.dir, is_dir, make_dir, open_store, open_git)

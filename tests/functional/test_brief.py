@@ -18,8 +18,6 @@ from flowgraph.cli import open_files, open_git, read_config, run
 
 pytestmark = pytest.mark.functional
 
-RED = pytest.mark.xfail(strict=True, reason="S-0116: fgraph brief is not there yet")
-
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 CHECK = ("--check", "make test")
@@ -176,7 +174,6 @@ def document(checkout: Path, item: str) -> Any:
     return json.loads(brief(checkout, item, "--format", "json").out)
 
 
-@RED
 class TestTheBriefAsJson:
     def test_it_holds_the_branch(self, checkout: Path) -> None:
         assert document(checkout, "S-0002")["branch"] == "wi/S-0002-brief-me"
@@ -228,14 +225,12 @@ class TestTheBriefAsJson:
         assert printed == json.dumps(json.loads(printed), indent=2, sort_keys=True) + "\n"
 
 
-@RED
 class TestTheBriefOfBacklogAsJson:
     @pytest.mark.parametrize("key", ["branch", "worktree", "feature"])
     def test_a_part_it_has_none_of_is_null(self, checkout: Path, key: str) -> None:
         assert document(checkout, "S-0003")[key] is None
 
 
-@RED
 class TestTheFormatRefused:
     def test_a_format_that_is_neither_is_refused_naming_both(self, checkout: Path) -> None:
         assert "is not text or json, the two formats of brief" in (

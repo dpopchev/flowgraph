@@ -2,7 +2,9 @@
 
 from pathlib import Path
 
+from flowgraph.brief.document import JSON, brief_json, chosen_brief_format
 from flowgraph.brief.model import Brief, FeatureBrief, TermLine, governing
+from flowgraph.brief.text import brief_text
 from flowgraph.development.commit import OpenGit, kept_in
 from flowgraph.feature import feature_bucket, feature_detail
 from flowgraph.item.id import parse_work_item_id_of_any_kind
@@ -72,3 +74,14 @@ def brief_of(item: str, store: Store, record: Path, open_git: OpenGit) -> Brief:
         tuple(governing(newest_first(collected(store), None), detail.tasks)),
         tuple(TermLine(name, store.terms.load_term(name).meaning) for name in names),
     )
+
+
+def brief_output(item: str, format_: str, store: Store, record: Path, open_git: OpenGit) -> str:
+    """The brief of the work item of that id in that format, text or JSON.
+
+    The format is chosen before anything is read. Raises BriefFormatError naming both formats
+    when it is neither, and the refusals of `brief_of`. Nothing is written.
+    """
+    chosen = chosen_brief_format(format_)
+    brief = brief_of(item, store, record, open_git)
+    return brief_json(brief) if chosen == JSON else brief_text(brief)

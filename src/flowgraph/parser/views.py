@@ -4,8 +4,7 @@ import argparse
 from pathlib import Path
 
 from flowgraph.about import about_item
-from flowgraph.brief.read import brief_of
-from flowgraph.brief.text import brief_text
+from flowgraph.brief.read import brief_output
 from flowgraph.development.commit import OpenGit, Said
 from flowgraph.feature.item import show_any_item
 from flowgraph.graph import graph_text
@@ -33,7 +32,7 @@ def view_said(
         case "about":
             return Said(about_item(args.id, store, cwd, open_git))
         case "brief":
-            return Said(brief_text(brief_of(args.id, store, record, open_git)))
+            return Said(brief_output(args.id, args.format, store, record, open_git))
         case "show":
             return Said(show_any_item(args.id, store))
         case _:

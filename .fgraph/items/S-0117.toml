@@ -18,12 +18,13 @@ then = "it prints one /goal line for the developer to paste: the scope by its id
 
 [[tasks]]
 id = "T-0407"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_goal.py, failing on the criterion of S-0117"
 description = "Run through run() of src/flowgraph/cli.py. Copy the helpers fgraph, git, environment and checkout from tests/functional/test_brief.py. Fixture: add F-0001, then three Stories with --parent F-0001, then fgraph config set development.enabled true, development.parallel 3 and development.driver agent. One assert per test, each test under its own strict xfail naming S-0117. TestTheGoalOfAFeature: exit 0; the output holds exactly one newline, at its end; the output is exactly this line plus a newline: /goal Develop F-0001 until fgraph show F-0001 lists S-0001, S-0002 and S-0003 Completed, or stop after 8 hours. This session is the coordinator: it hands each whole work item to one subagent, at most 3 at once as development.parallel says. The goal is met as well when this session prints [HALT] <id>: <the decision needed> on a change to a criterion, a Task or the scope of a work item, or a removal, that the developer has not agreed. The line is under 4000 characters. With --hours 4 the line says or stop after 4 hours. TestTheGoalRefused, on the error output only: the driver left out names development.driver; the development off names development.enabled; an F-0002 with no work item says it holds no work item in Backlog; --hours 0 says it is a whole number of 1 or more. Assert messages, never exit 2: argparse already exits 2 on an unknown command today, so a test on exit 2 would pass now, and a test that passes on today's code cannot sit under a strict xfail. No source changes."
 check = "uv run pytest tests/functional/test_goal.py -q"
 expected_output = "created: tests/functional/test_goal.py states that on a record with the development on, development.parallel 3 and development.driver agent, holding F-0001 with S-0001, S-0002 and S-0003 in Backlog, fgraph goal F-0001 prints one line, the whole line pinned, with the bound of 8 hours, and fgraph goal F-0001 --hours 4 the same line with 4 hours. It also states that a record driven by a developer, one with the development off, a Feature with nothing in Backlog and --hours 0 are each refused naming why"
 created = 2026-11-23 10:14:16+00:00
+started = 2026-11-23 10:18:04+00:00
 
 [[tasks]]
 id = "T-0408"

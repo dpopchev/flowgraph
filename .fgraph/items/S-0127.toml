@@ -18,12 +18,13 @@ then = "status marks the two planned whole as able to start and no other, and fg
 
 [[tasks]]
 id = "T-0411"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_planned_start.py, failing on the criterion of S-0127"
 description = "Run through run() of src/flowgraph/cli.py. Copy the helpers fgraph, git, marked, environment, checkout and task (with --check make test) from tests/functional/test_status_start_now.py. Its config.toml is the development on with no parallel key. Classes and tests: TestStatusAsText, the marked ids; TestStatusAsJson, can_start and next_to_start; test_a_start_refused_exits_with_two_and_names_what_it_lacks, parametrized on the exit and the last line of the error output -- S-0001: fgraph: error: S-0001 has no Task to start with; F-0001: fgraph: error: F-0001 has no work item in Backlog to start with; F-0002: fgraph: error: F-0002 cannot start: S-0004 has no Task to start with; test_a_start_of_one_planned_whole_exits_with_zero, parametrized on S-0002 and F-0003, each on a fresh checkout. Keep the word status out of every name but the two Status classes. The red tests are the three Status tests and the F-0002 parameter; each carries its own strict xfail naming S-0127, the F-0002 one through the marks of pytest.param. The other parameters pass today: they are guards and carry no xfail. functional is the pytestmark. One assert per test. No source changes."
 check = "uv run pytest tests/functional/test_planned_start.py -q"
 expected_output = "created: tests/functional/test_planned_start.py states that, in a git repository with [development] enabled = true and parallel left out, holding S-0001 alone with no Task, S-0002 alone with a Task, F-0001 with no work item, F-0002 with S-0003 with a Task and S-0004 without, and F-0003 with S-0005 and S-0006 each with a Task: fgraph status marks S-0002 and F-0003 alone; the JSON lists can_start as S-0002, F-0003 with next_to_start S-0002; fgraph start refuses S-0001, F-0001 and F-0002 with exit 2, naming what each lacks; fgraph start of S-0002 and of F-0003 exits 0"
 created = 2026-11-23 10:14:49+00:00
+started = 2026-11-23 10:17:30+00:00
 
 [[tasks]]
 id = "T-0412"

@@ -42,12 +42,13 @@ commit = "9ab5908"
 
 [[tasks]]
 id = "T-0440"
-state = "backlog"
+state = "started"
 title = "Keep a blocked work item in its file and read it as a row and a detail"
 description = "src/flowgraph/work_item/held_file.py (202 lines, about 237 after): add BlockedItemFile after StartedItemFile, its fields and since, reason and waiting_on right after started, tasks as list[HeldTask]; add it to HeldItemFile on its one line; give each of the seven matches its case, started_held and agent_held with the started file, the five others with the files that hold nothing; add block_held(held), the reason and what it waits on, both empty unless blocked. src/flowgraph/work_item/primitives.py: in item_held the blocked file takes the way of the started one, the Tasks through at_most_one_started, the agent handed, then blocked_work_item with since as its time, so a file holds no block the moves could not reach. src/flowgraph/work_item/views.py: WorkItemRow gains block_reason and waiting_on, keyword only, empty by default, right after agent; WorkItemDetail gains waiting_on right after reason, its reason shared by the block and the removal as that of FeatureDetail is. src/flowgraph/work_item/file.py and projection.py fill them, from block_held and from block_of. In file.py add EmptyPartError to the refusals read_work_item turns into WorkItemFileError: it names the file for a blank reason, and for a blank title too, which is refused today as title is empty with no file named. Leave the status modules alone. Tests red first, in a new tests/work_item/test_work_item_blocked_file.py shaped as tests/feature/test_feature_blocked.py from its line 148 on: the keys written, in order; read back whole; the three keys gone after the unblock; a blocked file with a blank reason refused with WorkItemFileError naming it; the row read from the file equal to the row of the item; the detail with its reason and waiting_on. Existing tests that change: the two parameters of states in tests/work_item/test_work_item_file.py, read back whole and the row of the file, gain the blocked item."
 check = "uv run pytest tests/work_item -q"
 expected_output = "changed: the file of a blocked work item holds state = \"blocked\" with its started time, its agent when it has one, since, reason and waiting_on, and reads back whole; the unblock takes the three keys out of the file; a blocked file with a blank reason is refused naming the file; the row of a blocked work item holds its started time, its block_reason and what it is waiting_on, the same read from the file and mapped from the item; its detail holds its reason and waiting_on"
 created = 2026-11-23 14:57:24+00:00
+started = 2026-11-23 15:17:55+00:00
 
 [[tasks]]
 id = "T-0441"

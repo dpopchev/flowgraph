@@ -46,17 +46,19 @@ class LandingSteps:
     """The steps only a landing takes in a work tree, each bound to it.
 
     `merge` merges a branch as a merge of its own, held uncommitted, and merges nothing when git
-    refuses; `abort_merge` drops a merge held; `commit_merge` commits it under a message and
-    returns its short sha; `commit_squash` commits it as one commit of the branch of the work
-    tree alone, and merges nothing when git refuses; `can_fast_forward` is true when a branch
-    holds every commit the work tree is on; `fast_forward` moves the work tree to the tip of a
-    branch with no commit and returns its short sha; `remove_worktree` and `delete_branch`
-    remove the worktree and the branch, `delete_unmerged_branch` a branch whose commits the work
-    tree does not hold; `push` pushes a branch to the one it tracks and returns the name of the
-    remote. Each step raises GitError when git refuses it.
+    refuses; it answers None while a merge is held, and the short sha of the commit the work tree
+    is on when the branch brings no change; `abort_merge` drops a merge held; `commit_merge`
+    commits it under a message and returns its short sha; `commit_squash` commits it as one
+    commit of the branch of the work tree alone, and merges nothing when git refuses;
+    `can_fast_forward` is true when a branch holds every commit the work tree is on;
+    `fast_forward` moves the work tree to the tip of a branch with no commit and returns its
+    short sha; `remove_worktree` and `delete_branch` remove the worktree and the branch,
+    `delete_unmerged_branch` a branch whose commits the work tree does not hold; `push` pushes a
+    branch to the one it tracks and returns the name of the remote. Each step raises GitError
+    when git refuses it.
     """
 
-    merge: Callable[[str], None]
+    merge: Callable[[str], str | None]
     abort_merge: Callable[[], None]
     commit_merge: Callable[[str], str]
     commit_squash: Callable[[str], str]

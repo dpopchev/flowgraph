@@ -37,7 +37,6 @@ WAYS = [
 ]
 WAY_IDS = ["merge-commit", "squash", "fast-forward"]
 NOT_YET = pytest.mark.xfail(strict=True, reason="S-0140: a push refused leaves it started")
-NOT_TAKEN_UP = pytest.mark.xfail(strict=True, reason="S-0140: a landing is taken up again")
 IDENTITY = {
     "GIT_AUTHOR_NAME": "a developer",
     "GIT_AUTHOR_EMAIL": "developer@example.com",
@@ -229,7 +228,6 @@ def test_a_landing_taken_up_completes_by_each_way(
     )
 
 
-@NOT_TAKEN_UP
 class TestAStoryWhoseBranchIsMergedByHand:
     @pytest.fixture
     def landed(self, tmp_path: Path, origin: Path) -> Refused:

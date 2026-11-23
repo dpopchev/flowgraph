@@ -717,3 +717,66 @@ def test_a_landing_with_the_development_off_and_delivery_push_true_takes_no_git_
     with pytest.raises(LandError):
         land(READY, work_tree(steps), config=make_config(PUSH))
     assert steps == []
+
+
+def merged_already(steps: list[object]) -> WorkTree:
+    """The work tree of `work_tree` whose merge finds the branch merged into main at 3e9ae5c."""
+    return with_step(
+        work_tree(steps),
+        merge=lambda _: "3e9ae5c",
+        commit_merge=refuse,
+        commit_squash=refuse,
+        fast_forward=refuse,
+    )
+
+
+def test_a_landing_taken_up_takes_the_record_and_the_removal_steps_alone() -> None:
+    steps: list[object] = []
+    land(READY, merged_already(steps))
+    assert steps == [RECORD_COMMIT, ("remove worktree", WORKTREE), ("delete branch", BRANCH)]
+
+
+def test_a_landing_taken_up_completes_the_work_item_at_the_commit_main_is_on() -> None:
+    saved: list[WorkItemState] = []
+    land(READY, merged_already([]), saved)
+    assert [item.commit for item in saved if isinstance(item, CompletedWorkItem)] == [
+        make_commit("3e9ae5c")
+    ]
+
+
+def test_a_landing_taken_up_names_the_work_item_and_that_commit() -> None:
+    assert land(READY, merged_already([])) == Said("landed S-0001 at 3e9ae5c\n")
+
+
+def test_a_landing_taken_up_with_a_task_not_completed_is_refused_taking_no_step() -> None:
+    steps: list[object] = []
+    with pytest.raises(OpenTaskError):
+        land(OPEN, merged_already(steps))
+    assert steps == []
+
+
+def test_a_landing_taken_up_under_a_gate_runs_it_first() -> None:
+    steps: list[object] = []
+    land(READY, merged_already(steps), config=GATED, run_gate=gate(steps))
+    assert steps == [
+        GATE_RUN,
+        RECORD_COMMIT,
+        ("remove worktree", WORKTREE),
+        ("delete branch", BRANCH),
+    ]
+
+
+def test_a_landing_taken_up_by_squash_deletes_the_branch_as_an_unmerged_one() -> None:
+    steps: list[object] = []
+    land(READY, merged_already(steps), config=SQUASH)
+    assert steps == [
+        RECORD_COMMIT,
+        ("remove worktree", WORKTREE),
+        ("delete unmerged branch", BRANCH),
+    ]
+
+
+def test_a_landing_taken_up_by_fast_forward_moves_main_nowhere() -> None:
+    steps: list[object] = []
+    land(READY, merged_already(steps), config=FAST_FORWARD, message=None)
+    assert steps == [RECORD_COMMIT, ("remove worktree", WORKTREE), ("delete branch", BRANCH)]

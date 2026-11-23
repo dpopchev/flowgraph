@@ -1911,6 +1911,568 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 | done | `CompletedX` |
 | pruned | `RemovedX` |
 
+### Records measured
+
+The seven board 1 records, read on 2026-11-23 by the board script alone:
+`board.py --root <repo> status` for the Epics, the Tasks and the landing
+line, and `board.py --root <repo> show W-nnn --detail brief` on every work
+item for its kind, its state and its parent. A cell is the count by state,
+todo/doing/blocked/done/pruned, then the total in brackets.
+
+| Repository | Epics | Tasks |
+|---|---|---|
+| `~/.claude` | 0/0/0/48/0 (48) | 2/0/0/1294/68 (1364) |
+| `advent-of-code-2025` | 0/0/0/0/0 (0) | 0/0/0/0/0 (0) |
+| `chaos-to-simple` | 0/0/0/20/0 (20) | 0/0/0/512/8 (520) |
+| `gflow` | 0/0/0/1/0 (1) | 0/0/0/12/0 (12) |
+| `stats` | 0/0/0/3/0 (3) | 2/0/0/85/1 (88) |
+| `surrogate-models` | 1/1/0/16/2 (20) | 30/0/1/410/77 (518) |
+| `svrf-parser` | 0/0/0/16/0 (16) | 0/0/0/381/32 (413) |
+| all seven | 1/1/0/104/2 (108) | 34/0/1/2694/186 (2915) |
+
+The work items by kind:
+
+| Repository | issue | spike | bug |
+|---|---|---|---|
+| `~/.claude` | 0/0/0/365/13 (378) | 0/0/0/22/2 (24) | 2/0/0/255/8 (265) |
+| `advent-of-code-2025` | 0/0/0/0/0 (0) | 0/0/0/0/0 (0) | 0/0/0/0/0 (0) |
+| `chaos-to-simple` | 0/0/0/156/0 (156) | 0/0/0/4/0 (4) | 0/0/0/75/1 (76) |
+| `gflow` | 0/0/0/3/0 (3) | 0/0/0/0/0 (0) | 0/0/0/0/0 (0) |
+| `stats` | 1/0/0/25/0 (26) | 0/0/0/0/0 (0) | 1/0/0/11/1 (13) |
+| `surrogate-models` | 13/1/0/118/17 (149) | 2/0/0/6/5 (13) | 6/0/0/36/1 (43) |
+| `svrf-parser` | 0/0/0/108/2 (110) | 0/0/0/10/10 (20) | 0/0/0/54/1 (55) |
+| all seven | 14/1/0/775/32 (822) | 2/0/0/42/17 (61) | 9/0/0/431/12 (452) |
+
+The work items by parent: a standalone root, under an Epic, or nested under
+another work item. A work item whose brief prints an item it `continues` is
+counted apart; `continues` is printed on the successor of a pruned item, the
+other side of `pruned.successor`, stored by neither (Field map).
+
+| Repository | Work items | Standalone | Under an Epic | Nested | Continues |
+|---|---|---|---|---|---|
+| `~/.claude` | 667 | 403 | 264 | 0 | 11 |
+| `advent-of-code-2025` | 0 | 0 | 0 | 0 | 0 |
+| `chaos-to-simple` | 236 | 43 | 193 | 0 | 1 |
+| `gflow` | 3 | 0 | 3 | 0 | 0 |
+| `stats` | 39 | 12 | 27 | 0 | 0 |
+| `surrogate-models` | 205 | 50 | 155 | 0 | 5 |
+| `svrf-parser` | 185 | 66 | 119 | 0 | 6 |
+| all seven | 1335 | 574 | 761 | 0 | 23 |
+
+Every sum by kind and by state equals the total `status` prints for its
+record, and the Tasks the briefs list, each counted once, equal the Task row
+of `status`. No work item of the seven has another work item as parent.
+
+The `landing:` line of each record, as `status` prints it:
+
+- `~/.claude`: `ff-main, approver agent, branch ids local, tag root-close,
+  ci none, worktree ../.claude.worktrees, branch max 1d, gate make -C
+  skills/board/scripts check, lanes 3`
+- `advent-of-code-2025`: `ff-main, approver developer, branch ids local, tag
+  epic-close, ci none, worktree ../advent-of-code-2025.worktrees, branch max
+  1d, lanes 1`
+- `chaos-to-simple`: `main, approver agent, branch ids local, tag
+  epic-close, ci none, on main, no branches, gate make check, lanes 1`
+- `gflow`: `pr, approver developer, branch ids local, tag epic-close, ci
+  pipeline, worktree ../gflow.worktrees, branch max 1d, lanes 1`
+- `stats`: `ff-main, approver developer, branch ids local, tag none, ci none,
+  worktree ../stats.worktrees, branch max 1d, lanes 1`
+- `surrogate-models`: `ff-main, approver agent, branch ids local, tag
+  epic-close, ci none, worktree ../surrogate-models-wt, branch max 1d, lanes
+  1`
+- `svrf-parser`: `pr, approver agent, branch ids remote, tag epic-close, ci
+  pipeline, worktree ../svrf-parser.worktrees, branch max 1d, lanes 3`
+
+### Field map
+
+The fields of a board 1 item, read on 2026-11-23 by the board script alone:
+`show <id> --detail full` on, in `surrogate-models`, the Epics E-007
+(pruned), E-018 (done), E-019 (doing) and E-020 (todo), the issues W-045
+(pruned), W-187 (done) and W-197 (doing), the spikes W-044 (pruned), W-061
+(todo) and W-195 (done), the bugs W-181 (todo), W-185 and W-188 (done), the
+Tasks T-118 (todo), T-476 (done), T-492 (pruned) and T-493 (blocked); in
+`~/.claude` W-141, W-143, W-145, W-153, W-664 and T-311; in `svrf-parser`
+W-008; beside `sections`, `status`, `tree E-019`, `knowledge --search` and
+`config show`. `--detail full` prints no `reasoning`, `created`,
+`filed_during`, `amends`, `remote` or `pre_empted_by`, so `--detail raw` was
+read too: on E-002, W-185, W-187, T-492 and T-493 of `surrogate-models`, on
+W-143, W-153, W-157, W-159, W-161 and W-664 of `~/.claude`, and on W-008 and
+W-125 of `svrf-parser`. Raw prints the file of the checkout: for T-492 and
+T-493, worked on the branch of W-197, it still reads `doing` and `todo`
+where `full` reads pruned and blocked. No bug is doing and no work item is
+blocked in any record today; W-008 of `svrf-parser` was blocked once, by its
+History. An id alone below is of `surrogate-models`, `(c)` marks
+`~/.claude` and `(s)` `svrf-parser`. The fgraph side is this file, the help
+of `fgraph` and the state types of `src/flowgraph` on this branch. A field
+fgraph could hold only as free text in a description is `lost`: a
+description carries no meaning the planning skill reads. An item of the
+Backlog that aims at a gap is named in its row; the field is lost today.
+
+Every item:
+
+| Field | Seen on | In fgraph | Verdict |
+|---|---|---|---|
+| id `E-nnn`, `W-nnn`, `T-nnn` | every item | a new id by kind, `F-`, `S-`, `U-`, `B-`, `Q-`, `T-` and four digits (Ids); the old id has no place (S-0106) | converted: a new id; the old one lost |
+| title | every item | the title | kept |
+| `created`, a day | raw W-187, T-492 | `created`, a time | converted: the day becomes a time |
+| the external token, `W-008 (AB#3128)`, and `remote:` -- `token`, `synced`, `pushed`, `text`, `parent` | raw W-008 (s), W-125 (s) | none; no item of the Backlog names it | lost |
+
+An Epic:
+
+| Field | Seen on | In fgraph | Verdict |
+|---|---|---|---|
+| `parent: root` | E-019 | a Feature is the top level (Levels) | kept |
+| `## Hypothesis` | E-019 | none: a Feature holds a title, a description and its criteria (Attributes) | lost |
+| `## Outcome` | E-019 | none | lost |
+| a criterion `ACn Given ... When ... Then ...` | E-019 AC1 to AC8, E-007 AC2, AC3 | `--criterion`, free text (Acceptance criteria) | converted: its text a criterion; its label `ACn` dropped |
+| the work item a criterion names, `-> W-189` | E-019 | none (F-0013, S-0100) | lost |
+| a criterion nested under another, `ACn.k` | on no item read; E-035 (c) AC3 states the form | none: the criteria are a flat list | lost |
+| `relations.depends_on` | E-007 on E-006 | none: `--depends-on` is refused on a Feature (Depends on) | lost |
+| `relations.pre_empted_by`, set by a park | raw E-002, empty; its park in E-002#v4 | none: no park | lost |
+| its ledger, `ledgers/E-nnn.md` | E-018 evidence | none | lost |
+
+A work item, of every kind:
+
+| Field | Seen on | In fgraph | Verdict |
+|---|---|---|---|
+| `kind: spike`, `kind: bug` | W-195, W-188 | `Spike`, `Bug` (From board 1) | kept |
+| `kind: issue` with `issue.then: behavior` | raw W-187 | `Story` | converted: the kind from `then` |
+| `kind: issue` with `issue.then: step` | raw W-664 (c) | `Upkeep` | converted: the kind from `then` |
+| `kind: issue` with no `then` | raw W-153 (c) | unknown | unknown: settled by a rule for its kind, the developer's |
+| `parent`, an Epic or empty | W-187, raw W-153 (c) | `parent`, a Feature or standing alone | kept |
+| `reasoning` | raw W-187 `deductive`, W-125 (s) `abductive` | none | lost |
+| `## Hypothesis` of an issue or a bug | W-187, W-188 | none: a Story, an Upkeep and a Bug take none | lost |
+| `tasks` | W-197 | the Tasks in the file of the work item | kept |
+| no `tasks` line | W-044, W-045, both pruned | a work item holds a tuple of Tasks (`src/flowgraph/work_item/model.py`) | unknown: whether the record reads one with none; the Probe settles it |
+| the branch of a doing one, `wi/W-197-no-review-mark-is` | `status` | the branch `fgraph start` cuts (`--slug`) | unknown: whether fgraph takes a branch it did not cut; S-0107 settles it |
+
+An issue, a spike and a bug, by kind:
+
+| Field | Seen on | In fgraph | Verdict |
+|---|---|---|---|
+| issue `## Outcome`, one Given / When / Then sentence | W-187 | `--given`, `--when`, `--then` | converted: the sentence split at its three words |
+| `issue.description` | W-187 | the description | kept |
+| spike `## Hypothesis`, a yes/no question | W-195, W-061 | `--hypothesis` | kept |
+| `spike.research_question`, printed `question` | W-195, raw W-125 (s) | none | lost |
+| `spike.hypothesis`, printed `conjecture` | W-195, raw W-125 (s) | none | lost |
+| spike `## Outcome`, the Given / When / Then of its decision | W-195 | none | lost |
+| `spike.decision` | W-195 | the decision of a `CompletedSpike`, `complete --decision`; no answer, which a Spike completed before the answer was taken lacks (States are types) | kept |
+| `bug.actual` | W-188 | `--observed` | kept |
+| `bug.expected` | W-188 | `--expected` | kept |
+| bug `## Outcome`, a Given / When / Then | W-185, where it differs from `expected` | none | lost |
+| `bug.input` | W-188 | none | lost |
+| `bug.steps` | W-188 | none | lost |
+| `bug.technical` | W-188 | none | lost |
+
+A Task:
+
+| Field | Seen on | In fgraph | Verdict |
+|---|---|---|---|
+| title `<Verb> <object> -> <output>` | T-476 | the title, an output title (Titles) | kept |
+| `parent`, a work item | T-476 | the work item whose file holds it | kept |
+| `## Action` | T-476 | `--description`, the one free text of a Task | converted: the brief becomes the description |
+| `## Output` | T-476 | `--output`, the expected output | kept |
+| `## Check`, the command before ` -- ` or ` -> ` | T-476, T-492 | `--check`, run by `complete` | converted: the command alone |
+| `## Check`, the expected result, `prints 2` | T-492, T-476 `prints "1 passed"` | none: `complete` judges the exit status alone (Persistence, S-0089) | lost |
+| `relations.depends_on` | raw T-492, T-493, empty on both | none: a Task takes none | lost |
+| a Finding of a Task, `T-023: fact:` on its work item | W-008 (s) | a knowledge line of the work item (Attributes) | kept |
+
+The payload of each state:
+
+| Field | Seen on | In fgraph | Verdict |
+|---|---|---|---|
+| `todo`, no payload | T-118, E-020, W-061 | the bare type, in Backlog | kept |
+| `doing`, no payload | W-197, E-019 | `started`, a time | converted: the day of the `doing` History line |
+| `blocked` of a Task: `reason`, `since`, `waiting_on` | T-493 | a `BlockedTask`: `reason`, `since`, `waiting_on` (`fgraph block`) | kept; `since` a day read as a time |
+| `blocked` of a work item | on none today; W-008 (s) History | none: the block of a work item is not built (Persistence, `fgraph block --help`) | lost |
+| `blocked` of an Epic | on none | a `BlockedFeature` | kept |
+| `done.on` | W-187, T-476, E-018 | `completed`, a time | converted: the day becomes a time |
+| `done.evidence` of a work item | W-187 `merged into main at f184dc1`, W-008 (s) `PR 339; merged d4cba3e; build 1806 succeeded; ...` | `commit`, a sha of 7 to 40 hex digits (Evidence) | converted: the sha; the rest of the text lost |
+| `done.evidence` of a Task | T-476 `65312dd; make test ...: [DONE] tests passed` | `commit` | converted: the sha; what the check printed lost |
+| `done.evidence` of an Epic | E-018, a ledger, the ACs, a tag | the commit of its last work item (Evidence) | converted: that commit; the text lost |
+| `pruned.on`, `pruned.reason` of a work item in todo | W-044, W-045 | `removed`, `reason` (`fgraph remove`) | kept |
+| `pruned` of a work item from doing | W-143 (c), its History `doing` then `pruned` | none: the remove of a started work item is not built (Persistence) | lost |
+| `pruned` of a Task | T-492, T-311 (c) | none: a Task has no removed state, and a completed work item holds completed Tasks alone (`src/flowgraph/task/model.py`, `work_item/model.py`) | lost |
+| the done Tasks of a pruned work item | W-143 (c), T-314 and T-315 | none: a removed work item holds Tasks in Backlog alone | lost |
+| `pruned.on`, `pruned.reason` of an Epic | E-007 | a `RemovedFeature`: removed on, reason | kept |
+
+The relations:
+
+| Field | Seen on | In fgraph | Verdict |
+|---|---|---|---|
+| `depends_on`, work item to work item | W-061 on W-059, W-129, W-164 | `depends_on` (Depends on) | kept |
+| `depends_on` naming a pruned work item | W-045 on W-044 | refused at the write, `it is removed` (Depends on) | unknown: whether a conversion may write it; the Probe settles it |
+| `filed_during`, a work item | raw W-185 on W-173 | `filed_during` (Filed during) | kept |
+| `filed_during`, a Task | raw W-187 on T-456 | none: it names a work item alone | converted: the work item of the Task, W-174 |
+| `amends`, a work item | raw W-185 on W-173 | `amends`, a completed work item (Amends) | kept |
+| `amends`, a criterion of an Epic, `E-011/AC3` | raw W-161 (c), W-157 (c), W-159 (c) | none | lost |
+| `pruned.successor`, work item to work item | W-143 (c) to W-145, W-141 (c) to W-153 | `superseded_by` (Superseded by), from Backlog alone | kept |
+| `pruned.successor` of a Task, to a Task or a work item | T-492 to T-518, T-311 (c) to W-153 | none: only a removed work item names one | lost |
+| `continues`, printed on the successor | W-145 (c) on W-143, W-144; W-153 (c) on T-311, T-312, W-141 | `supersedes`, derived (Superseded by) | kept: derived from `successor`, stored by neither |
+
+The knowledge lines:
+
+| Field | Seen on | In fgraph | Verdict |
+|---|---|---|---|
+| a Finding, `<day> <text>` | E-018, W-187 | `fgraph note --finding`, its text and the time noted | converted: the day becomes a time |
+| the type of a Finding, `fact`, `open`, `standing` | E-018 | none (F-0014, S-0102) | lost |
+| `supersedes: <ref>` ending a Finding or a Decision | E-018, W-187, W-195 | none (F-0014, S-0103) | lost |
+| the ref of a line, `<item>#<k>`, `#d<k>`, `#v<k>` | `knowledge --search` (c), W-143#d3 in W-143 (c) | none: a line holds no ref | lost |
+| `about: <term>` ending a line, of `[knowledge] terms` | on no item read; ledger E-044 (c); `config show knowledge` (c) | `--about TERM`, of a term the record holds (Terms) | converted: each word a term added first |
+| a Decision, `<day>: <text>` | E-019, W-195 | `--decision` | converted: the day becomes a time |
+| the burn Decision, `burn: ... (stop after 8 hours)` | E-019, W-664 (c) | a decision line; no command reads its stop | converted: the text alone |
+| a Deviation, `<day>: <text>`, on a root | E-018, E-019, W-143 (c) | `--deviation`, on any work item or Feature | converted: the day becomes a time |
+| the Deviations a checkpoint moved to the ledger | SKILL.md, checkpoint; on no item read | none | lost |
+
+The History lines:
+
+| Field | Seen on | In fgraph | Verdict |
+|---|---|---|---|
+| `todo`, `doing`, `done`, `pruned` | W-187, T-492 | `created`, `started`, `completed`, `removed` of the state | converted: the day of each a time; `pruned` of a Task lost |
+| `blocked` | T-493 | `since` of the `BlockedTask` | converted: the day becomes a time |
+| `unblocked: <why>` | W-008 (s) | none: `fgraph unblock` takes no why | lost |
+| `progress: <text>`, `re-aim`, `halt at` | E-019 | none | lost |
+| `progress: red: <line>` | T-476 | none | lost |
+| `progress: structure: ...` | W-197, W-187 | none | lost |
+| `progress: verified: ...` of an issue or a bug | W-187, W-188 | `fgraph verify --yes`, the `Verification` (Attributes) | converted: the answer yes with its text |
+| `progress: verified: ...` of a spike | W-195 | none: a Spike is not verified (Attributes) | lost |
+| `progress: verified: ...` of an Epic | E-018 | none: a Feature is not verified | lost |
+| `progress: burn started ...`, `burn stopped ...` | E-018, E-019 | none | lost |
+| `progress: tagged v0.14.0 at 1437f75` | E-018 | none in the record: the tag is in git (`fgraph release`) | lost |
+| `note: re-parented ...`, `note: amended depends_on`, `note: rewrote finding ...` | W-188, W-061, E-018 | none: each write of fgraph is a commit in git (Persistence) | lost |
+| a `draft:` block, an imported item | on no item read; SKILL.md, V13 | none | lost |
+
+### Probe
+
+A sample of real board 1 items converted on 2026-11-23 into scratch records
+under the scratchpad of the session, each a directory of its own made with
+`git init`, outside every repository, by the fgraph of this branch (`uv run
+--project <worktree> fgraph`), the development off unless said. The old
+items were read by `board.py show <id> --detail full`, and `raw` where
+`full` omits a field. The sample: the one Epic of `gflow` whole, E-001 with
+W-001 to W-003 and T-001 to T-012; in `surrogate-models` E-007, E-019, E-020,
+W-044, W-045, W-061, W-181, W-187, W-188, W-195, W-197 with T-492, T-493 and
+T-518; in `~/.claude` W-143 with T-314 and T-315, W-153, W-161, W-664; in
+`svrf-parser` W-008. An item they name outside the sample (E-006, W-059,
+T-456 of W-174, W-145, W-159, E-011) got a stand-in. Part 2 wrote item files
+by hand, in the shape the commands wrote, one scratch record per case, read
+by `status`, `show`, `about` and `knowledge`. The runs were made before a
+restart of the session wiped the scratch directory; the lines quoted are
+from those runs. Three were run again after it, each with the same line: the
+day alone beside a time, the start on a branch already there, the old id.
+
+Took by the commands:
+
+| Item | As | What arrived | What did not |
+|---|---|---|---|
+| E-001 (`gflow`), whole | F-0001, S-0001 to S-0003, T-0001 to T-0012 | titles, criteria, Given / When / Then, descriptions, outputs, every old sha as `commit`, the verified text, knowledge text; the Feature completed at 2f7df5c, the commit of its last Story | the hypothesis, the outcome, the checks, every date; 51 commands, 50 commits, about 41 s |
+| E-019, doing | a started Feature | `start` of a Feature starts its first work item; each `complete` starts the next | -- |
+| E-020, todo; W-181, todo bug | a Feature and a Bug in Backlog | criteria, observed, expected | the bug's input, steps, technical |
+| E-007, pruned | `remove`, its reason | the reason | `depends_on` E-006 |
+| W-044, pruned spike, no Task | `remove` | the reason, `Tasks (0)` | -- |
+| W-045, pruned, on pruned W-044 | `remove` | `depends on Q-0001`, kept when written before Q-0001 was removed | -- |
+| W-061, todo spike | `add spike --depends-on` | the hypothesis, `depends on S-0002 (Backlog)` | the question, the conjecture |
+| W-187, done | `--filed-during` the work item of T-456 | `filed during S-0002`, the verification | the Task it was filed during |
+| W-188, done bug | `add bug`, `verify --yes` | observed, expected, the verification | input, steps, technical |
+| W-195, done spike | `complete --decision --answer yes` | the decision, the answer | the verification |
+| W-197, doing | started, T-518 completed, T-493 blocked | `reason`, `waiting on` of the block | T-492 pruned |
+| W-143, pruned from doing | started, T-314, T-315 completed at 1b19455, b3f5a63 | the two completed Tasks, its notes | the removal |
+| W-153, W-664 | `add upkeep` | Given / When / Then; the burn Decision as text | -- |
+| W-161 | `--depends-on` | the dependency | `amends` E-011/AC3 |
+| W-008 | a Story | -- | the token, the block |
+
+No command takes a date: none of `add`, `start`, `block`, `complete`,
+`remove`, `note`, `verify` or `add term` has an option for one, and every
+file they wrote holds the time of the run, `created = 2026-11-23
+05:29:38+00:00`, `removed = ...`, `noted = ...`, `since = ...`, the `on` of
+`[verified]`.
+
+The checks and the commits:
+
+- With the development off a Task takes no check: `fgraph: error: a Task
+  takes no --check: the development is off -- set development.enabled = true
+  in <record>/config.toml`, exit 2.
+- A Task that holds a check runs it at `complete`, the development on or
+  off: added with it on and completed after `config set development.enabled
+  false`, it still printed `fgraph: error: T-0001 cannot complete: its check
+  "make test K=test_settings" exited with status 2`. A Task reaches Completed
+  with its old check only where the check passes today.
+- Any sha is taken, never looked up: off, as on, `completed T-0013 of S-0001
+  at c6e0f15` in a repository that holds no such commit, once the check
+  passed.
+- With the development on a work item started by `start` completes on main
+  alone, `fgraph: error: B-0001 completes on main, in <record>: <worktree> is
+  on wi/B-0001-bug-probe`, and main does not see the Tasks completed in the
+  worktree until its branch is merged, `fgraph: error: B-0001 has Tasks to
+  complete first: T-0015`. It reaches Completed by `land`, at the merge
+  commit, not at the old sha.
+
+Refused, each exit 2:
+
+| Command | Line |
+|---|---|
+| `add feature --hypothesis`, `--outcome`, `--depends-on` | `fgraph: error: unrecognized arguments: --hypothesis ...` (the same for each) |
+| `amend F-0002 --depends-on F-0001` | `fgraph: error: 'F-0001' is no Story, Upkeep, Bug or Spike id` |
+| `add story --hypothesis` | `fgraph: error: unrecognized arguments: --hypothesis ...` |
+| `add bug --input --steps --technical` | `fgraph: error: unrecognized arguments: --input ... --steps ... --technical ...` |
+| `add story --token AB#3128` | `fgraph: error: unrecognized arguments: --token AB#3128` |
+| `add story --filed-during T-0001` | `fgraph: error: 'T-0001' is no Story, Upkeep, Bug or Spike id` |
+| `add story --amends F-0001`, `--amends F-0001/AC3` | `fgraph: error: 'F-0001/AC3' is no Story, Upkeep, Bug or Spike id` |
+| `add story --amends S-0003`, in Backlog | `fgraph: error: a work item cannot amend S-0003: it is not completed` |
+| `add story --depends-on Q-0001`, removed | `fgraph: error: a work item cannot depend on Q-0001: it is removed` |
+| `remove T-0006` | `fgraph: error: 'T-0006' is no Story, Upkeep, Bug, Spike or Feature id` |
+| `remove T-0006 --superseded-by T-0008` | `fgraph: error: 'T-0008' is no Story, Upkeep, Bug or Spike id` |
+| `remove S-0001`, started | `fgraph: error: S-0001 is started already` |
+| `block S-0004` | `fgraph: error: 'S-0004' is no Task or Feature id` |
+| `start U-0001`, no Task | `fgraph: error: U-0001 has no Task to start with` |
+| `verify Q-0002`, a Spike | `fgraph: error: Q-0002 is a Spike: fgraph verify takes a completed Story, Bug or Upkeep` |
+| `note --type open`, `--supersedes U-0002#1` | `fgraph: error: unrecognized arguments: --type open` |
+| `note --about landing`, no such term | `fgraph: error: no term 'landing' in the record: add it with fgraph add term` |
+| `add term "Landing Mode"` | `fgraph: error: 'Landing Mode' is no term name: lowercase words of letters and digits joined by -` |
+| `start S-0004 --slug no-review-mark-is`, the branch there | `fgraph: error: git worktree add --quiet -b wi/S-0004-no-review-mark-is ... failed: fatal: a branch named 'wi/S-0004-no-review-mark-is' already exists -- S-0004 is started at 9948147, its branch is not` |
+
+A line of type or `supersedes` survives only as text: `note --finding
+"fact: ... supersedes: W-664#1, W-664#2"` took and `show` prints it as given.
+
+By a file written by hand. A refusal of the read is of the whole record:
+`status`, `show` of any other item and `knowledge` exit 2 naming the one
+file, `fgraph: error: <file> holds no Story: ...` followed by the lines of
+the validator.
+
+| Case | Read | Line or what was shown |
+|---|---|---|
+| old times, `2026-10-11 09:00:00+00:00`, in created, started, completed, the `on` of verified, noted; a completed Task whose check fails today | read, exit 0 | `verified yes 2026-10-12`, `finding 2026-10-11`; a later `note` keeps them |
+| `created = 2026-10-11`, a day alone | read alone; `amend` rewrites it `2026-10-11 00:00:00`, no offset | beside a time with an offset, `status` and `knowledge` exit 1: `TypeError: can't compare offset-naive and offset-aware datetimes` |
+| the old id, `W-187.toml` | `status` exit 0 and lists nothing | `fgraph: error: 'W-187' is no Story, Upkeep, Bug, Spike or Feature id` |
+| a completed work item with no Task | read | `Tasks (0)`, its commit |
+| a removed work item with `started` and completed Tasks | refused | `removed.tasks.0.state Input should be 'backlog'`; `removed.started Extra inputs are not permitted` |
+| a removed Task | refused | `Input tag 'removed' found using 'state' does not match any of the expected tags: 'backlog', 'started', 'blocked', 'completed'` |
+| a blocked work item | refused | `Input tag 'blocked' found using 'state' does not match any of the expected tags: 'backlog', 'started', 'completed', 'removed'` |
+| `depends_on` a removed work item | read | `~ S-0002 ... -- depends on S-0001`, `depends on S-0001 (Removed)` |
+| a Feature with `hypothesis`, `outcome`, `depends_on` | refused | `started.hypothesis Extra inputs are not permitted` (the same for each) |
+| a Bug with `input`, `steps`, `technical` | refused | `backlog.input Extra inputs are not permitted` (the same for each) |
+| a `token` | refused | `backlog.token Extra inputs are not permitted` |
+| `filed_during = "T-0001"` | refused | `filed during names T-0001, which is not a bug or spike or story or upkeep` |
+| `amends = "F-0001/AC1"` | refused | `amends names F-0001/AC1, which is not in the record` |
+| `amends` a work item in Backlog | read | `amends S-0001`, `amended by S-0002`: the write refuses it, the read does not |
+| a knowledge line with `type`, `supersedes` | refused | `backlog.knowledge.0.type Extra inputs are not permitted` |
+| `about` a term not in the record | refused | `about names landing, which is not in the record` |
+| a term with an old `added` | read | `terms (1) landing` |
+| a completed Spike with a decision, no answer | read | `decision Cut the appendix ...` |
+| a started Story by hand, branch `wi/S-0001-no-review-mark-is` made by git in a worktree at a path of its own | read | `status` reads its row from that worktree; T-0001 completed there; `landed S-0001 at cf960c9`, its old `started` kept |
+
+The Field map, row by row, against the probe. Refuted:
+
+- `created`, a day: no command takes it; a file carries it only as a time
+  with its offset -- a bare day is read but breaks `status` and `knowledge`.
+- `doing`, `done.on`, `blocked` of a Task (`since`), a Finding, a Decision
+  and a Deviation (`<day>`), the History lines: said converted, the day a
+  time; by the commands every one is the time of the run. Converted by a
+  file alone.
+- `pruned.on`, `pruned.reason` of a work item in todo and of an Epic: said
+  kept; `remove` keeps the reason and stamps the day of the run. Kept by a
+  file.
+- `## Check`, the command: said converted; with the development off it is
+  refused, and on, a completed Task keeps it only when it passes today. By a
+  file it is carried.
+- `done.evidence` of a work item: said converted to the sha; with the
+  development on a work item started by `start` completes by `land`, at its
+  merge commit. The sha is kept with the development off or by a file.
+
+Confirmed lost, refused by the command and by the read: the Epic's
+`## Hypothesis`, `## Outcome` and `relations.depends_on`; the hypothesis of
+an issue or a bug (no option); `bug.input`, `bug.steps`, `bug.technical`;
+the external token; `blocked` of a work item; `pruned` of a work item from
+doing, with the done Tasks it holds; `pruned` of a Task and its successor;
+`amends` a criterion of an Epic; the type of a Finding and `supersedes`
+(kept as text alone); `progress: verified` of a spike; the old id. Confirmed
+converted: `filed_during` a Task, as the work item of the Task; `about`, as a
+term added first, its name in lowercase words joined by `-`.
+
+The four rows left unknown:
+
+- `kind: issue` with no `then`: still open. `add story` and `add upkeep`
+  take the same Given / When / Then, so fgraph decides nothing. The data
+  offers the Outcome and the hypothesis alone: raw W-153 (c), created
+  2026-10-08, and W-001 to W-003 of `gflow`, created 2026-10-11 and
+  2026-10-12, hold no `then`; W-187, created 2026-11-15, holds one. W-153's
+  Then, `it prints that Decision line with its item ref`, reads as a behavior
+  not there before. The rule is the developer's.
+- no `tasks` line: settled. A removed work item with none is taken by
+  `remove` and read; a completed one with none cannot be reached by the
+  commands (`has no Task to start with`) and is read from a file.
+- `depends_on` naming a pruned work item: settled. The write refuses it
+  once the other is removed, and keeps it when written before; the read
+  takes it from a file and shows `(Removed)`. A conversion writes the
+  dependency before the removal, or writes the file.
+- the branch of a doing work item: settled for a branch named by the new
+  id. fgraph keeps no branch: it reads a started item from the worktree of a
+  branch `wi/<id>-*`, wherever that worktree is, so a branch git made, and a
+  start written by hand, were taken through to `land`. The branch of board 1
+  carries the old id, `wi/W-197-no-review-mark-is`, which matches no fgraph
+  id; it is taken only once renamed, which was not run. `start` does not
+  adopt a branch already there: it fails at `git worktree add` and leaves the
+  item started with no branch, its rerun refused `S-0004 is started
+  already`, and its Tasks then start on main.
+
+### Gaps
+
+Counted on 2026-11-23 by the board script alone: `show <id> --detail raw`
+and `show <id> --detail full` on every id of the six records that hold
+items, 4,358 ids and 8,716 calls run by `xargs -P 16`, each output saved
+once to the scratchpad of the session and counted there by a small Python
+script, a pattern per gap (a key of the frontmatter, a `## ` section, the
+prefix of a line); `knowledge --search " "` on each record for the ledgers,
+whose lines it prints with their path; `status` for the landing line. The
+ids have gaps: `~/.claude` holds no W-077 (`no item W-077 on this board`)
+and holds W-668, so its 667 work items run to W-668; the other records run
+from 001 to their totals. `raw` of T-518 of `surrogate-models`, made on the
+branch of W-197, fails (`.board/items/T-518.md not found`); its state, check
+and evidence are from `full`. The Backlog was read by `fgraph status --all`
+and `fgraph show`; B-0025 to B-0029 and S-0109, filed on main during this
+Spike, by `fgraph show` in the checkout of main. The records below: c
+`~/.claude`, cts `chaos-to-simple`, g `gflow`, st `stats`, sm
+`surrogate-models`, sv `svrf-parser`; `advent-of-code-2025` holds no item.
+A count is of items unless it says lines. Closed by names an item with the
+words of its criterion that close the gap, `part` where they close a part of
+it, or `not filed`.
+
+Held by every record that holds items:
+
+| Gap | Items that hold it | Closed by |
+|---|---|---|
+| the old id | 4,358, every item | S-0106: "fgraph show of the item lists W-0123 as its reference" |
+| the days of an item: `created`, `done.on`, `pruned.on`, `since`, the History and knowledge lines; no command takes one (Probe) | 4,358 hold `created` | part, S-0107: "every item under its kind and its bucket"; no word of a date |
+| Epic `## Hypothesis` | 108, every Epic: c 48, cts 20, g 1, st 3, sm 20, sv 16 | not filed |
+| Epic `## Outcome` | 108, every Epic | not filed |
+| a criterion naming its work item, `-> W-nnn` | 611 criteria on all 108 Epics: c 213, cts 164, g 3, st 21, sm 114, sv 96 | S-0100, from the work item: "lists the second criterion of F-0001 as the one it realizes"; S-0101: "lists its criteria as met 1 of 2" |
+| `reasoning` | 1,335, every work item | not filed |
+| `## Hypothesis` of an issue | 822, every issue: c 378, cts 156, g 3, st 26, sm 149, sv 110 | not filed |
+| the expected result of a Check, after ` -- ` or ` -> ` | 2,832 of 2,915 Tasks: c 1,281, cts 520, g 12, st 88, sm 518, sv 413 | not filed |
+| `done.evidence` beyond a bare sha | 4,046, every done item: Epics 104, work items 1,248, Tasks 2,694 | not filed |
+| the type of a Finding | 991 lines: fact 505, open 186, standing 300; g 10 | part, S-0102: "a finding is noted on it as open ... list the line with its mark"; a `fact` would be a line with no mark, whether it is live left open (S-0104, description) |
+| `supersedes:` ending a line | 593 lines: in Findings 454, Decisions 111, Deviations 28; g 3 | S-0103: "lists the first as superseded by the later" |
+| the ref of a line, `#k`, `#dk`, `#vk` | every knowledge line, 2,711: Findings 991, Decisions 1,213, Deviations 507 | not filed; S-0103 needs one, its form not stated |
+
+Held by some records:
+
+| Gap | Items that hold it | Closed by |
+|---|---|---|
+| a pruned Task, a state the read refuses | 186: c 68, cts 8, st 1, sm 77, sv 32 | part, B-0025: "each move a table lists is one fgraph makes, or the table marks it as not built" |
+| a work item that holds a pruned Task | 123: c 51, cts 7, st 1, sm 40, sv 24; of them done 74, pruned 48, doing 1 (W-197) | part, B-0025 |
+| a work item pruned after `doing` | 6: c 2, cts 1, sv 3, each holding a pruned Task | part, B-0025 |
+| the done Tasks of a pruned work item | 3 work items: c 1, sv 2 | not filed |
+| a blocked work item | 0 today; 67 `blocked` History lines on work items | part, B-0025 |
+| the successor of a pruned Task | 49: c 26, cts 4, sm 14, sv 5 | not filed |
+| an issue with no `then` | 601: c 281, cts 156, g 3, sm 90, sv 71 | not filed: its kind is a rule of the developer (Probe) |
+| spike `research_question`, `hypothesis`, `## Outcome` | 61 each, every spike: c 24, cts 4, sm 13, sv 20 | not filed |
+| bug `## Hypothesis`, `## Outcome`, `input`, `steps` | 452 each, every bug: c 265, cts 76, st 13, sm 43, sv 55 | not filed |
+| bug `technical` | 392: c 245, cts 46, st 12, sm 42, sv 47 | not filed |
+| `depends_on` of a Task | 494: c 277, cts 5, g 9, sm 138, sv 65 | not filed |
+| a knowledge section of a Task's own | 19: c 8, cts 2, g 1, sm 6, sv 2 | not filed: `fgraph note` takes a work item, so its lines move to it |
+| `filed_during` a Task | 553: c 260, cts 91, st 16, sm 112, sv 74 | not filed: the work item of the Task is kept (Probe), the Task lost |
+| `amends` a criterion of an Epic | 8: c 4, sm 4 | not filed |
+| `depends_on` of an Epic | 5: c 1, sm 4 | not filed |
+| a nested criterion `ACn.k` | 9 on E-001 and E-003 of st | not filed |
+| done with no sha in its evidence | 58: Tasks 53 (c 38, sm 15), work items 5 (c 4, sm 1) | not filed |
+| a Check in prose, no ` -- ` or ` -> ` | 83, all of c | not filed |
+| the Deviations a checkpoint moved to a ledger | 27 sections in 13 ledgers: c 5 in 4, st 1 in 1, sm 5 in 3, sv 16 in 5 | not filed |
+| the branch of the doing work item, named by its old id | 1, W-197 of sm | part, B-0027: "or leaves a way to make the branch of the started work item"; the rename not filed |
+| `depends_on` a pruned item | 39: c 14, sm 23, sv 2 | none needed: written before the removal, or by a file (Probe) |
+
+Lost by a decision taken, or of no use once converted. The decisions are
+quoted; `reading` marks a judgment of this Task, not a fact:
+
+| Gap | Items that hold it | Why |
+|---|---|---|
+| the external token, `remote:` | 614, every item of sv | decision on F-0007: "external sync is later, with no order asked"; `docs/board-review.md`, group 8, "drop for now" |
+| a `draft:` block | 0 seen | the same |
+| `pre_empted_by`, a park | 2 Epics of sm; 9 park sections in ledgers | decision on F-0007: "left out as overhead -- park" |
+| the stop of a burn Decision | 243 burn Decisions, 147 burn History lines | decision on F-0007: burn "stays in the planning skill and not in fgraph"; the line converts as text |
+| a ledger as an archive | 106: c 48, cts 20, g 1, st 3, sm 18, sv 16 | reading: a view rebuilt from the items (`docs/board-review.md`, group 7); its checkpoint Deviations are not, above |
+| `note:` and `progress: tagged` History lines | 1,133 and 348 lines | reading: git holds each write and each tag (Field map) |
+| `progress: red:` | 1,366 lines | reading: the red proof gates a close in board 1; nothing reads it of a done Task, and no Task in flight holds one |
+| `progress: structure:`, the other progress lines, `unblocked: <why>` | 654, 339 and 174 lines | reading: a story of the work, read by no gate; not filed |
+| `progress: verified:` of a spike, of an Epic | 20 and 58 lines | reading: a Spike keeps its decision and answer, and S-0101 shows a Feature met k of n; not filed as such |
+
+The configuration, the `landing:` line of Records measured against F-0012
+and `fgraph config show`:
+
+| Board 1 | Records | Closed by |
+|---|---|---|
+| `main`, no branches | cts | S-0096: "no branch and no worktree was made" |
+| `pr` | g, sv | S-0097: "its branch is pushed with a pull request opened" |
+| `branch max 1d` | all but cts | S-0098: "the line of the work item says its branch is older than 1d" |
+| `approver agent`, `approver developer` | all seven | S-0099: "it exits 2 saying the landing waits for the developer" |
+| `gate`, `lanes 3` | c, cts; c, sv | `development.gate`, `development.parallel`, kept |
+| `tag epic-close`; `tag root-close`; `tag none` | five; c; st | `delivery.tag`, `feature-close` or `none`; the tag of a standalone root, not filed |
+| `ci pipeline`, `branch ids remote` | g, sv; sv | not filed; external sync is later (F-0007) |
+
+The work in flight a conversion must carry, by the composed state of `full`:
+
+| Record | Epics | Work items | Tasks |
+|---|---|---|---|
+| c | none | 2 bugs todo, W-666 and W-668 | 2 todo |
+| st | none | 1 issue and 1 bug todo | 2 todo |
+| sm | E-019 doing, E-020 todo | W-197 doing; 13 issues, 6 bugs, 2 spikes todo | 30 todo, T-493 blocked |
+| cts, g, sv, advent-of-code-2025 | none | none | none |
+
+Two results the migration rests on, from the Probe:
+
+- By files, not by commands. No command takes a date, so every converted
+  item would carry the time of the run; with the development off a Task
+  takes no `--check`, and with it on `complete` runs the old check and
+  refuses when it fails today, and a work item reaches Completed by `land`
+  at its merge commit, not at the old sha. Files with the old times, the
+  old checks and the old shas were read with exit 0. A file must write each
+  time with its offset: a day alone ends `status` and `knowledge` in a
+  traceback (B-0026). Whether the 2,694 done Tasks would pass their checks
+  today was not counted: it means running every old check in its
+  repository.
+- States the read refuses, whatever writes them: a removed Task, a blocked
+  work item, a removed work item with `started` or a Task out of Backlog
+  (Probe); and, from the model, a completed or started work item that holds
+  a Task no state of fgraph takes (Field map, a pruned Task). Items in such
+  a state: c 119 (68 Tasks, 51 work items), cts 15 (8, 7), g 0, st 2 (1,
+  1), sm 117 (77, 40), sv 56 (32, 24), 309 in all; advent-of-code-2025 0.
+  No work item is blocked today. Only `gflow` and `advent-of-code-2025`
+  convert without a change of the model or the drop of a pruned Task.
+
+Against the passages above: the Field map rows `done.evidence` of a work
+item and of a Task, "converted: the sha", fail on the 58 done items whose
+evidence holds no sha, as T-010 of c, `scratch t010: make check exit 0, ...`;
+the row `## Check`, "converted: the command alone", cannot cut the 83 Checks
+of c in prose, as `... returns nothing`, by a rule, the pattern being a word
+of a result with no separator; the row of a nested criterion, "on no item
+read", meets 9 on E-001 and E-003 of `stats`; and the row of a Finding of a
+Task, kept on its work item, leaves out the 19 Tasks that hold a section of
+their own. Every count by kind and state agrees with Records measured.
+
+The answer to Q-0001: no. Every record that holds items holds fields fgraph
+has no place for -- the Hypothesis and Outcome of all 108 Epics, the
+`reasoning` of all 1,335 work items, the expected result of 2,832 Checks --
+and five of the six hold states the read of fgraph refuses, 309 items.
+
+The gaps split three ways; which records hold each is observed, and that a
+gap must close is the reading of the hypothesis itself, no field the
+planning skill reads lost, with F-0015's "every item kept with its state and
+its relations". The decision of what to build is the developer's.
+
+- Before any record converts, held by all six: the write path by files with
+  times (S-0107), the old id (S-0106), the criterion link (S-0100, S-0101),
+  the type of a Finding (S-0102, part) and `supersedes` (S-0103); not
+  filed: the Epic Hypothesis and Outcome, `reasoning`, the Hypothesis of an
+  issue, the expected result of a Check, the evidence beyond its sha, the
+  ref of a knowledge line.
+- For some records: the refused states, 309 items in c, cts, st, sm and sv
+  (B-0025, part); the rest of the second table, each with its records. On
+  top of the first list `gflow` holds 3 issues with no `then`, 9 Tasks with
+  `depends_on` and 1 Task with knowledge of its own, and no refused state.
+- Lost by a decision taken: the external token and `draft:` (sync later),
+  the park, the stop of a burn. Of no use once converted, a reading: the
+  ledger as a view, the `note:`, `tagged`, `red:`, `structure:`, other
+  progress and `unblocked:` History lines.
+
 ## Open questions
 
 - Must a Story under a Feature name the Feature criterion it realizes? The

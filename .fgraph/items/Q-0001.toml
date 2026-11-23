@@ -72,3 +72,8 @@ created = 2026-11-23 05:25:15+00:00
 started = 2026-11-23 05:25:39+00:00
 completed = 2026-11-23 05:26:06+00:00
 commit = "877d0aab4a5d00dcf2451d5d0ea3b45eed7a0115"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: at 7ac8023 on main, the merge of wi/Q-0001-board-1-conversion, fgraph land Q-0001 exit 0 printed landed Q-0001 at 7ac8023 and not started: S-0106 has no Task to start with; fgraph show Q-0001 lists bucket Completed, commit 7ac8023, its decision and answer no, five Tasks completed; docs/domain-model.md, From board 1, holds Records measured, Field map, Probe and Gaps; make check on main at 7f2ba24: 2783 passed, all checks passed. Each Task was worked by a subagent and its commit read by the coordinator before the next: T-0371, T-0372, T-0373 and T-0374 on opus, T-0375 on haiku. The scratch records of the Probe ran before a restart of the session wiped them; three lines were run again after it."
+noted = 2026-11-23 06:32:32+00:00

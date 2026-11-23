@@ -13,13 +13,15 @@ then = "each is started with its branch and its worktree, and a fourth start is 
 
 [[tasks]]
 id = "T-0376"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_start_feature_parallel.py, failing on the criterion of S-0111"
 description = "Run through run() of src/flowgraph/cli.py on a real git repository in tmp_path, with open_git and read_config, the identity from the environment and no git config, as tests/functional/test_parallel.py and tests/functional/test_start_next_branch.py do. One class with one fixture and one assert per test: exit and output of each start, the branch at the commit of its start, the worktree on its branch, the refusal of the fourth on its last stderr line. Seen red: today the second start is refused with F-0001 starts one work item at a time. Then marked a strict xfail naming S-0111 in pytestmark beside functional, until the Task that turns it green removes the mark. No source changes."
 check = "uv run pytest tests/functional/test_start_feature_parallel.py -q"
 expected_output = "created: tests/functional/test_start_feature_parallel.py states that in a git repository with the development on and development.parallel = 3, a Feature started with the first of its four Stories, each with a Task, takes fgraph start of the second and of the third on main, each exiting 0 and naming its branch wi/S-000N-slug checked out in its worktree; and that the start of the fourth exits 2 naming development.parallel = 3 and the three started Stories"
 created = 2026-11-23 07:16:07+00:00
 started = 2026-11-23 07:17:52+00:00
+completed = 2026-11-23 07:18:51+00:00
+commit = "57a2240"
 
 [[tasks]]
 id = "T-0377"

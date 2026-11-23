@@ -1,0 +1,11 @@
+id = "S-0133"
+state = "backlog"
+title = "Raise the completed work items of a Feature in progress fgraph status lists under it from none to every one"
+description = "Filed on the word of the developer of 2026-11-23, from the frame drawn that day. Its Tasks are written when it is ordered. Today the text lists the started work items of a Feature in progress alone; the JSON lists every one."
+parent = "F-0017"
+created = 2026-11-23 12:01:43+00:00
+
+[criterion]
+given = "a record with a started Feature of two work items, the first completed and the second started"
+when = "fgraph status is run"
+then = "the first is listed under the Feature with its Tasks completed of all and no Task below it, beside the second"

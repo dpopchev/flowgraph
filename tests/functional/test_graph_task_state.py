@@ -60,9 +60,6 @@ def fgraph(argv: list[str], cwd: Path) -> Outcome:
     return Outcome(status, "".join(out), "".join(err))
 
 
-RED = pytest.mark.xfail(strict=True, reason="B-0021: a Task node prints bucket null, with no state")
-
-
 class TestAStoryHoldingATaskInBacklogABlockedOneAStartedOneAndACompletedOne:
     @pytest.fixture
     def graph(self, tmp_path: Path) -> Outcome:
@@ -80,18 +77,14 @@ class TestAStoryHoldingATaskInBacklogABlockedOneAStartedOneAndACompletedOne:
     def test_graph_exits_with_zero(self, graph: Outcome) -> None:
         assert graph.status == 0
 
-    @RED
     def test_the_task_in_backlog_is_in_backlog(self, graph: Outcome) -> None:
         assert self.state_of(graph, "T-0001") == ("Backlog", "backlog")
 
-    @RED
     def test_the_blocked_task_is_in_progress_as_blocked(self, graph: Outcome) -> None:
         assert self.state_of(graph, "T-0002") == ("InProgress", "blocked")
 
-    @RED
     def test_the_started_task_is_in_progress_as_started(self, graph: Outcome) -> None:
         assert self.state_of(graph, "T-0003") == ("InProgress", "started")
 
-    @RED
     def test_the_completed_task_is_completed(self, graph: Outcome) -> None:
         assert self.state_of(graph, "T-0004") == ("Completed", "completed")

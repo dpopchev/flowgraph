@@ -2,12 +2,13 @@
 
 A view: it reads the record as plain data and changes nothing. A node is a Feature, a work item, a
 Task or a term, with its id, its kind, its title -- the meaning of a term -- and its bucket where
-it has one. An edge has a kind and two ends, from and to: a work item is under a Feature, a Task
-is of its work item, a work item depends on, was filed during, is superseded by or amends another,
-a term is a kind of or part of another, and a work item or a Feature is about a term. The
-knowledge lines are a list of their own. The nodes are in the order of their ids, the edges in
-the order of their kinds as listed here and then of their ends, the lines by item and time, so
-two runs on one record print the same bytes.
+it has one. A Task node also holds its state, as status writes it. An edge has a kind and two
+ends, from and to: a work item is under a Feature, a Task is of its work item, a work item
+depends on, was filed during, is superseded by or amends another, a term is a kind of or part
+of another, and a work item or a Feature is about a term. The knowledge lines are a list of
+their own. The nodes are in the order of their ids, the edges in the order of their kinds as
+listed here and then of their ends, the lines by item and time, so two runs on one record print
+the same bytes.
 """
 
 import json
@@ -19,6 +20,8 @@ from flowgraph.parent import parse_feature_id
 from flowgraph.record.store import Store
 from flowgraph.relation.depends import record_standing
 from flowgraph.status import rows_by_id, rows_under
+from flowgraph.status.text import BUCKETS
+from flowgraph.task import TaskRow
 
 # The one format of the graph, and the default.
 JSON = "json"
@@ -59,6 +62,17 @@ def _node(id_: str, kind: str, title: str, bucket: str | None = None) -> Node:
     return {"id": id_, "kind": kind, "title": title, "bucket": bucket}
 
 
+def task_node(task: TaskRow, item_state: str) -> Node:
+    """The node of a Task: the four keys of a node, then its state as status writes it.
+
+    Its bucket is the one `fgraph show` lists it in, Removed with its work item; the state tells
+    a started Task from a blocked one, both in InProgress.
+    """
+    held = "removed" if item_state == "removed" else task.state
+    bucket = next(name for name, states in BUCKETS if held in states)
+    return {**_node(task.id, "task", task.title, bucket), "state": task.state}
+
+
 def _feature_parts(store: Store) -> tuple[list[Node], list[Edge]]:
     """The node of every Feature of the record, and its edges to the terms it is about."""
     nodes: list[Node] = []
@@ -88,7 +102,7 @@ def _item_parts(store: Store) -> tuple[list[Node], list[Edge]]:
         ]
         edges += [(kind, row.id, to) for kind, to in named if to]
         for task in row.tasks:
-            nodes.append(_node(task.id, "task", task.title))
+            nodes.append(task_node(task, row.state))
             edges.append(("task of", task.id, row.id))
     return nodes, edges
 

@@ -53,3 +53,8 @@ created = 2026-11-23 13:09:15+00:00
 kind = "decision"
 text = "The developer gave the go on 2026-11-23 to the Tasks and the rulings shown that day: with delivery.push true a landing pushes main after the merge and before the write that completes, and again as its last step, two pushes of main per landing; a first push refused leaves the work item started and merged, and fgraph land run again takes it up at the commit main is on, the gate run again; the refusal that a branch brings nothing to merge goes. The developer also said that day: delegate according to the complexity to subagents -- S-0129, S-0125 and S-0140, each medium, are each handed whole to one subagent on sonnet, side by side."
 noted = 2026-11-23 13:09:42+00:00
+
+[[knowledge]]
+kind = "deviation"
+text = "The developer gave the go on 2026-11-23 to the way shown that day, which keeps every test seen red first: three tests T-0430 names as red hold today for another reason -- the first land exits 2, and after the second land the Story is Completed and its branch gone, since today the first land completes it. No test is left unmarked and none is dropped: the exit status of the first land is asserted with the end of its error output, as one pair; the bucket of the Story and its branches after the second land are each asserted with the exit status of that land, as one pair. Each pair is red today, where the second land exits 2, so the sentence of T-0430 that every test is red and carries a strict xfail holds; the file holds 14 tests in place of 15. The two facts of the second land cannot be red alone: the code of today reaches the same end by its first land."
+noted = 2026-11-23 13:59:10+00:00

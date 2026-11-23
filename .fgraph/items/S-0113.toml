@@ -27,3 +27,12 @@ description = "New src/flowgraph/work_item/agent.py: a frozen Agent(name), make_
 check = "uv run pytest tests/functional/test_start_agent.py tests/functional/test_start_agent_refused.py tests/work_item/test_work_item_agent.py tests/functional/test_command_help.py -q"
 expected_output = "changed: fgraph start of a work item, and of a Feature for its first work item, takes --agent NAME, one word of at most 32 letters, digits and . _ : / -; the started work item holds it in its file as agent, the completed one keeps it, and fgraph show lists it on a line agent; a start without --agent writes no agent and lists no line. The start is refused with exit 2 and nothing written for a Task, for a name that is no agent, and with the development off, naming development.enabled; the start a completion, a landing or an unblock makes names no agent"
 created = 2026-11-23 08:08:00+00:00
+
+[[tasks]]
+id = "T-0392"
+state = "backlog"
+title = "List the agent of a started work item in fgraph status and in its JSON"
+description = "In views.py add agent: str as field(default=empty, kw_only=True) right after started of WorkItemRow. In file.py read_work_item_rows and in work_item/commands.py work_item_row, add agent right after started. In status/text.py, only the started branch of _status_line changes. In status/document.py, _work_item gets agent: row.agent or None as its first key, before id, and one sentence in the module docstring. The worktree read in development/worktrees.py passes rows whole, so the agent of a started work item comes from its worktree with no change. New tests seen red: tests/status/text/test_status_agent.py (the line with an agent; the line under a Feature; the cut to a width keeps it; the line without one is a guard) and tests/status/test_document_agent.py (the name; null when none, red today by KeyError; inside work_items). Remove the remaining xfail marks."
+check = "uv run pytest tests/functional/test_start_agent.py tests/status/text/test_status_agent.py tests/status/test_document_agent.py -q --runxfail"
+expected_output = "changed: fgraph status lists a work item handed to an agent with [agent] between its progress and its title, in InProgress and under a started Feature, so a line cut to the width of the terminal keeps it; fgraph status --format json holds agent on every work item, the name or null, in buckets and in the work_items of a Feature; a work item without one is listed as before. No strict xfail mark is left in tests/functional/test_start_agent.py"
+created = 2026-11-23 08:08:03+00:00

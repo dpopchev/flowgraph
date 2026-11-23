@@ -45,3 +45,8 @@ description = "docs/domain-model.md: the Attributes rows of Story, Bug, Upkeep a
 check = "grep -q -- '--complexity' README.md && grep -q 'complexity' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md states in Attributes that a Story, Bug, Upkeep and Spike carry a complexity, low, medium or high, none when left out, set by fgraph add or fgraph amend in Backlog and carried by every move, any other word refused naming the three, and that which model it maps to stays outside fgraph; in Persistence, that the file holds the key complexity only when there is one; in Status as JSON, that a work item holds complexity, its word or null. README.md shows fgraph add story --complexity high, fgraph amend --complexity, the complexity line of fgraph show and the key in the JSON example"
 created = 2026-11-23 08:07:31+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer gave the go on 2026-11-23 to the Tasks and the rulings shown that day: the complexity is low, medium or high, or none when left out; every state of a work item carries it; it is set by add or by amend in Backlog alone and is not taken back to none in this Story; the JSON holds the key complexity, the word or null; the text of fgraph status does not change; neither a Feature nor a Task carries one. No complexity is set in the record of flowgraph until S-0110, S-0112 and S-0113 are landed: a worktree on older code refuses a file that holds the key."
+noted = 2026-11-23 08:08:09+00:00

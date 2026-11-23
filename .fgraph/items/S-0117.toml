@@ -54,12 +54,13 @@ commit = "6923de3"
 
 [[tasks]]
 id = "T-0410"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say fgraph goal words the /goal line of a Feature"
 description = "Find the passages by grep, never by line number. Leave the development.driver passage, Order and Persistence alone: S-0127 edits Order and the refusals of a start."
 check = "grep -q fgraph.goal README.md && grep -q ^##.Goal docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md gets a new section Goal between Brief and Terms: what is printed, which parts come from the record (the ids, development.parallel, the hours) and which are fixed text, the refusals, that fgraph never sets the goal, and the page of the documentation of Claude Code the wording follows (one measurable end state, a stated check, the constraints that matter, a bound; at most 4,000 characters). README.md gets a row in its table right after the row of the brief of a work item, and a paragraph with an example right after the fgraph brief example block"
 created = 2026-11-23 10:14:25+00:00
+started = 2026-11-23 10:23:32+00:00
 
 [[knowledge]]
 kind = "decision"

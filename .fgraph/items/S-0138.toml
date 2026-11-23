@@ -54,13 +54,15 @@ commit = "98521e4"
 
 [[tasks]]
 id = "T-0441"
-state = "started"
+state = "completed"
 title = "Take a started work item on fgraph block and fgraph unblock"
 description = "src/flowgraph/item/id.py: parse_moved_id reads a Feature id and a Task id as today, then a work item id of any kind, and refuses any other text with the line of parse_item_id; it returns ItemId | FeatureId. src/flowgraph/item/moves.py (196 lines, about 224 after): block_item and unblock_item match parse_item_id as start_item and complete_item do, a work item through work_item.block_work_item and work_item.unblock_work_item on the store, a Task as today; the output and the message are those of a Feature, by the id. src/flowgraph/feature/block.py: _feature_of gives None for a work item as for a Task; update its docstrings. src/flowgraph/parser/item_commands.py (241 lines): the summary of block and of unblock and the help of ID name the work item; keep each call on one line, as block a started work item, Task or Feature, take a blocked work item, Task or Feature back and the id of the work item, Task or Feature, so the module stays at 241. src/flowgraph/development/task_run.py: no check is run for a Task whose work item is blocked, the complete refusing it. Leave parser/command.py and parser/refusals.py alone: the dispatch and every refusal are there. Tests red first: a new tests/item/test_block_item.py on a store in memory, built as tests/feature/test_feature_remove.py builds one -- what the block and the unblock of a work item say and their messages, the blocked item saved, a Task still blocked through the Task; in tests/development/task_check a Task of a blocked work item runs no check. Existing tests that change: tests/item/test_item_id.py, where S-0001 moves from the refused texts to those read and the refusal names every kind; tests/functional/test_block_task.py, whose parameter a-work-item-id is removed, the block of S-0001 being taken now; tests/functional/test_unblock_task.py, whose a-work-item-id expects S-0001 is not blocked; tests/functional/test_block_feature.py, whose block-of-a-story-id expects no Story S-0001 in the record and whose unblock-of-no-id the line naming every kind."
 check = "uv run pytest tests/item tests/parser tests/development/task_check tests/functional/test_block_work_item.py tests/functional/test_block_task.py tests/functional/test_unblock_task.py tests/functional/test_block_feature.py tests/functional/test_unblock_feature.py -q"
 expected_output = "changed: fgraph block S-0001 --reason TEXT --waiting-on TEXT blocks a started work item of any kind, says blocked S-0001 and commits chore: block S-0001 in the record; fgraph unblock S-0001 takes it back to started, says unblocked S-0001 and commits chore: unblock S-0001 in the record; each refusal exits 2 with nothing written; a text that is no id is refused 'X-0001' is no Story, Upkeep, Bug, Spike, Task or Feature id; a Task and a Feature are blocked as before; the check of a Task of a blocked work item is not run. The xfail marks of tests/functional/test_block_work_item.py are removed from every test but those that read the text of status, the text of show and the block of the JSON"
 created = 2026-11-23 14:57:29+00:00
 started = 2026-11-23 15:23:11+00:00
+completed = 2026-11-23 15:29:02+00:00
+commit = "053db8b"
 
 [[tasks]]
 id = "T-0442"

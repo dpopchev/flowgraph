@@ -1,0 +1,11 @@
+id = "S-0135"
+state = "backlog"
+title = "Raise the lines of fgraph status that say what an item adds on a line of its own below it, under its id, from none to every one"
+description = "Filed on the word of the developer of 2026-11-23, from the frame drawn that day. Its Tasks are written when it is ordered. Today each is written after the title on the same line, after two dashes, and is cut with the line at the width of the terminal."
+parent = "F-0017"
+created = 2026-11-23 12:01:49+00:00
+
+[criterion]
+given = "a record with a blocked Feature, a removed work item with its reason and a work item of the backlog that waits for another"
+when = "fgraph status is run"
+then = "what each adds -- who it waits on and why, why it was removed, what it depends on -- is on a line of its own right below it, beginning under its id, and its own line ends with its title"

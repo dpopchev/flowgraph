@@ -21,3 +21,8 @@ noted = 2026-11-23 05:04:25+00:00
 kind = "decision"
 text = "The developer decided on 2026-11-23, after Q-0001 answered no: the projects are of no concern now and adopt the new board one by one -- first the tool is completed here, then the skills of ~/.claude are reworked, then the projects migrate one by one. The board pivots: an old board is archived and a new one started with no information lost, filed as S-0120; the conversion of every item, S-0106 and S-0107, is removed, superseded by it. The reading the developer agreed: a repository that adopts fgraph keeps its .board/ as a read-only archive and starts an empty .fgraph/ that carries its open work alone."
 noted = 2026-11-23 07:02:44+00:00
+
+[[knowledge]]
+kind = "finding"
+text = "open: the remove of a started Feature this block waits on is filed as S-0125 on 2026-11-23, on the word of the developer; F-0015 is removed with it once it lands."
+noted = 2026-11-23 07:36:50+00:00

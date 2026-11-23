@@ -9,3 +9,8 @@ created = 2026-11-23 12:01:35+00:00
 given = "a record with five items in the backlog"
 when = "fgraph status and fgraph watch --count 1 are run with no flag, then with the flag that lists the backlog whole"
 then = "with no flag each lists the first item of the backlog alone, then a line saying how many more there are and how many of them can start; with the flag each lists all five"
+
+[[knowledge]]
+kind = "decision"
+text = "The developer decided on 2026-11-23, asked before its Tasks were drafted: the whole Backlog is listed with a new flag, --backlog, which leaves the other buckets short; --all still lists every line of every bucket."
+noted = 2026-11-23 20:31:01+00:00

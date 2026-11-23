@@ -1,9 +1,11 @@
 id = "S-0119"
-state = "backlog"
+state = "started"
 title = "Raise the terms the record of flowgraph holds from none to those of its domain model"
 description = "Filed on the plan the developer agreed on 2026-11-23. Its Tasks are written when it is ordered. The criterion of the developer for the project: flowgraph tracks itself with fgraph and builds a knowledge base with an ontology that enables graph queries and planning. The ontology is built, F-0005 and F-0006, and the record of flowgraph holds none of it. Its output is the record itself; the list of terms is the Task's, from the document."
 complexity = "low"
 created = 2026-11-23 07:02:25+00:00
+started = 2026-11-23 12:05:35+00:00
+agent = "coordinator"
 
 [criterion]
 given = "the record of flowgraph, where fgraph terms prints no terms in the record"

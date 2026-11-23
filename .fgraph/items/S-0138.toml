@@ -1,11 +1,13 @@
 id = "S-0138"
-state = "started"
+state = "completed"
 title = "Raise the items fgraph block takes from a Task and a Feature to a work item too"
 description = "Filed on the word of the developer of 2026-11-23, from the frame drawn that day. Its Tasks are written when it is ordered. The words, noted on B-0025 too: blocked can be any work item, a Feature among them; I do not see how a Task can be blocked. Today fgraph block takes a Task or a Feature and refuses a work item, and the tables of docs/domain-model.md list the block of a work item among the moves. Open, for the developer: whether fgraph block stops taking a Task."
 complexity = "high"
 created = 2026-11-23 12:01:57+00:00
 started = 2026-11-23 14:58:25+00:00
+completed = 2026-11-23 15:54:35+00:00
 agent = "opus"
+commit = "1e65ca2"
 depends_on = [
     "S-0125",
     "S-0140",

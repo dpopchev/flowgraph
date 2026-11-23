@@ -3,6 +3,7 @@ state = "backlog"
 title = "Raise the started work items a coordinator hands to an agent after their start from none to every one"
 description = "Filed on the go of the developer of 2026-11-23, from the plan of the Story it depends on. Its Tasks are written when it is ordered. The start a completion, a landing or an unblock makes names no agent, and S-0113 names one at fgraph start alone; a coordinator also hands a work item to another agent after a refuted hand-back. The name of the command is the Task's; the file of a started work item is written in its worktree. Open: whether the agents a work item held before are kept."
 parent = "F-0016"
+complexity = "medium"
 created = 2026-11-23 08:08:21+00:00
 depends_on = [
     "S-0113",

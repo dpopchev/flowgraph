@@ -19,3 +19,8 @@ criteria = [
 kind = "decision"
 text = "The developer decided on 2026-11-23, on the plan agreed that day: an agent is handed the whole work item, not the Task; the coordinator reads fgraph, reviews and keeps the Backlog, and the subagents are short-lived; development.parallel, set to 3 in this record, is how many work items that are no Feature are worked at once. Two readings agreed with the plan: the Tasks of a work item are still written when it is planned, and the agent runs all of them and may add its own; work items of one Feature start side by side, which replaces the decision of 2026-11-21 that a Feature starts them one by one. Agent-driven development always starts with a /goal the developer initiates, worded by fgraph for the scope of the Backlog to implement, under a key of the configuration so a developer who works by hand meets none of it."
 noted = 2026-11-23 07:02:47+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer ruled on 2026-11-23: a work item in progress, and what relates to it, is changed only after the developer agrees; and the work always reduces scope creep. The reading of the coordinator: no Task, criterion or scope of a started work item is added or altered, and no work item is added to it, on the word of an agent alone; a subagent that needs a file its Tasks do not name stops and says so. The same day development.parallel was set to 5 in this record, and the coordinator maps a complexity to a model as low haiku, medium sonnet, high opus, one model up after a refuted hand-back."
+noted = 2026-11-23 09:12:20+00:00

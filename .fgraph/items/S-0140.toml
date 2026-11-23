@@ -50,13 +50,15 @@ commit = "c12dfdaf2a2d7c774fdf5c5bd1fef6f2c756ee84"
 
 [[tasks]]
 id = "T-0433"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a landing pushes main before it completes the work item, and is taken up again when its branch is merged already"
 description = "Find the passages by grep, not by line number. In README.md: the paragraph starting `push` is `true` or `false`, the paragraph starting A push git refuses with its example block, and the paragraph starting A landing merges into a checkout of `main` that holds no merge of its own with the second line of its example block; keep the example line of the push on one line of its block. In docs/domain-model.md: the bullets starting `[delivery] push` pushes `main` at a landing, With `[delivery] push = true` the push of `main` is the last step, A push git refuses, and A landing is refused, with nothing merged. Keep each edit inside its paragraph. Do not touch the passages on delivery.tag and on fgraph release, which say the tag follows the push as it still does: S-0123 edits them. Do not touch the table of keys or the passage on the gate. No source or test changes."
 check = "grep -q \"is merged at 3e9ae5c and not completed -- run fgraph land S-0001 again\" README.md && grep -q \"and not completed\" docs/domain-model.md && ! grep -q \"brings nothing to merge\" README.md"
 expected_output = "changed: README.md, the passage on delivery.push: main is pushed after the merge and before the write that completes, and again as the last step; a push refused leaves the Story started and merged, with the line ... -- main is not pushed -- S-0001 is merged at 3e9ae5c and not completed -- run fgraph land S-0001 again in place of the line that ends is landed at 3e9ae5c, main is not pushed; the passage on a branch that brings no commit main lacks says the landing is taken up at the commit main is on, and its example line brings nothing to merge is gone. docs/domain-model.md, Persistence: the bullets on the push say the same, with what the last push refused still says; the bullet on what a landing refuses with nothing merged loses the branch that brings nothing; a new bullet says how a landing is taken up, by each way of merging, that the gate runs again on the tree of main, and that a fast-forward taken up after main moved on is refused"
 created = 2026-11-23 13:09:15+00:00
 started = 2026-11-23 14:13:47+00:00
+completed = 2026-11-23 14:14:30+00:00
+commit = "f5d7a64ecbedc78610e70bfb2c60a49055ff644a"
 
 [[knowledge]]
 kind = "decision"

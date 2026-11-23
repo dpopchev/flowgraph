@@ -67,12 +67,13 @@ commit = "9d43f3e3337d79d83d56e919da06c4686daf233c"
 
 [[tasks]]
 id = "T-0405"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say fgraph brief prints the brief of a work item, as text and as JSON"
 description = "Find the passages by grep, not by line number: S-0114 and S-0115 land in between. Touch no other section. S-0114 edits Order and Status as JSON, and S-0115 edits the development in Persistence and the configuration in README."
 check = "grep -q fgraph.brief README.md && grep -q governed_by docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md holds a new section Brief between About and Terms. It states which work items brief takes and in what states; the text form (the show text, then Worktree, Feature, Governed by and Terms, each left out when empty); how a governed path is matched in a Task; the JSON keys as a contract (sorted, null for nothing, the same bytes on two runs); and the refusals. README.md adds a row after the links of an item in the table, and a paragraph with an example after the about-of-a-file examples"
 created = 2026-11-23 09:11:48+00:00
+started = 2026-11-23 09:26:49+00:00
 
 [[knowledge]]
 kind = "decision"

@@ -37,13 +37,15 @@ commit = "969a2ca"
 
 [[tasks]]
 id = "T-0378"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a Feature starts its work items side by side up to development.parallel"
 description = "The passages of docs/domain-model.md, by their lines on main at the plan: 1094-1106 (the principle: one is started at a time), 1128-1139 (the rule and Both rules), 1140-1150 (the same rules, the one at a time), 1161-1171 (the not started case beside another started work item), 1232-1233 (its started one goes on), 1247-1257 (the unblock, reason only), 1314-1323 (the one at a time and parallel both hold), and 1459-1471 if it needs rewording. In README.md: lines 1668-1669, 1712-1713, 1930-1946 and 1961. Keep the historical quotes of 2026-11-21 as history and add the replacement."
 check = "! grep -q 'one work item at a time' README.md docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md states that work items of a started Feature start side by side, limited by development.parallel alone, that a completion starts the next beside those started, and that this replaces the decision of 2026-11-21 on the word of 2026-11-23; README.md shows fgraph start of a second Story of a started Feature succeeding with its branch, and the refusal under development.parallel"
 created = 2026-11-23 07:16:11+00:00
 started = 2026-11-23 07:20:55+00:00
+completed = 2026-11-23 07:21:42+00:00
+commit = "63ba48e"
 
 [[knowledge]]
 kind = "decision"

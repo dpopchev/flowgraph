@@ -1,0 +1,10 @@
+id = "S-0147"
+state = "backlog"
+title = "Raise the items fgraph remove takes from a work item in Backlog and a Feature to a Task too"
+description = "Filed on the word of the developer of 2026-11-23, picked from the map made that day of what the skills and rules of ~/.claude ask of board 1 that fgraph does not do and no Backlog item builds, so that those skills can call fgraph in its place. In board 1: the prune of a Task, board move T pruned with its reason. Its Tasks are written when it is ordered."
+created = 2026-11-23 20:39:05+00:00
+
+[criterion]
+given = "a started work item that holds a Task in Backlog and a started Task"
+when = "fgraph remove of each Task is run with a reason"
+then = "each Task is kept as removed with its reason, counts in no progress of its work item and is no Task left to complete before its work item lands"

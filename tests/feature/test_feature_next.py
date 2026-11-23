@@ -168,6 +168,19 @@ def test_the_next_work_item_is_the_first_in_backlog_in_the_order_of_the_queue() 
     assert written.out == f"{COMPLETED_ALONE}started S-0003\n"
 
 
+def test_the_next_work_item_is_started_beside_a_started_one_of_its_feature() -> None:
+    written, _ = complete([ready(1), story(2), started(3)])
+    assert written.out == f"{COMPLETED_ALONE}started S-0002\n"
+
+
+def test_the_next_work_item_is_saved_started_beside_a_started_one_of_its_feature() -> None:
+    _, saved = complete([ready(1), story(2), started(3)])
+    assert saved == [
+        completed_work_item(ready(1), NOW, COMMIT),
+        started_work_item(story(2), NOW),
+    ]
+
+
 NOT_STARTED = [
     ([ready(1), story(2, tasks=0)], UNLIMITED, (), "S-0002 has no Task to start with"),
     (
@@ -175,12 +188,6 @@ NOT_STARTED = [
         ONE_AT_ONCE,
         (),
         "S-0002 cannot start: development.parallel = 1, started already: S-0003",
-    ),
-    (
-        [ready(1), story(2), started(3)],
-        UNLIMITED,
-        (),
-        "S-0002 cannot start: F-0001 starts one work item at a time, started already: S-0003",
     ),
     ([ready(1), story(2)], UNLIMITED, (S2,), "S-0002 is not written here"),
     (
@@ -193,7 +200,6 @@ NOT_STARTED = [
 WHY_NOT = [
     "without-a-task",
     "beside-as-many-as-parallel-starts",
-    "beside-a-started-one-of-its-feature",
     "out-of-the-scope-of-the-branch",
     "a-title-that-gives-no-slug",
 ]

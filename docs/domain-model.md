@@ -1112,6 +1112,14 @@ and its merge tool.
   it cannot start without one, its work item cannot start before it, one is
   started at a time, the completed ones stay inside it and are counted, it
   completes with the last, and a blocked one marks it.
+- The work items of a started Feature start side by side, limited by
+  `[development] parallel` alone, what the work item depends on, its Task and
+  its slug: no Feature holds one started at a time. This replaces the
+  decision of 2026-11-21 that a Feature starts its work items one by one, on
+  the developer's word of 2026-11-23 (S-0111). The completion of a work item
+  still starts the next one of its Feature, now beside those still started,
+  and the start of a Feature still starts one work item. The passages below
+  that say one at a time are the history of that decision.
 - `fgraph start F-0001` starts the Feature and its first work item with it,
   in one write and one commit, `chore: start F-0001 in the record`, and says
   `started F-0001 with S-0001`. The first work item is the first of its work
@@ -1133,29 +1141,32 @@ and its merge tool.
   the Feature, `S-0001 cannot start: F-0001 is not started, start it first`.
   The alternative, that the start of a child starts its Feature, was shown
   with the plan and not taken.
-- One work item of a Feature is started at a time: the start of a work item
-  of a started Feature beside another started work item of it is refused
-  naming that one, `S-0002 cannot start: F-0001 starts one work item at a
-  time, started already: S-0001`. With none started it starts: `fgraph
-  start` of it is for the one the completion of the one before left in
-  Backlog (below).
-- Both rules are asked at the start of a work item in Backlog and nowhere
-  else: no Task write asks them, and a completion asks them of the next work
-  item it starts alone (below), never of the one it completes. So a work
-  item started under a Feature that was never started, as in a record whose
-  work items were started one by one before a Feature had a state, is worked
-  and completed as before.
+- The work items of a started Feature start side by side: the start of a
+  work item of a started Feature beside another started work item of it
+  passes, and `fgraph start` of it is for the one the completion of one
+  before left in Backlog (below) as for any other. What refuses it is
+  `[development] parallel`, a dependency not completed, a missing Task and a
+  title that gives no slug.
+- The rule that the Feature is started is asked at the start of a work item
+  in Backlog and nowhere else: no Task write asks it, and a completion asks
+  it of the next work item it starts alone (below), never of the one it
+  completes. So a work item started under a Feature that was never started,
+  as in a record whose work items were started one by one before a Feature
+  had a state, is worked and completed as before.
 - The Feature starts its work items, the reading of S-0053 as written: the
   completion of a work item under a `StartedFeature` -- by `fgraph complete`
   or by `fgraph land` -- starts the next work item of the Feature in the same
   write. The next one is the first of its work items in Backlog in the order
-  they start in (Order), the one `fgraph start F-0001` would start. It is
-  started as `fgraph start` of it starts it, by the same rules: the one at a
-  time of its Feature, `[development] parallel`, a Task to start with, and a
+  they start in (Order), the one `fgraph start F-0001` would start, and it
+  starts beside the work items of the Feature still started. It is
+  started as `fgraph start` of it starts it, by the same rules:
+  `[development] parallel`, a Task to start with, and a
   branch named by the slug of its title; no `--slug` names it. The
   alternative, that the developer starts each work item with `fgraph start`,
   was shown with the plan and not taken: by the developer's words of
-  2026-11-21 starting a Feature starts its work items one by one.
+  2026-11-21 starting a Feature starts its work items one by one. The
+  developer's word of 2026-11-23 kept the completion's start; that the
+  coordinator starts each work item is a Story of its own, later.
 - The completion names the start on a line of its own after its own,
   `completed S-0001 at 677f9b0` then `started S-0002`, and the one commit of
   the record holds the two files, worded `chore: complete S-0001 and start
@@ -1172,10 +1183,7 @@ and its merge tool.
   line after it says `not started:` and the refusal of that start. One
   without a Task: `not started: S-0002 has no Task to start with`. One
   `[development] parallel` refuses: `not started: S-0002 cannot start:
-  development.parallel = 1, started already: S-0003`. One beside another
-  started work item of its Feature, as in a record whose work items were
-  started before their Feature was: `not started: S-0002 cannot start: F-0001
-  starts one work item at a time, started already: S-0003`. One whose title
+  development.parallel = 1, started already: S-0003`. One whose title
   gives no slug. One under a blocked Feature (below).
   `fgraph start S-0002` on `main` starts it once the refusal is gone.
 - A completion starts no work item when the Feature holds none in Backlog --
@@ -1252,9 +1260,9 @@ and its merge tool.
   alternative, that every write under a blocked Feature is refused, the
   Tasks of its started work item among them, was shown with the plan of
   S-0056 and not taken.
-- The unblock of a Feature starts its next work item when none of it is
-  started, as the completion of one does (above): the first of its work
-  items in Backlog in the order they start in, by the same rules. It says
+- The unblock of a Feature starts its next work item only when none of it is
+  started: the first of its work items in Backlog in the order they start
+  in, by the same rules as the start the completion of one makes (above). It says
   `unblocked F-0001` then `started S-0002`, the one commit holds the two
   files, worded `chore: unblock F-0001 and start S-0002 in the record`, and
   with the development on the branch of that work item is checked out in
@@ -1319,10 +1327,11 @@ and its merge tool.
   work item writes that work item alone, and the Feature keeps the bucket its
   work items derive, Completed, with no commit. So a record whose Features
   were worked before a Feature had a state lists them as it did.
-- The one at a time of a Feature and `[development] parallel` both hold,
-  decided when S-0052 was ordered: a Feature starts one work item at a time,
-  and `parallel` counts every started work item of the record, those of a
-  Feature among them. The start of a Feature starts one work item, so
+- `[development] parallel` alone limits the work items of a Feature started
+  at once, replacing what was decided when S-0052 was ordered, that a Feature
+  starts its work items one by one: `parallel` counts every started work item
+  of the record, those of a Feature among them, and with it left out nothing
+  limits them. The start of a Feature starts one work item, so
   `parallel` refuses it as it refuses that one, naming the Feature: `F-0001
   cannot start: development.parallel = 1, started already: S-0002`. It is
   asked once the Feature is known to start, so a Feature started already, or

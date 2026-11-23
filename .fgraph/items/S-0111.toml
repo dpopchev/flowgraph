@@ -13,30 +13,39 @@ then = "each is started with its branch and its worktree, and a fourth start is 
 
 [[tasks]]
 id = "T-0376"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_start_feature_parallel.py, failing on the criterion of S-0111"
 description = "Run through run() of src/flowgraph/cli.py on a real git repository in tmp_path, with open_git and read_config, the identity from the environment and no git config, as tests/functional/test_parallel.py and tests/functional/test_start_next_branch.py do. One class with one fixture and one assert per test: exit and output of each start, the branch at the commit of its start, the worktree on its branch, the refusal of the fourth on its last stderr line. Seen red: today the second start is refused with F-0001 starts one work item at a time. Then marked a strict xfail naming S-0111 in pytestmark beside functional, until the Task that turns it green removes the mark. No source changes."
 check = "uv run pytest tests/functional/test_start_feature_parallel.py -q"
 expected_output = "created: tests/functional/test_start_feature_parallel.py states that in a git repository with the development on and development.parallel = 3, a Feature started with the first of its four Stories, each with a Task, takes fgraph start of the second and of the third on main, each exiting 0 and naming its branch wi/S-000N-slug checked out in its worktree; and that the start of the fourth exits 2 naming development.parallel = 3 and the three started Stories"
 created = 2026-11-23 07:16:07+00:00
+started = 2026-11-23 07:17:52+00:00
+completed = 2026-11-23 07:18:51+00:00
+commit = "57a2240"
 
 [[tasks]]
 id = "T-0377"
-state = "backlog"
+state = "completed"
 title = "Start work items of a started Feature side by side, limited by development.parallel alone"
 description = "Removes the xfail mark of tests/functional/test_start_feature_parallel.py. In src/flowgraph/feature/start.py drop the StartedFeature started-already branch of check_start_under_feature and the class WorkItemInProgressError, and reword the module docstring and the function docstring. Remove that class from NOT_STARTED and the imports in src/flowgraph/feature/next.py and from src/flowgraph/parser/refusals.py. Reword the docstrings in src/flowgraph/feature/next.py, src/flowgraph/feature/block.py (_next_of keeps its behavior; only its reason changes) and src/flowgraph/feature/state.py line 41. Tests change red first: in tests/feature/test_feature_start.py the refusal beside a started one of its Feature becomes a test that it passes; in tests/feature/test_feature_next.py drop the case beside-a-started-one-of-its-feature from NOT_STARTED and add a test that the completion starts the next beside a started one of its Feature; in tests/functional/test_start_feature.py drop the case a-story-beside-a-started-one-of-its-feature and reword the module docstring. Unchanged: the Feature start starts one work item, parallel counts every started work item of the record, and the refusals for blocked, not started, completed and removed Features stay."
 check = "uv run pytest tests/functional/test_start_feature_parallel.py tests/functional/test_start_feature.py tests/feature/test_feature_start.py tests/feature/test_feature_next.py -q --runxfail"
 expected_output = "changed: fgraph start of a work item in Backlog under a started Feature is no longer refused because another of it is started; only development.parallel, what it depends on, its Task and its slug refuse it. The completion of a work item under a started Feature still starts the first in Backlog of it beside the started ones, by the same rules. The unblock of a Feature still starts one only when none of it is started. WorkItemInProgressError and the message starts one work item at a time are gone from src"
 created = 2026-11-23 07:16:09+00:00
+started = 2026-11-23 07:18:53+00:00
+completed = 2026-11-23 07:20:52+00:00
+commit = "969a2ca"
 
 [[tasks]]
 id = "T-0378"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a Feature starts its work items side by side up to development.parallel"
 description = "The passages of docs/domain-model.md, by their lines on main at the plan: 1094-1106 (the principle: one is started at a time), 1128-1139 (the rule and Both rules), 1140-1150 (the same rules, the one at a time), 1161-1171 (the not started case beside another started work item), 1232-1233 (its started one goes on), 1247-1257 (the unblock, reason only), 1314-1323 (the one at a time and parallel both hold), and 1459-1471 if it needs rewording. In README.md: lines 1668-1669, 1712-1713, 1930-1946 and 1961. Keep the historical quotes of 2026-11-21 as history and add the replacement."
 check = "! grep -q 'one work item at a time' README.md docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md states that work items of a started Feature start side by side, limited by development.parallel alone, that a completion starts the next beside those started, and that this replaces the decision of 2026-11-21 on the word of 2026-11-23; README.md shows fgraph start of a second Story of a started Feature succeeding with its branch, and the refusal under development.parallel"
 created = 2026-11-23 07:16:11+00:00
+started = 2026-11-23 07:20:55+00:00
+completed = 2026-11-23 07:21:42+00:00
+commit = "63ba48e"
 
 [[knowledge]]
 kind = "decision"

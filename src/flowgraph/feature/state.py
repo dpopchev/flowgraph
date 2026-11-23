@@ -38,7 +38,7 @@ class Feature:
 
 @dataclass(frozen=True)
 class StartedFeature:
-    """A Feature in InProgress: started, its work items started one at a time."""
+    """A Feature in InProgress: started, its work items started side by side."""
 
     id: FeatureId
     title: str

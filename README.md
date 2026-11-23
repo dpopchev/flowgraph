@@ -1610,8 +1610,9 @@ fgraph start F-0001
 
 A Feature is to its work items what a work item is to its Tasks, the
 principle the developer's words of 2026-11-21 were filed under (F-0002): it
-does not start without one, its work item does not start before it, and one
-of them is started at a time. The first work item is the first of its work
+does not start without one, and its work item does not start before it. Its
+work items start side by side, as many as `[development] parallel` allows
+(below), which replaces the one-by-one start of the same decision. The first work item is the first of its work
 items in Backlog in the order they start in, the one `fgraph reorder` gives
 them (below); a Feature that already holds completed work items starts with
 the next one. The Feature and that work item are started in one write and one
@@ -1674,7 +1675,7 @@ on is what the cut takes first. A Feature is blocked itself with `fgraph
 block` too (below); blocking a work item is not built.
 
 The completion of a work item of a started Feature starts the next one, in
-the same write: a Feature starts its work items one by one. The next one is
+the same write, beside those of the Feature still started. The next one is
 the first of its work items in Backlog in the order they start in, the one
 `fgraph reorder` gives them (below). Here F-0001 holds S-0001, started, and
 S-0003, a second Story under it, in Backlog:
@@ -1717,9 +1718,6 @@ and the refusal of that start:
 - when it has no Task: `not started: S-0003 has no Task to start with`;
 - when `[development] parallel` refuses one more started work item:
   `not started: S-0003 cannot start: development.parallel = 1, started already: S-0002`;
-- when another work item of the Feature is started, as one started before
-  its Feature was: `not started: S-0003 cannot start: F-0001 starts one work
-  item at a time, started already: S-0004`;
 - when its title gives no slug to name its branch.
 
 `fgraph start S-0003`, on main, starts it once what refused it is gone. A
@@ -1933,24 +1931,31 @@ branch made:
 - when `[development] parallel` refuses one more started work item:
   `F-0001 cannot start: development.parallel = 1, started already: S-0002`.
 
-A work item does not start before its Feature, and one work item of a Feature
-is started at a time. `fgraph start` of a work item in Backlog under a
-Feature exits 2 naming the Feature while the Feature is not started, and
-naming the started work item of the Feature while one is -- here S-0003, a
-second Story under F-0001:
+A work item does not start before its Feature. `fgraph start` of a work item
+in Backlog under a Feature exits 2 naming the Feature while the Feature is
+not started. Once it is, the work items of the Feature start side by side:
+`fgraph start` of a second Story, S-0002, under the started F-0001 succeeds
+and names its branch, and with `[development] parallel = 2` the start of a
+third, S-0003, is refused naming the key and the started work items:
 
 ```sh
 fgraph start S-0001
 # fgraph: error: S-0001 cannot start: F-0001 is not started, start it first
 
+fgraph start S-0002
+# started S-0002
+# branch wi/S-0002-<slug> in <path>
+
 fgraph start S-0003
-# fgraph: error: S-0003 cannot start: F-0001 starts one work item at a time, started already: S-0001
+# fgraph: error: S-0003 cannot start: development.parallel = 2, started already: S-0001, S-0002
 ```
 
-The completion of S-0001 starts S-0003 by itself (above); `fgraph start
-S-0003` is for the one a completion left in Backlog. The one at a time of a
-Feature and `parallel` both hold, for the start a completion makes too: a Feature starts one work item at a time, and `parallel` counts every
-started work item of the record, those under a Feature among them.
+The completion of S-0001 starts the next one by itself (above), beside those
+still started; `fgraph start S-0003` is for the one a completion left in
+Backlog. `parallel` alone limits them, for the start a completion makes too,
+and counts every started work item of the record, those under a Feature
+among them; left out, nothing limits them. The unblock of a Feature starts a
+work item only when none of it is started.
 
 A Feature file without a state line reads as a Feature in Backlog: every
 Feature written before it had a state is such a file. `fgraph status` and
@@ -1968,7 +1973,9 @@ Feature has no state and that its bucket is derived from its work items. The
 developer's words of the same day reversed it: starting a Feature starts its
 work items one by one, in separate branches when git is used for the
 development; they are completed but all stay in progress, and the Feature
-moves to Completed when all are.
+moves to Completed when all are. The developer's word of 2026-11-23 replaced
+the one-by-one start: the work items of a started Feature start side by side,
+limited by `[development] parallel` alone.
 
 This reverses the developer's decision of 2026-11-21 that listed the Features
 in a block of their own above the buckets, under a heading `Features`, each

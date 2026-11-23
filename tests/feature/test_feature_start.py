@@ -20,7 +20,6 @@ from flowgraph.feature import (
 from flowgraph.feature.start import (
     FeatureNotStartedError,
     NoWorkItemError,
-    WorkItemInProgressError,
     check_start_under_feature,
     start_feature_item,
 )
@@ -268,15 +267,8 @@ def test_a_work_item_started_before_its_feature_is_refused_naming_the_feature() 
         check_start_under_feature("S-0001", store([story(1), story(2)]))
 
 
-def test_a_work_item_started_beside_a_started_one_of_its_feature_is_refused_naming_that_one() -> (
-    None
-):
-    with pytest.raises(
-        WorkItemInProgressError,
-        match=r"^S-0002 cannot start: F-0001 starts one work item at a time,"
-        r" started already: S-0001$",
-    ):
-        check_start_under_feature("S-0002", store([started(1), story(2)], STARTED))
+def test_a_work_item_started_beside_a_started_one_of_its_feature_passes() -> None:
+    assert check_start_under_feature("S-0002", store([started(1), story(2)], STARTED)) is None
 
 
 def test_a_work_item_started_under_a_completed_feature_is_refused_naming_the_feature() -> None:

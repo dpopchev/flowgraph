@@ -16,7 +16,7 @@ from flowgraph.development.version import VersionError
 from flowgraph.development.way import LandError
 from flowgraph.feature import FeatureFileError, FeatureNotFoundError, NoCriterionError
 from flowgraph.feature.item import OpenWorkItemError
-from flowgraph.feature.start import FeatureNotStartedError, NoWorkItemError, WorkItemInProgressError
+from flowgraph.feature.start import FeatureNotStartedError, NoWorkItemError
 from flowgraph.graph import FormatError
 from flowgraph.item.commands import ItemIdError
 from flowgraph.knowledge.list import KindListedError
@@ -74,7 +74,6 @@ REFUSED = (
     NoCriterionError,
     NoWorkItemError,
     FeatureNotStartedError,
-    WorkItemInProgressError,
     SlugError,
     GitError,
     LandError,

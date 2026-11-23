@@ -61,7 +61,7 @@ def _next_of(feature_id: FeatureId, store: Store) -> WorkItemId | None:
     """The work item the unblock of the Feature starts; None when it starts none.
 
     It is its first work item in Backlog in the order of the queue, unless one of it is started:
-    a Feature holds one started at a time.
+    the unblock restarts a Feature that holds work, and starts one only when none is.
     """
     named = feature_id_text(feature_id)
     under = (row for row in rows_by_id(store).values() if row.parent == named)

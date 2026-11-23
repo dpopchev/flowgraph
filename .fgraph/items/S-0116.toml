@@ -3,6 +3,7 @@ state = "backlog"
 title = "Raise the parts of a work item one command prints as the brief of an agent from none to every one it works from"
 description = "Filed on the plan the developer agreed on 2026-11-23. Its Tasks are written when it is ordered. It is the input a coordinator hands a subagent with the whole work item; the name of the command is the Task's."
 parent = "F-0016"
+complexity = "medium"
 created = 2026-11-23 07:02:19+00:00
 depends_on = [
     "S-0112",

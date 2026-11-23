@@ -12,6 +12,11 @@ depends_on = [
     "S-0127",
 ]
 
+[verified]
+answer = "yes"
+text = "at c865842 on main, in a scratch git repository with the development on, driver agent and parallel left out, S-0001 with a Task and the complexity low and S-0002 with a Task and none: fgraph status exit 0 marked > S-0001 and not S-0002; fgraph status --format json held can_start S-0001 and next_to_start S-0001; fgraph start S-0002 exit 2 with S-0002 has no complexity to start with: set it with fgraph amend S-0002 --complexity low, medium or high; fgraph start S-0001 exit 0 printed started S-0001 and its branch; with the driver set to developer status marked > S-0002, can_start held S-0002 and fgraph start S-0002 exit 0; make check on main at ba1504d: 3269 passed, all checks passed. Worked whole by one subagent on sonnet from fgraph brief; its diff held the files its six Tasks name alone; it wrote one test file and one source change with a python heredoc, against the rule of Edit and Write alone, and saw the 12 unit tests of development/driver.py fail at the import only, not one by one; a second commit of T-0423 sorts an import the first left unsorted."
+on = 2026-11-23 13:33:57+00:00
+
 [criterion]
 given = "a record with the development on and development.driver set to agent, and two work items in Backlog that each hold a Task and wait for nothing, the first with a complexity and the second with none"
 when = "fgraph status is run, as text and as JSON, and fgraph start of each is run"

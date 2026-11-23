@@ -42,3 +42,8 @@ created = 2026-11-23 09:11:05+00:00
 kind = "decision"
 text = "The developer ruled on 2026-11-23: the complexity matters when the development is driven by an agent, so the coordinator can evaluate a work item and use the proper model for it. So with the key set to an agent, a work item is planned only once its complexity is set, beside its Tasks (S-0127); with the key left out no command asks for one. Which model a complexity maps to stays outside fgraph, with the coordinator."
 noted = 2026-11-23 08:56:03+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer gave the go on 2026-11-23 to the Tasks and the rulings shown that day: the key is development.driver, developer by default or agent; it is held as written with the development off; nothing reads it in this Story -- S-0127 and S-0117 are its first readers. It is not set in the record of flowgraph before this Story is landed: a table of the configuration is read strictly."
+noted = 2026-11-23 09:12:15+00:00

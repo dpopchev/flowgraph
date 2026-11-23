@@ -1,3 +1,6 @@
 name = "bug"
 meaning = "A work item for a behavior that fails, completed when the fixed behavior is on main."
 added = 2026-11-23 12:06:07.823158+00:00
+is_a = [
+    "work-item",
+]

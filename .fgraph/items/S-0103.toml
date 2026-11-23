@@ -3,7 +3,11 @@ state = "backlog"
 title = "Raise the knowledge lines a later line supersedes from none to every one it names"
 description = "Its Tasks are written when it is ordered."
 parent = "F-0014"
+complexity = "high"
 created = 2026-11-22 21:04:01+00:00
+depends_on = [
+    "S-0102",
+]
 
 [criterion]
 given = "a Story with a decision noted on it"

@@ -36,3 +36,8 @@ description = "The passages of docs/domain-model.md, by their lines on main at t
 check = "! grep -q 'one work item at a time' README.md docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md states that work items of a started Feature start side by side, limited by development.parallel alone, that a completion starts the next beside those started, and that this replaces the decision of 2026-11-21 on the word of 2026-11-23; README.md shows fgraph start of a second Story of a started Feature succeeding with its branch, and the refusal under development.parallel"
 created = 2026-11-23 07:16:11+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer gave the go on 2026-11-23 to the Tasks and the rulings shown that day: the completion of a work item under a started Feature still starts the next one of it, beside those started -- that the coordinator starts each is a Story of its own, later, once the list of what can start exists; and with development.parallel left out nothing limits the starts side by side."
+noted = 2026-11-23 07:16:35+00:00

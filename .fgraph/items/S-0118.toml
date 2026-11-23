@@ -26,3 +26,12 @@ description = "The one seat is the shell. Do not make parse_work_item_id, parse_
 check = "! grep -q xfail tests/functional/test_id_spellings.py && uv run pytest tests/functional/test_id_spellings.py tests/item/test_id_spelled.py tests/parser/test_ids_read.py -q"
 expected_output = "changed: src/flowgraph/item/id.py gains id_spelled, which gives the canonical id of a text that is a prefix letter of a kind in any case, an optional dash and a number of 1 or more, and gives any other text unchanged; created: src/flowgraph/parser/ids.py with ids_read, which rewrites the id, before, parent, depends_on, filed_during, amends and superseded_by of the parsed arguments; changed: src/flowgraph/cli.py reads the arguments through it; the xfail mark of tests/functional/test_id_spellings.py is removed"
 created = 2026-11-23 07:16:32+00:00
+
+[[tasks]]
+id = "T-0381"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say an id is read in any case, without its dash and its leading zeros"
+description = "In docs/domain-model.md, by its lines on main at the plan: the Ids section starts at line 880, the passage on wrong ids is at lines 1054-1066, and the term name rule is at lines 686-689. Every refusal wording quoted there stays as it is. README.md is about 109 KB: grep it and do not read it whole."
+check = "grep -q 'fgraph show f15' README.md && grep -q 'leading zeros' docs/domain-model.md"
+expected_output = "changed: README.md shows fgraph show f15 showing F-0015 in the section Use; docs/domain-model.md says in its section Ids that a command reads an id in any case, its dash and leading zeros left out, that fgraph writes and prints the canonical form and reads the files of the record in it alone, and in its section Terms that a term named as such a spelling is shadowed by the id"
+created = 2026-11-23 07:16:33+00:00

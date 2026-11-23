@@ -12,3 +12,8 @@ depends_on = [
 given = "a record with a work item in Backlog that holds no Task, a Feature that holds no work item, a Feature whose second work item holds no Task, and a work item and a Feature planned whole, none waiting for another"
 when = "fgraph status is run, as text and as JSON, and fgraph start of each is run"
 then = "status marks the two planned whole as able to start and no other, and fgraph start refuses each of the three others naming what it lacks"
+
+[[knowledge]]
+kind = "decision"
+text = "The developer ruled on 2026-11-23: a Backlog item is pulled only when it is planned -- a Feature has work items, a work item has Tasks, and so every work item of a Feature has its Tasks. S-0127 was amended that day to hold the whole rule."
+noted = 2026-11-23 08:54:02+00:00

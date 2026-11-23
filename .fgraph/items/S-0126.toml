@@ -1,0 +1,14 @@
+id = "S-0126"
+state = "backlog"
+title = "Raise the started work items a coordinator hands to an agent after their start from none to every one"
+description = "Filed on the go of the developer of 2026-11-23, from the plan of the Story it depends on. Its Tasks are written when it is ordered. The start a completion, a landing or an unblock makes names no agent, and S-0113 names one at fgraph start alone; a coordinator also hands a work item to another agent after a refuted hand-back. The name of the command is the Task's; the file of a started work item is written in its worktree. Open: whether the agents a work item held before are kept."
+parent = "F-0016"
+created = 2026-11-23 08:08:21+00:00
+depends_on = [
+    "S-0113",
+]
+
+[criterion]
+given = "a record with the development on and two started work items, one that names no agent, started by the completion of another, and one that names an agent"
+when = "each is handed to an agent named, by one command"
+then = "fgraph status lists the new agent beside each, and fgraph show of the second lists the agent it holds now"

@@ -1,0 +1,11 @@
+id = "S-0109"
+state = "backlog"
+title = "Cut the refusals of a file of the record that print the lines of the validator from every one to none"
+description = "Found by the subagent of T-0373 of Q-0001 on 2026-11-23, on a scratch record (docs/domain-model.md, Probe, once Q-0001 lands); filed at the end of the queue and not burned. Its Tasks are written when it is ordered. The lines today: Input tag 'blocked' found using 'state' does not match any of the expected tags ..., backlog.token Extra inputs are not permitted, each with a link."
+created = 2026-11-23 06:04:42+00:00
+filed_during = "Q-0001"
+
+[criterion]
+given = "a record with an item file that holds a key or a state the model does not take, as a blocked work item or a token"
+when = "fgraph status is run"
+then = "it exits 2 with one line naming the file and the key or the state in the words of fgraph, with no line of the validator and no link to errors.pydantic.dev"

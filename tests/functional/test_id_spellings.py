@@ -54,19 +54,16 @@ def refusal(text: str, cwd: Path) -> tuple[int, list[str]]:
     return status, err.splitlines()[-1:]
 
 
-@pytest.mark.xfail(strict=True, reason="S-0118: an id is read in any spelling")
 @pytest.mark.parametrize("text", SPELLINGS)
 def test_show_of_a_spelling_of_f_0015_exits_with_zero(text: str, record: Path) -> None:
     assert fgraph(["show", text], record)[0] == 0
 
 
-@pytest.mark.xfail(strict=True, reason="S-0118: an id is read in any spelling")
 @pytest.mark.parametrize("text", SPELLINGS)
 def test_show_of_a_spelling_of_f_0015_shows_f_0015(text: str, record: Path) -> None:
     assert fgraph(["show", text], record)[1].splitlines()[0] == "F-0015  a feature title"
 
 
-@pytest.mark.xfail(strict=True, reason="S-0118: an id is read in any spelling")
 def test_show_of_f99_is_refused_as_f_minus_99_is(record: Path) -> None:
     named = "fgraph: error: no Feature F-0099 in the record"
     assert refusal("f99", record) == (2, [named])

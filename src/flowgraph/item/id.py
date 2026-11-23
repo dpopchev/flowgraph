@@ -18,6 +18,20 @@ class ItemIdError(ValueError):
     """A text that is the id of no kind of item."""
 
 
+def id_spelled(text: str) -> str:
+    """The canonical id of a text that spells one, in any case, without its dash or zeros.
+
+    A text is such a spelling when it is the prefix letter of a kind of work item, of a Feature or
+    of a Task, an optional dash and a number of 1 or more; any other text, a number of 0 included,
+    is given back unchanged, so each refusal keeps its wording.
+    """
+    prefixes = {*(kind.prefix for kind in KINDS), "F", "T"}
+    spelled = re.fullmatch(r"([A-Za-z])-?(\d+)", text)
+    if spelled is None or spelled[1].upper() not in prefixes or int(spelled[2]) < 1:
+        return text
+    return f"{spelled[1].upper()}-{int(spelled[2]):04d}"
+
+
 def kind_named(name: str) -> Kind:
     """The kind whose noun, in lower case, is the name; raises KeyError when none is."""
     named = {kind.noun.lower(): kind for kind in KINDS}

@@ -29,7 +29,7 @@ from flowgraph.status.next import NEXT_ONLY, StartLimit, with_start_now
 from flowgraph.status.text import cut_lines, status_text
 from flowgraph.status.under import in_show_order
 from flowgraph.status.waits import with_waits
-from flowgraph.work_item import STARTED, WorkItemId, WorkItemRow, parse_work_item_id
+from flowgraph.work_item import IN_PROGRESS, WorkItemId, WorkItemRow, parse_work_item_id
 
 # The state of a row in Backlog, as the record writes it.
 BACKLOG = "backlog"
@@ -70,9 +70,9 @@ def _reached(row: WorkItemRow) -> datetime:
     return row.completed or row.started or row.created
 
 
-def _last_first(rows: Iterable[WorkItemRow], state: str) -> list[WorkItemRow]:
-    """The work items in that state, the last to reach it first; those of one time as given."""
-    return sorted((row for row in rows if row.state == state), key=_reached, reverse=True)
+def _last_first(rows: Iterable[WorkItemRow], states: Collection[str]) -> list[WorkItemRow]:
+    """The work items in those states, the last to reach one first; those of one time as given."""
+    return sorted((row for row in rows if row.state in states), key=_reached, reverse=True)
 
 
 def _placed_feature(feature: FeatureState, under: Collection[WorkItemRow]) -> _PlacedFeature:
@@ -83,7 +83,7 @@ def _placed_feature(feature: FeatureState, under: Collection[WorkItemRow]) -> _P
     that of its last started work item; with none started that of its last completed one, as
     under Completed; with neither the time it was added, as in Backlog.
     """
-    started = _last_first(under, STARTED)
+    started = _last_first(under, IN_PROGRESS)
     row = replace(feature_row(feature, [each.state for each in under]), started=started)
     match feature:
         case CompletedFeature():
@@ -91,7 +91,7 @@ def _placed_feature(feature: FeatureState, under: Collection[WorkItemRow]) -> _P
         case RemovedFeature():
             return feature.removed, row
         case Feature() | StartedFeature() | BlockedFeature():
-            reached = [_reached(each) for each in started or _last_first(under, COMPLETED)]
+            reached = [_reached(each) for each in started or _last_first(under, (COMPLETED,))]
             return max(reached, default=feature.created), row
         case _ as unreachable:
             assert_never(unreachable)
@@ -205,16 +205,16 @@ def status_rows(store: Store, limit: StartLimit = NEXT_ONLY) -> list[WorkItemRow
     alone = {item_id: row for item_id, row in rows.items() if row.parent not in held}
     backlog = _backlog_lines(alone, features)
     in_queue = queued(store.load_queue(), backlog)
-    started = [row for row in alone.values() if row.state == STARTED]
+    started = [row for row in alone.values() if row.state in IN_PROGRESS]
     completed = [row for row in alone.values() if row.state == COMPLETED]
     gone = [row for _, row in features if row.bucket == "Removed"]
     with_them = {row.id for row in gone}
     removed = [
         row
         for row in rows.values()
-        if row.state not in (BACKLOG, STARTED, COMPLETED) and row.parent not in with_them
+        if row.state not in (BACKLOG, *IN_PROGRESS, COMPLETED) and row.parent not in with_them
     ]
-    taken = sum(row.state == STARTED for row in rows.values())
+    taken = sum(row.state in IN_PROGRESS for row in rows.values())
     listed = [
         *(backlog[placed] for placed in in_queue),
         *_with_features(started, features, "InProgress", last_first=True),

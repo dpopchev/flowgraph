@@ -16,6 +16,7 @@ from flowgraph.task import make_task, make_task_id
 from flowgraph.work_item import (
     WorkItemState,
     append_task,
+    blocked_work_item,
     completed_task,
     completed_work_item,
     started_task,
@@ -77,6 +78,16 @@ def test_a_task_write_of_a_started_work_item_with_a_worktree_is_refused_naming_i
         r" /src/project.worktrees/S-0001-a-slug$",
     ):
         within(store(BEGUN, []), lambda: None, lambda _: WORKTREE).save_work_item(MOVED)
+
+
+def test_the_block_of_a_started_work_item_with_a_worktree_is_refused_naming_it() -> None:
+    held = blocked_work_item(BEGUN, "no key", "developer", NOW)
+    with pytest.raises(
+        OutOfScopeError,
+        match=r"^S-0001 is started: its Tasks are written in its worktree,"
+        r" /src/project.worktrees/S-0001-a-slug$",
+    ):
+        within(store(BEGUN, []), lambda: None, lambda _: WORKTREE).save_work_item(held)
 
 
 def test_a_task_write_refused_is_not_saved() -> None:

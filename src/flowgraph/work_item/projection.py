@@ -10,26 +10,27 @@ from flowgraph.criterion import criterion_parts
 from flowgraph.knowledge import knowledge_row
 from flowgraph.parent import parent_text
 from flowgraph.task import row_of
+from flowgraph.work_item.block import block_of
 from flowgraph.work_item.handed import agent_text
 from flowgraph.work_item.id import WorkItemId, work_item_id_text
 from flowgraph.work_item.model import (
+    BlockedWorkItem,
     CompletedWorkItem,
     RemovedWorkItem,
     StartedWorkItem,
     WorkItem,
     WorkItemState,
-    commit_sha,
-    state_name,
 )
 from flowgraph.work_item.removal import reason_of, superseded_by_of
+from flowgraph.work_item.state import commit_sha, state_name
 from flowgraph.work_item.verification import Verification
 from flowgraph.work_item.views import DependsRow, VerifiedRow, WorkItemDetail, WorkItemRow
 
 
 def _started_on(item: WorkItemState) -> datetime | None:
-    """The started time of a started work item; none in any other state, as its file reads."""
+    """The started time of a started or blocked work item; none in any other, as its file reads."""
     match item:
-        case StartedWorkItem():
+        case StartedWorkItem() | BlockedWorkItem():
             return item.started
         case WorkItem() | CompletedWorkItem() | RemovedWorkItem():
             return None
@@ -42,7 +43,7 @@ def _completed_on(item: WorkItemState) -> datetime | None:
     match item:
         case CompletedWorkItem():
             return item.completed
-        case WorkItem() | StartedWorkItem() | RemovedWorkItem():
+        case WorkItem() | StartedWorkItem() | BlockedWorkItem() | RemovedWorkItem():
             return None
         case _ as unreachable:
             assert_never(unreachable)
@@ -75,6 +76,8 @@ def work_item_row(item: WorkItemState) -> WorkItemRow:
         created=item.created,
         started=_started_on(item),
         agent=agent_text(item),
+        block_reason=block_of(item)[0],
+        waiting_on=block_of(item)[1],
         completed=_completed_on(item),
         tasks=[row_of(task) for task in item.tasks],
         depends_on=[work_item_id_text(each) for each in item.relations.depends_on],
@@ -86,6 +89,7 @@ def work_item_row(item: WorkItemState) -> WorkItemRow:
 
 def work_item_detail(item: WorkItemState) -> WorkItemDetail:
     """The work item with its criterion and its Tasks as the plain data a view reads."""
+    block_reason, waiting_on = block_of(item)
     return WorkItemDetail(
         id=work_item_id_text(item.id),
         title=item.title,
@@ -94,7 +98,8 @@ def work_item_detail(item: WorkItemState) -> WorkItemDetail:
         tasks=[row_of(task) for task in item.tasks],
         commit=commit_sha(item),
         agent=agent_text(item),
-        reason=reason_of(item),
+        reason=block_reason or reason_of(item),
+        waiting_on=waiting_on,
         parent=parent_text(item.parent),
         complexity=item.complexity or "",
         knowledge=[knowledge_row(line) for line in item.knowledge],

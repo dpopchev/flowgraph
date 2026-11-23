@@ -42,6 +42,7 @@ from flowgraph.record.store import FeatureStore, Store
 from flowgraph.status import status_text
 from flowgraph.story import STORY, make_story_id
 from flowgraph.task import (
+    BlockedError,
     CompletedAlreadyError,
     NotBlockedError,
     StartedAlreadyError,
@@ -53,6 +54,7 @@ from flowgraph.work_item import (
     WorkItem,
     WorkItemState,
     append_task,
+    blocked_work_item,
     completed_task,
     completed_work_item,
     make_work_item,
@@ -105,6 +107,11 @@ def story(number: int, parent: Parent = ONE) -> WorkItem:
 def started(number: int) -> WorkItemState:
     """The Story of that number under the Feature, started."""
     return started_work_item(story(number), BEGUN)
+
+
+def blocked(number: int) -> WorkItemState:
+    """The Story of that number under the Feature, started and then blocked."""
+    return blocked_work_item(started(number), "no key", "developer", BEGUN)
 
 
 def completed(number: int) -> WorkItemState:
@@ -399,8 +406,13 @@ def test_a_feature_in_progress_that_holds_a_started_work_item_is_refused_and_sav
             CompletedAlreadyError,
             r"^F-0001 cannot be removed: S-0001 is completed already$",
         ),
+        (
+            [story(1), blocked(2)],
+            BlockedError,
+            r"^F-0001 cannot be removed: S-0002 is blocked$",
+        ),
     ],
-    ids=["a-started-work-item", "a-completed-work-item"],
+    ids=["a-started-work-item", "a-completed-work-item", "a-blocked-work-item"],
 )
 def test_a_feature_never_started_that_holds_a_work_item_begun_is_not_removed(
     items: list[WorkItemState], refusal: type[Exception], error: str

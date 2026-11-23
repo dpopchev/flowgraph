@@ -22,10 +22,11 @@ from flowgraph.criterion import (
 )
 from flowgraph.parent import Parent
 from flowgraph.relation import with_depends_on
-from flowgraph.task import CompletedAlreadyError, StartedAlreadyError
+from flowgraph.task import BlockedError, CompletedAlreadyError, StartedAlreadyError
 from flowgraph.work_item.complexity import Complexity
 from flowgraph.work_item.id import WorkItemId, work_item_id_text
 from flowgraph.work_item.model import (
+    BlockedWorkItem,
     CompletedWorkItem,
     RemovedAlreadyError,
     RemovedWorkItem,
@@ -126,8 +127,8 @@ def amended_work_item(item: WorkItemState, amendment: Amendment) -> WorkItem:
     Raises NoPartError when it names none, NoSuchPartError when it names a part the criterion of
     the item does not have, EmptyPartError when its title or a part of its criterion is blank,
     RelationError when it makes the item depend on itself,
-    StartedAlreadyError when the item is started, CompletedAlreadyError when it is completed and
-    RemovedAlreadyError when it is removed.
+    StartedAlreadyError when the item is started, BlockedError when it is blocked,
+    CompletedAlreadyError when it is completed and RemovedAlreadyError when it is removed.
     """
     named = work_item_id_text(item.id)
     match item:
@@ -155,6 +156,8 @@ def amended_work_item(item: WorkItemState, amendment: Amendment) -> WorkItem:
             )
         case StartedWorkItem():
             raise StartedAlreadyError(f"{named} is started already")
+        case BlockedWorkItem():
+            raise BlockedError(f"{named} is blocked")
         case CompletedWorkItem():
             raise CompletedAlreadyError(f"{named} is completed already")
         case RemovedWorkItem():

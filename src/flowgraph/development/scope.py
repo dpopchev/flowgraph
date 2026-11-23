@@ -22,6 +22,7 @@ from flowgraph.record.store import Store
 from flowgraph.task import TaskId
 from flowgraph.term import Term
 from flowgraph.work_item import (
+    BlockedWorkItem,
     CompletedWorkItem,
     RemovedWorkItem,
     StartedWorkItem,
@@ -96,9 +97,9 @@ def worktree_of_item(record: Path, open_git: OpenGit, item_id: WorkItemId) -> Pa
 
 
 def _is_started(item: WorkItemState) -> bool:
-    """True for a started work item."""
+    """True for a started work item, and for a blocked one, which is started still."""
     match item:
-        case StartedWorkItem():
+        case StartedWorkItem() | BlockedWorkItem():
             return True
         case WorkItem() | CompletedWorkItem() | RemovedWorkItem():
             return False

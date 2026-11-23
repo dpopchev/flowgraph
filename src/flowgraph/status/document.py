@@ -6,7 +6,8 @@ its `items`, in the order of the flow and of the rows given, and `next_to_start`
 line marked as such or null. A work item holds its `id`, `kind`, `title`, `state`, `commit`,
 `reason` and `superseded_by` (null while empty), `progress` (its Tasks `completed` of `total`),
 its `tasks` and the ids it `waits_for`. A work item holds its `complexity` too, the word or null,
-and its `agent`, the name or null.
+and its `agent`, the name or null. A work item holds its `block` as well -- the `reason` and what
+it is `waiting_on` while it is blocked, or null; its `reason` stays that of a removal.
 A Task holds its `id`, `title`, `state`, `commit`, `reason` and `waiting_on`.
 A Feature holds its `id`, `kind`, `title`, `commit`, `reason`,
 `progress` (its work items `completed` of `total`), the ids its first work item `waits_for`, its
@@ -94,10 +95,15 @@ def _item(row: Row) -> Item:
 
 
 def _work_item(row: WorkItemRow) -> Item:
-    """A work item with its Tasks; its kind is that of the prefix of its id."""
+    """A work item with its Tasks; its kind is that of the prefix of its id.
+
+    Its block is held while it waits on someone.
+    """
     kinds = {kind.prefix: kind.noun.lower() for kind in KINDS}
+    block = {"reason": row.block_reason, "waiting_on": row.waiting_on} if row.waiting_on else None
     return {
         "agent": row.agent or None,
+        "block": block,
         "id": row.id,
         "kind": kinds[row.id.partition("-")[0]],
         "complexity": row.complexity or None,

@@ -21,11 +21,12 @@ from flowgraph.record.queue import make_queue
 from flowgraph.record.store import FeatureStore
 from flowgraph.story import STORY as STORY_KIND
 from flowgraph.story import make_story, make_story_id
-from flowgraph.task import OpenTaskError, make_task, make_task_id
+from flowgraph.task import BlockedError, OpenTaskError, make_task, make_task_id
 from flowgraph.work_item import (
     CompletedWorkItem,
     WorkItemState,
     append_task,
+    blocked_work_item,
     completed_task,
     started_task,
     started_work_item,
@@ -59,6 +60,7 @@ TASK = make_task(make_task_id(1), "a task", "an output", "", CREATED)
 STORY = make_story(make_story_id(1), "a title", make_scenario("a", "b", "c"), "", CREATED)
 OPEN = started_task(started_work_item(append_task(STORY, TASK), NOW), make_task_id(1), NOW)
 READY = completed_task(OPEN, make_task_id(1), NOW, make_commit("abc1234"))
+BLOCKED = blocked_work_item(READY, "no key", "developer", NOW)
 MESSAGE = "feat: land the first Story"
 GATE_RUN = ("gate", "make check", TOP)
 
@@ -365,6 +367,13 @@ def test_a_landing_with_a_task_not_completed_aborts_the_merge() -> None:
     assert steps == [("merge", BRANCH), "abort merge"]
 
 
+def test_a_landing_of_a_blocked_work_item_aborts_the_merge_naming_the_block() -> None:
+    steps: list[object] = []
+    with pytest.raises(BlockedError, match=r"^S-0001 is blocked: unblock it first$"):
+        land(BLOCKED, work_tree(steps))
+    assert steps == [("merge", BRANCH), "abort merge"]
+
+
 def test_a_merge_commit_git_refuses_aborts_the_merge() -> None:
     steps: list[object] = []
     with pytest.raises(GitError):
@@ -488,6 +497,13 @@ def test_a_landing_by_squash_with_a_task_not_completed_aborts_the_merge() -> Non
     assert steps == [("merge", BRANCH), "abort merge"]
 
 
+def test_a_landing_by_squash_of_a_blocked_work_item_aborts_the_merge() -> None:
+    steps: list[object] = []
+    with pytest.raises(BlockedError):
+        land(BLOCKED, work_tree(steps), config=SQUASH)
+    assert steps == [("merge", BRANCH), "abort merge"]
+
+
 def test_a_squash_commit_git_refuses_takes_no_step_of_the_record() -> None:
     steps: list[object] = []
     with pytest.raises(GitError):
@@ -525,6 +541,13 @@ def test_a_landing_by_fast_forward_with_a_task_not_completed_moves_main_nowhere(
     steps: list[object] = []
     with pytest.raises(OpenTaskError):
         land(OPEN, work_tree(steps), config=FAST_FORWARD, message=None)
+    assert steps == [("merge", BRANCH), "abort merge"]
+
+
+def test_a_landing_by_fast_forward_of_a_blocked_work_item_moves_main_nowhere() -> None:
+    steps: list[object] = []
+    with pytest.raises(BlockedError):
+        land(BLOCKED, work_tree(steps), config=FAST_FORWARD, message=None)
     assert steps == [("merge", BRANCH), "abort merge"]
 
 

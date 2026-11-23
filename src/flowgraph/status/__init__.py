@@ -14,7 +14,6 @@ from flowgraph.status.under import in_show_order
 from flowgraph.status.view import (
     BACKLOG,
     COMPLETED,
-    STARTED,
     backlog_as_added,
     find_backlog,
     rows_by_id,
@@ -23,6 +22,7 @@ from flowgraph.status.view import (
     status_output,
 )
 from flowgraph.status.watch import CLEAR, Pace, PaceError, Wait, framed, make_pace, watch
+from flowgraph.work_item import STARTED
 
 __all__ = [
     "APART",

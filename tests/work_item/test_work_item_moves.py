@@ -22,6 +22,7 @@ from flowgraph.work_item import (
     StartedWorkItem,
     WorkItemState,
     append_task,
+    blocked_work_item,
     commit_sha,
     completed_task,
     completed_work_item,
@@ -127,7 +128,13 @@ def test_a_completed_work_item_takes_no_task() -> None:
 
 
 @pytest.mark.parametrize(
-    ("item", "name"), [(ITEM, "backlog"), (HALF, "started"), (WHOLE, "completed")]
+    ("item", "name"),
+    [
+        (ITEM, "backlog"),
+        (HALF, "started"),
+        (blocked_work_item(HALF, "no key", "developer", DONE), "blocked"),
+        (WHOLE, "completed"),
+    ],
 )
 def test_a_work_item_names_its_state_as_the_record_writes_it(
     item: WorkItemState, name: str

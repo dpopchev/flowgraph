@@ -65,14 +65,14 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     about.add_argument("id", metavar="ID", help="the id of the work item or of the Feature")
     brief = brief_command(commands)
     start = start_command(commands)
-    block = new_command(commands, "block", "block a started Task or Feature that cannot go on")
-    block.add_argument("id", metavar="ID", help="the id of the Task or of the Feature")
+    block = new_command(commands, "block", "block a started work item, Task or Feature")
+    block.add_argument("id", metavar="ID", help="the id of the work item, Task or Feature")
     block.add_argument("--reason", required=True, metavar="TEXT", help="why it cannot go on")
     block.add_argument(
         "--waiting-on", required=True, metavar="TEXT", help="who or what it waits on"
     )
-    unblock = new_command(commands, "unblock", "take a blocked Task or Feature back to started")
-    unblock.add_argument("id", metavar="ID", help="the id of the Task or of the Feature")
+    unblock = new_command(commands, "unblock", "take a blocked work item, Task or Feature back")
+    unblock.add_argument("id", metavar="ID", help="the id of the work item, Task or Feature")
     complete = new_command(
         commands, "complete", "complete a work item or a Task of it, or a Feature left done"
     )

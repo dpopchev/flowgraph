@@ -1,4 +1,4 @@
-"""The moves of an item named by its id: its start, the block and unblock of a Task, its complete.
+"""The moves of an item named by its id: its start, its block and unblock, its complete.
 
 Each reads the id, runs the move of the work item or of the Task on the store and returns what
 the write says with the message of its commit; each raises the refusal of the move.
@@ -24,7 +24,7 @@ from flowgraph.item.id import parse_item_id
 from flowgraph.parent import FeatureId, feature_id_text
 from flowgraph.record import DEVELOPMENT_ENABLED, Config, Now
 from flowgraph.record.store import KINDS, Store
-from flowgraph.task import TaskId, parse_task_id, task_id_text
+from flowgraph.task import TaskId, task_id_text
 from flowgraph.work_item import WorkItemId, parse_work_item_id, work_item_id_text
 from flowgraph.work_item.agent import AgentError, make_agent
 
@@ -86,36 +86,59 @@ def start_item(
             assert_never(unreachable)
 
 
-def block_item(task: str, reason: str, waiting_on: str, store: Store, now: Now) -> Written:
-    """Block the started Task of that id for the reason given; what the write says.
+def block_item(item: str, reason: str, waiting_on: str, store: Store, now: Now) -> Written:
+    """Block the started work item or Task of that id for the reason given; what the write says.
 
-    Raises TaskIdError when the text is no Task id, or the refusal of the block; nothing is
-    saved.
+    A work item is named alone, a Task with its work item. Raises ItemIdError when the text is
+    no id, or the refusal of the block; nothing is saved.
     """
-    task_id = parse_task_id(task)
-    holder = work_item.block_task(
-        task_id=task_id,
-        reason=reason,
-        waiting_on=waiting_on,
-        load_holder=load_holder(store),
-        save_work_item=store.save_work_item,
-        now=now,
-    )
-    blocked = f"{task_id_text(task_id)} of {work_item_id_text(holder)}"
+    match parse_item_id(item):
+        case WorkItemId() as item_id:
+            work_item.block_work_item(
+                item_id=item_id,
+                reason=reason,
+                waiting_on=waiting_on,
+                load_work_item=store.load_work_item,
+                save_work_item=store.save_work_item,
+                now=now,
+            )
+            blocked = work_item_id_text(item_id)
+        case TaskId() as task_id:
+            holder = work_item.block_task(
+                task_id=task_id,
+                reason=reason,
+                waiting_on=waiting_on,
+                load_holder=load_holder(store),
+                save_work_item=store.save_work_item,
+                now=now,
+            )
+            blocked = f"{task_id_text(task_id)} of {work_item_id_text(holder)}"
+        case _ as unreachable:
+            assert_never(unreachable)
     return Written(f"blocked {blocked}\n", MESSAGE.format(f"block {blocked}"))
 
 
-def unblock_item(task: str, store: Store) -> Written:
-    """Unblock the blocked Task of that id; what the write says.
+def unblock_item(item: str, store: Store) -> Written:
+    """Unblock the blocked work item or Task of that id; what the write says.
 
-    Raises TaskIdError when the text is no Task id, or the refusal of the unblock; nothing is
-    saved.
+    A work item is named alone, a Task with its work item. Raises ItemIdError when the text is
+    no id, or the refusal of the unblock; nothing is saved.
     """
-    task_id = parse_task_id(task)
-    holder = work_item.unblock_task(
-        task_id=task_id, load_holder=load_holder(store), save_work_item=store.save_work_item
-    )
-    unblocked = f"{task_id_text(task_id)} of {work_item_id_text(holder)}"
+    match parse_item_id(item):
+        case WorkItemId() as item_id:
+            work_item.unblock_work_item(
+                item_id=item_id,
+                load_work_item=store.load_work_item,
+                save_work_item=store.save_work_item,
+            )
+            unblocked = work_item_id_text(item_id)
+        case TaskId() as task_id:
+            holder = work_item.unblock_task(
+                task_id=task_id, load_holder=load_holder(store), save_work_item=store.save_work_item
+            )
+            unblocked = f"{task_id_text(task_id)} of {work_item_id_text(holder)}"
+        case _ as unreachable:
+            assert_never(unreachable)
     return Written(f"unblocked {unblocked}\n", MESSAGE.format(f"unblock {unblocked}"))
 
 

@@ -9,6 +9,7 @@ from flowgraph.development.task_check import check_task_passes
 from flowgraph.item.moves import load_holder
 from flowgraph.record.store import Store
 from flowgraph.task import StartedTask, TaskIdError, TaskNotFoundError, parse_task_id, task_id_text
+from flowgraph.work_item import BlockedWorkItem
 
 
 def check_task_run(
@@ -17,13 +18,16 @@ def check_task_run(
     """Run the check of the started Task of that id, in the worktree of its work item.
 
     The worktree is the one the branch of the work item is checked out in, else cwd. An id that
-    is no Task's, a Task no item holds and a Task not started run nothing: the complete refuses
-    them. Raises TaskCheckError when the check exits with another status than 0.
+    is no Task's, a Task no item holds, a Task not started and a Task of a blocked work item run
+    nothing: the complete refuses them. Raises TaskCheckError when the check exits with another
+    status than 0.
     """
     try:
         task_id = parse_task_id(item)
         holder = load_holder(store)(task_id)
     except TaskIdError, TaskNotFoundError:
+        return
+    if isinstance(holder, BlockedWorkItem):
         return
     for task in holder.tasks:
         if task.id == task_id and isinstance(task, StartedTask):

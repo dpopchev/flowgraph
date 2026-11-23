@@ -339,7 +339,9 @@ of work item. The developer said so on 2026-11-21.
   landing is on top; those completed at one time, by kind and number.
 - InProgress is listed the last started first, by the same decision: by the
   started time each work item holds; those started at one time, by kind and
-  number. A blocked Task does not move its work item in the list.
+  number. A blocked Task does not move its work item in the list, and a
+  blocked work item keeps the place its started time gives it, listed once
+  (S-0138).
 - A Feature is placed in those two buckets among the work items that stand
   alone. A completed Feature is placed by its own completed time, that of the
   completion of its last work item (S-0054). Any other is placed by a time of
@@ -373,6 +375,13 @@ of work item. The developer said so on 2026-11-21.
   Task is not completed. The lines of Backlog, Completed and Removed carry no
   progress. The Tasks are those the record status reads holds: the row of a
   work item is read with its Tasks, each with its state.
+- A blocked work item is listed under InProgress as a started one is, marked
+  `!` before its id and ending with what it waits on and why (S-0138):
+  `! S-0001  0/1 T  <title>  -- waiting on <what>: <reason>`, its agent in
+  brackets before its title when it has one and its Tasks being worked under
+  it. Under a Feature the same line stands two columns further in. It is not
+  marked `?`, whatever its Tasks, and it takes a place of
+  `development.parallel` in the marks `>`, as a started one does.
 - Under a work item of InProgress `fgraph status` lists each Task of it being
   worked, the developer's decision of 2026-11-21, after board 1's watch: the
   started Task as `    => T-0001  <title>`, and a blocked one as
@@ -414,11 +423,17 @@ of work item. The developer said so on 2026-11-21.
   the work item and of its blocked Task under it stay as they are, a Feature
   without such a Task is listed as before, and the line is cut to the width
   as any other (below). A child work item is blocked when it holds a blocked
-  Task: the alternative, a block of a work item itself, was shown and not
-  taken, and is not built. A Feature never started whose work item was
+  Task, and when it is blocked itself (S-0138, on the developer's word on
+  B-0025, which reverses the reading that a block of a work item was shown
+  and not taken): a started Feature is marked `!` by a blocked work item
+  under it too, with what that work item waits on and why. Its own block
+  comes first, then that of a work item, then that of a Task, each work item
+  in the order listed with its own block before that of its first blocked
+  Task. A Feature never started whose work item was
   started before a Feature had a state (Persistence) is marked the same way,
   since the mark reads the started work items listed under the Feature and
-  not its state.
+  not its state; one never started that holds a blocked work item is in
+  InProgress, as one holding a started work item is.
 - `fgraph status` lists a `BlockedFeature` under InProgress with the same
   look (S-0056): `!` before its id and `-- waiting on <what>: <reason>` after
   its title, `! F-0001  0/1 W  <title>  -- waiting on <what>: <reason>`. Here
@@ -917,6 +932,10 @@ that holds nothing is `null`, never an empty text; a list that holds nothing is 
   for; `superseded_by`, the id that supersedes it; `progress`, an object `completed` and
   `total`, its Tasks completed of all; `tasks`, in the order written; `waits_for`, the
   ids it depends on that are not completed, in the order written.
+- A work item holds its `block` too, the reading of S-0138: an object `reason` and
+  `waiting_on` while it is blocked, else `null`, in a bucket and under a Feature alike, as
+  the `block` of a Feature is built; its `state` is then `blocked`, and its `reason` stays
+  the one it was removed for.
 - A work item holds its `complexity` too, the reading of S-0112: `low`, `medium` or
   `high`, else `null`; a Task and a Feature hold none.
 - Task: `id`; `title`; `state` (`backlog`, `started`, `blocked`, `completed`); `commit`;
@@ -1149,7 +1168,34 @@ and its merge tool.
 - `fgraph unblock` takes a blocked Task back to started, with the started
   time it had. Its reason, since and what it waited on leave the file, which
   keeps only what a state needs; git keeps the block. A Task that is not
-  blocked is refused. Blocking and unblocking a work item are not built.
+  blocked is refused.
+- A started work item of any kind is blocked and unblocked too (S-0138, on
+  the developer's word on B-0025): `fgraph block S-0001 --reason <why>
+  --waiting-on <what>` takes a `StartedWorkItem` to a `BlockedWorkItem` and
+  says `blocked S-0001`; `fgraph unblock S-0001` takes it back to the
+  `StartedWorkItem` it was, with its started time, its agent and its Tasks,
+  and says `unblocked S-0001`. A `BlockedWorkItem` holds what a started one
+  holds, then its reason, the time it is blocked since and what it waits on.
+  Its file holds `state = "blocked"` with its `started` time, its `agent`
+  when it has one, `since`, `reason` and `waiting_on`, read back through its
+  start and its block; the unblock takes the three keys out of the file, and
+  a blocked file with a blank reason is refused naming the file. Each is one
+  write and one commit, `chore: block S-0001 in the record` and `chore:
+  unblock S-0001 in the record`. Only a started work item is blocked: the
+  block of one in Backlog is refused, `S-0001 is in Backlog: start it first`;
+  of a blocked one, `S-0001 is blocked already`; of a completed or removed
+  one, `S-0001 is completed already`, `S-0001 is removed already`; a blank
+  reason or waiting on, `reason is empty`, `waiting on is empty`; and the
+  unblock of one not blocked, `S-0001 is not blocked`. No Task of a blocked
+  work item moves: its start, complete, block and unblock are refused naming
+  the block, `T-0001 cannot start: S-0001 is blocked, waiting on <what>:
+  unblock it first`, and the check of a Task of it is not run. A Task is
+  still added to it and a line still noted. Its start, complete and hand are
+  refused, `S-0001 is blocked: unblock it first`, and so is its landing,
+  which drops the merge held; its amend and its remove are refused, `S-0001
+  is blocked`, and the remove of a Feature holding it, `F-0001 cannot be
+  removed: S-0001 is blocked`. `fgraph block` still takes a Task and a
+  Feature, as before.
 - A completed item is kept as `state = "completed"` with its `started` and
   `completed` times and its `commit` sha. A started Story's file may hold
   completed Tasks; a completed Story's file holds only completed Tasks, since
@@ -1406,10 +1452,11 @@ and its merge tool.
   blank reason or a blank waiting on, `reason is empty`, `waiting on is
   empty`. The unblock of a Feature that is not blocked is refused, `F-0001
   is not blocked`. No refusal is a new one: each is that of a Task, naming
-  the Feature. A text that is neither a Task id nor a Feature id is refused
-  by both commands naming the two (B-0015), `'S-0001' is no Task or Feature
-  id`, and one written `F-` or `T-` and a number below 1 as an id of its
-  kind, `a Feature id counts from 1: 0 is below 1`.
+  the Feature. A text that is the id of no work item, Task or Feature is
+  refused by both commands naming every kind (B-0015, S-0138), `'X-0001' is
+  no Story, Upkeep, Bug, Spike, Task or Feature id`, and one written `F-` or
+  `T-` and a number below 1 as an id of its kind, `a Feature id counts from
+  1: 0 is below 1`.
 - While a Feature is blocked no further work item of it starts, and its
   started one goes on, the reading of S-0056. `fgraph start` of a work item
   of it in Backlog is refused naming the block, `S-0002 cannot start: F-0001
@@ -1432,8 +1479,8 @@ and its merge tool.
   files, worded `chore: unblock F-0001 and start S-0002 in the record`, and
   with the development on the branch of that work item is checked out in
   its worktree at that commit and named on a third line. While a work item
-  of the Feature is started the unblock starts none and says `unblocked
-  F-0001` alone. A next work item that cannot start is left in Backlog and
+  of the Feature is started or blocked the unblock starts none and says
+  `unblocked F-0001` alone. A next work item that cannot start is left in Backlog and
   the unblock stands: the line after it says `not started:` and the refusal
   of that start, and its commit is that of the unblock alone.
 - A completed Feature takes no start and no work item added under it: `fgraph
@@ -1652,10 +1699,11 @@ development too.
   `development.parallel`, its number and each started work item. The started
   work items are those of every kind, read as `fgraph status` reads them: a
   started work item is the one its worktree holds. Those under a Feature are
-  counted among them, and the start of a Feature, which starts one work item,
-  is refused the same way, naming the Feature (Persistence). `fgraph status`
-  marks as able to start now only as many work items as `parallel` leaves
-  places for (Order).
+  counted among them, and so are those blocked (S-0138): a blocked work item
+  is started still, and the refusal names it among those `started already`.
+  The start of a Feature, which starts one work item, is refused the same
+  way, naming the Feature (Persistence). `fgraph status` marks as able to
+  start now only as many work items as `parallel` leaves places for (Order).
 - The start of a Task is neither counted nor limited by `parallel`: a work
   item has one started Task at a time whatever the key. A work item that is
   not in Backlog is left to the start, which refuses it for its own state.
@@ -1854,6 +1902,7 @@ held to `main`, and there is no landing:
 | add a Task to a started work item | its branch |
 | start, block, unblock and complete its Tasks | its branch |
 | hand a started work item to an agent | its branch: `fgraph hand` in its worktree, or from `main` with `--dir` on the record of that worktree |
+| block and unblock a started work item | its branch: `fgraph block` and `fgraph unblock` in its worktree, or from `main` with `--dir` on the record of that worktree |
 | land the work item | `main`: `fgraph land` merges its branch and completes it |
 | complete the work item | `main`, after a merge made by hand |
 | complete a Feature | `main`: with its last work item, by its landing or its complete, or by `fgraph complete F-0001` once each work item of it is completed or removed |
@@ -1919,6 +1968,16 @@ agreed on 2026-11-21 that `fgraph` owns the record, its rituals and its rules:
   of a work item, show reads the record of that work tree and no other. The
   show of a Feature lists its work items from the rows, so it reads them
   there as status does.
+- The block and the unblock of a started work item are written where its
+  Tasks are (S-0138), as `fgraph hand` is: in its worktree, or from `main`
+  with `--dir` on the record of that worktree, one commit of its branch. Run
+  on `main` the block is refused naming the worktree, `S-0001 is started:
+  its Tasks are written in its worktree, <path>`, nothing written. `main`
+  keeps the file as started, and status and show on `main` read the row from
+  the worktree, so they list it blocked. The unblock run on `main` answers
+  from the copy of `main`, as that of a Task does: that copy holds it
+  started, and the unblock is refused, `S-0001 is not blocked`. A worktree
+  on code older than S-0138 refuses a file that holds `state = "blocked"`.
 
 The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 
@@ -1939,8 +1998,8 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   | reorder | `chore: reorder S-0002 before S-0001 in the record`, `chore: reorder F-0001 before S-0001 in the record` |
   | start | `chore: start S-0001 in the record`, `chore: start T-0001 of S-0001 in the record`, `chore: start F-0001 in the record` for a Feature and its first work item |
   | hand | `chore: hand S-0001 to opus-b2 in the record` |
-  | block | `chore: block T-0001 of S-0001 in the record`, `chore: block F-0001 in the record` for a Feature |
-  | unblock | `chore: unblock T-0001 of S-0001 in the record`, `chore: unblock F-0001 in the record` for a Feature, `chore: unblock F-0001 and start S-0002 in the record` for a Feature and the next work item its unblock starts |
+  | block | `chore: block S-0001 in the record` for a work item, `chore: block T-0001 of S-0001 in the record`, `chore: block F-0001 in the record` for a Feature |
+  | unblock | `chore: unblock S-0001 in the record` for a work item, `chore: unblock T-0001 of S-0001 in the record`, `chore: unblock F-0001 in the record` for a Feature, `chore: unblock F-0001 and start S-0002 in the record` for a Feature and the next work item its unblock starts |
   | remove | `chore: remove S-0001 in the record`, `chore: remove F-0001 in the record` for a Feature and its work items |
   | complete | `chore: complete S-0001 in the record`, `chore: complete T-0001 of S-0001 in the record`, `chore: complete S-0002 and F-0001 in the record` for a work item and the Feature it completes, `chore: complete S-0001 and start S-0002 in the record` for a work item and the next one of its Feature, `chore: complete F-0001 in the record` for a Feature left with every work item completed or removed |
   | set a key of the configuration | `chore: set development.enabled in the record` |
@@ -2307,7 +2366,7 @@ The payload of each state:
 | `todo`, no payload | T-118, E-020, W-061 | the bare type, in Backlog | kept |
 | `doing`, no payload | W-197, E-019 | `started`, a time | converted: the day of the `doing` History line |
 | `blocked` of a Task: `reason`, `since`, `waiting_on` | T-493 | a `BlockedTask`: `reason`, `since`, `waiting_on` (`fgraph block`) | kept; `since` a day read as a time |
-| `blocked` of a work item | on none today; W-008 (s) History | none: the block of a work item is not built (Persistence, `fgraph block --help`) | lost |
+| `blocked` of a work item | on none today; W-008 (s) History | a `BlockedWorkItem`: `reason`, `since`, `waiting_on` (`fgraph block`, S-0138) | kept |
 | `blocked` of an Epic | on none | a `BlockedFeature` | kept |
 | `done.on` | W-187, T-476, E-018 | `completed`, a time | converted: the day becomes a time |
 | `done.evidence` of a work item | W-187 `merged into main at f184dc1`, W-008 (s) `PR 339; merged d4cba3e; build 1806 succeeded; ...` | `commit`, a sha of 7 to 40 hex digits (Evidence) | converted: the sha; the rest of the text lost |

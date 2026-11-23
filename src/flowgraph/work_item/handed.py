@@ -3,10 +3,11 @@
 from dataclasses import replace
 from typing import assert_never
 
-from flowgraph.task import CompletedAlreadyError, NotStartedError
+from flowgraph.task import BlockedError, CompletedAlreadyError, NotStartedError
 from flowgraph.work_item.agent import Agent
 from flowgraph.work_item.id import WorkItemId, work_item_id_text
 from flowgraph.work_item.model import (
+    BlockedWorkItem,
     CompletedWorkItem,
     LoadWorkItem,
     RemovedAlreadyError,
@@ -26,8 +27,8 @@ def handed_work_item(started: StartedWorkItem, agent: Agent | None) -> StartedWo
 def handed_over(item: WorkItemState, agent: Agent) -> StartedWorkItem:
     """The started work item handed to the agent in place of the one it held.
 
-    Raises NotStartedError when it is in Backlog, CompletedAlreadyError when it is completed and
-    RemovedAlreadyError when it is removed.
+    Raises NotStartedError when it is in Backlog, BlockedError when it is blocked,
+    CompletedAlreadyError when it is completed and RemovedAlreadyError when it is removed.
     """
     match item:
         case StartedWorkItem():
@@ -35,6 +36,8 @@ def handed_over(item: WorkItemState, agent: Agent) -> StartedWorkItem:
         case WorkItem():
             named = work_item_id_text(item.id)
             raise NotStartedError(f"{named} is in Backlog: its start names the agent with --agent")
+        case BlockedWorkItem():
+            raise BlockedError(f"{work_item_id_text(item.id)} is blocked: unblock it first")
         case CompletedWorkItem():
             raise CompletedAlreadyError(f"{work_item_id_text(item.id)} is completed already")
         case RemovedWorkItem():
@@ -55,11 +58,21 @@ def hand_work_item(
 
 
 def agent_text(item: WorkItemState) -> str:
-    """The name of the agent a started or completed work item holds; empty for none or any other."""
+    """The name of the agent a started, blocked or completed work item holds; empty for none."""
     match item:
-        case StartedWorkItem(agent=Agent() as agent) | CompletedWorkItem(agent=Agent() as agent):
+        case (
+            StartedWorkItem(agent=Agent() as agent)
+            | BlockedWorkItem(agent=Agent() as agent)
+            | CompletedWorkItem(agent=Agent() as agent)
+        ):
             return agent.name
-        case StartedWorkItem() | CompletedWorkItem() | WorkItem() | RemovedWorkItem():
+        case (
+            StartedWorkItem()
+            | BlockedWorkItem()
+            | CompletedWorkItem()
+            | WorkItem()
+            | RemovedWorkItem()
+        ):
             return ""
         case _ as unreachable:
             assert_never(unreachable)

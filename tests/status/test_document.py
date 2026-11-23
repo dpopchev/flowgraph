@@ -159,6 +159,21 @@ def test_a_work_item_that_waits_for_nothing_holds_an_empty_list() -> None:
     assert only(story("S-0001"))["waits_for"] == []
 
 
+def test_a_blocked_work_item_holds_its_block() -> None:
+    blocked = story("S-0001", "blocked", block_reason="no key", waiting_on="developer")
+    assert only(blocked)["block"] == {"reason": "no key", "waiting_on": "developer"}
+
+
+def test_a_work_item_that_is_not_blocked_holds_no_block() -> None:
+    assert only(story("S-0001", "started"))["block"] is None
+
+
+def test_a_blocked_work_item_of_a_feature_holds_its_block() -> None:
+    held = [story("S-0001", "blocked", block_reason="no key", waiting_on="developer")]
+    listed = only(feature(bucket="InProgress", work_items=held))["work_items"][0]
+    assert listed["block"] == {"reason": "no key", "waiting_on": "developer"}
+
+
 def test_a_feature_holds_its_progress_in_work_items() -> None:
     assert only(feature(completed=1))["progress"] == {"completed": 1, "total": 2}
 

@@ -59,6 +59,29 @@ class StartedItemFile(RelationsFile, BaseModel):
     knowledge: list[KnowledgeFile] = []
 
 
+class BlockedItemFile(RelationsFile, BaseModel):
+    """What the file of a blocked work item holds: what a started one does, then its block."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    state: Literal["blocked"]
+    title: str
+    description: str = ""
+    parent: str = ""
+    about: list[str] = []
+    complexity: Complexity | None = None
+    created: datetime
+    started: datetime
+    since: datetime
+    reason: str
+    waiting_on: str
+    agent: str = ""
+    criterion: AnyCriterionFile
+    tasks: list[HeldTask] = []
+    knowledge: list[KnowledgeFile] = []
+
+
 class VerifiedFile(BaseModel):
     """The table of the answer of a closing: the answer, what the run printed and the time."""
 
@@ -117,7 +140,7 @@ class RemovedItemFile(RelationsFile, BaseModel):
 
 
 # The file of a work item in any of its states.
-HeldItemFile = ItemFile | StartedItemFile | CompletedItemFile | RemovedItemFile
+HeldItemFile = ItemFile | StartedItemFile | BlockedItemFile | CompletedItemFile | RemovedItemFile
 
 # The validator of a work item file, which tells the states apart by the state line.
 HELD_ITEM: TypeAdapter[HeldItemFile] = TypeAdapter(
@@ -130,27 +153,27 @@ def commit_held(held: HeldItemFile) -> str:
     match held:
         case CompletedItemFile():
             return held.commit
-        case ItemFile() | StartedItemFile() | RemovedItemFile():
+        case ItemFile() | StartedItemFile() | BlockedItemFile() | RemovedItemFile():
             return ""
         case _ as unreachable:
             assert_never(unreachable)
 
 
 def reason_held(held: HeldItemFile) -> str:
-    """The reason a validated file holds; empty for an item not removed."""
+    """The reason a validated file holds; empty for an item not removed, the block kept apart."""
     match held:
         case RemovedItemFile():
             return held.reason
-        case ItemFile() | StartedItemFile() | CompletedItemFile():
+        case ItemFile() | StartedItemFile() | BlockedItemFile() | CompletedItemFile():
             return ""
         case _ as unreachable:
             assert_never(unreachable)
 
 
 def started_held(held: HeldItemFile) -> datetime | None:
-    """The started time a validated file of a started item holds; none in any other state."""
+    """The started time a validated file of a started or blocked item holds; none in any other."""
     match held:
-        case StartedItemFile():
+        case StartedItemFile() | BlockedItemFile():
             return held.started
         case ItemFile() | CompletedItemFile() | RemovedItemFile():
             return None
@@ -159,9 +182,9 @@ def started_held(held: HeldItemFile) -> datetime | None:
 
 
 def agent_held(held: HeldItemFile) -> str:
-    """The agent a validated file of a started or completed item holds; empty for none."""
+    """The agent a validated file of a started, blocked or completed item holds; empty for none."""
     match held:
-        case StartedItemFile() | CompletedItemFile():
+        case StartedItemFile() | BlockedItemFile() | CompletedItemFile():
             return held.agent
         case ItemFile() | RemovedItemFile():
             return ""
@@ -174,7 +197,7 @@ def completed_held(held: HeldItemFile) -> datetime | None:
     match held:
         case CompletedItemFile():
             return held.completed
-        case ItemFile() | StartedItemFile() | RemovedItemFile():
+        case ItemFile() | StartedItemFile() | BlockedItemFile() | RemovedItemFile():
             return None
         case _ as unreachable:
             assert_never(unreachable)
@@ -185,7 +208,7 @@ def verified_held(held: HeldItemFile) -> VerifiedFile | None:
     match held:
         case CompletedItemFile():
             return held.verified
-        case ItemFile() | StartedItemFile() | RemovedItemFile():
+        case ItemFile() | StartedItemFile() | BlockedItemFile() | RemovedItemFile():
             return None
         case _ as unreachable:
             assert_never(unreachable)
@@ -196,7 +219,18 @@ def superseded_held(held: HeldItemFile) -> str:
     match held:
         case RemovedItemFile():
             return held.superseded_by
-        case ItemFile() | StartedItemFile() | CompletedItemFile():
+        case ItemFile() | StartedItemFile() | BlockedItemFile() | CompletedItemFile():
             return ""
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def block_held(held: HeldItemFile) -> tuple[str, str]:
+    """The reason and what it waits on the file of a blocked item holds; both empty for others."""
+    match held:
+        case BlockedItemFile():
+            return held.reason, held.waiting_on
+        case ItemFile() | StartedItemFile() | CompletedItemFile() | RemovedItemFile():
+            return "", ""
         case _ as unreachable:
             assert_never(unreachable)

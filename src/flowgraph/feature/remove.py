@@ -19,8 +19,9 @@ from flowgraph.record.store import Store
 from flowgraph.relation import RelationError
 from flowgraph.relation.depends import superseded_by_asked
 from flowgraph.status import rows_by_id
-from flowgraph.task import CompletedAlreadyError, StartedAlreadyError
+from flowgraph.task import BlockedError, CompletedAlreadyError, StartedAlreadyError
 from flowgraph.work_item import (
+    BlockedWorkItem,
     CompletedWorkItem,
     RemovedWorkItem,
     StartedWorkItem,
@@ -37,8 +38,9 @@ def _removed_with(
     """The work item of the Feature of that name removed with it; None for one left as it is.
 
     One removed before stays as it was, with the reason it had; under a Feature begun, started
-    or blocked, a completed one stays too. Raises StartedAlreadyError or CompletedAlreadyError
-    naming the Feature and the work item that is started, or completed under one in Backlog.
+    or blocked, a completed one stays too. Raises StartedAlreadyError, BlockedError or
+    CompletedAlreadyError naming the Feature and the work item that is started, blocked, or
+    completed under one in Backlog.
     """
     named = work_item_id_text(item.id)
     match item:
@@ -48,6 +50,8 @@ def _removed_with(
             return None
         case StartedWorkItem():
             raise StartedAlreadyError(f"{feature} cannot be removed: {named} is started already")
+        case BlockedWorkItem():
+            raise BlockedError(f"{feature} cannot be removed: {named} is blocked")
         case CompletedWorkItem() if begun:
             return None
         case CompletedWorkItem():

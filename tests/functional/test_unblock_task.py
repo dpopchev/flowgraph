@@ -93,7 +93,7 @@ class TestABlockedTaskUnblocked:
         ([*STARTED, UNBLOCK], "T-0001 is not blocked"),
         ([*STARTED, COMPLETE, UNBLOCK], "T-0001 is not blocked"),
         ([*BLOCKED, UNBLOCK, UNBLOCK], "T-0001 is not blocked"),
-        ([*BLOCKED, ["unblock", "S-0001"]], "'S-0001' is no Task or Feature id"),
+        ([*BLOCKED, ["unblock", "S-0001"]], "S-0001 is not blocked"),
         ([*BLOCKED, ["unblock", "T-0009"]], "no Task T-0009 in the record"),
     ],
     ids=[

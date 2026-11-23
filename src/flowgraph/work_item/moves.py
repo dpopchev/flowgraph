@@ -6,6 +6,7 @@ from typing import assert_never
 
 from flowgraph.criterion import Answer, Decision, Evidence, settled
 from flowgraph.task import (
+    BlockedError,
     CompletedAlreadyError,
     NoTaskError,
     NotStartedError,
@@ -14,6 +15,7 @@ from flowgraph.task import (
 )
 from flowgraph.work_item.id import work_item_id_text
 from flowgraph.work_item.model import (
+    BlockedWorkItem,
     CompletedWorkItem,
     OpenWorkItem,
     RemovedAlreadyError,
@@ -21,8 +23,8 @@ from flowgraph.work_item.model import (
     StartedWorkItem,
     WorkItem,
     WorkItemState,
-    state_name,
 )
+from flowgraph.work_item.state import state_name
 from flowgraph.work_item.verification import (
     TAKES,
     NotVerifiableError,
@@ -33,9 +35,12 @@ from flowgraph.work_item.verification import (
 
 
 def still_open(item: WorkItemState) -> OpenWorkItem:
-    """The work item, which still takes Tasks; raises CompletedAlreadyError when it is completed."""
+    """The work item, which still takes Tasks; raises CompletedAlreadyError when it is completed.
+
+    A blocked one takes them too.
+    """
     match item:
-        case WorkItem() | StartedWorkItem():
+        case WorkItem() | StartedWorkItem() | BlockedWorkItem():
             return item
         case CompletedWorkItem():
             raise CompletedAlreadyError(f"{work_item_id_text(item.id)} is completed already")
@@ -48,8 +53,8 @@ def still_open(item: WorkItemState) -> OpenWorkItem:
 def started_work_item(item: WorkItemState, on: datetime) -> StartedWorkItem:
     """The work item started on that time, kept to the second, its Tasks still in Backlog.
 
-    Raises NoTaskError when it has no Task, StartedAlreadyError when it is started and
-    CompletedAlreadyError when it is completed.
+    Raises NoTaskError when it has no Task, StartedAlreadyError when it is started, BlockedError
+    when it is blocked and CompletedAlreadyError when it is completed.
     """
     match item:
         case WorkItem(tasks=()):
@@ -72,6 +77,8 @@ def started_work_item(item: WorkItemState, on: datetime) -> StartedWorkItem:
             )
         case StartedWorkItem():
             raise StartedAlreadyError(f"{work_item_id_text(item.id)} is started already")
+        case BlockedWorkItem():
+            raise BlockedError(f"{work_item_id_text(item.id)} is blocked: unblock it first")
         case CompletedWorkItem():
             raise CompletedAlreadyError(f"{work_item_id_text(item.id)} is completed already")
         case RemovedWorkItem():
@@ -88,7 +95,7 @@ def completed_work_item(
     A work item that states a hypothesis is completed with the decision that answers it, and
     its yes or no. Raises NotStartedError when it is in Backlog, OpenTaskError naming the Tasks
     not completed, DecisionError when a hypothesis has no decision or no answer or another
-    criterion is given a decision, and
+    criterion is given a decision, BlockedError when it is blocked and
     CompletedAlreadyError when it is completed.
     """
     match item:
@@ -113,6 +120,8 @@ def completed_work_item(
                 agent=item.agent,
                 about=item.about,
             )
+        case BlockedWorkItem():
+            raise BlockedError(f"{work_item_id_text(item.id)} is blocked: unblock it first")
         case CompletedWorkItem():
             raise CompletedAlreadyError(f"{work_item_id_text(item.id)} is completed already")
         case RemovedWorkItem():
@@ -139,7 +148,7 @@ def verified_work_item(
             return replace(item, verified=make_verification(answer, text, on))
         case CompletedWorkItem():
             raise VerifiedAlreadyError(f"{named} is verified already")
-        case WorkItem() | StartedWorkItem() | RemovedWorkItem():
+        case WorkItem() | StartedWorkItem() | BlockedWorkItem() | RemovedWorkItem():
             raise NotVerifiableError(f"{named} is {state_name(item)}: {TAKES}")
         case _ as unreachable:
             assert_never(unreachable)

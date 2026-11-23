@@ -25,9 +25,11 @@ from flowgraph.item import (
 from flowgraph.parent import parent_text, parent_written
 from flowgraph.task import at_most_one_started
 from flowgraph.work_item.agent import agent_written
+from flowgraph.work_item.block import blocked_work_item
 from flowgraph.work_item.depends import id_held, relations_held, relations_primitives
 from flowgraph.work_item.handed import agent_text, handed_work_item
 from flowgraph.work_item.held_file import (
+    BlockedItemFile,
     CompletedItemFile,
     HeldItemFile,
     ItemFile,
@@ -36,6 +38,7 @@ from flowgraph.work_item.held_file import (
 )
 from flowgraph.work_item.id import Kind, parse_work_item_id, work_item_id_text
 from flowgraph.work_item.model import (
+    BlockedWorkItem,
     CompletedWorkItem,
     RemovedWorkItem,
     StartedWorkItem,
@@ -43,10 +46,10 @@ from flowgraph.work_item.model import (
     WorkItemState,
     append_task,
     make_work_item,
-    state_name,
 )
 from flowgraph.work_item.moves import completed_work_item, started_work_item
 from flowgraph.work_item.removal import removed_work_item
+from flowgraph.work_item.state import state_name
 from flowgraph.work_item.verification import make_verification
 
 
@@ -58,8 +61,10 @@ def _verified_primitives(item: CompletedWorkItem) -> dict[str, object]:
     return {"verified": {"answer": answer.answer, "text": answer.text, "on": answer.on}}
 
 
-def _agent_primitives(item: StartedWorkItem | CompletedWorkItem) -> dict[str, object]:
-    """The agent a started or completed item is handed to, held only when it has one."""
+def _agent_primitives(
+    item: StartedWorkItem | BlockedWorkItem | CompletedWorkItem,
+) -> dict[str, object]:
+    """The agent a started, blocked or completed item is handed to, held only when it has one."""
     name = agent_text(item)
     return {"agent": name} if name else {}
 
@@ -71,6 +76,9 @@ def _moves_primitives(item: WorkItemState) -> dict[str, object]:
             return {}
         case StartedWorkItem():
             return {"started": item.started, **_agent_primitives(item)}
+        case BlockedWorkItem():
+            block = {"since": item.since, "reason": item.reason, "waiting_on": item.waiting_on}
+            return {"started": item.started, **_agent_primitives(item), **block}
         case CompletedWorkItem():
             times = {"started": item.started, "completed": item.completed}
             return {
@@ -169,11 +177,13 @@ def item_held(held: HeldItemFile, kind: Kind, kinds: Sequence[Kind] = ()) -> Wor
                 id_held(held.superseded_by, (kind, *kinds)) if held.superseded_by else None
             )
             return removed_work_item(item, held.reason, held.removed, superseded_by)
-        case StartedItemFile() | CompletedItemFile():
+        case StartedItemFile() | BlockedItemFile() | CompletedItemFile():
             tasks = at_most_one_started(tuple(task_held(task) for task in held.tasks))
             begun = replace(started_work_item(item, held.started), tasks=tasks)
             begun = handed_work_item(begun, agent_written(held.agent))
             match held:
+                case BlockedItemFile():
+                    return blocked_work_item(begun, held.reason, held.waiting_on, held.since)
                 case CompletedItemFile():
                     commit = evidence_written(held.commit)
                     question = begun.criterion

@@ -8,6 +8,7 @@ from typing import assert_never
 
 from flowgraph.feature import FeatureRow
 from flowgraph.status.next import start_now_ids
+from flowgraph.status.review import ready_for_review, review_ids
 from flowgraph.story import StoryRow
 from flowgraph.task import TaskRow
 from flowgraph.upkeep import UpkeepRow
@@ -51,7 +52,9 @@ def status_text(rows: Iterable[WorkItemRow | FeatureRow], top: int | None = None
         held = [_item_lines(row) for row in in_bucket]
         if bucket == APART and not held:
             continue
-        pinned = [at for at, row in enumerate(in_bucket) if start_now_ids([row])]
+        pinned = [
+            at for at, row in enumerate(in_bucket) if start_now_ids([row]) or review_ids([row])
+        ]
         lines.append(f"{bucket} ({len(held)})\n")
         lines.extend(_top_of(held, top, pinned))
     return "".join(lines)
@@ -175,7 +178,8 @@ def _top_of(items: Sequence[str], top: int | None, pinned: Collection[int] = ())
 def _status_line(row: StoryRow | UpkeepRow) -> str:
     """One item of a bucket: its id and title, with its commit or the reason it was removed.
 
-    A started one is listed with its Tasks completed of all, between its id and its title, then
+    A started one is marked `?` before its id when it is ready for review. It is listed with
+    its Tasks completed of all, between its id and its title, then
     the agent it is handed to in brackets, if any, and under it each Task of it being worked on a
     line of its own, in the order written. A completed one holds a commit or not: one it holds
     stands before the title, so a line cut to a width keeps it; a reason ends the line.
@@ -184,7 +188,8 @@ def _status_line(row: StoryRow | UpkeepRow) -> str:
         completed = sum(task.state == COMPLETED for task in row.tasks)
         worked = "".join(_task_line(task) for task in row.tasks)
         handed = f"[{row.agent}]  " if row.agent else ""
-        return f"  {row.id}  {completed}/{len(row.tasks)} T  {handed}{row.title}\n{worked}"
+        mark = "? " if ready_for_review(row) else "  "
+        return f"{mark}{row.id}  {completed}/{len(row.tasks)} T  {handed}{row.title}\n{worked}"
     if row.commit:
         return f"  {row.id}  {row.commit}  {row.title}\n"
     why = ", ".join(

@@ -17,3 +17,12 @@ description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path
 check = "uv run pytest tests/functional/test_id_spellings.py -q"
 expected_output = "created: tests/functional/test_id_spellings.py states that on a record holding F-0015, fgraph show of f15, f-15, F15 and f-0015 each exits 0 and shows F-0015, and that f99 is refused as F-99 is, naming no Feature F-0099 in the record; and that x15, sp-15 and f-0 are refused as before, each with its refusal of today"
 created = 2026-11-23 07:16:30+00:00
+
+[[tasks]]
+id = "T-0380"
+state = "backlog"
+title = "Read an id given to any command in any case, without its dash and without its leading zeros"
+description = "The one seat is the shell. Do not make parse_work_item_id, parse_task_id, parse_feature_id or the regexes of item/id.py and feature/item.py lenient, since the record files are read through them and a file holds the canonical form. The prefixes come from KINDS of src/flowgraph/record/store.py plus F and T. A number of 0 is left as typed, so f-0 and s0 are refused as before. Text that is not of that form, such as a term name, a path, none, sp-15 or x15, is left untouched, so every refusal keeps its wording. Leave the --about and --waiting-on options alone. The unit tests come first, seen red: tests/item/test_id_spelled.py for id_spelled, and tests/parser/test_ids_read.py, parametrized over argv of every command and option that takes an id, parsed by build_command_line and read through ids_read. No existing test changes. Keep parser/item_commands.py as it is, since it is at 247 lines."
+check = "! grep -q xfail tests/functional/test_id_spellings.py && uv run pytest tests/functional/test_id_spellings.py tests/item/test_id_spelled.py tests/parser/test_ids_read.py -q"
+expected_output = "changed: src/flowgraph/item/id.py gains id_spelled, which gives the canonical id of a text that is a prefix letter of a kind in any case, an optional dash and a number of 1 or more, and gives any other text unchanged; created: src/flowgraph/parser/ids.py with ids_read, which rewrites the id, before, parent, depends_on, filed_during, amends and superseded_by of the parsed arguments; changed: src/flowgraph/cli.py reads the arguments through it; the xfail mark of tests/functional/test_id_spellings.py is removed"
+created = 2026-11-23 07:16:32+00:00

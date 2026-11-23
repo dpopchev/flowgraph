@@ -1911,6 +1911,77 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 | done | `CompletedX` |
 | pruned | `RemovedX` |
 
+### Records measured
+
+The seven board 1 records, read on 2026-11-23 by the board script alone:
+`board.py --root <repo> status` for the Epics, the Tasks and the landing
+line, and `board.py --root <repo> show W-nnn --detail brief` on every work
+item for its kind, its state and its parent. A cell is the count by state,
+todo/doing/blocked/done/pruned, then the total in brackets.
+
+| Repository | Epics | Tasks |
+|---|---|---|
+| `~/.claude` | 0/0/0/48/0 (48) | 2/0/0/1294/68 (1364) |
+| `advent-of-code-2025` | 0/0/0/0/0 (0) | 0/0/0/0/0 (0) |
+| `chaos-to-simple` | 0/0/0/20/0 (20) | 0/0/0/512/8 (520) |
+| `gflow` | 0/0/0/1/0 (1) | 0/0/0/12/0 (12) |
+| `stats` | 0/0/0/3/0 (3) | 2/0/0/85/1 (88) |
+| `surrogate-models` | 1/1/0/16/2 (20) | 30/0/1/410/77 (518) |
+| `svrf-parser` | 0/0/0/16/0 (16) | 0/0/0/381/32 (413) |
+| all seven | 1/1/0/104/2 (108) | 34/0/1/2694/186 (2915) |
+
+The work items by kind:
+
+| Repository | issue | spike | bug |
+|---|---|---|---|
+| `~/.claude` | 0/0/0/365/13 (378) | 0/0/0/22/2 (24) | 2/0/0/255/8 (265) |
+| `advent-of-code-2025` | 0/0/0/0/0 (0) | 0/0/0/0/0 (0) | 0/0/0/0/0 (0) |
+| `chaos-to-simple` | 0/0/0/156/0 (156) | 0/0/0/4/0 (4) | 0/0/0/75/1 (76) |
+| `gflow` | 0/0/0/3/0 (3) | 0/0/0/0/0 (0) | 0/0/0/0/0 (0) |
+| `stats` | 1/0/0/25/0 (26) | 0/0/0/0/0 (0) | 1/0/0/11/1 (13) |
+| `surrogate-models` | 13/1/0/118/17 (149) | 2/0/0/6/5 (13) | 6/0/0/36/1 (43) |
+| `svrf-parser` | 0/0/0/108/2 (110) | 0/0/0/10/10 (20) | 0/0/0/54/1 (55) |
+| all seven | 14/1/0/775/32 (822) | 2/0/0/42/17 (61) | 9/0/0/431/12 (452) |
+
+The work items by parent: a standalone root, under an Epic, or nested under
+another work item. A work item whose brief names an item it `continues` is
+counted apart: that is a relation of its own, not a parent.
+
+| Repository | Work items | Standalone | Under an Epic | Nested | Continues |
+|---|---|---|---|---|---|
+| `~/.claude` | 667 | 403 | 264 | 0 | 11 |
+| `advent-of-code-2025` | 0 | 0 | 0 | 0 | 0 |
+| `chaos-to-simple` | 236 | 43 | 193 | 0 | 1 |
+| `gflow` | 3 | 0 | 3 | 0 | 0 |
+| `stats` | 39 | 12 | 27 | 0 | 0 |
+| `surrogate-models` | 205 | 50 | 155 | 0 | 5 |
+| `svrf-parser` | 185 | 66 | 119 | 0 | 6 |
+| all seven | 1335 | 574 | 761 | 0 | 23 |
+
+Every sum by kind and by state equals the total `status` prints for its
+record, and the Tasks the briefs list, each counted once, equal the Task row
+of `status`. No work item of the seven has another work item as parent.
+
+The `landing:` line of each record, as `status` prints it:
+
+- `~/.claude`: `ff-main, approver agent, branch ids local, tag root-close,
+  ci none, worktree ../.claude.worktrees, branch max 1d, gate make -C
+  skills/board/scripts check, lanes 3`
+- `advent-of-code-2025`: `ff-main, approver developer, branch ids local, tag
+  epic-close, ci none, worktree ../advent-of-code-2025.worktrees, branch max
+  1d, lanes 1`
+- `chaos-to-simple`: `main, approver agent, branch ids local, tag
+  epic-close, ci none, on main, no branches, gate make check, lanes 1`
+- `gflow`: `pr, approver developer, branch ids local, tag epic-close, ci
+  pipeline, worktree ../gflow.worktrees, branch max 1d, lanes 1`
+- `stats`: `ff-main, approver developer, branch ids local, tag none, ci none,
+  worktree ../stats.worktrees, branch max 1d, lanes 1`
+- `surrogate-models`: `ff-main, approver agent, branch ids local, tag
+  epic-close, ci none, worktree ../surrogate-models-wt, branch max 1d, lanes
+  1`
+- `svrf-parser`: `pr, approver agent, branch ids remote, tag epic-close, ci
+  pipeline, worktree ../svrf-parser.worktrees, branch max 1d, lanes 3`
+
 ## Open questions
 
 - Must a Story under a Feature name the Feature criterion it realizes? The

@@ -29,12 +29,13 @@ commit = "3fb2eb3"
 
 [[tasks]]
 id = "T-0416"
-state = "backlog"
+state = "started"
 title = "Hand a started work item to an agent in the model: handed_over and hand_work_item in src/flowgraph/work_item/handed.py"
 description = "handed_over is an exhaustive match closed by assert_never; its started case calls handed_work_item. Import NotStartedError and CompletedAlreadyError from flowgraph.task; take RemovedAlreadyError, LoadWorkItem and SaveWorkItem from where the rest of the code imports them today. hand_work_item takes keyword-only arguments, shaped as start_work_item. Export nothing through work_item/__init__.py: callers import from handed.py directly. Do not touch work_item/moves.py, work_item/commands.py or item/moves.py. Tests are seen red first. Under the model marker: a started work item with no agent is handed and holds it; one with an agent holds the new one; the handed item equals the started one but for its agent; Backlog, completed and removed are each refused with their error and message. Under the command marker: hand_work_item saves the handed item through a recording list append; a refused hand saves nothing. Build the items as tests/work_item/test_work_item_agent.py does."
 check = "uv run pytest tests/work_item/test_work_item_hand.py -q"
 expected_output = "changed: src/flowgraph/work_item/handed.py adds two functions. handed_over(item, agent) returns the started work item holding the agent in place of the one it held, its Tasks, started time and the rest as they were; it raises NotStartedError for a work item in Backlog (the message names the id and says its start names the agent with --agent), CompletedAlreadyError for a completed one and RemovedAlreadyError for a removed one. hand_work_item(item_id, agent, load_work_item, save_work_item) loads the item, hands it over and saves it whole; nothing is saved on a refusal. created: tests/work_item/test_work_item_hand.py proves them"
 created = 2026-11-23 10:15:28+00:00
+started = 2026-11-23 10:33:26+00:00
 
 [[tasks]]
 id = "T-0417"

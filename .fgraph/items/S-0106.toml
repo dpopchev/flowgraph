@@ -1,9 +1,12 @@
 id = "S-0106"
-state = "backlog"
+state = "removed"
 title = "Raise the items of a record that keep the id they held in another record from none to every one converted"
 description = "The words of the note: the old ids kept as a reference. Its Tasks are written when it is ordered."
 parent = "F-0015"
 created = 2026-11-22 21:04:13+00:00
+removed = 2026-11-23 07:02:42+00:00
+reason = "the pivot the developer decided on 2026-11-23, after Q-0001 answered no: an old board is archived beside a new record, its items are not converted"
+superseded_by = "S-0120"
 depends_on = [
     "Q-0001",
 ]

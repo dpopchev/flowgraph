@@ -1,9 +1,10 @@
 id = "S-0112"
-state = "backlog"
+state = "started"
 title = "Raise the work items that carry their complexity from none to every one given it"
 description = "Filed on the plan the developer agreed on 2026-11-23. Its Tasks are written when it is ordered. The coordinator picks the model of the subagent from it; which model a complexity maps to stays in the skill, not in fgraph."
 parent = "F-0016"
 created = 2026-11-23 07:01:58+00:00
+started = 2026-11-23 08:08:31+00:00
 
 [criterion]
 given = "a record with a Story in Backlog"

@@ -1,0 +1,14 @@
+id = "S-0127"
+state = "backlog"
+title = "Cut the work items fgraph status lists as able to start now that hold no Task from every one to none"
+description = "Filed on the go of the developer of 2026-11-23, from the plan of the Story it depends on. Its Tasks are written when it is ordered. The next to start has never read the Tasks, and fgraph start refuses a work item with none: S-0001 has no Task to start with. Open: whether the line of such a work item says it waits for its Tasks, so a coordinator sees what to plan next."
+parent = "F-0016"
+created = 2026-11-23 08:08:24+00:00
+depends_on = [
+    "S-0110",
+]
+
+[criterion]
+given = "a record with the development on and two work items in Backlog that wait for nothing, the first with no Task and the second with one"
+when = "fgraph status is run, as text and as JSON"
+then = "it marks the second as able to start now and not the first, which fgraph start would refuse for its Task"

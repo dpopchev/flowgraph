@@ -1,10 +1,12 @@
 id = "S-0117"
-state = "backlog"
+state = "started"
 title = "Raise the scopes of the Backlog fgraph words a /goal line for from none to every one a developer names"
 description = "Filed on the plan the developer agreed on 2026-11-23. Its Tasks are written when it is ordered. The words of the developer: agent-driven development always starts with a /goal initiated by the developer; the goal follows the best practices of Claude and is suggested by fgraph given the scope of the Backlog that will be implemented. fgraph words the line and never sets it. Open: the best practices are read from the documentation of Claude Code for /goal when the Story is ordered; the scopes beside a Feature -- a work item, the top of the queue -- and what a record driven by a developer answers."
 parent = "F-0016"
 complexity = "medium"
 created = 2026-11-23 07:02:21+00:00
+started = 2026-11-23 10:15:55+00:00
+agent = "sonnet-3"
 depends_on = [
     "S-0115",
 ]

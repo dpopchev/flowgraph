@@ -225,7 +225,6 @@ def test_the_last_story_of_a_feature_is_tagged_at_its_close(tmp_path: Path, orig
     assert git(checkout, "tag", "--list") == "v0.1.0"
 
 
-@RED
 class TestTheLastStoryOfAFeatureWhoseTagTheOriginRefuses:
     @pytest.fixture
     def checkout(self, tmp_path: Path, origin: Path) -> Path:
@@ -254,7 +253,6 @@ class TestTheLastStoryOfAFeatureWhoseTagTheOriginRefuses:
         assert "bucket       InProgress" in fgraph(["show", "F-0001"], checkout).out
 
 
-@RED
 def test_the_tag_at_the_close_of_a_feature_is_on_the_commit_of_the_landing(
     tmp_path: Path, origin: Path
 ) -> None:

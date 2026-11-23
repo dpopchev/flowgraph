@@ -144,19 +144,20 @@ class TestTheLastStoryOfAFeatureLandedWithDeliveryTagFeatureClose:
         self, landed: Outcome, checkout: Path
     ) -> None:
         merge = git(checkout, "rev-parse", "--short", "main~1")
-        head = git(checkout, "rev-parse", "--short", "main")
         assert landed.out == (
-            f"landed S-0001 at {merge}\ncompleted F-0001 at {merge}\ntagged v0.1.0 at {head}\n"
+            f"landed S-0001 at {merge}\ncompleted F-0001 at {merge}\ntagged v0.1.0 at {merge}\n"
         )
 
-    def test_main_holds_the_next_v_tag_on_its_head(self, landed: Outcome, checkout: Path) -> None:
-        assert git(checkout, "tag", "--list", "--points-at", "main") == "v0.1.0"
+    def test_main_holds_the_next_v_tag_on_the_commit_before_its_head(
+        self, landed: Outcome, checkout: Path
+    ) -> None:
+        assert git(checkout, "tag", "--list", "--points-at", "main~1") == "v0.1.0"
 
-    def test_the_tag_is_on_the_commit_that_completes_the_feature(
+    def test_the_tag_is_on_the_commit_of_the_landing_that_precedes_the_complete(
         self, landed: Outcome, checkout: Path
     ) -> None:
         assert git(checkout, "for-each-ref", "--format=%(*subject)", "refs/tags/v0.1.0") == (
-            "chore: complete S-0001 and F-0001 in the record"
+            "feat: land the first Story"
         )
 
     def test_the_tag_is_annotated_as_fgraph_release_makes_it(

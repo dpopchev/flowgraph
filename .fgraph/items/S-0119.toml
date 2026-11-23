@@ -2,9 +2,10 @@ id = "S-0119"
 state = "backlog"
 title = "Raise the terms the record of flowgraph holds from none to those of its domain model"
 description = "Filed on the plan the developer agreed on 2026-11-23. Its Tasks are written when it is ordered. The criterion of the developer for the project: flowgraph tracks itself with fgraph and builds a knowledge base with an ontology that enables graph queries and planning. The ontology is built, F-0005 and F-0006, and the record of flowgraph holds none of it. Its output is the record itself; the list of terms is the Task's, from the document."
+complexity = "low"
 created = 2026-11-23 07:02:25+00:00
 
 [criterion]
 given = "the record of flowgraph, where fgraph terms prints no terms in the record"
 when = "fgraph terms is run"
-then = "it lists the terms of docs/domain-model.md -- record, work item, Feature, Story, Bug, Spike, Upkeep, Task, criterion, bucket, queue, knowledge line, term, development, landing, gate, delivery -- each with its meaning, and fgraph show of one lists what it is part of or is"
+then = "it lists the twenty-two terms the developer agreed on 2026-11-23 -- record, work-item, feature, story, bug, spike, upkeep, task, criterion, bucket, backlog, in-progress, completed, removed, knowledge-line, term, development, landing, gate, delivery, planned, blocked -- each with its meaning, and fgraph show of one lists what it is part of or is"

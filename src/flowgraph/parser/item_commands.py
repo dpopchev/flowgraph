@@ -4,6 +4,7 @@ import argparse
 
 from flowgraph.graph import JSON
 from flowgraph.parser.base import Commands, new_command
+from flowgraph.parser.brief import brief_command
 from flowgraph.parser.start import start_command
 from flowgraph.status import document
 from flowgraph.term import KINDS
@@ -62,6 +63,7 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         commands, "about", "list the links of a work item or a Feature, by relation"
     )
     about.add_argument("id", metavar="ID", help="the id of the work item or of the Feature")
+    brief = brief_command(commands)
     start = start_command(commands)
     block = new_command(commands, "block", "block a started Task or Feature that cannot go on")
     block.add_argument("id", metavar="ID", help="the id of the Task or of the Feature")
@@ -219,6 +221,7 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         "amend": amend,
         "show": show,
         "about": about,
+        "brief": brief,
         "start": start,
         "block": block,
         "unblock": unblock,

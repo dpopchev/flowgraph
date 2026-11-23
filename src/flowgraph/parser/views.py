@@ -4,6 +4,8 @@ import argparse
 from pathlib import Path
 
 from flowgraph.about import about_item
+from flowgraph.brief.read import brief_of
+from flowgraph.brief.text import brief_text
 from flowgraph.development.commit import OpenGit, Said
 from flowgraph.feature.item import show_any_item
 from flowgraph.graph import graph_text
@@ -12,11 +14,14 @@ from flowgraph.record.store import Store
 from flowgraph.term.item import terms_text
 
 
-def view_said(args: argparse.Namespace, store: Store, cwd: Path, open_git: OpenGit) -> Said | None:
+def view_said(
+    args: argparse.Namespace, store: Store, cwd: Path, open_git: OpenGit, record: Path
+) -> Said | None:
     """Say the text of the view the arguments name; None when they name none.
 
-    The directory fgraph runs in, cwd, is where the path of fgraph about a file is taken from.
-    Raises the refusal of the view; nothing is written.
+    The directory fgraph runs in, cwd, is where the path of fgraph about a file is taken from;
+    the record is where git is asked for the branch and the worktree of a brief. Raises the
+    refusal of the view; nothing is written.
     """
     match args.command:
         case "knowledge":
@@ -27,6 +32,8 @@ def view_said(args: argparse.Namespace, store: Store, cwd: Path, open_git: OpenG
             return Said(graph_text(args.format, store))
         case "about":
             return Said(about_item(args.id, store, cwd, open_git))
+        case "brief":
+            return Said(brief_text(brief_of(args.id, store, record, open_git)))
         case "show":
             return Said(show_any_item(args.id, store))
         case _:

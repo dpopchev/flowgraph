@@ -40,17 +40,17 @@ RECORD = [
     ["add", "feature", "the gate", "--criterion", "a criterion"],
     ["note", "F-0001", "--decision", FEATURE_DECISION],
     ["add", "story", "the first story", *CRITERION],
-    ["add", "task", "a first task", "--parent", "S-0001", "--output", "an output", *CHECK],
+    ["add", "task", "a first task", "--parent", "S-0001", "--output", "an output"],
     ["start", "S-0001"],
     ["start", "T-0001"],
     ["complete", "T-0001"],
     ["complete", "S-0001"],
     ["note", "S-0001", "--decision", GOVERNING, "--governs", "src/gate.py"],
+    ["config", "set", "development.enabled", "true"],
     ["add", "story", "the second story", *CRITERION, "--parent", "F-0001", *RELATED],
     ["add", "task", "a second task", "--parent", "S-0002", "--output", OUTPUT, *CHECK],
     ["note", "S-0002", "--decision", ITEM_DECISION],
     ["add", "story", "the third story", *CRITERION],
-    ["config", "set", "development.enabled", "true"],
     ["start", "F-0001", "--slug", "brief-me", "--agent", "sonnet-a1"],
 ]
 
@@ -108,7 +108,8 @@ def checkout(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Path]:
         git(path, "init", "--quiet", "--initial-branch", "main")
         git(path, "commit", "--quiet", "--allow-empty", "--message", "chore: start the project")
         for argv in RECORD:
-            fgraph(argv, path)
+            made = fgraph(argv, path)
+            assert made.status == 0, f"{' '.join(argv)}: {made.err}"
         yield path
 
 
@@ -127,7 +128,6 @@ def shown(checkout: Path, item: str) -> str:
     return fgraph(["show", item], checkout).out
 
 
-@RED
 class TestTheBriefAsText:
     @pytest.fixture
     def printed(self, checkout: Path) -> Outcome:
@@ -158,13 +158,11 @@ class TestTheBriefAsText:
         assert f"Terms (1)\n  gate  {MEANING}\n" in printed.out
 
 
-@RED
 class TestTheBriefOfBacklogAsText:
     def test_it_prints_exactly_what_show_prints(self, checkout: Path) -> None:
         assert brief(checkout, "S-0003").out == shown(checkout, "S-0003")
 
 
-@RED
 class TestTheBriefRefusedAsText:
     @pytest.mark.parametrize("item", ["F-0001", "T-0001"])
     def test_an_id_that_is_no_work_item_is_refused_naming_the_kinds(

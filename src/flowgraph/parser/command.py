@@ -234,4 +234,4 @@ def command_said(
                 status_output(store, None if args.all else TOP, args.format, width(), limit)
             )
         case _:
-            return view_said(args, store, cwd, open_git)
+            return view_said(args, store, cwd, open_git, record)

@@ -8,3 +8,8 @@ filed_during = "Q-0001"
 [criterion]
 observed = "docs/domain-model.md, States are types, says the same five types exist for Story, Bug, Spike, Upkeep and Task, with BlockedStory among them, and Direction lists remove from X, StartedX and BlockedX; the same file says under Persistence that blocking and unblocking a work item are not built and that removing a Task and removing a started work item are not built; fgraph block --help takes the id of a Task or of a Feature, fgraph remove --help an item in Backlog, and src/flowgraph/task/model.py holds four states of a Task, none removed"
 expected = "the two tables and the code agree: each move a table lists is one fgraph makes, or the table marks it as not built"
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-23, reading a drawn frame of fgraph watch: blocked can be any work item, a Feature among them; I do not see how a Task can be blocked. So the block of a work item, which the tables list and fgraph does not make, is wanted. Open, for the developer: whether fgraph block stops taking a Task, which it takes today beside a Feature."
+noted = 2026-11-23 11:56:30+00:00

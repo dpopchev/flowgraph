@@ -49,3 +49,8 @@ description = "Find the passages by grep, not by line number. Add no row to the 
 check = "grep -q fgraph.hand README.md && grep -q chore:.hand docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, in Persistence: a bullet right after the passage on fgraph start --agent states fgraph hand, its form, where it is written, its refusals, the agent replaced with no history kept but the commits, and the development off; the sentence naming the hand as a later Story is replaced; the table of writes gains hand a started work item to an agent, on its branch, right after the row of its Tasks; hand joins the list of the writes fgraph commits; the table of messages gains a row hand right after start. README.md: after the example of fgraph start --agent, a paragraph and an example of fgraph hand, run in the worktree and from main with --dir, and the refusal on main"
 created = 2026-11-23 10:15:32+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer gave the go on 2026-11-23 to the Tasks and the rulings shown that day: the command is fgraph hand ID --agent NAME; it is written where the Tasks of the started work item are -- in its worktree, or from main with --dir on the record of that worktree -- and on main it is refused naming the worktree; the agent is replaced, the one before kept by the commit of the hand alone. S-0126 starts once S-0117 is landed: both add a command to the same module of the parser."
+noted = 2026-11-23 10:15:53+00:00

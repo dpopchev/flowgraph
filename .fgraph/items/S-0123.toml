@@ -3,6 +3,9 @@ state = "backlog"
 title = "Raise the steps a work item has passed when fgraph lists it Completed, with the development on, from one, the merge into main, to four: the gate, the tag and the push too"
 description = "The UX request of the developer of 2026-11-23, filed as asked; ordered by the developer. Its Tasks are written when it is ordered. The words: the criteria of the completed is also being delivered -- the minimum is merged in main, no failing tests, tagged accordingly and pushed. Seen on 2026-11-23: each is a key a record may leave out -- development.gate none, delivery.push false and delivery.tag none in the record of flowgraph -- and a landing completes without them; delivery.tag tags at the close of a Feature alone, and no value tags a work item that stands alone. Open: whether the gate, the tag and the push become what a landing always does or a landing is refused while a key is left out; what tagged accordingly is -- a tag at each completed work item, the next minor for a Story or a Bug and the next patch for an Upkeep or a Spike as fgraph release computes, or at the close of a Feature; a record with no remote; and the development off, where a developer works by hand."
 created = 2026-11-23 07:13:15+00:00
+depends_on = [
+    "S-0140",
+]
 
 [criterion]
 given = "a record with the development on, a remote that main tracks and a started work item whose Tasks are completed"

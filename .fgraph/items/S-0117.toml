@@ -30,13 +30,15 @@ commit = "fd67982"
 
 [[tasks]]
 id = "T-0408"
-state = "started"
+state = "completed"
 title = "Word the /goal line of a Feature in the new pure module src/flowgraph/goal/model.py"
 description = "Red first. test_line.py is under the view marker and covers one, two and three ids, Parallel 3, Unlimited, the hours, and the whole line of the first Task. test_scope.py is under the model marker and covers each refusal message. Pure: no store, no I/O, plain ASCII, an exhaustive match on the limit of src/flowgraph/record/layers.py closed by assert_never. Leave out of the line: any model name, any mapping of a complexity to a model, how hand-backs are reviewed or landed, filing findings, make check, the path of the repository: that protocol stays in the skill. Touch no other file."
 check = "uv run pytest tests/goal -q"
 expected_output = "created: src/flowgraph/goal/__init__.py with a one-line docstring, and src/flowgraph/goal/model.py, which holds goal_line(feature, items, limit, hours), the line of the first Task: ids joined as a, a and b, or a, b and c; Parallel(n) says at most n at once as development.parallel says, and Unlimited says as many at once as can start, development.parallel setting no limit; the bound says or stop after N hours. It holds make_hours(text), a whole number of 1 or more, raising GoalHoursError; check_driven_by_agent(development), raising GoalDriverError naming development.enabled when the development is off and development.driver when the driver is a developer, each message saying how to set the key with fgraph config set; and check_scope(feature, items), raising EmptyGoalError naming the Feature when items is empty. Created beside it: tests/goal/test_line.py and tests/goal/test_scope.py"
 created = 2026-11-23 10:14:19+00:00
 started = 2026-11-23 10:19:17+00:00
+completed = 2026-11-23 10:20:56+00:00
+commit = "3331fd0"
 
 [[tasks]]
 id = "T-0409"

@@ -27,3 +27,8 @@ description = "Written on main by the coordinator, as fgraph relate is a write o
 check = "uv run fgraph graph | grep -cE 'kind.: .(is a|part of).,' | grep -qx 22"
 expected_output = "changed: the terms of the record on main hold 22 relations: story, bug, spike and upkeep is-a work-item; backlog, in-progress, completed and removed is-a bucket; task part-of work-item; work-item part-of feature and record; feature, term and development part-of record; criterion part-of work-item, feature and task; knowledge-line part-of work-item and feature; landing part-of development; gate and delivery part-of landing"
 created = 2026-11-23 12:05:09+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer gave the go on 2026-11-23 to the vocabulary shown that day: twenty-two terms and twenty-two relations. Against the seventeen of the criterion as filed: queue is dropped -- the backlog is an ordered list the developer arranges and work is pulled from its top, neither a queue nor a stack; the four buckets are terms of their own, backlog, in-progress, completed and removed, each a bucket; planned and blocked are added, blocked being of a work item or a Feature in the words of the developer. A term is not amended or removed once added. The shape of the work: the Story is worked by the coordinator alone, with no subagent, since a term is written on main alone and its output is 44 writes of the record and no code; each Task is completed in the worktree of the Story, whose check reads the terms of main."
+noted = 2026-11-23 12:05:12+00:00

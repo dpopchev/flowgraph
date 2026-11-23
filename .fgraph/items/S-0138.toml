@@ -78,13 +78,15 @@ commit = "2dd0da3"
 
 [[tasks]]
 id = "T-0443"
-state = "started"
+state = "completed"
 title = "Show the block of a work item in fgraph show and in the JSON of fgraph status"
 description = "src/flowgraph/status/show.py (145 lines): in show_text the bucket line ends , blocked when the detail waits on someone, and a line waiting on, padded to 13 as the others, follows the reason line. src/flowgraph/status/document.py (143 lines): _work_item holds block right after agent, built as _feature builds it, from block_reason and waiting_on of the row; the module docstring names it in a sentence of its own after the one on the agent. The text of fgraph brief and the node of a work item in fgraph graph do not change. Tests red first: in tests/status/test_document.py a blocked work item holds its block, one that is not holds null, and one under a Feature holds it too; a new tests/status/test_show_blocked.py for the three lines of show and for a started one that has none of them. Remove the remaining xfail marks of the first Task."
 check = "uv run pytest tests/status tests/functional/test_block_work_item.py tests/functional/test_status_json.py -q && ! grep -q xfail tests/functional/test_block_work_item.py"
 expected_output = "changed: fgraph show of a blocked work item lists bucket InProgress, blocked, then reason and waiting on; every work item object of fgraph status --format json, in a bucket and under a Feature, holds the key block, an object reason and waiting_on while it is blocked, else null, and its state blocked; reason stays the one of a removal. No xfail mark is left in tests/functional/test_block_work_item.py"
 created = 2026-11-23 14:57:38+00:00
 started = 2026-11-23 15:34:00+00:00
+completed = 2026-11-23 15:37:55+00:00
+commit = "7ebe73d"
 
 [[tasks]]
 id = "T-0444"

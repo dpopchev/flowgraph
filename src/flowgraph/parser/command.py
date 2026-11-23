@@ -9,8 +9,8 @@ from pathlib import Path
 
 from flowgraph.development import RunGate, check_slug_branched
 from flowgraph.development.commit import OpenGit, Said, commit_written
-from flowgraph.development.land import land_item
 from flowgraph.development.driver import check_complexity
+from flowgraph.development.land import land_item
 from flowgraph.development.parallel import check_parallel
 from flowgraph.development.release import release_trunk
 from flowgraph.development.scope import check_complete_on_main, check_start_on_main

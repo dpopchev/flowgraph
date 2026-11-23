@@ -177,8 +177,8 @@ fgraph about src/gate.py
 
 `fgraph graph` exports the whole record as one JSON document another tool reads:
 every node with its kind -- feature, story, upkeep, bug, spike, task or term --
-its title, which for a term is its meaning, and its bucket where it has one;
-every edge with its kind and its two ends, `from` and `to`; and the knowledge
+its title, which for a term is its meaning, and its bucket where it has one, a
+task also its `state` (backlog, started, blocked or completed); every edge with its kind and its two ends, `from` and `to`; and the knowledge
 lines as a list of their own. It reads the record and writes nothing; `json` is
 its one format and its default, and another word is refused naming it. The order
 is fixed, by id, so two runs on one record print the same bytes:
@@ -198,6 +198,13 @@ fgraph graph --format json
 #       "kind": "story",
 #       "title": "Run the gate",
 #       "bucket": "Backlog"
+#     },
+#     {
+#       "id": "T-0001",
+#       "kind": "task",
+#       "title": "Write the gate",
+#       "bucket": "InProgress",
+#       "state": "blocked"
 #     },
 #     {
 #       "id": "gate",

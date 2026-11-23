@@ -12,23 +12,32 @@ expected = "the node of a Task carries its state as fgraph show lists it: Backlo
 
 [[tasks]]
 id = "T-0343"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_graph_task_state.py, failing on the expected of B-0021"
 description = "Run through run() of src/flowgraph/cli.py on a record in tmp_path, as tests/functional/test_graph_json.py does. Seen red, then marked a strict xfail naming B-0021 until the Task that turns it green removes the mark."
 expected_output = "created: tests/functional/test_graph_task_state.py states that on a record with a Story holding a started, a blocked, a completed Task and one in Backlog, fgraph graph exits 0 and each Task node carries its own state"
 created = 2026-11-22 21:02:23+00:00
+started = 2026-11-23 00:06:23+00:00
+completed = 2026-11-23 00:10:55+00:00
+commit = "6d7114a"
 
 [[tasks]]
 id = "T-0344"
-state = "backlog"
+state = "completed"
 title = "Carry the state of a Task on its node in fgraph graph"
 description = "Removes the xfail mark of tests/functional/test_graph_task_state.py. Written on 2026-11-22 against the modules of that day, before U-0010 moves them: they are taken again when the Task starts. A module of src/ that would pass the line limit of mk/python.mk is split by one cohesive part, named in the commit."
 expected_output = "changed: the node of a Task in fgraph graph carries its state in place of bucket null: its bucket, and whether an InProgress one is started or blocked, under keys chosen in the Task; the node of a work item, of a Feature and of a term is what it was; two runs print the same bytes"
 created = 2026-11-22 21:02:25+00:00
+started = 2026-11-23 00:10:56+00:00
+completed = 2026-11-23 00:13:34+00:00
+commit = "1d962b0"
 
 [[tasks]]
 id = "T-0345"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to show the state of a Task node of fgraph graph"
 expected_output = "changed: README.md shows a Task node with its state; docs/domain-model.md, Graph, says what a Task node carries"
 created = 2026-11-22 21:02:26+00:00
+started = 2026-11-23 00:13:35+00:00
+completed = 2026-11-23 00:16:02+00:00
+commit = "93599fa"

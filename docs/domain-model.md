@@ -759,7 +759,12 @@ three lists.
 - `nodes`: each has `id`, `kind`, `title` and `bucket`. The kinds are `feature`,
   `story`, `upkeep`, `bug`, `spike`, `task` and `term`. The title of a term is its
   meaning. The bucket is that of a Feature or a work item as `fgraph status` lists it,
-  and `null` for a Task and a term, which are in none.
+  and `null` for a term, which is in none. A Task node has a fifth key, `state`, after
+  `bucket`: `backlog`, `started`, `blocked` or `completed`, the words of a Task in
+  `fgraph status --format json`. Its `bucket` is the one `fgraph show` lists the Task in:
+  Backlog, InProgress for a started and a blocked one -- `state` tells them apart --
+  Completed, and Removed for every Task of a removed work item, whose `state` is the one
+  it kept. The node of a work item, of a Feature and of a term has the four keys alone.
 - `edges`: each has `kind`, `from` and `to`. The kinds are `under` (a work item to its
   Feature), `task of` (a Task to its work item), `depends on`, `filed during`,
   `superseded by` and `amends` (a work item to another), `is a` and `part of` (a term
@@ -806,8 +811,8 @@ that holds nothing is `null`, never an empty text; a list that holds nothing is 
   started ones alone; the document lists all of them, and `progress` counts them as before.
 
 The block of a Task is its own state and is carried by the Task: a Feature does not copy
-it, as the text line of a Feature does. `fgraph graph` prints `"bucket": null` for a Task;
-the status document carries the state of each Task instead.
+it, as the text line of a Feature does. The node of a Task in `fgraph graph` carries the
+same `state`, with its bucket (see Graph).
 
 ## Evidence
 

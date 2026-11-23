@@ -46,3 +46,8 @@ description = "Find the passages by grep, not by line numbers: S-0115 and S-0116
 check = "grep -q ready_for_review docs/domain-model.md && grep -q ready_for_review README.md"
 expected_output = "changed: docs/domain-model.md, section Order, states that fgraph status marks ? a started work item that holds a Task with every Task completed, as ready for review: standing alone or under a Feature, with the development on or off, read from the rows as status reads them (from its worktree with the development on), derived at each listing and kept in no file; a work item with no Task and the line of a Feature are not marked, and a marked line the top leaves out is listed after it; section Status as JSON lists ready_for_review in the bullet Document; README.md shows the marked line and the key in the JSON example"
 created = 2026-11-23 09:10:40+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer gave the go on 2026-11-23 to the Tasks and the rulings shown that day: the mark is ? in the first column of the line; it is read from the Tasks and kept in no file; a work item with no Task is not marked; it is shown with the development off too and by fgraph watch; the JSON holds the top-level list ready_for_review and no key on an item. Its complexity is medium by the coordinator, low by its planner: its first Task builds two worktrees with Tasks completed in them."
+noted = 2026-11-23 09:12:12+00:00

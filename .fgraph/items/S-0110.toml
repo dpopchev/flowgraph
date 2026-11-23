@@ -8,6 +8,11 @@ started = 2026-11-23 08:08:26+00:00
 completed = 2026-11-23 08:28:35+00:00
 commit = "61c6404"
 
+[verified]
+answer = "yes"
+text = "at 61c6404 on main, in a scratch git repository with the development on and development.parallel = 3, S-0001 started and S-0002 to S-0005 in Backlog, each with a Task, S-0002 depending on S-0004: fgraph status exit 0 marked > S-0003 and > S-0004 and no other line, S-0002 with ~; fgraph status --format json held can_start S-0003, S-0004 and next_to_start S-0003; fgraph watch --count 1 marked two lines; with the development off can_start held S-0003 alone; on the record of flowgraph, F-0016 started with S-0113, status marked S-0114 and S-0115 under the Feature and can_start listed them; make check on main at 812326d, with S-0112 landed too: 2968 passed, all checks passed. Worked whole by one subagent on sonnet beside S-0112; the two branches merged with no conflict; it added a fifth commit with no Task, e1b6837, for four lint findings of its own code, and tried one python heredoc to edit a test, which the harness denied. src/flowgraph/status/view.py is at 247 of 250 lines. The two lines the record of flowgraph marks hold no Task: S-0127."
+on = 2026-11-23 08:35:53+00:00
+
 [criterion]
 given = "a record with the development on and development.parallel set to 3, one work item started, three in Backlog that wait for nothing and a fourth that waits for one of them"
 when = "fgraph status is run, as text and as JSON"

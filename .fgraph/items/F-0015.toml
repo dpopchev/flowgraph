@@ -1,12 +1,10 @@
 id = "F-0015"
-state = "blocked"
+state = "removed"
 title = "Raise the board 1 records a developer converts to a record of fgraph with one command from none to all seven"
 description = "From the note of the ~/.claude session of 2026-11-22 on the gaps of the planning skill (output: migration), filed and ordered on the word of the developer of that day: update the backlog and prioritize. The data of the note: one .board/ per repository -- board.toml, one Markdown file per item under items/ with a frontmatter, ledgers; ids E-nnn, W-nnn, T-nnn; states todo, doing, blocked, done, pruned; relations parent, depends_on, filed_during, amends, pre_empted_by. Seven repositories: ~/.claude, the largest with about 48 Epics, 667 work items and 1364 Tasks, and advent-of-code-2025, chaos-to-simple, gflow, stats, surrogate-models and svrf-parser under ~/projects; read through uv run ~/.claude/skills/board/scripts/board.py --root <repo> <command>; once per repository, at its migration. The map of the kinds is docs/domain-model.md, From board 1."
 created = 2026-11-22 21:04:08+00:00
-started = 2026-11-23 04:57:51+00:00
-since = 2026-11-23 07:02:48+00:00
-reason = "pivoted on 2026-11-23: its criteria, the conversion of every item, are not met and are superseded by S-0120; it is removed once a started Feature can be"
-waiting_on = "the rework of the skills of ~/.claude, and the remove of a started Feature"
+removed = 2026-11-23 13:43:54+00:00
+reason = "pivoted on 2026-11-23: its criteria, the conversion of every item of a board 1 record, are not met and are superseded by S-0120, which archives an old board beside a new record"
 criteria = [
     "a developer converts the .board/ of a repository to a .fgraph/ with one command, every item kept with its state and its relations",
     "a developer finds an item of the new record by the id it held in the old one",

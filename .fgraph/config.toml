@@ -1,3 +1,4 @@
 [development]
 enabled = true
 parallel = 5
+driver = "agent"

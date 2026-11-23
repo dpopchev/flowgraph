@@ -19,7 +19,6 @@ from flowgraph.cli import open_files, run
 
 pytestmark = pytest.mark.functional
 
-RED = pytest.mark.xfail(strict=True, reason="S-0138: the block of a work item is not built")
 START = datetime(2026, 1, 1, tzinfo=UTC)
 LATER = START + timedelta(minutes=1)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
@@ -93,7 +92,6 @@ class TestAStartedStoryBlocked:
             f"Backlog (0)\nInProgress (1)\n{MARKED}\nCompleted (0)\n"
         )
 
-    @RED
     def test_show_lists_it_in_inprogress_as_blocked_with_its_reason_and_what_it_waits_on(
         self, blocked: Outcome, tmp_path: Path
     ) -> None:
@@ -110,7 +108,6 @@ class TestAStartedStoryBlocked:
             "    expected output  an output\n"
         )
 
-    @RED
     def test_the_json_holds_its_state_blocked_and_its_block(
         self, blocked: Outcome, tmp_path: Path
     ) -> None:
@@ -145,7 +142,6 @@ class TestABlockedStoryUnblocked:
             "Backlog (0)\nInProgress (1)\n  S-0001  0/1 T  a title\nCompleted (0)\n",
         )
 
-    @RED
     def test_the_json_holds_its_state_started_and_no_block(
         self, unblocked: Outcome, tmp_path: Path
     ) -> None:

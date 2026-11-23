@@ -67,9 +67,10 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     amends, the work items that amend it, a description, an agent, a commit, the answer of its
     closing with its day and the text the run printed, the work item that supersedes a removed
     one and the reason of a removal are listed only when there is one, the bucket of a
-    Task only once it has left Backlog. A blocked Task is listed in InProgress as blocked, with
-    its reason and what it waits on. The knowledge lines follow, in the order noted, each with
-    its kind, its date and its text, then the terms it is about; there is no heading without one.
+    Task only once it has left Backlog. A blocked work item or Task is listed in InProgress as
+    blocked, with its reason and what it waits on. The knowledge lines follow, in the order
+    noted, each with its kind, its date and its text, then the terms it is about; there is no
+    heading without one.
     The terms the item is about are listed after its description, only when there are some, and
     its complexity after them, only when it has one.
     """
@@ -89,6 +90,7 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     day = None if answer is None else answer.on.date().isoformat()
     verified = [] if answer is None else [f"  verified     {answer.answer}  {day}  {answer.text}\n"]
     removed = [f"  reason       {detail.reason}\n"] if detail.reason else []
+    waited = [f"  waiting on   {detail.waiting_on}\n"] if detail.waiting_on else []
     superseded = [f"  superseded by {detail.superseded_by}\n"] if detail.superseded_by else []
     supersedes = ", ".join(detail.supersedes)
     supersede = [f"  supersedes   {supersedes}\n"] if supersedes else []
@@ -107,7 +109,7 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     }
     lines = [
         f"{detail.id}  {detail.title}\n",
-        f"  bucket       {bucket}\n",
+        f"  bucket       {bucket}{', blocked' if detail.waiting_on else ''}\n",
         *under,
         *depends,
         *during,
@@ -120,6 +122,7 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
         *verified,
         *superseded,
         *removed,
+        *waited,
         *described,
         *about,
         *rated,

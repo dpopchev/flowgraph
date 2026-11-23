@@ -8,3 +8,8 @@ criteria = [
     "a developer converts the .board/ of a repository to a .fgraph/ with one command, every item kept with its state and its relations",
     "a developer finds an item of the new record by the id it held in the old one",
 ]
+
+[[knowledge]]
+kind = "decision"
+text = "The developer set the goal of the session on 2026-11-23: burn Q-0001 until it is Completed with its decision and its answer, landed on main with make check passing there. The session is the coordinator and does no work of a work item itself: every work item that is no Feature is delegated, Task by Task, to a subagent in the worktree of the work item, its model and effort by the complexity of the Task (the dispatch rule of ~/.claude/skills/board/lanes.md, one model up after a refuted or blocked hand-back); the subagent writes the record with uv run fgraph in that worktree and commits with no Claude attribution. The coordinator reviews each hand-back against git log and the diff of the branch, lands the work item with fgraph land, runs its criterion on main and notes what it printed, and files every finding of a subagent at the end of the Backlog with --filed-during, never burned. The Spike is landed with the answer the evidence gives. It halts on a criterion change, a removal, a record that disagrees with the repository, a missing toolchain, or a second refuted hand-back of one Task."
+noted = 2026-11-23 05:04:25+00:00

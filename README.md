@@ -57,6 +57,7 @@ the typed edges of the whole record as JSON.
 | the release of the trunk        | `fgraph release` tags `main` with its next `v*` version  |
 | the links of an item            | `fgraph about` lists every relation, both sides, by id   |
 | the brief of a work item        | `fgraph brief` prints it whole, as text or as JSON       |
+| the /goal line of a Feature     | `fgraph goal` prints it, for a developer to paste        |
 | the export of the record        | `fgraph graph` prints its nodes and edges as JSON        |
 | the ontology                    | started: terms, related by is-a and part-of              |
 | flowgraph tracking its own work | its Stories are in `.fgraph/` since 0.4.0                |
@@ -217,6 +218,20 @@ fgraph brief S-0002
 # Terms (1)
 #   gate  a check every deliverable passes before it lands
 fgraph brief S-0002 --format json
+```
+
+`fgraph goal F-0001` prints one `/goal` line for a developer to paste into Claude
+Code, naming the work items of the Feature in Backlog in the order they start. It
+reads the record and writes nothing, and fgraph never sets the goal itself. The ids,
+`development.parallel` and the hours come from the record and the option; the rest
+is fixed text. `--hours N` bounds the goal, 8 by default. It is refused, exit 2, for
+a record whose `development.enabled` is off or whose `development.driver` is not
+`agent`, for a Feature with no work item in Backlog, and for hours that are not a
+whole number of 1 or more:
+
+```sh
+fgraph goal F-0001 --hours 4
+# /goal Develop F-0001 until fgraph show F-0001 lists S-0001, S-0002 and S-0003 Completed, or stop after 4 hours. This session is the coordinator: it hands each whole work item to one subagent, at most 3 at once as development.parallel says. The goal is met as well when this session prints [HALT] <id>: <the decision needed> on a change to a criterion, a Task or the scope of a work item, or a removal, that the developer has not agreed.
 ```
 
 `fgraph graph` exports the whole record as one JSON document another tool reads:

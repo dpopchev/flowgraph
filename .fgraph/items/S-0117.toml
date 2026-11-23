@@ -18,39 +18,51 @@ then = "it prints one /goal line for the developer to paste: the scope by its id
 
 [[tasks]]
 id = "T-0407"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_goal.py, failing on the criterion of S-0117"
 description = "Run through run() of src/flowgraph/cli.py. Copy the helpers fgraph, git, environment and checkout from tests/functional/test_brief.py. Fixture: add F-0001, then three Stories with --parent F-0001, then fgraph config set development.enabled true, development.parallel 3 and development.driver agent. One assert per test, each test under its own strict xfail naming S-0117. TestTheGoalOfAFeature: exit 0; the output holds exactly one newline, at its end; the output is exactly this line plus a newline: /goal Develop F-0001 until fgraph show F-0001 lists S-0001, S-0002 and S-0003 Completed, or stop after 8 hours. This session is the coordinator: it hands each whole work item to one subagent, at most 3 at once as development.parallel says. The goal is met as well when this session prints [HALT] <id>: <the decision needed> on a change to a criterion, a Task or the scope of a work item, or a removal, that the developer has not agreed. The line is under 4000 characters. With --hours 4 the line says or stop after 4 hours. TestTheGoalRefused, on the error output only: the driver left out names development.driver; the development off names development.enabled; an F-0002 with no work item says it holds no work item in Backlog; --hours 0 says it is a whole number of 1 or more. Assert messages, never exit 2: argparse already exits 2 on an unknown command today, so a test on exit 2 would pass now, and a test that passes on today's code cannot sit under a strict xfail. No source changes."
 check = "uv run pytest tests/functional/test_goal.py -q"
 expected_output = "created: tests/functional/test_goal.py states that on a record with the development on, development.parallel 3 and development.driver agent, holding F-0001 with S-0001, S-0002 and S-0003 in Backlog, fgraph goal F-0001 prints one line, the whole line pinned, with the bound of 8 hours, and fgraph goal F-0001 --hours 4 the same line with 4 hours. It also states that a record driven by a developer, one with the development off, a Feature with nothing in Backlog and --hours 0 are each refused naming why"
 created = 2026-11-23 10:14:16+00:00
+started = 2026-11-23 10:18:04+00:00
+completed = 2026-11-23 10:19:09+00:00
+commit = "fd67982"
 
 [[tasks]]
 id = "T-0408"
-state = "backlog"
+state = "completed"
 title = "Word the /goal line of a Feature in the new pure module src/flowgraph/goal/model.py"
 description = "Red first. test_line.py is under the view marker and covers one, two and three ids, Parallel 3, Unlimited, the hours, and the whole line of the first Task. test_scope.py is under the model marker and covers each refusal message. Pure: no store, no I/O, plain ASCII, an exhaustive match on the limit of src/flowgraph/record/layers.py closed by assert_never. Leave out of the line: any model name, any mapping of a complexity to a model, how hand-backs are reviewed or landed, filing findings, make check, the path of the repository: that protocol stays in the skill. Touch no other file."
 check = "uv run pytest tests/goal -q"
 expected_output = "created: src/flowgraph/goal/__init__.py with a one-line docstring, and src/flowgraph/goal/model.py, which holds goal_line(feature, items, limit, hours), the line of the first Task: ids joined as a, a and b, or a, b and c; Parallel(n) says at most n at once as development.parallel says, and Unlimited says as many at once as can start, development.parallel setting no limit; the bound says or stop after N hours. It holds make_hours(text), a whole number of 1 or more, raising GoalHoursError; check_driven_by_agent(development), raising GoalDriverError naming development.enabled when the development is off and development.driver when the driver is a developer, each message saying how to set the key with fgraph config set; and check_scope(feature, items), raising EmptyGoalError naming the Feature when items is empty. Created beside it: tests/goal/test_line.py and tests/goal/test_scope.py"
 created = 2026-11-23 10:14:19+00:00
+started = 2026-11-23 10:19:17+00:00
+completed = 2026-11-23 10:20:56+00:00
+commit = "3331fd0"
 
 [[tasks]]
 id = "T-0409"
-state = "backlog"
+state = "completed"
 title = "Print the line with fgraph goal F-ID: parser, view and refusals"
 description = "The work items in Backlog in start order are read as first_in_backlog of src/flowgraph/feature/start.py reads them -- backlog_as_added over rows_under, sorted by queued over store.load_queue -- without importing or changing that function: S-0127 works in that module beside this Story. The hours reach make_hours as the text typed, with no type of argparse, so the refusal is the one of the domain. Do not touch src/flowgraph/parser/item_commands.py (241 lines), src/flowgraph/cli.py or src/flowgraph/status/view.py (247 lines). The help of the command: print the /goal line a developer pastes for the work items of a Feature in Backlog. Text only, no --format."
 check = "uv run pytest tests/functional/test_goal.py tests/parser tests/functional/test_command_help.py tests/goal -q --runxfail && ! grep -q xfail tests/functional/test_goal.py"
 expected_output = "changed: new src/flowgraph/goal/read.py: goal_output(feature, hours, store, development) checks the driver first, then the hours, then parses the id with parse_feature_id, loads the Feature with store.features.load_feature, takes its work items in Backlog in start order, runs check_scope and returns goal_line. New src/flowgraph/parser/goal.py: goal_command(commands), shaped as parser/brief.py, one positional ID and --hours N, 8 by default. src/flowgraph/parser/arguments.py: build_command_line builds goal after config and adds the key goal, and its module docstring names goal. src/flowgraph/parser/views.py: view_said takes a development parameter and gains the case goal. src/flowgraph/parser/command.py: only the last line of command_said changes, to pass config.development. src/flowgraph/parser/refusals.py imports GoalDriverError, EmptyGoalError and GoalHoursError and lists them right after BriefFormatError. tests/parser/test_help.py: one line for goal right after the line for brief in test_every_command_kind_under_add_and_action_under_config_has_its_help. tests/functional/test_command_help.py: one line for goal right after the line for brief in COMMANDS. The xfail marks of tests/functional/test_goal.py are removed"
 created = 2026-11-23 10:14:22+00:00
+started = 2026-11-23 10:20:59+00:00
+completed = 2026-11-23 10:23:29+00:00
+commit = "6923de3"
 
 [[tasks]]
 id = "T-0410"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph goal words the /goal line of a Feature"
 description = "Find the passages by grep, never by line number. Leave the development.driver passage, Order and Persistence alone: S-0127 edits Order and the refusals of a start."
 check = "grep -q fgraph.goal README.md && grep -q ^##.Goal docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md gets a new section Goal between Brief and Terms: what is printed, which parts come from the record (the ids, development.parallel, the hours) and which are fixed text, the refusals, that fgraph never sets the goal, and the page of the documentation of Claude Code the wording follows (one measurable end state, a stated check, the constraints that matter, a bound; at most 4,000 characters). README.md gets a row in its table right after the row of the brief of a work item, and a paragraph with an example right after the fgraph brief example block"
 created = 2026-11-23 10:14:25+00:00
+started = 2026-11-23 10:23:32+00:00
+completed = 2026-11-23 10:23:54+00:00
+commit = "514cc38"
 
 [[knowledge]]
 kind = "decision"

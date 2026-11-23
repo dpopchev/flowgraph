@@ -417,12 +417,29 @@ completed. The mark is gone once each is completed; a block, marked `!`, says
 `waiting on` a person. A Feature in Backlog carries it when its first work item
 waits.
 
-`fgraph status` names the next to start with `>`: the first line of the Backlog
-that `fgraph start` would take, a work item that waits for nothing or a Feature
-whose first work item waits for nothing (S-0001 above, since S-0002 waits for
-it). When the top of the heading leaves it out it is listed after the top, apart
-from the count of those more; a Backlog where nothing can start marks none. No
-`next` command is added.
+`fgraph status` marks with `>` every work item that can start now, within
+`[development] parallel` less the work items started: first the work items in
+Backlog of a started Feature, then the lines of the Backlog that `fgraph start`
+would take, a work item that waits for nothing or a Feature whose first work
+item waits for nothing, which takes one place. With `parallel = 3` and one work
+item started, two lines are marked `>` (S-0003 and S-0004 below: S-0002 waits for
+S-0004, and the limit leaves out S-0005). With `parallel` left out
+every one that waits for nothing is marked; with the development off the next to
+start alone, as before. A marked line the top of the heading leaves out is listed
+after the top, apart from the count of those more; a Backlog where nothing can
+start marks none. No `next` command is added. This replaces the next to start
+alone of S-0086.
+
+```sh
+fgraph status        # parallel = 3, S-0001 started, S-0002 waits for S-0004
+# Backlog (4)
+# ~ S-0002  a second title  -- depends on S-0004
+# > S-0003  a third title
+# > S-0004  a fourth title
+#   S-0005  a fifth title
+# InProgress (1)
+#   S-0001  0/1 T  a first title
+```
 
 `fgraph status --format json` prints the same view as one JSON document another
 tool reads, such as the SessionStart hook of an agent harness: each bucket with
@@ -435,6 +452,10 @@ always printed; another word is refused naming both, with exit 2. `--all` change
 nothing for JSON, which lists every item anyway, and `fgraph watch` stays text.
 The keys are sorted, so two runs on one record print the same bytes; every key is
 listed in `docs/domain-model.md`, section Status as JSON.
+
+The document lists in `can_start` the ids of every work item that can start now, in
+the order `fgraph status` marks them with `>`, and `[]` for none; `next_to_start`
+stays, the first of them or `null`.
 
 ```sh
 fgraph status --format json
@@ -471,6 +492,7 @@ fgraph status --format json
 #       "name": "InProgress"
 #     }
 #   ],
+#   "can_start": [],
 #   "next_to_start": null
 # }
 ```

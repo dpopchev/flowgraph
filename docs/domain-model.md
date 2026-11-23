@@ -284,14 +284,25 @@ of work item. The developer said so on 2026-11-21.
   number, then a Feature by number.
 - A work item that leaves the Backlog leaves the queue with it, and so does a
   Feature: the other buckets are not listed by the queue.
-- The next to start is the first line of the queue that `fgraph start` would
-  take, the reading of S-0086: a work item that waits for nothing, or a Feature
-  whose first work item in Backlog waits for nothing (Depends on); a Feature
-  holding no work item in Backlog is not taken. `fgraph status` marks that line
-  `>`, and lists it after the top of the Backlog, apart from the count of
-  those more, when the top leaves it out; a Backlog where nothing can start
-  marks none. It is a view of `fgraph status`: no `next` command exists. The
-  view holds it as data on the row, beside what the row waits for.
+- `fgraph status` marks every work item that can start now with `>`, within
+  `[development] parallel` (S-0110, which takes over S-0108 and replaces the
+  reading of S-0086 that marked the next to start alone). The places are
+  `parallel` less the work items started, those under a Feature counted. The
+  first to take them are the work items in Backlog of a started Feature that
+  are not blocked and wait for nothing, the started Features in the order
+  InProgress lists them and the work items of each in the order its start
+  takes them; then the lines of the queue that `fgraph start` would take, in
+  the order of the queue: a work item that waits for nothing, or a Feature
+  whose first work item in Backlog waits for nothing (Depends on), which takes
+  one place. A line that waits is skipped, and the limit, not a dependency,
+  leaves out the rest. A Feature holding no work item in Backlog, a blocked
+  Feature and one never started give none. With `parallel` left out every one
+  that waits for nothing is marked; with the development off the next to start
+  alone, the first such line of the queue, as before. Each marked line the top
+  of the Backlog leaves out is listed after the top, apart from the count of
+  those more; a Backlog where nothing can start marks none. It is a view of
+  `fgraph status` and `fgraph watch`: no `next` command exists. The view holds
+  it as data on the row, beside what the row waits for.
 - A reorder names two items in Backlog; one that is not there, or the same
   one twice, is refused. A Feature in progress, completed or removed is not
   in Backlog, and is refused as a started work item is:
@@ -791,8 +802,10 @@ and the text ends with a newline, so two runs on one record print the same bytes
 that holds nothing is `null`, never an empty text; a list that holds nothing is `[]`.
 
 - Document: `buckets`, one object per bucket, always the four, in the order of the flow
-  (Backlog, InProgress, Completed, Removed; Removed too when empty); `next_to_start`, the
-  id of the line of the Backlog that `fgraph start` would take, or `null`.
+  (Backlog, InProgress, Completed, Removed; Removed too when empty); `can_start`, the ids
+  of every work item that can start now, in the order they take their places, the work
+  items of a started Feature first (S-0110, which adds it to the reading of S-0087), `[]`
+  for none; `next_to_start`, the first of them, or `null`.
 - Bucket: `name`; `count`, the number of its items; `items`, every one of them, in the
   order the text lists them.
 - Work item (an item of kind `story`, `upkeep`, `bug` or `spike`): `id`; `kind`; `title`;
@@ -1485,7 +1498,9 @@ development too.
   work items are those of every kind, read as `fgraph status` reads them: a
   started work item is the one its worktree holds. Those under a Feature are
   counted among them, and the start of a Feature, which starts one work item,
-  is refused the same way, naming the Feature (Persistence).
+  is refused the same way, naming the Feature (Persistence). `fgraph status`
+  marks as able to start now only as many work items as `parallel` leaves
+  places for (Order).
 - The start of a Task is neither counted nor limited by `parallel`: a work
   item has one started Task at a time whatever the key. A work item that is
   not in Backlog is left to the start, which refuses it for its own state.

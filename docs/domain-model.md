@@ -1944,8 +1944,9 @@ The work items by kind:
 | all seven | 14/1/0/775/32 (822) | 2/0/0/42/17 (61) | 9/0/0/431/12 (452) |
 
 The work items by parent: a standalone root, under an Epic, or nested under
-another work item. A work item whose brief names an item it `continues` is
-counted apart: that is a relation of its own, not a parent.
+another work item. A work item whose brief prints an item it `continues` is
+counted apart; `continues` is printed on the successor of a pruned item, the
+other side of `pruned.successor`, stored by neither (Field map).
 
 | Repository | Work items | Standalone | Under an Epic | Nested | Continues |
 |---|---|---|---|---|---|

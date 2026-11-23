@@ -9,3 +9,12 @@ created = 2026-11-23 20:39:15+00:00
 given = "a main with a v* tag and, completed since it, a Story that holds no answer of fgraph verify"
 when = "fgraph release is run, and run again once fgraph verify has kept a yes for the Story"
 then = "the first is refused, exit 2, naming the Story and fgraph verify, no tag made; the second tags as today"
+
+[[tasks]]
+id = "T-0565"
+state = "backlog"
+title = "Verify the work items tests/functional/test_release.py lands before it releases"
+description = "Change tests/functional/test_release.py only (139 lines, about 141 after); no source change. Five of its tests release with a completed work item that holds no answer of fgraph verify: the four of class TestAReleaseWithAStoryCompletedSinceTheLastTag and test_a_release_with_an_upkeep_alone_completed_since_tags_the_next_patch. All five build their record through the helper land(checkout, add). Add one last step to that helper, after the fgraph land call: fgraph([\"verify\", item, \"--yes\", \"it holds\"], checkout), and say it in its docstring (add, one Task, start, work, land, then keep the yes of its closing). Nothing else changes: the verify commits chore: verify S-0001 in the record on main, and every assert of the file reads main when it asserts (git rev-parse main), so the tag is still on the head of main and the printed sha is still its short sha. test_a_release_with_nothing_completed_since_exits_with_two_and_tags_nothing lands nothing and stays as written. See the file green before and after the edit. This Task is first on purpose: with it the later refusal breaks no test of this file. Out of bounds: every file under src/, tests/development/release/ (its rows are corrected by one default of its helper in Task 4, once the row holds the answer), tests/functional/test_release_feature_close.py and tests/functional/test_land_delivered.py (the tag of a landing is not asked for an answer), the docs."
+check = "uv run pytest tests/functional/test_release.py -q && grep -q '\"verify\", item, \"--yes\"' tests/functional/test_release.py"
+expected_output = "changed: the helper land of tests/functional/test_release.py keeps a yes on the work item it landed, with fgraph verify, so the five tests of that file that release after a landing release verified work; each passes as before, today and once a release refuses unverified work"
+created = 2026-11-23 21:00:26+00:00

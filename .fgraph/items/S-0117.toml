@@ -54,3 +54,8 @@ created = 2026-11-23 10:14:25+00:00
 kind = "decision"
 text = "The developer ruled on 2026-11-23, on the draft of the line shown that day: the /goal line fgraph words carries a time bound. The documentation of Claude Code for /goal, read that day (code.claude.com/docs/en/goal), asks a condition for one measurable end state, a stated check, the constraints that matter and a bound, a turn or time clause in the condition; the condition holds at most 4,000 characters and is judged by a small model from the conversation alone. Open, for the plan: where the number of hours comes from -- an option of the command, a default -- the reading of the coordinator being an option --hours with the 8 hours a burn of board 1 used as its default."
 noted = 2026-11-23 10:09:54+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer gave the go on 2026-11-23 to the Tasks and the rulings shown that day: the command is fgraph goal F-ID, of a Feature alone, for its work items in Backlog; the bound is the option --hours, 8 by default, worded as or stop after N hours; the line holds one end state, the check fgraph show of the Feature, the coordinator that hands each whole work item to one subagent up to development.parallel, and the halt on a change the developer has not agreed; it leaves out the choice of a model, the review and the landing, which stay in the skill; it is refused for a record driven by a developer or with the development off, naming the key."
+noted = 2026-11-23 10:15:49+00:00

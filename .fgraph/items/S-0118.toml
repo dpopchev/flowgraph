@@ -1,9 +1,11 @@
 id = "S-0118"
-state = "started"
+state = "completed"
 title = "Raise the spellings of an id fgraph takes from two, F-0015 and F-15, to every one that names it: any case, the dash left out"
 description = "Filed on the plan the developer agreed on 2026-11-23. Its Tasks are written when it is ordered. The words of the developer: search provided strings with lower case, f and F, omitting the leading zeros, 8 for 0008 or 08, and the dash, f15 is F-15. Seen on 2026-11-23: fgraph show F-15 shows F-0015 and fgraph show f-15 exits 2 with 'f-15' is no Story, Upkeep, Bug, Spike or Feature id. It holds for every command that takes an id."
 created = 2026-11-23 07:02:23+00:00
 started = 2026-11-23 07:16:47+00:00
+completed = 2026-11-23 07:24:31+00:00
+commit = "05bb641"
 
 [criterion]
 given = "a record that holds F-0015"

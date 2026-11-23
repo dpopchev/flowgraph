@@ -17,3 +17,8 @@ then = "status marks the two planned whole as able to start and no other, and fg
 kind = "decision"
 text = "The developer ruled on 2026-11-23: a Backlog item is pulled only when it is planned -- a Feature has work items, a work item has Tasks, and so every work item of a Feature has its Tasks. S-0127 was amended that day to hold the whole rule."
 noted = 2026-11-23 08:54:02+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer ruled on 2026-11-23, closing the open point of this Story: with the development driven by an agent (S-0115), planned also means the complexity of the work item is set; driven by a developer, the Tasks alone."
+noted = 2026-11-23 08:56:05+00:00

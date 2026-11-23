@@ -1,0 +1,10 @@
+id = "B-0027"
+state = "backlog"
+title = "Cut the work items fgraph start leaves started with no branch and no way to make one, when the branch is there already, from every one to none"
+description = "Found by the subagent of T-0373 of Q-0001 on 2026-11-23, on a scratch record (docs/domain-model.md, Probe, once Q-0001 lands); filed at the end of the queue and not burned. Its Tasks are written when it is ordered. Run again by the subagent after the restart with the same lines. Open: whether the start takes a branch that is there, which the conversion of a doing work item of board 1 would use, or refuses before it writes."
+created = 2026-11-23 06:04:33+00:00
+filed_during = "Q-0001"
+
+[criterion]
+observed = "with the development on, fgraph start S-0001 --slug no-review-mark-is while a branch wi/S-0001-no-review-mark-is exists commits chore: start S-0001 in the record, then exits 2 with git worktree add ... failed: fatal: a branch named 'wi/S-0001-no-review-mark-is' already exists -- S-0001 is started at 773abc9, its branch is not; a second start exits 2 with S-0001 is started already, the branch deleted or not, and its Tasks then start on main"
+expected = "a start whose branch git refuses writes nothing, or leaves a way to make the branch of the started work item"

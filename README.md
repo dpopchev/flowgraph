@@ -56,6 +56,7 @@ the typed edges of the whole record as JSON.
 | the development                 | once enabled: start branches, `fgraph land` lands        |
 | the release of the trunk        | `fgraph release` tags `main` with its next `v*` version  |
 | the links of an item            | `fgraph about` lists every relation, both sides, by id   |
+| the brief of a work item        | `fgraph brief` prints it whole, as text or as JSON       |
 | the export of the record        | `fgraph graph` prints its nodes and edges as JSON        |
 | the ontology                    | started: terms, related by is-a and part-of              |
 | flowgraph tracking its own work | its Stories are in `.fgraph/` since 0.4.0                |
@@ -191,6 +192,31 @@ fgraph about src/gate.py
 #   decision  2026-11-22  S-0001  the gate holds no state
 # S-0002  4f2a9c1  Hold the landing
 #   T-0004  91be07d  Add the gate to the landing
+```
+
+`fgraph brief` prints the whole brief of a work item in any state, the input a
+coordinator hands an agent: the text of `fgraph show`, then the branch and the
+worktree git holds for it under `Worktree`, its Feature with its knowledge, the
+lines of the record that govern a path one of its Tasks names under `Governed by`,
+and the terms it or its Feature is about under `Terms`. A section with nothing in
+it is left out. `--format json` prints the same as one JSON document, keys sorted
+and `null` for nothing, the same bytes on two runs. A Feature id, a Task id and an
+id the record does not hold are refused, exit 2:
+
+```sh
+fgraph brief S-0002
+# S-0002  Hold the landing
+#   ...
+# Worktree
+#   branch       wi/S-0002-hold-the-landing
+#   path         /work/project.worktrees/S-0002-hold-the-landing
+# Feature
+#   F-0001  InProgress  Land work safely
+# Governed by
+#   decision  2026-11-22  S-0001  the gate holds no state
+# Terms (1)
+#   gate  a check every deliverable passes before it lands
+fgraph brief S-0002 --format json
 ```
 
 `fgraph graph` exports the whole record as one JSON document another tool reads:

@@ -65,12 +65,13 @@ commit = "8e03b19"
 
 [[tasks]]
 id = "T-0425"
-state = "backlog"
+state = "started"
 title = "Leave in Backlog, with the development driven by an agent, the next work item of a started Feature that holds no complexity when a completion or a landing would start it"
 description = "Change src/flowgraph/feature/next.py only (115 lines, about 120 after): import NoComplexityError and check_complexity from src/flowgraph/development/driver.py; list NoComplexityError in NOT_STARTED right after NoTaskError; in start_next call check_complexity(named, store.load_work_item, config) right after check_parallel; update the docstring of start_next and the module docstring. Leave feature/block.py and development/land.py alone: both go through start_next and NOT_STARTED. A work item added to a started Feature with no complexity is not refused at the add: it waits, as one with no Task does. Tests seen red first, in tests/feature/test_feature_next.py, each with the word complexity in its name or its id: the helper story gains a keyword complexity, none by default; a configuration with enabled = true and driver = \"agent\"; one more row of NOT_STARTED with its id in WHY_NOT, a next Story with a Task and no complexity under that configuration, with the whole line, which the three parametrized tests over NOT_STARTED take as it is; a test that a next Story holding a complexity is started under that configuration; a guard that a next Story with no complexity is started with the driver left out. No test of the unblock is added: it shares the function. Existing tests that change: none."
 check = "uv run pytest tests/feature/test_feature_next.py -q -k complexity && uv run pytest tests/feature tests/functional/test_start_next.py tests/functional/test_start_next_branch.py tests/functional/test_unblock_feature.py tests/functional/test_land_work_item.py -q"
 expected_output = "changed: with the development on and development.driver agent, the completion or the landing of a work item under a started Feature whose next work item in Backlog holds a Task and no complexity stands as written, exits 0, starts nothing and says on the line after it not started: S-0002 has no complexity to start with: set it with fgraph amend S-0002 --complexity low, medium or high; its commit is that of the completion alone, with no branch; the unblock of a Feature, which starts its next work item through the same function, says the same line; a next work item that holds a complexity is started as before, and so is any next one with the driver a developer"
 created = 2026-11-23 13:08:57+00:00
+started = 2026-11-23 13:18:26+00:00
 
 [[tasks]]
 id = "T-0426"

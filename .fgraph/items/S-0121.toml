@@ -2,7 +2,11 @@ id = "S-0121"
 state = "backlog"
 title = "Raise the work items fgraph start takes with no id from none to the one on top of the Backlog"
 description = "The UX request of the developer of 2026-11-23, filed as asked; ordered by the developer. Its Tasks are written when it is ordered. The words: the Backlog is a stack that can be reordered accordingly and always you get the top most item. Seen on 2026-11-23: fgraph start with no id exits 2 with the following arguments are required: ID. Open: whether the top is the first line that can start, the one fgraph status marks, or the first line whatever it waits for, refused then; a Feature on top starts as fgraph start of it does."
+complexity = "low"
 created = 2026-11-23 07:13:12+00:00
+depends_on = [
+    "U-0025",
+]
 
 [criterion]
 given = "a record whose Backlog holds a first item that waits for another and a second that waits for nothing"

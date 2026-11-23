@@ -42,13 +42,15 @@ commit = "d1cd5c97b8f0beee2635d2c561969e331930b0aa"
 
 [[tasks]]
 id = "T-0413"
-state = "started"
+state = "completed"
 title = "Refuse fgraph start of a Feature, with the development on, while a work item of it in Backlog holds no Task"
 description = "Change src/flowgraph/feature/start.py: add first_unplanned(feature, store) beside first_in_backlog, with the same rows_under, backlog_as_added and queued order, giving the first work item in Backlog whose row has no tasks, or none; in start_feature_item, right after the NoWorkItemError, when config.development.enabled, raise NoTaskError naming the Feature, cannot start:, the id, has no Task to start with; update the docstring of the function and the module docstring. Keep the names first_in_backlog, backlog_as_added and rows_under as they are: S-0117 reads the same order beside this Story. Leave feature/next.py, parser/command.py and the add commands alone: a work item added to a started Feature with no Task is not refused at the add, it waits, and the completion already says not started. Tests seen red first, in tests/feature/test_feature_start.py: a configuration with [development] enabled = true; a refused row of a Feature whose second Story has no Task under it, with its id; a guard that the same items start with the development off. Existing test that changes: tests/functional/test_start_next_branch.py, the class TestAStoryLandedWhileTheNextOfItsStartedFeatureHasNoTask, whose Feature would now be refused at its start: its fixture starts the Feature with its first Story planned and adds the second Story on the checkout before the land; drop its constant for the second Story without a Task if it is left unused. Remove the remaining xfail of the first Task."
 check = "uv run pytest tests/feature tests/functional/test_planned_start.py tests/functional/test_start_next_branch.py tests/functional/test_start_feature.py tests/functional/test_start_next.py -q && ! grep -q xfail tests/functional/test_planned_start.py"
 expected_output = "changed: with the development on, fgraph start F-0002 exits 2, writes nothing and says F-0002 cannot start: S-0004 has no Task to start with, naming the first such work item in start order; with the development off a Feature starts as before. No xfail mark is left in tests/functional/test_planned_start.py"
 created = 2026-11-23 10:14:53+00:00
 started = 2026-11-23 10:22:07+00:00
+completed = 2026-11-23 10:24:47+00:00
+commit = "d640659ef3512e46853206670b17cf7859a80f85"
 
 [[tasks]]
 id = "T-0414"

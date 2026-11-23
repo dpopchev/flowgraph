@@ -657,6 +657,7 @@ def test_a_landing_with_delivery_push_true_pushes_main_once_the_landing_is_whole
     assert steps == [
         ("merge", BRANCH),
         ("commit merge", MESSAGE),
+        ("push", "main"),
         RECORD_COMMIT,
         ("remove worktree", WORKTREE),
         ("delete branch", BRANCH),
@@ -683,30 +684,70 @@ def test_a_landing_that_starts_the_next_work_item_pushes_main_after_its_branch_i
     assert steps[-2:] == [("add worktree", NEXT_BRANCH, NEXT_WORKTREE, "HEAD"), ("push", "main")]
 
 
-def test_a_push_git_refuses_says_the_work_item_is_landed_and_main_is_not_pushed() -> None:
+def refusing_the_second_push(steps: list[object]) -> WorkTree:
+    """The work tree whose push of main is taken the first time and refused the second."""
+    pushes: list[str] = []
+
+    def push(branch: str) -> str:
+        steps.append(("push", branch))
+        pushes.append(branch)
+        if len(pushes) > 1:
+            refuse()
+        return "origin"
+
+    return with_step(work_tree(steps), push=push)
+
+
+def test_a_first_push_git_refuses_says_main_is_not_pushed_and_the_work_item_is_not_completed() -> (
+    None
+):
+    said = "-- main is not pushed -- S-0001 is merged at 3e9ae5c and not completed"
     with pytest.raises(
-        GitError, match=r"^git failed: refused -- S-0001 is landed at 3e9ae5c, main is not pushed$"
+        GitError, match=rf"^git failed: refused {said} -- run fgraph land S-0001 again$"
     ):
         land(READY, with_step(work_tree([]), push=refuse), config=PUSHED)
 
 
-def test_a_push_git_refuses_leaves_the_landing_whole() -> None:
+def test_a_first_push_git_refuses_takes_no_later_step() -> None:
     steps: list[object] = []
     with pytest.raises(GitError):
         land(READY, with_step(work_tree(steps), push=refuse), config=PUSHED)
-    assert steps == [
-        ("merge", BRANCH),
-        ("commit merge", MESSAGE),
-        RECORD_COMMIT,
-        ("remove worktree", WORKTREE),
-        ("delete branch", BRANCH),
-    ]
+    assert steps == [("merge", BRANCH), ("commit merge", MESSAGE)]
 
 
-def test_a_push_git_refuses_leaves_the_work_item_completed_at_the_merge_commit() -> None:
+def test_a_first_push_git_refuses_saves_nothing() -> None:
     saved: list[WorkItemState] = []
     with pytest.raises(GitError):
         land(READY, with_step(work_tree([]), push=refuse), saved, PUSHED)
+    assert saved == []
+
+
+def test_a_second_push_git_refuses_says_the_work_item_is_landed_and_main_is_not_pushed() -> None:
+    with pytest.raises(
+        GitError, match=r"^git failed: refused -- S-0001 is landed at 3e9ae5c, main is not pushed$"
+    ):
+        land(READY, refusing_the_second_push([]), config=PUSHED)
+
+
+def test_a_second_push_git_refuses_leaves_the_landing_whole() -> None:
+    steps: list[object] = []
+    with pytest.raises(GitError):
+        land(READY, refusing_the_second_push(steps), config=PUSHED)
+    assert steps == [
+        ("merge", BRANCH),
+        ("commit merge", MESSAGE),
+        ("push", "main"),
+        RECORD_COMMIT,
+        ("remove worktree", WORKTREE),
+        ("delete branch", BRANCH),
+        ("push", "main"),
+    ]
+
+
+def test_a_second_push_git_refuses_leaves_the_work_item_completed_at_the_merge_commit() -> None:
+    saved: list[WorkItemState] = []
+    with pytest.raises(GitError):
+        land(READY, refusing_the_second_push([]), saved, PUSHED)
     assert [item.commit for item in saved if isinstance(item, CompletedWorkItem)] == [
         make_commit("3e9ae5c")
     ]
@@ -763,6 +804,18 @@ def test_a_landing_taken_up_under_a_gate_runs_it_first() -> None:
         RECORD_COMMIT,
         ("remove worktree", WORKTREE),
         ("delete branch", BRANCH),
+    ]
+
+
+def test_a_landing_taken_up_pushes_main_before_the_record_commit() -> None:
+    steps: list[object] = []
+    land(READY, merged_already(steps), config=PUSHED)
+    assert steps == [
+        ("push", "main"),
+        RECORD_COMMIT,
+        ("remove worktree", WORKTREE),
+        ("delete branch", BRANCH),
+        ("push", "main"),
     ]
 
 

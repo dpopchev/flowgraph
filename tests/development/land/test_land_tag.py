@@ -71,6 +71,19 @@ def refuse(*_: object) -> Never:
     raise GitError("git failed: refused")
 
 
+def refusing_the_second_push(tree: WorkTree) -> WorkTree:
+    """The work tree whose push of main is taken the first time and refused the second."""
+    pushes: list[str] = []
+
+    def push(branch: str) -> str:
+        pushes.append(branch)
+        if len(pushes) > 1:
+            refuse()
+        return "origin"
+
+    return replace(tree, landing=replace(tree.landing, push=push))
+
+
 def ready(parent: Parent) -> WorkItemState:
     """S-0001 under that parent, started, its one Task completed: ready to land."""
     task = make_task(make_task_id(1), "a task", "an output", "", CREATED)
@@ -220,8 +233,7 @@ def test_a_push_of_the_tag_git_refuses_says_the_tag_is_made_and_not_pushed() -> 
 
 
 def test_a_push_of_main_git_refuses_says_the_feature_is_not_tagged() -> None:
-    tree = work_tree([])
-    refused = replace(tree, landing=replace(tree.landing, push=refuse))
+    refused = refusing_the_second_push(work_tree([]))
     with pytest.raises(GitError) as error:
         land(refused, TAGGED_AND_PUSHED)
     assert str(error.value) == (

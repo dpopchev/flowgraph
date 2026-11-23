@@ -36,7 +36,6 @@ WAYS = [
     ('[development]\nenabled = true\nmerge = "fast-forward"\n', LAND_UNWORDED),
 ]
 WAY_IDS = ["merge-commit", "squash", "fast-forward"]
-NOT_YET = pytest.mark.xfail(strict=True, reason="S-0140: a push refused leaves it started")
 IDENTITY = {
     "GIT_AUTHOR_NAME": "a developer",
     "GIT_AUTHOR_EMAIL": "developer@example.com",
@@ -149,7 +148,6 @@ def taken_up(tmp_path: Path, origin: Path, development: str, argv: Sequence[str]
     return Refused(refused.checkout, fgraph(argv, refused.checkout), refused.sha)
 
 
-@NOT_YET
 class TestALandingWhosePushIsRefused:
     @pytest.fixture
     def refused(self, tmp_path: Path, origin: Path) -> Refused:
@@ -176,7 +174,6 @@ class TestALandingWhosePushIsRefused:
         assert (refused.land.status, refused.land.err.endswith(ending)) == (2, True)
 
 
-@NOT_YET
 class TestTheLandingTakenUpOnceTheOriginIsBack:
     @pytest.fixture
     def again(self, tmp_path: Path, origin: Path) -> Refused:
@@ -211,13 +208,7 @@ class TestTheLandingTakenUpOnceTheOriginIsBack:
         assert (again.land.status, left) == (0, "")
 
 
-@pytest.mark.parametrize(
-    ("development", "argv"),
-    [
-        pytest.param(*way, id=way_id, marks=NOT_YET)
-        for way, way_id in zip(WAYS, WAY_IDS, strict=True)
-    ],
-)
+@pytest.mark.parametrize(("development", "argv"), WAYS, ids=WAY_IDS)
 def test_a_landing_taken_up_completes_by_each_way(
     development: str, argv: list[str], tmp_path: Path, origin: Path
 ) -> None:

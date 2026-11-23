@@ -1,3 +1,6 @@
 name = "in-progress"
 meaning = "The bucket of the items being worked, started or blocked, ordered by the time each was started."
 added = 2026-11-23 12:06:41.781295+00:00
+is_a = [
+    "bucket",
+]

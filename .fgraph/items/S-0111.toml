@@ -1,9 +1,10 @@
 id = "S-0111"
-state = "backlog"
+state = "started"
 title = "Raise the work items of one Feature that are started at one time from one to as many as development.parallel leaves"
 description = "Filed on the plan the developer agreed on 2026-11-23. Its Tasks are written when it is ordered. It replaces the decision of the developer of 2026-11-21 that a Feature starts its work items one by one, on the word of 2026-11-23. Open: whether the completion of a work item still starts the next one of its Feature, or the coordinator starts each; and what limits them with development.parallel left out."
 parent = "F-0016"
 created = 2026-11-23 07:01:56+00:00
+started = 2026-11-23 07:16:43+00:00
 
 [criterion]
 given = "a started Feature with three work items in Backlog that wait for nothing, in a record with the development on and development.parallel set to 3"

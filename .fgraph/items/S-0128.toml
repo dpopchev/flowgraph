@@ -8,3 +8,11 @@ created = 2026-11-23 09:21:32+00:00
 given = "a repository whose record lives in a folder of another name, as .dpopchev, relative to the root of the repository and not tracked by git"
 when = "fgraph status is run in the repository with no --dir"
 then = "it lists the record of that folder, named once for the repository and found by every command"
+
+[[knowledge]]
+kind = "decision"
+text = "The developer decided on 2026-11-23: the items of a record stay in one directory, items/, one file per item with its state inside; a bucket is never a folder. Weighed that day against a folder per bucket: the bucket would be kept twice, in the folder and in the state, so a file could sit in the wrong one; every move would be a rename with an edit, which git often loses; a started item is written on its branch while main would move its file; and an id would be looked for in four places. One table of items with the state as a field is also the shape a store other than files would take. Left for S-0120 and F-0014: a single split of live items from an archive of the completed and removed ones, which are terminal."
+noted = 2026-11-23 11:56:28+00:00
+governs = [
+    "src/flowgraph/record/store.py",
+]

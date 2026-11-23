@@ -22,6 +22,7 @@ the commit of the landing, as a landing taken up finds, is the tag of it and is 
 from collections.abc import Iterator
 from datetime import datetime
 from pathlib import Path
+from typing import assert_never
 
 from flowgraph.development.branch import MAIN
 from flowgraph.development.commit import OpenGit, ReleaseSteps, Said
@@ -38,6 +39,7 @@ from flowgraph.development.version import (
     version_text,
 )
 from flowgraph.record import Config
+from flowgraph.record.layers import TagAt
 from flowgraph.record.store import KINDS, Store
 from flowgraph.work_item import Kind
 
@@ -123,6 +125,23 @@ def release_trunk(
     tag = version_text(next_version(last, bump) if named is None else named)
     sha = steps.make_tag(tag, f"release {tag}", MAIN)
     return Said(f"tagged {tag} at {sha}\n{_pushed_tag(steps, tag, sha, config)}")
+
+
+def tags_landing(tag: TagAt, alone: bool, closes: bool) -> bool:
+    """Whether a landing tags main under that word of `delivery.tag`.
+
+    `alone` says the work item stands alone, under no Feature; `closes` that its completion
+    completes a Feature. A work item under a Feature that it does not close never tags.
+    """
+    match tag:
+        case TagAt.NONE:
+            return False
+        case TagAt.FEATURE_CLOSE:
+            return closes
+        case TagAt.CLOSE:
+            return closes or alone
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 def release_landing(kind: Kind, sha: str, store: Store, steps: ReleaseSteps, config: Config) -> str:

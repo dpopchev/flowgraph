@@ -9,7 +9,7 @@ pytestmark = pytest.mark.model
 
 ENABLED = {"development": {"enabled": True}}
 TAKES_A_COUNT = "it takes a whole number of 1 or more"
-TAKES_A_TAG = "it takes feature-close or none"
+TAKES_A_TAG = "it takes feature-close, close or none"
 
 
 @pytest.mark.parametrize(
@@ -27,6 +27,7 @@ TAKES_A_TAG = "it takes feature-close or none"
         ("development.driver", "developer", {"development": {"driver": "developer"}}),
         ("delivery.push", "true", {"delivery": {"push": True}}),
         ("delivery.tag", "feature-close", {"delivery": {"tag": "feature-close"}}),
+        ("delivery.tag", "close", {"delivery": {"tag": "close"}}),
         ("delivery.tag", "none", {"delivery": {"tag": "none"}}),
     ],
     ids=[
@@ -42,6 +43,7 @@ TAKES_A_TAG = "it takes feature-close or none"
         "a-developer",
         "a-push",
         "a-tag-at-the-close-of-a-feature",
+        "a-tag-at-the-close-of-a-work-item",
         "no-tag",
     ],
 )

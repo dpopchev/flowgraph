@@ -10,8 +10,8 @@ them. `[development] merge` is how a landing merges: `merge-commit` unless it na
 `fast-forward`. `[development] gate` is the one command line a landing runs before main moves;
 it has no default either, so left out a landing runs none. `[development] driver` names who
 drives the development: `developer` unless it names `agent`. `[delivery] push = true` pushes main
-once a landing is whole; it is false by default. `[delivery] tag = "feature-close"` tags main
-with its next version once a landing completes a Feature; it is `none` by default. Each layer is
+once a landing is whole; it is false by default. `[delivery] tag` tags main with its version at
+`feature-close`, `close` (a work item alone too) or never, `none`, the default. Each layer is
 a value (`flowgraph.record.layers`); what a file refused says is `flowgraph.record.config_refusal`.
 """
 
@@ -61,7 +61,7 @@ GIT_COMMIT = "git.commit"
 # The key that pushes main once a landing is whole.
 DELIVERY_PUSH = "delivery.push"
 
-# The key that tags main at the close of a Feature.
+# The key that tags main at the close of a Feature or, under close, of a work item alone.
 DELIVERY_TAG = "delivery.tag"
 
 

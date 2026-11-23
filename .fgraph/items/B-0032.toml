@@ -1,0 +1,10 @@
+id = "B-0032"
+state = "backlog"
+title = "Cut the blocks and unblocks of a Task fgraph answers on main from the copy of main, for a Task moved in the worktree of its work item, from every one to none"
+description = "Found by the planner of S-0138 on 2026-11-23, in a scratch record, and run again by the coordinator that day; filed at the end of the Backlog on the word of the developer. The moves of a Task are answered before the save that src/flowgraph/development/scope.py refuses on main, so a move the copy of main refuses never reaches that refusal. The block of a work item S-0138 builds is written in the worktree too and its unblock on main will say S-0001 is not blocked the same way. src/flowgraph/development/scope.py is at 238 of 250 lines. Open: whether the start and the complete of a Task on main are named the same way. Its Tasks are written when it is ordered."
+created = 2026-11-23 14:02:28+00:00
+filed_during = "S-0138"
+
+[criterion]
+observed = "in a scratch git repository with the development on, a started Story S-0001 whose Task T-0001 is started and blocked in the worktree of the Story: on main fgraph status lists T-0001 blocked, read from the worktree, while fgraph unblock T-0001 exits 2 with T-0001 is not blocked and fgraph block T-0001 exits 2 with T-0001 is in Backlog: start it first, each answered from the file main holds"
+expected = "on main the block and the unblock of a Task of a started work item that has a worktree exit 2 naming the worktree, as the save of such a work item does: S-0001 is started: its Tasks are written in its worktree, and the path"

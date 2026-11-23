@@ -9,3 +9,8 @@ created = 2026-11-23 07:02:03+00:00
 given = "a record with the development on"
 when = "the key of the configuration that names who drives the development is set to an agent"
 then = "fgraph config show lists it, and a record that leaves the key out works as before: no command asks for a complexity, an agent or a goal"
+
+[[knowledge]]
+kind = "decision"
+text = "The developer ruled on 2026-11-23: the complexity matters when the development is driven by an agent, so the coordinator can evaluate a work item and use the proper model for it. So with the key set to an agent, a work item is planned only once its complexity is set, beside its Tasks (S-0127); with the key left out no command asks for one. Which model a complexity maps to stays outside fgraph, with the coordinator."
+noted = 2026-11-23 08:56:03+00:00

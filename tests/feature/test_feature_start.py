@@ -9,6 +9,7 @@ import pytest
 
 from flowgraph.criterion import NO_COMMIT, make_scenario
 from flowgraph.development import make_slug
+from flowgraph.development.driver import NoComplexityError
 from flowgraph.development.parallel import ParallelError
 from flowgraph.feature import (
     FeatureNotFoundError,
@@ -42,6 +43,7 @@ from flowgraph.work_item import (
     append_task,
     completed_task,
     completed_work_item,
+    make_complexity,
     make_work_item,
     started_task,
     started_work_item,
@@ -61,6 +63,8 @@ NO_QUEUE = make_queue([])
 UNLIMITED = make_config("")
 ONE_AT_ONCE = make_config("[development]\nenabled = true\nparallel = 1\n")
 DEVELOPED = make_config("[development]\nenabled = true\n")
+DRIVEN_BY_AN_AGENT = make_config('[development]\nenabled = true\ndriver = "agent"\n')
+AGENT_OFF = make_config('[development]\ndriver = "agent"\n')
 
 
 def never(*_: object) -> Never:
@@ -68,11 +72,23 @@ def never(*_: object) -> Never:
     raise AssertionError("a start reads the rows, the queue, the Feature and its work item")
 
 
-def story(number: int, parent: Parent = F1, *, tasks: int = 1) -> WorkItem:
-    """The Story of that number in Backlog, added on the day of its number, with that many Tasks."""
+def story(
+    number: int, parent: Parent = F1, *, tasks: int = 1, complexity: str | None = None
+) -> WorkItem:
+    """The Story of that number in Backlog, added on the day of its number.
+
+    It holds that many Tasks and that complexity, none by default.
+    """
     criterion = make_scenario("a state", "an action", "another")
+    held = None if complexity is None else make_complexity(complexity)
     item = make_work_item(
-        make_story_id(number), f"title {number}", criterion, "", DAY[number], parent
+        make_story_id(number),
+        f"title {number}",
+        criterion,
+        "",
+        DAY[number],
+        parent,
+        complexity=held,
     )
     for _ in range(tasks):
         task = make_task(make_task_id(number), "a task title", "an output", "", DAY[number])
@@ -216,6 +232,29 @@ REFUSED = [
         NoTaskError,
         "F-0001 cannot start: S-0002 has no Task to start with",
     ),
+    (
+        [story(1, complexity="low"), story(2)],
+        FEATURE,
+        DRIVEN_BY_AN_AGENT,
+        NoComplexityError,
+        "F-0001 cannot start: S-0002 has no complexity to start with: "
+        "set it with fgraph amend S-0002 --complexity low, medium or high",
+    ),
+    (
+        [story(1), story(2)],
+        FEATURE,
+        DRIVEN_BY_AN_AGENT,
+        NoComplexityError,
+        "F-0001 cannot start: S-0001 has no complexity to start with: "
+        "set it with fgraph amend S-0001 --complexity low, medium or high",
+    ),
+    (
+        [story(1), story(2, tasks=0)],
+        FEATURE,
+        DRIVEN_BY_AN_AGENT,
+        NoTaskError,
+        "F-0001 cannot start: S-0002 has no Task to start with",
+    ),
     ([story(1)], STARTED, UNLIMITED, StartedAlreadyError, "F-0001 is started already"),
     ([story(1)], COMPLETED, UNLIMITED, CompletedAlreadyError, "F-0001 is completed already"),
     (
@@ -231,6 +270,9 @@ REFUSALS = [
     "no-work-item-in-backlog",
     "first-work-item-without-a-task",
     "second-work-item-without-a-task-with-the-development-on",
+    "second-work-item-without-a-complexity-driven-by-an-agent",
+    "neither-work-item-with-a-complexity-driven-by-an-agent",
+    "first-without-a-complexity-second-without-a-task-driven-by-an-agent",
     "started-already",
     "completed-already",
     "beside-as-many-started-as-parallel",
@@ -265,6 +307,28 @@ def test_a_feature_start_refused_saves_nothing(
 
 def test_a_feature_whose_second_work_item_has_no_task_starts_with_the_development_off() -> None:
     written, _ = start([story(1), story(2, tasks=0)])
+    assert written.out == "started F-0001 with S-0001\n"
+
+
+def test_a_feature_whose_work_items_in_backlog_each_hold_a_complexity_starts() -> None:
+    items = [story(1, complexity="low"), story(2, complexity="high")]
+    written, _ = start(items, config=DRIVEN_BY_AN_AGENT)
+    assert written.out == "started F-0001 with S-0001\n"
+
+
+def test_a_completed_work_item_with_no_complexity_is_not_asked_for_one() -> None:
+    items = [completed(1), story(2, complexity="medium")]
+    written, _ = start(items, config=DRIVEN_BY_AN_AGENT)
+    assert written.out == "started F-0001 with S-0002\n"
+
+
+@pytest.mark.parametrize(
+    "config", [DEVELOPED, AGENT_OFF], ids=["driver-left-out", "development-off"]
+)
+def test_a_feature_whose_work_items_hold_no_complexity_starts_unless_an_agent_drives(
+    config: Config,
+) -> None:
+    written, _ = start([story(1), story(2)], config=config)
     assert written.out == "started F-0001 with S-0001\n"
 
 

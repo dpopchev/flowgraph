@@ -61,3 +61,8 @@ created = 2026-11-23 00:00:15+00:00
 started = 2026-11-23 00:00:18+00:00
 completed = 2026-11-23 00:04:38+00:00
 commit = "126c0ce"
+
+[[knowledge]]
+kind = "finding"
+text = "verified: yes -- at 555de70 on main, on a scratch record with items in every bucket, a blocked Task and a Story that waits for another, fgraph status --format json exit 0 printed one JSON document, the same bytes on two runs: Backlog count 2, InProgress 1, Completed 1, Removed 1, T-0001 blocked with the reason no key waiting on developer, S-0002 waits_for S-0001, next_to_start S-0003; --format xml exit 2 naming text and json; --format text the bytes of fgraph status; on the record of flowgraph F-0012 lists its four work items in backlog and F-0008 its five with their states; make check on the tree of the landing, the branch with main merged: 2765 passed, all checks passed. T-0370 was added on the word of the coordinator after the hand-back of T-0341, whose JSON listed the started work items of a Feature alone; its check was run by fgraph complete."
+noted = 2026-11-23 00:06:02+00:00

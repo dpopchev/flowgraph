@@ -1,0 +1,11 @@
+id = "S-0112"
+state = "backlog"
+title = "Raise the work items that carry their complexity from none to every one given it"
+description = "Filed on the plan the developer agreed on 2026-11-23. Its Tasks are written when it is ordered. The coordinator picks the model of the subagent from it; which model a complexity maps to stays in the skill, not in fgraph."
+parent = "F-0016"
+created = 2026-11-23 07:01:58+00:00
+
+[criterion]
+given = "a record with a Story in Backlog"
+when = "the Story is added or amended with the complexity high"
+then = "fgraph show lists its complexity high and the JSON of fgraph status carries it; a word that is none of low, medium and high is refused naming the three"

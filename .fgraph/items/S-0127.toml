@@ -3,6 +3,7 @@ state = "backlog"
 title = "Cut the items of the Backlog fgraph pulls or lists as able to start before they are planned from every one to none: a work item holds a Task, a Feature holds work items that each hold one"
 description = "The rule of the developer of 2026-11-23: an item of the Backlog can be pulled when it is planned -- a Feature has work items, a work item has Tasks, so the work items of a Feature have their Tasks already. It widens the Story filed that day from the plan of S-0110, which named the work item with no Task alone. Today: fgraph start refuses a work item with no Task and a Feature with no work item in Backlog or whose first work item has no Task; a Feature whose later work items hold none starts; and the list of fgraph status reads no Task -- on 2026-11-23 it marked S-0114, S-0115 and S-0116, none with a Task. Open: whether, with the development driven by an agent (S-0115), planned also means its complexity is set, which amend takes in Backlog alone; whether the line of an item not planned says what it lacks; whether a work item added to a Feature already started, with no Task, is refused or waits; and that Tasks written for every work item before the first starts age as the earlier ones land -- the Tasks of S-0113 named lines and modules S-0112 had moved. Its Tasks are written when it is ordered."
 parent = "F-0016"
+complexity = "medium"
 created = 2026-11-23 08:08:24+00:00
 depends_on = [
     "S-0110",

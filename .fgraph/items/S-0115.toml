@@ -27,13 +27,15 @@ commit = "0a9a9bc445b6d8822f03eb38d9e11f8cd315aaab"
 
 [[tasks]]
 id = "T-0399"
-state = "started"
+state = "completed"
 title = "Add the key development.driver, developer or agent, read as a value of the development and shown, set and unset by fgraph config"
 description = "In src/flowgraph/record/layers.py add the enum Driver (DEVELOPER developer, AGENT agent) beside Merge. Add driver to Development as field(default=Driver.DEVELOPER, kw_only=True), so that a Development built without it is driven by a developer: tests/status/test_start_now.py and the branches of S-0114 and S-0116 build one. In src/flowgraph/record/config.py add the constant DEVELOPMENT_DRIVER, add driver to _DevelopmentTable as merge is, non-strict with a default, pass it in make_config, and add one sentence to the module docstring. In config_refusal.py add development.driver to _WORDS through _one_of(Driver). In setting.py add Key(DEVELOPMENT_DRIVER, Takes.TEXT, the value of the driver) right after the key of the gate in KEYS. Leave record/__init__.py and parser/command.py untouched: readers import Driver from flowgraph.record.layers, as land.py imports TagAt, and parser/command.py is at its limit of 250 lines and is split by S-0116. Tests seen red first. In tests/record/config/test_config.py: the default for no table, no key and developer written; agent read; held as written with the development off; a word that is none refused, and true refused. In tests/record/setting/test_with_setting.py: rows for agent and developer, and a refused word. In tests/record/setting/test_without_setting.py: the driver taken back keeps enabled. Existing tests that change because they pin the whole list: both whole-output tests of tests/record/setting/test_show_config.py (EVERY_KEY gains driver; GATE_LINE stays 4) and test_show_lists_every_key_at_its_default_on_a_record_without_a_config_file in tests/functional/test_config_command.py. Remove the xfail marks of the first Task. config.py stays under 250 lines."
 check = "uv run pytest tests/functional/test_development_driver.py tests/functional/test_config_command.py tests/record -q && ! grep -q xfail tests/functional/test_development_driver.py"
 expected_output = "changed: development.driver takes developer or agent and is developer by default. fgraph config show lists it after development.gate. fgraph config set and unset write it and take it back to developer. Any other word is refused, exit 2, naming the key, the word and that it takes developer or agent. With the development off it is held as written. The configuration holds it as Driver in Development, and no command reads it yet. No xfail mark is left in tests/functional/test_development_driver.py"
 created = 2026-11-23 09:11:02+00:00
 started = 2026-11-23 09:16:49+00:00
+completed = 2026-11-23 09:20:44+00:00
+commit = "6b8996f4f786b3808d9517a2e16d5da3a1ac8dc6"
 
 [[tasks]]
 id = "T-0400"

@@ -30,7 +30,6 @@ IDENTITY = {
     "GIT_COMMITTER_NAME": "a developer",
     "GIT_COMMITTER_EMAIL": "developer@example.com",
 }
-RED = "S-0110: fgraph status marks only the next to start so far"
 
 
 def story(number: int) -> list[str]:
@@ -134,7 +133,6 @@ class TestStatusAsText:
     def test_status_exits_with_zero(self, printed: Outcome) -> None:
         assert printed.status == 0
 
-    @pytest.mark.xfail(strict=True, reason=RED)
     def test_the_two_places_the_limit_leaves_are_marked(self, printed: Outcome) -> None:
         assert marked(printed.out) == ["S-0003", "S-0004"]
 
@@ -154,7 +152,6 @@ class TestStatusAsJson:
     def test_status_exits_with_zero(self, exit_status: int) -> None:
         assert exit_status == 0
 
-    @pytest.mark.xfail(strict=True, reason=RED)
     def test_can_start_lists_the_two_places_the_limit_leaves(
         self, document: dict[str, Any]
     ) -> None:
@@ -172,6 +169,5 @@ class TestWatchOneFrame:
     def test_watch_exits_with_zero(self, watched: Outcome) -> None:
         assert watched.status == 0
 
-    @pytest.mark.xfail(strict=True, reason=RED)
     def test_the_two_places_the_limit_leaves_are_marked(self, watched: Outcome) -> None:
         assert marked(watched.out) == ["S-0003", "S-0004"]

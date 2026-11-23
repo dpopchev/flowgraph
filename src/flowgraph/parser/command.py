@@ -58,6 +58,7 @@ from flowgraph.relation.depends import (
     filed_during_asked,
 )
 from flowgraph.status import status_output
+from flowgraph.status.next import start_limit
 from flowgraph.status.terminal import Width
 from flowgraph.term.about import about_asked
 from flowgraph.term.item import add_term_item, relate_term_item, terms_text
@@ -227,6 +228,9 @@ def command_said(
         case "show":
             return Said(show_any_item(args.id, store))
         case "status":
-            return Said(status_output(store, None if args.all else TOP, args.format, width()))
+            limit = start_limit(config.development)
+            return Said(
+                status_output(store, None if args.all else TOP, args.format, width(), limit)
+            )
         case _:
             return None

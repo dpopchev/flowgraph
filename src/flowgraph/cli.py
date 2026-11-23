@@ -37,6 +37,7 @@ from flowgraph.record import (
 from flowgraph.record.init import MakeDir, init_record
 from flowgraph.record.store import OpenStore, Store, open_files
 from flowgraph.relation.read import check_relations
+from flowgraph.status.next import start_limit
 from flowgraph.status.terminal import Height, Width, no_terminal, terminal_height, terminal_width
 from flowgraph.status.watch import Wait, framed, make_pace, watch
 
@@ -71,19 +72,27 @@ def _no_dir(path: Path) -> Never:
 
 
 def _watch(
-    args: argparse.Namespace, store: Store, write: Write, wait: Wait, width: Width, height: Height
+    args: argparse.Namespace,
+    store: Store,
+    write: Write,
+    wait: Wait,
+    width: Width,
+    height: Height,
+    config: Config,
 ) -> None:
     """Write the frames of watch on the record: each what status writes then, read anew.
 
     A frame is cut to the width and the height the terminal has then and replaces the one
-    before it; without a width it is whole and follows it. Raises PaceError when the seconds or
-    the count asked for are no positive number; no frame is written then.
+    before it; without a width it is whole and follows it. The configuration sets how many
+    lines a frame marks as able to start. Raises PaceError when the seconds or the count asked
+    for are no positive number; no frame is written then.
     """
     pace = make_pace(args.seconds, args.count)
     top = None if args.all else TOP
+    limit = start_limit(config.development)
 
     def read_frame() -> str:
-        return framed(status_item(store, top), width(), height())
+        return framed(status_item(store, top, limit), width(), height())
 
     watch(read_frame, write, wait, pace)
 
@@ -150,7 +159,7 @@ def run(
                 config = load_config(path)
                 check_relations(path, store, partial(held_elsewhere, path, open_git, open_store))
                 if args.command == "watch":
-                    _watch(args, store, write, wait, width, height)
+                    _watch(args, store, write, wait, width, height, config)
                     return 0
                 said = command_said(
                     args, store, now, path, open_git, width, config, run_gate, cwd, run_check

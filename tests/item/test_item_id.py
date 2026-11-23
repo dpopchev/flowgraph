@@ -91,21 +91,25 @@ def test_a_feature_id_below_one_show_is_given_is_refused_as_a_feature_id() -> No
 
 @pytest.mark.parametrize(
     ("text", "moved"),
-    [("T-0004", make_task_id(4)), ("F-0003", make_feature_id(3))],
-    ids=["task", "feature"],
+    [
+        ("T-0004", make_task_id(4)),
+        ("F-0003", make_feature_id(3)),
+        ("S-0001", make_story_id(1)),
+        ("B-0002", make_bug_id(2)),
+    ],
+    ids=["task", "feature", "a-story", "a-bug"],
 )
-def test_an_id_block_takes_is_read_as_that_of_a_task_or_of_a_feature(
+def test_an_id_block_takes_is_read_as_that_of_a_task_a_feature_or_a_work_item(
     text: str, moved: object
 ) -> None:
     assert parse_moved_id(text) == moved
 
 
-@pytest.mark.parametrize("text", ["X-0001", "S-0001"], ids=["no-kind", "a-story"])
-def test_a_text_that_is_no_id_block_takes_is_refused_naming_the_task_and_the_feature(
-    text: str,
-) -> None:
-    with pytest.raises(ItemIdError, match=f"^'{text}' is no Task or Feature id$"):
-        parse_moved_id(text)
+def test_a_text_that_is_no_id_block_takes_is_refused_naming_every_kind() -> None:
+    with pytest.raises(
+        ItemIdError, match=r"^'X-0001' is no Story, Upkeep, Bug, Spike, Task or Feature id$"
+    ):
+        parse_moved_id("X-0001")
 
 
 @pytest.mark.parametrize(

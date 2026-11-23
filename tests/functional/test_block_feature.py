@@ -182,9 +182,12 @@ class TestAStartedFeatureBlockedWhileItHoldsAStoryInBacklog:
         ([*STARTED, BLOCK, ["start", "F-0001"]], "F-0001 is blocked: unblock it first"),
         (
             [["block", "S-0001", "--reason", "a reason", "--waiting-on", "someone"]],
-            "'S-0001' is no Task or Feature id",
+            "no Story S-0001 in the record",
         ),
-        ([["unblock", "X-0001"]], "'X-0001' is no Task or Feature id"),
+        (
+            [["unblock", "X-0001"]],
+            "'X-0001' is no Story, Upkeep, Bug, Spike, Task or Feature id",
+        ),
         ([["unblock", "F-0000"]], "a Feature id counts from 1: 0 is below 1"),
     ],
     ids=[

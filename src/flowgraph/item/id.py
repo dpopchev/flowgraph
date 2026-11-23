@@ -113,14 +113,14 @@ def parse_shown_id(text: str) -> Placed:
     return parse_placed_id(text)
 
 
-def parse_moved_id(text: str) -> TaskId | FeatureId:
-    """The id of a Task, or of a Feature, as fgraph block and unblock read the text.
+def parse_moved_id(text: str) -> ItemId | FeatureId:
+    """The id of a Task, of a Feature or of a work item of any kind, as fgraph block reads it.
 
     Raises TaskIdError or FeatureIdError when the text is written as an id of that kind that is
-    none, as `T-0000` or `F-0000`, and ItemIdError naming both kinds when it is neither.
+    none, as `T-0000` or `F-0000`, and ItemIdError naming every kind when it is none of them.
     """
     if re.fullmatch(r"F-\d+", text) is not None:
         return parse_feature_id(text)
     if re.fullmatch(r"T-\d+", text) is not None:
         return parse_task_id(text)
-    raise ItemIdError(f"{text!r} is no Task or Feature id")
+    return parse_item_id(text)

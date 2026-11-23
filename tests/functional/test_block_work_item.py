@@ -80,11 +80,9 @@ class TestAStartedStoryBlocked:
     def blocked(self, tmp_path: Path) -> Outcome:
         return runs(tmp_path, *STARTED, BLOCK)
 
-    @RED
     def test_block_exits_with_zero(self, blocked: Outcome) -> None:
         assert blocked.status == 0
 
-    @RED
     def test_block_names_the_story(self, blocked: Outcome) -> None:
         assert blocked.out == "blocked S-0001\n"
 
@@ -137,15 +135,12 @@ class TestABlockedStoryUnblocked:
     def unblocked(self, tmp_path: Path) -> Outcome:
         return runs(tmp_path, *STARTED, BLOCK, UNBLOCK)
 
-    @RED
     def test_unblock_exits_with_zero(self, unblocked: Outcome) -> None:
         assert unblocked.status == 0
 
-    @RED
     def test_unblock_names_the_story(self, unblocked: Outcome) -> None:
         assert unblocked.out == "unblocked S-0001\n"
 
-    @RED
     def test_status_lists_it_as_started_again(self, unblocked: Outcome, tmp_path: Path) -> None:
         assert (unblocked.status, fgraph(["status"], tmp_path, LATER).out) == (
             0,
@@ -159,7 +154,6 @@ class TestABlockedStoryUnblocked:
         listed = item(tmp_path, "S-0001")
         assert (listed["state"], listed["block"]) == ("started", None)
 
-    @RED
     def test_it_is_blocked_a_second_time(self, unblocked: Outcome, tmp_path: Path) -> None:
         assert fgraph(BLOCK, tmp_path, LATER).out == "blocked S-0001\n"
 
@@ -167,19 +161,15 @@ class TestABlockedStoryUnblocked:
 @pytest.mark.parametrize(
     ("added", "id_"),
     [
-        pytest.param(
-            ["add", "upkeep", "an upkeep title", *CRITERION], "U-0001", marks=RED, id="upkeep"
-        ),
+        pytest.param(["add", "upkeep", "an upkeep title", *CRITERION], "U-0001", id="upkeep"),
         pytest.param(
             ["add", "bug", "a bug title", "--observed", "a traceback", "--expected", "exit 2"],
             "B-0001",
-            marks=RED,
             id="bug",
         ),
         pytest.param(
             ["add", "spike", "a spike title", "--hypothesis", "Can it be blocked?"],
             "Q-0001",
-            marks=RED,
             id="spike",
         ),
     ],
@@ -228,61 +218,48 @@ def test_the_block_of_a_started_task_still_names_its_work_item(tmp_path: Path) -
         pytest.param(
             [ADD_STORY, ADD_TASK, BLOCK],
             "S-0001 is in Backlog: start it first",
-            marks=RED,
             id="story-in-backlog",
         ),
-        pytest.param(
-            [*STARTED, BLOCK, BLOCK], "S-0001 is blocked already", marks=RED, id="blocked-already"
-        ),
+        pytest.param([*STARTED, BLOCK, BLOCK], "S-0001 is blocked already", id="blocked-already"),
         pytest.param(
             [*STARTED, *TASK_DONE, ["complete", "S-0001", "--commit", "def5678"], BLOCK],
             "S-0001 is completed already",
-            marks=RED,
             id="completed-already",
         ),
         pytest.param(
             [*STARTED, ["block", "S-0001", "--reason", " ", "--waiting-on", "developer"]],
             "reason is empty",
-            marks=RED,
             id="blank-reason",
         ),
         pytest.param(
             [*STARTED, ["block", "S-0001", "--reason", "no key", "--waiting-on", ""]],
             "waiting on is empty",
-            marks=RED,
             id="blank-waiting-on",
         ),
         pytest.param(
             [*STARTED, ["block", "S-0009", "--reason", "no key", "--waiting-on", "developer"]],
             "no Story S-0009 in the record",
-            marks=RED,
             id="no-such-story",
         ),
-        pytest.param(
-            [*STARTED, UNBLOCK], "S-0001 is not blocked", marks=RED, id="unblock-of-a-started-one"
-        ),
+        pytest.param([*STARTED, UNBLOCK], "S-0001 is not blocked", id="unblock-of-a-started-one"),
         pytest.param(
             [["block", "X-0001", "--reason", "no key", "--waiting-on", "developer"]],
             "'X-0001' is no Story, Upkeep, Bug, Spike, Task or Feature id",
-            marks=RED,
             id="block-of-no-id",
         ),
         pytest.param(
             [*STARTED, BLOCK, START_STORY],
             "S-0001 is blocked: unblock it first",
-            marks=RED,
             id="start-a-blocked-story",
         ),
         pytest.param(
             [*STARTED, *TASK_DONE, BLOCK, ["complete", "S-0001", "--commit", "def5678"]],
             "S-0001 is blocked: unblock it first",
-            marks=RED,
             id="complete-a-blocked-story",
         ),
         pytest.param(
             [*STARTED, BLOCK, START_TASK],
             "T-0001 cannot start: S-0001 is blocked, waiting on developer: unblock it first",
-            marks=RED,
             id="start-a-task-of-a-blocked-story",
         ),
         pytest.param(

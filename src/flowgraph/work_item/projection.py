@@ -13,23 +13,23 @@ from flowgraph.task import row_of
 from flowgraph.work_item.handed import agent_text
 from flowgraph.work_item.id import WorkItemId, work_item_id_text
 from flowgraph.work_item.model import (
+    BlockedWorkItem,
     CompletedWorkItem,
     RemovedWorkItem,
     StartedWorkItem,
     WorkItem,
     WorkItemState,
-    commit_sha,
-    state_name,
 )
 from flowgraph.work_item.removal import reason_of, superseded_by_of
+from flowgraph.work_item.state import commit_sha, state_name
 from flowgraph.work_item.verification import Verification
 from flowgraph.work_item.views import DependsRow, VerifiedRow, WorkItemDetail, WorkItemRow
 
 
 def _started_on(item: WorkItemState) -> datetime | None:
-    """The started time of a started work item; none in any other state, as its file reads."""
+    """The started time of a started or blocked work item; none in any other, as its file reads."""
     match item:
-        case StartedWorkItem():
+        case StartedWorkItem() | BlockedWorkItem():
             return item.started
         case WorkItem() | CompletedWorkItem() | RemovedWorkItem():
             return None
@@ -42,7 +42,7 @@ def _completed_on(item: WorkItemState) -> datetime | None:
     match item:
         case CompletedWorkItem():
             return item.completed
-        case WorkItem() | StartedWorkItem() | RemovedWorkItem():
+        case WorkItem() | StartedWorkItem() | BlockedWorkItem() | RemovedWorkItem():
             return None
         case _ as unreachable:
             assert_never(unreachable)

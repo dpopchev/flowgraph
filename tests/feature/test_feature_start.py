@@ -41,6 +41,7 @@ from flowgraph.work_item import (
     WorkItem,
     WorkItemState,
     append_task,
+    blocked_work_item,
     completed_task,
     completed_work_item,
     make_complexity,
@@ -371,8 +372,12 @@ def test_a_work_item_standing_alone_passes() -> None:
 
 @pytest.mark.parametrize(
     ("item", "items"),
-    [("S-0001", [started(1)]), ("S-0001", [completed(1)])],
-    ids=["started", "completed"],
+    [
+        ("S-0001", [started(1)]),
+        ("S-0001", [blocked_work_item(started(1), "no key", "developer", DAY[3])]),
+        ("S-0001", [completed(1)]),
+    ],
+    ids=["started", "blocked", "completed"],
 )
 def test_a_work_item_not_in_backlog_under_a_feature_never_started_passes_to_the_start(
     item: str, items: list[WorkItemState]

@@ -2,32 +2,25 @@
 
 The kind is a value the id carries, so one set of states and moves serves the Story, the
 Upkeep and every kind that shares their Given / When / Then. The kind and the id are in
-flowgraph.work_item.id, the moves between the states in flowgraph.work_item.moves.
+flowgraph.work_item.id, the moves between the states in flowgraph.work_item.moves and the
+names the record writes them by in flowgraph.work_item.state.
 """
 
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field, replace
 from datetime import datetime
-from typing import assert_never
 
 from flowgraph.criterion import (
     STATES,
     Criterion,
     CriterionError,
     Evidence,
-    evidence_text,
     said,
 )
 from flowgraph.knowledge import KnowledgeLine
 from flowgraph.parent import STANDALONE, Parent
 from flowgraph.relation import Relations, make_relations
-from flowgraph.task import (
-    BlockedTask,
-    CompletedTask,
-    StartedTask,
-    Task,
-    TaskState,
-)
+from flowgraph.task import CompletedTask, Task, TaskState
 from flowgraph.work_item.agent import Agent
 from flowgraph.work_item.complexity import Complexity
 from flowgraph.work_item.errors import (
@@ -87,6 +80,28 @@ class StartedWorkItem:
 
 
 @dataclass(frozen=True)
+class BlockedWorkItem:
+    """A started work item that cannot go on: its reason, the time since and what it waits on."""
+
+    id: WorkItemId
+    title: str
+    criterion: Criterion
+    description: str
+    created: datetime
+    started: datetime
+    reason: str
+    since: datetime
+    waiting_on: str
+    agent: Agent | None = field(default=None, kw_only=True)
+    tasks: tuple[TaskState, ...]
+    parent: Parent = STANDALONE
+    complexity: Complexity | None = None
+    knowledge: tuple[KnowledgeLine, ...] = ()
+    relations: Relations[WorkItemId] = NO_RELATIONS
+    about: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
 class CompletedWorkItem:
     """A work item in Completed: every Task of it completed, its commit on `main` or none named.
 
@@ -134,15 +149,11 @@ class RemovedWorkItem:
     about: tuple[str, ...] = ()
 
 
-# A work item that still takes Tasks: in Backlog or started.
-OpenWorkItem = WorkItem | StartedWorkItem
+# A work item that still takes Tasks: in Backlog, started or blocked.
+OpenWorkItem = WorkItem | StartedWorkItem | BlockedWorkItem
 
 # A work item in any of its states, as the record keeps it.
-WorkItemState = WorkItem | StartedWorkItem | CompletedWorkItem | RemovedWorkItem
-
-# The state of a started work item or Task, as the record writes it: its one name.
-STARTED = "started"
-
+WorkItemState = WorkItem | StartedWorkItem | BlockedWorkItem | CompletedWorkItem | RemovedWorkItem
 
 # The rows of the work items in the record; an empty list when it holds none.
 FindWorkItemRows = Callable[[], list[WorkItemRow]]
@@ -208,33 +219,3 @@ def append_task[W: OpenWorkItem](item: W, task: Task) -> W:
 def noted_work_item[W: WorkItemState](item: W, line: KnowledgeLine) -> W:
     """The work item, in whatever state, with the line after the lines it already keeps."""
     return replace(item, knowledge=(*item.knowledge, line))
-
-
-def state_name(item: WorkItemState | TaskState) -> str:
-    """The state of a work item or a Task as the record writes it."""
-    match item:
-        case WorkItem() | Task():
-            return "backlog"
-        case StartedWorkItem() | StartedTask():
-            return STARTED
-        case BlockedTask():
-            return "blocked"
-        case CompletedWorkItem() | CompletedTask():
-            return "completed"
-        case RemovedWorkItem():
-            return "removed"
-        case _ as unreachable:
-            assert_never(unreachable)
-
-
-def commit_sha(item: WorkItemState | TaskState) -> str:
-    """The sha of the commit of a completed work item or Task; empty for one that has none."""
-    match item:
-        case CompletedWorkItem() | CompletedTask():
-            return evidence_text(item.commit)
-        case WorkItem() | StartedWorkItem() | RemovedWorkItem():
-            return ""
-        case Task() | StartedTask() | BlockedTask():
-            return ""
-        case _ as unreachable:
-            assert_never(unreachable)

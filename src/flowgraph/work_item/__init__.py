@@ -7,6 +7,13 @@ from flowgraph.work_item.amend import (
     NoSuchPartError,
     amended_work_item,
 )
+from flowgraph.work_item.block import (
+    block_of,
+    block_work_item,
+    blocked_work_item,
+    unblock_work_item,
+    unblocked_work_item,
+)
 from flowgraph.work_item.commands import (
     add_work_item,
     amend_work_item,
@@ -40,7 +47,7 @@ from flowgraph.work_item.id import (
     work_item_id_text,
 )
 from flowgraph.work_item.model import (
-    STARTED,
+    BlockedWorkItem,
     CompletedWorkItem,
     FindTaskIds,
     FindWorkItemRows,
@@ -56,10 +63,8 @@ from flowgraph.work_item.model import (
     WorkItemNotFoundError,
     WorkItemState,
     append_task,
-    commit_sha,
     make_work_item,
     noted_work_item,
-    state_name,
 )
 from flowgraph.work_item.moves import (
     completed_work_item,
@@ -69,6 +74,7 @@ from flowgraph.work_item.moves import (
 )
 from flowgraph.work_item.projection import work_item_detail, work_item_row
 from flowgraph.work_item.removal import removed_work_item
+from flowgraph.work_item.state import BLOCKED, IN_PROGRESS, STARTED, commit_sha, state_name
 from flowgraph.work_item.task_commands import (
     LoadHolder,
     add_task,
@@ -94,9 +100,12 @@ from flowgraph.work_item.verify import JoinParent, verify_work_item, verify_work
 from flowgraph.work_item.views import DependsRow, VerifiedRow, WorkItemDetail, WorkItemRow
 
 __all__ = [
+    "BLOCKED",
     "COMPLEXITIES",
+    "IN_PROGRESS",
     "STARTED",
     "Amendment",
+    "BlockedWorkItem",
     "CheckMove",
     "CompletedWorkItem",
     "Complexity",
@@ -134,8 +143,11 @@ __all__ = [
     "amend_work_item",
     "amended_work_item",
     "append_task",
+    "block_of",
     "block_task",
+    "block_work_item",
     "blocked_task",
+    "blocked_work_item",
     "commit_sha",
     "complete_task",
     "completed_task",
@@ -163,7 +175,9 @@ __all__ = [
     "state_name",
     "still_open",
     "unblock_task",
+    "unblock_work_item",
     "unblocked_task",
+    "unblocked_work_item",
     "verified_work_item",
     "verify_work_item",
     "verify_work_item_no",

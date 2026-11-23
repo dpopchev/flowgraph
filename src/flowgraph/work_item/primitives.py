@@ -36,6 +36,7 @@ from flowgraph.work_item.held_file import (
 )
 from flowgraph.work_item.id import Kind, parse_work_item_id, work_item_id_text
 from flowgraph.work_item.model import (
+    BlockedWorkItem,
     CompletedWorkItem,
     RemovedWorkItem,
     StartedWorkItem,
@@ -43,10 +44,10 @@ from flowgraph.work_item.model import (
     WorkItemState,
     append_task,
     make_work_item,
-    state_name,
 )
 from flowgraph.work_item.moves import completed_work_item, started_work_item
 from flowgraph.work_item.removal import removed_work_item
+from flowgraph.work_item.state import state_name
 from flowgraph.work_item.verification import make_verification
 
 
@@ -58,8 +59,10 @@ def _verified_primitives(item: CompletedWorkItem) -> dict[str, object]:
     return {"verified": {"answer": answer.answer, "text": answer.text, "on": answer.on}}
 
 
-def _agent_primitives(item: StartedWorkItem | CompletedWorkItem) -> dict[str, object]:
-    """The agent a started or completed item is handed to, held only when it has one."""
+def _agent_primitives(
+    item: StartedWorkItem | BlockedWorkItem | CompletedWorkItem,
+) -> dict[str, object]:
+    """The agent a started, blocked or completed item is handed to, held only when it has one."""
     name = agent_text(item)
     return {"agent": name} if name else {}
 
@@ -71,6 +74,9 @@ def _moves_primitives(item: WorkItemState) -> dict[str, object]:
             return {}
         case StartedWorkItem():
             return {"started": item.started, **_agent_primitives(item)}
+        case BlockedWorkItem():
+            block = {"since": item.since, "reason": item.reason, "waiting_on": item.waiting_on}
+            return {"started": item.started, **_agent_primitives(item), **block}
         case CompletedWorkItem():
             times = {"started": item.started, "completed": item.completed}
             return {

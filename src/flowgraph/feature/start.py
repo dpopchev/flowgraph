@@ -33,6 +33,7 @@ from flowgraph.relation.depends import check_first_waits
 from flowgraph.status import backlog_as_added, rows_under
 from flowgraph.task import BlockedError, CompletedAlreadyError, NoTaskError, TaskId
 from flowgraph.work_item import (
+    BlockedWorkItem,
     CompletedWorkItem,
     RemovedWorkItem,
     StartedWorkItem,
@@ -154,7 +155,7 @@ def _awaited_feature(item: WorkItemState) -> FeatureId | None:
                     return None
                 case _ as unreachable:
                     assert_never(unreachable)
-        case StartedWorkItem() | CompletedWorkItem() | RemovedWorkItem():
+        case StartedWorkItem() | BlockedWorkItem() | CompletedWorkItem() | RemovedWorkItem():
             return None
         case _ as unreachable:
             assert_never(unreachable)

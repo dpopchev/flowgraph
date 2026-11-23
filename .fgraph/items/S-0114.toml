@@ -15,12 +15,13 @@ then = "it marks the first as ready for review and not the second, and the JSON 
 
 [[tasks]]
 id = "T-0394"
-state = "backlog"
+state = "started"
 title = "Add tests/functional/test_status_review.py, failing on the criterion of S-0114"
 description = "Run through run() of src/flowgraph/cli.py on a real git repository in tmp_path with open_files, open_git and read_config, the identity from the environment and no git config. Copy the helpers fgraph, git, environment and checkout from tests/functional/test_status_start_now.py. Take the way a Task is completed in a worktree from ready_to_land of tests/functional/test_land_gate.py: start the Task in the worktree, commit a file there, complete the Task with --commit and the sha of that commit. config.toml commits [development] enabled = true and no parallel. Add S-0001 and S-0002, one Task T-0001 under S-0001 and two Tasks T-0002 and T-0003 under S-0002. Start S-0001 --slug first and S-0002 --slug second on main, and read the worktree paths from what the start prints. Complete T-0001 in the first worktree and T-0002 in the second. One class per command (text, json, watch, development off), one fixture each, one assert per test. Assert that a whole line is in the output, not its index: InProgress lists the last started first. Red today, each with its own strict xfail naming S-0114 on the test itself, not in pytestmark: the text holds the line ? S-0001  1/1 T  title 1; watch holds that line; ready_for_review of the document is [S-0001] (a KeyError today); with the development off (no config.toml, T-0001 completed on main with --commit abc1234) the text holds the marked line. Guards, unmarked since they pass today: the exit 0 of each command; the text holds the line of S-0002 unmarked, two spaces then S-0002  1/2 T  title 2; the progress of S-0001 in the document is completed 1 of total 1, which proves its row is read from its worktree. No source changes."
 check = "uv run pytest tests/functional/test_status_review.py -q"
 expected_output = "created: tests/functional/test_status_review.py states that in a git repository with the development on, S-0001 started with its one Task completed in its worktree and S-0002 started with one Task completed and one in Backlog, fgraph status marks the line of S-0001 with ? and not that of S-0002, fgraph watch --count 1 marks it the same, fgraph status --format json lists ready_for_review as S-0001 alone, and with the development off a started work item whose one Task is completed on main is marked the same"
 created = 2026-11-23 09:10:30+00:00
+started = 2026-11-23 09:15:12+00:00
 
 [[tasks]]
 id = "T-0395"

@@ -36,3 +36,12 @@ description = "FeatureRow in src/flowgraph/feature/views.py gains one boolean fi
 check = "uv run pytest tests/status/test_start_now_feature.py tests/status/text/test_status_start_now_feature.py tests/feature tests/functional/test_status_start_now.py -q"
 expected_output = "changed: with the development on, each work item in Backlog under a started Feature that is not blocked and waits for nothing takes a place before the lines of the Backlog: the started Features in the order InProgress lists them, the work items of each in the order its start takes them; the text lists each marked one under its Feature after its started work items, as two spaces then > S-0002 and the title; a Feature holding one is listed after the top of InProgress when the top leaves it out; can_start lists them first; a Feature in Backlog takes one place, through its first work item; a blocked Feature and a never started one listed in InProgress give none"
 created = 2026-11-23 08:06:50+00:00
+
+[[tasks]]
+id = "T-0385"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say fgraph status marks every work item that can start now within development.parallel"
+description = "The passages, by their lines on main at the plan. docs/domain-model.md: 287-294 (the next to start, the reading of S-0086); the bullet Document of Status as JSON at 793-795, keeping the edit inside that bullet since S-0112 and S-0113 change the bullet Work item at 798-803; one sentence in [development] parallel at 1476-1488. README.md: rewrite 420-425; add a new paragraph after 437 instead of editing 427-437, which S-0112 and S-0113 extend; in the example add can_start: [] between the close of buckets and next_to_start at 473-474, keys sorted, and leave the example item at 446-469 alone. Keep S-0086 and S-0087 as history and say what replaces them, as S-0111 did."
+check = "grep -q can_start docs/domain-model.md && grep -q can_start README.md"
+expected_output = "changed: docs/domain-model.md, section Order, states that fgraph status marks every work item that can start now within development.parallel: the work items of a started Feature first, then the lines of the Backlog, a Feature in Backlog one place, the limit counting the started work items, every one with parallel left out, the next to start alone with the development off, and that this takes over S-0108; section Status as JSON lists can_start and next_to_start as its first; README.md shows two lines marked > under parallel = 3 and can_start in the JSON example"
+created = 2026-11-23 08:06:52+00:00

@@ -53,13 +53,15 @@ commit = "d29359a"
 
 [[tasks]]
 id = "T-0437"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a landing tags before it completes, and that delivery.tag close tags a work item that stands alone"
 description = "Find the passages by grep, not by line number. In README.md: the paragraph starting `tag` is `feature-close` or `none` with its example block, the paragraph starting A tag git refuses leaves the landing as it is, the row | `delivery.tag` of the table of keys, and the line delivery.tag is \"sometimes\". In docs/domain-model.md: the bullets starting `[delivery] tag` tags `main` at the close of a Feature, With `[delivery] tag = \"feature-close\"` the write that completes a Feature, With `[delivery] push = true` the push of `main`, for the order alone, and the table row starting | `tag epic-close`. Keep each edit inside its paragraph. Do not touch the passages on fgraph release, which is unchanged, on the gate, on the push of main, which S-0140 wrote, or the Status table at the top of README.md. No source or test changes."
 check = "grep -q 'tag = \"close\"' README.md && grep -q 'tag = \"close\"' docs/domain-model.md && grep -q \"feature-close, close or none\" README.md"
 expected_output = "changed: README.md: the passage on delivery.tag names the three words, shows tag = \"close\" with the landing of a Story that stands alone and its four lines, says the tag is on the commit of the landing, made after the first push of main and before the write that completes, and that a tag or its push refused leaves the Story merged and not completed with its line; the row of delivery.tag in the table of keys and the refusal line name the three words. docs/domain-model.md, Persistence: the bullets on [delivery] tag say the same, that the version counts the kind of the work item landed, that a landing taken up makes no second tag, that the record at the tag lists the work item InProgress, the cost of completing after the tag, and that a tag made by a landing bumps no version in a file of the project; the row of the table on the configuration of board 1 that reads the tag of a standalone root, not filed names close and S-0123"
 created = 2026-11-23 14:57:11+00:00
 started = 2026-11-23 15:21:13+00:00
+completed = 2026-11-23 15:22:20+00:00
+commit = "7a35468"
 
 [[knowledge]]
 kind = "decision"

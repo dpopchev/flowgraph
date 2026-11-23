@@ -110,6 +110,7 @@ def completed_work_item(
                 item.complexity,
                 item.knowledge,
                 item.relations,
+                agent=item.agent,
                 about=item.about,
             )
         case CompletedWorkItem():

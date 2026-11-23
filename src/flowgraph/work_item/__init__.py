@@ -13,8 +13,6 @@ from flowgraph.work_item.commands import (
     note_work_item,
     remove_work_item,
     start_work_item,
-    work_item_detail,
-    work_item_row,
 )
 from flowgraph.work_item.complexity import (
     COMPLEXITIES,
@@ -69,6 +67,7 @@ from flowgraph.work_item.moves import (
     still_open,
     verified_work_item,
 )
+from flowgraph.work_item.projection import work_item_detail, work_item_row
 from flowgraph.work_item.removal import removed_work_item
 from flowgraph.work_item.task_commands import (
     LoadHolder,

@@ -82,6 +82,7 @@ class WorkItemDetail:
     decision: str = ""
     answer: str = ""
     commit: str = ""
+    agent: str = ""
     reason: str = ""
     parent: str = ""
     complexity: str = ""

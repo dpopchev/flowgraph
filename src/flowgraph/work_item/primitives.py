@@ -24,7 +24,9 @@ from flowgraph.item import (
 )
 from flowgraph.parent import parent_text, parent_written
 from flowgraph.task import at_most_one_started
+from flowgraph.work_item.agent import agent_written
 from flowgraph.work_item.depends import id_held, relations_held, relations_primitives
+from flowgraph.work_item.handed import agent_text, handed_work_item
 from flowgraph.work_item.held_file import (
     CompletedItemFile,
     HeldItemFile,
@@ -56,16 +58,27 @@ def _verified_primitives(item: CompletedWorkItem) -> dict[str, object]:
     return {"verified": {"answer": answer.answer, "text": answer.text, "on": answer.on}}
 
 
+def _agent_primitives(item: StartedWorkItem | CompletedWorkItem) -> dict[str, object]:
+    """The agent a started or completed item is handed to, held only when it has one."""
+    name = agent_text(item)
+    return {"agent": name} if name else {}
+
+
 def _moves_primitives(item: WorkItemState) -> dict[str, object]:
     """The times and the commit of the moves an item has made, as its file holds them."""
     match item:
         case WorkItem():
             return {}
         case StartedWorkItem():
-            return {"started": item.started}
+            return {"started": item.started, **_agent_primitives(item)}
         case CompletedWorkItem():
             times = {"started": item.started, "completed": item.completed}
-            return {**times, **evidence_primitives(item.commit), **_verified_primitives(item)}
+            return {
+                **times,
+                **_agent_primitives(item),
+                **evidence_primitives(item.commit),
+                **_verified_primitives(item),
+            }
         case RemovedWorkItem():
             named = item.superseded_by
             superseded = {} if named is None else {"superseded_by": work_item_id_text(named)}
@@ -159,6 +172,7 @@ def item_held(held: HeldItemFile, kind: Kind, kinds: Sequence[Kind] = ()) -> Wor
         case StartedItemFile() | CompletedItemFile():
             tasks = at_most_one_started(tuple(task_held(task) for task in held.tasks))
             begun = replace(started_work_item(item, held.started), tasks=tasks)
+            begun = handed_work_item(begun, agent_written(held.agent))
             match held:
                 case CompletedItemFile():
                     commit = evidence_written(held.commit)

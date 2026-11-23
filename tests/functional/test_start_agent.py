@@ -36,6 +36,15 @@ ADD_TASK = [
     "make test",
 ]
 START = ["start", "S-0001", "--agent", "sonnet-a1"]
+CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
+ADD_FEATURE = ["add", "feature", "a feature title", "--criterion", "a criterion"]
+ADD_FIRST = [*ADD_STORY[:3], *CRITERION, "--parent", "F-0001"]
+ADD_SECOND = ["add", "story", "another title", *CRITERION, "--parent", "F-0001"]
+TASK_OF_SECOND = [*ADD_TASK[:4], "S-0002", *ADD_TASK[5:]]
+ADD_FEATURE_STORIES = (ADD_FEATURE, ADD_FIRST, ADD_TASK, ADD_SECOND, TASK_OF_SECOND)
+LAND = ["land", "S-0001", "--message", "feat: land the first Story"]
+LEAF = "S-0001-raise-the-stories-fgraph"
+AGENT_LINE = "  agent        sonnet-a1\n"
 IDENTITY = {
     "GIT_AUTHOR_NAME": "a developer",
     "GIT_AUTHOR_EMAIL": "developer@example.com",
@@ -43,8 +52,6 @@ IDENTITY = {
     "GIT_COMMITTER_EMAIL": "developer@example.com",
 }
 
-red_exit = pytest.mark.xfail(strict=True, reason="S-0113: start takes no --agent yet")
-red_show = pytest.mark.xfail(strict=True, reason="S-0113: show lists no agent yet")
 red_status = pytest.mark.xfail(strict=True, reason="S-0113: status lists no agent yet")
 
 
@@ -110,10 +117,10 @@ def environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
 
 
 @pytest.fixture
-def checkout(tmp_path: Path) -> Path:
-    """A git repository on main whose commits hold a Story in Backlog with one Task.
+def repository(tmp_path: Path) -> Path:
+    """A git repository on main whose first commit holds the config.toml of the record.
 
-    Its first commit holds the config.toml of the record, which turns the development on.
+    The config turns the development on.
     """
     path = tmp_path / "project"
     path.mkdir()
@@ -121,8 +128,14 @@ def checkout(tmp_path: Path) -> Path:
     enable_development(path)
     git(path, "add", ".fgraph/config.toml")
     git(path, "commit", "--quiet", "--message", "chore: turn the development on")
-    runs(path, ADD_STORY, ADD_TASK)
     return path
+
+
+@pytest.fixture
+def checkout(repository: Path) -> Path:
+    """The repository on main whose commits hold a Story in Backlog with one Task."""
+    runs(repository, ADD_STORY, ADD_TASK)
+    return repository
 
 
 def listed(checkout: Path) -> list[str]:
@@ -143,7 +156,6 @@ class TestAStoryStartedWithAnAgent:
     def started(self, checkout: Path) -> Outcome:
         return fgraph(START, checkout)
 
-    @red_exit
     def test_start_exits_with_zero(self, started: Outcome) -> None:
         assert started.status == 0
 
@@ -153,10 +165,44 @@ class TestAStoryStartedWithAnAgent:
     ) -> None:
         assert listed(checkout) == [f"  S-0001  0/1 T  [sonnet-a1]  {TITLE}"]
 
-    @red_show
     def test_show_lists_the_agent(self, started: Outcome, checkout: Path) -> None:
-        assert "  agent        sonnet-a1\n" in fgraph(["show", "S-0001"], checkout).out
+        assert AGENT_LINE in fgraph(["show", "S-0001"], checkout).out
 
     @red_status
     def test_the_json_of_status_holds_the_agent(self, started: Outcome, checkout: Path) -> None:
         assert agent_of(checkout) == "sonnet-a1"
+
+
+class TestAFeatureStartedWithAnAgent:
+    @pytest.fixture
+    def started(self, repository: Path) -> Outcome:
+        return runs(repository, *ADD_FEATURE_STORIES, ["start", "F-0001", "--agent", "sonnet-a1"])
+
+    def test_start_hands_its_first_work_item_to_the_agent(
+        self, started: Outcome, repository: Path
+    ) -> None:
+        assert AGENT_LINE in fgraph(["show", "S-0001"], repository).out
+
+
+class TestTheStartALandingMakesWhileTheFirstStoryHoldsAnAgent:
+    @pytest.fixture
+    def landed(self, repository: Path, tmp_path: Path) -> Outcome:
+        runs(repository, *ADD_FEATURE_STORIES, ["start", "F-0001", "--agent", "sonnet-a1"])
+        worktree = tmp_path / "project.worktrees" / LEAF
+        fgraph(["start", "T-0001"], worktree)
+        (worktree / "work.txt").write_text("the work of the Task\n", encoding="utf-8")
+        git(worktree, "add", "work.txt")
+        git(worktree, "commit", "--quiet", "--message", "feat: do the work of the Task")
+        fgraph(["complete", "T-0001", "--commit", git(worktree, "rev-parse", "HEAD")], worktree)
+        return fgraph(LAND, repository)
+
+    def test_the_next_story_is_started_and_lists_no_agent(
+        self, landed: Outcome, repository: Path
+    ) -> None:
+        shown = fgraph(["show", "S-0002"], repository).out.splitlines()
+        assert [line for line in shown if line.startswith(("  bucket", "  agent"))] == [
+            "  bucket       InProgress"
+        ]
+
+    def test_the_completed_story_keeps_its_agent(self, landed: Outcome, repository: Path) -> None:
+        assert AGENT_LINE in fgraph(["show", "S-0001"], repository).out

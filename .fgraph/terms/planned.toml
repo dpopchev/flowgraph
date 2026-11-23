@@ -1,0 +1,3 @@
+name = "planned"
+meaning = "An item of the backlog that can be pulled: a work item that holds a Task, or a Feature whose work items in the backlog each hold one; with an agent driving, its complexity is set too."
+added = 2026-11-23 12:07:20.161119+00:00

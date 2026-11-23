@@ -14,6 +14,11 @@ depends_on = [
     "S-0113",
 ]
 
+[verified]
+answer = "yes"
+text = "at 360264e on main, in a scratch git repository: S-0002 under F-0001, depending on the completed S-0001, about the term gate, complexity medium, one Task with the check make test whose output names src/gate.py, started through the Feature with --slug brief-me --agent sonnet-a1, and a decision on S-0001 governing src/gate.py: fgraph brief S-0002 exit 0 printed the text of fgraph show, then Worktree with branch wi/S-0002-brief-me and its path, Feature F-0001 InProgress with its decision, Governed by the decision of S-0001, and Terms (1) gate with its meaning; --format json held the eighteen keys sorted, agent sonnet-a1, complexity medium, depends_on S-0001 Completed, waits_for empty, the governing line, the term and the check of the Task; a Feature id and a Task id exit 2 with is no Story, Upkeep, Bug or Spike id; --format xml exit 2 naming the two formats of brief; make check on main at a04535f, with S-0114 and S-0115 landed too: 3146 passed, all checks passed. Worked whole by one subagent on sonnet beside S-0114 and S-0115; it stopped at a test its Tasks did not name, tests/parser/test_help.py, and wrote the line as T-0406 once the developer agreed; src/flowgraph/parser/command.py went from 250 to 237 lines by the move to parser/views.py."
+on = 2026-11-23 09:59:23+00:00
+
 [criterion]
 given = "a started work item under a Feature, with Tasks that hold checks, a work item it depends on, a term it is about and a knowledge line that governs a file"
 when = "the brief of the work item is printed with one command, as text and as JSON"

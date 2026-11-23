@@ -9,3 +9,12 @@ created = 2026-11-23 07:01:55+00:00
 given = "a record with the development on and development.parallel set to 3, one work item started, three in Backlog that wait for nothing and a fourth that waits for one of them"
 when = "fgraph status is run, as text and as JSON"
 then = "it marks the first two of the three as able to start now, the limit leaving two places, and the JSON document lists their ids"
+
+[[tasks]]
+id = "T-0382"
+state = "backlog"
+title = "Add tests/functional/test_status_start_now.py, failing on the criterion of S-0110"
+description = "Run through run() of src/flowgraph/cli.py on a real git repository in tmp_path with open_files, open_git and read_config, the identity from the environment and no git config, as tests/functional/test_parallel.py does; config.toml commits [development] enabled = true and parallel = 3. Five Stories, each with a Task so no later rule on Tasks changes the outcome; S-0002 amended --depends-on S-0004, so a waiting line is skipped and the limit, not a dependency, leaves out S-0005; start S-0001 on main. One class per command (text, json, watch), one fixture, one assert per test. Red today, each marked xfail strict naming S-0110 on the test itself, not in pytestmark: the text marks S-0003 alone, the JSON has no can_start key, watch marks S-0003 alone. Guards, unmarked since they pass today: the exit 0 of each, next_to_start is S-0003, the line of S-0002 starts with ~. No source changes."
+check = "uv run pytest tests/functional/test_status_start_now.py -q"
+expected_output = "created: tests/functional/test_status_start_now.py states that in a git repository with the development on and development.parallel = 3, S-0001 started and S-0002 to S-0005 in Backlog each with a Task, S-0002 waiting for S-0004, fgraph status marks S-0003 and S-0004 with > and no other line, fgraph status --format json lists can_start as S-0003 and S-0004 with next_to_start S-0003, and fgraph watch --count 1 marks the same two lines"
+created = 2026-11-23 08:06:45+00:00

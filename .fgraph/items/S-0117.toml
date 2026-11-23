@@ -40,6 +40,15 @@ check = "uv run pytest tests/functional/test_goal.py tests/parser tests/function
 expected_output = "changed: new src/flowgraph/goal/read.py: goal_output(feature, hours, store, development) checks the driver first, then the hours, then parses the id with parse_feature_id, loads the Feature with store.features.load_feature, takes its work items in Backlog in start order, runs check_scope and returns goal_line. New src/flowgraph/parser/goal.py: goal_command(commands), shaped as parser/brief.py, one positional ID and --hours N, 8 by default. src/flowgraph/parser/arguments.py: build_command_line builds goal after config and adds the key goal, and its module docstring names goal. src/flowgraph/parser/views.py: view_said takes a development parameter and gains the case goal. src/flowgraph/parser/command.py: only the last line of command_said changes, to pass config.development. src/flowgraph/parser/refusals.py imports GoalDriverError, EmptyGoalError and GoalHoursError and lists them right after BriefFormatError. tests/parser/test_help.py: one line for goal right after the line for brief in test_every_command_kind_under_add_and_action_under_config_has_its_help. tests/functional/test_command_help.py: one line for goal right after the line for brief in COMMANDS. The xfail marks of tests/functional/test_goal.py are removed"
 created = 2026-11-23 10:14:22+00:00
 
+[[tasks]]
+id = "T-0410"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say fgraph goal words the /goal line of a Feature"
+description = "Find the passages by grep, never by line number. Leave the development.driver passage, Order and Persistence alone: S-0127 edits Order and the refusals of a start."
+check = "grep -q fgraph.goal README.md && grep -q ^##.Goal docs/domain-model.md"
+expected_output = "changed: docs/domain-model.md gets a new section Goal between Brief and Terms: what is printed, which parts come from the record (the ids, development.parallel, the hours) and which are fixed text, the refusals, that fgraph never sets the goal, and the page of the documentation of Claude Code the wording follows (one measurable end state, a stated check, the constraints that matter, a bound; at most 4,000 characters). README.md gets a row in its table right after the row of the brief of a work item, and a paragraph with an example right after the fgraph brief example block"
+created = 2026-11-23 10:14:25+00:00
+
 [[knowledge]]
 kind = "decision"
 text = "The developer ruled on 2026-11-23, on the draft of the line shown that day: the /goal line fgraph words carries a time bound. The documentation of Claude Code for /goal, read that day (code.claude.com/docs/en/goal), asks a condition for one measurable end state, a stated check, the constraints that matter and a bound, a turn or time clause in the condition; the condition holds at most 4,000 characters and is judged by a small model from the conversation alone. Open, for the plan: where the number of hours comes from -- an option of the command, a default -- the reading of the coordinator being an option --hours with the 8 hours a burn of board 1 used as its default."

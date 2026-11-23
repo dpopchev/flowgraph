@@ -7,6 +7,11 @@ started = 2026-11-23 07:16:47+00:00
 completed = 2026-11-23 07:24:31+00:00
 commit = "05bb641"
 
+[verified]
+answer = "yes"
+text = "at 05bb641 on main, on the record of flowgraph, which holds F-0015: fgraph show f15, f-15, F15 and f-0015 each exit 0 and showed F-0015; f99 exit 2 with no Feature F-0099 in the record; x15 exit 2 with no term 'x15' in the record; f-0 and sp-15 exit 2 with is no Story, Upkeep, Bug, Spike or Feature id, each text as typed; fgraph show s111 showed S-0111 and fgraph about q1 listed Q-0001; make check on main at e8083e7: 2855 passed, all checks passed. Worked whole by one subagent on sonnet; it used sed once on its test file against the rule of Edit and Write alone, and the unit tests of T-0380 were seen red on the missing module, not on their assertions."
+on = 2026-11-23 07:28:47+00:00
+
 [criterion]
 given = "a record that holds F-0015"
 when = "fgraph show is run with f15, with f-15, with F15 and with f-0015"

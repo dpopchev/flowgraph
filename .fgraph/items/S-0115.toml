@@ -1,0 +1,11 @@
+id = "S-0115"
+state = "backlog"
+title = "Raise the drivers of the development the configuration names from one, a developer, to two: an agent"
+description = "Filed on the plan the developer agreed on 2026-11-23. Its Tasks are written when it is ordered. The words of the developer: this should be a configuration, preventing unnecessary rituals when a human is developing. The name of the key and of its values is the Task's. Open: what the agent-driven development asks that the other does not -- a complexity at the add, an agent at the start, a goal before the first start -- decided when it is ordered."
+parent = "F-0016"
+created = 2026-11-23 07:02:03+00:00
+
+[criterion]
+given = "a record with the development on"
+when = "the key of the configuration that names who drives the development is set to an agent"
+then = "fgraph config show lists it, and a record that leaves the key out works as before: no command asks for a complexity, an agent or a goal"

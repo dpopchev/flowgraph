@@ -25,7 +25,7 @@ from flowgraph.parent import FeatureId, feature_id_text, parse_feature_id
 from flowgraph.record.queue import Entry, Inside, Line, Placed, queued
 from flowgraph.record.store import KINDS, Store
 from flowgraph.status.document import JSON, chosen_format, status_json
-from flowgraph.status.next import with_next
+from flowgraph.status.next import NEXT_ONLY, StartLimit, with_start_now
 from flowgraph.status.text import cut_lines, status_text
 from flowgraph.status.under import in_show_order
 from flowgraph.status.waits import with_waits
@@ -184,7 +184,7 @@ def find_backlog(store: Store) -> list[Entry]:
     return [*(Line(placed) for placed in _backlog_lines(alone, features)), *inside]
 
 
-def status_rows(store: Store) -> list[WorkItemRow | FeatureRow]:
+def status_rows(store: Store, limit: StartLimit = NEXT_ONLY) -> list[WorkItemRow | FeatureRow]:
     """The work items standing alone and the Features of the record, in the order of the buckets.
 
     The plain data every format of status writes, each fact set on its row: what an item waits
@@ -205,7 +205,6 @@ def status_rows(store: Store) -> list[WorkItemRow | FeatureRow]:
     alone = {item_id: row for item_id, row in rows.items() if row.parent not in held}
     backlog = _backlog_lines(alone, features)
     in_queue = queued(store.load_queue(), backlog)
-    queue_lines = with_next([backlog[placed] for placed in in_queue])
     started = [row for row in alone.values() if row.state == STARTED]
     completed = [row for row in alone.values() if row.state == COMPLETED]
     gone = [row for _, row in features if row.bucket == "Removed"]
@@ -215,31 +214,34 @@ def status_rows(store: Store) -> list[WorkItemRow | FeatureRow]:
         for row in rows.values()
         if row.state not in (BACKLOG, STARTED, COMPLETED) and row.parent not in with_them
     ]
+    taken = sum(row.state == STARTED for row in rows.values())
     listed = [
-        *queue_lines,
+        *(backlog[placed] for placed in in_queue),
         *_with_features(started, features, "InProgress", last_first=True),
         *_with_features(completed, features, "Completed", last_first=True),
         *removed,
         *gone,
     ]
-    return listed
+    return with_start_now(listed, limit, taken)
 
 
-def status_item(store: Store, top: int | None = None) -> str:
+def status_item(store: Store, top: int | None = None, limit: StartLimit = NEXT_ONLY) -> str:
     """The text of the work items standing alone and of the Features of the record, by bucket.
 
     Under a top each heading lists that many, the first ones; the rows are those of
-    `status_rows`.
+    `status_rows` under the limit.
     """
-    return status_text(status_rows(store), top)
+    return status_text(status_rows(store, limit), top)
 
 
-def status_output(store: Store, top: int | None, format_: str, width: int | None) -> str:
+def status_output(
+    store: Store, top: int | None, format_: str, width: int | None, limit: StartLimit
+) -> str:
     """The status of the record in the format asked for: text cut to the width, or the document.
 
     The document lists every item, whatever the top, and is never cut. Raises StatusFormatError
     when the format is neither; the record is not read then.
     """
     if chosen_format(format_) == JSON:
-        return status_json(status_rows(store))
-    return cut_lines(status_item(store, top), width)
+        return status_json(status_rows(store, limit))
+    return cut_lines(status_item(store, top, limit), width)

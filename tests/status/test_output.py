@@ -9,6 +9,7 @@ import pytest
 from flowgraph.item.commands import Store, status_item
 from flowgraph.record.queue import make_queue
 from flowgraph.status.document import StatusFormatError
+from flowgraph.status.next import NextOnly
 from flowgraph.status.text import cut_lines
 from flowgraph.status.view import status_output
 from flowgraph.story import STORY
@@ -44,23 +45,25 @@ def store() -> Store:
 
 
 def test_the_text_is_what_status_prints_cut_to_the_width() -> None:
-    assert status_output(store(), 3, "text", 10) == cut_lines(status_item(store(), 3), 10)
+    assert status_output(store(), 3, "text", 10, NextOnly()) == cut_lines(
+        status_item(store(), 3), 10
+    )
 
 
 def test_the_text_is_the_default_text_of_status_when_there_is_no_width() -> None:
-    assert status_output(store(), None, "text", None) == status_item(store())
+    assert status_output(store(), None, "text", None, NextOnly()) == status_item(store())
 
 
 def test_the_json_lists_every_item_whatever_the_top() -> None:
-    document = json.loads(status_output(store(), 3, "json", 10))
+    document = json.loads(status_output(store(), 3, "json", 10, NextOnly()))
     assert document["buckets"][0]["count"] == len(document["buckets"][0]["items"]) == 7
 
 
 def test_the_json_is_not_cut_to_the_width() -> None:
-    document = json.loads(status_output(store(), None, "json", 10))
+    document = json.loads(status_output(store(), None, "json", 10, NextOnly()))
     assert document["buckets"][0]["items"][0]["title"] == "a long title of a Story"
 
 
 def test_a_format_that_is_none_is_refused() -> None:
     with pytest.raises(StatusFormatError):
-        status_output(store(), None, "xml", None)
+        status_output(store(), None, "xml", None, NextOnly())

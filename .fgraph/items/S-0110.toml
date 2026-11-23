@@ -13,39 +13,51 @@ then = "it marks the first two of the three as able to start now, the limit leav
 
 [[tasks]]
 id = "T-0382"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_status_start_now.py, failing on the criterion of S-0110"
 description = "Run through run() of src/flowgraph/cli.py on a real git repository in tmp_path with open_files, open_git and read_config, the identity from the environment and no git config, as tests/functional/test_parallel.py does; config.toml commits [development] enabled = true and parallel = 3. Five Stories, each with a Task so no later rule on Tasks changes the outcome; S-0002 amended --depends-on S-0004, so a waiting line is skipped and the limit, not a dependency, leaves out S-0005; start S-0001 on main. One class per command (text, json, watch), one fixture, one assert per test. Red today, each marked xfail strict naming S-0110 on the test itself, not in pytestmark: the text marks S-0003 alone, the JSON has no can_start key, watch marks S-0003 alone. Guards, unmarked since they pass today: the exit 0 of each, next_to_start is S-0003, the line of S-0002 starts with ~. No source changes."
 check = "uv run pytest tests/functional/test_status_start_now.py -q"
 expected_output = "created: tests/functional/test_status_start_now.py states that in a git repository with the development on and development.parallel = 3, S-0001 started and S-0002 to S-0005 in Backlog each with a Task, S-0002 waiting for S-0004, fgraph status marks S-0003 and S-0004 with > and no other line, fgraph status --format json lists can_start as S-0003 and S-0004 with next_to_start S-0003, and fgraph watch --count 1 marks the same two lines"
 created = 2026-11-23 08:06:45+00:00
+started = 2026-11-23 08:09:48+00:00
+completed = 2026-11-23 08:10:57+00:00
+commit = "a116823"
 
 [[tasks]]
 id = "T-0383"
-state = "backlog"
+state = "completed"
 title = "Mark every line of the Backlog that can start now within development.parallel in fgraph status, fgraph watch and the JSON key can_start"
 description = "Removes the xfail marks of tests/functional/test_status_start_now.py. In src/flowgraph/status/next.py, pure: a sum StartLimit = NextOnly | Within(most) | NoLimit; start_limit(development) maps the Development of flowgraph.record as _most of src/flowgraph/development/parallel.py does (off to NextOnly, Unlimited to NoLimit, Parallel(most) to Within); with_start_now(rows, limit, started) sets next_to_start on the rows, keeping with_next for NextOnly so tests/status/test_next.py stays as is; start_now_ids(rows) gives the marked ids in order and is the one place document.py reads them. flowgraph.status must not import flowgraph.development: parallel.py imports flowgraph.item.commands, which imports flowgraph.status, a cycle. started counts the rows in state started alone, as _check_room does; blocked ones are not counted. src/flowgraph/status/view.py holds 245 of its 250 lines: change only status_rows and status_item (a limit keyword, default NextOnly) and status_output (limit required); started is read from rows. Pass start_limit(config.development) from the status case of src/flowgraph/parser/command.py and from _watch of src/flowgraph/cli.py, which takes the config run() has loaded. In src/flowgraph/status/text.py, status_text pins every marked index and _top_of takes a collection of them. In src/flowgraph/status/document.py, add can_start in status_json and one sentence at the end of the module docstring; leave _work_item alone, S-0112 and S-0113 extend it. Unit tests red first, in new files: tests/status/test_start_now.py, tests/status/text/test_status_start_now.py, tests/status/test_document_can_start.py. tests/status/test_output.py passes NextOnly() to status_output."
 check = "uv run pytest tests/functional/test_status_start_now.py tests/functional/test_status_next.py tests/functional/test_status_json.py tests/functional/test_watch.py tests/status -q --runxfail"
 expected_output = "changed: with the development on, fgraph status and fgraph watch mark > every line of the Backlog that waits for nothing, in the order of the queue, up to development.parallel less the work items started, every one with parallel left out; each marked line the top of 5 leaves out is listed after the top; the JSON holds can_start, the ids marked in that order, [] for none, and next_to_start, its first or null; with the development off the marks and both keys hold the next to start alone, as before"
 created = 2026-11-23 08:06:47+00:00
+started = 2026-11-23 08:11:01+00:00
+completed = 2026-11-23 08:14:20+00:00
+commit = "a9a198a"
 
 [[tasks]]
 id = "T-0384"
-state = "backlog"
+state = "completed"
 title = "List the work items in Backlog of a started Feature that can start now in fgraph status, ahead of the lines of the Backlog"
 description = "FeatureRow in src/flowgraph/feature/views.py gains one boolean field at its end, default false, true from feature_row for a StartedFeature alone. Today the row cannot tell a started Feature from a never started one that feature_bucket lists in InProgress from the states of its work items; the start refuses the work items of that one as not started. with_start_now and start_now_ids of src/flowgraph/status/next.py read the work_items of such a row in state backlog with no waits_for, in the order held: in_show_order of status/under.py puts those in Backlog in start order. NextOnly is unchanged, so with the development off nothing under a Feature is marked and no existing test of the text changes. view.py marks the whole listed rows instead of the queue lines, within 250 lines. In src/flowgraph/status/text.py, _feature_lines adds the marked work items under the Feature; leave _status_line alone, S-0113 changes its started line. Red first in tests/status/test_start_now_feature.py and tests/status/text/test_status_start_now_feature.py, plus one class at the end of tests/functional/test_status_start_now.py: with parallel = 3, a started Feature of four Stories, its first started, lists the second and the third under it."
 check = "uv run pytest tests/status/test_start_now_feature.py tests/status/text/test_status_start_now_feature.py tests/feature tests/functional/test_status_start_now.py -q"
 expected_output = "changed: with the development on, each work item in Backlog under a started Feature that is not blocked and waits for nothing takes a place before the lines of the Backlog: the started Features in the order InProgress lists them, the work items of each in the order its start takes them; the text lists each marked one under its Feature after its started work items, as two spaces then > S-0002 and the title; a Feature holding one is listed after the top of InProgress when the top leaves it out; can_start lists them first; a Feature in Backlog takes one place, through its first work item; a blocked Feature and a never started one listed in InProgress give none"
 created = 2026-11-23 08:06:50+00:00
+started = 2026-11-23 08:14:23+00:00
+completed = 2026-11-23 08:18:16+00:00
+commit = "9114625"
 
 [[tasks]]
 id = "T-0385"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph status marks every work item that can start now within development.parallel"
 description = "The passages, by their lines on main at the plan. docs/domain-model.md: 287-294 (the next to start, the reading of S-0086); the bullet Document of Status as JSON at 793-795, keeping the edit inside that bullet since S-0112 and S-0113 change the bullet Work item at 798-803; one sentence in [development] parallel at 1476-1488. README.md: rewrite 420-425; add a new paragraph after 437 instead of editing 427-437, which S-0112 and S-0113 extend; in the example add can_start: [] between the close of buckets and next_to_start at 473-474, keys sorted, and leave the example item at 446-469 alone. Keep S-0086 and S-0087 as history and say what replaces them, as S-0111 did."
 check = "grep -q can_start docs/domain-model.md && grep -q can_start README.md"
 expected_output = "changed: docs/domain-model.md, section Order, states that fgraph status marks every work item that can start now within development.parallel: the work items of a started Feature first, then the lines of the Backlog, a Feature in Backlog one place, the limit counting the started work items, every one with parallel left out, the next to start alone with the development off, and that this takes over S-0108; section Status as JSON lists can_start and next_to_start as its first; README.md shows two lines marked > under parallel = 3 and can_start in the JSON example"
 created = 2026-11-23 08:06:52+00:00
+started = 2026-11-23 08:18:19+00:00
+completed = 2026-11-23 08:18:54+00:00
+commit = "2580080"
 
 [[knowledge]]
 kind = "decision"

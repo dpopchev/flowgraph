@@ -7,6 +7,7 @@ from collections.abc import Collection, Iterable, Sequence
 from typing import assert_never
 
 from flowgraph.feature import FeatureRow
+from flowgraph.status.next import start_now_ids
 from flowgraph.story import StoryRow
 from flowgraph.task import TaskRow
 from flowgraph.upkeep import UpkeepRow
@@ -50,7 +51,7 @@ def status_text(rows: Iterable[WorkItemRow | FeatureRow], top: int | None = None
         held = [_item_lines(row) for row in in_bucket]
         if bucket == APART and not held:
             continue
-        pinned = next((at for at, row in enumerate(in_bucket) if row.next_to_start), None)
+        pinned = [at for at, row in enumerate(in_bucket) if start_now_ids([row])]
         lines.append(f"{bucket} ({len(held)})\n")
         lines.extend(_top_of(held, top, pinned))
     return "".join(lines)
@@ -106,7 +107,10 @@ def _feature_lines(feature: FeatureRow) -> str:
         return f"  {feature.id}  {feature.title}  -- {feature.reason}\n"
     progress = f"{feature.completed}/{feature.held} W"
     commit = f"{feature.commit}  " if feature.commit else ""
-    started = (line for row in feature.started for line in _status_line(row).splitlines())
+    marked = (row for row in feature.work_items if row.next_to_start)
+    started = (
+        line for row in (*feature.started, *marked) for line in _status_line(row).splitlines()
+    )
     under = "".join(f"  {line}\n" for line in started)
     line = f"{feature.id}  {progress}  {commit}{feature.title}"
     own = (feature.waiting_on, feature.block_reason)
@@ -152,20 +156,19 @@ def _waited_on(rows: Iterable[StoryRow | UpkeepRow]) -> tuple[str, str]:
     return next(blocked, ("", ""))
 
 
-def _top_of(items: Sequence[str], top: int | None, pinned: int | None = None) -> list[str]:
+def _top_of(items: Sequence[str], top: int | None, pinned: Collection[int] = ()) -> list[str]:
     """The first items up to the top, then how many more there are; every item without a top.
 
     An item is counted once, whatever the lines it is written in: a work item with its Tasks
-    being worked, a Feature with its started work items. The pinned item, by its place, is
-    listed after the top when the top leaves it out, and is not one of those more.
+    being worked, a Feature with its started work items. Each pinned item, by its place, is
+    listed after the top in its order when the top leaves it out, and is not one of those more.
     """
     if top is None or len(items) <= top:
         return list(items)
     shown = list(items[:top])
-    more = len(items) - top
-    if pinned is not None and pinned >= top:
-        shown.append(items[pinned])
-        more -= 1
+    left_out = [at for at in sorted(pinned) if at >= top]
+    shown.extend(items[at] for at in left_out)
+    more = len(items) - top - len(left_out)
     return [*shown, f"  ... {more} more\n"] if more else shown
 
 

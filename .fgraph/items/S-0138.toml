@@ -66,12 +66,13 @@ commit = "053db8b"
 
 [[tasks]]
 id = "T-0442"
-state = "backlog"
+state = "started"
 title = "List a blocked work item in fgraph status under InProgress, marked ! with its reason"
 description = "src/flowgraph/status/view.py is at 247 of 250 lines and must not grow: _last_first takes the states as a collection; the work items listed under a Feature (line 86), the started lines (208) and the places taken (217) read IN_PROGRESS of flowgraph.work_item, and the removed ones (215) leave out blocked too; its import line names IN_PROGRESS in place of STARTED, which src/flowgraph/status/__init__.py then imports from flowgraph.work_item. src/flowgraph/status/text.py (214 lines): _status_line writes the progress line for a row started or blocked, and for one that waits on someone through _marked, in place of the mark of a review; _waited_on gives, per work item in the order given, its own block and then that of its first blocked Task. src/flowgraph/feature/views.py: BEGUN holds blocked. Leave status/review.py, next.py, document.py and show.py alone: a blocked work item is not ready for review as review.py stands. Tests red first: a new tests/status/text/test_status_blocked_item.py shaped as tests/status/text/test_status_tasks.py -- the line, with an agent, with a started Task under it, with every Task completed and no ?, under a Feature, the Feature marked by it, the block of the Feature before it, its block before that of a Task; in tests/item/test_status_in_progress_order.py a blocked work item keeps the place of its started time and is listed once; in tests/item/test_status_features.py one under a started Feature is listed under it; in tests/status/test_start_now.py or beside it, through status_rows under a limit of one, no line is marked beside a blocked work item; in tests/feature/test_feature_row.py the bucket of a Feature never started over a blocked work item. Remove the xfail marks of the status texts in tests/functional/test_block_work_item.py."
 check = "uv run pytest tests/status tests/item tests/feature tests/functional/test_block_work_item.py tests/functional/test_status_block_reason.py tests/functional/test_status_feature_blocked.py -q"
 expected_output = "changed: fgraph status and fgraph watch list a blocked work item under InProgress in the place its started time gives it, as ! S-0001  0/1 T  a title  -- waiting on developer: no key, its agent in brackets before the title, the Tasks of it being worked under it; under a Feature the same line two columns further in; a Feature is marked ! by a blocked work item under it, its own block first, then that of the work item, then that of a Task; a blocked work item is not marked ? and takes a place of development.parallel in the marks; a Feature never started that holds one is in InProgress"
 created = 2026-11-23 14:57:34+00:00
+started = 2026-11-23 15:29:10+00:00
 
 [[tasks]]
 id = "T-0443"

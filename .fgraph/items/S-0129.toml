@@ -77,12 +77,13 @@ commit = "d719295"
 
 [[tasks]]
 id = "T-0426"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say an item of the Backlog is planned, with the development driven by an agent, only once its complexity is set"
 description = "Find the passages by grep, never by line number. In README.md: the sentence With the development on a line is marked only once planned; the list after The start of a Feature exits 2; the list after A next work item that cannot start stays in Backlog; the paragraph starting `development.driver` names who drives the development, which keeps that a record that leaves the key out works as before. In docs/domain-model.md: the bullet holding a line is marked only once planned (S-0127); the bullet The start of a Feature is refused; the bullet A next work item that cannot start; the bullet starting `development.driver` names who drives the development. Keep each edit inside its paragraph or bullet. Do not touch the table at the top of README.md, the Goal section, the passages on --complexity of S-0112, the JSON example, or the table of refusals near start U-0001, no Task. Write the refusal lines exactly as src/flowgraph/development/driver.py words them. No source or test changes."
 check = "grep -q has.no.complexity.to.start.with README.md && grep -q has.no.complexity.to.start.with docs/domain-model.md && ! grep -q \"S-0127 and S-0117 are its first readers\" docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, Order: the bullet on what fgraph status marks says that with development.driver agent planned also means each work item holds a complexity, and that with the driver a developer the Tasks alone decide. Persistence: the refusals of the start of a Feature gain F-0001 cannot start: S-0002 has no complexity to start with: set it with fgraph amend S-0002 --complexity low, medium or high; the bullet on a next work item that cannot start gains the not started: line of one with no complexity. The bullet on development.driver no longer names S-0127 and S-0117 as its first readers: it says fgraph goal (S-0117) and the planned rule (S-0129) read it, gives the refusal of the start of a work item alone, S-0002 has no complexity to start with: ..., and keeps that which model a complexity maps to stays outside fgraph. README.md: the paragraph on what status marks gains the rule; the list of refusals of the start of a Feature and the list under A next work item that cannot start each gain their line; the paragraph on development.driver says what the key set to agent asks"
 created = 2026-11-23 13:08:59+00:00
+started = 2026-11-23 13:20:33+00:00
 
 [[knowledge]]
 kind = "decision"

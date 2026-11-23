@@ -1,0 +1,16 @@
+id = "U-0027"
+state = "backlog"
+title = "Cut the lines of src/flowgraph/cli.py from about 244 to 225 or fewer, the callables of a run given none taken into a module of their own"
+description = "Found on 2026-11-23 by summing the lines the filed plans add to src/flowgraph/cli.py: 217 today, S-0141 about 18, B-0022 about 9, S-0128 about 6, S-0098 about 3, S-0130 one, and the watch Stories of the frame more, so past 250. Filed on the word of the developer of that day to plan as many items as one goal takes. It waits for the three work items whose Tasks name those callables where they are today; S-0128, S-0098 and S-0130 wait for it. A move with no change of behavior."
+complexity = "low"
+created = 2026-11-23 21:07:44+00:00
+depends_on = [
+    "S-0141",
+    "B-0022",
+    "U-0023",
+]
+
+[criterion]
+given = "main, where make check passes and src/flowgraph/cli.py holds about 244 of the 250 lines mk/python.mk allows, S-0141, B-0022 and U-0023 landed, and S-0128, S-0098, S-0130 and the Stories of the frame each still add to it"
+when = "make check runs"
+then = "it still passes with no test file changed, src/flowgraph/cli.py holds 225 lines or fewer, and every command of fgraph prints what it printed before"

@@ -9,6 +9,11 @@ completed = 2026-11-23 12:10:34+00:00
 agent = "coordinator"
 commit = "232446f"
 
+[verified]
+answer = "yes"
+text = "at 232446f on main, on the record of flowgraph: fgraph terms exit 0 listed 22 terms, each with its meaning -- backlog, blocked, bucket, bug, completed, criterion, delivery, development, feature, gate, in-progress, knowledge-line, landing, planned, record, removed, spike, story, task, term, upkeep, work-item; fgraph show story listed is a work-item; fgraph show backlog listed is a bucket; fgraph show work-item listed part of feature, record, kinds bug, spike, story, upkeep and parts criterion, knowledge-line, task; fgraph show bucket listed kinds backlog, completed, in-progress, removed; fgraph graph held 22 edges is a or part of; make check on main at e5dd69c: 3225 passed, all checks passed. Worked by the coordinator alone, with no subagent: the terms and relations were written on main and each Task completed in the worktree of the Story, whose check read the terms of main there; the landing merged a branch that held commits of the record alone."
+on = 2026-11-23 12:16:27+00:00
+
 [criterion]
 given = "the record of flowgraph, where fgraph terms prints no terms in the record"
 when = "fgraph terms is run"

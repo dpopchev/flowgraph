@@ -3,4 +3,5 @@ meaning = "What an item states must be true once it is completed, in the form it
 added = 2026-11-23 12:06:26.631500+00:00
 part_of = [
     "work-item",
+    "feature",
 ]

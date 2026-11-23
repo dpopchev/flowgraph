@@ -34,8 +34,10 @@ commit = "1d962b0"
 
 [[tasks]]
 id = "T-0345"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to show the state of a Task node of fgraph graph"
 expected_output = "changed: README.md shows a Task node with its state; docs/domain-model.md, Graph, says what a Task node carries"
 created = 2026-11-22 21:02:26+00:00
 started = 2026-11-23 00:13:35+00:00
+completed = 2026-11-23 00:16:02+00:00
+commit = "93599fa"

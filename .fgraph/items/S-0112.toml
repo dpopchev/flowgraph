@@ -9,3 +9,12 @@ created = 2026-11-23 07:01:58+00:00
 given = "a record with a Story in Backlog"
 when = "the Story is added or amended with the complexity high"
 then = "fgraph show lists its complexity high and the JSON of fgraph status carries it; a word that is none of low, medium and high is refused naming the three"
+
+[[tasks]]
+id = "T-0386"
+state = "backlog"
+title = "Add tests/functional/test_complexity.py, failing on the criterion of S-0112"
+description = "Run through run() of src/flowgraph/cli.py with open_files on a record in tmp_path, open_git=lambda _: None and a fixed now, as tests/functional/test_amend_work_item.py and tests/functional/test_status_json.py do. Find the item of the JSON by its id across the buckets. One class per Given/When, one fixture, one assert per test, marker functional. Red today, each under its own strict xfail naming S-0112 on the test or its class: every exit 0 of an add or amend with --complexity, every show line naming it, every JSON complexity key (index it as item[complexity] so its absence is a KeyError, never .get), every refusal message. Guards, left unmarked since they pass today: the exit 2 of --complexity huge (argparse refuses the unknown option today), the exit 2 of the amend of a started Story, no item file written by a refused add, no complexity line in show of a Story given none. See every marked test xfail and every guard pass before the commit. No source changes."
+check = "uv run pytest tests/functional/test_complexity.py -q"
+expected_output = "created: tests/functional/test_complexity.py states that a Story added with --complexity high, or added without one and amended with --complexity high in Backlog, is listed by fgraph show with the line complexity high and carried as complexity high by its item in fgraph status --format json; that a Story given none carries complexity null in the JSON and no complexity line in show; that a started Story keeps the complexity it was given; that amend --complexity of a started Story is refused with S-0001 is started already; and that --complexity huge on add and on amend exits 2 with the last stderr line --complexity 'huge' is none of low, medium, high, nothing written"
+created = 2026-11-23 08:07:21+00:00

@@ -1,9 +1,10 @@
 """The lines that can start now: the next to start alone, or as many as the development allows.
 
 Plain data read from the work items of the started Features and the lines of the Backlog in
-the order of its queue, kept in one place for every view that lists it. It follows `flowgraph.status.waits`, which sets what each line waits
-for. The limit is a sum type mapped from the configuration here, since `flowgraph.development`
-imports this package and may not be imported by it.
+the order of its queue, kept in one place for every view that lists it. It follows
+`flowgraph.status.waits`, which sets what each line waits for. The limit is a sum type mapped
+from the configuration here, since `flowgraph.development` imports this package and may not
+be imported by it.
 """
 
 from collections.abc import Collection, Iterable, Sequence
@@ -43,6 +44,9 @@ class NoLimit:
 
 # How many lines status marks as able to start now.
 type StartLimit = NextOnly | Within | NoLimit
+
+# The one value of the next to start alone, the default of a view.
+NEXT_ONLY = NextOnly()
 
 
 def start_limit(development: Development) -> StartLimit:

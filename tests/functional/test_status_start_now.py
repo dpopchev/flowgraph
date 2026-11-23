@@ -137,7 +137,7 @@ class TestStatusAsText:
         assert marked(printed.out) == ["S-0003", "S-0004"]
 
     def test_the_story_that_waits_is_marked_with_a_tilde(self, printed: Outcome) -> None:
-        assert [line for line in printed.out.splitlines() if "S-0002" in line][0][0] == "~"
+        assert next(line for line in printed.out.splitlines() if "S-0002" in line)[0] == "~"
 
 
 class TestStatusAsJson:

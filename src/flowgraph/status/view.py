@@ -25,7 +25,7 @@ from flowgraph.parent import FeatureId, feature_id_text, parse_feature_id
 from flowgraph.record.queue import Entry, Inside, Line, Placed, queued
 from flowgraph.record.store import KINDS, Store
 from flowgraph.status.document import JSON, chosen_format, status_json
-from flowgraph.status.next import NextOnly, StartLimit, with_start_now
+from flowgraph.status.next import NEXT_ONLY, StartLimit, with_start_now
 from flowgraph.status.text import cut_lines, status_text
 from flowgraph.status.under import in_show_order
 from flowgraph.status.waits import with_waits
@@ -184,7 +184,7 @@ def find_backlog(store: Store) -> list[Entry]:
     return [*(Line(placed) for placed in _backlog_lines(alone, features)), *inside]
 
 
-def status_rows(store: Store, limit: StartLimit = NextOnly()) -> list[WorkItemRow | FeatureRow]:
+def status_rows(store: Store, limit: StartLimit = NEXT_ONLY) -> list[WorkItemRow | FeatureRow]:
     """The work items standing alone and the Features of the record, in the order of the buckets.
 
     The plain data every format of status writes, each fact set on its row: what an item waits
@@ -225,7 +225,7 @@ def status_rows(store: Store, limit: StartLimit = NextOnly()) -> list[WorkItemRo
     return with_start_now(listed, limit, taken)
 
 
-def status_item(store: Store, top: int | None = None, limit: StartLimit = NextOnly()) -> str:
+def status_item(store: Store, top: int | None = None, limit: StartLimit = NEXT_ONLY) -> str:
     """The text of the work items standing alone and of the Features of the record, by bucket.
 
     Under a top each heading lists that many, the first ones; the rows are those of

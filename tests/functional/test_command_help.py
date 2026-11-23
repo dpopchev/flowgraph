@@ -29,6 +29,7 @@ COMMANDS = [
     ("show",),
     ("about",),
     ("brief",),
+    ("goal",),
     ("start",),
     ("block",),
     ("unblock",),

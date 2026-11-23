@@ -41,7 +41,6 @@ LINE = (
     "this session prints [HALT] <id>: <the decision needed> on a change to a criterion, a Task "
     "or the scope of a work item, or a removal, that the developer has not agreed.\n"
 )
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0117: fgraph goal is not built yet")
 
 
 @dataclass(frozen=True)
@@ -135,51 +134,41 @@ class TestTheGoalOfAFeature:
     def printed(self, driven_by_agent: Path) -> Outcome:
         return goal(driven_by_agent, "F-0001")
 
-    @XFAIL
     def test_it_exits_with_zero(self, printed: Outcome) -> None:
         assert printed.status == 0
 
-    @XFAIL
     def test_it_prints_exactly_one_newline(self, printed: Outcome) -> None:
         assert printed.out.count("\n") == 1
 
-    @XFAIL
     def test_it_ends_the_line_with_that_newline(self, printed: Outcome) -> None:
         assert printed.out.endswith("\n")
 
-    @XFAIL
     def test_it_prints_the_line_with_the_bound_of_8_hours(self, printed: Outcome) -> None:
         assert printed.out == LINE
 
-    @XFAIL
     def test_the_line_is_under_4000_characters(self, printed: Outcome) -> None:
         assert 0 < len(printed.out) < 4000
 
-    @XFAIL
     def test_it_bounds_the_goal_by_the_hours_asked(self, driven_by_agent: Path) -> None:
         assert goal(driven_by_agent, "F-0001", "--hours", "4").out == LINE.replace("8", "4", 1)
 
 
 class TestTheGoalRefused:
-    @XFAIL
     def test_a_driver_left_out_is_refused_naming_development_driver(
         self, driven_by_developer: Path
     ) -> None:
         assert "development.driver" in goal(driven_by_developer, "F-0001").err
 
-    @XFAIL
     def test_a_development_off_is_refused_naming_development_enabled(
         self, development_off: Path
     ) -> None:
         assert "development.enabled" in goal(development_off, "F-0001").err
 
-    @XFAIL
     def test_a_feature_with_no_work_item_is_refused_saying_it_holds_none_in_backlog(
         self, driven_by_agent: Path
     ) -> None:
         assert "F-0002 holds no work item in Backlog" in goal(driven_by_agent, "F-0002").err
 
-    @XFAIL
     def test_hours_of_0_are_refused_saying_a_whole_number_of_1_or_more(
         self, driven_by_agent: Path
     ) -> None:

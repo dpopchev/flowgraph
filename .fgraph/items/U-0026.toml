@@ -5,8 +5,9 @@ description = "Found on 2026-11-23 while the Tasks of F-0017 were planned: its S
 complexity = "low"
 created = 2026-11-23 21:02:39+00:00
 depends_on = [
-    "S-0098",
     "S-0121",
+    "S-0098",
+    "S-0147",
 ]
 
 [criterion]

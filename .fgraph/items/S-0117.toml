@@ -42,13 +42,15 @@ commit = "3331fd0"
 
 [[tasks]]
 id = "T-0409"
-state = "started"
+state = "completed"
 title = "Print the line with fgraph goal F-ID: parser, view and refusals"
 description = "The work items in Backlog in start order are read as first_in_backlog of src/flowgraph/feature/start.py reads them -- backlog_as_added over rows_under, sorted by queued over store.load_queue -- without importing or changing that function: S-0127 works in that module beside this Story. The hours reach make_hours as the text typed, with no type of argparse, so the refusal is the one of the domain. Do not touch src/flowgraph/parser/item_commands.py (241 lines), src/flowgraph/cli.py or src/flowgraph/status/view.py (247 lines). The help of the command: print the /goal line a developer pastes for the work items of a Feature in Backlog. Text only, no --format."
 check = "uv run pytest tests/functional/test_goal.py tests/parser tests/functional/test_command_help.py tests/goal -q --runxfail && ! grep -q xfail tests/functional/test_goal.py"
 expected_output = "changed: new src/flowgraph/goal/read.py: goal_output(feature, hours, store, development) checks the driver first, then the hours, then parses the id with parse_feature_id, loads the Feature with store.features.load_feature, takes its work items in Backlog in start order, runs check_scope and returns goal_line. New src/flowgraph/parser/goal.py: goal_command(commands), shaped as parser/brief.py, one positional ID and --hours N, 8 by default. src/flowgraph/parser/arguments.py: build_command_line builds goal after config and adds the key goal, and its module docstring names goal. src/flowgraph/parser/views.py: view_said takes a development parameter and gains the case goal. src/flowgraph/parser/command.py: only the last line of command_said changes, to pass config.development. src/flowgraph/parser/refusals.py imports GoalDriverError, EmptyGoalError and GoalHoursError and lists them right after BriefFormatError. tests/parser/test_help.py: one line for goal right after the line for brief in test_every_command_kind_under_add_and_action_under_config_has_its_help. tests/functional/test_command_help.py: one line for goal right after the line for brief in COMMANDS. The xfail marks of tests/functional/test_goal.py are removed"
 created = 2026-11-23 10:14:22+00:00
 started = 2026-11-23 10:20:59+00:00
+completed = 2026-11-23 10:23:29+00:00
+commit = "6923de3"
 
 [[tasks]]
 id = "T-0410"

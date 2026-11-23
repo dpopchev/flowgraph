@@ -13,6 +13,11 @@ depends_on = [
     "S-0110",
 ]
 
+[verified]
+answer = "yes"
+text = "at b026b41 on main, in a scratch git repository with the development on and parallel left out: S-0001 alone with no Task, S-0002 alone with a Task, F-0001 with no work item, F-0002 with S-0003 planned and S-0004 with no Task, F-0003 with S-0005 and S-0006 each with a Task: fgraph status exit 0 marked > S-0002 and > F-0003 and no other line; fgraph status --format json held can_start S-0002, F-0003 and next_to_start S-0002; fgraph start exit 2 with S-0001 has no Task to start with, F-0001 has no work item in Backlog to start with, and F-0002 cannot start: S-0004 has no Task to start with; fgraph start S-0002 and F-0003 each started; with the development off one line was marked, as before; on the record of flowgraph status marks no line of the Backlog and can_start is empty, none of its 39 lines holding a Task; make check on main at 1b3e295, with S-0117 landed too: 3193 passed, all checks passed. Worked whole by one subagent on sonnet beside S-0117, from fgraph brief; its diff held the files its Tasks name alone and no other existing test went red; a second commit of T-0412 shortens one docstring the first left too long for lint."
+on = 2026-11-23 10:42:02+00:00
+
 [criterion]
 given = "a record with a work item in Backlog that holds no Task, a Feature that holds no work item, a Feature whose second work item holds no Task, and a work item and a Feature planned whole, none waiting for another"
 when = "fgraph status is run, as text and as JSON, and fgraph start of each is run"

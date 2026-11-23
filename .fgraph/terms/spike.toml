@@ -1,3 +1,6 @@
 name = "spike"
 meaning = "A work item that is a question to answer, completed when the decision and the yes or no are written."
 added = 2026-11-23 12:06:12.445155+00:00
+is_a = [
+    "work-item",
+]

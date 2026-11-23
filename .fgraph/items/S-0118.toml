@@ -35,3 +35,8 @@ description = "In docs/domain-model.md, by its lines on main at the plan: the Id
 check = "grep -q 'fgraph show f15' README.md && grep -q 'leading zeros' docs/domain-model.md"
 expected_output = "changed: README.md shows fgraph show f15 showing F-0015 in the section Use; docs/domain-model.md says in its section Ids that a command reads an id in any case, its dash and leading zeros left out, that fgraph writes and prints the canonical form and reads the files of the record in it alone, and in its section Terms that a term named as such a spelling is shadowed by the id"
 created = 2026-11-23 07:16:33+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer gave the go on 2026-11-23 to the Tasks and the rulings shown that day: a refusal echoes the text as typed, and a number of 0, f-0, is refused as before; f15 names the id even when a term or a file holds that name; a term name that reads as an id is refused by a work item of its own, not here."
+noted = 2026-11-23 07:16:36+00:00

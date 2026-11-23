@@ -1714,7 +1714,7 @@ development too.
   callable, `RunGate`, and `main()` binds the adapter `run_gate`, which runs
   the command line through the shell. The default of `run()` runs no gate: a
   run that lands under one is given its runner.
-- `[delivery] push` pushes `main` at a landing, `true` or `false`. It is
+- `[delivery] push` pushes `main` at a landing, twice, `true` or `false`. It is
   `false` by default, as S-0090 states it: a record that names
   none pushes nothing, as a landing did before the key. It is a step of a
   landing, so it pushes nothing with the development off, where it is held as
@@ -2003,20 +2003,35 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   complete: before the commit of a `merge-commit` or a `squash`, and before
   a `fast-forward` drops the merge and moves `main`. A gate that fails drops
   the merge held, and no later step is taken.
-- With `[delivery] push = true` the push of `main` is the last step of every
-  way but the tag at the close of a Feature (below), once the landing is
+- With `[delivery] push = true` `main` is pushed right after the merge,
+  before anything of the record is written, and again as the last step of
+  every way but the tag at the close of a Feature (below), once the landing is
   whole: after the commit of the record that
   completes the work item, the removal of the worktree and the branch landed,
   and the branch of the next work item of a Feature. `main` is pushed to the
   branch it tracks on its remote, and the landing says `pushed main to
-  <remote>` on a line of its own. A step refused before it takes no push.
-- A push git refuses -- a remote it cannot reach, a `main` that tracks no
-  branch of a remote -- leaves the landing as it is, the reading of the agent
-  for S-0090: `main` merged, the work item completed and committed, the
-  worktree and the branch removed, the next work item started with its
-  branch; nothing is undone, since history only moves forward. The landing
-  exits 2 naming the git command and its error, then `-- <id> is landed at
-  <sha>, main is not pushed`; the push is left to the developer.
+  <remote>` once, on a line of its own. A step refused before a push takes
+  no push.
+- A first push git refuses -- a remote it cannot reach, a `main` that tracks
+  no branch of a remote -- leaves the work item started and merged, its
+  branch and its worktree as they were, no next work item started and no tag
+  made; nothing is undone, since history only moves forward. The landing
+  exits 2 naming the git command and its error, then `-- main is not pushed
+  -- <id> is merged at <sha> and not completed -- run fgraph land <id>
+  again`. The last push refused, once the work item is completed, leaves the
+  landing as it is, the reading of the agent for S-0090: `main` merged, the
+  work item completed and committed, the worktree and the branch removed, the
+  next work item started with its branch. It exits 2 naming the git command
+  and its error, then `-- <id> is landed at <sha>, main is not pushed`; the
+  push is left to the developer.
+- A landing is taken up when the branch of the work item brings no change to
+  `main`, merged by hand or by a landing that stopped after its merge, by
+  each way of merging: merge-commit, squash and fast-forward. It makes no
+  merge and no commit, checks that the work item completes, runs the gate
+  again on the tree `main` has, and completes the work item at the commit
+  `main` is on, then pushes and removes as a landing does. A fast-forward
+  taken up after `main` moved on is refused as a fast-forward is, `main`
+  holding a commit the branch lacks.
 - With `[delivery] tag = "feature-close"` the write that completes a Feature
   -- the commit of the record of the landing of its last work item -- is
   followed by the tag `fgraph release` makes, made by that same code

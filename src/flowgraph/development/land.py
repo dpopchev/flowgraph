@@ -12,8 +12,11 @@ before main moves.
 `[development] gate` names one command a landing runs while that merge is held, once the work
 item is checked to complete: a gate that fails drops the merge, so main is where it was.
 
-`[delivery] push` pushes main to the branch it tracks once the landing is whole: a push that
-fails leaves the landing as it is, since history is never undone. `[delivery] tag` at
+`[delivery] push` pushes main to the branch it tracks twice: right after the merge, before
+anything of the record is written, and again as the last step of the landing, to carry the write
+that completes the work item. A first push that fails leaves the work item started and merged,
+and `fgraph land` run again takes it up; a last push that fails leaves the landing as it is,
+since history is never undone. `[delivery] tag` at
 feature-close then tags main, the last step, when the landing completes a Feature: the tag
 `fgraph release` makes (`flowgraph.development.release`), on the commit main is on, pushed after
 main under `[delivery] push`. A tag that fails leaves the landing as it is too.
@@ -96,19 +99,32 @@ def _without_branch(started: ToBranch | None) -> str:
     return f"; {work_item_id_text(started.item)} is started, its branch is not"
 
 
-def _pushed(item: str, sha: str, work_tree: WorkTree, untagged: FeatureId | None) -> str:
-    """Push main once the landing is whole; the line that names the remote it is pushed to.
+def _pushed(item: str, sha: str, work_tree: WorkTree, untagged: FeatureId | None) -> None:
+    """Push main once the landing is whole, to carry the write that completes the work item.
 
     Raises GitError saying the work item is landed and main is not pushed when git refuses it,
     and that the Feature is not tagged when the landing completes one it was to tag.
     """
     try:
-        remote = work_tree.landing.push(MAIN)
+        work_tree.landing.push(MAIN)
     except GitError as error:
         landed = f"{item} is landed at {sha}, {MAIN} is not pushed"
         if untagged is not None:
             landed += f", {feature_id_text(untagged)} is not tagged"
         raise GitError(f"{error} -- {landed}") from error
+
+
+def _pushed_at_merge(item: str, sha: str, work_tree: WorkTree) -> str:
+    """Push main once the merge is made; the line that names the remote it is pushed to.
+
+    Raises GitError saying main is not pushed, the work item merged and not completed, and that
+    `fgraph land` run again takes it up, when git refuses it.
+    """
+    try:
+        remote = work_tree.landing.push(MAIN)
+    except GitError as error:
+        merged = f"{item} is merged at {sha} and not completed -- run fgraph land {item} again"
+        raise GitError(f"{error} -- {MAIN} is not pushed -- {merged}") from error
     return f"pushed {MAIN} to {remote}\n"
 
 
@@ -162,8 +178,11 @@ def land_item(
     Feature completes the Feature in that commit of the record, named after the landing. Any
     other starts the next work item of the Feature in that commit, named after the landing too,
     and its branch is checked out at it, in a worktree of its own, once the landing is whole.
-    With the push of the delivery on, main is pushed to the branch it tracks after that: a push
-    git refuses leaves the landing whole and says main is not pushed. With the tag of the
+    With the push of the delivery on, main is pushed to the branch it tracks right after the
+    merge, before anything of the record is written: a push git refuses leaves the work item
+    started and merged, and says so; `fgraph land` run again takes it up at the commit main is on.
+    Main is pushed again as the last step, to carry the write that completes the work item: that
+    push refused leaves the landing whole and says main is not pushed. With the tag of the
     delivery at feature-close, a landing that completes a Feature then tags main as `fgraph
     release` does, the last step, the tag pushed under the push of the delivery: a tag refused
     leaves the landing whole and says the Feature is completed; a push of main refused makes
@@ -186,6 +205,7 @@ def land_item(
     completes = partial(_check_completes, item_id, decision, Landing(store, now, work_tree))
     passes = partial(check_gate, text, config.development.gate, work_tree.path, run_gate)
     sha = merged_by(way, text, branch, work_tree, partial(_check_lands, completes, passes))
+    pushed = _pushed_at_merge(text, sha, work_tree) if config.delivery.push else ""
     written = complete_and_start_next(text, sha, store, now, config, decision)
     # The branch of the next work item is made last, once the landing is whole.
     unbranched = replace(written, branch=None)
@@ -206,7 +226,8 @@ def land_item(
         said += branch_started(written.branch, work_tree)
     feature = _to_tag(config, written)
     if config.delivery.push:
-        said += _pushed(text, sha, work_tree, feature)
+        _pushed(text, sha, work_tree, feature)
+    said += pushed
     if feature is not None:
         release = partial(release_trunk, None, store, record, lambda _: work_tree, config)
         said += _tagged(text, sha, feature, release)

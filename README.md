@@ -804,10 +804,11 @@ push = true
 
 `push` is `true` or `false`, `false` by default, so a record that names none
 pushes nothing, as a landing did before the key. With it `true`, `fgraph
-land` pushes `main` to the branch it tracks on its remote as its last step:
-after the write that completes the Story, the removal of its worktree and its
-branch, and the branch of the next work item of a Feature. The landing names
-the remote on a line of its own:
+land` pushes `main` to the branch it tracks on its remote right after the
+merge and before the write that completes the Story, and again as its last
+step, to carry that write: after the removal of its worktree and its branch,
+and the branch of the next work item of a Feature. The landing names the
+remote once, on a line of its own:
 
 ```sh
 fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
@@ -815,16 +816,22 @@ fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
 # pushed main to origin
 ```
 
-A push git refuses -- a remote it cannot reach, a `main` that tracks no
-branch of a remote -- leaves the landing as it is: `main` is merged, the Story
-completed and committed, nothing undone, since history only moves forward.
-The landing exits 2 naming the git command and its error, then the landing
-and the push left to you, `git push` once the remote is there:
+A push git refuses -- a remote it cannot reach -- before the write that
+completes leaves the Story started and merged: `main` holds the merge, nothing
+is undone, since history only moves forward, and its branch and worktree stay.
+The landing exits 2 naming the git command and its error, then that `main` is
+not pushed and the Story merged and not completed. Run `fgraph land` again
+once the remote is there: it takes the landing up at the commit `main` is on,
+pushes and completes the Story:
 
 ```sh
 fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
-# fgraph: error: git push --quiet origin refs/heads/main:refs/heads/main failed: fatal: Could not read from remote repository. -- S-0001 is landed at 3e9ae5c, main is not pushed
+# fgraph: error: git push --quiet origin refs/heads/main:refs/heads/main failed: fatal: Could not read from remote repository. -- main is not pushed -- S-0001 is merged at 3e9ae5c and not completed -- run fgraph land S-0001 again
 ```
+
+The last push, once the Story is completed, refused leaves the landing whole,
+with the push left to you, `git push` once the remote is there; it exits 2
+ending `-- S-0001 is landed at 3e9ae5c, main is not pushed`.
 
 It is a step of a landing, so it pushes nothing with the development off,
 where it is held as written and the landing is refused as above.
@@ -1568,13 +1575,13 @@ nothing is merged then, and the commit of the record after it.
 
 A landing merges into a checkout of `main` that holds no merge of its own. One
 you left unconcluded there is named and left as it was, and a branch that
-brings no commit `main` lacks is refused before any commit, so nothing you
-staged is taken into the commit of a landing:
+brings no commit `main` lacks, merged by hand or by a landing that stopped
+after its merge, is taken up at the commit `main` is on: no commit is made, so
+nothing you staged is taken into the commit of a landing:
 
 ```sh
 fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
 # fgraph: error: a merge is held in /src/project: commit it or abort it first
-# fgraph: error: wi/S-0001-raise-the-stories-fgraph brings nothing to merge: it holds no commit main lacks
 ```
 
 A record whose `config.toml` names a `[development] gate` runs that command

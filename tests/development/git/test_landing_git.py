@@ -182,19 +182,45 @@ def staged(checkout: Path) -> Path:
     return checkout
 
 
-def test_a_merge_of_a_branch_that_brings_nothing_raises_naming_it(staged: Path) -> None:
-    with pytest.raises(
-        GitError, match=r"^wi/CH-0002-none brings nothing to merge: it holds no commit main lacks$"
-    ):
-        merge_uncommitted(staged, "wi/CH-0002-none")
+def test_a_merge_of_a_branch_that_brings_nothing_answers_the_short_sha_of_head(
+    staged: Path,
+) -> None:
+    assert merge_uncommitted(staged, "wi/CH-0002-none") == git(
+        staged, "rev-parse", "--short", "HEAD"
+    )
 
 
 def test_a_merge_of_a_branch_that_brings_nothing_leaves_the_staged_change_staged(
     staged: Path,
 ) -> None:
-    with pytest.raises(GitError):
-        merge_uncommitted(staged, "wi/CH-0002-none")
+    merge_uncommitted(staged, "wi/CH-0002-none")
     assert git(staged, "status", "--porcelain") == "A  staged.txt"
+
+
+def test_a_merge_of_a_branch_main_holds_already_answers_the_short_sha_of_head(
+    checkout: Path,
+) -> None:
+    git(checkout, "merge", "--no-ff", "--quiet", "--message", "a merge by hand", BRANCH)
+    assert merge_uncommitted(checkout, BRANCH) == git(checkout, "rev-parse", "--short", "HEAD")
+
+
+def test_a_merge_of_a_branch_landed_by_squash_already_answers_the_short_sha_of_head(
+    checkout: Path,
+) -> None:
+    merge_uncommitted(checkout, BRANCH)
+    commit_squash(checkout, "feat: land the work")
+    assert merge_uncommitted(checkout, BRANCH) == git(checkout, "rev-parse", "--short", "HEAD")
+
+
+def test_a_merge_of_a_branch_landed_by_squash_already_holds_no_merge(checkout: Path) -> None:
+    merge_uncommitted(checkout, BRANCH)
+    commit_squash(checkout, "feat: land the work")
+    merge_uncommitted(checkout, BRANCH)
+    assert (checkout / ".git" / "MERGE_HEAD").exists() is False
+
+
+def test_a_merge_of_a_branch_that_brings_work_answers_none(checkout: Path) -> None:
+    assert merge_uncommitted(checkout, BRANCH) is None
 
 
 def test_a_merge_squashed_is_one_commit_on_main_alone_under_the_message(checkout: Path) -> None:

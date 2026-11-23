@@ -1,7 +1,8 @@
 """The git steps of the development: each an adapter that runs git in a work tree.
 
-The commit of a write, the worktree of a branch, the merges of a landing, the cleanup after it
-and its push; each raises GitError naming the command and its error output when git refuses it.
+The commit of a write, the worktree of a branch, the merges of a landing -- a merge that brings
+no change answers the commit it is on -- the cleanup after it and its push; each raises
+GitError naming the command and its error output when git refuses it.
 Each runs git through flowgraph.development.git_command, which names GitError.
 """
 
@@ -9,7 +10,6 @@ import subprocess
 from collections.abc import Sequence
 from pathlib import Path
 
-from flowgraph.development.branch import MAIN
 from flowgraph.development.git_command import GitError, run_git
 
 
@@ -107,12 +107,14 @@ def abort_merge(work_tree: Path) -> None:
     run_git(work_tree, "merge", "--abort")
 
 
-def merge_uncommitted(work_tree: Path, branch: str) -> None:
+def merge_uncommitted(work_tree: Path, branch: str) -> str | None:
     """Adapter: merge the branch into the work tree as a merge of its own, held uncommitted.
 
-    Raises GitError when a merge is held in the work tree already, which is left as it was; when
-    git refuses the merge, as on a conflict, nothing is merged then; and when the branch brings
-    no commit to merge, so no merge is held and nothing staged is taken into a commit.
+    Answers None once a merge is held that stages a file. Answers the short sha of HEAD when the
+    branch brings no change -- git held no merge, or the merge held stages nothing, which is
+    dropped -- so nothing staged is taken into a commit. Raises GitError when a merge is held in
+    the work tree already, which is left as it was, and when git refuses the merge, as on a
+    conflict; nothing is merged then.
     """
     if _merging(work_tree):
         raise GitError(f"a merge is held in {work_tree}: commit it or abort it first")
@@ -121,8 +123,10 @@ def merge_uncommitted(work_tree: Path, branch: str) -> None:
     except GitError:
         abort_merge(work_tree)
         raise
-    if not _merging(work_tree):
-        raise GitError(f"{branch} brings nothing to merge: it holds no commit {MAIN} lacks")
+    if _merging(work_tree) and run_git(work_tree, "diff", "--cached", "--name-only"):
+        return None
+    abort_merge(work_tree)
+    return run_git(work_tree, "rev-parse", "--short", "HEAD")
 
 
 def commit_merge(work_tree: Path, message: str) -> str:

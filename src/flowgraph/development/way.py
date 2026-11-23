@@ -97,10 +97,15 @@ def make_way(item: str, merge: Merge, message: str | None) -> Way:
 def _committed(work_tree: WorkTree, branch: str, check: Check, commit: Callable[[], str]) -> str:
     """Hold the merge of the branch, check it, then commit it; the sha of that commit.
 
-    Raises the refusal of the check, or GitError when git refuses the merge or the commit; the
-    merge held is dropped then, and so it is when Ctrl-C interrupts the check, as under a gate.
+    A branch that brings no change is merged already: the check runs and the sha main is on is
+    answered, with no commit. Raises the refusal of the check, or GitError when git refuses the
+    merge or the commit; the merge held is dropped then, and so it is when Ctrl-C interrupts the
+    check, as under a gate.
     """
-    work_tree.landing.merge(branch)
+    taken = work_tree.landing.merge(branch)
+    if taken is not None:
+        check()
+        return taken
     try:
         check()
         return commit()
@@ -114,9 +119,13 @@ def _fast_forwarded(work_tree: WorkTree, branch: str, check: Check) -> str:
 
     A fast-forward cannot be held, so the merge held is the one look at the record of the branch
     and at the tree the gate runs on before main moves. Raises the refusal of the check, or
-    GitError when git refuses a step; main is where it was then.
+    GitError when git refuses a step; main is where it was then. A branch main holds already
+    brings no change: the check runs and the sha main is on is answered, with no fast-forward.
     """
-    work_tree.landing.merge(branch)
+    taken = work_tree.landing.merge(branch)
+    if taken is not None:
+        check()
+        return taken
     try:
         check()
     finally:
@@ -127,8 +136,10 @@ def _fast_forwarded(work_tree: WorkTree, branch: str, check: Check) -> str:
 def merged_by(way: Way, item: str, branch: str, work_tree: WorkTree, check: Check) -> str:
     """Merge the branch into main by the way, once the check holds; the commit main is then on.
 
-    Raises LandError when a fast-forward finds a commit on main that the branch lacks, the
-    refusal of the check, or GitError when git refuses a step; nothing is merged then.
+    A branch merged into main already, by hand or by a landing that stopped after its merge, is
+    taken up at the commit main is on: the check runs, no merge is made. Raises LandError when a
+    fast-forward finds a commit on main that the branch lacks, the refusal of the check, or
+    GitError when git refuses a step; nothing is merged then.
     """
     steps = work_tree.landing
     match way:

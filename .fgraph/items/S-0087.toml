@@ -50,10 +50,12 @@ commit = "96f575e"
 
 [[tasks]]
 id = "T-0370"
-state = "started"
+state = "completed"
 title = "List every work item of a Feature in the JSON of fgraph status, each with its state"
 description = "Filed on 2026-11-23 on the word of the coordinator, after the hand-back of T-0341: the JSON listed the started work items of a Feature alone. The check names the new test, so it fails until that test is there and green."
 check = "uv run pytest tests/functional/test_status_json.py -q -k every_work_item"
 expected_output = "changed: in fgraph status --format json the work_items of a Feature hold every work item under it, not the started ones alone -- those in Backlog, started, blocked, completed and removed -- each shaped as a work item of a bucket, with its state, its Tasks and the ids it waits for, in the order fgraph show of the Feature lists them; the progress of the Feature counts them as before; the text of fgraph status is what it was; tests/functional/test_status_json.py states it for a Feature with a completed, a started and a Backlog work item, and README.md and docs/domain-model.md say work_items holds every work item of the Feature"
 created = 2026-11-23 00:00:15+00:00
 started = 2026-11-23 00:00:18+00:00
+completed = 2026-11-23 00:04:38+00:00
+commit = "126c0ce"

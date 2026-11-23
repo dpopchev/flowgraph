@@ -1,3 +1,6 @@
 name = "term"
 meaning = "A word of the project and what it means, the first node of its ontology, in no bucket and no queue."
 added = 2026-11-23 12:06:58.937974+00:00
+part_of = [
+    "record",
+]

@@ -64,3 +64,8 @@ noted = 2026-11-23 08:56:05+00:00
 kind = "decision"
 text = "The developer ruled on 2026-11-23: the complexity part of the pull rule is a Story of its own, filed as S-0129, which depends on this one. S-0127 holds the Tasks alone, as its criterion says."
 noted = 2026-11-23 10:11:16+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer gave the go on 2026-11-23 to the Tasks and the rulings shown that day: the rule holds with the development on alone, as S-0110 did, about 29 test files with it off staying as they are; a line that is not planned is just unmarked; a work item added to a started Feature with no Task is not refused at the add, it waits. Once it lands, fgraph status marks nothing of the Backlog of flowgraph until Tasks are written: none of its lines holds one."
+noted = 2026-11-23 10:15:51+00:00

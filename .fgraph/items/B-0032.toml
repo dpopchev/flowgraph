@@ -8,3 +8,8 @@ filed_during = "S-0138"
 [criterion]
 observed = "in a scratch git repository with the development on, a started Story S-0001 whose Task T-0001 is started and blocked in the worktree of the Story: on main fgraph status lists T-0001 blocked, read from the worktree, while fgraph unblock T-0001 exits 2 with T-0001 is not blocked and fgraph block T-0001 exits 2 with T-0001 is in Backlog: start it first, each answered from the file main holds"
 expected = "on main the block and the unblock of a Task of a started work item that has a worktree exit 2 naming the worktree, as the save of such a work item does: S-0001 is started: its Tasks are written in its worktree, and the path"
+
+[[knowledge]]
+kind = "decision"
+text = "The developer decided on 2026-11-23, asked before its Tasks were drafted: the fix is as filed and no wider -- the block and the unblock of a Task alone; the start and the complete of a Task on main and the unblock of a work item on main stay as they are."
+noted = 2026-11-23 19:41:37+00:00

@@ -142,7 +142,6 @@ def checkout(tmp_path: Path) -> Path:
 
 
 class TestStatusAsText:
-    @XFAIL
     def test_the_planned_work_item_and_the_planned_feature_are_marked_alone(
         self, checkout: Path
     ) -> None:
@@ -154,13 +153,11 @@ class TestStatusAsJson:
     def document(self, checkout: Path) -> dict[str, Any]:
         return json.loads(fgraph(["status", "--format", "json"], checkout).out)
 
-    @XFAIL
     def test_can_start_lists_the_planned_work_item_and_the_planned_feature(
         self, document: dict[str, Any]
     ) -> None:
         assert document["can_start"] == ["S-0002", "F-0003"]
 
-    @XFAIL
     def test_next_to_start_is_the_planned_work_item(self, document: dict[str, Any]) -> None:
         assert document["next_to_start"] == "S-0002"
 

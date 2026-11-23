@@ -49,12 +49,13 @@ commit = "a87a2a6"
 
 [[tasks]]
 id = "T-0389"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say a work item carries its complexity"
 description = "docs/domain-model.md: the Attributes rows of Story, Bug, Upkeep and Spike gain complexity, plus a paragraph of its own after the paragraph on the check of a Task; Amendment gains a bullet after its first; Persistence gains a bullet after the one on the verified table; Status as JSON gains a sentence of its own after the Work item bullet, not inside it, since S-0110 and S-0113 rewrite that bullet. Name the decisions agreed on the plan of S-0112. README.md: a line in the Status table, a short paragraph with an example near the about example (lines 88-106 on main at the plan), and complexity: null in the JSON example right after commit: null (line 446), as the keys sort. Write no complexity into the record of .fgraph/ in this Story."
 check = "grep -q -- '--complexity' README.md && grep -q 'complexity' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md states in Attributes that a Story, Bug, Upkeep and Spike carry a complexity, low, medium or high, none when left out, set by fgraph add or fgraph amend in Backlog and carried by every move, any other word refused naming the three, and that which model it maps to stays outside fgraph; in Persistence, that the file holds the key complexity only when there is one; in Status as JSON, that a work item holds complexity, its word or null. README.md shows fgraph add story --complexity high, fgraph amend --complexity, the complexity line of fgraph show and the key in the JSON example"
 created = 2026-11-23 08:07:31+00:00
+started = 2026-11-23 08:15:36+00:00
 
 [[knowledge]]
 kind = "decision"

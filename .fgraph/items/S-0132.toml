@@ -1,0 +1,11 @@
+id = "S-0132"
+state = "backlog"
+title = "Raise the started items fgraph status lists under in-progress with no flag from the top 5 to every one"
+description = "Filed on the word of the developer of 2026-11-23, from the frame drawn that day. Its Tasks are written when it is ordered. Today in-progress lists its top 5, as each bucket does."
+parent = "F-0017"
+created = 2026-11-23 12:01:40+00:00
+
+[criterion]
+given = "a record with six started work items, two of them under one started Feature"
+when = "fgraph status is run with no flag"
+then = "all six are listed under in-progress, each under its Feature when it has one, with the Task being worked below it"

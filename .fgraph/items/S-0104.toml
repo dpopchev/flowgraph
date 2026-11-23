@@ -3,6 +3,7 @@ state = "backlog"
 title = "Cut the lines fgraph knowledge lists for a session start from every one to the live ones"
 description = "Open: whether a line with no mark is live. Its Tasks are written when it is ordered."
 parent = "F-0014"
+complexity = "low"
 created = 2026-11-22 21:04:03+00:00
 depends_on = [
     "S-0102",

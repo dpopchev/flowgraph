@@ -1,0 +1,15 @@
+id = "F-0016"
+state = "backlog"
+title = "Raise the work items a coordinator hands whole to an agent, on what fgraph prints alone, from none to every one that can start"
+description = "The words of the developer of 2026-11-23, filed on the agreed plan of that day: fgraph is managed with a development that hands an agent the whole work item, not the Task -- a Feature is the umbrella. A coordinator comes to a Feature with fgraph and hands a subagent its first work item, whatever its kind, for the development part. Work items are planned independent of one another so they run side by side; development.parallel says how many work items that are no Feature are worked at once, each by a subagent fit for its complexity. The coordinator observes and reviews the progress and keeps the Backlog; the subagents are short-lived. fgraph gives the inputs for it. Agent-driven development always starts with a /goal the developer initiates, suggested by fgraph for the scope of the Backlog to implement and worded by the best practices of Claude; it is a configuration, so a developer who works by hand meets none of the ritual."
+created = 2026-11-23 07:01:41+00:00
+criteria = [
+    "a coordinator sees every work item that can start now, within the limit of development.parallel",
+    "a coordinator starts work items of one Feature side by side, up to that limit",
+    "a developer writes the complexity of a work item when it is planned",
+    "a coordinator names the agent a started work item is handed to, and sees who holds what",
+    "a coordinator sees which started work items are ready for review",
+    "a developer turns the development driven by an agent on in the configuration, and a record that leaves it off is asked none of its parts",
+    "a coordinator prints the whole brief of a work item with one command",
+    "a developer is given by fgraph the /goal line for the scope of the Backlog to implement",
+]

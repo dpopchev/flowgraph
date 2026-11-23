@@ -150,7 +150,6 @@ class TestStatusAsText:
     def test_status_exits_with_zero(self, printed: Outcome) -> None:
         assert printed.status == 0
 
-    @pytest.mark.xfail(strict=True, reason="S-0114: the mark ? is not written yet")
     def test_the_work_item_whose_tasks_are_completed_is_marked(self, printed: Outcome) -> None:
         assert READY in printed.out.splitlines()
 
@@ -190,7 +189,6 @@ class TestWatchOneFrame:
     def test_watch_exits_with_zero(self, watched: Outcome) -> None:
         assert watched.status == 0
 
-    @pytest.mark.xfail(strict=True, reason="S-0114: the mark ? is not written yet")
     def test_the_work_item_whose_tasks_are_completed_is_marked(self, watched: Outcome) -> None:
         assert READY in watched.out.splitlines()
 
@@ -203,7 +201,6 @@ class TestStatusWithTheDevelopmentOff:
     def test_status_exits_with_zero(self, printed: Outcome) -> None:
         assert printed.status == 0
 
-    @pytest.mark.xfail(strict=True, reason="S-0114: the mark ? is not written yet")
     def test_the_work_item_whose_tasks_are_completed_on_main_is_marked(
         self, printed: Outcome
     ) -> None:

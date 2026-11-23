@@ -1,3 +1,6 @@
 name = "delivery"
 meaning = "The steps of a landing after its merge, the push of main and the tag at the close of a Feature, set by the delivery table of the configuration."
 added = 2026-11-23 12:07:16.049368+00:00
+part_of = [
+    "landing",
+]

@@ -1,0 +1,10 @@
+id = "B-0029"
+state = "backlog"
+title = "Cut the completions fgraph takes with a commit the repository does not hold, with the development on, from every one to none"
+description = "Found by the subagent of T-0373 of Q-0001 on 2026-11-23, on a scratch record (docs/domain-model.md, Probe, once Q-0001 lands); filed at the end of the queue and not burned. Its Tasks are written when it is ordered. Open: fgraph release reads a commit git does not know by its completed time, so an unknown commit may be meant to be taken; and a conversion keeps the old shas, which the repository holds."
+created = 2026-11-23 06:04:38+00:00
+filed_during = "Q-0001"
+
+[criterion]
+observed = "fgraph complete T-0001 --commit c6e0f15 exits 0 and prints completed T-0001 of S-0001 at c6e0f15 in a repository where git cat-file -t c6e0f15 says Not a valid object name; seen by the coordinator with the development off, and by the subagent with it on, completed T-0013 of S-0001 at c6e0f15"
+expected = "with the development on, a commit the repository does not hold is refused, as docs/domain-model.md, Evidence, says the commit that holds its work"

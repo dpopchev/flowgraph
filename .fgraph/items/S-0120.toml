@@ -8,3 +8,8 @@ created = 2026-11-23 07:02:27+00:00
 given = "a repository with a .board/ of board 1 that holds open and closed items"
 when = "the developer starts a record of fgraph in it"
 then = "the .fgraph/ holds the open work alone, the old board stays whole as an archive nothing writes to, and an item of the old board is found from the new record by the id it held"
+
+[[knowledge]]
+kind = "decision"
+text = "The developer decided on 2026-11-23, asked before its Tasks were drafted: the new record holds a pointer to the archive, and asked for an old id fgraph says it is in the archive, where, and the command that shows it; fgraph never reads the files of board 1."
+noted = 2026-11-23 20:30:43+00:00

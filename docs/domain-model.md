@@ -116,10 +116,10 @@ every type.
 | Type | Attributes |
 |---|---|
 | `Feature` | id, outcome title, description, experience criteria, created |
-| `Story` | id, outcome title, description, parent, Given / When / Then, created |
-| `Bug` | id, outcome title, description, parent, observed, expected, created |
-| `Upkeep` | id, outcome title, description, parent, Given / When / Then, created |
-| `Spike` | id, outcome title, description, parent, hypothesis, created |
+| `Story` | id, outcome title, description, parent, complexity, Given / When / Then, created |
+| `Bug` | id, outcome title, description, parent, complexity, observed, expected, created |
+| `Upkeep` | id, outcome title, description, parent, complexity, Given / When / Then, created |
+| `Spike` | id, outcome title, description, parent, complexity, hypothesis, created |
 | `Task` | id, output title, description, parent, expected output, check, created |
 
 `parent` is a Feature or standing alone for the four work items, and exactly
@@ -132,6 +132,16 @@ is refused, naming `development.enabled`. A blank one is refused where the Task
 is built. It is kept in the file of the work item, listed by `fgraph show`
 under the Task, and carried by every move of the Task. A Task written before
 holds none and is read as before. `complete` runs it (Persistence).
+
+A Story, a Bug, an Upkeep and a Spike carry a complexity: `low`, `medium` or
+`high`, none when it is left out, the reading of S-0112. It is set by `fgraph
+add` and by `fgraph amend`, the latter in Backlog alone, as every part of an
+amend is, and every move carries it: the start, the completion and the removal
+keep the complexity the item had. It is built by `make_complexity`, so any other
+word is refused, exit 2, naming `low`, `medium` and `high`. It is not taken back
+to none by an amend. A Feature and a Task carry none. Which model, or which
+agent, a complexity maps to is read by whoever hands the work item to an agent
+and stays outside fgraph.
 
 A work item in any state also keeps its knowledge: the lines noted on it, in
 the order noted. A line holds its kind, its text and the time it was noted; the
@@ -429,6 +439,10 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
 - `amend` rewrites the title, the description and the parts of the criterion
   -- Given, When, Then -- one alone or several together. A part it does not
   name stays as it was.
+- Its complexity is a part too, the reading of S-0112: `--complexity high`
+  gives it in place of the one it had, in Backlog alone, alone or beside the
+  other parts. A word that is none of `low`, `medium` and `high` is refused,
+  exit 2, nothing written; an amend does not take it back to none.
 - It is not a move: the type of the item stays, and so do its id, its created
   time, its Tasks and its place in the queue.
 - Each part goes through the constructor an `add` uses, so a blank title or a
@@ -801,6 +815,8 @@ that holds nothing is `null`, never an empty text; a list that holds nothing is 
   for; `superseded_by`, the id that supersedes it; `progress`, an object `completed` and
   `total`, its Tasks completed of all; `tasks`, in the order written; `waits_for`, the
   ids it depends on that are not completed, in the order written.
+- A work item holds its `complexity` too, the reading of S-0112: `low`, `medium` or
+  `high`, else `null`; a Task and a Feature hold none.
 - Task: `id`; `title`; `state` (`backlog`, `started`, `blocked`, `completed`); `commit`;
   `reason` and `waiting_on`, those of a block, `null` unless it is blocked.
 - Feature (kind `feature`): `id`; `kind`; `title`; `commit`; `reason`, the one it was
@@ -969,6 +985,11 @@ and its merge tool.
   not hold, a blank text, a second answer and a call without `--yes`.
   `fgraph show` lists it as `verified`, the answer, the day and the text, after
   the commit.
+- The file of a work item holds the key `complexity` (`low`, `medium` or
+  `high`) only when it has one: a file without it, as every file written
+  before, is read as none, and a file holding any other word is refused when
+  read, naming the file. `fgraph show` lists it as `complexity`, after the terms
+  the item is about, only when there is one.
 - The file of a Feature holds its lines of knowledge as a work item's does, the
   same `[[knowledge]]` tables, read back whole in every state. `fgraph note` of a
   Feature is one write and one commit, `chore: note F-0001 in the record`, and

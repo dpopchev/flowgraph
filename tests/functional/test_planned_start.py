@@ -30,7 +30,6 @@ IDENTITY = {
     "GIT_COMMITTER_NAME": "a developer",
     "GIT_COMMITTER_EMAIL": "developer@example.com",
 }
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0127: only a planned item is marked and started")
 
 
 def story(title: str, parent: str | None = None) -> list[str]:
@@ -167,11 +166,7 @@ class TestStatusAsJson:
     [
         ("S-0001", "fgraph: error: S-0001 has no Task to start with"),
         ("F-0001", "fgraph: error: F-0001 has no work item in Backlog to start with"),
-        pytest.param(
-            "F-0002",
-            "fgraph: error: F-0002 cannot start: S-0004 has no Task to start with",
-            marks=XFAIL,
-        ),
+        ("F-0002", "fgraph: error: F-0002 cannot start: S-0004 has no Task to start with"),
     ],
 )
 def test_a_start_refused_exits_with_two_and_names_what_it_lacks(

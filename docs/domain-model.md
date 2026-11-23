@@ -1098,8 +1098,21 @@ and its merge tool.
   exit 2 and nothing written, for a Task, for a name that is no agent and with
   the development off, naming `development.enabled`. The start a completion, a
   landing or an unblock makes names no agent, and `fgraph start` of a work item
-  started already stays refused: handing a started work item to another agent is
-  a later Story (S-0126). The output line `started S-0001` is as before.
+  started already stays refused: a started work item is handed to another agent
+  by `fgraph hand`, below. The output line `started S-0001` is as before.
+- `fgraph hand S-0001 --agent opus-b2` hands a started work item of any kind to
+  the agent named, in place of the one it held or of none, the reading of S-0126:
+  `--agent` is required, a command of its own, not a second `fgraph start`. It
+  says `handed S-0001 to opus-b2` and commits `chore: hand S-0001 to opus-b2 in
+  the record`. With the development on it is written where the Tasks of the work
+  item are written: in its worktree, or from `main` with `--dir` on the record of
+  that worktree; run on `main` without it, the scope of `main` refuses it and
+  names the worktree. With no worktree, or a record outside git, it is written in
+  the record itself. It is refused, exit 2 and nothing written, for a work item
+  in Backlog, completed or removed, a Task id, a Feature id, a name that is no
+  agent and with the development off, naming `development.enabled`. The agent is
+  replaced and no history of the agents before it is kept in the file: the commits
+  of the hands hold it.
 - The file of a Feature holds its lines of knowledge as a work item's does, the
   same `[[knowledge]]` tables, read back whole in every state. `fgraph note` of a
   Feature is one write and one commit, `chore: note F-0001 in the record`, and
@@ -1810,6 +1823,7 @@ held to `main`, and there is no landing:
 | start a Feature | `main`: `fgraph` commits it with its first work item and makes the branch of that one |
 | add a Task to a started work item | its branch |
 | start, block, unblock and complete its Tasks | its branch |
+| hand a started work item to an agent | its branch: `fgraph hand` in its worktree, or from `main` with `--dir` on the record of that worktree |
 | land the work item | `main`: `fgraph land` merges its branch and completes it |
 | complete the work item | `main`, after a merge made by hand |
 | complete a Feature | `main`: with its last work item, by its landing or its complete, or by `fgraph complete F-0001` once each work item of it is completed or removed |
@@ -1880,8 +1894,8 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 
 - `fgraph` commits every write of the record, when the record is inside a git
   work tree and its configuration leaves `[git] commit` on: `add`, `amend`,
-  `remove`, `reorder`, `start`, `block`, `unblock`, `complete` and `config
-  set`. The commit holds the files of the record the write changed, alone;
+  `remove`, `reorder`, `start`, `hand`, `block`, `unblock`, `complete` and
+  `config set`. The commit holds the files of the record the write changed, alone;
   whatever else is staged or changed stays as it was and out of the commit.
 - The commit is worded by `fgraph`, `chore: <write> <id> in the record`, a
   set of the configuration under its key:
@@ -1894,6 +1908,7 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   | amend | `chore: amend S-0001 in the record`, `chore: amend F-0001 in the record` for a Feature |
   | reorder | `chore: reorder S-0002 before S-0001 in the record`, `chore: reorder F-0001 before S-0001 in the record` |
   | start | `chore: start S-0001 in the record`, `chore: start T-0001 of S-0001 in the record`, `chore: start F-0001 in the record` for a Feature and its first work item |
+  | hand | `chore: hand S-0001 to opus-b2 in the record` |
   | block | `chore: block T-0001 of S-0001 in the record`, `chore: block F-0001 in the record` for a Feature |
   | unblock | `chore: unblock T-0001 of S-0001 in the record`, `chore: unblock F-0001 in the record` for a Feature, `chore: unblock F-0001 and start S-0002 in the record` for a Feature and the next work item its unblock starts |
   | remove | `chore: remove S-0001 in the record`, `chore: remove F-0001 in the record` for a Feature and its work items |

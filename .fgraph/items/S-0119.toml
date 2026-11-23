@@ -26,13 +26,15 @@ commit = "e30ae07"
 
 [[tasks]]
 id = "T-0420"
-state = "started"
+state = "completed"
 title = "Relate the terms of the record of main by the 22 relations the developer agreed"
 description = "Written on main by the coordinator, as fgraph relate is a write of a term. The commit named is the last relate commit on main."
 check = "uv run fgraph graph | grep -cE 'kind.: .(is a|part of).,' | grep -qx 22"
 expected_output = "changed: the terms of the record on main hold 22 relations: story, bug, spike and upkeep is-a work-item; backlog, in-progress, completed and removed is-a bucket; task part-of work-item; work-item part-of feature and record; feature, term and development part-of record; criterion part-of work-item, feature and task; knowledge-line part-of work-item and feature; landing part-of development; gate and delivery part-of landing"
 created = 2026-11-23 12:05:09+00:00
 started = 2026-11-23 12:07:54+00:00
+completed = 2026-11-23 12:10:04+00:00
+commit = "8a7cffc"
 
 [[knowledge]]
 kind = "decision"

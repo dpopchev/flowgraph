@@ -13,3 +13,8 @@ depends_on = [
 given = "a record with a standing line, an open line and a superseded line"
 when = "the live lines of fgraph knowledge are asked for"
 then = "it lists the standing and the open line alone"
+
+[[knowledge]]
+kind = "decision"
+text = "The developer decided on 2026-11-23, asked before its Tasks were drafted: a knowledge line with no mark is live until a later line supersedes it."
+noted = 2026-11-23 20:30:56+00:00

@@ -23,13 +23,15 @@ commit = "c481c3d4f7870e3b0ddf25740cb5f68c31868c3b"
 
 [[tasks]]
 id = "T-0372"
-state = "started"
+state = "completed"
 title = "Map every field of a board 1 item to where fgraph keeps it in docs/domain-model.md"
 description = "The fields are those board.py sections and show --detail full print on real items of the seven records, an item of every kind and state among them; the place in fgraph is the one docs/domain-model.md and the help of fgraph state on the day of the Task."
 check = "grep -q '^### Field map' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, From board 1, holds a table Field map with one row per field of a board 1 item -- of an Epic, an issue, a spike, a bug and a Task, the payload of each state, each relation, each kind of knowledge line and of History line -- naming where fgraph keeps it and a verdict: kept, converted or lost"
 created = 2026-11-23 04:57:46+00:00
 started = 2026-11-23 05:12:33+00:00
+completed = 2026-11-23 05:23:42+00:00
+commit = "0e484cdaf97ade1503038d37d080394fc9a2a8ba"
 
 [[tasks]]
 id = "T-0373"

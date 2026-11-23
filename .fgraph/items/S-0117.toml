@@ -13,6 +13,11 @@ depends_on = [
     "S-0115",
 ]
 
+[verified]
+answer = "yes"
+text = "at 8f33066 on main, on a scratch record with F-0001 holding S-0001, S-0002 and S-0003 in Backlog, the development on, development.parallel 3 and development.driver agent: fgraph goal F-0001 exit 0 printed one line of 437 characters -- /goal Develop F-0001 until fgraph show F-0001 lists S-0001, S-0002 and S-0003 Completed, or stop after 8 hours. This session is the coordinator: it hands each whole work item to one subagent, at most 3 at once as development.parallel says. The goal is met as well when this session prints [HALT] with the id and the decision needed, on a change the developer has not agreed; --hours 4 worded or stop after 4 hours; with the development off exit 2 naming development.enabled, with the driver left out exit 2 naming development.driver, each with the fgraph config set that sets it; F-0002 with no work item exit 2 with holds no work item in Backlog; --hours 0 exit 2 with give a whole number of 1 or more; make check on main at cda605b: 3178 passed, all checks passed. Worked whole by one subagent on sonnet beside S-0127, from fgraph brief; its diff held the files its Tasks name alone; it redirected the output of make check to a file of its scratchpad, against the rule of no shell redirect. No test of this Story proves the order of the queue in the line beyond three items added in order."
+on = 2026-11-23 10:35:51+00:00
+
 [criterion]
 given = "a record whose development is driven by an agent, with a Feature of three work items in Backlog"
 when = "the goal of the Feature is asked of fgraph"

@@ -2,8 +2,8 @@
 
 A Feature is to its work items what a work item is to its Tasks: it starts with its first work
 item and not without one, a work item of it does not start before it or while it is blocked, and
-one work item of it is started at a time. Each runs on the store of a record, as the commands of
-a work item do (`flowgraph.item.commands`).
+the work items of it started at once are limited by `development.parallel` alone. Each runs on
+the store of a record, as the commands of a work item do (`flowgraph.item.commands`).
 """
 
 from typing import assert_never
@@ -26,7 +26,7 @@ from flowgraph.record import Config, Now
 from flowgraph.record.queue import queued
 from flowgraph.record.store import Store
 from flowgraph.relation.depends import check_first_waits
-from flowgraph.status import STARTED, backlog_as_added, rows_under
+from flowgraph.status import backlog_as_added, rows_under
 from flowgraph.task import BlockedError, CompletedAlreadyError, NoTaskError, TaskId
 from flowgraph.work_item import (
     CompletedWorkItem,
@@ -45,10 +45,6 @@ class NoWorkItemError(ValueError):
 
 class FeatureNotStartedError(ValueError):
     """A work item started before its Feature; names the Feature."""
-
-
-class WorkItemInProgressError(ValueError):
-    """A second work item of one Feature started: a Feature holds at most one started."""
 
 
 def first_in_backlog(feature: FeatureId, store: Store) -> WorkItemId | None:
@@ -118,8 +114,9 @@ def _awaited_feature(item: WorkItemState) -> FeatureId | None:
 def check_start_under_feature(item: str, store: Store) -> None:
     """Check that the start of the work item of that id is one its Feature takes.
 
-    Raises FeatureNotStartedError naming the Feature when it is not started,
-    WorkItemInProgressError naming each started work item of it when one is, BlockedError
+    A started Feature takes the start of a work item beside those of it already started: only
+    the configuration, what the work item depends on, its Task and its slug limit them. Raises
+    FeatureNotStartedError naming the Feature when it is not started, BlockedError
     naming it and what it waits on when it is blocked, which starts no further work item,
     CompletedAlreadyError naming it when it is completed and RemovedAlreadyError naming it when
     it is removed. A work item standing alone passes, and so does one that is not in Backlog,
@@ -146,13 +143,7 @@ def check_start_under_feature(item: str, store: Store) -> None:
                 f"{named} cannot start: {feature} is not started, start it first"
             )
         case StartedFeature():
-            rows = rows_under(feature_id, store).values()
-            already = ", ".join(row.id for row in rows if row.state == STARTED)
-            if already:
-                one = f"{feature} starts one work item at a time"
-                raise WorkItemInProgressError(
-                    f"{named} cannot start: {one}, started already: {already}"
-                )
+            return
         case BlockedFeature(waiting_on=waiting_on):
             held = f"{feature} is blocked, waiting on {waiting_on}"
             raise BlockedError(f"{named} cannot start: {held}: unblock it first")

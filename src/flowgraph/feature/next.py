@@ -1,11 +1,11 @@
 """The next work item of a started Feature: the completion of the one before starts it.
 
-A Feature is to its work items what a work item is to its Tasks: it starts them one by one. The
+A Feature is to its work items what a work item is to its Tasks: it starts them in turn. The
 completion of a work item under a started Feature starts the first of its work items in Backlog
-in the order of the queue, in the same write, as `fgraph start` of that work item would. A next
-work item that cannot start leaves the completion as it is, and the completion says why: a
-blocked Feature starts none. It runs on the store of a record, as the commands of a work item
-do (`flowgraph.item.commands`).
+in the order of the queue, beside those of it still started, in the same write, as `fgraph
+start` of that work item would. A next work item that cannot start leaves the completion as it
+is, and the completion says why: a blocked Feature starts none. It runs on the store of a
+record, as the commands of a work item do (`flowgraph.item.commands`).
 """
 
 from typing import assert_never
@@ -21,11 +21,7 @@ from flowgraph.feature import (
     RemovedFeature,
     StartedFeature,
 )
-from flowgraph.feature.start import (
-    WorkItemInProgressError,
-    check_start_under_feature,
-    first_in_backlog,
-)
+from flowgraph.feature.start import check_start_under_feature, first_in_backlog
 from flowgraph.item.commands import MESSAGE, Written, parse_item_id
 from flowgraph.item.moves import complete_item, start_item
 from flowgraph.parent import FeatureId, Standalone
@@ -39,7 +35,6 @@ from flowgraph.work_item import WorkItemId, work_item_id_text
 NOT_STARTED = (
     NoTaskError,
     ParallelError,
-    WorkItemInProgressError,
     BlockedError,
     StartWaitsError,
     OutOfScopeError,
@@ -74,11 +69,10 @@ def _next_of(item_id: WorkItemId, store: Store) -> WorkItemId | None:
 def start_next(item_id: WorkItemId, store: Store, now: Now, config: Config) -> Written:
     """Start the work item in Backlog of that id, as `fgraph start` of it does; what it says.
 
-    Raises one of NOT_STARTED when its Feature holds a started work item or is blocked, when it
-    depends on a work item not completed, when as
-    many are started as the configuration starts at once, when it has no Task, when its title
-    gives no slug or when the branch written on writes another work item alone; nothing is
-    saved.
+    Raises one of NOT_STARTED when its Feature is blocked, when it depends on a work item not
+    completed, when as many are started as the configuration starts at once, when it has no
+    Task, when its title gives no slug or when the branch written on writes another work item
+    alone; nothing is saved.
     """
     named = work_item_id_text(item_id)
     check_start_under_feature(named, store)

@@ -1,8 +1,9 @@
 """The criterion of starting a Feature: `fgraph status` lists it under InProgress.
 
-Its first Story is started with it and listed under it; a Story of it does not start before it,
-nor beside another started Story of it. Run end to end on a record in a temporary directory,
-through the file adapters of the package, each command one second after the one before it.
+Its first Story is started with it and listed under it; a Story of it does not start before it.
+Run end to end on a record in a temporary
+directory, through the file adapters of the package, each command one second after the one
+before it.
 """
 
 import tomllib
@@ -244,10 +245,6 @@ def test_a_feature_start_refused_leaves_the_feature_in_backlog(tmp_path: Path) -
         ([*TWO_STORIES, START_FEATURE, START_FEATURE], "F-0001 is started already"),
         ([START_FEATURE], "no Feature F-0001 in the record"),
         ([*TWO_STORIES, ["start", "S-0001"]], f"S-0001 cannot start: {NOT_STARTED}"),
-        (
-            [*TWO_STORIES, START_FEATURE, ["start", "S-0002"]],
-            "S-0002 cannot start: F-0001 starts one work item at a time, started already: S-0001",
-        ),
     ],
     ids=[
         "a-feature-without-a-work-item",
@@ -255,7 +252,6 @@ def test_a_feature_start_refused_leaves_the_feature_in_backlog(tmp_path: Path) -
         "a-feature-started-twice",
         "a-feature-the-record-does-not-hold",
         "a-story-before-its-feature",
-        "a-story-beside-a-started-one-of-its-feature",
     ],
 )
 def test_a_start_refused_exits_with_two_and_names_why(

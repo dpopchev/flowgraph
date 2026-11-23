@@ -8,3 +8,8 @@ filed_during = "Q-0001"
 [criterion]
 observed = "with the development on, fgraph start S-0001 --slug no-review-mark-is while a branch wi/S-0001-no-review-mark-is exists commits chore: start S-0001 in the record, then exits 2 with git worktree add ... failed: fatal: a branch named 'wi/S-0001-no-review-mark-is' already exists -- S-0001 is started at 773abc9, its branch is not; a second start exits 2 with S-0001 is started already, the branch deleted or not, and its Tasks then start on main"
 expected = "a start whose branch git refuses writes nothing, or leaves a way to make the branch of the started work item"
+
+[[knowledge]]
+kind = "decision"
+text = "The developer decided on 2026-11-23, asked before its Tasks were drafted: when the branch the start would make is there already, fgraph start refuses before it writes, exit 2 naming the branch, the work item left in Backlog; it does not take the branch that is there."
+noted = 2026-11-23 19:41:29+00:00

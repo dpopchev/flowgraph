@@ -2,6 +2,7 @@ id = "S-0120"
 state = "backlog"
 title = "Raise the old boards a developer archives beside a new record of fgraph, with nothing lost, from none to every one"
 description = "Filed on the plan the developer agreed on 2026-11-23. Its Tasks are written when it is ordered. The words of the developer: pivot the board -- archive old boards and start new without losing information. It replaces the conversion of every item, S-0106 and S-0107, after Q-0001 answered no; its evidence is docs/domain-model.md, From board 1. The projects adopt the new board one by one, after the tool is complete here and the skills of ~/.claude are reworked. Open: how the new record points at the archive, and whether fgraph reads it or names the command that does."
+complexity = "medium"
 created = 2026-11-23 07:02:27+00:00
 
 [criterion]

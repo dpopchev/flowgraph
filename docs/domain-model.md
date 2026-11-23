@@ -2142,6 +2142,179 @@ The History lines:
 | `note: re-parented ...`, `note: amended depends_on`, `note: rewrote finding ...` | W-188, W-061, E-018 | none: each write of fgraph is a commit in git (Persistence) | lost |
 | a `draft:` block, an imported item | on no item read; SKILL.md, V13 | none | lost |
 
+### Probe
+
+A sample of real board 1 items converted on 2026-11-23 into scratch records
+under the scratchpad of the session, each a directory of its own made with
+`git init`, outside every repository, by the fgraph of this branch (`uv run
+--project <worktree> fgraph`), the development off unless said. The old
+items were read by `board.py show <id> --detail full`, and `raw` where
+`full` omits a field. The sample: the one Epic of `gflow` whole, E-001 with
+W-001 to W-003 and T-001 to T-012; in `surrogate-models` E-007, E-019, E-020,
+W-044, W-045, W-061, W-181, W-187, W-188, W-195, W-197 with T-492, T-493 and
+T-518; in `~/.claude` W-143 with T-314 and T-315, W-153, W-161, W-664; in
+`svrf-parser` W-008. An item they name outside the sample (E-006, W-059,
+T-456 of W-174, W-145, W-159, E-011) got a stand-in. Part 2 wrote item files
+by hand, in the shape the commands wrote, one scratch record per case, read
+by `status`, `show`, `about` and `knowledge`. The runs were made before a
+restart of the session wiped the scratch directory; the lines quoted are
+from those runs. Three were run again after it, each with the same line: the
+day alone beside a time, the start on a branch already there, the old id.
+
+Took by the commands:
+
+| Item | As | What arrived | What did not |
+|---|---|---|---|
+| E-001 (`gflow`), whole | F-0001, S-0001 to S-0003, T-0001 to T-0012 | titles, criteria, Given / When / Then, descriptions, outputs, every old sha as `commit`, the verified text, knowledge text; the Feature completed at 2f7df5c, the commit of its last Story | the hypothesis, the outcome, the checks, every date; 51 commands, 50 commits, about 41 s |
+| E-019, doing | a started Feature | `start` of a Feature starts its first work item; each `complete` starts the next | -- |
+| E-020, todo; W-181, todo bug | a Feature and a Bug in Backlog | criteria, observed, expected | the bug's input, steps, technical |
+| E-007, pruned | `remove`, its reason | the reason | `depends_on` E-006 |
+| W-044, pruned spike, no Task | `remove` | the reason, `Tasks (0)` | -- |
+| W-045, pruned, on pruned W-044 | `remove` | `depends on Q-0001`, kept when written before Q-0001 was removed | -- |
+| W-061, todo spike | `add spike --depends-on` | the hypothesis, `depends on S-0002 (Backlog)` | the question, the conjecture |
+| W-187, done | `--filed-during` the work item of T-456 | `filed during S-0002`, the verification | the Task it was filed during |
+| W-188, done bug | `add bug`, `verify --yes` | observed, expected, the verification | input, steps, technical |
+| W-195, done spike | `complete --decision --answer yes` | the decision, the answer | the verification |
+| W-197, doing | started, T-518 completed, T-493 blocked | `reason`, `waiting on` of the block | T-492 pruned |
+| W-143, pruned from doing | started, T-314, T-315 completed at 1b19455, b3f5a63 | the two completed Tasks, its notes | the removal |
+| W-153, W-664 | `add upkeep` | Given / When / Then; the burn Decision as text | -- |
+| W-161 | `--depends-on` | the dependency | `amends` E-011/AC3 |
+| W-008 | a Story | -- | the token, the block |
+
+No command takes a date: none of `add`, `start`, `block`, `complete`,
+`remove`, `note`, `verify` or `add term` has an option for one, and every
+file they wrote holds the time of the run, `created = 2026-11-23
+05:29:38+00:00`, `removed = ...`, `noted = ...`, `since = ...`, the `on` of
+`[verified]`.
+
+The checks and the commits:
+
+- With the development off a Task takes no check: `fgraph: error: a Task
+  takes no --check: the development is off -- set development.enabled = true
+  in <record>/config.toml`, exit 2.
+- A Task that holds a check runs it at `complete`, the development on or
+  off: added with it on and completed after `config set development.enabled
+  false`, it still printed `fgraph: error: T-0001 cannot complete: its check
+  "make test K=test_settings" exited with status 2`. A Task reaches Completed
+  with its old check only where the check passes today.
+- Any sha is taken, never looked up: off, as on, `completed T-0013 of S-0001
+  at c6e0f15` in a repository that holds no such commit, once the check
+  passed.
+- With the development on a work item started by `start` completes on main
+  alone, `fgraph: error: B-0001 completes on main, in <record>: <worktree> is
+  on wi/B-0001-bug-probe`, and main does not see the Tasks completed in the
+  worktree until its branch is merged, `fgraph: error: B-0001 has Tasks to
+  complete first: T-0015`. It reaches Completed by `land`, at the merge
+  commit, not at the old sha.
+
+Refused, each exit 2:
+
+| Command | Line |
+|---|---|
+| `add feature --hypothesis`, `--outcome`, `--depends-on` | `fgraph: error: unrecognized arguments: --hypothesis ...` (the same for each) |
+| `amend F-0002 --depends-on F-0001` | `fgraph: error: 'F-0001' is no Story, Upkeep, Bug or Spike id` |
+| `add story --hypothesis` | `fgraph: error: unrecognized arguments: --hypothesis ...` |
+| `add bug --input --steps --technical` | `fgraph: error: unrecognized arguments: --input ... --steps ... --technical ...` |
+| `add story --token AB#3128` | `fgraph: error: unrecognized arguments: --token AB#3128` |
+| `add story --filed-during T-0001` | `fgraph: error: 'T-0001' is no Story, Upkeep, Bug or Spike id` |
+| `add story --amends F-0001`, `--amends F-0001/AC3` | `fgraph: error: 'F-0001/AC3' is no Story, Upkeep, Bug or Spike id` |
+| `add story --amends S-0003`, in Backlog | `fgraph: error: a work item cannot amend S-0003: it is not completed` |
+| `add story --depends-on Q-0001`, removed | `fgraph: error: a work item cannot depend on Q-0001: it is removed` |
+| `remove T-0006` | `fgraph: error: 'T-0006' is no Story, Upkeep, Bug, Spike or Feature id` |
+| `remove T-0006 --superseded-by T-0008` | `fgraph: error: 'T-0008' is no Story, Upkeep, Bug or Spike id` |
+| `remove S-0001`, started | `fgraph: error: S-0001 is started already` |
+| `block S-0004` | `fgraph: error: 'S-0004' is no Task or Feature id` |
+| `start U-0001`, no Task | `fgraph: error: U-0001 has no Task to start with` |
+| `verify Q-0002`, a Spike | `fgraph: error: Q-0002 is a Spike: fgraph verify takes a completed Story, Bug or Upkeep` |
+| `note --type open`, `--supersedes U-0002#1` | `fgraph: error: unrecognized arguments: --type open` |
+| `note --about landing`, no such term | `fgraph: error: no term 'landing' in the record: add it with fgraph add term` |
+| `add term "Landing Mode"` | `fgraph: error: 'Landing Mode' is no term name: lowercase words of letters and digits joined by -` |
+| `start S-0004 --slug no-review-mark-is`, the branch there | `fgraph: error: git worktree add --quiet -b wi/S-0004-no-review-mark-is ... failed: fatal: a branch named 'wi/S-0004-no-review-mark-is' already exists -- S-0004 is started at 9948147, its branch is not` |
+
+A line of type or `supersedes` survives only as text: `note --finding
+"fact: ... supersedes: W-664#1, W-664#2"` took and `show` prints it as given.
+
+By a file written by hand. A refusal of the read is of the whole record:
+`status`, `show` of any other item and `knowledge` exit 2 naming the one
+file, `fgraph: error: <file> holds no Story: ...` followed by the lines of
+the validator.
+
+| Case | Read | Line or what was shown |
+|---|---|---|
+| old times, `2026-10-11 09:00:00+00:00`, in created, started, completed, the `on` of verified, noted; a completed Task whose check fails today | read, exit 0 | `verified yes 2026-10-12`, `finding 2026-10-11`; a later `note` keeps them |
+| `created = 2026-10-11`, a day alone | read alone; `amend` rewrites it `2026-10-11 00:00:00`, no offset | beside a time with an offset, `status` and `knowledge` exit 1: `TypeError: can't compare offset-naive and offset-aware datetimes` |
+| the old id, `W-187.toml` | `status` exit 0 and lists nothing | `fgraph: error: 'W-187' is no Story, Upkeep, Bug, Spike or Feature id` |
+| a completed work item with no Task | read | `Tasks (0)`, its commit |
+| a removed work item with `started` and completed Tasks | refused | `removed.tasks.0.state Input should be 'backlog'`; `removed.started Extra inputs are not permitted` |
+| a removed Task | refused | `Input tag 'removed' found using 'state' does not match any of the expected tags: 'backlog', 'started', 'blocked', 'completed'` |
+| a blocked work item | refused | `Input tag 'blocked' found using 'state' does not match any of the expected tags: 'backlog', 'started', 'completed', 'removed'` |
+| `depends_on` a removed work item | read | `~ S-0002 ... -- depends on S-0001`, `depends on S-0001 (Removed)` |
+| a Feature with `hypothesis`, `outcome`, `depends_on` | refused | `started.hypothesis Extra inputs are not permitted` (the same for each) |
+| a Bug with `input`, `steps`, `technical` | refused | `backlog.input Extra inputs are not permitted` (the same for each) |
+| a `token` | refused | `backlog.token Extra inputs are not permitted` |
+| `filed_during = "T-0001"` | refused | `filed during names T-0001, which is not a bug or spike or story or upkeep` |
+| `amends = "F-0001/AC1"` | refused | `amends names F-0001/AC1, which is not in the record` |
+| `amends` a work item in Backlog | read | `amends S-0001`, `amended by S-0002`: the write refuses it, the read does not |
+| a knowledge line with `type`, `supersedes` | refused | `backlog.knowledge.0.type Extra inputs are not permitted` |
+| `about` a term not in the record | refused | `about names landing, which is not in the record` |
+| a term with an old `added` | read | `terms (1) landing` |
+| a completed Spike with a decision, no answer | read | `decision Cut the appendix ...` |
+| a started Story by hand, branch `wi/S-0001-no-review-mark-is` made by git in a worktree at a path of its own | read | `status` reads its row from that worktree; T-0001 completed there; `landed S-0001 at cf960c9`, its old `started` kept |
+
+The Field map, row by row, against the probe. Refuted:
+
+- `created`, a day: no command takes it; a file carries it only as a time
+  with its offset -- a bare day is read but breaks `status` and `knowledge`.
+- `doing`, `done.on`, `blocked` of a Task (`since`), a Finding, a Decision
+  and a Deviation (`<day>`), the History lines: said converted, the day a
+  time; by the commands every one is the time of the run. Converted by a
+  file alone.
+- `pruned.on`, `pruned.reason` of a work item in todo and of an Epic: said
+  kept; `remove` keeps the reason and stamps the day of the run. Kept by a
+  file.
+- `## Check`, the command: said converted; with the development off it is
+  refused, and on, a completed Task keeps it only when it passes today. By a
+  file it is carried.
+- `done.evidence` of a work item: said converted to the sha; with the
+  development on a work item started by `start` completes by `land`, at its
+  merge commit. The sha is kept with the development off or by a file.
+
+Confirmed lost, refused by the command and by the read: the Epic's
+`## Hypothesis`, `## Outcome` and `relations.depends_on`; the hypothesis of
+an issue or a bug (no option); `bug.input`, `bug.steps`, `bug.technical`;
+the external token; `blocked` of a work item; `pruned` of a work item from
+doing, with the done Tasks it holds; `pruned` of a Task and its successor;
+`amends` a criterion of an Epic; the type of a Finding and `supersedes`
+(kept as text alone); `progress: verified` of a spike; the old id. Confirmed
+converted: `filed_during` a Task, as the work item of the Task; `about`, as a
+term added first, its name in lowercase words joined by `-`.
+
+The four rows left unknown:
+
+- `kind: issue` with no `then`: still open. `add story` and `add upkeep`
+  take the same Given / When / Then, so fgraph decides nothing. The data
+  offers the Outcome and the hypothesis alone: raw W-153 (c), created
+  2026-10-08, and W-001 to W-003 of `gflow`, created 2026-10-11 and
+  2026-10-12, hold no `then`; W-187, created 2026-11-15, holds one. W-153's
+  Then, `it prints that Decision line with its item ref`, reads as a behavior
+  not there before. The rule is the developer's.
+- no `tasks` line: settled. A removed work item with none is taken by
+  `remove` and read; a completed one with none cannot be reached by the
+  commands (`has no Task to start with`) and is read from a file.
+- `depends_on` naming a pruned work item: settled. The write refuses it
+  once the other is removed, and keeps it when written before; the read
+  takes it from a file and shows `(Removed)`. A conversion writes the
+  dependency before the removal, or writes the file.
+- the branch of a doing work item: settled for a branch named by the new
+  id. fgraph keeps no branch: it reads a started item from the worktree of a
+  branch `wi/<id>-*`, wherever that worktree is, so a branch git made, and a
+  start written by hand, were taken through to `land`. The branch of board 1
+  carries the old id, `wi/W-197-no-review-mark-is`, which matches no fgraph
+  id; it is taken only once renamed, which was not run. `start` does not
+  adopt a branch already there: it fails at `git worktree add` and leaves the
+  item started with no branch, its rerun refused `S-0004 is started
+  already`, and its Tasks then start on main.
+
 ## Open questions
 
 - Must a Story under a Feature name the Feature criterion it realizes? The

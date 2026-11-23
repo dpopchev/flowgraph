@@ -16,3 +16,8 @@ noted = 2026-11-23 11:56:28+00:00
 governs = [
     "src/flowgraph/record/store.py",
 ]
+
+[[knowledge]]
+kind = "decision"
+text = "The developer decided on 2026-11-23, asked before its Tasks were drafted: the folder of the record is named once in a key of the git configuration of the clone, untracked, as fgraph.record = .dpopchev; no variable of the environment and no file at the root."
+noted = 2026-11-23 20:30:48+00:00

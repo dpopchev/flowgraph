@@ -205,8 +205,6 @@ def status_rows(store: Store, limit: StartLimit = NextOnly()) -> list[WorkItemRo
     alone = {item_id: row for item_id, row in rows.items() if row.parent not in held}
     backlog = _backlog_lines(alone, features)
     in_queue = queued(store.load_queue(), backlog)
-    taken = sum(row.state == STARTED for row in rows.values())
-    queue_lines = with_start_now([backlog[placed] for placed in in_queue], limit, taken)
     started = [row for row in alone.values() if row.state == STARTED]
     completed = [row for row in alone.values() if row.state == COMPLETED]
     gone = [row for _, row in features if row.bucket == "Removed"]
@@ -216,14 +214,15 @@ def status_rows(store: Store, limit: StartLimit = NextOnly()) -> list[WorkItemRo
         for row in rows.values()
         if row.state not in (BACKLOG, STARTED, COMPLETED) and row.parent not in with_them
     ]
+    taken = sum(row.state == STARTED for row in rows.values())
     listed = [
-        *queue_lines,
+        *(backlog[placed] for placed in in_queue),
         *_with_features(started, features, "InProgress", last_first=True),
         *_with_features(completed, features, "Completed", last_first=True),
         *removed,
         *gone,
     ]
-    return listed
+    return with_start_now(listed, limit, taken)
 
 
 def status_item(store: Store, top: int | None = None, limit: StartLimit = NextOnly()) -> str:

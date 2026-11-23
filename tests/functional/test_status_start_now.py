@@ -171,3 +171,40 @@ class TestWatchOneFrame:
 
     def test_the_two_places_the_limit_leaves_are_marked(self, watched: Outcome) -> None:
         assert marked(watched.out) == ["S-0003", "S-0004"]
+
+
+FEATURE = [
+    ["add", "feature", "a feature title", "--criterion", "a developer sees it"],
+    *(
+        ["add", "story", f"title {number}", *CRITERION, "--parent", "F-0001"]
+        for number in range(1, 5)
+    ),
+    *(task(f"S-000{number}") for number in range(1, 5)),
+    ["start", "F-0001"],
+]
+
+
+class TestAStartedFeatureOfFourStoriesUnderParallelThree:
+    @pytest.fixture
+    def feature(self, tmp_path: Path) -> Path:
+        path = tmp_path / "feature"
+        path.mkdir()
+        git(path, "init", "--quiet", "--initial-branch", "main")
+        (path / ".fgraph").mkdir()
+        (path / ".fgraph" / "config.toml").write_text(THREE_AT_ONCE, encoding="utf-8")
+        git(path, "add", ".fgraph/config.toml")
+        git(path, "commit", "--quiet", "--message", "chore: start three work items at once")
+        for argv in FEATURE:
+            fgraph(argv, path)
+        return path
+
+    def test_the_second_and_the_third_are_listed_under_the_feature_marked(
+        self, feature: Path
+    ) -> None:
+        printed = fgraph(["status"], feature).out
+        under = [line for line in printed.splitlines() if line.startswith("  > ")]
+        assert [line.split()[1] for line in under] == ["S-0002", "S-0003"]
+
+    def test_can_start_lists_them(self, feature: Path) -> None:
+        document = json.loads(fgraph(["status", "--format", "json"], feature).out)
+        assert document["can_start"] == ["S-0002", "S-0003"]

@@ -64,7 +64,9 @@ class FeatureRow:
     it was blocked for, empty unless it is blocked; the ids its first work item in Backlog waits
     for, set by the view that lists the Backlog; it is the next to start when it is the first line
     of the Backlog its start would take, set there too. Its work items are every one under it, in
-    any state, in the order `fgraph show` of it lists them, set by that view.
+    any state, in the order `fgraph show` of it lists them, set by that view. It is started when
+    the Feature is in the state started, which its bucket cannot tell from a Feature never
+    started whose work items were started.
     """
 
     id: str
@@ -80,6 +82,7 @@ class FeatureRow:
     block_reason: str = field(default="", kw_only=True)
     waits_for: list[str] = field(default_factory=list[str], kw_only=True)
     next_to_start: bool = field(default=False, kw_only=True)
+    is_started: bool = field(default=False, kw_only=True)
 
 
 def feature_detail(feature: FeatureState) -> FeatureDetail:
@@ -150,4 +153,5 @@ def feature_row(feature: FeatureState, states: Collection[str]) -> FeatureRow:
         waiting_on=block_of(feature)[1],
         reason=removal_reason(feature),
         block_reason=block_of(feature)[0],
+        is_started=isinstance(feature, StartedFeature),
     )

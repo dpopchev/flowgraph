@@ -8,6 +8,11 @@ started = 2026-11-23 07:16:43+00:00
 completed = 2026-11-23 07:28:59+00:00
 commit = "b61b790"
 
+[verified]
+answer = "yes"
+text = "at b61b790 on main, in a throwaway git repository with the development on and development.parallel = 3, a Feature of four Stories, each with a Task: fgraph start F-0001 exit 0 printed started F-0001 with S-0001 and its branch; fgraph start S-0002 and S-0003 each exit 0 printed started with its branch wi/S-000N-raise-part-N-from in its worktree, git worktree list showing the three; fgraph start S-0004 exit 2 with S-0004 cannot start: development.parallel = 3, started already: S-0001, S-0002, S-0003; fgraph status listed the three under F-0001; make check on main at 93f2777, with S-0118 landed too: 2860 passed, all checks passed. Worked whole by one subagent on sonnet, beside S-0118; the landing merged with no conflict and said not started: S-0110 has no Task to start with."
+on = 2026-11-23 07:32:54+00:00
+
 [criterion]
 given = "a started Feature with three work items in Backlog that wait for nothing, in a record with the development on and development.parallel set to 3"
 when = "fgraph start is run on the second and on the third while the first is started"

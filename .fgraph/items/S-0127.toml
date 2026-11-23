@@ -22,3 +22,8 @@ noted = 2026-11-23 08:54:02+00:00
 kind = "decision"
 text = "The developer ruled on 2026-11-23, closing the open point of this Story: with the development driven by an agent (S-0115), planned also means the complexity of the work item is set; driven by a developer, the Tasks alone."
 noted = 2026-11-23 08:56:05+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer ruled on 2026-11-23: the complexity part of the pull rule is a Story of its own, filed as S-0129, which depends on this one. S-0127 holds the Tasks alone, as its criterion says."
+noted = 2026-11-23 10:11:16+00:00

@@ -2,20 +2,20 @@
 
 With the development on and the key set, a work item is started only while fewer than that many
 are started, of every kind, counted from the rows `fgraph status` lists under InProgress, those
-under a Feature among them. The start of a Feature starts one work item, so it is refused as the
-start of that one is. Left out, the key limits nothing, and neither does it with the development
-off.
+under a Feature and those blocked among them. The start of a Feature starts one work item, so it
+is refused as the start of that one is. Left out, the key limits nothing, and neither does it
+with the development off.
 """
 
 from collections.abc import Iterable
 from typing import assert_never
 
-from flowgraph.item.commands import BACKLOG, STARTED, ItemIdError, parse_item_id
+from flowgraph.item.commands import BACKLOG, ItemIdError, parse_item_id
 from flowgraph.parent import FeatureId, feature_id_text
 from flowgraph.record import DEVELOPMENT_PARALLEL, Config, Parallel, Unlimited
 from flowgraph.record.store import KINDS, FindKindRows
 from flowgraph.task import TaskId
-from flowgraph.work_item import WorkItemId, WorkItemRow, work_item_id_text
+from flowgraph.work_item import IN_PROGRESS, WorkItemId, WorkItemRow, work_item_id_text
 
 
 class ParallelError(Exception):
@@ -38,9 +38,10 @@ def _most(config: Config) -> int | None:
 def _check_room(named: str, rows: Iterable[WorkItemRow], most: int) -> None:
     """Check that fewer than that many of the rows are started; named is what starts one more.
 
-    Raises ParallelError naming it, the key, its number and every started work item.
+    A blocked one is started still. Raises ParallelError naming it, the key, its number and every
+    started work item.
     """
-    started = [row.id for row in rows if row.state == STARTED]
+    started = [row.id for row in rows if row.state in IN_PROGRESS]
     if len(started) < most:
         return
     limit = f"{DEVELOPMENT_PARALLEL} = {most}"

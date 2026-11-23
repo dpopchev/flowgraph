@@ -18,7 +18,7 @@ from flowgraph.development.gate import GateError
 from flowgraph.development.git import GitError
 from flowgraph.feature import FeatureNotFoundError
 from flowgraph.record import DEVELOPMENT_MERGE, Merge
-from flowgraph.task import CompletedAlreadyError, NotStartedError, OpenTaskError
+from flowgraph.task import BlockedError, CompletedAlreadyError, NotStartedError, OpenTaskError
 from flowgraph.work_item import RemovedAlreadyError, WorkItemNotFoundError
 
 # What stops a merge held from being committed: a refusal of the complete, of the gate or of git.
@@ -26,6 +26,7 @@ NOT_COMMITTED = (
     WorkItemNotFoundError,
     FeatureNotFoundError,
     NotStartedError,
+    BlockedError,
     OpenTaskError,
     CompletedAlreadyError,
     RemovedAlreadyError,

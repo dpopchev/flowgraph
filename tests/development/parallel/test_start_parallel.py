@@ -67,6 +67,20 @@ def test_a_work_item_of_another_kind_is_refused_as_a_story_is() -> None:
         check_parallel("Q-0002", rows, limited(4))
 
 
+def test_a_start_beside_a_blocked_work_item_is_refused_naming_it() -> None:
+    held = {
+        STORY: [
+            WorkItemRow("S-0001", "a blocked story", "blocked", created=CREATED, started=CREATED),
+            WorkItemRow("S-0002", "a story", "backlog", created=CREATED),
+        ]
+    }
+    with pytest.raises(
+        ParallelError,
+        match=r"^S-0002 cannot start: development\.parallel = 1, started already: S-0001$",
+    ):
+        check_parallel("S-0002", lambda kind: held.get(kind, []), limited(1))
+
+
 def test_a_start_beside_fewer_started_than_parallel_passes() -> None:
     assert check_parallel("S-0002", rows, limited(5)) is None
 

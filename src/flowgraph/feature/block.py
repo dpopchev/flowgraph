@@ -19,9 +19,9 @@ from flowgraph.item.moves import block_item, unblock_item
 from flowgraph.parent import FeatureId, feature_id_text
 from flowgraph.record import Config, Now
 from flowgraph.record.store import Store
-from flowgraph.status import STARTED, rows_by_id
+from flowgraph.status import rows_by_id
 from flowgraph.task import TaskId
-from flowgraph.work_item import WorkItemId, work_item_id_text
+from flowgraph.work_item import IN_PROGRESS, WorkItemId, work_item_id_text
 
 
 def _feature_of(item: str) -> FeatureId | None:
@@ -60,12 +60,12 @@ def block_named(item: str, reason: str, waiting_on: str, store: Store, now: Now)
 def _next_of(feature_id: FeatureId, store: Store) -> WorkItemId | None:
     """The work item the unblock of the Feature starts; None when it starts none.
 
-    It is its first work item in Backlog in the order of the queue, unless one of it is started:
-    the unblock restarts a Feature that holds work, and starts one only when none is.
+    It is its first work item in Backlog in the order of the queue, unless one of it is started
+    or blocked: the unblock restarts a Feature that holds work, and starts one only when none is.
     """
     named = feature_id_text(feature_id)
     under = (row for row in rows_by_id(store).values() if row.parent == named)
-    if any(row.state == STARTED for row in under):
+    if any(row.state in IN_PROGRESS for row in under):
         return None
     return first_in_backlog(feature_id, store)
 

@@ -25,3 +25,12 @@ description = "The fields are those board.py sections and show --detail full pri
 check = "grep -q '^### Field map' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, From board 1, holds a table Field map with one row per field of a board 1 item -- of an Epic, an issue, a spike, a bug and a Task, the payload of each state, each relation, each kind of knowledge line and of History line -- naming where fgraph keeps it and a verdict: kept, converted or lost"
 created = 2026-11-23 04:57:46+00:00
+
+[[tasks]]
+id = "T-0373"
+state = "backlog"
+title = "Convert a sample of board 1 items by the commands of fgraph on a scratch record, noted in docs/domain-model.md"
+description = "The scratch record is under the scratchpad of the session or local/scratch/, never the record of flowgraph. It is the experiment that can refute the Field map: a row said kept or converted that fgraph refuses is corrected there."
+check = "grep -q '^### Probe' docs/domain-model.md"
+expected_output = "changed: docs/domain-model.md, From board 1, holds a passage Probe: which items of a sample of one of the seven records fgraph took by its commands on a scratch record, an item of every kind and state among them, and each one it refused with the line of the refusal"
+created = 2026-11-23 04:57:47+00:00

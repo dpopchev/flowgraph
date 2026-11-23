@@ -36,3 +36,12 @@ description = "In src/flowgraph/status/document.py, status_json adds ready_for_r
 check = "uv run pytest tests/status/test_document_review.py tests/status/test_document.py tests/functional/test_status_review.py tests/functional/test_status_json.py -q"
 expected_output = "changed: fgraph status --format json holds the top-level key ready_for_review, the ids of every work item marked ? in the order the text lists them, one under a started Feature in its place, [] for none; buckets, can_start, next_to_start and every item are as before; no strict xfail mark is left in tests/functional/test_status_review.py"
 created = 2026-11-23 09:10:37+00:00
+
+[[tasks]]
+id = "T-0397"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say fgraph status marks a started work item ready for review"
+description = "Find the passages by grep, not by line numbers: S-0115 and S-0116 may land first. In docs/domain-model.md: add a new bullet in Order right after the bullet that begins Under a work item of InProgress fgraph status lists each Task of it being worked, naming S-0114 as the reading and setting the mark beside > ~ ! and =>; in the bullet Document of Status as JSON, add ready_for_review after next_to_start, inside that bullet, not as a sentence after the list. In README.md: add one paragraph and a short status example after the paragraph that begins Under it comes the Task being worked; add one sentence after the paragraph that begins The document lists in can_start; in the JSON example, give the next_to_start line a comma and put ready_for_review: [] after it, keys sorted. Do not touch the Status section at the top of README.md, nor the passages of start --agent and of [development]."
+check = "grep -q ready_for_review docs/domain-model.md && grep -q ready_for_review README.md"
+expected_output = "changed: docs/domain-model.md, section Order, states that fgraph status marks ? a started work item that holds a Task with every Task completed, as ready for review: standing alone or under a Feature, with the development on or off, read from the rows as status reads them (from its worktree with the development on), derived at each listing and kept in no file; a work item with no Task and the line of a Feature are not marked, and a marked line the top leaves out is listed after it; section Status as JSON lists ready_for_review in the bullet Document; README.md shows the marked line and the key in the JSON example"
+created = 2026-11-23 09:10:40+00:00

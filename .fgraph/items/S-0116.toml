@@ -43,13 +43,15 @@ commit = "d71b2e8bbab0e0593bdefd8a95be02a797fb729b"
 
 [[tasks]]
 id = "T-0403"
-state = "started"
+state = "completed"
 title = "Print the brief of a work item with fgraph brief ID: the text of fgraph show, then its worktree, its Feature, the lines that govern the files its Tasks name and its terms"
 description = "New package src/flowgraph/brief/, all imported directly and none through the __init__ of another package. model.py, pure: plain dataclasses Brief (detail, branch, worktree, feature, governed_by, terms), FeatureBrief and TermLine; governing(entries, tasks) keeps an entry when one of its governs paths stands as a whole path in the expected output or the description of a Task: no letter, digit, slash, dot, underscore or hyphen before it, and no letter, digit, slash, underscore or hyphen after it, so src/gate.py matches in changed: src/gate.py holds, but not in tests/src/gate.py or src/gate.pyi. text.py, pure: brief_text(brief) is show_text of src/flowgraph/status/show.py followed by the sections; do not change show.py; use governed_text of knowledge/governed.py for the Governed by block. read.py, the shell: brief_of(item, store, record, open_git) parses the id with parse_work_item_id_of_any_kind; reads the detail with find_work_item_detail and passes it through bucketed; reads the Feature with parse_feature_id, feature_detail, and feature_bucket over the states of rows_under, rebuilt the way _feature_line of about/view.py does, which is private and not imported; reads the governing lines by passing collected(store) through governing; reads the terms with store.terms.load_term; reads the branch with kept_in(record, open_git) and find_branches of wi/ID-*, the first branch with a worktree, else the first branch, else none. Do not touch development/scope.py, which is at 238 lines. New src/flowgraph/parser/brief.py, brief_command(commands), shaped as parser/start.py. item_commands.py builds it right after about and adds it to the dict. parser/views.py gains the case brief and a record parameter, which command.py passes. Add brief after about in COMMANDS of tests/functional/test_command_help.py. Write the unit tests red first, under the view marker: tests/brief/test_governing.py and tests/brief/test_text.py; in test_text.py a brief with no branch, no Feature, no governing line and no term is exactly show_text."
 check = "uv run pytest tests/functional/test_brief.py -q --runxfail -k AsText && uv run pytest tests/brief tests/functional/test_command_help.py -q"
 expected_output = "changed: fgraph brief ID takes a work item of any kind in any state and prints the text fgraph show ID prints, then Worktree with the branch and worktree path git holds for it; Feature with its id, bucket, title, description and knowledge lines; Governed by with every line of the record that governs a path a Task of it names, newest first; and Terms (n) with each term it or its Feature is about and its meaning, each once. A section with nothing in it is left out. A Feature id, a Task id and an id the record does not hold are refused, exit 2. The xfail marks of the AsText classes in tests/functional/test_brief.py are removed"
 created = 2026-11-23 09:11:42+00:00
 started = 2026-11-23 09:19:23+00:00
+completed = 2026-11-23 09:23:16+00:00
+commit = "37868ffe35d7df3d2985b85afddc13eaf296311c"
 
 [[tasks]]
 id = "T-0404"

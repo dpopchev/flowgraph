@@ -13,6 +13,11 @@ depends_on = [
     "S-0140",
 ]
 
+[verified]
+answer = "yes"
+text = "at 1e65ca2 on main, on a scratch record with the development off and a started Story S-0001 holding one Task: fgraph block S-0001 --reason \"no key\" --waiting-on developer exit 0 printed blocked S-0001; fgraph status listed under InProgress ! S-0001  0/1 T  a title  -- waiting on developer: no key; fgraph show S-0001 listed bucket InProgress, blocked, reason no key and waiting on developer; fgraph status --format json held state blocked and block with reason no key and waiting_on developer; while blocked, fgraph start T-0001 exit 2 with T-0001 cannot start: S-0001 is blocked, waiting on developer: unblock it first, fgraph complete S-0001 exit 2 with S-0001 is blocked: unblock it first, and a second block exit 2 with S-0001 is blocked already; fgraph unblock S-0001 exit 0 printed unblocked S-0001, status listed S-0001  0/1 T  a title and the JSON held state started and block null; fgraph block T-0001 of a started Task still printed blocked T-0001 of S-0001; make check on main at e6176e0, with S-0123 landed too: 3484 passed, all checks passed. Worked whole by one subagent on opus from fgraph brief; its diff of 58 files held no source file outside those its eight Tasks name, no module over 250 lines; the 26 marked tests of the criterion were seen red first, the unit tests of work_item/block.py at the import alone; ruff format rewrote two files in T-0439, and no heredoc wrote one; two test files the briefs allowed and did not name were added, tests/feature/test_feature_unblock.py and tests/status/test_start_now_blocked.py. Not run here: the block with the development on, in a worktree, which tests/functional/test_block_work_item_branch.py states. Found and not filed: S-0000 is refused as no id of any kind while T-0000 and F-0000 are refused as counting from 1."
+on = 2026-11-23 16:02:02+00:00
+
 [criterion]
 given = "a record with a started work item"
 when = "fgraph block of the work item is run with its reason and who it waits on, then fgraph unblock of it"

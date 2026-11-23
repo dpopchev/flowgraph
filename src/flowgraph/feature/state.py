@@ -85,7 +85,7 @@ class CompletedFeature:
 
 @dataclass(frozen=True)
 class RemovedFeature:
-    """A Feature in Removed: out of the flow from Backlog, kept whole with when and why."""
+    """A Feature in Removed: out of the flow, kept whole with when and why."""
 
     id: FeatureId
     title: str

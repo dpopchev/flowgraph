@@ -148,8 +148,8 @@ def test_a_story_of_it_removed_before_keeps_the_reason_it_had(tmp_path: Path) ->
 @pytest.mark.parametrize(
     ("argvs", "error"),
     [
-        ([*STARTED, REMOVE], "F-0001 is started already"),
-        ([*STARTED, BLOCK, REMOVE], "F-0001 is blocked"),
+        ([*STARTED, REMOVE], "F-0001 cannot be removed: S-0001 is started already"),
+        ([*STARTED, BLOCK, REMOVE], "F-0001 cannot be removed: S-0001 is started already"),
         ([*STARTED, *COMPLETE, REMOVE], "F-0001 is completed already"),
         ([*REMOVED, REMOVE], GONE),
         ([ADD_FEATURE, ["remove", "F-0001", "--reason", " "]], "reason is empty"),

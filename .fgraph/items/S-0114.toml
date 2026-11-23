@@ -1,0 +1,11 @@
+id = "S-0114"
+state = "backlog"
+title = "Raise the started work items fgraph status marks as ready for review from none to every one whose Tasks are all completed"
+description = "Filed on the plan the developer agreed on 2026-11-23. Its Tasks are written when it is ordered. The coordinator reviews and lands what is marked; the mark is read from the Tasks, no state of its own."
+parent = "F-0016"
+created = 2026-11-23 07:02:01+00:00
+
+[criterion]
+given = "a record with two started work items, every Task of the first completed and one Task of the second in Backlog"
+when = "fgraph status is run, as text and as JSON"
+then = "it marks the first as ready for review and not the second, and the JSON carries the mark"

@@ -1,4 +1,4 @@
-"""The parser of each command that reads or moves an item of the record: all but add and config."""
+"""The parser of each command that reads or moves an item: all but add, config, goal and hand."""
 
 import argparse
 

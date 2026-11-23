@@ -3,7 +3,7 @@
 Every command prints its own help. A command asked for its help is given without its required
 arguments, so the arguments are read for the command they name before argparse parses them.
 The commands that read or move an item are built in flowgraph.parser.item_commands; goal is
-built in flowgraph.parser.goal.
+built in flowgraph.parser.goal and hand in flowgraph.parser.hand.
 """
 
 import argparse
@@ -14,6 +14,7 @@ from pathlib import Path
 from flowgraph.parser.add import add_kinds
 from flowgraph.parser.base import HELP, Commands, new_command
 from flowgraph.parser.goal import goal_command
+from flowgraph.parser.hand import hand_command
 from flowgraph.parser.item_commands import item_commands
 
 DESCRIPTION = "flowgraph keeps the record of a project's work."
@@ -72,6 +73,7 @@ def build_command_line() -> CommandLine:
     add = new_command(commands, "add", "add an item to the record")
     kinds = add_kinds(add.add_subparsers(dest="kind", metavar="KIND", required=True))
     moves = item_commands(commands)
+    hand = hand_command(commands)
     config = new_command(commands, "config", "show the configuration of the record, or set a key")
     actions = _config_actions(config.add_subparsers(dest="action", metavar="ACTION", required=True))
     goal = goal_command(commands)
@@ -83,6 +85,7 @@ def build_command_line() -> CommandLine:
             ("add",): add,
             **{("add", name): kind for name, kind in kinds.items()},
             **{(name,): move for name, move in moves.items()},
+            ("hand",): hand,
             ("config",): config,
             **{("config", name): action for name, action in actions.items()},
             ("goal",): goal,

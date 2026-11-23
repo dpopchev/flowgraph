@@ -37,6 +37,7 @@ from flowgraph.item.commands import (
     reorder_item,
     write_task,
 )
+from flowgraph.item.hand import hand_item
 from flowgraph.item.moves import start_item
 from flowgraph.item.verify import verify_item, verify_item_no
 from flowgraph.knowledge import DECISION, DEVIATION, FINDING
@@ -148,6 +149,8 @@ def _written(
             return block_named(args.id, args.reason, args.waiting_on, store, now)
         case "unblock":
             return unblock_named(args.id, store, now, config)
+        case "hand":
+            return hand_item(args.id, args.agent, store)
         case "remove":
             return remove_named(args.id, args.reason, store, now, args.superseded_by)
         case "note":
@@ -209,6 +212,8 @@ def command_said(
         check_parallel(args.id, store.find_work_item_rows, config)
     if args.command == "add" and args.kind == "task":
         check_task_checked(args.check, config.development.enabled, record / CONFIG)
+    if args.command == "hand":
+        check_agent_taken(args.id, args.agent, config.development.enabled, record / CONFIG)
     written = _written(args, store, now, config, cwd, open_git)
     if written is not None:
         return commit_written(written, store, record, open_git, config)

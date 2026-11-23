@@ -16,7 +16,6 @@ from flowgraph.cli import open_files, open_git, read_config, run
 
 pytestmark = pytest.mark.functional
 
-RED = pytest.mark.xfail(strict=True, reason="S-0126: fgraph hand is not there yet")
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 TITLE = "Raise the Stories fgraph lists from 0 to 1"
 ADD_STORY = [
@@ -180,43 +179,36 @@ def handed(started: Path, worktrees: tuple[Path, Path]) -> tuple[Outcome, Outcom
 
 
 class TestTwoStartedWorkItemsHanded:
-    @RED
     def test_the_hand_of_the_second_story_from_main_exits_with_zero(
         self, handed: tuple[Outcome, Outcome]
     ) -> None:
         assert handed[0].status == 0
 
-    @RED
     def test_the_hand_of_the_third_story_in_its_worktree_exits_with_zero(
         self, handed: tuple[Outcome, Outcome]
     ) -> None:
         assert handed[1].status == 0
 
-    @RED
     def test_the_hand_of_the_third_story_says_what_it_did(
         self, handed: tuple[Outcome, Outcome]
     ) -> None:
         assert handed[1].out == "handed S-0003 to opus-b2\n"
 
-    @RED
     def test_status_lists_the_new_agent_beside_the_second_story(
         self, handed: tuple[Outcome, Outcome], started: Path
     ) -> None:
         assert listed(started, "S-0002") == "S-0002  0/1 T  [haiku-b1]  another title"
 
-    @RED
     def test_status_lists_the_new_agent_beside_the_third_story(
         self, handed: tuple[Outcome, Outcome], started: Path
     ) -> None:
         assert listed(started, "S-0003") == "S-0003  0/1 T  [opus-b2]  a third title"
 
-    @RED
     def test_show_lists_the_agent_the_third_story_holds_now_alone(
         self, handed: tuple[Outcome, Outcome], started: Path
     ) -> None:
         assert shown(started, "agent") == ["  agent        opus-b2"]
 
-    @RED
     def test_the_branch_of_the_third_story_holds_the_commit_of_the_hand(
         self, handed: tuple[Outcome, Outcome], worktrees: tuple[Path, Path]
     ) -> None:
@@ -224,7 +216,6 @@ class TestTwoStartedWorkItemsHanded:
             "chore: hand S-0003 to opus-b2 in the record"
         )
 
-    @RED
     def test_the_hand_on_main_is_refused_naming_the_worktree(
         self, handed: tuple[Outcome, Outcome], started: Path, worktrees: tuple[Path, Path]
     ) -> None:
@@ -242,7 +233,6 @@ class TestAThirdStoryHandedThenLanded:
         finish_task(worktrees[1], "T-0003")
         return fgraph(LAND_THIRD, started)
 
-    @RED
     def test_it_is_completed_and_keeps_the_agent_it_was_handed_to(
         self, landed: Outcome, started: Path
     ) -> None:

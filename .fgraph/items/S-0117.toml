@@ -12,3 +12,8 @@ depends_on = [
 given = "a record whose development is driven by an agent, with a Feature of three work items in Backlog"
 when = "the goal of the Feature is asked of fgraph"
 then = "it prints one /goal line for the developer to paste: the scope by its ids, the end state as a command of fgraph that shows it, the coordinator that hands each whole work item to a subagent up to development.parallel, and the halts"
+
+[[knowledge]]
+kind = "decision"
+text = "The developer ruled on 2026-11-23, on the draft of the line shown that day: the /goal line fgraph words carries a time bound. The documentation of Claude Code for /goal, read that day (code.claude.com/docs/en/goal), asks a condition for one measurable end state, a stated check, the constraints that matter and a bound, a turn or time clause in the condition; the condition holds at most 4,000 characters and is judged by a small model from the conversation alone. Open, for the plan: where the number of hours comes from -- an option of the command, a default -- the reading of the coordinator being an option --hours with the 8 hours a burn of board 1 used as its default."
+noted = 2026-11-23 10:09:54+00:00

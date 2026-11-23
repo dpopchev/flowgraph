@@ -1,9 +1,11 @@
 id = "S-0129"
-state = "backlog"
+state = "started"
 title = "Cut the work items fgraph pulls or lists as able to start with no complexity, with the development driven by an agent, from every one to none"
 description = "Filed on the word of the developer of 2026-11-23: the complexity part of the pull rule is a Story of its own. The rulings it builds: an item of the Backlog is pulled only when it is planned (S-0127), and with the development driven by an agent planned also means the complexity of the work item is set, so the coordinator can evaluate it and use the proper model (decisions on S-0115 and S-0127). From the plan of S-0127: it carries the driver of the configuration into the limit of what can start in src/flowgraph/status/next.py and adds a refusal to the start of a work item and of a Feature; it is the first reader of development.driver, so the passage of docs/domain-model.md that names S-0127 and S-0117 as its first readers is corrected with it. Open: whether a Feature is pulled only when every work item of it in Backlog holds a complexity; and what the start a completion makes does with a next work item that holds none. Its Tasks are written when it is ordered."
 complexity = "medium"
 created = 2026-11-23 10:11:14+00:00
+started = 2026-11-23 13:09:57+00:00
+agent = "sonnet"
 depends_on = [
     "S-0127",
 ]

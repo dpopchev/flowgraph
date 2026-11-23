@@ -8,27 +8,19 @@ with the work item and the commit the landing came to, so a landing refused says
 from collections.abc import Callable
 
 from flowgraph.development.branch import MAIN
-from flowgraph.development.commit import Said, WorkTree
+from flowgraph.development.commit import WorkTree
 from flowgraph.development.git import GitError
-from flowgraph.development.release import ReleaseError
-from flowgraph.item.commands import Written
-from flowgraph.parent import FeatureId, feature_id_text
-from flowgraph.record import Config
-from flowgraph.record.layers import TagAt
 
 
-def pushed(item: str, sha: str, work_tree: WorkTree, untagged: FeatureId | None) -> None:
+def pushed(item: str, sha: str, work_tree: WorkTree) -> None:
     """Push main once the landing is whole, to carry the write that completes the work item.
 
-    Raises GitError saying the work item is landed and main is not pushed when git refuses it,
-    and that the Feature is not tagged when the landing completes one it was to tag.
+    Raises GitError saying the work item is landed and main is not pushed when git refuses it.
     """
     try:
         work_tree.landing.push(MAIN)
     except GitError as error:
         landed = f"{item} is landed at {sha}, {MAIN} is not pushed"
-        if untagged is not None:
-            landed += f", {feature_id_text(untagged)} is not tagged"
         raise GitError(f"{error} -- {landed}") from error
 
 
@@ -41,26 +33,22 @@ def pushed_at_merge(item: str, sha: str, work_tree: WorkTree) -> str:
     try:
         remote = work_tree.landing.push(MAIN)
     except GitError as error:
-        merged = f"{item} is merged at {sha} and not completed -- run fgraph land {item} again"
-        raise GitError(f"{error} -- {MAIN} is not pushed -- {merged}") from error
+        raise GitError(f"{error} -- {MAIN} is not pushed -- {_merged(item, sha)}") from error
     return f"pushed {MAIN} to {remote}\n"
 
 
-def to_tag(config: Config, written: Written) -> FeatureId | None:
-    """The Feature whose close a landing tags main at; None when it tags nothing.
+def tagged_at_merge(item: str, sha: str, tag: Callable[[], str]) -> str:
+    """Tag main once the merge is made, before the write that completes; what the tag says.
 
-    It is the Feature the write of the landing completes, under `delivery.tag` feature-close.
-    """
-    return written.completes if config.delivery.tag is TagAt.FEATURE_CLOSE else None
-
-
-def tagged(item: str, sha: str, feature: FeatureId, release: Callable[[], Said]) -> str:
-    """Tag main as `fgraph release` does, once the landing is whole; what the release says.
-
-    Raises the refusal of the release saying the work item is landed and the Feature completed.
+    Raises GitError saying the work item is merged and not completed, and that `fgraph land` run
+    again takes it up, when git refuses the tag or its push.
     """
     try:
-        return release().out
-    except (GitError, ReleaseError) as error:
-        completed = f"{item} is landed at {sha}, {feature_id_text(feature)} is completed"
-        raise type(error)(f"{error} -- {completed}") from error
+        return tag()
+    except GitError as error:
+        raise GitError(f"{error} -- {_merged(item, sha)}") from error
+
+
+def _merged(item: str, sha: str) -> str:
+    """The way back of a landing refused after its merge: it is not completed, land it again."""
+    return f"{item} is merged at {sha} and not completed -- run fgraph land {item} again"

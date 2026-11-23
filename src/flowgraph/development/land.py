@@ -16,10 +16,11 @@ item is checked to complete: a gate that fails drops the merge, so main is where
 anything of the record is written, and again as the last step of the landing, to carry the write
 that completes the work item. A first push that fails leaves the work item started and merged,
 and `fgraph land` run again takes it up; a last push that fails leaves the landing as it is,
-since history is never undone. `[delivery] tag` at
-feature-close then tags main, the last step, when the landing completes a Feature: the tag
-`fgraph release` makes (`flowgraph.development.release`), on the commit main is on, pushed after
-main under `[delivery] push`. A tag that fails leaves the landing as it is too.
+since history is never undone. `[delivery] tag` at feature-close tags main between the two, after
+the first push and before anything of the record is written, when the landing completes a
+Feature: the tag of the landing (`flowgraph.development.release`), on the commit of the merge,
+pushed under `[delivery] push`. A tag or its push that fails leaves the work item started and
+merged, as the first push does, and `fgraph land` run again takes it up.
 """
 
 from collections.abc import Sequence
@@ -34,8 +35,9 @@ from flowgraph.development.branch import MAIN
 from flowgraph.development.commit import OpenGit, Said, WorkTree, branch_started, commit_written
 from flowgraph.development.gate import RunGate, check_gate
 from flowgraph.development.git import GitError
-from flowgraph.development.release import release_trunk
+from flowgraph.development.release import release_landing
 from flowgraph.development.way import Check, LandError, make_way, merged_by, removed_by
+from flowgraph.feature import CompletedFeature
 from flowgraph.feature.complete import completed_with
 from flowgraph.feature.next import complete_and_start_next
 from flowgraph.item.commands import ToBranch, parse_work_item_id_of_any_kind
@@ -45,6 +47,7 @@ from flowgraph.record import (
     Config,
     Now,
 )
+from flowgraph.record.layers import TagAt
 from flowgraph.record.store import Store
 from flowgraph.work_item import WorkItemId, work_item_id_text
 
@@ -70,15 +73,40 @@ def _branch_to_land(item: str, found: Sequence[str]) -> str:
     return found[0]
 
 
+def _completed_feature(
+    item_id: WorkItemId, decision: Decision | None, landing: Landing
+) -> CompletedFeature | None:
+    """The Feature the completion of the work item completes as the merge brought it, if any.
+
+    Raises the refusal of the complete when the work item cannot complete.
+    """
+    merged = landing.store.load_work_item(item_id)
+    done = work_item.completed_work_item(merged, landing.now(), UNMERGED, decision)
+    return completed_with(done, landing.store)
+
+
 def _check_completes(item_id: WorkItemId, decision: Decision | None, landing: Landing) -> None:
     """Check that the work item can complete as the merge held brought it; raises its refusal.
 
     The Feature it is under is read too, as its completion reads it after main has moved: one
     the record does not hold raises FeatureNotFoundError while the merge can still be dropped.
     """
-    merged = landing.store.load_work_item(item_id)
-    done = work_item.completed_work_item(merged, landing.now(), UNMERGED, decision)
-    completed_with(done, landing.store)
+    _completed_feature(item_id, decision, landing)
+
+
+def _tag_at_merge(
+    item_id: WorkItemId, sha: str, decision: Decision | None, landing: Landing, config: Config
+) -> str:
+    """The lines of the tag a landing makes once merged, before the write that completes.
+
+    Under `delivery.tag` feature-close it tags main when the completion will complete a Feature;
+    nothing else is tagged, and no line is said.
+    """
+    closes = _completed_feature(item_id, decision, landing) is not None
+    if config.delivery.tag is not TagAt.FEATURE_CLOSE or not closes:
+        return ""
+    tag = partial(release_landing, item_id.kind, sha, landing.store, landing.work_tree.release)
+    return delivery.tagged_at_merge(work_item_id_text(item_id), sha, partial(tag, config))
 
 
 def _check_lands(completes: Check, passes: Check) -> None:
@@ -133,10 +161,10 @@ def land_item(
     started and merged, and says so; `fgraph land` run again takes it up at the commit main is on.
     Main is pushed again as the last step, to carry the write that completes the work item: that
     push refused leaves the landing whole and says main is not pushed. With the tag of the
-    delivery at feature-close, a landing that completes a Feature then tags main as `fgraph
-    release` does, the last step, the tag pushed under the push of the delivery: a tag refused
-    leaves the landing whole and says the Feature is completed; a push of main refused makes
-    no tag and says so.
+    delivery at feature-close, a landing that completes a Feature tags main between the two
+    pushes, before anything of the record is written, the tag pushed under the push of the
+    delivery: a tag or its push refused leaves the work item started and merged, as the first
+    push does, and says so; a push of main refused makes no tag.
     """
     item_id = parse_work_item_id_of_any_kind(item)
     text = work_item_id_text(item_id)
@@ -152,10 +180,12 @@ def land_item(
     if on != MAIN:
         raise LandError(f"{text} lands on {MAIN}: {work_tree.path} is on {on or 'no branch'}")
     branch = _branch_to_land(text, work_tree.find_branches(f"wi/{text}-*"))
-    completes = partial(_check_completes, item_id, decision, Landing(store, now, work_tree))
+    landing = Landing(store, now, work_tree)
+    completes = partial(_check_completes, item_id, decision, landing)
     passes = partial(check_gate, text, config.development.gate, work_tree.path, run_gate)
     sha = merged_by(way, text, branch, work_tree, partial(_check_lands, completes, passes))
     at_merge = delivery.pushed_at_merge(text, sha, work_tree) if config.delivery.push else ""
+    at_merge += _tag_at_merge(item_id, sha, decision, landing, config)
     written = complete_and_start_next(text, sha, store, now, config, decision)
     # The branch of the next work item is made last, once the landing is whole.
     unbranched = replace(written, branch=None)
@@ -174,11 +204,6 @@ def land_item(
     said = f"landed {text} at {sha}\n{with_it}"
     if written.branch is not None:
         said += branch_started(written.branch, work_tree)
-    feature = delivery.to_tag(config, written)
     if config.delivery.push:
-        delivery.pushed(text, sha, work_tree, feature)
-    said += at_merge
-    if feature is not None:
-        release = partial(release_trunk, None, store, record, lambda _: work_tree, config)
-        said += delivery.tagged(text, sha, feature, release)
-    return Said(said)
+        delivery.pushed(text, sha, work_tree)
+    return Said(said + at_merge)

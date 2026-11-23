@@ -180,16 +180,22 @@ def test_a_landing_that_completes_a_feature_names_the_tag_after_the_feature() ->
     assert land(work_tree([])) == Said(f"{LANDED}tagged v0.1.0 at {HEAD}\n")
 
 
-def test_a_landing_that_completes_a_feature_tags_the_head_of_main_once_it_is_committed() -> None:
+def test_a_landing_that_completes_a_feature_tags_main_before_the_record_is_committed() -> None:
     steps: list[object] = []
     land(work_tree(steps))
-    assert steps[-2:] == [("commit", "chore: complete S-0001 and F-0001 in the record"), TAG_MADE]
+    assert steps[-2:] == [TAG_MADE, ("commit", "chore: complete S-0001 and F-0001 in the record")]
 
 
-def test_a_landing_that_completes_a_feature_with_the_push_pushes_main_then_the_tag() -> None:
+def test_a_landing_that_completes_a_feature_with_the_push_pushes_main_and_the_tag_first() -> None:
     steps: list[object] = []
     land(work_tree(steps), TAGGED_AND_PUSHED)
-    assert steps[-3:] == [("push", "main"), TAG_MADE, ("push tag", "main", "v0.1.0")]
+    assert steps[-5:] == [
+        ("push", "main"),
+        TAG_MADE,
+        ("push tag", "main", "v0.1.0"),
+        ("commit", "chore: complete S-0001 and F-0001 in the record"),
+        ("push", "main"),
+    ]
 
 
 def test_a_landing_that_completes_a_feature_with_the_push_names_both_pushes() -> None:
@@ -211,13 +217,14 @@ def test_a_landing_tags_nothing_unless_it_completes_a_feature_under_feature_clos
     assert TAG_MADE not in steps
 
 
-def test_a_tag_git_refuses_says_the_work_item_is_landed_and_the_feature_completed() -> None:
+def test_a_tag_git_refuses_says_the_work_item_is_merged_and_not_completed() -> None:
     tree = work_tree([])
     refused = replace(tree, release=replace(tree.release, make_tag=refuse))
     with pytest.raises(GitError) as error:
         land(refused)
     assert str(error.value) == (
-        f"git failed: refused -- S-0001 is landed at {MERGE}, F-0001 is completed"
+        "git failed: refused -- main is not tagged v0.1.0"
+        f" -- S-0001 is merged at {MERGE} and not completed -- run fgraph land S-0001 again"
     )
 
 
@@ -228,17 +235,16 @@ def test_a_push_of_the_tag_git_refuses_says_the_tag_is_made_and_not_pushed() -> 
         land(refused, TAGGED_AND_PUSHED)
     assert str(error.value) == (
         f"git failed: refused -- v0.1.0 is tagged at {HEAD}, it is not pushed"
-        f" -- S-0001 is landed at {MERGE}, F-0001 is completed"
+        f" -- S-0001 is merged at {MERGE} and not completed -- run fgraph land S-0001 again"
     )
 
 
-def test_a_push_of_main_git_refuses_says_the_feature_is_not_tagged() -> None:
+def test_a_push_of_main_git_refuses_says_the_work_item_is_landed_and_main_not_pushed() -> None:
     refused = refusing_the_second_push(work_tree([]))
     with pytest.raises(GitError) as error:
         land(refused, TAGGED_AND_PUSHED)
     assert str(error.value) == (
         f"git failed: refused -- S-0001 is landed at {MERGE}, main is not pushed"
-        ", F-0001 is not tagged"
     )
 
 

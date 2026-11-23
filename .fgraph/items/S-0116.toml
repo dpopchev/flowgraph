@@ -59,3 +59,8 @@ description = "Find the passages by grep, not by line number: S-0114 and S-0115 
 check = "grep -q fgraph.brief README.md && grep -q governed_by docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md holds a new section Brief between About and Terms. It states which work items brief takes and in what states; the text form (the show text, then Worktree, Feature, Governed by and Terms, each left out when empty); how a governed path is matched in a Task; the JSON keys as a contract (sorted, null for nothing, the same bytes on two runs); and the refusals. README.md adds a row after the links of an item in the table, and a paragraph with an example after the about-of-a-file examples"
 created = 2026-11-23 09:11:48+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer gave the go on 2026-11-23 to the Tasks and the rulings shown that day: the brief is a command of its own, fgraph brief ID, of a work item in any state; its text is that of fgraph show, then Worktree, Feature with its knowledge, Governed by and Terms, each left out when empty; a line governs when a Task names its whole path; it holds data alone, no word on how the work is done, which stays in the skill; a Feature id and a Task id are refused. This Story owns the split of src/flowgraph/parser/command.py, at 250 of 250 lines."
+noted = 2026-11-23 09:12:17+00:00

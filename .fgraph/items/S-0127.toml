@@ -22,6 +22,15 @@ check = "uv run pytest tests/functional/test_planned_start.py -q"
 expected_output = "created: tests/functional/test_planned_start.py states that, in a git repository with [development] enabled = true and parallel left out, holding S-0001 alone with no Task, S-0002 alone with a Task, F-0001 with no work item, F-0002 with S-0003 with a Task and S-0004 without, and F-0003 with S-0005 and S-0006 each with a Task: fgraph status marks S-0002 and F-0003 alone; the JSON lists can_start as S-0002, F-0003 with next_to_start S-0002; fgraph start refuses S-0001, F-0001 and F-0002 with exit 2, naming what each lacks; fgraph start of S-0002 and of F-0003 exits 0"
 created = 2026-11-23 10:14:49+00:00
 
+[[tasks]]
+id = "T-0412"
+state = "backlog"
+title = "Mark in fgraph status, with the development on, only the planned lines: a work item holding a Task, a Feature whose every work item in Backlog holds one"
+description = "Change src/flowgraph/status/next.py only: add a pure _planned(line), a WorkItemRow with tasks or a FeatureRow whose work_items in state backlog all hold tasks; in with_start_now the lines asked are those of _can_start and _planned; _startable_under adds the tasks of the item to its test; _can_start and with_next stay as they are, so NextOnly is unchanged. Leave status/view.py (247 of 250 lines), text.py and document.py untouched. Tests red first. In tests/status/test_start_now.py: a work item with no Task takes no place under NoLimit; a Feature in Backlog whose second work item has no Task takes no place; the guard that NextOnly still marks a work item with no Task. In tests/status/test_start_now_feature.py: a work item with no Task under a started Feature takes no place, and the next one takes it. Existing tests that change: the helpers row of tests/status/test_start_now.py and story of tests/status/test_start_now_feature.py gain one TaskRow by default through a tasks keyword, which keeps their 12 tests that expect a mark as written."
+check = "uv run pytest tests/status tests/functional/test_status_start_now.py tests/functional/test_planned_start.py -q && uv run pytest tests/functional/test_planned_start.py -q --runxfail -k Status"
+expected_output = "changed: with the development on, fgraph status, fgraph watch and can_start mark no work item in Backlog that holds no Task, a line of the Backlog and a work item under a started Feature alike; a Feature in Backlog is marked only when each of its work items in Backlog holds a Task; a line that is not planned is just unmarked, with no suffix; with the development off the next to start is marked as before. The xfail marks of the Status classes of tests/functional/test_planned_start.py are removed"
+created = 2026-11-23 10:14:51+00:00
+
 [[knowledge]]
 kind = "decision"
 text = "The developer ruled on 2026-11-23: a Backlog item is pulled only when it is planned -- a Feature has work items, a work item has Tasks, and so every work item of a Feature has its Tasks. S-0127 was amended that day to hold the whole rule."

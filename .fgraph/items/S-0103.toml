@@ -1,5 +1,5 @@
 id = "S-0103"
-state = "blocked"
+state = "started"
 title = "Raise the knowledge lines a later line supersedes from none to every one it names"
 description = "Its Tasks are written when it is ordered."
 parent = "F-0014"
@@ -7,9 +7,6 @@ complexity = "high"
 created = 2026-11-22 21:04:01+00:00
 started = 2026-11-24 07:05:55+00:00
 agent = "opus-a28"
-since = 2026-11-24 07:32:56+00:00
-reason = "the check of T-0533 runs tests/functional, where tests/functional/test_knowledge_search.py of S-0146 and tests/functional/test_note_mark.py of S-0102, both landed on 2026-11-24 after the Task was written, pin the bare id that T-0533 turns into a ref, S-0001#1: 8 tests fail; T-0533 names two other files for that same edit of expected lines and no clause covers a file it missed -- whether T-0533 also corrects the expected lines of those two files is for the developer; its work is in the worktree, not committed"
-waiting_on = "developer"
 depends_on = [
     "S-0102",
 ]

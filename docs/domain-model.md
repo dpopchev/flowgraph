@@ -1346,7 +1346,10 @@ and its merge tool.
   with the development on and `development.driver` agent, one whose work item
   in Backlog has no complexity, the first in start order named, `F-0001 cannot
   start: S-0002 has no complexity to start with: set it with fgraph amend
-  S-0002 --complexity low, medium or high`; and a start `[development] parallel` refuses (below).
+  S-0002 --complexity low, medium or high`; with the development on, one whose
+  first work item has its branch there already, `F-0001 cannot start: the
+  branch wi/S-0002-<slug> is there already -- delete it or give another
+  --slug`; and a start `[development] parallel` refuses (below).
 - A work item does not start before its Feature: the start of a work item in
   Backlog under a Feature that is not started is refused with exit 2, naming
   the Feature, `S-0001 cannot start: F-0001 is not started, start it first`.
@@ -2018,7 +2021,13 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   `<parent>/<checkout name>.worktrees/<id>-<slug>`. The slug is given with
   `--slug`, else it is the first four words of the title, lower-cased and kept
   to their letters and digits. With the development off the start ends at its
-  commit.
+  commit. A start whose branch `wi/<id>-<slug>` is there already is refused
+  with exit 2 before anything is written, so the work item stays in Backlog,
+  `S-0001 cannot start: the branch wi/S-0001-<slug> is there already -- delete
+  it or give another --slug`; it holds for a Feature by the branch of its first
+  work item. The developer deletes the branch or gives another `--slug`: the
+  start takes over no branch that is there, the developer's decision of
+  2026-11-23 (B-0027).
 - Outside a git work tree a write is made as before, without a commit and
   without a warning; only a start of a work item with the development on
   warns, that no branch was made. A write refused makes no commit and no
@@ -2041,8 +2050,8 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   completing the work item with no commit of the record. A worktree git
   refuses leaves the start written.
 - A git step refused exits 2 naming the command: a commit refused puts every
-  file the write changed back as it was, a worktree refused leaves the start
-  committed.
+  file the write changed back as it was, a worktree refused for another cause
+  than a branch there leaves the start committed.
 - With the development on, `fgraph land` lands a started work item, run in
   the checkout of `main`. It merges the branch `wi/<id>-*` into `main` as a
   merge of its own, held uncommitted; commits it under the message the
@@ -2597,10 +2606,11 @@ The four rows left unknown:
   branch `wi/<id>-*`, wherever that worktree is, so a branch git made, and a
   start written by hand, were taken through to `land`. The branch of board 1
   carries the old id, `wi/W-197-no-review-mark-is`, which matches no fgraph
-  id; it is taken only once renamed, which was not run. `start` does not
-  adopt a branch already there: it fails at `git worktree add` and leaves the
-  item started with no branch, its rerun refused `S-0004 is started
-  already`, and its Tasks then start on main.
+  id; it is taken only once renamed, which was not run. `start` did not
+  adopt a branch already there, as the probe saw: it failed at `git worktree
+  add`, left the item started with no branch, its rerun refused `S-0004 is
+  started already`, and its Tasks then started on main. Since B-0027 the start
+  is refused before it writes and adopts no branch.
 
 ### Gaps
 
@@ -2664,7 +2674,7 @@ Held by some records:
 | done with no sha in its evidence | 58: Tasks 53 (c 38, sm 15), work items 5 (c 4, sm 1) | not filed |
 | a Check in prose, no ` -- ` or ` -> ` | 83, all of c | not filed |
 | the Deviations a checkpoint moved to a ledger | 27 sections in 13 ledgers: c 5 in 4, st 1 in 1, sm 5 in 3, sv 16 in 5 | not filed |
-| the branch of the doing work item, named by its old id | 1, W-197 of sm | part, B-0027: "or leaves a way to make the branch of the started work item"; the rename not filed |
+| the branch of the doing work item, named by its old id | 1, W-197 of sm | B-0027 refuses the start before it writes and takes over no branch; a branch git made beside a start written by hand is read through to land (Probe); the rename not filed |
 | `depends_on` a pruned item | 39: c 14, sm 23, sv 2 | none needed: written before the removal, or by a file (Probe) |
 
 Lost by a decision taken, or of no use once converted. The decisions are

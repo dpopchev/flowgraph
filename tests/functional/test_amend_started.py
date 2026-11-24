@@ -140,7 +140,6 @@ def test_a_blocked_story_is_amended_with_its_deviation(tmp_path: Path) -> None:
     assert (outcome.status, outcome.out) == (0, "amended S-0001\n")
 
 
-@XFAIL
 @pytest.mark.parametrize("setup", [STORY_STARTED, STORY_BLOCKED], ids=["started", "blocked"])
 def test_an_amend_without_a_deviation_of_a_story_is_refused(
     setup: tuple[list[str], ...], tmp_path: Path

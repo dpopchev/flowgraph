@@ -185,7 +185,6 @@ class TestAStartedStoryAmendedInTheCheckoutOfMain:
         ) == ("", "chore: start S-0001 in the record")
 
 
-@XFAIL
 def test_an_amend_without_a_deviation_of_a_story_on_main_is_refused(checkout: Path) -> None:
     assert refusal(fgraph(AMEND_THEN, checkout)) == (2, [f"fgraph: error: {NEEDED}"])
 

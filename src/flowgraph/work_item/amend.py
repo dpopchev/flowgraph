@@ -1,5 +1,6 @@
-"""The amendment of a work item: the wording of one in Backlog rewritten, part by part.
+"""The amendment of a work item: its wording rewritten, part by part.
 
+One in Backlog is amended as it is; a started or blocked one with its deviation, kept on it.
 It is not a move: the state of the work item stays, and so do its id, its Tasks and its place.
 Its parent is a part too: the Feature it is under, or standing alone.
 """
@@ -20,19 +21,22 @@ from flowgraph.criterion import (
     make_scenario,
     said,
 )
+from flowgraph.knowledge import KnowledgeLine
 from flowgraph.parent import NO_CRITERION, Parent, Realizes, realizes_under
 from flowgraph.relation import with_depends_on
-from flowgraph.task import BlockedError, CompletedAlreadyError, StartedAlreadyError
+from flowgraph.task import CompletedAlreadyError, StartedAlreadyError
 from flowgraph.work_item.complexity import Complexity
 from flowgraph.work_item.id import WorkItemId, work_item_id_text
 from flowgraph.work_item.model import (
     BlockedWorkItem,
     CompletedWorkItem,
+    OpenWorkItem,
     RemovedAlreadyError,
     RemovedWorkItem,
     StartedWorkItem,
     WorkItem,
     WorkItemState,
+    noted_work_item,
 )
 
 
@@ -135,22 +139,74 @@ def _amended_criterion(named: str, was: Criterion, amendment: Amendment) -> Crit
             assert_never(unreachable)
 
 
-def amended_work_item(item: WorkItemState, amendment: Amendment) -> WorkItem:
-    """The work item in Backlog with the parts the amendment names rewritten, the rest as it was.
+class DeviationError(ValueError):
+    """An amend of a started item without its deviation, or of one in Backlog with one."""
 
+
+def check_deviation(named: str, started: bool, deviation: KnowledgeLine | None) -> None:
+    """Raise DeviationError unless a started item has its deviation and one in Backlog has none."""
+    if started and deviation is None:
+        needed = "amend it with --deviation TEXT, what changes in what it was agreed to do"
+        raise DeviationError(f"{named} is started: {needed}")
+    if not started and deviation is not None:
+        none = "it has no agreed plan to deviate from -- amend it without --deviation"
+        raise DeviationError(f"{named} is in Backlog: {none}")
+
+
+def _check_task_parts(named: str, amendment: Amendment) -> None:
+    """Raise NoSuchPartError when the amendment names a part that only a Task states."""
+    given = tuple(part for part in TASK_PARTS if getattr(amendment, part) is not None)
+    if given:
+        raise NoSuchPartError(f"{named} has no {_listed(given)}: only a Task states them")
+
+
+def _amended_started(
+    item: StartedWorkItem | BlockedWorkItem, amendment: Amendment, deviation: KnowledgeLine | None
+) -> StartedWorkItem | BlockedWorkItem:
+    """The started or blocked work item with its title, description, criterion and terms rewritten.
+
+    The deviation is kept after the lines it had; its state, times, agent, block and Tasks stay.
+    Raises the refusals of amended_work_item for a started item.
+    """
+    named = work_item_id_text(item.id)
+    backlog_alone = (amendment.complexity, amendment.parent, amendment.depends_on)
+    if any(part is not None for part in backlog_alone):
+        alone = "its complexity, its parent and what it depends on are amended in Backlog alone"
+        raise StartedAlreadyError(f"{named} is started: {alone}")
+    _check_task_parts(named, amendment)
+    check_deviation(named, True, deviation)
+    if deviation is None or amendment == Amendment():
+        raise NoPartError(f"amend rewrites no part of {named}: name one")
+    amended = replace(
+        item,
+        title=said("title", _kept(amendment.title, item.title)),
+        criterion=_amended_criterion(named, item.criterion, amendment),
+        description=_kept(amendment.description, item.description),
+        about=_kept(amendment.about, item.about),
+    )
+    return noted_work_item(amended, deviation)
+
+
+def amended_work_item(
+    item: WorkItemState, amendment: Amendment, deviation: KnowledgeLine | None = None
+) -> OpenWorkItem:
+    """The work item with the parts the amendment names rewritten, the rest as it was.
+
+    One in Backlog is amended without a deviation; a started or blocked one with its deviation,
+    kept on it after the lines it had, and its title, description, criterion and terms alone.
     Raises NoPartError when it names none, NoSuchPartError when it names a part the criterion of
-    the item does not have, EmptyPartError when its title or a part of its criterion is blank,
-    RelationError when it makes the item depend on itself, RealizesError when it names a
-    criterion for an item standing alone, StartedAlreadyError when the item is started,
-    BlockedError when it is blocked, CompletedAlreadyError when it is completed and
+    the item does not have or a part of a Task, EmptyPartError when its title or a part of its
+    criterion is blank, RelationError when it makes the item depend on itself, RealizesError when
+    it names a criterion for an item standing alone, DeviationError when a started item has none
+    or one in Backlog has one, StartedAlreadyError when a started item is given a complexity, a
+    parent or what it depends on, CompletedAlreadyError when it is completed and
     RemovedAlreadyError when it is removed.
     """
     named = work_item_id_text(item.id)
     match item:
         case WorkItem():
-            given = tuple(part for part in TASK_PARTS if getattr(amendment, part) is not None)
-            if given:
-                raise NoSuchPartError(f"{named} has no {_listed(given)}: only a Task states them")
+            check_deviation(named, False, deviation)
+            _check_task_parts(named, amendment)
             if amendment == Amendment():
                 raise NoPartError(f"amend rewrites no part of {named}: name one")
             criterion = _amended_criterion(named, item.criterion, amendment)
@@ -175,10 +231,8 @@ def amended_work_item(item: WorkItemState, amendment: Amendment) -> WorkItem:
                 about=about,
                 complexity=complexity,
             )
-        case StartedWorkItem():
-            raise StartedAlreadyError(f"{named} is started already")
-        case BlockedWorkItem():
-            raise BlockedError(f"{named} is blocked")
+        case StartedWorkItem() | BlockedWorkItem():
+            return _amended_started(item, amendment, deviation)
         case CompletedWorkItem():
             raise CompletedAlreadyError(f"{named} is completed already")
         case RemovedWorkItem():

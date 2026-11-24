@@ -200,7 +200,11 @@ def test_a_work_item_alone_is_put_under_a_started_feature_as_an_add_puts_it(
             [ADD_FEATURE, ADD_ALONE, ["amend", "S-0001", "--parent", "None"]],
             "'None' is neither a Feature id nor none: a Feature id is F- and a number",
         ),
-        ([*STARTED, ["amend", "S-0001", "--parent", "none"]], "S-0001 is started already"),
+        (
+            [*STARTED, ["amend", "S-0001", "--parent", "none"]],
+            "S-0001 is started: its complexity, its parent and what it depends on are amended in"
+            " Backlog alone",
+        ),
     ],
     ids=[
         "out-of-a-started-feature",

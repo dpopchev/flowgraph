@@ -29,7 +29,10 @@ SHOW = ["show", "S-0001"]
 STATUS = ["status", "--format", "json"]
 LINE = "  complexity   high\n"
 HUGE = "fgraph: error: --complexity 'huge' is none of low, medium, high"
-STARTED = "fgraph: error: S-0001 is started already"
+STARTED = (
+    "fgraph: error: S-0001 is started: its complexity, its parent and what it depends on are"
+    " amended in Backlog alone"
+)
 
 
 @dataclass(frozen=True)

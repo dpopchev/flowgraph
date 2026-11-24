@@ -56,6 +56,7 @@ from flowgraph.term import TermError, TermFileError, TermNotFoundError
 from flowgraph.term.item import TermExistsError
 from flowgraph.work_item import (
     ComplexityError,
+    DeviationError,
     NoPartError,
     NoSuchPartError,
     NotVerifiableError,
@@ -111,6 +112,7 @@ REFUSED = (
     DecisionError,
     NoPartError,
     NoSuchPartError,
+    DeviationError,
     RemovedAlreadyError,
     NotVerifiableError,
     VerifiedAlreadyError,

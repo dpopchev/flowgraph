@@ -10,6 +10,11 @@ agent = "haiku-a2"
 commit = "84662db"
 filed_during = "S-0129"
 
+[verified]
+answer = "yes"
+text = "at 84662db on main, the merge of wi/B-0031-cut-the-work-items, on a throwaway record with the development on and development.driver agent: with S-0002 holding no Task, fgraph goal F-0001 exit 2 printed fgraph: error: F-0001 cannot start: S-0002 has no Task to start with; with a Task on each and no complexity on S-0002, exit 2 printed fgraph: error: F-0001 cannot start: S-0002 has no complexity to start with: set it with fgraph amend S-0002 --complexity low, medium or high, the line fgraph start F-0001 printed on the same record; planned whole, exit 0 printed the /goal line naming S-0001 and S-0002; on the record of flowgraph fgraph goal F-0017 exit 0, its nine work items planned since. make check on the tree of the landing, the branch with main merged at 2292f87: 3501 passed, all checks passed. Handed whole to one subagent on haiku, which stopped before its own make check ended and did not run the variant with no Task; both were run by the coordinator."
+on = 2026-11-24 03:56:54+00:00
+
 [criterion]
 observed = "on the record of flowgraph on 2026-11-23, with the development on and development.driver agent, fgraph goal F-0017 exits 0 and words a /goal line that names S-0130, S-0131, S-0132, S-0133, S-0134, S-0135, S-0136, S-0137 and S-0139, none of which holds a Task or a complexity, so fgraph start of the Feature refuses and no coordinator can meet the goal"
 expected = "fgraph goal of a Feature that holds a work item in Backlog not planned -- no Task, or no complexity with the development driven by an agent -- exits 2 and names the first such work item in start order and what it lacks; a Feature planned whole is worded as today"

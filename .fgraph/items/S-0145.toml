@@ -12,6 +12,11 @@ depends_on = [
     "S-0144",
 ]
 
+[verified]
+answer = "yes"
+text = "at 3f3e3e6, on a scratch record with a started Story S-0002 and a started Feature F-0001: fgraph amend S-0002 --then and fgraph amend F-0001 --title each exit 2 with \"is started: amend it with --deviation TEXT, what changes in what it was agreed to do\"; with --deviation each exits 0, says amended, fgraph show lists the rewritten part and one deviation line dated 2026-11-24"
+on = 2026-11-24 10:58:19+00:00
+
 [criterion]
 given = "a record with a started work item and a started Feature"
 when = "fgraph amend of each is run with a part to rewrite and the text of a deviation, and without that text"

@@ -15,7 +15,7 @@ from flowgraph.work_item import BLOCKED, IN_PROGRESS, STARTED
 
 # The mark is not special at the start of a line pasted into Markdown nor in a search by a
 # regular expression: the set the developer chose on 2026-11-23 (S-0139), whose mark of a line
-# that can start he dropped on 2026-11-24 (S-0152).
+# that can start the developer dropped on 2026-11-24 (S-0152).
 # A started work item whose Tasks are all completed.
 READY_FOR_REVIEW = "@"
 

@@ -1164,7 +1164,16 @@ and its merge tool.
   copied, and stays kept on the Spike as its `decision`. `--kind` narrows the list to
   `finding`, `decision` or `deviation`; any other word is refused naming the
   three, exit 2. A record with no line of the kind asked, or none, prints one
-  line saying so and exits 0.
+  line saying so and exits 0. `fgraph knowledge --search TEXT` narrows the list
+  to the lines whose text holds the text, whatever the case of either; `--kind`,
+  `--about` and `--search` narrow the same list, a line listed when it meets each
+  one given. Only the text of a line is searched, not the title or the id of its
+  item, its kind or its terms; with no such line it prints one line and exits 0
+  (`no knowledge lines holding 'zzz' in the record`, or with a kind or a term asked
+  too, `no decision lines about gate holding 'zzz' in the record`); a blank text is
+  refused, exit 2, `search is empty`. The search is one filter of the entries,
+  holding of `src/flowgraph/knowledge/list.py`, applied before the list is narrowed
+  and ordered (S-0146).
 - A blocked Task is kept as `state = "blocked"` with its `started` time, its
   `since` time, its `reason` and its `waiting_on`. Only a started work item's
   file may hold one, and it is read back through its start and its block.

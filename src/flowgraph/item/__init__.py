@@ -19,6 +19,7 @@ from flowgraph.item.file import (
 from flowgraph.item.held_time import HeldTime, NoOffsetError
 from flowgraph.item.task_file import (
     CompletedTaskFile,
+    DoneTask,
     HeldTask,
     TaskFile,
     backlog_task,
@@ -30,6 +31,7 @@ from flowgraph.item.task_file import (
 __all__ = [
     "AnyCriterionFile",
     "CompletedTaskFile",
+    "DoneTask",
     "HeldTask",
     "HeldTime",
     "KnowledgeFile",

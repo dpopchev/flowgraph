@@ -8,12 +8,13 @@ from flowgraph.task.id import TaskId, task_id_text
 from flowgraph.task.model import (
     CompletedTask,
     OpenTaskError,
+    RemovedTask,
     StartedTask,
     TaskInProgressError,
     TaskNotFoundError,
     TaskState,
 )
-from flowgraph.task.moves import blocked, completed, started, unblocked
+from flowgraph.task.moves import blocked, completed, removed, started, unblocked
 
 
 def task_of(tasks: Iterable[TaskState], task_id: TaskId) -> TaskState:
@@ -80,6 +81,17 @@ def unblocked_among(tasks: tuple[TaskState, ...], task_id: TaskId) -> tuple[Task
     return tuple(moved if task.id == task_id else task for task in tasks)
 
 
+def removed_among(
+    tasks: tuple[TaskState, ...], task_id: TaskId, reason: str, on: datetime
+) -> tuple[TaskState, ...]:
+    """The Tasks with the one of that id removed on that time, the rest as they are.
+
+    Raises TaskNotFoundError when none has the id, or the refusal of its remove.
+    """
+    task_of(tasks, task_id)
+    return tuple(removed(task, reason, on) if task.id == task_id else task for task in tasks)
+
+
 def completed_among(
     tasks: tuple[TaskState, ...], task_id: TaskId, on: datetime, commit: Evidence
 ) -> tuple[TaskState, ...]:
@@ -91,14 +103,20 @@ def completed_among(
     return tuple(completed(task, on, commit) if task.id == task_id else task for task in tasks)
 
 
-def all_completed(tasks: Iterable[TaskState], holder: str) -> tuple[CompletedTask, ...]:
-    """The Tasks, every one of them completed.
+def all_completed(
+    tasks: Iterable[TaskState], holder: str
+) -> tuple[CompletedTask | RemovedTask, ...]:
+    """The Tasks, every one of them completed or removed, in order.
 
-    Raises OpenTaskError naming the holder and the Tasks not completed.
+    Raises OpenTaskError naming the holder and the Tasks neither completed nor removed.
     """
     listed = list(tasks)
-    done = tuple(task for task in listed if isinstance(task, CompletedTask))
-    left = [task_id_text(task.id) for task in listed if not isinstance(task, CompletedTask)]
+    done = tuple(task for task in listed if isinstance(task, CompletedTask | RemovedTask))
+    left = [
+        task_id_text(task.id)
+        for task in listed
+        if not isinstance(task, CompletedTask | RemovedTask)
+    ]
     if left:
         raise OpenTaskError(f"{holder} has Tasks to complete first: {', '.join(left)}")
     return done

@@ -67,15 +67,30 @@ class CompletedTask:
     check: str | None = None
 
 
+@dataclass(frozen=True)
+class RemovedTask:
+    """A Task in Removed: taken out of its started work item, with the reason it was."""
+
+    id: TaskId
+    title: str
+    expected_output: str
+    description: str
+    created: datetime
+    removed: datetime
+    reason: str
+    check: str | None = None
+
+
 # A Task in any of its states, as the file of its Story keeps it.
-TaskState = Task | StartedTask | BlockedTask | CompletedTask
+TaskState = Task | StartedTask | BlockedTask | CompletedTask | RemovedTask
 
 
 @dataclass
 class TaskRow:
     """One Task as plain data, as a view reads it from the record.
 
-    A commit once completed in one; a reason and what it waits on while blocked.
+    A commit once completed in one; a reason and what it waits on while blocked, a reason once
+    removed too.
     """
 
     id: str
@@ -115,6 +130,10 @@ class TaskInProgressError(ValueError):
 
 class CompletedAlreadyError(ValueError):
     """A completed Story or Task moved once more, or a Task written for a completed Story."""
+
+
+class TaskRemovedError(ValueError):
+    """A removed Task moved once more."""
 
 
 class NotStartedError(ValueError):
@@ -162,6 +181,8 @@ def task_state_name(task: TaskState) -> str:
             return "blocked"
         case CompletedTask():
             return "completed"
+        case RemovedTask():
+            return "removed"
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -169,7 +190,7 @@ def task_state_name(task: TaskState) -> str:
 def row_of(task: TaskState) -> TaskRow:
     """The Task as the row a view reads: its commit once completed, its block while blocked.
 
-    A Task completed without a commit reads with none.
+    A Task completed without a commit reads with none; a removed one reads with its reason.
     """
     row = TaskRow(
         task_id_text(task.id),
@@ -187,6 +208,9 @@ def row_of(task: TaskState) -> TaskRow:
             return row
         case CompletedTask():
             row.commit = evidence_text(task.commit)
+            return row
+        case RemovedTask():
+            row.reason = task.reason
             return row
         case _ as unreachable:
             assert_never(unreachable)

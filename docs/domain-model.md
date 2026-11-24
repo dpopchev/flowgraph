@@ -1949,7 +1949,14 @@ agreed on 2026-11-21 that `fgraph` owns the record, its rituals and its rules:
 - A Task write of a started work item -- a Task added, started or completed --
   is taken in the worktree of that work item. In a work tree on any branch
   that no work item owns, `main` among them, it is refused with exit 2,
-  nothing written, and the refusal names that worktree.
+  nothing written, and the refusal names that worktree. The block and the
+  unblock of a Task are refused there too (B-0032), by a check that runs
+  before the copy of that work tree is read, so the answer is the worktree
+  and not what a stale copy says of the Task (before B-0032 the copy of
+  `main` answered `T-0001 is in Backlog: start it first`, `T-0001 is not
+  blocked` or `no Task T-0002 in the record`). It holds for a Task in any
+  state and for one added in the worktree after the start, with the line
+  `S-0001 is started: its Tasks are written in its worktree, <path>`.
 - The start, the complete and the landing of the work item itself stay on
   `main`.
 - A started work item whose branch is checked out in no worktree, and a
@@ -1986,8 +1993,9 @@ agreed on 2026-11-21 that `fgraph` owns the record, its rituals and its rules:
   its Tasks are written in its worktree, <path>`, nothing written. `main`
   keeps the file as started, and status and show on `main` read the row from
   the worktree, so they list it blocked. The unblock run on `main` answers
-  from the copy of `main`, as that of a Task does: that copy holds it
-  started, and the unblock is refused, `S-0001 is not blocked`. A worktree
+  from the copy of `main`: that copy holds it started, and the unblock is
+  refused, `S-0001 is not blocked`. The unblock of a Task names the worktree
+  since B-0032, as its block does. A worktree
   on code older than S-0138 refuses a file that holds `state = "blocked"`.
 
 The git steps `fgraph` takes, decided by the developer on 2026-11-21:

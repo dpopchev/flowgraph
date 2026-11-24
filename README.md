@@ -1236,11 +1236,14 @@ of its Story. A Feature starts on main alone as a Story does, since its start
 starts its first work item (further down).
 
 A Task of a started Story that has a worktree is written there: added,
-started and completed in it. On main the same write exits 2 and names the
-worktree:
+started and completed in it, and its block and its unblock are written there
+too. On main the same write exits 2 and names the worktree, and so do the
+block and the unblock of its Task, whatever the copy of main holds of the Task:
 
 ```sh
 fgraph add task "Add the show command" --parent S-0001 --output "changed: cli.py"
+# fgraph: error: S-0001 is started: its Tasks are written in its worktree, /src/project.worktrees/S-0001-raise-the-stories-fgraph
+fgraph unblock T-0001
 # fgraph: error: S-0001 is started: its Tasks are written in its worktree, /src/project.worktrees/S-0001-raise-the-stories-fgraph
 ```
 
@@ -1517,10 +1520,12 @@ fgraph status
 
 A block exits 2 and names why when the Task is still in Backlog, blocked
 already or completed, when the reason or what it waits on is blank, when the
-text is no id, or when the record does not hold the Task. A blocked Task is
-not started or completed, and its Story is not completed, while it is
-blocked. `fgraph block` and `fgraph unblock` take a started work item of any
-kind (next) and a started Feature too (below).
+text is no id, or when the record does not hold the Task. With the development
+on, run on `main` for a Task of a started Story that has a worktree, it names
+that worktree: `S-0001 is started: its Tasks are written in its worktree, <path>`.
+A blocked Task is not started or completed, and its Story is not completed,
+while it is blocked. `fgraph block` and `fgraph unblock` take a started work
+item of any kind (next) and a started Feature too (below).
 
 Unblock it once it can go on. It is started again, with the started time it
 had, and can be completed or blocked once more:
@@ -1531,7 +1536,9 @@ fgraph unblock T-0001
 ```
 
 An unblock exits 2 and names why when the Task is not blocked, when the text
-is no id, or when the record does not hold the Task.
+is no id, or when the record does not hold the Task. With the development on,
+run on `main` for a Task of a started Story that has a worktree, it names
+that worktree: `S-0001 is started: its Tasks are written in its worktree, <path>`.
 
 A started work item that cannot go on is blocked the same way, a Story, an
 Upkeep, a Bug or a Spike, with the reason and who or what it waits on. It

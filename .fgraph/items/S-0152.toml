@@ -55,3 +55,8 @@ created = 2026-11-24 17:18:36+00:00
 started = 2026-11-24 17:43:34+00:00
 completed = 2026-11-24 17:44:27+00:00
 commit = "1d046df"
+
+[[knowledge]]
+kind = "deviation"
+text = "The developer agreed on 2026-11-24, at the review of the hand-back: one commit beyond the Tasks, 6553125, rewords a comment of src/flowgraph/status/work_item_lines.py to name the developer; and eight tests that found the lines that can start by their mark, in tests/functional/test_status_start_now.py, test_planned_start.py, test_planned_complexity.py and test_status_marks.py, were removed by the agent where T-0635 named a rewrite, the same ids held by can_start of the JSON."
+noted = 2026-11-24 19:33:19+00:00

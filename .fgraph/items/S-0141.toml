@@ -10,6 +10,11 @@ agent = "haiku-a1"
 commit = "953a824"
 amends = "S-0035"
 
+[verified]
+answer = "yes"
+text = "at 953a824 on main, the merge of wi/S-0141-raise-the-work-trees, in a throwaway repository with the development on, S-0001 and S-0002 started in their worktrees, T-0001 started in the worktree of S-0001, T-0002 in that of S-0002, and S-0003 with a Task added on main after: fgraph watch --count 1 exit 0 on main and in each of the two worktrees, the three frames the same bytes -- Backlog (1) > S-0003, InProgress (2) S-0002 0/1 T with => T-0002 and S-0001 0/1 T with => T-0001, Completed (0); fgraph status the same bytes in the three; fgraph show S-0002 in the worktree of S-0001 still lists bucket Backlog. make check on main at 953a824: 3522 passed, all checks passed. Handed whole to one subagent on haiku: it wrote tests/functional/test_watch_worktree.py before the start of T-0447 and started the Task before its commit, and in T-0449 it reworded the sentence of the docstring of that file that named the xfail marks, beside removing them."
+on = 2026-11-24 04:04:16+00:00
+
 [criterion]
 given = "a repository with the development on, two work items started in their worktrees with a Task being worked in each, and a work item added on main after both starts"
 when = "fgraph watch draws a frame on main and in the worktree of each of the two work items"

@@ -8,6 +8,7 @@ import argparse
 import sys
 import time
 from collections.abc import Callable, Sequence
+from contextlib import nullcontext
 from datetime import UTC, datetime
 from functools import partial
 from pathlib import Path
@@ -22,7 +23,16 @@ from flowgraph.development.worktrees import across_worktrees, held_elsewhere, re
 from flowgraph.parser import REFUSED, build_command_line, help_asked
 from flowgraph.parser.command import command_said
 from flowgraph.parser.ids import ids_read
-from flowgraph.parser.not_given import no_check, no_config, no_dir, no_gate, no_removal, no_wait
+from flowgraph.parser.locked import takes_lock
+from flowgraph.parser.not_given import (
+    no_check,
+    no_config,
+    no_dir,
+    no_gate,
+    no_lock,
+    no_removal,
+    no_wait,
+)
 from flowgraph.record import (
     Config,
     FindNamed,
@@ -40,6 +50,7 @@ from flowgraph.record import (
     why_missing,
 )
 from flowgraph.record.init import MakeDir, RemoveDir, init_record
+from flowgraph.record.lock import LockRecord, lock_files
 from flowgraph.record.store import OpenStore, Store, open_files
 from flowgraph.relation.read import check_relations
 from flowgraph.status.buckets import shown_buckets
@@ -115,6 +126,7 @@ def run(
     make_dir: MakeDir = no_dir,
     remove_dir: RemoveDir = no_removal,
     find_named: FindNamed = no_name,
+    lock_record: LockRecord = no_lock,
 ) -> int:
     """Read the arguments, locate the record in cwd, run the command and return the exit status.
 
@@ -138,7 +150,9 @@ def run(
     gate is given: the default runs none. The complete of a Task that holds a check runs it
     through run_check, which a run that completes such a Task is given: the default runs none
     and refuses to, as that of the gate does. The rows of a started work item say, through `aged`,
-    that their branch is older than `development.branch_max`: said, never refused.
+    that their branch is older than `development.branch_max`: said, never refused. A write takes
+    the lock of its record through lock_record before it reads, the default takes none, and a
+    write not given it within the wait fails with 2.
     """
     command_line = build_command_line()
     parser = command_line.parser
@@ -165,16 +179,18 @@ def run(
                 partial(scope_in, path, open_git),
                 partial(worktree_of_item, path, open_git),
             )
+            held = partial(held_elsewhere, path, open_git, open_store)
             try:
-                config = load_config(path)
-                store = aged(store, config.development, now)
-                check_relations(path, store, partial(held_elsewhere, path, open_git, open_store))
-                if args.command == "watch":
-                    _watch(args, store, write, wait, width, height, config)
-                    return 0
-                said = command_said(
-                    args, store, now, path, open_git, width, config, run_gate, cwd, run_check
-                )
+                with lock_record(path) if takes_lock(args) else nullcontext():
+                    config = load_config(path)
+                    store = aged(store, config.development, now)
+                    check_relations(path, store, held)
+                    if args.command == "watch":
+                        _watch(args, store, write, wait, width, height, config)
+                        return 0
+                    said = command_said(
+                        args, store, now, path, open_git, width, config, run_gate, cwd, run_check
+                    )
             except REFUSED as error:
                 write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
                 return 2
@@ -217,6 +233,7 @@ def main() -> None:
             make_dir=Path.mkdir,
             remove_dir=Path.rmdir,
             find_named=record_named,
+            lock_record=partial(lock_files, wait=time.sleep),
         )
     )
 

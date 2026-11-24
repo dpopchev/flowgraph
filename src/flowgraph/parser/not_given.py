@@ -1,9 +1,11 @@
 """The callable run() of src/flowgraph/cli.py takes for an effect when it is given none.
 
-A wait that does not wait, the configuration at its defaults, and for the rest a contract that
-raises, since such a run must not make that effect.
+A wait that does not wait, the configuration at its defaults, a lock that locks nothing, and for
+the rest a contract that raises, since such a run must not make that effect.
 """
 
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Never
 
@@ -17,6 +19,12 @@ def no_wait(seconds: float) -> None:
 def no_config(record: Path) -> Config:
     """The configuration of a run given none to read: the defaults, whatever the record holds."""
     return make_config("")
+
+
+@contextmanager
+def no_lock(record: Path) -> Iterator[None]:
+    """The lock of a run given none: its block runs and nothing is locked."""
+    yield
 
 
 def no_gate(command: str, directory: Path) -> Never:

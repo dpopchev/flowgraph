@@ -33,6 +33,7 @@ from flowgraph.parent import FeatureIdError, RealizesError
 from flowgraph.record import ConfigError
 from flowgraph.record.archive import ArchivedError
 from flowgraph.record.init import NoDirectoryError, RecordHeldError
+from flowgraph.record.lock import LockedError
 from flowgraph.record.queue import NotInBacklogError, SameItemError, UnderFeatureError
 from flowgraph.record.queue_file import QueueFileError
 from flowgraph.relation import RelationError
@@ -95,6 +96,7 @@ REFUSED = (
     SlugError,
     AgentError,
     GitError,
+    LockedError,
     LandError,
     ApprovalError,
     GateError,

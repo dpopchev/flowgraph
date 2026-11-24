@@ -24,6 +24,7 @@ from flowgraph.status.next import NEXT_ONLY, StartLimit, with_start_now
 from flowgraph.status.placed import PlacedFeature, placed_features, waiting_features, with_features
 from flowgraph.status.rows import BACKLOG, COMPLETED, backlog_as_added, rows_by_id
 from flowgraph.status.text import cut_lines, status_text
+from flowgraph.status.tops import same_top
 from flowgraph.status.waits import with_waits
 from flowgraph.work_item import IN_PROGRESS, WorkItemId, WorkItemRow
 
@@ -111,7 +112,7 @@ def status_item(store: Store, top: int | None = None, limit: StartLimit = NEXT_O
     Under a top each heading lists that many, the first ones; the rows are those of
     `status_rows` under the limit.
     """
-    return status_text(status_rows(store, limit), top)
+    return status_text(status_rows(store, limit), same_top(top))
 
 
 def status_output(

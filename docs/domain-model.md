@@ -165,7 +165,11 @@ do: `fgraph amend` of a started item keeps one with the part it rewrites, and
 mark, a sum of three with no mark: standing, the line holds until a later line
 supersedes it, and open, the line is not settled yet; a line of any kind takes
 one. The mark is given when the line is noted and, as the line, never amended;
-no command reads it, `fgraph show` and `fgraph knowledge` list it. The text says
+no command reads it, `fgraph show` and `fgraph knowledge` list it. A line is live
+until a later line supersedes it, whatever its mark: a line with no mark, a standing
+one and an open one alike, the decision of the developer of 2026-11-23 (S-0104); a
+superseded line stays superseded when the line that supersedes it is superseded in
+turn; live is derived from the record and stored nowhere. The text says
 something, so a blank one is refused where the line is built. A line is noted
 with `fgraph note` in Backlog, started, Completed or Removed alike, and is never
 amended or removed: it is added after the lines the item keeps already. A line
@@ -1399,6 +1403,15 @@ and its merge tool.
   refused, exit 2, `search is empty`. The search is one filter of the entries,
   holding of `src/flowgraph/knowledge/list.py`, applied before the list is narrowed
   and ordered (S-0146).
+  `fgraph knowledge --live` lists the live lines alone, the last noted first, each as
+  the list writes it, with its ref and its mark; the default stays every line. What is
+  superseded is read over every line of the record, of every work item and Feature,
+  before `--kind` and `--about` narrow the list, so a finding a decision supersedes is
+  not listed by `--live --kind finding`. The decision of a completed Spike has no ref
+  and is always live. A list with no live line prints `no live knowledge lines in the
+  record`, with the kind and the term when they are given, and exits 0; the list has
+  one format, text. This is the list a session start reads; fgraph cuts it to no
+  length: the hook that reads it composes it with `fgraph status` (F-0014).
 - A blocked Task is kept as `state = "blocked"` with its `started` time, its
   `since` time, its `reason` and its `waiting_on`. Only a started work item's
   file may hold one, and it is read back through its start and its block.
@@ -3144,8 +3157,8 @@ Held by every record that holds items:
 | `## Hypothesis` of an issue | 822, every issue: c 378, cts 156, g 3, st 26, sm 149, sv 110 | not filed |
 | the expected result of a Check, after ` -- ` or ` -> ` | 2,832 of 2,915 Tasks: c 1,281, cts 520, g 12, st 88, sm 518, sv 413 | not filed |
 | `done.evidence` beyond a bare sha | 4,046, every done item: Epics 104, work items 1,248, Tasks 2,694 | not filed |
-| the type of a Finding | 991 lines: fact 505, open 186, standing 300; g 10 | S-0102 keeps open and standing as the mark of a line, a `fact` is a line with no mark, and a line with no mark is live until a later line supersedes it, the decision of the developer of 2026-11-23 (S-0104) |
-| `supersedes:` ending a line | 593 lines: in Findings 454, Decisions 111, Deviations 28; g 3 | S-0103: "lists the first as superseded by the later" |
+| the type of a Finding | 991 lines: fact 505, open 186, standing 300; g 10 | S-0102 keeps open and standing as the mark of a line, a `fact` is a line with no mark, and a line with no mark is live until a later line supersedes it, the decision of the developer of 2026-11-23; S-0104: open, standing and no mark are live alike until superseded, and `fgraph knowledge --live` lists them |
+| `supersedes:` ending a line | 593 lines: in Findings 454, Decisions 111, Deviations 28; g 3 | S-0103: "lists the first as superseded by the later"; S-0104 leaves a superseded line out of `fgraph knowledge --live` |
 | the ref of a line, `#k`, `#dk`, `#vk` | every knowledge line, 2,711: Findings 991, Decisions 1,213, Deviations 507 | S-0103: `<id>#<place>`, listed by `fgraph knowledge` |
 
 Held by some records:

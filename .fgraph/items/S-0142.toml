@@ -64,3 +64,12 @@ description = "Change README.md (2787 lines) and docs/domain-model.md (2772 line
 check = "grep -q 'changed what its brief does not name: docs/notes.md' README.md && grep -q 'changed what its brief does not name: docs/notes.md' docs/domain-model.md && grep -q 'named_files.py' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, Evidence, says which files of the commit given to fgraph complete of a Task are held to its brief, the rule that names a file, what is never asked and the refusal T-0001 cannot complete: the commit 3e9ae5c changed what its brief does not name: docs/notes.md; Rules names the rule. README.md shows the refusal after the example of a failing check and lists it among the refusals of a complete"
 created = 2026-11-23 20:54:43+00:00
+
+[[knowledge]]
+kind = "finding"
+text = "Found by the agent on 2026-11-24 while reviewing the draft of F-0020: T-0541 writes a second rule for the path a Task names, beside _named of src/flowgraph/brief/model.py, which fgraph brief lists its governing lines by. The two differ: the brief reads src/a.py:12 as naming src/a.py, and the table of T-0541 says it is not named, so the brief and the gate would disagree on one Task. To decide when the Tasks of S-0142 are read again: one rule for both, or two said apart."
+noted = 2026-11-24 19:56:17+00:00
+mark = "open"
+governs = [
+    "src/flowgraph/brief/model.py",
+]

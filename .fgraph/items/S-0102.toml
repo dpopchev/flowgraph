@@ -1,10 +1,12 @@
 id = "S-0102"
-state = "backlog"
+state = "started"
 title = "Raise the knowledge lines a developer marks as standing or as open from none to every one"
 description = "Its Tasks are written when it is ordered."
 parent = "F-0014"
 complexity = "medium"
 created = 2026-11-22 21:03:59+00:00
+started = 2026-11-24 06:22:01+00:00
+agent = "sonnet-a23"
 depends_on = [
     "B-0026",
     "S-0143",

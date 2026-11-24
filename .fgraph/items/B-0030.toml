@@ -32,3 +32,8 @@ description = "Change README.md only; find the passage by grep \"there is no uns
 check = "tr -s ' \\n' ' ' < README.md | grep -q \"taken back to its default by .fgraph config unset KEY.\" && ! tr -s ' \\n' ' ' < README.md | grep -qE \"there is no unset|only by removing their line\""
 expected_output = "changed: README.md, the paragraph before Start a Story once it has a Task: a key is taken back to its default by fgraph config unset KEY, which leaves it out of the file, or by setting that default, which writes it there; parallel and gate have no default to set, so an unset alone takes them back to none; a set or an unset writes the file whole. The words there is no unset and only by removing their line from the file are gone"
 created = 2026-11-23 20:45:43+00:00
+
+[[knowledge]]
+kind = "deviation"
+text = "The developer decided on 2026-11-24: the two documents say the keys built are the ones fgraph config show lists, each named in its order, and state no count of them; T-0478 and T-0479 are amended to that. The Tasks as written said eight and the block asked for nine, while fgraph config show lists twelve since development.mode, development.branch_max, development.approver and archive.board landed: a count written in the documents went stale each time a key landed."
+noted = 2026-11-24 10:19:23+00:00

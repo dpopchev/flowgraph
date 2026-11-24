@@ -11,6 +11,11 @@ completed = 2026-11-24 22:21:52+00:00
 agent = "opus-b35"
 commit = "7bc48364"
 
+[verified]
+answer = "yes"
+text = "at 7bc48364 on main, the merge of wi/B-0035-cut-the-pairs-of, with fgraph of b0c2c643 in three throwaway repositories with the development on: four fgraph add story run at one time as real processes printed added S-0001, added S-0002, added S-0003 and added S-0004, each once and each with exit 0, in every one of the three trials; .fgraph/items held four files, git log four commits chore: add S-000N in the record, git status --porcelain nothing, and fgraph status --format json listed the four ids. Before the landing, in the worktree: uv run pytest tests/functional/test_writes_at_one_time.py tests/record tests/parser said 562 passed, and the agent's make check said 5078 passed"
+on = 2026-11-24 22:23:20+00:00
+
 [criterion]
 observed = "in a throwaway repository with the development on, with fgraph of 2d612af on 2026-11-24, one trial: two fgraph add story run at one time both printed added S-0006 and exited 0; main holds two commits chore: add S-0006 in the record, and fgraph status lists one S-0006, with the title of one of the two, the other Story listed nowhere and nothing said"
 expected = "each of two adds run at one time is given an id of its own, or the second exits 2 in one line of fgraph and writes nothing; no add that printed added is lost"

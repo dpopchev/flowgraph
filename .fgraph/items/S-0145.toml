@@ -5,7 +5,7 @@ description = "Filed on the word of the developer of 2026-11-23, picked from the
 complexity = "medium"
 created = 2026-11-23 20:38:54+00:00
 started = 2026-11-24 07:24:25+00:00
-agent = "sonnet-a30"
+agent = "sonnet-a39"
 depends_on = [
     "S-0144",
 ]

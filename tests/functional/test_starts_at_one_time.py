@@ -21,9 +21,6 @@ from flowgraph.cli import open_files, open_git, read_config, run
 
 pytestmark = pytest.mark.functional
 
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="B-0036: the refusal of a second start does not name who holds it"
-)
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 TITLE = "Raise the Stories fgraph lists from 0 to 1"
 ADD_STORY = [
@@ -148,7 +145,6 @@ class TestASecondStartOfAWorkItemAnAgentHolds:
             ["start", "S-0001", "--agent", "opus-b2"],
         )
 
-    @XFAIL
     def test_is_refused_naming_the_agent_that_holds_it(self, second: Outcome) -> None:
         assert (second.status, last_error(second)) == (
             2,
@@ -238,7 +234,6 @@ class TestTwoStartsAtOneTimeAsProcesses:
     def test_the_exit_statuses_are_zero_and_two(self, processes: Processes) -> None:
         assert sorted(each.status for each in processes.outcomes.values()) == [0, 2]
 
-    @XFAIL
     def test_the_refusal_names_the_agent_whose_start_was_taken(self, processes: Processes) -> None:
         assert last_error(processes.loser) == (
             f"fgraph: error: S-0001 is started already: {processes.winner} holds it"

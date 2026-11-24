@@ -51,13 +51,15 @@ commit = "4444d75fab1fca5f1ddf58135ea3835dbbde93bb"
 
 [[tasks]]
 id = "T-0450"
-state = "started"
+state = "completed"
 title = "Update docs/domain-model.md and README.md to say fgraph status and fgraph watch list the record of main from the worktree of a work item"
 description = "Change docs/domain-model.md and README.md only; no source or test changes. Find the passages by grep, never by line number. In docs/domain-model.md: grep `status reads the record of that`; it is one sentence of the bullet on fgraph status on main, under the paragraph on fgraph holding the side of main. Replace that sentence alone with the rule in the expected output, naming S-0141 and the date 2026-11-23; keep the sentences before it and the closing one, Every read of the rows goes this way, so the bucket of a Feature does too. Do not touch the next bullet, on fgraph show: its sentence Run in a work tree on the branch of a work item, show reads the record of that work tree and no other stays true and stays. Do not touch the bullet on the block and the unblock of a started work item, the bullet on fgraph watch under Order, or the table of where each write is made. In README.md: grep `Run in the worktree of a Story`; replace that two-line paragraph alone, and write it so the words `fgraph watch` list the record of main, with the backticks around fgraph watch, stay on one line, which the check reads. Do not touch the example above it, the section on fgraph watch, or the table at the top. Plain ASCII; wrap as the lines around do. Say nothing the code does not do: the code is src/flowgraph/cli.py and record_of_main of src/flowgraph/development/worktrees.py as the Tasks before left them."
 check = "grep -q \"S-0141\" docs/domain-model.md && ! grep -q \"status reads the record of that\" docs/domain-model.md && ! grep -q \"and .fgraph show. read the$\" README.md && grep -q \"fgraph watch. list the record of main\" README.md"
 expected_output = "changed: docs/domain-model.md, Persistence, the bullet starting `fgraph status` on `main` reads a started work item where its Tasks are written: the sentence that status, run in a work tree on the branch of a work item, reads the record of that work tree and no other is replaced by the rule of S-0141, the developer's decision of 2026-11-23 amending S-0035: there fgraph status and fgraph watch list the record of main, its queue, its Features, its configuration and every row, each started work item read from its own worktree as on main, so every work tree lists the same frame, the marks and the JSON too; with no work tree on main, outside a git work tree and for a record git ignores they read the record of that work tree; fgraph show, every other read and every write stay with the record of that work tree. README.md: the sentence Run in the worktree of a Story, `fgraph status` and `fgraph show` read the record of that worktree says instead that `fgraph status` and `fgraph watch` list the record of main there, each started Story read from its own worktree, and that `fgraph show` reads the record of that worktree"
 created = 2026-11-23 20:10:16+00:00
 started = 2026-11-24 03:42:11+00:00
+completed = 2026-11-24 03:42:45+00:00
+commit = "3c7a13b3bf964d207721f4aa6ad72c8d008e8b9c"
 
 [[knowledge]]
 kind = "decision"

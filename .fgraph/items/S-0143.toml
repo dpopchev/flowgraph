@@ -1,11 +1,13 @@
 id = "S-0143"
-state = "started"
+state = "completed"
 title = "Raise the progress lines fgraph note keeps, on a work item and on a Task of it, from none to every one"
 description = "Filed on the word of the developer of 2026-11-23, picked from the map made that day of what the skills and rules of ~/.claude ask of board 1 that fgraph does not do and no Backlog item builds, so that those skills can call fgraph in its place. In board 1: board note --event progress: the hand-off line of a session, burn started and stopped, a structure note, the red line of a Task. Its Tasks are written when it is ordered."
 complexity = "high"
 created = 2026-11-23 20:38:44+00:00
 started = 2026-11-24 04:08:17+00:00
+completed = 2026-11-24 04:53:13+00:00
 agent = "opus-a10"
+commit = "d975ab1"
 depends_on = [
     "B-0026",
 ]

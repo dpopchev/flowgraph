@@ -42,6 +42,7 @@ class Merge(Enum):
     MERGE_COMMIT = "merge-commit"
     SQUASH = "squash"
     FAST_FORWARD = "fast-forward"
+    PULL_REQUEST = "pull-request"
 
 
 class Driver(Enum):

@@ -791,7 +791,7 @@ enabled = true
 merge = "squash"
 ```
 
-`merge` is one of three words. Each is a way `fgraph land` puts the work of
+`merge` is one of four words. Each is a way `fgraph land` puts the work of
 the branch on `main`:
 
 | `merge`                     | `main` gains                                               | `--message`                 |
@@ -799,6 +799,7 @@ the branch on `main`:
 | `merge-commit`, the default | one merge commit of the branch, with two parents           | needed: it words the commit |
 | `squash`                    | one commit of its own that holds the work, with one parent | needed: it words the commit |
 | `fast-forward`              | no new commit: `main` moves to the tip of the branch       | refused: no commit to word  |
+| `pull-request`              | nothing from fgraph: its pull request merges the branch    | refused: no commit to word  |
 
 Left out, the key is `merge-commit`, the one merge a landing made before the
 key. Whatever the way, the Story is completed at the commit `main` is then
@@ -810,7 +811,7 @@ word exits 2 naming the key, whatever the command:
 
 ```sh
 fgraph status
-# fgraph: error: /src/project/.fgraph/config.toml: development.merge is "rebase": it takes merge-commit, squash or fast-forward
+# fgraph: error: /src/project/.fgraph/config.toml: development.merge is "rebase": it takes merge-commit, squash, fast-forward or pull-request
 ```
 
 The development gates a landing when the record names a command:
@@ -1152,19 +1153,19 @@ fgraph config show
 VALUE is a text, read by what its key takes and never guessed from the text,
 so `fgraph config set development.gate true` names the command `true`:
 
-| Key                    | VALUE                                      | Set as                                            |
-| ---------------------- | ------------------------------------------ | ------------------------------------------------- |
-| `git.commit`           | `true` or `false`                          | `fgraph config set git.commit false`              |
-| `development.enabled`  | `true` or `false`                          | `fgraph config set development.enabled true`      |
-| `development.parallel` | a whole number of 1 or more                | `fgraph config set development.parallel 2`        |
-| `development.merge`    | `merge-commit`, `squash` or `fast-forward` | `fgraph config set development.merge squash`      |
-| `development.gate`     | a command line, one argument of the shell  | `fgraph config set development.gate "make check"` |
-| `development.driver`   | `developer` or `agent`                     | `fgraph config set development.driver agent`      |
-| `development.mode`     | `branch` or `trunk`                        | `fgraph config set development.mode trunk`        |
-| `development.branch_max` | a whole number of days as `1d`           | `fgraph config set development.branch_max 1d`     |
-| `delivery.push`        | `true` or `false`                          | `fgraph config set delivery.push true`            |
-| `delivery.tag`         | `feature-close`, `close` or `none`         | `fgraph config set delivery.tag close`            |
-| `archive.board`        | the path of the `.board/` of board 1       | `fgraph config set archive.board .board`          |
+| Key                    | VALUE                                                      | Set as                                            |
+| ---------------------- | ---------------------------------------------------------- | ------------------------------------------------- |
+| `git.commit`           | `true` or `false`                                          | `fgraph config set git.commit false`              |
+| `development.enabled`  | `true` or `false`                                          | `fgraph config set development.enabled true`      |
+| `development.parallel` | a whole number of 1 or more                                | `fgraph config set development.parallel 2`        |
+| `development.merge`    | `merge-commit`, `squash`, `fast-forward` or `pull-request` | `fgraph config set development.merge squash`      |
+| `development.gate`     | a command line, one argument of the shell                  | `fgraph config set development.gate "make check"` |
+| `development.driver`   | `developer` or `agent`                                     | `fgraph config set development.driver agent`      |
+| `development.mode`     | `branch` or `trunk`                                        | `fgraph config set development.mode trunk`        |
+| `development.branch_max` | a whole number of days as `1d`                           | `fgraph config set development.branch_max 1d`     |
+| `delivery.push`        | `true` or `false`                                          | `fgraph config set delivery.push true`            |
+| `delivery.tag`         | `feature-close`, `close` or `none`                         | `fgraph config set delivery.tag close`            |
+| `archive.board`        | the path of the `.board/` of board 1                       | `fgraph config set archive.board .board`          |
 
 The whole file is read back as a configuration before it replaces the one in
 the record. A key the configuration does not have, a value the key does not
@@ -1839,9 +1840,29 @@ fgraph land S-0001
 # run: a Story is added -> fgraph status lists it under Backlog
 ```
 
+With `merge = "pull-request"` the landing is left to a pull request on the
+host of the remote. The first run checks the merge as any way does -- the
+Tasks completed, the gate -- drops it, pushes the branch to the remote `main`
+tracks and names the command that opens its pull request: nothing is merged,
+written or removed. fgraph opens no pull request and fetches nothing. Once
+the pull request is merged and `main` pulled, the same command completes the
+Story at the commit `main` is on and removes the worktree and the branch:
+
+```sh
+fgraph land S-0001
+# pushed wi/S-0001-raise-the-stories-fgraph to origin
+# open its pull request: gh pr create --base main --head wi/S-0001-raise-the-stories-fgraph
+# S-0001 is not completed: run fgraph land S-0001 again once main holds its pull request merged
+
+git pull --ff-only origin main
+fgraph land S-0001
+# landed S-0001 at 3e9ae5c
+# run: a Story is added -> fgraph status lists it under Backlog
+```
+
 The message goes with the commit a landing makes. A landing by `merge-commit`
-or `squash` exits 2 without `--message`, and one by `fast-forward` exits 2
-with it, each naming the key:
+or `squash` exits 2 without `--message`, and one by `fast-forward` or
+`pull-request` exits 2 with it, each naming the key:
 
 ```sh
 fgraph land S-0001

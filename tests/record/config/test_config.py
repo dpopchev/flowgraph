@@ -27,7 +27,7 @@ FILE = "config.toml"
 ENABLED = "[development]\nenabled = true\n"
 UNCOMMITTED = "[git]\ncommit = false\n"
 TAKES_A_COUNT = "it takes a whole number of 1 or more"
-TAKES_A_WAY = "it takes merge-commit, squash or fast-forward"
+TAKES_A_WAY = "it takes merge-commit, squash, fast-forward or pull-request"
 TAKES_A_COMMAND = "it takes a command line"
 TAKES_A_TAG = "it takes feature-close, close or none"
 TAKES_A_DRIVER = "it takes developer or agent"
@@ -98,6 +98,7 @@ def test_a_landing_merges_by_a_merge_commit_unless_merge_is_set(text: str) -> No
         ("merge-commit", Merge.MERGE_COMMIT),
         ("squash", Merge.SQUASH),
         ("fast-forward", Merge.FAST_FORWARD),
+        ("pull-request", Merge.PULL_REQUEST),
     ],
 )
 def test_merge_set_is_how_a_landing_merges(word: str, merge: Merge) -> None:

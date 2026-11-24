@@ -41,6 +41,7 @@ OFF = make_config("")
 TRUNK = make_config('[development]\nenabled = true\nmode = "trunk"\n')
 SQUASH = make_config('[development]\nenabled = true\nmerge = "squash"\n')
 FAST_FORWARD = make_config('[development]\nenabled = true\nmerge = "fast-forward"\n')
+PULL_REQUEST = make_config('[development]\nenabled = true\nmerge = "pull-request"\n')
 GATE = 'gate = "make check"\n'
 GATED = make_config(f"[development]\nenabled = true\n{GATE}")
 GATED_SQUASH = make_config(f'[development]\nenabled = true\nmerge = "squash"\n{GATE}')
@@ -116,6 +117,10 @@ def work_tree(steps: list[object]) -> WorkTree:
         steps.append(("push", branch))
         return "origin"
 
+    def publish(branch: str, beside: str) -> str:
+        steps.append(("publish", branch, beside))
+        return "origin"
+
     return WorkTree(
         path=TOP,
         commit_files=commit_files,
@@ -136,6 +141,7 @@ def work_tree(steps: list[object]) -> WorkTree:
             delete_unmerged_branch=lambda branch: steps.append(("delete unmerged branch", branch)),
             push=push,
             upstream=lambda _: ("origin", "refs/heads/main"),
+            publish=publish,
         ),
     )
 
@@ -938,3 +944,88 @@ def test_a_landing_pushed_on_another_branch_is_refused_for_it_first_tracks() -> 
     tree = replace(untracked([]), current_branch=lambda: "wi/other")
     with pytest.raises(LandError, match=r"^S-0001 lands on main: "):
         land(READY, tree, config=PUSHED)
+
+
+REQUESTED = (
+    f"pushed {BRANCH} to origin\n"
+    f"open its pull request: gh pr create --base main --head {BRANCH}\n"
+    "S-0001 is not completed: run fgraph land S-0001 again once main holds its pull request"
+    " merged\n"
+)
+
+
+def test_a_landing_through_a_pull_request_holds_the_merge_drops_it_and_publishes_the_branch() -> (
+    None
+):
+    steps: list[object] = []
+    land(READY, work_tree(steps), config=PULL_REQUEST, message=None)
+    assert steps == [("merge", BRANCH), "abort merge", ("publish", BRANCH, "main")]
+
+
+def test_a_landing_through_a_pull_request_says_the_branch_pushed_and_the_pull_request_to_open() -> (
+    None
+):
+    assert land(READY, work_tree([]), config=PULL_REQUEST, message=None) == Said(REQUESTED)
+
+
+def test_a_landing_through_a_pull_request_saves_nothing() -> None:
+    saved: list[WorkItemState] = []
+    land(READY, work_tree([]), saved, PULL_REQUEST, None)
+    assert saved == []
+
+
+def test_a_landing_through_a_pull_request_runs_its_gate_between_the_merge_and_its_drop() -> None:
+    steps: list[object] = []
+    gated = make_config(f'[development]\nenabled = true\nmerge = "pull-request"\n{GATE}')
+    land(READY, work_tree(steps), config=gated, message=None, run_gate=gate(steps))
+    assert steps == [("merge", BRANCH), GATE_RUN, "abort merge", ("publish", BRANCH, "main")]
+
+
+def test_a_landing_through_a_pull_request_with_a_task_not_completed_publishes_nothing() -> None:
+    steps: list[object] = []
+    with pytest.raises(OpenTaskError):
+        land(OPEN, work_tree(steps), config=PULL_REQUEST, message=None)
+    assert steps == [("merge", BRANCH), "abort merge"]
+
+
+def test_a_publish_git_refuses_says_the_branch_is_not_pushed_and_the_work_item_not_landed() -> None:
+    with pytest.raises(
+        GitError,
+        match=rf"^git failed: refused -- {BRANCH} is not pushed, S-0001 is not landed$",
+    ):
+        land(READY, with_step(work_tree([]), publish=refuse), config=PULL_REQUEST, message=None)
+
+
+def test_a_landing_through_a_pull_request_merged_completes_and_removes_the_branch_unmerged() -> (
+    None
+):
+    steps: list[object] = []
+    merged = with_step(work_tree(steps), merge=lambda _: "abc1234")
+    land(READY, merged, config=PULL_REQUEST, message=None)
+    assert steps == [
+        RECORD_COMMIT,
+        ("remove worktree", WORKTREE),
+        ("delete unmerged branch", BRANCH),
+    ]
+
+
+def test_a_landing_through_a_pull_request_merged_names_the_commit_main_is_on() -> None:
+    merged = with_step(work_tree([]), merge=lambda _: "abc1234")
+    landed = land(READY, merged, config=PULL_REQUEST, message=None)
+    assert landed == Said("landed S-0001 at abc1234\nrun: b -> c\n")
+
+
+def test_a_landing_through_a_pull_request_is_refused_with_a_message_naming_the_key() -> None:
+    with pytest.raises(LandError) as error:
+        land(READY, work_tree([]), config=PULL_REQUEST)
+    assert str(error.value) == (
+        "S-0001 cannot land with --message:"
+        " development.merge = pull-request makes no commit to word"
+    )
+
+
+def test_a_landing_through_a_pull_request_refused_with_a_message_takes_no_git_step() -> None:
+    steps: list[object] = []
+    with pytest.raises(LandError):
+        land(READY, work_tree(steps), config=PULL_REQUEST)
+    assert steps == []

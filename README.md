@@ -424,7 +424,7 @@ fgraph add story "Raise the Stories fgraph lists under Backlog from 0 to 1" \
 
 fgraph status
 # backlog (1)
-# > S-0001  []  Raise the Stories fgraph lists under Backlog from 0 to 1
+# = S-0001  []  Raise the Stories fgraph lists under Backlog from 0 to 1
 # in-progress (0)
 # completed (0)
 ```
@@ -514,7 +514,7 @@ fgraph show S-0002
 
 fgraph status --backlog
 # backlog (2)
-# > S-0001  [1 T]  Add the show command
+# = S-0001  [1 T]  Add the show command
 # ~ S-0002  [1 T]  Raise the Stories fgraph lists under Backlog from 1 to 2
 #   depends on S-0001
 ```
@@ -525,13 +525,16 @@ completed stand on a line of its own below it, beginning under its id. The mark 
 `waiting on` a person. A Feature in Backlog carries it when its first work item
 waits.
 
-`fgraph status` marks with `>` every work item that can start now, within
+`fgraph status` marks with `=` every work item that can start now, within
 `[development] parallel` less the work items started: first the work items in
 Backlog of a started Feature, then the lines of the Backlog that `fgraph start`
 would take, a work item that waits for nothing or a Feature whose first work
 item waits for nothing, which takes one place. With `parallel = 3` and one work
-item started, two lines are marked `>` (S-0003 and S-0004 below: S-0002 waits for
-S-0004, and the limit leaves out S-0005). With `parallel` left out
+item started, two lines are marked `=` (S-0003 and S-0004 below: S-0002 waits for
+S-0004, and the limit leaves out S-0005). The marks are `=`, `@`, `~`, `!` and `=>`, the set
+the developer chose on 2026-11-23 from three (S-0139): `>` at the start of a line pasted into
+Markdown opens a quote and `?` is special in a search by a regular expression, and these five
+are neither. With `parallel` left out
 every one that waits for nothing is marked; with the development off the next to
 start alone, as before. With the development on a line is marked only once
 planned: a work item holds a Task, and a Feature's work items in Backlog each
@@ -548,8 +551,8 @@ fgraph status --backlog   # parallel = 3, S-0001 started, S-0002 waits for S-000
 # backlog (4)
 # ~ S-0002  []  a second title
 #   depends on S-0004
-# > S-0003  []  a third title
-# > S-0004  []  a fourth title
+# = S-0003  []  a third title
+# = S-0004  []  a fourth title
 #   S-0005  []  a fifth title
 # in-progress (1)
 #   S-0001  0/1 T  a first title
@@ -589,9 +592,9 @@ The keys are sorted, so two runs on one record print the same bytes; every key i
 listed in `docs/domain-model.md`, section Status as JSON.
 
 The document lists in `can_start` the ids of every work item that can start now, in
-the order `fgraph status` marks them with `>`, and `[]` for none; `next_to_start`
+the order `fgraph status` marks them with `=`, and `[]` for none; `next_to_start`
 stays, the first of them or `null`. It lists in `ready_for_review` the ids of every work
-item marked `?`, in the order the text lists them, and `[]` for none; no item holds a key
+item marked `@`, in the order the text lists them, and `[]` for none; no item holds a key
 for it.
 
 ```sh
@@ -1291,8 +1294,8 @@ work item. A Task in Backlog or completed is not listed, and a Task line does
 not count toward the top of a heading (below).
 
 A started work item that holds a Task, with every Task completed, is ready for
-review, and `fgraph status` marks it `?` in the first column of its line, beside
-`>`, `~` and `!`. `fgraph watch` shows it the same, with the development on or
+review, and `fgraph status` marks it `@` in the first column of its line, beside
+`=`, `~` and `!`. `fgraph watch` shows it the same, with the development on or
 off, alone or under a started Feature. A work item with no Task, or with a Task
 still in Backlog, started or blocked, is not marked, and nor is the line of a
 Feature. The mark is read from the Tasks at each listing and kept in no file:
@@ -1301,7 +1304,7 @@ Feature. The mark is read from the Tasks at each listing and kept in no file:
 fgraph status
 # backlog (0)
 # in-progress (2)
-# ? S-0001  1/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
+# @ S-0001  1/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
 #   S-0002  1/2 T  Add the show command to src/flowgraph/cli.py
 # completed (0)
 ```
@@ -2009,7 +2012,7 @@ fgraph add upkeep "Cut the lines of the largest module of src/flowgraph from 106
 
 fgraph status
 # backlog (1)
-# > U-0001  []  Cut the lines of the largest module of src/flowgraph from 1068 to 400
+# = U-0001  []  Cut the lines of the largest module of src/flowgraph from 1068 to 400
 # in-progress (0)
 # completed (0)
 ```
@@ -2206,7 +2209,7 @@ is on no line of its own:
 ```sh
 fgraph status --backlog
 # backlog (2)
-# > F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
+# = F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #   S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # in-progress (0)
 # completed (0)
@@ -2260,7 +2263,7 @@ under its line, indented, with its progress and its Task being worked:
 ```sh
 fgraph status
 # backlog (1)
-# > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
+# = S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # in-progress (1)
 #   F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #     S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
@@ -2282,7 +2285,7 @@ fgraph block T-0001 --reason "the review is not back" --waiting-on "the reviewer
 
 fgraph status
 # backlog (1)
-# > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
+# = S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # in-progress (1)
 # ! F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #   waiting on the reviewer: the review is not back
@@ -2318,7 +2321,7 @@ fgraph complete S-0001 --commit 677f9b0
 
 fgraph status
 # backlog (1)
-# > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
+# = S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # in-progress (1)
 #   F-0001  1/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #     S-0003  0/1 T  Raise the Stories fgraph lists under Completed from 0 to 1
@@ -2375,7 +2378,7 @@ fgraph complete S-0001 --commit 677f9b0
 
 fgraph status
 # backlog (1)
-# > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
+# = S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # in-progress (0)
 # completed (1)
 #   F-0001  677f9b0  Raise the kinds of work a project tracks with fgraph from 1 to 5
@@ -2468,7 +2471,7 @@ fgraph block F-0001 --reason "the budget is not agreed" --waiting-on "the sponso
 
 fgraph status
 # backlog (1)
-# > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
+# = S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # in-progress (1)
 # ! F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #   waiting on the sponsor: the budget is not agreed
@@ -2640,7 +2643,7 @@ another:
 ```sh
 fgraph status --backlog
 # backlog (2)
-# > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
+# = S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 #   U-0002  []  Cut the lines one kind of work item holds from 885 to 250
 # in-progress (0)
 # completed (0)
@@ -2650,7 +2653,7 @@ fgraph reorder U-0002 --before S-0002
 
 fgraph status --backlog
 # backlog (2)
-# > U-0002  []  Cut the lines one kind of work item holds from 885 to 250
+# = U-0002  []  Cut the lines one kind of work item holds from 885 to 250
 #   S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # in-progress (0)
 # completed (0)
@@ -2667,7 +2670,7 @@ fgraph reorder S-0002 --before F-0001
 
 fgraph status --backlog
 # backlog (2)
-# > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
+# = S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 #   F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 # in-progress (0)
 # completed (0)
@@ -2677,7 +2680,7 @@ fgraph reorder F-0001 --before S-0002
 
 fgraph status --backlog
 # backlog (2)
-# > F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
+# = F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #   S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # in-progress (0)
 # completed (0)
@@ -2787,7 +2790,7 @@ A Backlog of five under a plain `fgraph status` lists its first line:
 ```sh
 fgraph status
 # backlog (5)
-# > S-0001  [1 T]  Add the show command
+# = S-0001  [1 T]  Add the show command
 #   ... 4 more, 0 can start
 # in-progress (0)
 # completed (0)

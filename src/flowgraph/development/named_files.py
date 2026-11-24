@@ -6,6 +6,23 @@ commit may change (S-0142, the scope rule 1 of board 1); the rule reads words, n
 
 import re
 from collections.abc import Iterable
+from pathlib import Path
+
+from flowgraph.criterion import CommitError, make_commit
+from flowgraph.development.commit import OpenGit
+from flowgraph.item.moves import load_holder
+from flowgraph.record import Config
+from flowgraph.record.store import Store
+from flowgraph.task import StartedTask, TaskIdError, TaskNotFoundError, parse_task_id, task_id_text
+from flowgraph.work_item import BlockedWorkItem
+
+# The refusal of a completion at a commit that changed a file the brief does not name.
+NOT_NAMED = "{id} cannot complete: the commit {sha} changed what its brief does not name: {files}"
+
+
+class FilesNotNamedError(ValueError):
+    """A completion at a commit that changed a file its brief does not name; lists each file."""
+
 
 _OPENING = "([{<\"'`"
 _CLOSING = ")]}>\"'`,;:.!?"
@@ -32,3 +49,51 @@ def files_not_named(changed: Iterable[str], brief: Iterable[str]) -> list[str]:
     words = frozenset().union(*(path_words(text) for text in brief))
     directories = tuple(word for word in words if word.endswith("/"))
     return [file for file in changed if file not in words and not file.startswith(directories)]
+
+
+def check_files_named(
+    item: str, sha: str | None, store: Store, record: Path, open_git: OpenGit, config: Config
+) -> None:
+    """Raise FilesNotNamedError when the commit changed a file its Task's brief does not name.
+
+    Nothing is read unless the development is on, a commit is given and the id is a Task's: a
+    work item, a Feature and a text that is no id are not asked, nor a sha that is no commit. The
+    Task must be a started Task of a work item that is not blocked, else the complete refuses it
+    in its own words; a record outside a git work tree and a commit git does not know are not
+    asked, a record git ignores is. The files under the directory of the record are never asked:
+    fgraph commits its own writes there. The sha is reported as given.
+    """
+    if not config.development.enabled or sha is None:
+        return
+    try:
+        task_id = parse_task_id(item)
+        make_commit(sha)
+    except TaskIdError, CommitError:
+        return
+    try:
+        holder = load_holder(store)(task_id)
+    except TaskNotFoundError:
+        return
+    if isinstance(holder, BlockedWorkItem):
+        return
+    task = next((t for t in holder.tasks if t.id == task_id and isinstance(t, StartedTask)), None)
+    work_tree = open_git(record) if task is not None else None
+    if task is None or work_tree is None:
+        return
+    changed = work_tree.changed_files(sha)
+    if changed is None:
+        return
+    unnamed = files_not_named(
+        _outside_record(changed, record, work_tree.path),
+        (task.title, task.expected_output, task.description),
+    )
+    if unnamed:
+        raise FilesNotNamedError(
+            NOT_NAMED.format(id=task_id_text(task_id), sha=sha, files=", ".join(unnamed))
+        )
+
+
+def _outside_record(changed: list[str], record: Path, top: Path) -> list[str]:
+    """The files that are not under the directory of the record, which is inside the top."""
+    prefix = f"{record.resolve().relative_to(top.resolve()).as_posix()}/"
+    return [file for file in changed if not file.startswith(prefix)]

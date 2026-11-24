@@ -35,9 +35,6 @@ LINE = (
     "fgraph: error: T-0001 cannot complete: the commit {sha} changed what its brief does not "
     "name: {files}"
 )
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="S-0142: a commit that changed a file the brief does not name is taken"
-)
 
 
 @dataclass(frozen=True)
@@ -139,7 +136,6 @@ def environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setenv("GIT_CONFIG_NOSYSTEM", "1")
 
 
-@XFAIL
 class TestATaskCompletedAtACommitThatChangedAFileItsBriefDoesNotName:
     @pytest.fixture
     def worktree(self, tmp_path: Path) -> Path:
@@ -165,7 +161,6 @@ class TestATaskCompletedAtACommitThatChangedAFileItsBriefDoesNotName:
         assert f"  S-0001  0/1 T  {TITLE}\n" in fgraph(["status"], worktree).out
 
 
-@XFAIL
 def test_every_file_the_brief_does_not_name_is_listed(tmp_path: Path) -> None:
     worktree = started_task(tmp_path, "changed: src/named.py")
     sha = committed(worktree, "src/named.py", "other.txt", "docs/more.md")
@@ -173,7 +168,6 @@ def test_every_file_the_brief_does_not_name_is_listed(tmp_path: Path) -> None:
     assert last_line(refused) == [LINE.format(sha=sha, files="docs/more.md, other.txt")]
 
 
-@XFAIL
 def test_the_check_of_the_task_is_not_run_for_a_commit_out_of_its_brief(tmp_path: Path) -> None:
     worktree = started_task(tmp_path, "changed: src/named.py", check="exit 3")
     sha = committed(worktree, "src/named.py", "other.txt")
@@ -181,7 +175,6 @@ def test_the_check_of_the_task_is_not_run_for_a_commit_out_of_its_brief(tmp_path
     assert last_line(refused) == [LINE.format(sha=sha, files="other.txt")]
 
 
-@XFAIL
 def test_a_brief_that_names_no_file_is_refused_for_the_file_changed(tmp_path: Path) -> None:
     worktree = started_task(tmp_path, "an output")
     sha = committed(worktree, "work.txt")
@@ -189,7 +182,6 @@ def test_a_brief_that_names_no_file_is_refused_for_the_file_changed(tmp_path: Pa
     assert last_line(refused) == [LINE.format(sha=sha, files="work.txt")]
 
 
-@XFAIL
 def test_a_task_of_a_record_git_ignores_is_refused_the_same(tmp_path: Path) -> None:
     checkout = tmp_path / "project"
     checkout.mkdir()

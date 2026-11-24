@@ -40,6 +40,12 @@ _WORDS = {
     "delivery.tag": _one_of(TagAt),
 }
 
+# What the archive board takes, whether its value is no text or a blank one.
+_PATH = "a path"
+
+# What a key takes whatever the type of its error, by the dotted key; it wins over _TAKES.
+_TAKES_BY_KEY = {"archive.board": _PATH}
+
 
 def refusal(error: ValidationError) -> str:
     """What the first error of a file refused says: its key, dotted, and why it is refused."""
@@ -48,5 +54,8 @@ def refusal(error: ValidationError) -> str:
     if first["type"] == "extra_forbidden":
         return f"{key} is no {'table' if len(first['loc']) == 1 else 'key'} of the configuration"
     written = json.dumps(first["input"], default=str)
-    takes = _WORDS.get(key) if first["type"] == "enum" else _TAKES.get(first["type"])
+    if key in _TAKES_BY_KEY:
+        takes = _TAKES_BY_KEY[key]
+    else:
+        takes = _WORDS.get(key) if first["type"] == "enum" else _TAKES.get(first["type"])
     return f"{key} is {written}: {first['msg'] if takes is None else f'it takes {takes}'}"

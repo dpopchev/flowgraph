@@ -39,9 +39,6 @@ IDENTITY = {
     "GIT_COMMITTER_NAME": "a developer",
     "GIT_COMMITTER_EMAIL": "developer@example.com",
 }
-XFAIL_KEY = pytest.mark.xfail(
-    strict=True, reason="S-0099: development.approver is no key of the configuration"
-)
 XFAIL_HELD = pytest.mark.xfail(strict=True, reason="S-0099: no landing is held for the developer")
 
 
@@ -154,8 +151,9 @@ class TestALandingHeldForTheDeveloper:
     def test_land_exits_with_two(self, held: Outcome) -> None:
         assert (held.status, last_line(held.err)) == (2, HELD)
 
+    @XFAIL_HELD
     def test_land_writes_no_output(self, held: Outcome) -> None:
-        assert held.out == ""
+        assert (last_line(held.err), held.out) == (HELD, "")
 
     @XFAIL_HELD
     def test_nothing_is_merged_nor_written(
@@ -199,7 +197,6 @@ class TestALandingTheDeveloperApproved:
         )
 
 
-@XFAIL_HELD
 def test_with_approver_agent_the_landing_needs_no_flag(tmp_path: Path, origin: Path) -> None:
     checkout = ready(tmp_path, origin, 'approver = "agent"\n')
     assert fgraph(LAND, checkout).status == 0
@@ -211,7 +208,6 @@ def test_with_approver_agent_the_flag_changes_nothing(tmp_path: Path, origin: Pa
     assert fgraph([*LAND, "--approved"], checkout).status == 0
 
 
-@XFAIL_HELD
 def test_a_development_off_names_enabled_and_not_the_approver(tmp_path: Path, origin: Path) -> None:
     checkout = ready(tmp_path, origin, 'approver = "developer"\n')
     (checkout / ".fgraph" / "config.toml").write_text(
@@ -222,7 +218,6 @@ def test_a_development_off_names_enabled_and_not_the_approver(tmp_path: Path, or
     assert ("development.enabled" in error, "approver" in error) == (True, False)
 
 
-@XFAIL_KEY
 class TestTheKeyOfTheConfiguration:
     def test_config_show_lists_the_developer(self, tmp_path: Path, origin: Path) -> None:
         checkout = ready(tmp_path, origin, 'approver = "developer"\n')

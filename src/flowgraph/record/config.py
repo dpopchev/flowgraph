@@ -13,6 +13,8 @@ drives the development: `developer` unless it names `agent`. `[development] mode
 item is developed: `branch` unless it names `trunk`, which makes no branch and holds one started
 work item, so its `parallel` is 1 left out and a number above 1 is refused. `[development]
 branch_max` is an age in whole days, `1d`, with no default: left out no age is said.
+`[development] approver` names who approves a landing: `agent` unless it names `developer`, whose
+landing waits for the developer (`fgraph land --approved`).
 `[delivery] push = true` pushes main once a landing is whole; it is false by default.
 `[delivery] tag` tags main with its version at `feature-close`, `close` (a work item alone too)
 or never, `none`, the default.
@@ -69,6 +71,9 @@ DEVELOPMENT_MODE = "development.mode"
 
 # The key that sets the age a branch passes before status says so, as a refusal names it.
 DEVELOPMENT_BRANCH_MAX = "development.branch_max"
+
+# The key that names who approves a landing, as a refusal names it.
+DEVELOPMENT_APPROVER = "development.approver"
 
 # The key that turns the commits of the record off, as a refusal names it.
 GIT_COMMIT = "git.commit"
@@ -146,6 +151,7 @@ def make_config(text: str) -> Config:
         driver=held.development.driver,
         mode=mode,
         branch_max=NO_MAX if age is None else MaxDays(int(age.removesuffix("d"))),
+        approver=held.development.approver,
     )
     delivery = Delivery(push=held.delivery.push, tag=held.delivery.tag)
     git = Git(commit=held.git.commit)

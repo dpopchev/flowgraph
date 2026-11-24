@@ -7,7 +7,7 @@ of it.
 from pydantic import BaseModel, ConfigDict, Field
 
 from flowgraph.record.archive import ArchiveTable
-from flowgraph.record.layers import Driver, Merge, Mode, TagAt
+from flowgraph.record.layers import Approver, Driver, Merge, Mode, TagAt
 
 
 class _Table(BaseModel):
@@ -40,6 +40,8 @@ class _DevelopmentTable(_Table):
     mode: Mode = Field(default=Mode.BRANCH, strict=False)
     # A whole number of days of 1 or more, then d: the age a branch passes before status says so.
     branch_max: str | None = Field(default=None, pattern=r"^[1-9][0-9]*d$")
+    # Not strict, so that the word of the file is read as the approver it names.
+    approver: Approver = Field(default=Approver.AGENT, strict=False)
 
 
 class _DeliveryTable(_Table):

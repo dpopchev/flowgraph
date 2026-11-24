@@ -10,7 +10,7 @@ pytestmark = pytest.mark.view
 EVERY_KEY = (
     "[git]\ncommit = true\n"
     '[development]\nenabled = true\nparallel = 2\nmerge = "squash"\ngate = "make check"\n'
-    'driver = "agent"\nmode = "branch"\nbranch_max = "1d"\n'
+    'driver = "agent"\nmode = "branch"\nbranch_max = "1d"\napprover = "developer"\n'
     '[delivery]\npush = true\ntag = "feature-close"\n'
     '[archive]\nboard = ".board"\n'
 )
@@ -28,6 +28,7 @@ def test_a_configuration_without_a_key_written_lists_every_key_at_its_default() 
         'development.driver = "developer"\n'
         'development.mode = "branch"\n'
         "development.branch_max = none\n"
+        'development.approver = "agent"\n'
         "delivery.push = false\n"
         'delivery.tag = "none"\n'
         "archive.board = none\n"
@@ -44,6 +45,7 @@ def test_a_configuration_with_every_key_written_lists_each_as_the_file_writes_it
         'development.driver = "agent"\n'
         'development.mode = "branch"\n'
         'development.branch_max = "1d"\n'
+        'development.approver = "developer"\n'
         "delivery.push = true\n"
         'delivery.tag = "feature-close"\n'
         'archive.board = ".board"\n'

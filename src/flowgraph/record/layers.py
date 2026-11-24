@@ -51,6 +51,13 @@ class Driver(Enum):
     AGENT = "agent"
 
 
+class Approver(Enum):
+    """Who approves a landing: the agent, by default, or the developer; each is its file word."""
+
+    AGENT = "agent"
+    DEVELOPER = "developer"
+
+
 class Mode(Enum):
     """Where a work item is developed: on its own branch, or on main; each is its file word.
 
@@ -115,8 +122,8 @@ def age_text(branch_max: BranchMax) -> str | None:
 class Development:
     """The development beside the source code: turned on, or off, and its keys as written.
 
-    The limit, the merge, the gate, the driver, the mode and the age of a branch are keys of the
-    development: none says anything while it is off.
+    The limit, the merge, the gate, the driver, the mode, the age of a branch and the approver are
+    keys of the development: none says anything while it is off.
     """
 
     enabled: bool
@@ -126,6 +133,7 @@ class Development:
     driver: Driver = field(default=Driver.DEVELOPER, kw_only=True)
     mode: Mode = field(default=Mode.BRANCH, kw_only=True)
     branch_max: BranchMax = field(default=NO_MAX, kw_only=True)
+    approver: Approver = field(default=Approver.AGENT, kw_only=True)
 
 
 def branched(development: Development) -> bool:

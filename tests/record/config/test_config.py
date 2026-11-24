@@ -10,6 +10,7 @@ from flowgraph.record.layers import (
     NO_MAX,
     UNGATED,
     UNLIMITED,
+    Approver,
     BranchMax,
     Driver,
     Gated,
@@ -230,6 +231,32 @@ def test_a_branch_max_that_is_no_age_is_refused_naming_the_key(value: str) -> No
 )
 def test_an_age_is_written_as_the_file_writes_it(branch_max: BranchMax, text: str | None) -> None:
     assert age_text(branch_max) == text
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["", "[development]\n", ENABLED],
+    ids=["no-table", "no-key", "development-on"],
+)
+def test_an_approver_is_the_agent_unless_written(text: str) -> None:
+    assert make_config(text).development.approver is Approver.AGENT
+
+
+def test_an_approver_of_developer_is_read() -> None:
+    config = make_config(f'{ENABLED}approver = "developer"\n')
+    assert config.development.approver is Approver.DEVELOPER
+
+
+def test_an_approver_is_held_as_written_with_the_development_off() -> None:
+    config = make_config('[development]\napprover = "developer"\n')
+    assert config.development.approver is Approver.DEVELOPER
+
+
+@pytest.mark.parametrize("value", ['"team"', "true", "1"], ids=["a-word", "a-truth", "a-number"])
+def test_an_approver_that_is_no_word_of_it_is_refused_naming_the_key(value: str) -> None:
+    with pytest.raises(ConfigError) as error:
+        make_config(f"[development]\napprover = {value}\n")
+    assert str(error.value) == f"development.approver is {value}: it takes agent or developer"
 
 
 @pytest.mark.parametrize("parallel", ["", "parallel = 1\n"], ids=["left-out", "written-1"])

@@ -150,7 +150,6 @@ class TestAStartedStoryRemovedOnMain:
     def removed(self, worked: str, checkout: Path) -> Outcome:
         return fgraph(REMOVE, checkout)
 
-    @XFAIL
     def test_remove_exits_with_zero(self, removed: Outcome) -> None:
         assert removed.status == 0
 
@@ -171,7 +170,6 @@ class TestAStartedStoryRemovedOnMain:
             worktree.is_dir(),
         ) == (0, f"+ {BRANCH}", True)
 
-    @XFAIL
     def test_status_on_main_lists_it_under_removed(self, removed: Outcome, checkout: Path) -> None:
         assert fgraph(["status"], checkout).out == (
             "Backlog (1)\n"
@@ -182,21 +180,18 @@ class TestAStartedStoryRemovedOnMain:
             f"  S-0001  {TITLE}  -- pivoted\n"
         )
 
-    @XFAIL
     def test_show_names_the_bucket_and_the_reason(self, removed: Outcome, checkout: Path) -> None:
         assert fgraph(["show", "S-0001"], checkout).out.splitlines()[1:3] == [
             "  bucket       Removed",
             "  reason       pivoted",
         ]
 
-    @XFAIL
     def test_show_keeps_the_completed_task_and_removes_the_others(
         self, removed: Outcome, worked: str, checkout: Path
     ) -> None:
         show = fgraph(["show", "S-0001"], checkout).out
         assert task_facts(show) == ["Completed", worked, "Removed", "pivoted", "Removed", "pivoted"]
 
-    @XFAIL
     def test_the_remove_is_one_commit_of_main_holding_its_file_alone(
         self, removed: Outcome, checkout: Path
     ) -> None:
@@ -206,7 +201,6 @@ class TestAStartedStoryRemovedOnMain:
             git(checkout, "status", "--porcelain"),
         ) == ("chore: remove S-0001 in the record", STORY_FILE, "")
 
-    @XFAIL
     def test_status_json_holds_it_removed_with_its_task_states(
         self, removed: Outcome, checkout: Path
     ) -> None:
@@ -219,12 +213,10 @@ class TestAStartedStoryRemovedOnMain:
             ["completed", "removed", "removed"],
         )
 
-    @XFAIL
     def test_another_story_starts_after_it(self, removed: Outcome, checkout: Path) -> None:
         outcome = fgraph(["start", "S-0002"], checkout)
         assert (outcome.status, outcome.out.splitlines()[:1]) == (0, ["started S-0002"])
 
-    @XFAIL
     def test_its_landing_is_refused_and_main_is_unmoved(
         self, removed: Outcome, checkout: Path
     ) -> None:
@@ -253,7 +245,6 @@ def test_a_story_removed_right_after_its_start_loses_its_branch_and_worktree(
     ) == (f"removed S-0001\nremoved branch {BRANCH} in {worktree}\n", "", False)
 
 
-@XFAIL
 def test_a_blocked_story_is_removed(checkout: Path, worktree: Path) -> None:
     fgraph(["block", "S-0001", "--reason", "no key", "--waiting-on", "developer"], worktree)
     outcome = fgraph(REMOVE, checkout)
@@ -265,7 +256,6 @@ def test_a_blocked_story_is_removed(checkout: Path, worktree: Path) -> None:
     )
 
 
-@XFAIL
 def test_a_story_superseded_by_another_names_it_on_itself_and_its_tasks(
     worked: str, checkout: Path
 ) -> None:
@@ -277,7 +267,6 @@ def test_a_story_superseded_by_another_names_it_on_itself_and_its_tasks(
     ) == (True, True)
 
 
-@XFAIL
 def test_a_remove_run_in_the_worktree_is_refused_naming_main(
     checkout: Path, worktree: Path
 ) -> None:
@@ -288,7 +277,6 @@ def test_a_remove_run_in_the_worktree_is_refused_naming_main(
     )
 
 
-@XFAIL
 def test_under_a_started_feature_no_next_work_item_starts(tmp_path: Path) -> None:
     under = ("--parent", "F-0001")
     added = (ADD_FEATURE, [*ADD_STORY, *under], task("S-0001"), [*ADD_OTHER, *under])

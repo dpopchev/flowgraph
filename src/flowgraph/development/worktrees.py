@@ -8,6 +8,9 @@ clones.
 
 A term is written on main alone, so the worktree of a started work item reads the terms of the
 record of main: its own copy of them is the one its branch was made with.
+
+Run in the worktree of a work item, fgraph status and fgraph watch list the record of main, which
+record_of_main names (S-0141).
 """
 
 from dataclasses import replace
@@ -47,6 +50,21 @@ def held_elsewhere(record: Path, open_git: OpenGit, open_store: OpenStore) -> fr
         for kind in KINDS
         for row in open_store(other).find_work_item_rows(kind)
     )
+
+
+def record_of_main(record: Path, open_git: OpenGit) -> Path | None:
+    """The directory of the record of main at the place the record has in its own work tree.
+
+    None on main, on a branch no work item owns, on no branch, outside a git work tree, for a
+    record git ignores, and when no work tree is on main.
+    """
+    work_tree = kept_in(record, open_git)
+    if work_tree is None or scope_of(work_tree.current_branch()) is None:
+        return None
+    home = work_tree.find_worktree(MAIN)
+    if home is None:
+        return None
+    return home / record.resolve().relative_to(work_tree.path.resolve())
 
 
 def across_worktrees(store: Store, record: Path, open_git: OpenGit, open_store: OpenStore) -> Store:
@@ -110,13 +128,8 @@ def across_worktrees(store: Store, record: Path, open_git: OpenGit, open_store: 
 
     def main_store() -> Store | None:
         """The store of the record of main, for a work tree on the branch of a work item."""
-        work_tree = kept_in(record, open_git)
-        if work_tree is None or scope_of(work_tree.current_branch()) is None:
-            return None
-        home = work_tree.find_worktree(MAIN)
-        if home is None:
-            return None
-        return open_store(home / record.resolve().relative_to(work_tree.path.resolve()))
+        home = record_of_main(record, open_git)
+        return None if home is None else open_store(home)
 
     def load_term(name: str) -> Term:
         main = main_store()

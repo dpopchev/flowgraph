@@ -2,6 +2,8 @@ id = "U-0017"
 state = "backlog"
 title = "Raise the things the help of fgraph about names from an item alone to an item, a term and a file"
 description = "Found during T-0308 of S-0075 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. src/flowgraph/parser.py still says the links of a work item or a Feature, with the metavar ID, since S-0074. Its Tasks are written when it is ordered."
+parent = "F-0018"
+complexity = "low"
 created = 2026-11-22 17:54:57+00:00
 
 [criterion]

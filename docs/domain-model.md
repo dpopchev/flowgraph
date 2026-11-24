@@ -1891,9 +1891,23 @@ development too.
   naming the option and the key without it (Evidence).
 - The rules that read a branch `wi/<id>-*` stay as they are: without the
   development `fgraph` makes no such branch, so none scopes a write and no
-  worktree takes the Tasks of a started work item.
+  worktree takes the Tasks of a started work item; on the trunk too no such
+  branch is made.
 - With `enabled = true` the start, the scoping and the landing are as this
   section states them below.
+- `[development] mode` is where a work item is developed, `branch` or `trunk`
+  (S-0096). `branch`, the default, is the development this section states.
+  `trunk` is for a repository whose work tree is the live artifact, the words
+  of the note being work on main, no worktree: a start is committed on `main`
+  and makes no branch and no worktree, the Tasks are started, checked and
+  completed in the checkout of `main`, and the work item is completed with
+  `fgraph complete S-0001 --commit` at the commit of `main` given.
+  `fgraph land` is refused with exit 2 before any git step, `S-0001 cannot
+  land: development.mode = trunk makes no branch to land -- complete it with
+  fgraph complete S-0001 --commit SHA`, so the gate, the push and the tag of
+  the delivery, steps of a landing, are not taken. The model is `Mode` and
+  `branched` of `src/flowgraph/record/layers.py`; a word that is neither is
+  refused naming the key and the two words.
 - The start of a work item is held to `main` with the development on or off,
   and it alone, the reading decided when S-0039 was ordered: no other write of
   a record is held to `main`.
@@ -1901,7 +1915,10 @@ development too.
   whole number of 1 or more. It has no default, decided when S-0044 was
   ordered: left out, nothing limits the started work items. It is a key of
   the development, so it limits nothing with the development off, where it is
-  held as written.
+  held as written. On the trunk it is 1, left out or written 1, and a number
+  above 1 is refused naming both keys, with the line `development.parallel is
+  2 while development.mode is trunk: the trunk holds one started work item at
+  a time`.
 - With the development on and `parallel` set, the start of a work item in
   Backlog is refused with exit 2, nothing written and no branch made, when
   that many work items are started already. The refusal names the key,
@@ -2246,12 +2263,12 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 - A write that leaves its file as it was makes no commit. With the
   development on, completing a Task names the commit of its work, so the
   commit of the record follows it.
-- With the development on, a start of a work item then checks out the branch
-  `wi/<id>-<slug>` at its commit in a new worktree,
+- With the development on and the mode `branch`, a start of a work item then
+  checks out the branch `wi/<id>-<slug>` at its commit in a new worktree,
   `<parent>/<checkout name>.worktrees/<id>-<slug>`. The slug is given with
   `--slug`, else it is the first four words of the title, lower-cased and kept
-  to their letters and digits. With the development off the start ends at its
-  commit. A start whose branch `wi/<id>-<slug>` is there already is refused
+  to their letters and digits. With the development off, and on the trunk, the
+  start ends at its commit. A start whose branch `wi/<id>-<slug>` is there already is refused
   with exit 2 before anything is written, so the work item stays in Backlog,
   `S-0001 cannot start: the branch wi/S-0001-<slug> is there already -- delete it or give another --slug`;
   it holds for a Feature by the branch of its first work item. The developer deletes the branch or gives another `--slug`: the
@@ -2387,7 +2404,8 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   in the checkout into the commit and drops it with the squash. The merge of
   its own refuses such a checkout, and committed with one parent it holds
   the same work.
-- A landing is refused, with nothing merged, when the development is off,
+- A landing is refused, with nothing merged, when the development is off, on
+  the trunk (`development.mode = trunk makes no branch to land`),
   when `--message` is missing for a commit or given to a `fast-forward`,
   when the record is outside a git work tree, when the work tree it runs in
   is not on `main`, when `[delivery] push` is `true` and `main` tracks no
@@ -2995,7 +3013,7 @@ and `fgraph config show`:
 
 | Board 1 | Records | Closed by |
 |---|---|---|
-| `main`, no branches | cts | S-0096: "no branch and no worktree was made" |
+| `main`, no branches | cts | `development.mode = trunk`, S-0096: "no branch and no worktree was made" |
 | `pr` | g, sv | S-0097: "its branch is pushed with a pull request opened" |
 | `branch max 1d` | all but cts | S-0098: "the line of the work item says its branch is older than 1d" |
 | `approver agent`, `approver developer` | all seven | S-0099: "it exits 2 saying the landing waits for the developer" |

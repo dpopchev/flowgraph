@@ -1074,6 +1074,7 @@ fgraph config show
 # development.merge = "merge-commit"
 # development.gate = none
 # development.driver = "developer"
+# development.mode = "branch"
 # delivery.push = false
 # delivery.tag = "none"
 # archive.board = none
@@ -1092,6 +1093,25 @@ complexity exits 2 with `S-0002 has no complexity to start with: set it with
 fgraph amend S-0002 --complexity low, medium or high`, and `fgraph status`
 marks no such work item.
 
+`development.mode` is where a work item is developed: `branch`, the default, or
+`trunk`, for a repository whose work tree is the live artifact. On the trunk a
+start is committed on `main` and makes no branch and no worktree, one work item
+is started at a time, and `fgraph land` is refused:
+
+```sh
+fgraph config set development.mode trunk
+# set development.mode = "trunk"
+
+fgraph start S-0001
+# started S-0001
+
+fgraph complete S-0001 --commit 3e9ae5c
+# completed S-0001 at 3e9ae5c
+
+fgraph land S-0001
+# fgraph: error: S-0001 cannot land: development.mode = trunk makes no branch to land -- complete it with fgraph complete S-0001 --commit SHA
+```
+
 `fgraph config set KEY VALUE` writes that one key into the file and keeps the
 others; a record without the file gains it:
 
@@ -1109,6 +1129,7 @@ fgraph config show
 # development.merge = "merge-commit"
 # development.gate = "make check"
 # development.driver = "developer"
+# development.mode = "branch"
 # delivery.push = false
 # delivery.tag = "none"
 # archive.board = none
@@ -1125,6 +1146,7 @@ so `fgraph config set development.gate true` names the command `true`:
 | `development.merge`    | `merge-commit`, `squash` or `fast-forward` | `fgraph config set development.merge squash`      |
 | `development.gate`     | a command line, one argument of the shell  | `fgraph config set development.gate "make check"` |
 | `development.driver`   | `developer` or `agent`                     | `fgraph config set development.driver agent`      |
+| `development.mode`     | `branch` or `trunk`                        | `fgraph config set development.mode trunk`        |
 | `delivery.push`        | `true` or `false`                          | `fgraph config set delivery.push true`            |
 | `delivery.tag`         | `feature-close`, `close` or `none`         | `fgraph config set delivery.tag close`            |
 | `archive.board`        | the path of the `.board/` of board 1       | `fgraph config set archive.board .board`          |

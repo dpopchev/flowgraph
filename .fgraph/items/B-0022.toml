@@ -1,9 +1,11 @@
 id = "B-0022"
-state = "backlog"
+state = "started"
 title = "Cut the empty .fgraph/ directories a failed fgraph init leaves behind from one to none"
 description = "Found during T-0326 of S-0082 on 2026-11-23, under the burn of the goal; filed at the end of the queue and not burned. Reported by the lane and not reproduced by the coordinator. Steps: in a git work tree where git commit fails, run fgraph init, then run it again. Its Tasks are written when it is ordered."
 complexity = "low"
 created = 2026-11-22 22:29:55+00:00
+started = 2026-11-24 04:06:08+00:00
+agent = "haiku-a9"
 filed_during = "S-0082"
 
 [criterion]

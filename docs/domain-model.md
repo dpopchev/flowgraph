@@ -1631,6 +1631,15 @@ and its merge tool.
   nothing written, one line naming the file and why, `fgraph: error:
   <path> holds no Story: <why>`, `holds no Feature: <why>` or `holds no
   queue: <why>`, never a Python traceback.
+- Each time of a file -- created, started, since, completed, removed, noted,
+  the `on` of verified, the added of a term -- is read with its offset. A
+  file that writes one without, a day alone as `created = 2026-10-11` or a
+  time with no offset, is refused when the record is read (B-0026), by every
+  command, exit 2 and nothing written, in one line naming the file, the key
+  and what is written: `fgraph: error: <path> holds no Story: created =
+  2026-10-11 is a time with no offset: write it with one, as 2026-01-01
+  09:00:00+00:00`. An `amend` no longer rewrites the day as a time with no
+  offset.
 - The queue of the Backlog (Order) is one file beside `items/`, `queue.toml`:
   a `backlog` list of the ids placed, in their order -- the ids of work items
   and of Features, `F-0001` beside `S-0001`. A record without the file holds
@@ -2519,12 +2528,12 @@ A line of type or `supersedes` survives only as text: `note --finding
 By a file written by hand. A refusal of the read is of the whole record:
 `status`, `show` of any other item and `knowledge` exit 2 naming the one
 file, `fgraph: error: <file> holds no Story: ...` followed by the lines of
-the validator.
+the validator; a time with no offset is refused in the one line alone.
 
 | Case | Read | Line or what was shown |
 |---|---|---|
 | old times, `2026-10-11 09:00:00+00:00`, in created, started, completed, the `on` of verified, noted; a completed Task whose check fails today | read, exit 0 | `verified yes 2026-10-12`, `finding 2026-10-11`; a later `note` keeps them |
-| `created = 2026-10-11`, a day alone | read alone; `amend` rewrites it `2026-10-11 00:00:00`, no offset | beside a time with an offset, `status` and `knowledge` exit 1: `TypeError: can't compare offset-naive and offset-aware datetimes` |
+| `created = 2026-10-11`, a day alone | as of the probe: read alone; `amend` rewrote it `2026-10-11 00:00:00`, no offset; since B-0026 it is refused at the read | as of the probe, beside a time with an offset, `status` and `knowledge` exit 1: `TypeError: can't compare offset-naive and offset-aware datetimes`; since B-0026 exit 2: `fgraph: error: <file> holds no Story: created = 2026-10-11 is a time with no offset: write it with one, as 2026-01-01 09:00:00+00:00` |
 | the old id, `W-187.toml` | `status` exit 0 and lists nothing | `fgraph: error: 'W-187' is no Story, Upkeep, Bug, Spike or Feature id` |
 | a completed work item with no Task | read | `Tasks (0)`, its commit |
 | a removed work item with `started` and completed Tasks | refused | `removed.tasks.0.state Input should be 'backlog'`; `removed.started Extra inputs are not permitted` |
@@ -2546,7 +2555,7 @@ the validator.
 The Field map, row by row, against the probe. Refuted:
 
 - `created`, a day: no command takes it; a file carries it only as a time
-  with its offset -- a bare day is read but breaks `status` and `knowledge`.
+  with its offset -- a bare day is refused when the record is read (B-0026).
 - `doing`, `done.on`, `blocked` of a Task (`since`), a Finding, a Decision
   and a Deviation (`<day>`), the History lines: said converted, the day a
   time; by the commands every one is the time of the run. Converted by a
@@ -2707,8 +2716,8 @@ Two results the migration rests on, from the Probe:
   refuses when it fails today, and a work item reaches Completed by `land`
   at its merge commit, not at the old sha. Files with the old times, the
   old checks and the old shas were read with exit 0. A file must write each
-  time with its offset: a day alone ends `status` and `knowledge` in a
-  traceback (B-0026). Whether the 2,694 done Tasks would pass their checks
+  time with its offset: a day alone is refused when the record is read, exit
+  2, in one line naming the file (B-0026). Whether the 2,694 done Tasks would pass their checks
   today was not counted: it means running every old check in its
   repository.
 - States the read refuses, whatever writes them: a removed Task, a blocked

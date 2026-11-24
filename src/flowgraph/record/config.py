@@ -11,8 +11,10 @@ them. `[development] merge` is how a landing merges: `merge-commit` unless it na
 it has no default either, so left out a landing runs none. `[development] driver` names who
 drives the development: `developer` unless it names `agent`. `[delivery] push = true` pushes main
 once a landing is whole; it is false by default. `[delivery] tag` tags main with its version at
-`feature-close`, `close` (a work item alone too) or never, `none`, the default. Each layer is
-a value (`flowgraph.record.layers`); what a file refused says is `flowgraph.record.config_refusal`.
+`feature-close`, `close` (a work item alone too) or never, `none`, the default. `[archive] board`
+is the path of the `.board/` of board 1 the record points at, with no default, so left out the
+record points at none. Each layer is a value (`flowgraph.record.layers`); what a file refused
+says is `flowgraph.record.config_refusal`.
 """
 
 import tomllib
@@ -23,6 +25,7 @@ from pathlib import Path
 import tomli_w
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
+from flowgraph.record.archive import Archive, ArchiveTable, make_archive
 from flowgraph.record.config_refusal import refusal
 from flowgraph.record.layers import (
     UNGATED,
@@ -72,6 +75,7 @@ class Config:
     git: Git
     development: Development
     delivery: Delivery
+    archive: Archive
 
 
 # The configuration of the record in that directory; the defaults when it holds no config.toml.
@@ -134,6 +138,7 @@ class _ConfigFile(_Table):
     git: _GitTable = _GitTable()
     development: _DevelopmentTable = _DevelopmentTable()
     delivery: _DeliveryTable = _DeliveryTable()
+    archive: ArchiveTable = ArchiveTable()
 
 
 def make_config(text: str) -> Config:
@@ -141,8 +146,8 @@ def make_config(text: str) -> Config:
 
     Raises ConfigError naming the first table or key the configuration does not have, or whose
     value is of another type than the key takes, a count below 1, no way of merging, a blank
-    gate or no word of a tag, and when the text is no TOML; naming both keys when it turns the
-    development on with the commits off.
+    gate, a blank archive path or no word of a tag, and when the text is no TOML; naming both
+    keys when it turns the development on with the commits off.
     """
     try:
         held = _ConfigFile.model_validate(tomllib.loads(text))
@@ -165,7 +170,10 @@ def make_config(text: str) -> Config:
         driver=held.development.driver,
     )
     delivery = Delivery(push=held.delivery.push, tag=held.delivery.tag)
-    return Config(git=Git(commit=held.git.commit), development=development, delivery=delivery)
+    git = Git(commit=held.git.commit)
+    return Config(
+        git=git, development=development, delivery=delivery, archive=make_archive(held.archive)
+    )
 
 
 def make_settings(text: str) -> dict[str, dict[str, object]]:

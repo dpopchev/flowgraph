@@ -51,6 +51,7 @@ the typed edges of the whole record as JSON.
 | git                             | every write of the record committed, unless turned off   |
 | the layers of a record          | `.fgraph/config.toml`: commits on, development off       |
 | the configuration               | every key shown and set by `fgraph config`               |
+| the archive of an old board     | `archive.board` points at it, `fgraph show` names an id  |
 | the knowledge of an item        | lines noted by `fgraph note` on a work item or a Feature |
 | the knowledge of the record     | every line listed by `fgraph knowledge`, newest first    |
 | the progress of the work        | `fgraph note --progress` on a work item or a Task        |
@@ -378,6 +379,23 @@ nothing is written. It is the one command that runs with no record:
 fgraph init
 # record: /path/to/project/.fgraph
 ```
+
+A repository that holds a `.board/` of board 1 keeps it whole as an archive: it
+runs `fgraph init` beside it, points the record at it, and asks for an id of the
+old board, which `fgraph show` answers by naming the archive and the command
+that shows it:
+
+```sh
+fgraph init
+fgraph config set archive.board .board
+# set archive.board = ".board"
+
+fgraph show W-123
+# fgraph: error: W-123 is in the archive of board 1 at /path/to/project/.board -- show it with: uv run ~/.claude/skills/board/scripts/board.py --root /path/to/project show W-123
+```
+
+The open work is filed by hand with `fgraph add`; fgraph reads and writes no
+file of the old board, and `fgraph show` alone answers an E-, W- or T- id so.
 
 Add a Story with its
 title and its one Given / When / Then, then list the record by bucket. The
@@ -1058,6 +1076,7 @@ fgraph config show
 # development.driver = "developer"
 # delivery.push = false
 # delivery.tag = "none"
+# archive.board = none
 ```
 
 `none` is how a key that holds no value is listed: `parallel` without a
@@ -1092,6 +1111,7 @@ fgraph config show
 # development.driver = "developer"
 # delivery.push = false
 # delivery.tag = "none"
+# archive.board = none
 ```
 
 VALUE is a text, read by what its key takes and never guessed from the text,
@@ -1107,6 +1127,7 @@ so `fgraph config set development.gate true` names the command `true`:
 | `development.driver`   | `developer` or `agent`                     | `fgraph config set development.driver agent`      |
 | `delivery.push`        | `true` or `false`                          | `fgraph config set delivery.push true`            |
 | `delivery.tag`         | `feature-close`, `close` or `none`         | `fgraph config set delivery.tag close`            |
+| `archive.board`        | the path of the `.board/` of board 1       | `fgraph config set archive.board .board`          |
 
 The whole file is read back as a configuration before it replaces the one in
 the record. A key the configuration does not have, a value the key does not

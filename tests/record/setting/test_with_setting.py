@@ -29,6 +29,7 @@ TAKES_A_TAG = "it takes feature-close, close or none"
         ("delivery.tag", "feature-close", {"delivery": {"tag": "feature-close"}}),
         ("delivery.tag", "close", {"delivery": {"tag": "close"}}),
         ("delivery.tag", "none", {"delivery": {"tag": "none"}}),
+        ("archive.board", ".board", {"archive": {"board": ".board"}}),
     ],
     ids=[
         "false",
@@ -45,6 +46,7 @@ TAKES_A_TAG = "it takes feature-close, close or none"
         "a-tag-at-the-close-of-a-feature",
         "a-tag-at-the-close-of-a-work-item",
         "no-tag",
+        "a-path",
     ],
 )
 def test_the_text_of_a_value_is_read_as_the_value_its_key_takes(
@@ -115,6 +117,8 @@ def test_a_key_the_configuration_does_not_have_is_refused_naming_it(key: str) ->
         ("delivery.push", "yes", 'delivery.push is "yes": it takes true or false'),
         ("delivery.tag", "sometimes", f'delivery.tag is "sometimes": {TAKES_A_TAG}'),
         ("delivery.tag", "true", f'delivery.tag is "true": {TAKES_A_TAG}'),
+        ("archive.board", "", 'archive.board is "": it takes a path'),
+        ("archive.board", "  ", 'archive.board is "  ": it takes a path'),
     ],
     ids=[
         "another-word-for-false",
@@ -132,6 +136,8 @@ def test_a_key_the_configuration_does_not_have_is_refused_naming_it(key: str) ->
         "another-word-for-a-push",
         "no-word-of-a-tag",
         "a-truth-for-a-tag",
+        "an-empty-path",
+        "a-blank-path",
     ],
 )
 def test_a_value_its_key_does_not_take_is_refused_naming_the_key(

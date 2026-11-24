@@ -29,6 +29,7 @@ from flowgraph.item.progress import ProgressLineError
 from flowgraph.knowledge.list import KindListedError
 from flowgraph.parent import FeatureIdError, RealizesError
 from flowgraph.record import ConfigError
+from flowgraph.record.archive import ArchivedError
 from flowgraph.record.init import NoDirectoryError, RecordHeldError
 from flowgraph.record.queue import NotInBacklogError, SameItemError, UnderFeatureError
 from flowgraph.record.queue_file import QueueFileError
@@ -75,6 +76,7 @@ REFUSED = (
     RecordHeldError,
     NoDirectoryError,
     ConfigError,
+    ArchivedError,
     WorkItemFileError,
     FeatureFileError,
     QueueFileError,

@@ -1,9 +1,11 @@
 id = "S-0128"
-state = "backlog"
+state = "started"
 title = "Raise the folders fgraph finds the record of a repository in, with no --dir on each call, from two, .fgraph and fgraph, to any one the developer names once"
 description = "The story request of the developer of 2026-11-23, for the Backlog alone: fgraph allows the items to be in a custom folder -- the dotfiles of the developer keep theirs in .dpopchev, which is not part of the repository -- so it can be custom, relative to the root. Today the record is .fgraph/ or else fgraph/ in the directory, and another folder is named on each call with -d PATH, or at fgraph init --dir. Open: how the folder is named once -- a variable of the environment, a file at the root, a key git holds; relative to the root of the repository is the reading of the coordinator of the words of the developer; and what the development does with a record git does not track, where S-0028 made the start cut its branch on a record git ignores. Its Tasks are written when it is ordered."
 complexity = "medium"
 created = 2026-11-23 09:21:32+00:00
+started = 2026-11-24 06:45:46+00:00
+agent = "sonnet-a25"
 depends_on = [
     "B-0022",
     "S-0141",

@@ -819,6 +819,16 @@ fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
 # pushed main to origin
 ```
 
+With `push` `true`, a `main` that tracks no branch of a remote is refused
+before the merge, exit 2, with nothing merged, the Story started and its
+branch and worktree as they were. Give `main` an upstream, `git push
+--set-upstream origin main`, or turn the push off:
+
+```sh
+fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
+# fgraph: error: S-0001 cannot land: main tracks no branch of a remote to push to -- run git push --set-upstream <remote> main, or fgraph config set delivery.push false
+```
+
 A push git refuses -- a remote it cannot reach -- before the write that
 completes leaves the Story started and merged: `main` holds the merge, nothing
 is undone, since history only moves forward, and its branch and worktree stay.
@@ -1584,7 +1594,8 @@ that message, completes the Story at that commit, commits the record as
 `chore: complete S-0001 in the record`, and removes the worktree and the
 branch. A land exits 2 and names why, with nothing merged, when the
 development is off, when a Task of the Story is not completed, when the
-checkout it runs in is not on `main`, when the Story has no branch or
+checkout it runs in is not on `main`, when `delivery.push` is `true` and
+`main` tracks no branch of a remote, when the Story has no branch or
 several, when the record is outside a git work tree, when git refuses the
 merge, or when the gate of the record fails.
 

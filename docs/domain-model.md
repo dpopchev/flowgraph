@@ -2083,9 +2083,10 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   and the branch of the next work item of a Feature. `main` is pushed to the
   branch it tracks on its remote, and the landing says `pushed main to
   <remote>` once, on a line of its own. A step refused before a push takes
-  no push.
-- A first push git refuses -- a remote it cannot reach, a `main` that tracks
-  no branch of a remote -- leaves the work item started and merged, its
+  no push. The branch `main` tracks is read before the merge, through the step
+  `upstream` of the landing, so a `main` that tracks none merges nothing.
+- A first push git refuses -- a remote it cannot reach -- leaves the work item
+  started and merged, its
   branch and its worktree as they were, no next work item started and no tag
   made; nothing is undone, since history only moves forward. The landing
   exits 2 naming the git command and its error, then `-- main is not pushed
@@ -2134,7 +2135,13 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 - A landing is refused, with nothing merged, when the development is off,
   when `--message` is missing for a commit or given to a `fast-forward`,
   when the record is outside a git work tree, when the work tree it runs in
-  is not on `main`, when no branch `wi/<id>-*` or more than one is there,
+  is not on `main`, when `[delivery] push` is `true` and `main` tracks no
+  branch of a remote (B-0023), with the line `<id> cannot land: main tracks no
+  branch of a remote to push to -- run git push --set-upstream <remote> main,
+  or fgraph config set delivery.push false`, checked before the branch of the
+  work item is looked for (`check_main_tracked`,
+  `src/flowgraph/development/delivery.py`), when no branch `wi/<id>-*` or more
+  than one is there,
   when a `fast-forward` finds a commit on `main` that the branch lacks, when
   git refuses the merge, and -- the merge held dropped again -- when a Task
   of the work item is not completed, when the gate of the record exits with

@@ -3,6 +3,7 @@
 `[delivery]` of the configuration says what a landing takes beside the merge: main pushed to the
 branch it tracks, and main tagged with its version. Each step raises the GitError git gave it,
 with the work item and the commit the landing came to, so a landing refused says how far it came.
+A main that tracks no branch of a remote is refused by `check_main_tracked`, before any merge.
 """
 
 from collections.abc import Callable
@@ -10,6 +11,23 @@ from collections.abc import Callable
 from flowgraph.development.branch import MAIN
 from flowgraph.development.commit import WorkTree
 from flowgraph.development.git import GitError
+from flowgraph.development.way import LandError
+from flowgraph.record import DELIVERY_PUSH
+
+
+def check_main_tracked(item: str, work_tree: WorkTree) -> None:
+    """Check main tracks a branch of a remote, before a landing that pushes its merges.
+
+    Raises LandError naming the work item and the remote main lacks, when it tracks none; nothing
+    is merged before the check.
+    """
+    try:
+        work_tree.landing.upstream(MAIN)
+    except GitError as error:
+        raise LandError(
+            f"{item} cannot land: {error} -- run git push --set-upstream <remote> {MAIN}, "
+            f"or fgraph config set {DELIVERY_PUSH} false"
+        ) from error
 
 
 def pushed(item: str, sha: str, work_tree: WorkTree) -> None:

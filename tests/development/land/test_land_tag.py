@@ -160,6 +160,7 @@ def work_tree(steps: list[object]) -> WorkTree:
             delete_branch=lambda _: None,
             delete_unmerged_branch=never,
             push=push,
+            upstream=lambda _: ("origin", "refs/heads/main"),
         ),
         release=ReleaseSteps(
             find_tags=lambda _: [],

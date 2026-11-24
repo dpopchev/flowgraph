@@ -1,5 +1,6 @@
 """The landing of a work item: its git steps in order and what it refuses, with fakes."""
 
+import re
 from collections.abc import Callable, Sequence
 from dataclasses import replace
 from datetime import UTC, datetime
@@ -133,6 +134,7 @@ def work_tree(steps: list[object]) -> WorkTree:
             delete_branch=lambda branch: steps.append(("delete branch", branch)),
             delete_unmerged_branch=lambda branch: steps.append(("delete unmerged branch", branch)),
             push=push,
+            upstream=lambda _: ("origin", "refs/heads/main"),
         ),
     )
 
@@ -856,3 +858,64 @@ def test_a_landing_taken_up_by_fast_forward_moves_main_nowhere() -> None:
     steps: list[object] = []
     land(READY, merged_already(steps), config=FAST_FORWARD, message=None)
     assert steps == [RECORD_COMMIT, ("remove worktree", WORKTREE), ("delete branch", BRANCH)]
+
+
+def no_upstream(*_: object) -> Never:
+    """The upstream of a main that tracks no branch of a remote: git refuses it."""
+    raise GitError("main tracks no branch of a remote to push to")
+
+
+def untracked(steps: list[object]) -> WorkTree:
+    """The work tree of `work_tree` whose main tracks no branch of a remote."""
+    return with_step(work_tree(steps), upstream=no_upstream)
+
+
+UNTRACKED = (
+    "S-0001 cannot land: main tracks no branch of a remote to push to -- "
+    "run git push --set-upstream <remote> main, or fgraph config set delivery.push false"
+)
+
+
+def test_a_landing_pushed_to_an_untracked_main_is_refused_tracks() -> None:
+    with pytest.raises(LandError, match=f"^{re.escape(UNTRACKED)}$"):
+        land(READY, untracked([]), config=PUSHED)
+
+
+def test_a_landing_pushed_to_an_untracked_main_takes_no_git_step_tracks() -> None:
+    steps: list[object] = []
+    with pytest.raises(LandError):
+        land(READY, untracked(steps), config=PUSHED)
+    assert steps == []
+
+
+def test_a_landing_pushed_to_an_untracked_main_saves_nothing_tracks() -> None:
+    saved: list[WorkItemState] = []
+    with pytest.raises(LandError):
+        land(READY, untracked([]), saved, config=PUSHED)
+    assert saved == []
+
+
+def test_a_landing_taken_up_to_an_untracked_main_is_refused_tracks() -> None:
+    tree = with_step(merged_already([]), upstream=no_upstream)
+    with pytest.raises(LandError, match=f"^{re.escape(UNTRACKED)}$"):
+        land(READY, tree, config=PUSHED)
+
+
+def test_a_landing_of_a_branch_not_found_is_refused_before_the_untracked_main_tracks() -> None:
+    tree = replace(untracked([]), find_branches=lambda _: [])
+    with pytest.raises(LandError, match=f"^{re.escape(UNTRACKED)}$"):
+        land(READY, tree, config=PUSHED)
+
+
+# Guards, passing today and after: the upstream is never read without the push, and a landing on
+# another branch is refused for that branch before the upstream is asked.
+
+
+def test_a_landing_without_the_push_to_an_untracked_main_lands_tracks() -> None:
+    assert land(READY, untracked([])) == Said("landed S-0001 at 3e9ae5c\n")
+
+
+def test_a_landing_pushed_on_another_branch_is_refused_for_it_first_tracks() -> None:
+    tree = replace(untracked([]), current_branch=lambda: "wi/other")
+    with pytest.raises(LandError, match=r"^S-0001 lands on main: "):
+        land(READY, tree, config=PUSHED)

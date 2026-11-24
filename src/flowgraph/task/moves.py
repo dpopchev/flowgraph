@@ -1,9 +1,11 @@
-"""The moves of a Task between its states: started, blocked and unblocked, then completed."""
+"""The moves of a Task between its states: started, blocked and unblocked, then completed or
+removed."""
 
 from datetime import datetime
 from typing import assert_never
 
 from flowgraph.criterion import Evidence, said
+from flowgraph.task.id import task_id_text
 from flowgraph.task.model import (
     BlockedError,
     BlockedTask,
@@ -11,19 +13,20 @@ from flowgraph.task.model import (
     CompletedTask,
     NotBlockedError,
     NotStartedError,
+    RemovedTask,
     StartedAlreadyError,
     StartedTask,
     Task,
+    TaskRemovedError,
     TaskState,
-    task_id_text,
 )
 
 
 def started(task: TaskState, on: datetime) -> StartedTask:
     """The Task started on that time.
 
-    Raises StartedAlreadyError when it is started, BlockedError when it is blocked and
-    CompletedAlreadyError when it is completed.
+    Raises StartedAlreadyError when it is started, BlockedError when it is blocked,
+    CompletedAlreadyError when it is completed and TaskRemovedError when it is removed.
     """
     match task:
         case Task():
@@ -42,6 +45,8 @@ def started(task: TaskState, on: datetime) -> StartedTask:
             raise BlockedError(f"{task_id_text(task.id)} is blocked: unblock it first")
         case CompletedTask():
             raise CompletedAlreadyError(f"{task_id_text(task.id)} is completed already")
+        case RemovedTask():
+            raise TaskRemovedError(f"{task_id_text(task.id)} is removed already")
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -50,8 +55,8 @@ def blocked(task: TaskState, reason: str, waiting_on: str, on: datetime) -> Bloc
     """The started Task blocked on that time, kept to the second, for the reason given.
 
     Raises NotStartedError when it is in Backlog, BlockedError when it is blocked already,
-    CompletedAlreadyError when it is completed and EmptyPartError when the reason or what it
-    waits on is blank.
+    CompletedAlreadyError when it is completed, TaskRemovedError when it is removed and
+    EmptyPartError when the reason or what it waits on is blank.
     """
     match task:
         case Task():
@@ -73,6 +78,8 @@ def blocked(task: TaskState, reason: str, waiting_on: str, on: datetime) -> Bloc
             raise BlockedError(f"{task_id_text(task.id)} is blocked already")
         case CompletedTask():
             raise CompletedAlreadyError(f"{task_id_text(task.id)} is completed already")
+        case RemovedTask():
+            raise TaskRemovedError(f"{task_id_text(task.id)} is removed already")
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -80,7 +87,7 @@ def blocked(task: TaskState, reason: str, waiting_on: str, on: datetime) -> Bloc
 def unblocked(task: TaskState) -> StartedTask:
     """The blocked Task started again, with the started time it had; its block is dropped.
 
-    Raises NotBlockedError when it is in Backlog, started or completed.
+    Raises NotBlockedError when it is in Backlog, started, completed or removed.
     """
     match task:
         case BlockedTask():
@@ -93,8 +100,35 @@ def unblocked(task: TaskState) -> StartedTask:
                 task.started,
                 task.check,
             )
-        case Task() | StartedTask() | CompletedTask():
+        case Task() | StartedTask() | CompletedTask() | RemovedTask():
             raise NotBlockedError(f"{task_id_text(task.id)} is not blocked")
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def removed(task: TaskState, reason: str, on: datetime) -> RemovedTask:
+    """The Task removed on that time, kept to the second, for the reason given.
+
+    One in Backlog, started or blocked is removed alike: its started time and its block are
+    dropped. Raises CompletedAlreadyError when it is completed, TaskRemovedError when it is
+    removed already and EmptyPartError when the reason is blank.
+    """
+    match task:
+        case Task() | StartedTask() | BlockedTask():
+            return RemovedTask(
+                task.id,
+                task.title,
+                task.expected_output,
+                task.description,
+                task.created,
+                on.replace(microsecond=0),
+                said("reason", reason),
+                task.check,
+            )
+        case CompletedTask():
+            raise CompletedAlreadyError(f"{task_id_text(task.id)} is completed already")
+        case RemovedTask():
+            raise TaskRemovedError(f"{task_id_text(task.id)} is removed already")
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -102,8 +136,8 @@ def unblocked(task: TaskState) -> StartedTask:
 def completed(task: TaskState, on: datetime, commit: Evidence) -> CompletedTask:
     """The Task completed on that time in that commit, or without one.
 
-    Raises NotStartedError when it is in Backlog, BlockedError when it is blocked and
-    CompletedAlreadyError when it is completed.
+    Raises NotStartedError when it is in Backlog, BlockedError when it is blocked,
+    CompletedAlreadyError when it is completed and TaskRemovedError when it is removed.
     """
     match task:
         case Task():
@@ -124,5 +158,7 @@ def completed(task: TaskState, on: datetime, commit: Evidence) -> CompletedTask:
             raise BlockedError(f"{task_id_text(task.id)} is blocked: unblock it first")
         case CompletedTask():
             raise CompletedAlreadyError(f"{task_id_text(task.id)} is completed already")
+        case RemovedTask():
+            raise TaskRemovedError(f"{task_id_text(task.id)} is removed already")
         case _ as unreachable:
             assert_never(unreachable)

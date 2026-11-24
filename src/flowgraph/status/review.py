@@ -1,13 +1,15 @@
-"""The work items ready for review: started, holding a Task, every Task of it completed.
+"""The work items ready for review, and the Tasks that count in the progress of a work item.
 
-Derived at each listing from the Tasks of a row and kept in no field and no file, as the block
-of a Feature is.
+A work item is ready for review when it is started and holds a Task that is not removed, every
+such Task of it completed; a removed Task counts in no progress. Derived at each listing from the
+Tasks of a row and kept in no field and no file, as the block of a Feature is.
 """
 
 from collections.abc import Iterable
 from typing import assert_never
 
 from flowgraph.feature import FeatureRow
+from flowgraph.task import TaskRow
 from flowgraph.work_item import STARTED, WorkItemRow
 
 type Line = WorkItemRow | FeatureRow
@@ -15,14 +17,19 @@ type Line = WorkItemRow | FeatureRow
 # The state of a completed Task, as the record writes it.
 _COMPLETED = "completed"
 
+# The state of a removed Task, as the record writes it.
+_REMOVED = "removed"
+
+
+def counted(row: WorkItemRow) -> list[TaskRow]:
+    """The Tasks of the row that count in its progress: every one that is not removed."""
+    return [task for task in row.tasks if task.state != _REMOVED]
+
 
 def ready_for_review(row: WorkItemRow) -> bool:
-    """True when the row is started, holds a Task and every Task of it is completed."""
-    return (
-        row.state == STARTED
-        and bool(row.tasks)
-        and all(task.state == _COMPLETED for task in row.tasks)
-    )
+    """True when the row is started, holds a Task not removed and each such Task is completed."""
+    tasks = counted(row)
+    return row.state == STARTED and bool(tasks) and all(task.state == _COMPLETED for task in tasks)
 
 
 def review_ids(rows: Iterable[Line]) -> list[str]:

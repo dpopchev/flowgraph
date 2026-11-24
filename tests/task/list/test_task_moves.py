@@ -1,4 +1,4 @@
-"""The Tasks of a work item: one of them starts or completes by its id, the rest stay."""
+"""The Tasks of a work item: one starts, completes or is removed by its id, the rest stay."""
 
 from datetime import UTC, datetime
 
@@ -17,6 +17,8 @@ from flowgraph.task import (
     completed_among,
     make_task,
     make_task_id,
+    removed,
+    removed_among,
     started,
     started_among,
     task_of,
@@ -84,3 +86,27 @@ def test_tasks_not_all_completed_are_refused_naming_the_holder_and_the_rest() ->
     done = completed(started(FIRST, ON), ON, COMMIT)
     with pytest.raises(OpenTaskError, match=r"^U-0001 has Tasks to complete first: T-0002$"):
         all_completed((done, SECOND), "U-0001")
+
+
+def test_one_task_is_removed_and_the_rest_stay() -> None:
+    assert removed_among(TASKS, make_task_id(2), "a reason", ON) == (
+        FIRST,
+        removed(SECOND, "a reason", ON),
+    )
+
+
+def test_a_task_they_do_not_hold_is_not_removed() -> None:
+    with pytest.raises(TaskNotFoundError, match=r"^no Task T-0003 in the record$"):
+        removed_among(TASKS, make_task_id(3), "a reason", ON)
+
+
+def test_tasks_completed_or_removed_are_returned_in_order() -> None:
+    done = completed(started(FIRST, ON), ON, COMMIT)
+    gone = removed(SECOND, "a reason", ON)
+    assert all_completed((done, gone), "S-0001") == (done, gone)
+
+
+def test_a_removed_task_beside_one_in_backlog_names_the_one_in_backlog_alone() -> None:
+    gone = removed(FIRST, "a reason", ON)
+    with pytest.raises(OpenTaskError, match=r"^S-0001 has Tasks to complete first: T-0002$"):
+        all_completed((gone, SECOND), "S-0001")

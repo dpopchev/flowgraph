@@ -167,7 +167,8 @@ class TestAStoryOfABlockedFeatureLandedWhileTheNextIsInBacklog:
         merge = git(checkout, "rev-parse", "--short", "HEAD~1")
         assert (landed.status, landed.out) == (
             0,
-            f"landed S-0001 at {merge}\nnot started: S-0002 cannot start: {HELD}\n",
+            f"landed S-0001 at {merge}\nrun: an action -> another\n"
+            f"not started: S-0002 cannot start: {HELD}\n",
         )
 
     def test_unblock_names_the_next_story_started_then_its_branch_and_its_worktree(

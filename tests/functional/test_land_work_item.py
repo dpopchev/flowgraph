@@ -135,7 +135,8 @@ class TestAStoryLandedInTheCheckoutOfMain:
         assert landed.status == 0
 
     def test_land_names_the_story_and_the_merge_commit(self, landed: Outcome, ready: Path) -> None:
-        assert landed.out == f"landed S-0001 at {git(ready, 'rev-parse', '--short', 'HEAD~1')}\n"
+        merge = git(ready, "rev-parse", "--short", "HEAD~1")
+        assert landed.out == f"landed S-0001 at {merge}\nrun: an action -> another\n"
 
     def test_status_lists_it_under_completed_with_the_merge_commit(
         self, landed: Outcome, ready: Path

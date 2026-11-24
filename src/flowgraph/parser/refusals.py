@@ -48,6 +48,7 @@ from flowgraph.task import (
     TaskIdError,
     TaskInProgressError,
     TaskNotFoundError,
+    TaskRemovedError,
 )
 from flowgraph.term import TermError, TermFileError, TermNotFoundError
 from flowgraph.term.item import TermExistsError
@@ -124,6 +125,7 @@ REFUSED = (
     OpenTaskError,
     OpenWorkItemError,
     CompletedAlreadyError,
+    TaskRemovedError,
     NotInBacklogError,
     SameItemError,
     UnderFeatureError,

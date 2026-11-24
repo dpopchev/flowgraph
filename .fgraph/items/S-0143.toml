@@ -12,6 +12,11 @@ depends_on = [
     "B-0026",
 ]
 
+[verified]
+answer = "yes"
+text = "at d975ab1 on main, the merge of wi/S-0143-raise-the-progress-lines, on a throwaway record with S-0001 started and its Task T-0001 started: fgraph note S-0001 --progress the parser is read; next the show exit 0 printed noted S-0001; fgraph note T-0001 --progress red: 1 failed exit 0 printed noted T-0001 of S-0001; fgraph show S-0001 lists under T-0001 the line progress 2026-11-24 red: 1 failed and, after its Tasks, Progress (1) with 2026-11-24 the parser is read; next the show; the file of S-0001 holds both under progress, each with its text and its time noted with an offset, the second with task = T-0001; fgraph knowledge printed no knowledge lines in the record; a Feature and a blank text each exit 2. make check on the tree of the landing, the branch with main merged at cd3e13c: 3808 passed, all checks passed. Handed whole to one subagent on opus; handed back once by the coordinator, src/flowgraph/parser/item_commands.py holding 250 lines where T-0559 says at most 244: the commit 56e87db holds the summary and the two helps of note as constants, the same bytes of help, 244 lines, 247 on main with S-0146. Its deviations, each inside a file its Tasks name: no WHOLE in tests/work_item/test_work_item_progress.py; the branch test asserts the files of the commit as a pair with the status; in README.md none or more than one of the four in place of the three kinds. Seen by it: the file holds the lines as an inline array progress = [...], the same TOML the docs call a table; fgraph show tells a line of the work item by an empty task id, which no type states."
+on = 2026-11-24 04:54:17+00:00
+
 [criterion]
 given = "a record with a started work item that holds a started Task"
 when = "fgraph note is run with a progress line on the work item, and with one on the Task"

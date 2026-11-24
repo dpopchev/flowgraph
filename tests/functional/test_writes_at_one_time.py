@@ -1,26 +1,38 @@
 """The criterion of B-0035: two fgraph add run at one time on one record get an id each.
 
-Run end to end through `run` on a record in a temporary directory, the development off and no git.
-The second command runs inside the first, after the first has read the ids taken and before it
-writes: two writes at one time, the same on every run.
+Run end to end through `run` on a record in a temporary directory, the development off and no git,
+each run given the lock of lock_files with a wait that does not wait. The second command runs
+inside the first, after the first has read the ids taken and before it writes: two writes at one
+time, the same on every run. Then four fgraph add run as real processes on a git repository.
 """
 
 import json
+import os
+import subprocess
+import sys
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime
+from functools import partial
 from pathlib import Path
 
 import pytest
 
 from flowgraph.cli import open_files, run
+from flowgraph.record.lock import lock_files
 from flowgraph.record.store import OpenStore, Store
 
 pytestmark = pytest.mark.functional
 
 START = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
-XFAIL = pytest.mark.xfail(strict=True, reason="B-0035: two writes at one time are given one id")
+IDENTITY = {
+    "GIT_AUTHOR_NAME": "a developer",
+    "GIT_AUTHOR_EMAIL": "developer@example.com",
+    "GIT_COMMITTER_NAME": "a developer",
+    "GIT_COMMITTER_EMAIL": "developer@example.com",
+}
+FOUR = range(1, 5)
 
 
 @dataclass(frozen=True)
@@ -33,7 +45,7 @@ class Outcome:
 
 
 def fgraph(argv: Sequence[str], cwd: Path, open_store: OpenStore = open_files) -> Outcome:
-    """Run the command at START in cwd, whose record is `.fgraph/`, on the store given."""
+    """Run the command at START in cwd, whose record is `.fgraph/`, on the store given, locked."""
     (cwd / ".fgraph").mkdir(exist_ok=True)
     out: list[str] = []
     err: list[str] = []
@@ -46,6 +58,7 @@ def fgraph(argv: Sequence[str], cwd: Path, open_store: OpenStore = open_files) -
         open_store=open_store,
         open_git=lambda _: None,
         now=lambda: START,
+        lock_record=partial(lock_files, wait=lambda _: None),
     )
     return Outcome(status, "".join(out), "".join(err))
 
@@ -126,13 +139,46 @@ def added(outcome: Outcome) -> int:
 
 
 class TestTwoAddsAtOneTime:
-    @XFAIL
     def test_the_two_outputs_are_not_the_same_line(self, raced: Raced) -> None:
         assert raced.outer.out != raced.inner.out
 
-    @XFAIL
     def test_every_add_that_printed_added_is_listed_after(self, raced: Raced) -> None:
         assert added(raced.outer) + added(raced.inner) == raced.listed
+
+
+class TestTwoStoriesAtOneTime:
+    @pytest.fixture
+    def inner(self, tmp_path: Path) -> Outcome:
+        first, second = PAIRS["story"]
+        kept: list[Outcome] = []
+        fgraph(first, tmp_path, racing(tmp_path, second, kept))
+        return kept[0]
+
+    def test_the_second_exits_with_two(self, inner: Outcome) -> None:
+        assert inner.status == 2
+
+    def test_the_second_says_the_record_is_being_written(
+        self, inner: Outcome, tmp_path: Path
+    ) -> None:
+        assert inner.err.splitlines()[-1] == (
+            f"fgraph: error: {tmp_path / '.fgraph'} is being written by another fgraph: "
+            "run the command again"
+        )
+
+    def test_the_record_holds_the_first_alone(self, inner: Outcome, tmp_path: Path) -> None:
+        assert sorted(each.name for each in (tmp_path / ".fgraph" / "items").iterdir()) == [
+            "S-0001.toml"
+        ]
+
+    def test_the_story_kept_has_the_title_of_the_first(
+        self, inner: Outcome, tmp_path: Path
+    ) -> None:
+        assert fgraph(["show", "S-0001"], tmp_path).out.splitlines()[0] == "S-0001  the first"
+
+    def test_an_add_run_after_the_pair_is_given_s_0002(
+        self, inner: Outcome, tmp_path: Path
+    ) -> None:
+        assert fgraph(story("the third"), tmp_path).out == "added S-0002\n"
 
 
 def test_two_adds_one_after_the_other_print_two_ids(tmp_path: Path) -> None:
@@ -152,3 +198,77 @@ class TestStatusWhileAnAddIsMade:
 
     def test_the_add_prints_added_s_0001(self, kept: tuple[Outcome, Outcome]) -> None:
         assert kept[0].out == "added S-0001\n"
+
+
+def git(repository: Path, environment: dict[str, str], *argv: str) -> str:
+    """Run git in the repository with that environment; what it printed."""
+    done = subprocess.run(
+        ["git", *argv], cwd=repository, env=environment, capture_output=True, text=True, check=True
+    )
+    return done.stdout
+
+
+@dataclass(frozen=True)
+class Processes:
+    """Four fgraph add run at one time as processes: the repository, the environment, the runs."""
+
+    repository: Path
+    environment: dict[str, str]
+    outcomes: list[Outcome]
+
+
+@pytest.fixture(scope="module")
+def processes(tmp_path_factory: pytest.TempPathFactory) -> Processes:
+    """Four fgraph add story started together on a git repository with one commit, waited for."""
+    repository = tmp_path_factory.mktemp("project")
+    empty = repository.parent / "gitconfig"
+    empty.touch()
+    environment = {
+        **os.environ,
+        **IDENTITY,
+        "GIT_CONFIG_GLOBAL": str(empty),
+        "GIT_CONFIG_NOSYSTEM": "1",
+    }
+    git(repository, environment, "init", "--quiet", "--initial-branch", "main")
+    git(repository, environment, "commit", "--quiet", "--allow-empty", "--message", "chore: begin")
+    (repository / ".fgraph").mkdir()
+    started = [
+        subprocess.Popen(
+            [sys.executable, "-m", "flowgraph.cli", *story(f"title {number}")],
+            cwd=repository,
+            env=environment,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        for number in FOUR
+    ]
+    return Processes(repository, environment, [finished(each) for each in started])
+
+
+def finished(process: subprocess.Popen[str]) -> Outcome:
+    """What the process left once it has exited."""
+    out, err = process.communicate()
+    return Outcome(process.returncode, out, err)
+
+
+class TestFourAddsAsProcesses:
+    def test_the_four_are_given_four_ids(self, processes: Processes) -> None:
+        assert sorted(each.out for each in processes.outcomes) == [
+            f"added S-000{number}\n" for number in FOUR
+        ]
+
+    def test_every_one_exits_with_zero(self, processes: Processes) -> None:
+        assert [each.status for each in processes.outcomes] == [0, 0, 0, 0]
+
+    def test_the_record_holds_four_files(self, processes: Processes) -> None:
+        assert len(list((processes.repository / ".fgraph" / "items").iterdir())) == 4
+
+    def test_git_log_holds_the_four_commits(self, processes: Processes) -> None:
+        logged = git(processes.repository, processes.environment, "log", "--format=%s")
+        assert sorted(logged.splitlines()[:4]) == [
+            f"chore: add S-000{number} in the record" for number in FOUR
+        ]
+
+    def test_git_status_is_empty(self, processes: Processes) -> None:
+        assert git(processes.repository, processes.environment, "status", "--porcelain") == ""

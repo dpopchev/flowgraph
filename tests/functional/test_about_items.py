@@ -167,7 +167,7 @@ class TestTheKnowledgeListNarrowedToATerm:
         assert listed.status == 0
 
     def test_it_lists_the_lines_about_the_term_alone(self, listed: Outcome) -> None:
-        assert listed.out == "2026-01-01  finding  S-0001  about the gate  (about gate)\n"
+        assert listed.out == "2026-01-01  finding  S-0001#1  about the gate  (about gate)\n"
 
 
 def test_the_knowledge_list_of_a_term_no_line_is_about_says_there_are_none(terms: Path) -> None:

@@ -7,6 +7,7 @@ rows at each listing.
 from collections.abc import Sequence
 
 from flowgraph.status.review import counted, ready_for_review
+from flowgraph.status.rows import BACKLOG
 from flowgraph.story import StoryRow
 from flowgraph.task import TaskRow
 from flowgraph.upkeep import UpkeepRow
@@ -25,7 +26,9 @@ def work_item_lines(row: StoryRow | UpkeepRow) -> str:
     its Tasks completed of all but the removed, between its id and its title, then
     the agent it is handed to in brackets, if any, and under it each Task of it being worked on a
     line of its own, in the order written. A completed one holds a commit or not: one it holds
-    stands before the title, so a line cut to a width keeps it; a reason ends the line.
+    stands before the title, so a line cut to a width keeps it; a reason ends the line. One in
+    Backlog is listed with the count of its Tasks in brackets, `[]` for none, between its id and
+    its title: the developer's frame of 2026-11-23.
     """
     if row.state in IN_PROGRESS:
         done, total = _progress(row)
@@ -50,7 +53,10 @@ def work_item_lines(row: StoryRow | UpkeepRow) -> str:
     )
     if why:
         return f"  {row.id}  {row.title}  -- {why}\n"
-    return f"{waiting_line(f'{row.id}  {row.title}', row.waits_for, next_up=row.next_to_start)}\n"
+    named = (
+        f"{row.id}  {_held(row)}  {row.title}" if row.state == BACKLOG else f"{row.id}  {row.title}"
+    )
+    return f"{waiting_line(named, row.waits_for, next_up=row.next_to_start)}\n"
 
 
 def completed_line(row: StoryRow | UpkeepRow) -> str:
@@ -60,6 +66,11 @@ def completed_line(row: StoryRow | UpkeepRow) -> str:
     """
     done, total = _progress(row)
     return f"  {row.id}  {done}/{total} T  {row.title}\n"
+
+
+def _held(row: StoryRow | UpkeepRow) -> str:
+    """The Tasks a work item holds, as `[N T]`, or `[]` when it holds none."""
+    return f"[{len(row.tasks)} T]" if row.tasks else "[]"
 
 
 def _progress(row: StoryRow | UpkeepRow) -> tuple[int, int]:

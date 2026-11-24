@@ -48,9 +48,9 @@ def store(queue: Queue) -> Store:
 def test_the_backlog_is_listed_as_added_and_by_kind_and_id_when_added_at_one_time() -> None:
     assert status_item(store(make_queue([]))) == (
         "Backlog (3)\n"
-        "> S-0003  a twin story\n"
-        "  U-0001  an upkeep\n"
-        "  S-0001  a story\n"
+        "> S-0003  []  a twin story\n"
+        "  U-0001  []  an upkeep\n"
+        "  S-0001  []  a story\n"
         "InProgress (0)\n"
         "Completed (1)\n"
         "  S-0002  abc1234  a done story\n"
@@ -59,7 +59,7 @@ def test_the_backlog_is_listed_as_added_and_by_kind_and_id_when_added_at_one_tim
 
 def test_a_placed_work_item_is_listed_above_the_ones_never_placed() -> None:
     assert status_item(store(make_queue([make_story_id(1)]))).splitlines()[1:4] == [
-        "> S-0001  a story",
-        "  S-0003  a twin story",
-        "  U-0001  an upkeep",
+        "> S-0001  []  a story",
+        "  S-0003  []  a twin story",
+        "  U-0001  []  an upkeep",
     ]

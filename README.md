@@ -113,7 +113,7 @@ fgraph amend S-0001 --about lane
 fgraph show S-0001          # about  lane, and the line: decision  2026-11-22  a gate runs on main  (about gate, lane)
 fgraph show gate            # gate, with the lines: items  S-0001, knowledge  S-0001  decision  2026-11-22  a gate runs on main
 fgraph knowledge --about gate
-# 2026-11-22  decision  S-0001  a gate runs on main  (about gate, lane)
+# 2026-11-22  decision  S-0001#1  a gate runs on main  (about gate, lane)
 ```
 
 A Story, an Upkeep, a Bug and a Spike carry a complexity, `low`, `medium` or
@@ -424,10 +424,13 @@ fgraph add story "Raise the Stories fgraph lists under Backlog from 0 to 1" \
 
 fgraph status
 # Backlog (1)
-# > S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
+# > S-0001  []  Raise the Stories fgraph lists under Backlog from 0 to 1
 # InProgress (0)
 # Completed (0)
 ```
+
+A work item in Backlog is listed with the count of its Tasks in brackets, `[]` while it holds
+none.
 
 Write the Tasks of a Story, then show it with them. A Task title names the
 output: an imperative verb, the specific artifact, and the target state or
@@ -507,8 +510,8 @@ fgraph show S-0002
 
 fgraph status --backlog
 # Backlog (2)
-# > S-0001  Add the show command
-# ~ S-0002  Raise the Stories fgraph lists under Backlog from 1 to 2  -- depends on S-0001
+# > S-0001  [1 T]  Add the show command
+# ~ S-0002  [1 T]  Raise the Stories fgraph lists under Backlog from 1 to 2  -- depends on S-0001
 ```
 
 `fgraph status` marks the line of a work item in Backlog that waits: it starts
@@ -538,10 +541,10 @@ alone of S-0086.
 ```sh
 fgraph status --backlog   # parallel = 3, S-0001 started, S-0002 waits for S-0004
 # Backlog (4)
-# ~ S-0002  a second title  -- depends on S-0004
-# > S-0003  a third title
-# > S-0004  a fourth title
-#   S-0005  a fifth title
+# ~ S-0002  []  a second title  -- depends on S-0004
+# > S-0003  []  a third title
+# > S-0004  []  a fourth title
+#   S-0005  []  a fifth title
 # InProgress (1)
 #   S-0001  0/1 T  a first title
 ```
@@ -1599,9 +1602,12 @@ fgraph show S-0001
 ```
 
 `fgraph knowledge` lists the lines of every work item and every Feature of the
-record, the last noted first, each with its date, its kind, the id of its item
-and its text. `--kind` narrows the list to `finding`, `decision` or `deviation`;
-another word exits 2 naming the three. `fgraph knowledge --search TEXT` narrows
+record, the last noted first, each with its date, its kind, the ref of the line
+and its text: the id of its item, `#` and its place among the lines of that
+item, counted from 1 in the order noted, as `S-0001#2`. `--kind` narrows the list to `finding`, `decision` or `deviation`;
+another word exits 2 naming the three. `fgraph knowledge --live` lists the live
+lines alone, those no later line supersedes, a line with no mark among them; it is
+the list to read at the start of a session. `fgraph knowledge --search TEXT` narrows
 the list to the lines whose text holds the text, whatever the case of either,
 as a part of a word too. `--kind`, `--about` and `--search` narrow the same
 list, a line being listed when it meets each one given. Only the text of the
@@ -1609,27 +1615,35 @@ line is searched, as it is listed (the decision of a Spike with its answer),
 not the title or the id of its item, its kind or the terms it is about. With
 no such line it prints one line and exits 0; a blank text exits 2. The decision
 of a completed Spike is listed among the decisions at the time the Spike was
-completed, and stays kept on the Spike. A record with no line prints one line
-saying so:
+completed, under the id of the Spike with no ref, and stays kept on the Spike.
+A record with no line prints one line saying so:
 
 ```sh
 fgraph knowledge
-# 2026-11-24  deviation  S-0001  the second Task was dropped
+# 2026-11-24  deviation  S-0001#3  the second Task was dropped
 # 2026-11-23  decision  Q-0001  one file per work item (answer yes)
-# 2026-11-22  decision  F-0001  the budget is agreed
-# 2026-11-22  decision  S-0001  keep one store
-# 2026-11-22  finding  S-0001  the file holds the lines in the order noted
+# 2026-11-22  decision  F-0001#1  the budget is agreed
+# 2026-11-22  decision  S-0001#2  keep one store
+# 2026-11-22  finding  S-0001#1  the file holds the lines in the order noted
 
 fgraph knowledge --kind decision
 # 2026-11-23  decision  Q-0001  one file per work item (answer yes)
-# 2026-11-22  decision  F-0001  the budget is agreed
-# 2026-11-22  decision  S-0001  keep one store
+# 2026-11-22  decision  F-0001#1  the budget is agreed
+# 2026-11-22  decision  S-0001#2  keep one store
 
 fgraph knowledge --kind finding
-# 2026-11-22  finding  S-0001  the file holds the lines in the order noted
+# 2026-11-22  finding  S-0001#1  the file holds the lines in the order noted
+
+fgraph knowledge --live
+# after: fgraph note S-0001 --decision "keep one file per item" --supersedes S-0001#2
+# 2026-11-24  decision  S-0001#4  keep one file per item
+# 2026-11-24  deviation  S-0001#3  the second Task was dropped
+# 2026-11-23  decision  Q-0001  one file per work item (answer yes)
+# 2026-11-22  decision  F-0001#1  the budget is agreed
+# 2026-11-22  finding  S-0001#1  the file holds the lines in the order noted
 
 fgraph knowledge --search STORE
-# 2026-11-22  decision  S-0001  keep one store
+# 2026-11-22  decision  S-0001#2  keep one store
 
 fgraph knowledge --search budget --kind finding
 # no finding lines holding 'budget' in the record
@@ -1640,6 +1654,22 @@ an id the record does not hold, a blank text and a note with none or more than o
 started work item is noted in its worktree, as its Tasks are written, and every
 other one, a Feature too, on `main`; the branch of a work item writes that work
 item alone, so a Feature is not noted there.
+A later line supersedes an earlier one with `--supersedes REF`, once per line
+it supersedes, by the ref `fgraph knowledge` lists, of the same item or of any
+other. The later line keeps the refs and the earlier one is left as written;
+`fgraph show` ends the superseded line with the refs of the lines that
+supersede it, as `(superseded by S-0001#2)`. A ref that names no line exits 2 and writes nothing, with
+`--supersedes names S-0001#9, which is no knowledge line of the record: fgraph
+knowledge lists each line with its ref`:
+
+```sh
+fgraph note S-0001 --decision "keep one file per item" --supersedes S-0001#2
+# noted S-0001
+
+fgraph show S-0001
+# ...
+#   decision  2026-11-22  keep one store  (superseded by S-0001#4)
+```
 
 A completed Story, Bug or Upkeep is closed on a question: does its criterion
 hold on `main`? The run of the criterion is the agent's; `fgraph verify` keeps
@@ -1945,7 +1975,7 @@ fgraph add upkeep "Cut the lines of the largest module of src/flowgraph from 106
 
 fgraph status
 # Backlog (1)
-# > U-0001  Cut the lines of the largest module of src/flowgraph from 1068 to 400
+# > U-0001  []  Cut the lines of the largest module of src/flowgraph from 1068 to 400
 # InProgress (0)
 # Completed (0)
 ```
@@ -2143,7 +2173,7 @@ is on no line of its own:
 fgraph status --backlog
 # Backlog (2)
 # > F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
-#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+#   S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (0)
 # Completed (0)
 ```
@@ -2196,7 +2226,7 @@ under its line, indented, with its progress and its Task being worked:
 ```sh
 fgraph status
 # Backlog (1)
-# > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (1)
 #   F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #     S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
@@ -2218,7 +2248,7 @@ fgraph block T-0001 --reason "the review is not back" --waiting-on "the reviewer
 
 fgraph status
 # Backlog (1)
-# > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (1)
 # ! F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5  -- waiting on the reviewer: the review is not back
 #     S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
@@ -2252,7 +2282,7 @@ fgraph complete S-0001 --commit 677f9b0
 
 fgraph status
 # Backlog (1)
-# > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (1)
 #   F-0001  1/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #     S-0003  0/1 T  Raise the Stories fgraph lists under Completed from 0 to 1
@@ -2309,7 +2339,7 @@ fgraph complete S-0001 --commit 677f9b0
 
 fgraph status
 # Backlog (1)
-# > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (0)
 # Completed (1)
 #   F-0001  677f9b0  Raise the kinds of work a project tracks with fgraph from 1 to 5
@@ -2402,7 +2432,7 @@ fgraph block F-0001 --reason "the budget is not agreed" --waiting-on "the sponso
 
 fgraph status
 # Backlog (1)
-# > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (1)
 # ! F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5  -- waiting on the sponsor: the budget is not agreed
 #     S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
@@ -2573,8 +2603,8 @@ another:
 ```sh
 fgraph status --backlog
 # Backlog (2)
-# > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
-#   U-0002  Cut the lines one kind of work item holds from 885 to 250
+# > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
+#   U-0002  []  Cut the lines one kind of work item holds from 885 to 250
 # InProgress (0)
 # Completed (0)
 
@@ -2583,8 +2613,8 @@ fgraph reorder U-0002 --before S-0002
 
 fgraph status --backlog
 # Backlog (2)
-# > U-0002  Cut the lines one kind of work item holds from 885 to 250
-#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# > U-0002  []  Cut the lines one kind of work item holds from 885 to 250
+#   S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (0)
 # Completed (0)
 ```
@@ -2600,7 +2630,7 @@ fgraph reorder S-0002 --before F-0001
 
 fgraph status --backlog
 # Backlog (2)
-# > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 #   F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 # InProgress (0)
 # Completed (0)
@@ -2611,7 +2641,7 @@ fgraph reorder F-0001 --before S-0002
 fgraph status --backlog
 # Backlog (2)
 # > F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
-#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+#   S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (0)
 # Completed (0)
 ```
@@ -2719,7 +2749,7 @@ A Backlog of five under a plain `fgraph status` lists its first line:
 ```sh
 fgraph status
 # Backlog (5)
-# > S-0001  Add the show command
+# > S-0001  [1 T]  Add the show command
 #   ... 4 more, 0 can start
 # InProgress (0)
 # Completed (0)

@@ -50,15 +50,17 @@ ONE = [story(1)]
 
 WHOLE = (
     "Backlog (5)\n"
-    "> S-0001  title 1\n"
-    "  S-0002  title 2\n"
-    "  S-0003  title 3\n"
-    "  S-0004  title 4\n"
-    "  S-0005  title 5\n"
+    "> S-0001  []  title 1\n"
+    "  S-0002  []  title 2\n"
+    "  S-0003  []  title 3\n"
+    "  S-0004  []  title 4\n"
+    "  S-0005  []  title 5\n"
     "InProgress (0)\n"
     "Completed (0)\n"
 )
-SHORT = "Backlog (5)\n> S-0001  title 1\n  ... 4 more, 0 can start\nInProgress (0)\nCompleted (0)\n"
+SHORT = (
+    "Backlog (5)\n> S-0001  []  title 1\n  ... 4 more, 0 can start\nInProgress (0)\nCompleted (0)\n"
+)
 
 
 @dataclass(frozen=True)
@@ -114,7 +116,7 @@ def test_status_counts_the_next_to_start_the_top_leaves_out_and_does_not_list_it
 ) -> None:
     listed = after(tmp_path, WAITING, ["status"])
     assert listed.out.splitlines()[1:3] == [
-        "~ S-0001  title 1  -- depends on S-0002",
+        "~ S-0001  []  title 1  -- depends on S-0002",
         "  ... 4 more, 1 can start",
     ]
 
@@ -157,5 +159,5 @@ def test_status_json_lists_every_item_of_the_backlog(tmp_path: Path) -> None:
 
 def test_status_lists_a_backlog_of_one_line_with_no_more_line(tmp_path: Path) -> None:
     assert after(tmp_path, ONE, ["status"]).out == (
-        "Backlog (1)\n> S-0001  title 1\nInProgress (0)\nCompleted (0)\n"
+        "Backlog (1)\n> S-0001  []  title 1\nInProgress (0)\nCompleted (0)\n"
     )

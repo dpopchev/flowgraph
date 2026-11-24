@@ -13,6 +13,11 @@ depends_on = [
     "S-0133",
 ]
 
+[verified]
+answer = "yes"
+text = "at 9501201, on a scratch record with a completed Feature of two work items and a completed Story standing alone, fgraph status prints \"Completed (2)\", \"  F-0001  5678def  a feature title\", \"  S-0003  abc1233  title 3\", neither with a count; on the record of flowgraph F-0012 reads \"F-0012  4a0a43d  Raise the ways of working ...\" where it read \"F-0012  4/4 W  4a0a43d\" before"
+on = 2026-11-24 11:12:43+00:00
+
 [criterion]
 given = "a record with a completed Feature of two work items and a completed Story that stands alone"
 when = "fgraph status is run"

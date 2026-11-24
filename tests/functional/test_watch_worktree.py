@@ -34,7 +34,7 @@ SECOND = Path("project.worktrees") / "S-0002-title-2"
 WORKTREES = [FIRST, SECOND]
 FRAME = (
     "Backlog (1)\n"
-    "> S-0003  title 3\n"
+    "> S-0003  [1 T]  title 3\n"
     "InProgress (2)\n"
     "  S-0001  0/1 T  title 1\n"
     "    => T-0001  a task title\n"
@@ -152,13 +152,13 @@ class TestGuardsThatPassToday:
     def test_under_parallel_two_main_lists_the_one_added_after_unmarked(
         self, limited: Path
     ) -> None:
-        assert "  S-0003  title 3" in fgraph(["status"], limited).out.splitlines()
+        assert "  S-0003  [1 T]  title 3" in fgraph(["status"], limited).out.splitlines()
 
     def test_with_no_work_tree_on_main_a_worktree_lists_its_own_record(
         self, checkout: Path, tmp_path: Path
     ) -> None:
         git(checkout, "switch", "--quiet", "--create", "elsewhere")
-        assert "> S-0002  title 2" in fgraph(["status"], tmp_path / FIRST).out.splitlines()
+        assert "> S-0002  [1 T]  title 2" in fgraph(["status"], tmp_path / FIRST).out.splitlines()
 
     def test_show_in_a_worktree_reads_the_record_of_that_worktree(
         self, checkout: Path, tmp_path: Path
@@ -190,4 +190,6 @@ class TestWorktreesListTheRecordOfMain:
     def test_under_parallel_two_a_worktree_lists_the_one_added_after_unmarked(
         self, limited: Path, tmp_path: Path, worktree: Path
     ) -> None:
-        assert "  S-0003  title 3" in fgraph(["status"], tmp_path / worktree).out.splitlines()
+        assert (
+            "  S-0003  [1 T]  title 3" in fgraph(["status"], tmp_path / worktree).out.splitlines()
+        )

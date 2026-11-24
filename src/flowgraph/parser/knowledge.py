@@ -8,6 +8,10 @@ from flowgraph.parser.base import Commands, new_command
 NOTE = "keep a finding, a decision, a deviation or a progress line on a work item, in any state"
 NOTE_ID = "the id of the work item or of the Feature, of a Task too with --progress"
 NOTE_PROGRESS = "where the work stands; no knowledge line"
+NOTE_SUPERSEDES = (
+    "an earlier line this one supersedes, by the ref fgraph knowledge lists, as S-0001#2; "
+    "once per line"
+)
 
 
 def note_command(commands: Commands) -> argparse.ArgumentParser:
@@ -18,6 +22,7 @@ def note_command(commands: Commands) -> argparse.ArgumentParser:
     note.add_argument(
         "--governs", action="append", metavar="PATH", help="a file the line governs; once per file"
     )
+    note.add_argument("--supersedes", action="append", metavar="REF", help=NOTE_SUPERSEDES)
     kinds = note.add_mutually_exclusive_group(required=True)
     kinds.add_argument("--finding", metavar="TEXT", help="what the work learned")
     kinds.add_argument("--decision", metavar="TEXT", help="what was decided")
@@ -58,5 +63,10 @@ def knowledge_command(commands: Commands) -> argparse.ArgumentParser:
     knowledge.add_argument("--about", metavar="TERM", help="list the lines about one term alone")
     knowledge.add_argument(
         "--search", metavar="TEXT", help="list the lines whose text holds this text, in any case"
+    )
+    knowledge.add_argument(
+        "--live",
+        action="store_true",
+        help="list the live lines alone: those no later line supersedes",
     )
     return knowledge

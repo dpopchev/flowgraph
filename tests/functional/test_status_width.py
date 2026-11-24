@@ -80,13 +80,13 @@ class TestAStoryWhoseLineIsLongerThanTheTerminal:
         self, listed: Outcome
     ) -> None:
         assert listed.out == (
-            "Backlog (1)\n> S-0001  a title that is much longer...\nInProgress (0)\nCompleted (0)\n"
+            "Backlog (1)\n> S-0001  []  a title that is much lo...\nInProgress (0)\nCompleted (0)\n"
         )
 
 
 def test_status_written_to_no_terminal_lists_the_line_whole(tmp_path: Path) -> None:
     listed = status_after(tmp_path, [ADD_STORY], None)
-    assert listed.out.splitlines()[1] == f"> S-0001  {LONG}"
+    assert listed.out.splitlines()[1] == f"> S-0001  []  {LONG}"
 
 
 def test_status_keeps_the_commit_of_a_completed_story_on_a_line_cut(tmp_path: Path) -> None:

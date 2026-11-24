@@ -59,3 +59,36 @@ def test_a_decision_of_a_feature_marked_standing_ends_with_its_mark() -> None:
     assert feature_text(detail, [], "Backlog").endswith(
         "  decision  2026-01-01  a text  (standing)\n"
     )
+
+
+def test_a_superseded_line_ends_with_the_ref_of_the_line_that_supersedes_it() -> None:
+    row = KnowledgeRow("decision", NOW, "a text", superseded_by=["S-0001#2"])
+    assert shown(row).endswith("  decision  2026-01-01  a text  (superseded by S-0001#2)\n")
+
+
+def test_the_refs_that_supersede_a_line_come_after_its_mark_terms_and_files() -> None:
+    row = KnowledgeRow(
+        "finding", NOW, "a text", ["gate"], ["src/gate.py"], "open", superseded_by=["S-0001#2"]
+    )
+    assert shown(row).endswith(
+        "  finding  2026-01-01  a text  (open)  (about gate)  (governs src/gate.py)"
+        "  (superseded by S-0001#2)\n"
+    )
+
+
+def test_two_refs_that_supersede_a_line_are_joined_by_a_comma() -> None:
+    row = KnowledgeRow("decision", NOW, "a text", superseded_by=["S-0001#2", "S-0002#1"])
+    assert shown(row).endswith("  a text  (superseded by S-0001#2, S-0002#1)\n")
+
+
+def test_a_superseded_line_of_a_feature_ends_with_the_refs_that_supersede_it() -> None:
+    detail = FeatureDetail(
+        "F-0001",
+        "a feature title",
+        "",
+        ["a criterion"],
+        knowledge=[KnowledgeRow("decision", NOW, "a text", superseded_by=["F-0001#2"])],
+    )
+    assert feature_text(detail, [], "Backlog").endswith(
+        "  decision  2026-01-01  a text  (superseded by F-0001#2)\n"
+    )

@@ -156,13 +156,14 @@ def note_work_item(
     about: tuple[str, ...] = (),
     governs: tuple[str, ...] = (),
     mark: Mark = UNMARKED,
+    supersedes: tuple[str, ...] = (),
 ) -> None:
     """Keep a line of that kind and text on the work item of that id, in any state, and save it.
 
-    The line is about the terms given, governs the files given, carries the mark given and goes
-    after the lines the item keeps. Raises
+    The line is about the terms given, governs the files given, carries the mark given, keeps the
+    refs of the lines it supersedes and goes after the lines the item keeps. Raises
     WorkItemNotFoundError when the record holds no such item and EmptyPartError when the text is
     blank; nothing is saved.
     """
-    line = make_knowledge_line(kind, text, now(), about, governs, mark)
+    line = make_knowledge_line(kind, text, now(), about, governs, mark, supersedes)
     save_work_item(noted_work_item(load_work_item(item_id), line))

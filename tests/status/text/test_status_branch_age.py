@@ -72,7 +72,7 @@ def test_an_older_branch_under_a_feature_is_two_columns_further_in() -> None:
 
 
 def test_a_work_item_in_backlog_holding_an_older_age_is_listed_as_before() -> None:
-    assert status_text([row(state="backlog")]).splitlines()[1] == "  S-0001  a title"
+    assert status_text([row(state="backlog")]).splitlines()[1] == "  S-0001  [2 T]  a title"
 
 
 def test_a_completed_work_item_holding_an_older_age_is_listed_as_before() -> None:

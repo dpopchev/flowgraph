@@ -20,7 +20,7 @@ def plain(item: int) -> WorkItemRow:
 
 
 def test_the_next_to_start_is_marked() -> None:
-    assert status_text([NEXT]).splitlines()[1] == "> S-0002  a title"
+    assert status_text([NEXT]).splitlines()[1] == "> S-0002  []  a title"
 
 
 def test_a_feature_that_is_the_next_to_start_is_marked() -> None:
@@ -36,8 +36,8 @@ def test_the_next_to_start_left_out_by_the_top_is_counted_in_the_more_line_and_n
     last = WorkItemRow("S-0004", "a title", "backlog", created=CREATED, next_to_start=True)
     rows = [plain(1), plain(2), plain(3), last]
     assert status_text(rows, same_top(2)).splitlines()[1:-2] == [
-        "  S-0001  a title",
-        "  S-0002  a title",
+        "  S-0001  []  a title",
+        "  S-0002  []  a title",
         "  ... 2 more, 1 can start",
     ]
 
@@ -45,14 +45,14 @@ def test_the_next_to_start_left_out_by_the_top_is_counted_in_the_more_line_and_n
 def test_the_next_to_start_inside_the_top_is_listed_once() -> None:
     rows = [plain(1), NEXT, plain(3)]
     assert status_text(rows, same_top(2)).splitlines()[1:-2] == [
-        "  S-0001  a title",
-        "> S-0002  a title",
+        "  S-0001  []  a title",
+        "> S-0002  []  a title",
         "  ... 1 more, 0 can start",
     ]
 
 
 def test_a_top_that_leaves_none_out_lists_no_more_line() -> None:
     assert status_text([plain(1), NEXT], same_top(2)).splitlines()[1:-2] == [
-        "  S-0001  a title",
-        "> S-0002  a title",
+        "  S-0001  []  a title",
+        "> S-0002  []  a title",
     ]

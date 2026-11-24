@@ -8,7 +8,7 @@ from typing import assert_never
 
 from flowgraph.feature import FeatureRow
 from flowgraph.status.next import start_now_ids
-from flowgraph.status.review import ready_for_review, review_ids
+from flowgraph.status.review import counted, ready_for_review, review_ids
 from flowgraph.story import StoryRow
 from flowgraph.task import TaskRow
 from flowgraph.upkeep import UpkeepRow
@@ -188,16 +188,17 @@ def _status_line(row: StoryRow | UpkeepRow) -> str:
 
     A started one is marked `?` before its id when it is ready for review; a blocked one `!`,
     ending with what it waits on and why, as a blocked Task. Each is listed with
-    its Tasks completed of all, between its id and its title, then
+    its Tasks completed of all but the removed, between its id and its title, then
     the agent it is handed to in brackets, if any, and under it each Task of it being worked on a
     line of its own, in the order written. A completed one holds a commit or not: one it holds
     stands before the title, so a line cut to a width keeps it; a reason ends the line.
     """
     if row.state in IN_PROGRESS:
-        completed = sum(task.state == COMPLETED for task in row.tasks)
+        tasks = counted(row)
+        completed = sum(task.state == COMPLETED for task in tasks)
         worked = "".join(_task_line(task) for task in row.tasks)
         handed = f"[{row.agent}]  " if row.agent else ""
-        line = f"{row.id}  {completed}/{len(row.tasks)} T  {handed}{row.title}"
+        line = f"{row.id}  {completed}/{len(tasks)} T  {handed}{row.title}"
         if row.waiting_on:
             return f"{_marked(line, (row.waiting_on, row.block_reason))}\n{worked}"
         mark = "? " if ready_for_review(row) else "  "
@@ -215,7 +216,7 @@ def _status_line(row: StoryRow | UpkeepRow) -> str:
 
 
 def _task_line(task: TaskRow) -> str:
-    """A Task being worked, under its work item; nothing for one in Backlog or completed.
+    """A Task being worked, under its work item; nothing for one in Backlog, completed or removed.
 
     A started Task is marked `=>`, a blocked one `!` and ends with what it waits on and why.
     """

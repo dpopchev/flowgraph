@@ -1,5 +1,6 @@
 """The moves of a work item of any kind: it starts with a Task and completes once every Task has."""
 
+from dataclasses import replace
 from datetime import UTC, datetime
 
 import pytest
@@ -15,6 +16,8 @@ from flowgraph.task import (
     completed,
     make_task,
     make_task_id,
+    removed,
+    removed_among,
     started,
 )
 from flowgraph.work_item import (
@@ -104,6 +107,17 @@ def test_a_work_item_with_every_task_completed_completes_in_its_commit() -> None
         completed=DONE.replace(microsecond=0),
         commit=COMMIT,
         tasks=(completed(started(TASK, ON), DONE, COMMIT),),
+    )
+
+
+def test_a_work_item_whose_tasks_are_completed_or_removed_completes_holding_both() -> None:
+    other = make_task(make_task_id(2), "another task", "another output", "", CREATED)
+    begun = started_work_item(append_task(ITEM, other), ON)
+    done = completed_task(started_task(begun, make_task_id(1), ON), make_task_id(1), DONE, COMMIT)
+    gone = replace(done, tasks=removed_among(done.tasks, make_task_id(2), "a reason", DONE))
+    assert completed_work_item(gone, DONE, COMMIT).tasks == (
+        completed(started(TASK, ON), DONE, COMMIT),
+        removed(other, "a reason", DONE),
     )
 
 

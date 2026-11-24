@@ -17,6 +17,7 @@ from flowgraph.task import (
     TaskId,
     blocked_among,
     completed_among,
+    removed_among,
     started_among,
     task_id_text,
     task_of,
@@ -108,6 +109,34 @@ def unblocked_task(item: WorkItemState, task_id: TaskId) -> StartedWorkItem:
             raise _held(task_id_text(task_id), "cannot be unblocked", item)
         case WorkItem() | CompletedWorkItem() | RemovedWorkItem():
             raise NotBlockedError(f"{task_id_text(task_id)} is not blocked")
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def removed_task(
+    item: WorkItemState, task_id: TaskId, reason: str, on: datetime
+) -> StartedWorkItem:
+    """The started work item with its Task of that id removed on that time, for the reason.
+
+    A Task in Backlog, started or blocked is removed. Raises TaskNotFoundError when the item
+    holds no such Task, ItemInBacklogError when the item is in Backlog, BlockedError when it is
+    blocked, CompletedAlreadyError when it or the Task is completed, RemovedAlreadyError when
+    it is removed, TaskRemovedError when the Task is and EmptyPartError when the reason is blank.
+    """
+    task_of(item.tasks, task_id)
+    task = task_id_text(task_id)
+    named = work_item_id_text(item.id)
+    match item:
+        case WorkItem():
+            raise ItemInBacklogError(f"{task} cannot be removed: {named} is in Backlog")
+        case StartedWorkItem():
+            return replace(item, tasks=removed_among(item.tasks, task_id, reason, on))
+        case BlockedWorkItem():
+            raise _held(task, "cannot be removed", item)
+        case CompletedWorkItem():
+            raise CompletedAlreadyError(f"{task} cannot be removed: {named} is completed already")
+        case RemovedWorkItem():
+            raise RemovedAlreadyError(item.id)
         case _ as unreachable:
             assert_never(unreachable)
 

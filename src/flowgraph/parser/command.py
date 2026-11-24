@@ -32,6 +32,7 @@ from flowgraph.item.commands import (
 )
 from flowgraph.item.hand import hand_item
 from flowgraph.item.moves import start_item
+from flowgraph.item.progress import note_progress
 from flowgraph.item.verify import verify_item, verify_item_no
 from flowgraph.knowledge import DECISION, DEVIATION, FINDING
 from flowgraph.knowledge.governed import governs_asked
@@ -141,6 +142,8 @@ def _written(
             return hand_item(args.id, args.agent, store)
         case "remove":
             return remove_named(args.id, args.reason, store, now, args.superseded_by)
+        case "note" if args.progress is not None:
+            return note_progress(args.id, args.progress, store, now, args.about, args.governs)
         case "note":
             kind, text = next(
                 (kind, text)

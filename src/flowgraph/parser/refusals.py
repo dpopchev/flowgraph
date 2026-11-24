@@ -24,6 +24,7 @@ from flowgraph.feature.start import FeatureNotStartedError, NoWorkItemError
 from flowgraph.goal.model import EmptyGoalError, GoalDriverError, GoalHoursError
 from flowgraph.graph import FormatError
 from flowgraph.item.commands import ItemIdError
+from flowgraph.item.progress import ProgressLineError
 from flowgraph.knowledge.list import KindListedError
 from flowgraph.parent import FeatureIdError
 from flowgraph.record import ConfigError
@@ -75,6 +76,7 @@ REFUSED = (
     FeatureFileError,
     QueueFileError,
     ItemIdError,
+    ProgressLineError,
     WorkItemIdError,
     FeatureIdError,
     FeatureNotFoundError,

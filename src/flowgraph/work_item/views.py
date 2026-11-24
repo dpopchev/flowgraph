@@ -5,6 +5,7 @@ from datetime import datetime
 
 from flowgraph.knowledge import KnowledgeRow
 from flowgraph.task import TaskRow
+from flowgraph.work_item.progress import ProgressRow
 
 
 @dataclass
@@ -104,3 +105,4 @@ class WorkItemDetail:
     amended_by: list[str] = field(default_factory=list[str])
     about: list[str] = field(default_factory=list[str])
     verified: VerifiedRow | None = None
+    progress: list[ProgressRow] = field(default_factory=list[ProgressRow])

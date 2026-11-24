@@ -420,7 +420,11 @@ of work item. The developer said so on 2026-11-21.
   removed Feature are on no line either, and its show lists them Completed
   (Persistence).
 - `fgraph status` lists the top of each heading, the developer's decision of
-  2026-11-21, but not for InProgress, which has no top: with no flag it lists
+  2026-11-21. The tops are those of the configuration, the developer's decision
+  of 2026-11-23 on S-0136: `status.backlog`, `status.in-progress`,
+  `status.completed` and `status.removed` each take a count of lines of 1 or
+  more, or `all`, and left out they are 1, `all`, 5 and 5; a flag of the command
+  wins over a key for that run. With no key InProgress has no top: it lists
   every item of InProgress (S-0132, the developer's frame of 2026-11-23), each
   started work item under its Feature when it has one, with the Task being
   worked below it. Completed and Removed keep the first five, in the order each
@@ -478,9 +482,9 @@ of work item. The developer said so on 2026-11-21.
   holds it. A work item with no Task is not marked, nor is one whose Task is in Backlog,
   started or blocked, nor a completed one; the line of a Feature carries no mark. A removed
   Task counts neither way: a work item whose Tasks left are each completed is marked, and
-  one whose every Task is removed is not (S-0147). With no flag InProgress has
-  no top, so the next sentence holds only where a top of InProgress is set (a
-  configuration will set one): a marked line the top leaves out is listed
+  one whose every Task is removed is not (S-0147). With no key InProgress has
+  no top, so the next sentence holds only where `status.in-progress` sets a
+  top: a marked line the top leaves out is listed
   after it, apart from the count of those more, in InProgress; in the Backlog a line that can start beyond the top is counted
   in the more-line, `... N more, M can start`, and not listed.
 - Under a Feature of InProgress `fgraph status` lists each started work item
@@ -554,7 +558,9 @@ of work item. The developer said so on 2026-11-21.
   and writes the next, every 5 seconds or every `-n SECS`, a part of a
   second too. Each line is cut to the width of the terminal as status cuts
   it, the width asked for again at every frame. `--all` lists every item and
-  `--backlog` the whole Backlog, as on status. It ends after `--count N` frames with exit 0, no wait after the
+  `--backlog` the whole Backlog, as on status; a frame lists the buckets
+  `watch.buckets` names, in the order of the flow, and by the counts the
+  `[status]` keys set, `--all` listing every line of those buckets. It ends after `--count N` frames with exit 0, no wait after the
   last; without a count Ctrl-C ends it, with exit 0 and no traceback, since
   that is how a watch is left. A `-n` or a `--count` that is no positive
   number is refused with exit 2 before a frame is written.
@@ -2229,7 +2235,9 @@ development too.
   `git.commit`, `development.enabled`, `development.parallel`,
   `development.merge`, `development.gate`, `development.driver`,
   `development.mode`, `development.branch_max`, `development.approver`,
-  `delivery.push`, `delivery.tag` and `archive.board`, each named dotted, its
+  `delivery.push`, `delivery.tag`, `archive.board`, `status.backlog`,
+  `status.in-progress`, `status.completed`, `status.removed` and
+  `watch.buckets`, each named dotted, its
   table and its key. The record of flowgraph holds
   `[development] enabled = true`, no `parallel`, no `merge` and no `gate`.
 - The configuration is shown and set through `fgraph config`, the reading of
@@ -2253,6 +2261,17 @@ development too.
 - `archive.board` holds the path of the `.board/` of board 1 the record points
   at, a text read as it is; it is `none` when left out, and a blank is refused
   with `archive.board is "": it takes a path`.
+- Two tables hold the lines and the buckets of a listing, read in
+  `src/flowgraph/record/listing.py` and mapped to the frame in
+  `src/flowgraph/status/tops.py` and `buckets.py`. `[status]` holds
+  `backlog`, `in-progress`, `completed` and `removed`, each a whole number of
+  1 or more, or the text `all`, left out 1, `all`, 5 and 5; one that is neither
+  is refused with `status.backlog is 0: it takes a count of lines of 1 or more,
+  or all`. `[watch]` holds `buckets`, the buckets to show separated by commas,
+  left out the four; a value that is no text, no bucket or a bucket twice is
+  refused with `watch.buckets is "backlog, done": it takes the buckets to show,
+  among backlog, in-progress, completed and removed, separated by commas`. The
+  buckets are kept in the order of the flow whatever the order written.
 - The whole file is read back through the constructor of the configuration
   before it replaces the one in the record (`write_settings`,
   `src/flowgraph/record/config.py`). A key the configuration does not have, a value

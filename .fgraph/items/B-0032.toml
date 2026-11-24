@@ -1,11 +1,13 @@
 id = "B-0032"
-state = "started"
+state = "completed"
 title = "Cut the blocks and unblocks of a Task fgraph answers on main from the copy of main, for a Task moved in the worktree of its work item, from every one to none"
 description = "Found by the planner of S-0138 on 2026-11-23, in a scratch record, and run again by the coordinator that day; filed at the end of the Backlog on the word of the developer. The moves of a Task are answered before the save that src/flowgraph/development/scope.py refuses on main, so a move the copy of main refuses never reaches that refusal. The block of a work item S-0138 builds is written in the worktree too and its unblock on main will say S-0001 is not blocked the same way. src/flowgraph/development/scope.py is at 238 of 250 lines. Open: whether the start and the complete of a Task on main are named the same way. Its Tasks are written when it is ordered."
 complexity = "low"
 created = 2026-11-23 14:02:28+00:00
 started = 2026-11-24 04:04:41+00:00
+completed = 2026-11-24 04:38:00+00:00
 agent = "haiku-a8"
+commit = "6b02396"
 depends_on = [
     "U-0025",
 ]

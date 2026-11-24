@@ -1,0 +1,18 @@
+id = "S-0159"
+state = "backlog"
+title = "Raise the moves an agent makes as tools from none to those of its work item and its Tasks: start, hand, block, unblock, note, and the start, the block and the complete of a Task"
+description = "New on the plan agreed on 2026-11-24. It waits for the two Bugs of F-0019: a server makes two writes of main at one time likelier. Its Tasks are written before its Feature starts."
+parent = "F-0022"
+realizes = 3
+complexity = "high"
+created = 2026-11-24 19:52:02+00:00
+depends_on = [
+    "S-0157",
+    "B-0035",
+    "B-0036",
+]
+
+[criterion]
+given = "the server of fgraph mcp on a repository with the development on and a planned Story in Backlog"
+when = "the session calls the tools that start the Story with its agent, start its Task, note its progress and complete the Task at its commit, and then the one that completes a Task whose check fails"
+then = "each move is written where fgraph writes it, main or the worktree of the Story, and answers with the line its command prints; the refused completion is given back as an error that holds the one line of the refusal, nothing written"

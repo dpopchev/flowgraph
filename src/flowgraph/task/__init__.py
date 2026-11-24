@@ -1,5 +1,6 @@
 """A Task: one deliverable of a work item, and the Tasks of one work item among themselves."""
 
+from flowgraph.task.amend import TaskAmendment, amended
 from flowgraph.task.id import (
     TaskId,
     TaskIdError,
@@ -57,6 +58,7 @@ __all__ = [
     "StartedAlreadyError",
     "StartedTask",
     "Task",
+    "TaskAmendment",
     "TaskId",
     "TaskIdError",
     "TaskInProgressError",
@@ -65,6 +67,7 @@ __all__ = [
     "TaskRow",
     "TaskState",
     "all_completed",
+    "amended",
     "at_most_one_started",
     "blocked",
     "blocked_among",

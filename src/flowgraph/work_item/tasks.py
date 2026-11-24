@@ -1,6 +1,7 @@
 """The moves of a Task inside its work item: only a started work item moves its Tasks.
 
-No Task of a blocked work item moves: each move is refused naming the block.
+No Task of a blocked work item moves: each move is refused naming the block. The amend of a Task
+in Backlog is here too, though it is no move: it takes the work items that take a new Task.
 """
 
 from dataclasses import replace
@@ -14,7 +15,11 @@ from flowgraph.task import (
     ItemInBacklogError,
     NotBlockedError,
     NotStartedError,
+    Task,
+    TaskAmendment,
     TaskId,
+    TaskState,
+    amended,
     blocked_among,
     completed_among,
     removed_among,
@@ -23,10 +28,12 @@ from flowgraph.task import (
     task_of,
     unblocked_among,
 )
+from flowgraph.work_item.amend import NoPartError
 from flowgraph.work_item.id import work_item_id_text
 from flowgraph.work_item.model import (
     BlockedWorkItem,
     CompletedWorkItem,
+    OpenWorkItem,
     RemovedAlreadyError,
     RemovedWorkItem,
     StartedWorkItem,
@@ -88,6 +95,39 @@ def blocked_task(
             raise _held(task, "cannot be blocked", item)
         case CompletedWorkItem():
             raise CompletedAlreadyError(f"{task} is completed already")
+        case RemovedWorkItem():
+            raise RemovedAlreadyError(item.id)
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def _amended_named(task: TaskState, amendment: TaskAmendment) -> Task:
+    """The Task amended, once its state has passed; NoPartError when the amendment is empty."""
+    new = amended(task, amendment)
+    if amendment == TaskAmendment():
+        raise NoPartError(f"amend rewrites no part of {task_id_text(task.id)}: name one")
+    return new
+
+
+def amended_task(item: WorkItemState, task_id: TaskId, amendment: TaskAmendment) -> OpenWorkItem:
+    """The work item with its Task in Backlog of that id amended, in the place it had.
+
+    A work item in Backlog, started or blocked takes it, as it takes a new Task. Raises
+    TaskNotFoundError when the item holds no such Task, the refusal of `amended` for a Task that
+    is not in Backlog, CompletedAlreadyError when the item is completed, RemovedAlreadyError
+    when it is removed and NoPartError when the amendment names no part.
+    """
+    task = task_of(item.tasks, task_id)
+    named = task_id_text(task_id)
+    match item:
+        case WorkItem():
+            new = _amended_named(task, amendment)
+            return replace(item, tasks=tuple(new if t.id == task_id else t for t in item.tasks))
+        case StartedWorkItem() | BlockedWorkItem():
+            new = _amended_named(task, amendment)
+            return replace(item, tasks=tuple(new if t.id == task_id else t for t in item.tasks))
+        case CompletedWorkItem():
+            raise CompletedAlreadyError(f"{named} is completed already")
         case RemovedWorkItem():
             raise RemovedAlreadyError(item.id)
         case _ as unreachable:

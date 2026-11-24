@@ -13,6 +13,11 @@ depends_on = [
 ]
 filed_during = "Q-0001"
 
+[verified]
+answer = "yes"
+text = "at 8b39b4d on main, the merge of wi/B-0027-cut-the-work-items, in a throwaway repository with the development on, S-0001 in Backlog with a Task and a branch wi/S-0001-no-review-mark-is made by hand: fgraph start S-0001 --slug no-review-mark-is exit 2 printed fgraph: error: S-0001 cannot start: the branch wi/S-0001-no-review-mark-is is there already -- delete it or give another --slug; the head of main the same commit before and after, git status empty, fgraph show S-0001 lists bucket Backlog; once the branch is deleted the same start exit 0 printed started S-0001 and its branch in its worktree, bucket InProgress. make check on the tree of the landing, the branch with main merged at 9a7e99b: 3629 passed, all checks passed. Handed whole to one subagent on sonnet: T-0458 holds two commits of one message, e62b7ca and 620123a, the second joining a refusal line its check greps on one line; src/flowgraph/development/start_branch.py holds 138 lines against the about 110 of the brief, the paths of a work item and of a Feature in private functions."
+on = 2026-11-24 04:19:56+00:00
+
 [criterion]
 observed = "with the development on, fgraph start S-0001 --slug no-review-mark-is while a branch wi/S-0001-no-review-mark-is exists commits chore: start S-0001 in the record, then exits 2 with git worktree add ... failed: fatal: a branch named 'wi/S-0001-no-review-mark-is' already exists -- S-0001 is started at 773abc9, its branch is not; a second start exits 2 with S-0001 is started already, the branch deleted or not, and its Tasks then start on main"
 expected = "a start whose branch git refuses writes nothing, or leaves a way to make the branch of the started work item"

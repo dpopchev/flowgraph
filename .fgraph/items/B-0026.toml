@@ -10,6 +10,11 @@ agent = "sonnet-a4"
 commit = "c5305ac"
 filed_during = "Q-0001"
 
+[verified]
+answer = "yes"
+text = "at c5305ac on main, the merge of wi/B-0026-cut-the-item-files, on a throwaway record of two Stories, one with a finding, where the created of S-0001.toml was rewritten to created = 2026-10-11: fgraph status, fgraph knowledge, fgraph show S-0002 and fgraph amend S-0001 --title x each exit 2 and end on the one line fgraph: error: <path>/.fgraph/items/S-0001.toml holds no Story: created = 2026-10-11 is a time with no offset: write it with one, as 2026-01-01 09:00:00+00:00, no traceback; after the amend the file still holds created = 2026-10-11; before the edit fgraph status exit 0; the record of flowgraph reads as before, fgraph status exit 0. make check on main at c5305ac: 3591 passed, all checks passed. Handed whole to one subagent on sonnet: after the four Tasks it added the commit 0cec4c8, which types the helper rewritten as Any in three test files its Tasks name, for pyright, and carries no id of the work item or of a Task."
+on = 2026-11-24 04:14:30+00:00
+
 [criterion]
 observed = "an item file whose created is a day alone, created = 2026-10-11, is read alone; beside an item whose times carry an offset, fgraph status and fgraph knowledge exit 1 with TypeError: can't compare offset-naive and offset-aware datetimes (status/view.py:65, knowledge/list.py:89), and fgraph amend rewrites the day as 2026-10-11 00:00:00 with no offset"
 expected = "a time of a file is read as one kind, or the file is refused in one line naming it, exit 2, with no traceback"

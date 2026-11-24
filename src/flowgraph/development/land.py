@@ -2,8 +2,9 @@
 
 `fgraph land` takes the git steps a developer ran by hand: the branch merged into main, the
 complete of the work item at the commit main is then on with the commit of the record, then the
-worktree and the branch removed. It is part of the development: a record whose configuration
-leaves the development off has no landing.
+worktree and the branch removed. After the line of the landing it says the When and the Then of
+the criterion to run on main at that commit, the expected of a Bug, nothing for a Spike. It is
+part of the development: a record whose configuration leaves the development off has no landing.
 
 `[development] merge` of the configuration says how it merges (`flowgraph.development.way`).
 Each way holds the merge uncommitted first, to complete the work item as the branch has it
@@ -31,7 +32,7 @@ from functools import partial
 from pathlib import Path
 
 from flowgraph import work_item
-from flowgraph.criterion import Decision, make_commit
+from flowgraph.criterion import Decision, make_commit, run_line
 from flowgraph.development import delivery
 from flowgraph.development.branch import MAIN
 from flowgraph.development.commit import OpenGit, Said, WorkTree, branch_started, commit_written
@@ -169,7 +170,8 @@ def land_item(
     of a work item that stands alone does too, between the two pushes, before anything of the
     record is written, the tag pushed under the push of the delivery: a tag or its push refused
     leaves the work item started and merged, as the first push does, and says so; a push of
-    main refused makes no tag.
+    main refused makes no tag. After the line of the landing it says the run line of the
+    criterion, the When and the Then or the expected of a Bug, and nothing for a Spike.
     """
     item_id = parse_work_item_id_of_any_kind(item)
     text = work_item_id_text(item_id)
@@ -191,6 +193,7 @@ def land_item(
     completes = partial(_check_completes, item_id, decision, landing)
     passes = partial(check_gate, text, config.development.gate, work_tree.path, run_gate)
     sha = merged_by(way, text, branch, work_tree, partial(_check_lands, completes, passes))
+    run = run_line(store.load_work_item(item_id).criterion)
     at_merge = delivery.pushed_at_merge(text, sha, work_tree) if config.delivery.push else ""
     at_merge += _tag_at_merge(item_id, sha, decision, landing, config)
     written = complete_and_start_next(text, sha, store, now, config, decision)
@@ -208,7 +211,7 @@ def land_item(
     # What the complete says after the line of the work item: the Feature completed with it,
     # or the next work item of the Feature, started or not.
     _, _, with_it = written.out.partition("\n")
-    said = f"landed {text} at {sha}\n{with_it}"
+    said = f"landed {text} at {sha}\n{run}{with_it}"
     if written.branch is not None:
         said += branch_started(written.branch, work_tree)
     if config.delivery.push:

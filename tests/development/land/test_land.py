@@ -210,7 +210,7 @@ def test_a_landing_takes_its_git_steps_in_order() -> None:
 
 
 def test_a_landing_names_the_work_item_and_the_merge_commit() -> None:
-    assert land(READY, work_tree([])) == Said("landed S-0001 at 3e9ae5c\n")
+    assert land(READY, work_tree([])) == Said("landed S-0001 at 3e9ae5c\nrun: b -> c\n")
 
 
 def test_a_landing_completes_the_work_item_at_the_merge_commit() -> None:
@@ -239,7 +239,7 @@ def test_a_landing_that_completes_the_feature_of_the_work_item_names_it_after_th
 ):
     kept, tree = last_of_a_started_feature(), work_tree([])
     landed = land_item("S-0001", MESSAGE, kept, lambda: NOW, RECORD, lambda _: tree, ON, no_gate)
-    assert landed == Said("landed S-0001 at 3e9ae5c\ncompleted F-0001 at 3e9ae5c\n")
+    assert landed == Said("landed S-0001 at 3e9ae5c\nrun: b -> c\ncompleted F-0001 at 3e9ae5c\n")
 
 
 def test_a_landing_that_completes_the_feature_commits_the_record_once_naming_both() -> None:
@@ -314,7 +314,8 @@ def test_a_landing_that_starts_the_next_work_item_names_it_and_its_branch_after_
     None
 ):
     assert land_first(branching([])) == Said(
-        f"landed S-0001 at 3e9ae5c\nstarted S-0002\nbranch {NEXT_BRANCH} in {NEXT_WORKTREE}\n"
+        f"landed S-0001 at 3e9ae5c\nrun: b -> c\n"
+        f"started S-0002\nbranch {NEXT_BRANCH} in {NEXT_WORKTREE}\n"
     )
 
 
@@ -481,7 +482,8 @@ def test_a_landing_by_squash_takes_its_git_steps_in_order() -> None:
 
 
 def test_a_landing_by_squash_names_the_work_item_and_the_squash_commit() -> None:
-    assert land(READY, work_tree([]), config=SQUASH) == Said("landed S-0001 at 5d1e0aa\n")
+    landed = land(READY, work_tree([]), config=SQUASH)
+    assert landed == Said("landed S-0001 at 5d1e0aa\nrun: b -> c\n")
 
 
 def test_a_landing_by_squash_completes_the_work_item_at_the_squash_commit() -> None:
@@ -528,7 +530,7 @@ def test_a_landing_by_fast_forward_takes_its_git_steps_in_order() -> None:
 
 def test_a_landing_by_fast_forward_names_the_work_item_and_the_tip_of_the_branch() -> None:
     landed = land(READY, work_tree([]), config=FAST_FORWARD, message=None)
-    assert landed == Said("landed S-0001 at 9f8e7d6\n")
+    assert landed == Said("landed S-0001 at 9f8e7d6\nrun: b -> c\n")
 
 
 def test_a_landing_by_fast_forward_completes_the_work_item_at_the_tip_of_the_branch() -> None:
@@ -618,7 +620,7 @@ def test_a_landing_runs_its_gate_at_the_top_of_the_work_tree_while_the_merge_is_
 
 def test_a_landing_whose_gate_passes_names_the_work_item_and_the_merge_commit() -> None:
     landed = land(READY, work_tree([]), config=GATED, run_gate=gate([]))
-    assert landed == Said("landed S-0001 at 3e9ae5c\n")
+    assert landed == Said("landed S-0001 at 3e9ae5c\nrun: b -> c\n")
 
 
 def test_a_landing_whose_gate_fails_is_refused_naming_the_command_and_its_status() -> None:
@@ -692,7 +694,7 @@ def test_a_landing_with_delivery_push_true_pushes_main_once_the_landing_is_whole
 
 def test_a_landing_pushed_names_the_remote_main_is_pushed_to() -> None:
     assert land(READY, work_tree([]), config=PUSHED) == Said(
-        "landed S-0001 at 3e9ae5c\npushed main to origin\n"
+        "landed S-0001 at 3e9ae5c\nrun: b -> c\npushed main to origin\n"
     )
 
 
@@ -811,7 +813,7 @@ def test_a_landing_taken_up_completes_the_work_item_at_the_commit_main_is_on() -
 
 
 def test_a_landing_taken_up_names_the_work_item_and_that_commit() -> None:
-    assert land(READY, merged_already([])) == Said("landed S-0001 at 3e9ae5c\n")
+    assert land(READY, merged_already([])) == Said("landed S-0001 at 3e9ae5c\nrun: b -> c\n")
 
 
 def test_a_landing_taken_up_with_a_task_not_completed_is_refused_taking_no_step() -> None:
@@ -912,7 +914,7 @@ def test_a_landing_of_a_branch_not_found_is_refused_before_the_untracked_main_tr
 
 
 def test_a_landing_without_the_push_to_an_untracked_main_lands_tracks() -> None:
-    assert land(READY, untracked([])) == Said("landed S-0001 at 3e9ae5c\n")
+    assert land(READY, untracked([])) == Said("landed S-0001 at 3e9ae5c\nrun: b -> c\n")
 
 
 def test_a_landing_pushed_on_another_branch_is_refused_for_it_first_tracks() -> None:

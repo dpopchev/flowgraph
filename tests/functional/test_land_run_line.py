@@ -2,7 +2,7 @@
 
 Run end to end through `run` on a real git repository in a temporary directory, never a faked
 git; the identity of its commits comes from the environment and no git config of the machine is
-read. The red tests are strict xfails until the landing prints the line.
+read.
 """
 
 import subprocess
@@ -35,9 +35,6 @@ ADD_WRAPPED = [
     "another",
 ]
 RUN = "run: an action -> another"
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="S-0151: fgraph land prints no line of the criterion to run"
-)
 IDENTITY = {
     "GIT_AUTHOR_NAME": "a developer",
     "GIT_AUTHOR_EMAIL": "developer@example.com",
@@ -127,31 +124,26 @@ class TestAStoryLanded:
     def landing(self, project: Path) -> Outcome:
         return landed(project, ADD_STORY)
 
-    @XFAIL
     def test_the_output_names_the_story_and_the_criterion_to_run(
         self, landing: Outcome, project: Path
     ) -> None:
         merge = git(project, "rev-parse", "--short", "HEAD~1")
         assert landing.out == f"landed S-0001 at {merge}\n{RUN}\n"
 
-    @XFAIL
     def test_the_second_line_is_the_run_line(self, landing: Outcome) -> None:
         assert (landing.status, landing.out.splitlines()[1]) == (0, RUN)
 
 
-@XFAIL
 def test_an_upkeep_landed_prints_its_run_line_second(project: Path) -> None:
     upkeep = landed(project, ADD_UPKEEP)
     assert (upkeep.status, upkeep.out.splitlines()[1]) == (0, RUN)
 
 
-@XFAIL
 def test_a_bug_landed_prints_its_expected_as_the_run_line(project: Path) -> None:
     bug = landed(project, ADD_BUG)
     assert (bug.status, bug.out.splitlines()[1]) == (0, "run: it works")
 
 
-@XFAIL
 def test_a_when_over_two_lines_is_printed_on_one(project: Path) -> None:
     wrapped = landed(project, ADD_WRAPPED)
     assert (wrapped.status, wrapped.out.splitlines()[1]) == (

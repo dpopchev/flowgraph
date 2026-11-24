@@ -19,13 +19,15 @@ then = "its branch is pushed with a pull request opened, and the work item is co
 
 [[tasks]]
 id = "T-0512"
-state = "started"
+state = "completed"
 title = "Move the steps of a landing and of a release from src/flowgraph/development/commit.py into src/flowgraph/development/steps.py"
 description = "A move with no change of behavior, the suite its guard: the landing through a pull request needs one more step of LandingSteps and its binding in open_git, 4 lines, and src/flowgraph/development/commit.py holds 244 lines today, 247 after B-0023 and 248 after S-0096. Change src/flowgraph/development/commit.py (about 248 lines, about 185 after) and add src/flowgraph/development/steps.py (about 80 lines) only. Move, as written, _lands_nothing, LandingSteps (with the step upstream B-0023 added), NO_LANDING, _releases_nothing, ReleaseSteps and NO_RELEASE, with their docstrings and comment lines. The new module imports Callable, dataclass, datetime, Path and Never as those classes need them, and nothing of flowgraph: it is the lowest module of the development. Its docstring, one paragraph: the steps only a landing and only a release take in a work tree, each a callable bound to it by open_git of flowgraph.development.commit, and the values of a work tree built without them. commit.py imports LandingSteps, NO_LANDING, ReleaseSteps and NO_RELEASE from flowgraph.development.steps and drops the imports it no longer uses (Never, datetime, if nothing else there reads them); WorkTree, OpenGit, Said, open_git, kept_in, commit_written, branch_started, HEAD, _ignores_nothing and _knows_no_commit stay. One sentence of the module docstring of commit.py names the new module. src/flowgraph/development/release.py and the tests under tests/development/land and tests/development/release keep importing LandingSteps and ReleaseSteps from flowgraph.development.commit, which still names them through its import: change no importer. Should make check (ruff or pyright) refuse a name imported through commit.py, change that one import in src/flowgraph/development/release.py to the new module and say so in the commit; no test file changes either way. Out of bounds: src/flowgraph/development/git.py (239 lines), tag_git.py, land.py, way.py, delivery.py, every test file, the docs."
 check = "test \"$(wc -l < src/flowgraph/development/commit.py)\" -le 195 && grep -q \"^class LandingSteps\" src/flowgraph/development/steps.py && make check"
 expected_output = "created: src/flowgraph/development/steps.py holds LandingSteps, NO_LANDING, ReleaseSteps and NO_RELEASE with the two functions that refuse a step, as they are; changed: src/flowgraph/development/commit.py imports them, WorkTree and open_git stay as they are, and the module holds 195 lines or fewer; no test file changes and every command prints what it printed before"
 created = 2026-11-23 20:50:51+00:00
 started = 2026-11-24 07:54:26+00:00
+completed = 2026-11-24 08:02:15+00:00
+commit = "582598e0414b612056237a0b4f608875446c8853"
 
 [[tasks]]
 id = "T-0513"

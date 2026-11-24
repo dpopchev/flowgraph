@@ -71,7 +71,7 @@ def test_show_of_a_work_item_lists_an_open_finding_with_its_mark(story: Path) ->
 def test_knowledge_lists_an_open_finding_with_its_mark(story: Path) -> None:
     fgraph(OPEN_NOTE, story)
     assert fgraph(["knowledge"], story).out == (
-        "2026-01-01  finding  S-0001  the queue is one file  (open)\n"
+        "2026-01-01  finding  S-0001#1  the queue is one file  (open)\n"
     )
 
 
@@ -99,7 +99,7 @@ def test_knowledge_lists_the_mark_before_the_term_the_line_is_about(story: Path)
     fgraph(ADD_TERM, story)
     fgraph([*OPEN_NOTE, "--about", "gate"], story)
     assert fgraph(["knowledge"], story).out == (
-        "2026-01-01  finding  S-0001  the queue is one file  (open)  (about gate)\n"
+        "2026-01-01  finding  S-0001#1  the queue is one file  (open)  (about gate)\n"
     )
 
 

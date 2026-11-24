@@ -35,8 +35,8 @@ SCRIPT = [
     (6, ["note", "S-0001", "--deviation", "a task was dropped"]),
 ]
 
-STORE = "2026-01-03  decision  S-0001  keep one store  (about gate)\n"
-PLAIN = "2026-01-02  finding  S-0001  the Store is plain files\n"
+STORE = "2026-01-03  decision  S-0001#2  keep one store  (about gate)\n"
+PLAIN = "2026-01-02  finding  S-0001#1  the Store is plain files\n"
 
 
 def none(what: str) -> str:
@@ -118,7 +118,7 @@ def test_search_finds_a_part_of_a_word(recorded: Path) -> None:
     result = search(recorded, "--search", "tw")
     assert (result.status, result.out) == (
         0,
-        "2026-01-04  decision  F-0001  ship in two steps\n",
+        "2026-01-04  decision  F-0001#1  ship in two steps\n",
     )
 
 
@@ -153,11 +153,11 @@ def test_a_blank_search_is_refused_with_exit_two(recorded: Path) -> None:
 
 def test_knowledge_without_a_search_lists_every_line_newest_first(recorded: Path) -> None:
     assert search(recorded).out == (
-        "2026-01-06  deviation  S-0001  a task was dropped\n"
+        "2026-01-06  deviation  S-0001#3  a task was dropped\n"
         "2026-01-05  decision  Q-0001  one file per item (answer yes)\n"
-        "2026-01-04  decision  F-0001  ship in two steps\n"
-        "2026-01-03  decision  S-0001  keep one store  (about gate)\n"
-        "2026-01-02  finding  S-0001  the Store is plain files\n"
+        "2026-01-04  decision  F-0001#1  ship in two steps\n"
+        "2026-01-03  decision  S-0001#2  keep one store  (about gate)\n"
+        "2026-01-02  finding  S-0001#1  the Store is plain files\n"
     )
 
 

@@ -1176,6 +1176,16 @@ before and, with the development on, fgraph warns that no branch was made. A
 git step refused exits 2 and names the git command: a commit refused puts the
 file back as it was, a worktree refused leaves the start committed.
 
+A start whose branch is there already is refused before it writes: nothing is
+written and the Story stays in Backlog. Delete the branch or give another
+`--slug`; the start takes over no branch that is there.
+
+```sh
+git branch wi/S-0001-branch-on-start
+fgraph start S-0001 --slug branch-on-start
+# fgraph: error: S-0001 cannot start: the branch wi/S-0001-branch-on-start is there already -- delete it or give another --slug
+```
+
 The rules of a branch that follow are those of a record with the development
 on: with it off fgraph makes no branch `wi/<id>-<slug>` and no worktree, so
 every write is taken on `main`. A start given `--slug` then exits 2 naming the
@@ -2170,6 +2180,9 @@ branch made:
 - with `development.driver` set to `agent`, when a work item of it in Backlog
   has no complexity, the first in start order named:
   `F-0001 cannot start: S-0002 has no complexity to start with: set it with fgraph amend S-0002 --complexity low, medium or high`;
+- with the development on, when the branch of its first work item is there
+  already:
+  `F-0001 cannot start: the branch wi/S-0002-<slug> is there already -- delete it or give another --slug`;
 - when `[development] parallel` refuses one more started work item:
   `F-0001 cannot start: development.parallel = 1, started already: S-0002`.
 

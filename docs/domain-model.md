@@ -234,6 +234,10 @@ A `RemovedStory` reached from a `StartedStory` or a `BlockedStory` holds no
 started time, no agent and no block: its completed Tasks are kept and its
 others are each a `RemovedTask` (S-0148).
 
+fgraph prints the four buckets in kebab case -- backlog, in-progress, completed, removed -- in
+every text and every JSON document, the developer's decision of 2026-11-23 (S-0137). A bucket
+is never stored: an item file holds its state, backlog, started, blocked, completed or removed.
+
 The five of a Task are `Task`, `StartedTask`, `BlockedTask`, `CompletedTask`
 and `RemovedTask`; the last adds removed on and reason, with no superseded by
 and no started time or block (S-0147).
@@ -729,7 +733,7 @@ and `--depends-on none` alone takes them all away.
   away`. A Feature is amended by its title, its description and its criteria,
   so `--depends-on` given to one is refused as a part it has not.
 - `fgraph show` lists `depends on` with each id and the bucket it is in now,
-  `S-0001 (Backlog)`, after the parent, and lists none for a work item that
+  `S-0001 (backlog)`, after the parent, and lists none for a work item that
   depends on none. The file holds the ids as `depends_on = ["S-0001"]`, only
   when there is one, read back in every state; an id of no kind, or the work
   item itself, makes the file refused when it is read.
@@ -942,7 +946,7 @@ fgraph never sets the goal, it words it. The scope is the Feature alone: its wor
 Backlog, named in the order they start. The output is text only, the line and its newline.
 
 The line holds, in this order: the Feature and its end state, `fgraph show F-ID lists` the ids
-as `a`, `a and b` or `a, b and c` `Completed`; the bound, `or stop after N hours`; the
+as `a`, `a and b` or `a, b and c` `completed`; the bound, `or stop after N hours`; the
 coordinator, one whole work item handed to one subagent, at most `development.parallel` at once,
 or as many as can start when `development.parallel` sets no limit; and the halt, the goal is met
 as well when the session prints `[HALT] <id>: <the decision needed>` on a change to a criterion,
@@ -1057,8 +1061,8 @@ three lists.
   and `null` for a term, which is in none. A Task node has a fifth key, `state`, after
   `bucket`: `backlog`, `started`, `blocked` or `completed`, the words of a Task in
   `fgraph status --format json`. Its `bucket` is the one `fgraph show` lists the Task in:
-  Backlog, InProgress for a started and a blocked one -- `state` tells them apart --
-  Completed, and Removed for every Task of a removed work item, whose `state` is the one
+  backlog, in-progress for a started and a blocked one -- `state` tells them apart --
+  completed, and removed for every Task of a removed work item, whose `state` is the one
   it kept. The node of a work item, of a Feature and of a term has the four keys alone.
 - `edges`: each has `kind`, `from` and `to`. The kinds are `under` (a work item to its
   Feature), `task of` (a Task to its work item), `depends on`, `filed during`,
@@ -1084,7 +1088,8 @@ and the text ends with a newline, so two runs on one record print the same bytes
 that holds nothing is `null`, never an empty text; a list that holds nothing is `[]`.
 
 - Document: `buckets`, one object per bucket, always the four, in the order of the flow
-  (Backlog, InProgress, Completed, Removed; Removed too when empty); `can_start`, the ids
+  (backlog, in-progress, completed, removed; removed too when empty), the names a client
+  that reads them adopts; `can_start`, the ids
   of every work item that can start now, in the order they take their places, the work
   items of a started Feature first (S-0110, which adds it to the reading of S-0087), `[]`
   for none; `next_to_start`, the first of them, or `null`; `ready_for_review`, the ids of
@@ -1524,7 +1529,7 @@ and its merge tool.
   `T-0001 is a Task: it is removed with --reason alone`. A removed Task
   refuses its start, its block and its complete as `T-0001 is removed
   already`, and its unblock as `T-0001 is not blocked`. `fgraph show` and
-  `fgraph brief` list it under its title with `    bucket           Removed`
+  `fgraph brief` list it under its title with `    bucket           removed`
   and `    reason           <why>`; the heading `Tasks (N)` still counts it.
 - An Upkeep is kept as `items/U-0001.toml`, in the shape of a Story file:
   the same fields in each state, `started`, `completed` and `commit` once it
@@ -1844,7 +1849,7 @@ and its merge tool.
   Its work items are on no line of their own, as under a Feature of any
   bucket: those removed with it, a completed one, and one removed before it,
   which had its own line until then. A work item removed under a Feature that is not removed keeps its
-  line. `fgraph show` of a removed Feature lists `bucket       Removed` and
+  line. `fgraph show` of a removed Feature lists `bucket       removed` and
   under it `reason       <reason>`, as the show of a removed work item does,
   then its criteria and its work items, each in its own state, `Removed` or
   `Completed`; `fgraph show` of a work item removed with it lists the same
@@ -1930,7 +1935,7 @@ and its merge tool.
   keeps it. The JSON keeps the progress of a completed Feature. One completed without a commit, and
   a Feature never started that is derived Completed, are listed without one,
   `F-0001  2/2 W  <title>`. `fgraph show` of a completed Feature lists
-  `bucket       Completed` and under it `commit       677f9b0`, the commit
+  `bucket       completed` and under it `commit       677f9b0`, the commit
   line only when it has one, as the show of a work item does.
 - This reverses the developer's decision of 2026-11-21 that listed the
   Features of a record in a block of their own above the buckets: the heading
@@ -3010,7 +3015,7 @@ Took by the commands:
 | E-007, pruned | `remove`, its reason | the reason | `depends_on` E-006 |
 | W-044, pruned spike, no Task | `remove` | the reason, `Tasks (0)` | -- |
 | W-045, pruned, on pruned W-044 | `remove` | `depends on Q-0001`, kept when written before Q-0001 was removed | -- |
-| W-061, todo spike | `add spike --depends-on` | the hypothesis, `depends on S-0002 (Backlog)` | the question, the conjecture |
+| W-061, todo spike | `add spike --depends-on` | the hypothesis, `depends on S-0002 (backlog)` | the question, the conjecture |
 | W-187, done | `--filed-during` the work item of T-456 | `filed during S-0002`, the verification | the Task it was filed during |
 | W-188, done bug | `add bug`, `verify --yes` | observed, expected, the verification | input, steps, technical |
 | W-195, done spike | `complete --decision --answer yes` | the decision, the answer | the verification |
@@ -3087,7 +3092,7 @@ the validator; a time with no offset is refused in the one line alone.
 | a removed work item with `started` and completed Tasks | refused | `removed.tasks.0.state Input should be 'backlog'`; `removed.started Extra inputs are not permitted` |
 | a removed Task | refused | `Input tag 'removed' found using 'state' does not match any of the expected tags: 'backlog', 'started', 'blocked', 'completed'` |
 | a blocked work item | refused | `Input tag 'blocked' found using 'state' does not match any of the expected tags: 'backlog', 'started', 'completed', 'removed'` |
-| `depends_on` a removed work item | read | `~ S-0002  [] ...`, then `  depends on S-0001` below, `depends on S-0001 (Removed)` |
+| `depends_on` a removed work item | read | `~ S-0002  [] ...`, then `  depends on S-0001` below, `depends on S-0001 (removed)` |
 | a Feature with `hypothesis`, `outcome`, `depends_on` | refused | `started.hypothesis Extra inputs are not permitted` (the same for each) |
 | a Bug with `input`, `steps`, `technical` | refused | `backlog.input Extra inputs are not permitted` (the same for each) |
 | a `token` | refused | `backlog.token Extra inputs are not permitted` |
@@ -3142,7 +3147,7 @@ The four rows left unknown:
   commands (`has no Task to start with`) and is read from a file.
 - `depends_on` naming a pruned work item: settled. The write refuses it
   once the other is removed, and keeps it when written before; the read
-  takes it from a file and shows `(Removed)`. A conversion writes the
+  takes it from a file and shows `(removed)`. A conversion writes the
   dependency before the removal, or writes the file.
 - the branch of a doing work item: settled for a branch named by the new
   id. fgraph keeps no branch: it reads a started item from the worktree of a

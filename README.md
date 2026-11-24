@@ -142,11 +142,11 @@ during it and a term:
 fgraph about S-0002
 # S-0002  Hold the landing
 #   feature (1)
-#     F-0001  InProgress  Land work safely
+#     F-0001  in-progress  Land work safely
 #   depends on (1)
-#     S-0001  Completed  Run the gate
+#     S-0001  completed  Run the gate
 #   filed here (1)
-#     S-0003  Backlog  Name the lane of a landing
+#     S-0003  backlog  Name the lane of a landing
 #   terms (1)
 #     gate  a check every deliverable passes before it lands
 ```
@@ -219,7 +219,7 @@ fgraph brief S-0002
 #   branch       wi/S-0002-hold-the-landing
 #   path         /work/project.worktrees/S-0002-hold-the-landing
 # Feature
-#   F-0001  InProgress  Land work safely
+#   F-0001  in-progress  Land work safely
 # Governed by
 #   decision  2026-11-22  S-0001  the gate holds no state
 # Terms (1)
@@ -240,7 +240,7 @@ not a whole number of 1 or more:
 
 ```sh
 fgraph goal F-0001 --hours 4
-# /goal Develop F-0001 until fgraph show F-0001 lists S-0001, S-0002 and S-0003 Completed, or stop after 4 hours. This session is the coordinator: it hands each whole work item to one subagent, at most 3 at once as development.parallel says. The goal is met as well when this session prints [HALT] <id>: <the decision needed> on a change to a criterion, a Task or the scope of a work item, or a removal, that the developer has not agreed.
+# /goal Develop F-0001 until fgraph show F-0001 lists S-0001, S-0002 and S-0003 completed, or stop after 4 hours. This session is the coordinator: it hands each whole work item to one subagent, at most 3 at once as development.parallel says. The goal is met as well when this session prints [HALT] <id>: <the decision needed> on a change to a criterion, a Task or the scope of a work item, or a removal, that the developer has not agreed.
 ```
 
 `fgraph graph` exports the whole record as one JSON document another tool reads:
@@ -259,19 +259,19 @@ fgraph graph --format json
 #       "id": "F-0001",
 #       "kind": "feature",
 #       "title": "Land work safely",
-#       "bucket": "Backlog"
+#       "bucket": "backlog"
 #     },
 #     {
 #       "id": "S-0001",
 #       "kind": "story",
 #       "title": "Run the gate",
-#       "bucket": "Backlog"
+#       "bucket": "backlog"
 #     },
 #     {
 #       "id": "T-0001",
 #       "kind": "task",
 #       "title": "Write the gate",
-#       "bucket": "InProgress",
+#       "bucket": "in-progress",
 #       "state": "blocked"
 #     },
 #     {
@@ -423,11 +423,15 @@ fgraph add story "Raise the Stories fgraph lists under Backlog from 0 to 1" \
 # added S-0001
 
 fgraph status
-# Backlog (1)
+# backlog (1)
 # > S-0001  []  Raise the Stories fgraph lists under Backlog from 0 to 1
-# InProgress (0)
-# Completed (0)
+# in-progress (0)
+# completed (0)
 ```
+
+fgraph prints the four buckets in kebab case -- backlog, in-progress, completed, removed -- in
+every text and every JSON document, the developer's decision of 2026-11-23 (S-0137); this
+README names them in its prose as before.
 
 A work item in Backlog is listed with the count of its Tasks in brackets, `[]` while it holds
 none.
@@ -444,7 +448,7 @@ fgraph add task "Add the show command to src/flowgraph/cli.py, listing a Story" 
 
 fgraph show S-0001
 # S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
-#   bucket       Backlog
+#   bucket       backlog
 #   given        a record with no items
 #   when         a Story is added
 #   then         fgraph status lists it under Backlog
@@ -500,16 +504,16 @@ fgraph add task "Add a second Story to the listing" --parent S-0002 --output "ch
 # added T-0002 to S-0002
 
 fgraph start S-0002
-# fgraph: error: S-0002 cannot start: it depends on S-0001, in Backlog
+# fgraph: error: S-0002 cannot start: it depends on S-0001, in backlog
 
 fgraph show S-0002
 # S-0002  Raise the Stories fgraph lists under Backlog from 1 to 2
-#   bucket       Backlog
-#   depends on   S-0001 (Backlog)
+#   bucket       backlog
+#   depends on   S-0001 (backlog)
 #   ...
 
 fgraph status --backlog
-# Backlog (2)
+# backlog (2)
 # > S-0001  [1 T]  Add the show command
 # ~ S-0002  [1 T]  Raise the Stories fgraph lists under Backlog from 1 to 2
 #   depends on S-0001
@@ -541,13 +545,13 @@ alone of S-0086.
 
 ```sh
 fgraph status --backlog   # parallel = 3, S-0001 started, S-0002 waits for S-0004
-# Backlog (4)
+# backlog (4)
 # ~ S-0002  []  a second title
 #   depends on S-0004
 # > S-0003  []  a third title
 # > S-0004  []  a fourth title
 #   S-0005  []  a fifth title
-# InProgress (1)
+# in-progress (1)
 #   S-0001  0/1 T  a first title
 ```
 
@@ -625,7 +629,7 @@ fgraph status --format json
 #           "waits_for": []
 #         }
 #       ],
-#       "name": "InProgress"
+#       "name": "in-progress"
 #     }
 #   ],
 #   "can_start": [],
@@ -671,13 +675,13 @@ fgraph add bug "Cut the traceback fgraph prints on a blank title from 1 to 0" \
 
 fgraph show B-0001
 # B-0001  Cut the traceback fgraph prints on a blank title from 1 to 0
-#   bucket       Backlog
+#   bucket       backlog
 #   filed during S-0001
 #   ...
 
 fgraph show S-0001
 # S-0001  ...
-#   bucket       InProgress
+#   bucket       in-progress
 #   filed here   B-0001
 #   ...
 ```
@@ -699,13 +703,13 @@ fgraph add story "Raise the kinds of work item fgraph adds from 4 to 5" \
 
 fgraph show S-0002
 # S-0002  Raise the kinds of work item fgraph adds from 4 to 5
-#   bucket       Backlog
+#   bucket       backlog
 #   amends       S-0001
 #   ...
 
 fgraph show S-0001
 # S-0001  ...
-#   bucket       Completed
+#   bucket       completed
 #   amended by   S-0002
 #   ...
 ```
@@ -1270,11 +1274,11 @@ fgraph start T-0001
 # started T-0001 of S-0001
 
 fgraph status
-# Backlog (0)
-# InProgress (1)
+# backlog (0)
+# in-progress (1)
 #   S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
 #     => T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
-# Completed (0)
+# completed (0)
 ```
 
 A work item under InProgress is listed with its progress, `0/1 T`: its Tasks
@@ -1295,11 +1299,11 @@ Feature. The mark is read from the Tasks at each listing and kept in no file:
 
 ```sh
 fgraph status
-# Backlog (0)
-# InProgress (2)
+# backlog (0)
+# in-progress (2)
 # ? S-0001  1/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
 #   S-0002  1/2 T  Add the show command to src/flowgraph/cli.py
-# Completed (0)
+# completed (0)
 ```
 
 With the development on and `development.branch_max` set to an age such as
@@ -1309,11 +1313,11 @@ refusal: nothing is held back for an old branch.
 
 ```sh
 fgraph status
-# Backlog (0)
-# InProgress (1)
+# backlog (0)
+# in-progress (1)
 #   S-0001  1/2 T  Raise the Stories fgraph lists
 #   its branch is older than 1d
-# Completed (0)
+# completed (0)
 ```
 
 When the record is inside a git work tree, starting a Story commits its file
@@ -1436,17 +1440,17 @@ fgraph start T-0001
 
 cd /src/project
 fgraph status
-# Backlog (0)
-# InProgress (1)
+# backlog (0)
+# in-progress (1)
 #   S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
 #     => T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
-# Completed (0)
+# completed (0)
 
 fgraph show S-0001
 # ...
 # Tasks (1)
 #   T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
-#     bucket           InProgress
+#     bucket           in-progress
 #     expected output  changed: src/flowgraph/cli.py gains the show command
 ```
 
@@ -1455,7 +1459,7 @@ there, each started Story read from its own worktree, and `fgraph show` reads th
 that worktree.
 
 `fgraph show` then names the bucket of the Story and of each Task that has
-left Backlog (`    bucket           InProgress`). A start exits 2 and names
+left Backlog (`    bucket           in-progress`). A start exits 2 and names
 why when the Story has no Task, when a Task's Story is still in Backlog, when
 the item is started or completed already, or when the record does not hold
 it.
@@ -1481,9 +1485,9 @@ fgraph complete S-0001 --commit 677f9b0
 # completed S-0001 at 677f9b0
 
 fgraph status
-# Backlog (0)
-# InProgress (0)
-# Completed (1)
+# backlog (0)
+# in-progress (0)
+# completed (1)
 #   S-0001  677f9b0  Raise the Stories fgraph lists under Backlog from 0 to 1
 ```
 
@@ -1519,20 +1523,20 @@ fgraph complete S-0001
 # completed S-0001
 
 fgraph status
-# Backlog (0)
-# InProgress (0)
-# Completed (1)
+# backlog (0)
+# in-progress (0)
+# completed (1)
 #   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
 
 fgraph show S-0001
 # S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
-#   bucket       Completed
+#   bucket       completed
 #   given        a record with no items
 #   when         a Story is added
 #   then         fgraph status lists it under Backlog
 # Tasks (1)
 #   T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
-#     bucket           Completed
+#     bucket           completed
 #     expected output  changed: src/flowgraph/cli.py gains the show command
 ```
 
@@ -1579,8 +1583,8 @@ fgraph note F-0001 --decision "the budget is agreed"
 fgraph show F-0001
 # ...
 # Work items (2)
-#   S-0001  Add the show command to src/flowgraph/cli.py  Completed
-#   S-0002  Add the note command to src/flowgraph/cli.py  Backlog
+#   S-0001  Add the show command to src/flowgraph/cli.py  completed
+#   S-0002  Add the note command to src/flowgraph/cli.py  backlog
 # Knowledge (1)
 #   decision  2026-11-22  the budget is agreed
 ```
@@ -1604,7 +1608,7 @@ fgraph show S-0001
 # ...
 # Tasks (1)
 #   T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
-#     bucket           InProgress
+#     bucket           in-progress
 #     expected output  changed: src/flowgraph/cli.py gains the show command
 #     progress         2026-11-22  red: 1 failed
 # Progress (1)
@@ -1715,7 +1719,7 @@ fgraph verify S-0001 --yes "make check: all checks passed"
 
 fgraph show S-0001
 # S-0001  Add the show command to src/flowgraph/cli.py
-#   bucket       Completed
+#   bucket       completed
 #   commit       def5678
 #   verified     yes  2026-11-22  make check: all checks passed
 # ...
@@ -1736,7 +1740,7 @@ fgraph verify S-0001 --no "status listed no reason"
 
 fgraph show B-0001
 # B-0001  No at the verify of S-0001: Add the show command to src/flowgraph/cli.py
-#   bucket       Backlog
+#   bucket       backlog
 #   amends       S-0001
 #   observed     status listed no reason
 #   expected     the item is shown
@@ -1744,7 +1748,7 @@ fgraph show B-0001
 
 fgraph show S-0001
 # S-0001  Add the show command to src/flowgraph/cli.py
-#   bucket       Completed
+#   bucket       completed
 #   amended by   B-0001
 #   commit       def5678
 #   verified     no  2026-11-22  status listed no reason
@@ -1762,7 +1766,7 @@ fgraph show S-0001
 # ...
 # Tasks (1)
 #   T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
-#     bucket           InProgress, blocked
+#     bucket           in-progress, blocked
 #     reason           the review is not back
 #     waiting on       the reviewer
 #     expected output  changed: src/flowgraph/cli.py gains the show command
@@ -1773,12 +1777,12 @@ below it, beginning under its id:
 
 ```sh
 fgraph status
-# Backlog (0)
-# InProgress (1)
+# backlog (0)
+# in-progress (1)
 #   S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
 #     !  T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
 #        waiting on the reviewer: the review is not back
-# Completed (0)
+# completed (0)
 ```
 
 A block exits 2 and names why when the Task is still in Backlog, blocked
@@ -1813,15 +1817,15 @@ fgraph block S-0001 --reason "no key" --waiting-on "developer"
 # blocked S-0001
 
 fgraph status
-# Backlog (0)
-# InProgress (1)
+# backlog (0)
+# in-progress (1)
 # ! S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
 #   waiting on developer: no key
-# Completed (0)
+# completed (0)
 
 fgraph show S-0001
 # S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
-#   bucket       InProgress, blocked
+#   bucket       in-progress, blocked
 #   reason       no key
 #   waiting on   developer
 # ...
@@ -2004,10 +2008,10 @@ fgraph add upkeep "Cut the lines of the largest module of src/flowgraph from 106
 # added U-0001
 
 fgraph status
-# Backlog (1)
+# backlog (1)
 # > U-0001  []  Cut the lines of the largest module of src/flowgraph from 1068 to 400
-# InProgress (0)
-# Completed (0)
+# in-progress (0)
+# completed (0)
 ```
 
 `fgraph show U-0001` shows it with its criterion and its Tasks. An Upkeep
@@ -2044,7 +2048,7 @@ fgraph add bug "Cut the tracebacks fgraph --dir prints for a file from 1 to 0" \
 
 fgraph show B-0001
 # B-0001  Cut the tracebacks fgraph --dir prints for a file from 1 to 0
-#   bucket       Backlog
+#   bucket       backlog
 #   observed     fgraph --dir given a file prints a traceback
 #   expected     it exits 2 and names the path
 # Tasks (0)
@@ -2070,7 +2074,7 @@ fgraph complete Q-0001 --commit 677f9b0 \
 
 fgraph show Q-0001
 # Q-0001  Settle whether one file per item can hold the record
-#   bucket       Completed
+#   bucket       completed
 #   commit       677f9b0
 #   hypothesis   Can one file per item hold the record?
 #   decision     one file per work item, its Tasks inside
@@ -2111,12 +2115,12 @@ fgraph add story "Raise the Stories fgraph lists under Backlog from 0 to 1" \
 
 fgraph show F-0001
 # F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
-#   bucket       Backlog
+#   bucket       backlog
 # Criteria (2)
 #   a developer sees every work item of the project by bucket
 #   a developer adds every kind of work
 # Work items (1)
-#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  Backlog
+#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  backlog
 ```
 
 A Feature has a state of its own, kept in its file as that of a work item is:
@@ -2148,7 +2152,7 @@ fgraph add story "Raise the kinds of work item fgraph adds from 1 to 2" \
 
 fgraph show S-0002
 # S-0002  Raise the kinds of work item fgraph adds from 1 to 2
-#   bucket       Backlog
+#   bucket       backlog
 #   parent       F-0001
 #   realizes     2  a developer adds every kind of work
 #   given        a record with a Story
@@ -2185,13 +2189,13 @@ optional. With S-0001, completed, realizing the first criterion:
 ```sh
 fgraph show F-0001
 # F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
-#   bucket       InProgress
+#   bucket       in-progress
 # Criteria (2), met 1 of 2
 #   1  met      a developer sees every work item of the project by bucket  S-0001
 #   2  not met  a developer adds every kind of work  S-0002
 # Work items (2)
-#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  Completed
-#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2  Backlog
+#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  completed
+#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2  backlog
 ```
 
 `fgraph status` lists a Feature inside its bucket, as one line in place of
@@ -2201,11 +2205,11 @@ is on no line of its own:
 
 ```sh
 fgraph status --backlog
-# Backlog (2)
+# backlog (2)
 # > F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #   S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
-# InProgress (0)
-# Completed (0)
+# in-progress (0)
+# completed (0)
 ```
 
 The progress, `0/1 W`, is the work items of the Feature completed of all it
@@ -2255,13 +2259,13 @@ under its line, indented, with its progress and its Task being worked:
 
 ```sh
 fgraph status
-# Backlog (1)
+# backlog (1)
 # > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
-# InProgress (1)
+# in-progress (1)
 #   F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #     S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
 #       => T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
-# Completed (0)
+# completed (0)
 ```
 
 The lines under a Feature belong to it: they count neither beside the heading
@@ -2277,15 +2281,15 @@ fgraph block T-0001 --reason "the review is not back" --waiting-on "the reviewer
 # blocked T-0001 of S-0001
 
 fgraph status
-# Backlog (1)
+# backlog (1)
 # > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
-# InProgress (1)
+# in-progress (1)
 # ! F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #   waiting on the reviewer: the review is not back
 #     S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
 #       !  T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
 #          waiting on the reviewer: the review is not back
-# Completed (0)
+# completed (0)
 ```
 
 The mark is derived at each listing, from the Tasks of the started work item,
@@ -2313,13 +2317,13 @@ fgraph complete S-0001 --commit 677f9b0
 # started S-0003
 
 fgraph status
-# Backlog (1)
+# backlog (1)
 # > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
-# InProgress (1)
+# in-progress (1)
 #   F-0001  1/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #     S-0003  0/1 T  Raise the Stories fgraph lists under Completed from 0 to 1
 #     S-0001  1/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
-# Completed (0)
+# completed (0)
 ```
 
 The start is named on a line of its own after the completion, and the two
@@ -2370,21 +2374,21 @@ fgraph complete S-0001 --commit 677f9b0
 # completed F-0001 at 677f9b0
 
 fgraph status
-# Backlog (1)
+# backlog (1)
 # > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
-# InProgress (0)
-# Completed (1)
+# in-progress (0)
+# completed (1)
 #   F-0001  677f9b0  Raise the kinds of work a project tracks with fgraph from 1 to 5
 
 fgraph show F-0001
 # F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
-#   bucket       Completed
+#   bucket       completed
 #   commit       677f9b0
 # Criteria (2)
 #   a developer sees every work item of the project by bucket
 #   a developer adds every kind of work
 # Work items (1)
-#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  Completed
+#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  completed
 ```
 
 The Feature holds the commit of that completion as its evidence, and none
@@ -2463,17 +2467,17 @@ fgraph block F-0001 --reason "the budget is not agreed" --waiting-on "the sponso
 # blocked F-0001
 
 fgraph status
-# Backlog (1)
+# backlog (1)
 # > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
-# InProgress (1)
+# in-progress (1)
 # ! F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #   waiting on the sponsor: the budget is not agreed
 #     S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
-# Completed (0)
+# completed (0)
 
 fgraph show F-0001
 # F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
-#   bucket       InProgress, blocked
+#   bucket       in-progress, blocked
 #   reason       the budget is not agreed
 #   waiting on   the sponsor
 # Criteria (2)
@@ -2635,21 +2639,21 @@ another:
 
 ```sh
 fgraph status --backlog
-# Backlog (2)
+# backlog (2)
 # > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 #   U-0002  []  Cut the lines one kind of work item holds from 885 to 250
-# InProgress (0)
-# Completed (0)
+# in-progress (0)
+# completed (0)
 
 fgraph reorder U-0002 --before S-0002
 # moved U-0002 before S-0002
 
 fgraph status --backlog
-# Backlog (2)
+# backlog (2)
 # > U-0002  []  Cut the lines one kind of work item holds from 885 to 250
 #   S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
-# InProgress (0)
-# Completed (0)
+# in-progress (0)
+# completed (0)
 ```
 
 A Feature is placed in the queue as a work item is: `fgraph reorder` takes
@@ -2662,21 +2666,21 @@ fgraph reorder S-0002 --before F-0001
 # moved S-0002 before F-0001
 
 fgraph status --backlog
-# Backlog (2)
+# backlog (2)
 # > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 #   F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
-# InProgress (0)
-# Completed (0)
+# in-progress (0)
+# completed (0)
 
 fgraph reorder F-0001 --before S-0002
 # moved F-0001 before S-0002
 
 fgraph status --backlog
-# Backlog (2)
+# backlog (2)
 # > F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #   S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
-# InProgress (0)
-# Completed (0)
+# in-progress (0)
+# completed (0)
 ```
 
 A work item under a Feature is on no line of the Backlog, so it is reordered
@@ -2692,13 +2696,13 @@ fgraph reorder S-0003 --before S-0001
 
 fgraph show F-0001
 # F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
-#   bucket       Backlog
+#   bucket       backlog
 # Criteria (2)
 #   a developer sees every work item of the project by bucket
 #   a developer adds every kind of work
 # Work items (2)
-#   S-0003  Raise the Upkeeps fgraph lists under Backlog from 0 to 1  Backlog
-#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  Backlog
+#   S-0003  Raise the Upkeeps fgraph lists under Backlog from 0 to 1  backlog
+#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  backlog
 ```
 
 A reorder exits 2 and names why:
@@ -2748,11 +2752,11 @@ Completed by the one completed last:
 
 ```sh
 fgraph status
-# Backlog (0)
-# InProgress (2)
+# backlog (0)
+# in-progress (2)
 #   B-0001  0/2 T  Cut the tracebacks fgraph --dir prints for a file from 1 to 0
 #   S-0003  1/3 T  Raise the kinds of work item fgraph adds from 2 to 3
-# Completed (3)
+# completed (3)
 #   U-0002  757fbaf  Cut the lines one kind of work item holds from 885 to 250
 #   F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #   S-0002  87c0307  Raise the kinds of work item fgraph adds from 1 to 2
@@ -2767,9 +2771,9 @@ item does. The count beside the heading stays that of all its items:
 
 ```sh
 fgraph status
-# Backlog (0)
-# InProgress (0)
-# Completed (7)
+# backlog (0)
+# in-progress (0)
+# completed (7)
 #   S-0007  e82af5a  Raise the kinds of work item fgraph takes to Completed from 3 to 4
 #   S-0006  c29f1b7  Raise the kinds of work item fgraph takes to Completed from 2 to 3
 #   S-0005  c399b40  Raise the kinds of work item fgraph takes to Completed from 1 to 2
@@ -2782,11 +2786,11 @@ A Backlog of five under a plain `fgraph status` lists its first line:
 
 ```sh
 fgraph status
-# Backlog (5)
+# backlog (5)
 # > S-0001  [1 T]  Add the show command
 #   ... 4 more, 0 can start
-# InProgress (0)
-# Completed (0)
+# in-progress (0)
+# completed (0)
 ```
 
 `fgraph status --backlog` lists the whole Backlog and leaves Completed and
@@ -2799,9 +2803,9 @@ keeps it:
 
 ```sh
 fgraph status        # on a terminal 60 columns wide
-# Backlog (0)
-# InProgress (0)
-# Completed (7)
+# backlog (0)
+# in-progress (0)
+# completed (7)
 #   S-0007  e82af5a  Raise the kinds of work item fgraph ta...
 #   S-0006  c29f1b7  Raise the kinds of work item fgraph ta...
 #   ...
@@ -2847,7 +2851,7 @@ fgraph amend S-0002 --then "fgraph status lists both kinds under Backlog"
 
 fgraph show S-0002
 # S-0002  Raise the kinds of work item fgraph adds from 1 to 2
-#   bucket       Backlog
+#   bucket       backlog
 #   given        a record with a Story
 #   when         an Upkeep is added
 #   then         fgraph status lists both kinds under Backlog
@@ -2891,13 +2895,13 @@ fgraph amend S-0002 --parent F-0001
 
 fgraph show F-0001
 # F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
-#   bucket       Backlog
+#   bucket       backlog
 # Criteria (2)
 #   a developer sees every work item of the project by bucket
 #   a developer adds every kind of work
 # Work items (2)
-#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  Backlog
-#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2  Backlog
+#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  backlog
+#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2  backlog
 
 fgraph amend S-0002 --parent none
 # amended S-0002
@@ -2952,12 +2956,12 @@ fgraph amend F-0001 --title "Raise the kinds of work a project tracks with fgrap
 
 fgraph show F-0001
 # F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 4
-#   bucket       Backlog
+#   bucket       backlog
 # Criteria (2)
 #   a developer sees every work item of the project by bucket
 #   a developer adds a Story, an Upkeep, a Bug and a Spike
 # Work items (1)
-#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  Backlog
+#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  backlog
 ```
 
 `--description ""` clears its description. An amend of a Feature exits 2,
@@ -3012,10 +3016,10 @@ fgraph remove S-0002 --reason "superseded by S-0003"
 # removed S-0002
 
 fgraph status
-# Backlog (0)
-# InProgress (0)
-# Completed (0)
-# Removed (1)
+# backlog (0)
+# in-progress (0)
+# completed (0)
+# removed (1)
 #   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 #   superseded by S-0003
 ```
@@ -3037,20 +3041,20 @@ fgraph remove S-0002 --superseded-by S-0003 --reason "refiled as a smaller step"
 
 fgraph status
 # ...
-# Removed (1)
+# removed (1)
 #   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 #   superseded by S-0003, refiled as a smaller step
 
 fgraph show S-0002
 # S-0002  Raise the kinds of work item fgraph adds from 1 to 2
-#   bucket       Removed
+#   bucket       removed
 #   superseded by S-0003
 #   reason       refiled as a smaller step
 #   ...
 
 fgraph show S-0003
 # S-0003  ...
-#   bucket       Backlog
+#   bucket       backlog
 #   supersedes   S-0002
 #   ...
 ```
@@ -3075,22 +3079,22 @@ fgraph remove S-0001 --reason "pivoted"
 
 fgraph status
 # ...
-# Removed (1)
+# removed (1)
 #   S-0001  Raise the Stories fgraph lists from 0 to 1
 #   pivoted
 
 fgraph show S-0001
 # ...
 #   T-0001  <its title>
-#     bucket           Completed
+#     bucket           completed
 #     commit           <sha>
 #   ...
 #   T-0002  <its title>
-#     bucket           Removed
+#     bucket           removed
 #     reason           pivoted
 #   ...
 #   T-0003  <its title>
-#     bucket           Removed
+#     bucket           removed
 #     reason           pivoted
 #   ...
 ```
@@ -3124,7 +3128,7 @@ fgraph status
 fgraph show S-0001
 # ...
 #   T-0002  <its title>
-#     bucket           Removed
+#     bucket           removed
 #     reason           not needed
 # ...
 
@@ -3154,10 +3158,10 @@ fgraph remove F-0001 --reason "dropped from the plan"
 # removed F-0001
 
 fgraph status
-# Backlog (0)
-# InProgress (0)
-# Completed (0)
-# Removed (2)
+# backlog (0)
+# in-progress (0)
+# completed (0)
+# removed (2)
 #   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 #   superseded by S-0003
 #   F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
@@ -3165,14 +3169,14 @@ fgraph status
 
 fgraph show F-0001
 # F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
-#   bucket       Removed
+#   bucket       removed
 #   reason       dropped from the plan
 # Criteria (2)
 #   a developer sees every work item of the project by bucket
 #   a developer adds every kind of work
 # Work items (2)
-#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  Removed
-#   S-0004  Raise the Stories fgraph lists under InProgress from 0 to 1  Removed
+#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  removed
+#   S-0004  Raise the Stories fgraph lists under InProgress from 0 to 1  removed
 ```
 
 The line of a removed Feature holds no progress: its reason stands in its

@@ -4,11 +4,12 @@ A second formatter of the rows `flowgraph.status.view` lists, beside the text: n
 computed here. The document holds `buckets`, each with its `name`, its `count` and every one of
 its `items`, in the order of the flow and of the rows given, and `next_to_start`, the id of the
 line marked as such or null. A work item holds its `id`, `kind`, `title`, `state`, `commit`,
-`reason` and `superseded_by` (null while empty), `progress` (its Tasks `completed` of `total`),
-its `tasks` and the ids it `waits_for`. A work item holds its `complexity` too, the word or null,
-and its `agent`, the name or null. A work item holds its `block` as well -- the `reason` and what
-it is `waiting_on` while it is blocked, or null; its `reason` stays that of a removal.
-A Task holds its `id`, `title`, `state`, `commit`, `reason` and `waiting_on`.
+`reason` and `superseded_by` (null while empty), `progress` (its Tasks `completed` of `total`,
+counting no removed Task), its `tasks` and the ids it `waits_for`. A work item holds its
+`complexity` too, the word or null, and its `agent`, the name or null. A work item holds its
+`block` as well -- the `reason` and what it is `waiting_on` while it is blocked, or null; its
+`reason` stays that of a removal. A Task holds its `id`, `title`, `state`, `commit`, `reason`
+and `waiting_on`; its `reason` while it is blocked or once it is removed.
 A Feature holds its `id`, `kind`, `title`, `commit`, `reason`,
 `progress` (its work items `completed` of `total`), the ids its first work item `waits_for`, its
 `block` -- the `reason` and what it is `waiting_on`, or null -- and its `work_items`: every work
@@ -25,7 +26,7 @@ from typing import Any, assert_never
 from flowgraph.feature import FeatureRow
 from flowgraph.record.store import KINDS
 from flowgraph.status.next import start_now_ids
-from flowgraph.status.review import review_ids
+from flowgraph.status.review import counted, review_ids
 from flowgraph.status.text import BUCKETS, is_listed_in
 from flowgraph.task import TaskRow
 from flowgraph.work_item import WorkItemRow
@@ -113,8 +114,8 @@ def _work_item(row: WorkItemRow) -> Item:
         "reason": row.reason or None,
         "superseded_by": row.superseded_by or None,
         "progress": {
-            "completed": sum(task.state == _COMPLETED for task in row.tasks),
-            "total": len(row.tasks),
+            "completed": sum(task.state == _COMPLETED for task in counted(row)),
+            "total": len(counted(row)),
         },
         "tasks": [_task(task) for task in row.tasks],
         "waits_for": list(row.waits_for),

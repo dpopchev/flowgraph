@@ -44,6 +44,18 @@ def test_a_started_work_item_with_a_blocked_task_is_not_ready() -> None:
     assert not ready_for_review(item(1, "started", task("completed"), task("blocked")))
 
 
+def test_a_started_work_item_with_its_tasks_completed_or_removed_is_ready() -> None:
+    assert ready_for_review(item(1, "started", task("completed"), task("removed")))
+
+
+def test_a_started_work_item_with_a_removed_task_and_one_in_backlog_is_not_ready() -> None:
+    assert not ready_for_review(item(1, "started", task("removed"), task("backlog")))
+
+
+def test_a_started_work_item_with_every_task_removed_is_not_ready() -> None:
+    assert not ready_for_review(item(1, "started", task("removed"), task("removed")))
+
+
 def test_a_completed_work_item_is_not_ready() -> None:
     assert not ready_for_review(item(1, "completed", task("completed")))
 

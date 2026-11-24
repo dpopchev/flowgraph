@@ -38,7 +38,6 @@ REMOVED = (*RECORD, DROP_WAITING, DROP_STARTED)
 LAST_DONE = (["start", "T-0003"], ["complete", "T-0003"])
 STORY_DONE = ["complete", "S-0001"]
 BLOCK_STORY = ["block", "S-0001", "--reason", "no key", "--waiting-on", "developer"]
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0147: fgraph remove takes no Task")
 
 
 @dataclass(frozen=True)
@@ -127,7 +126,6 @@ class TestATaskInBacklogAndTheStartedOneRemoved:
     def removed(self, tmp_path: Path) -> Outcome:
         return runs(tmp_path, *REMOVED)
 
-    @XFAIL
     def test_status_lists_the_story_at_none_of_one_task_and_no_task_under_it(
         self, removed: Outcome, tmp_path: Path
     ) -> None:
@@ -135,7 +133,6 @@ class TestATaskInBacklogAndTheStartedOneRemoved:
             "Backlog (0)\nInProgress (1)\n  S-0001  0/1 T  a title\nCompleted (0)\n"
         )
 
-    @XFAIL
     def test_show_lists_each_removed_task_with_its_bucket_and_its_reason(
         self, removed: Outcome, tmp_path: Path
     ) -> None:
@@ -146,7 +143,6 @@ class TestATaskInBacklogAndTheStartedOneRemoved:
         shown = fgraph(["show", "S-0001"], tmp_path, LATER).out
         assert (removed.status, brief == shown) == (0, True)
 
-    @XFAIL
     def test_status_as_json_lists_the_progress_and_each_task_with_its_state_and_reason(
         self, removed: Outcome, tmp_path: Path
     ) -> None:
@@ -168,7 +164,6 @@ class TestTheTaskLeftCompleted:
     def done(self, tmp_path: Path) -> Outcome:
         return runs(tmp_path, *REMOVED, *LAST_DONE)
 
-    @XFAIL
     def test_status_lists_the_story_marked_for_review_at_one_of_one_task(
         self, done: Outcome, tmp_path: Path
     ) -> None:
@@ -196,7 +191,6 @@ class TestEveryTaskRemoved:
     def emptied(self, tmp_path: Path) -> Outcome:
         return runs(tmp_path, *REMOVED, DROP_LAST)
 
-    @XFAIL
     def test_status_lists_the_story_at_none_of_none_unmarked(
         self, emptied: Outcome, tmp_path: Path
     ) -> None:

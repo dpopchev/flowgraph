@@ -68,7 +68,8 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     closing with its day and the text the run printed, the work item that supersedes a removed
     one and the reason of a removal are listed only when there is one, the bucket of a
     Task only once it has left Backlog. A blocked work item or Task is listed in InProgress as
-    blocked, with its reason and what it waits on. The knowledge lines follow, in the order
+    blocked, with its reason and what it waits on; a removed Task in Removed with its reason.
+    The knowledge lines follow, in the order
     noted, each with its kind, its date and its text, then the terms it is about; there is no
     heading without one.
     The terms the item is about are listed after its description, only when there are some, and
@@ -138,6 +139,8 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
             lines.append(f"    waiting on       {task.waiting_on}\n")
         elif task_bucket != "Backlog":
             lines.append(f"    bucket           {task_bucket}\n")
+            if task.reason:
+                lines.append(f"    reason           {task.reason}\n")
         if task.commit:
             lines.append(f"    commit           {task.commit}\n")
         lines.append(f"    expected output  {task.expected_output}\n")

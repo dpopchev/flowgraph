@@ -53,8 +53,9 @@ def still_open(item: WorkItemState) -> OpenWorkItem:
 def started_work_item(item: WorkItemState, on: datetime) -> StartedWorkItem:
     """The work item started on that time, kept to the second, its Tasks still in Backlog.
 
-    Raises NoTaskError when it has no Task, StartedAlreadyError when it is started, BlockedError
-    when it is blocked and CompletedAlreadyError when it is completed.
+    Raises NoTaskError when it has no Task, StartedAlreadyError when it is started, naming the
+    agent that holds it when one does, BlockedError when it is blocked and CompletedAlreadyError
+    when it is completed.
     """
     match item:
         case WorkItem(tasks=()):
@@ -78,7 +79,8 @@ def started_work_item(item: WorkItemState, on: datetime) -> StartedWorkItem:
                 progress=item.progress,
             )
         case StartedWorkItem():
-            raise StartedAlreadyError(f"{work_item_id_text(item.id)} is started already")
+            holder = f": {item.agent.name} holds it" if item.agent is not None else ""
+            raise StartedAlreadyError(f"{work_item_id_text(item.id)} is started already{holder}")
         case BlockedWorkItem():
             raise BlockedError(f"{work_item_id_text(item.id)} is blocked: unblock it first")
         case CompletedWorkItem():

@@ -1392,7 +1392,11 @@ and its merge tool.
   exit 2 and nothing written, for a Task, for a name that is no agent and with
   the development off, naming `development.enabled`. The start a completion, a
   landing or an unblock makes names no agent, and `fgraph start` of a work item
-  started already stays refused: a started work item is handed to another agent
+  started already stays refused, naming the agent that holds it, with the words
+  `S-0001 is started already: sonnet-a1 holds it`; one no agent holds is refused
+  as before with `S-0001 is started already`. Two starts at one time are made
+  one after the other by the lock of the record (B-0035, B-0036), so one holds
+  the work item. A started work item is handed to another agent
   by `fgraph hand`, below. The output line `started S-0001` is as before.
 - `fgraph hand S-0001 --agent opus-b2` hands a started work item of any kind to
   the agent named, in place of the one it held or of none, the reading of S-0126:

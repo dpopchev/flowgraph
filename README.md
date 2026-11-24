@@ -1365,7 +1365,9 @@ not interpret. The started work item holds it, the completed one keeps it,
 `fgraph status --format json` holds `agent`, the name or `null`. On a Feature
 the agent goes to the first work item the Feature starts. The start is read
 with the development on: it exits 2 and writes nothing for a Task, for a name
-that is no agent and with the development off, naming the key. The start a
+that is no agent and with the development off, naming the key. A second start
+of a work item an agent holds is refused naming it, and of two starts run at
+one time one holds the work item, by the lock of a write (B-0035). The start a
 completion, a landing or an unblock makes names no agent:
 
 ```sh
@@ -1374,6 +1376,8 @@ fgraph status               # the line:  S-0001  0/1 T  [sonnet-a1]  Raise the S
 fgraph show S-0001          # the line: agent  sonnet-a1
 fgraph start T-0001 --agent sonnet-a1
 # fgraph: error: --agent names the agent of a work item: T-0001 is a Task
+fgraph start S-0001 --agent opus-b2
+# fgraph: error: S-0001 is started already: sonnet-a1 holds it
 ```
 
 A started work item is handed to another agent, or to one when it holds none,

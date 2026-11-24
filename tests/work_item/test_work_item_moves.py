@@ -37,6 +37,7 @@ from flowgraph.work_item import (
     state_name,
     still_open,
 )
+from flowgraph.work_item.agent import make_agent
 
 pytestmark = pytest.mark.model
 
@@ -50,6 +51,7 @@ BARE = make_work_item(make_work_item_id(CHORE, 1), "a title", SCENARIO, "why", C
 TASK = make_task(make_task_id(1), "a task title", "an output", "how", CREATED)
 ITEM = append_task(BARE, TASK)
 BEGUN = started_work_item(ITEM, ON)
+HELD = replace(BEGUN, agent=make_agent("sonnet-a1"))
 HALF = started_task(BEGUN, make_task_id(1), ON)
 FINISHED = completed_task(HALF, make_task_id(1), DONE, COMMIT)
 WHOLE = completed_work_item(FINISHED, DONE, COMMIT)
@@ -84,6 +86,13 @@ def test_a_work_item_without_a_task_is_refused_by_its_id() -> None:
 def test_a_started_work_item_is_refused_by_its_id() -> None:
     with pytest.raises(StartedAlreadyError, match=r"^CH-0001 is started already$"):
         started_work_item(BEGUN, ON)
+
+
+def test_a_started_work_item_an_agent_holds_is_refused_naming_the_agent() -> None:
+    with pytest.raises(
+        StartedAlreadyError, match=r"^CH-0001 is started already: sonnet-a1 holds it$"
+    ):
+        started_work_item(HELD, ON)
 
 
 def test_a_task_of_a_work_item_in_backlog_is_refused_naming_both() -> None:

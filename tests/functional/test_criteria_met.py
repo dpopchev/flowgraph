@@ -34,9 +34,6 @@ OTHER = ["add", "story", "another title", *CRITERION, "--parent", "F-0001"]
 ALSO_FIRST = [*OTHER, "--realizes", "1"]
 TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
 TASK_FOR_OTHER = ["add", "task", "a task title", "--parent", "S-0002", "--output", "an output"]
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="S-0101: fgraph show of a Feature lists no criterion as met"
-)
 
 
 @dataclass(frozen=True)
@@ -89,7 +86,6 @@ def work_items(cwd: Path) -> list[str]:
     return shown[first:]
 
 
-@XFAIL
 def test_a_criterion_realized_by_a_completed_story_is_met_in_show(tmp_path: Path) -> None:
     runs(tmp_path, FEATURE, FIRST, OTHER, TASK, TASK_FOR_OTHER, ["start", "F-0001"], *COMPLETIONS)
     assert criteria(tmp_path) == [
@@ -99,7 +95,6 @@ def test_a_criterion_realized_by_a_completed_story_is_met_in_show(tmp_path: Path
     ]
 
 
-@XFAIL
 def test_a_criterion_realized_by_a_story_in_backlog_is_listed_on_its_line_not_met(
     tmp_path: Path,
 ) -> None:
@@ -111,7 +106,6 @@ def test_a_criterion_realized_by_a_story_in_backlog_is_listed_on_its_line_not_me
     ]
 
 
-@XFAIL
 def test_a_criterion_realized_by_a_started_story_is_listed_on_its_line_not_met(
     tmp_path: Path,
 ) -> None:
@@ -123,7 +117,6 @@ def test_a_criterion_realized_by_a_started_story_is_listed_on_its_line_not_met(
     ]
 
 
-@XFAIL
 def test_two_stories_on_one_criterion_are_both_listed_and_one_completed_meets_it(
     tmp_path: Path,
 ) -> None:
@@ -140,7 +133,6 @@ def test_two_stories_on_one_criterion_are_both_listed_and_one_completed_meets_it
     assert criteria(tmp_path)[1] == "  1  met      a first criterion  S-0001, S-0002"
 
 
-@XFAIL
 def test_a_completed_story_verified_no_still_meets_its_criterion(tmp_path: Path) -> None:
     runs(
         tmp_path,
@@ -156,7 +148,6 @@ def test_a_completed_story_verified_no_still_meets_its_criterion(tmp_path: Path)
     assert criteria(tmp_path)[1] == "  1  met      a first criterion  S-0001"
 
 
-@XFAIL
 def test_the_feature_completed_by_its_last_story_shows_its_criteria_met_1_of_2(
     tmp_path: Path,
 ) -> None:

@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 
+from flowgraph.record.archive import UNARCHIVED, Archive, Archived
 from flowgraph.record.config import ConfigError, make_config, read_config
 from flowgraph.record.layers import UNGATED, UNLIMITED, Driver, Gated, Merge, Parallel
 
@@ -218,6 +219,34 @@ def test_a_gate_that_is_no_command_line_is_refused_naming_the_key(value: str) ->
     assert str(error.value) == f"development.gate is {value}: {TAKES_A_COMMAND}"
 
 
+@pytest.mark.parametrize("text", ["", "[archive]\n"], ids=["no-table", "no-key"])
+def test_the_archive_is_none_unless_board_is_set(text: str) -> None:
+    assert make_config(text).archive == UNARCHIVED
+
+
+@pytest.mark.parametrize(
+    ("text", "archive"),
+    [
+        ('[archive]\nboard = ".board"\n', Archived(".board")),
+        ('[archive]\nboard = "../old/.board"\n', Archived("../old/.board")),
+    ],
+    ids=["a-path", "a-path-as-written"],
+)
+def test_the_archive_board_set_is_the_path_as_written(text: str, archive: Archive) -> None:
+    assert make_config(text).archive == archive
+
+
+@pytest.mark.parametrize(
+    "value",
+    ['""', '"  "', "1", "true", '[".board"]'],
+    ids=["empty", "blank", "number", "true", "paths"],
+)
+def test_an_archive_board_that_is_no_path_is_refused_naming_the_key(value: str) -> None:
+    with pytest.raises(ConfigError) as error:
+        make_config(f"[archive]\nboard = {value}\n")
+    assert str(error.value) == f"archive.board is {value}: it takes a path"
+
+
 @pytest.mark.parametrize(
     "text",
     ["", "[git]\n", "[git]\ncommit = true\n", ENABLED, f"{ENABLED}[git]\ncommit = true\n"],
@@ -268,6 +297,8 @@ def test_the_development_enabled_with_the_commits_off_is_refused_naming_both_key
         ("[delivery]\npushes = true\n", "delivery.pushes is no key of the configuration"),
         ('[delivery]\npush = "yes"\n', 'delivery.push is "yes": it takes true or false'),
         ("delivery = true\n", "delivery is true: it takes a table"),
+        ('[archive]\nboards = ".board"\n', "archive.boards is no key of the configuration"),
+        ("archive = true\n", "archive is true: it takes a table"),
     ],
     ids=[
         "table",
@@ -282,6 +313,8 @@ def test_the_development_enabled_with_the_commits_off_is_refused_naming_both_key
         "key-of-delivery",
         "text-value-of-delivery",
         "value-for-delivery",
+        "key-of-archive",
+        "value-for-archive",
     ],
 )
 def test_a_text_refused_names_the_key(text: str, why: str) -> None:

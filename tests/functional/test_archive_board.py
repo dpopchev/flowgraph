@@ -55,9 +55,6 @@ LINE = (
     "uv run ~/.claude/skills/board/scripts/board.py --root {root} show {old}"
 )
 NO_ID = "fgraph: error: {!r} is no Story, Upkeep, Bug, Spike or Feature id"
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="S-0120: the record holds no pointer to the archive of board 1"
-)
 
 
 @dataclass(frozen=True)
@@ -167,7 +164,6 @@ class TestThePointerToTheArchive:
 
 
 class TestAnOldIdAskedOfARecordThatPointsAtTheArchive:
-    @XFAIL
     @pytest.mark.parametrize(
         ("asked", "old"),
         [
@@ -185,7 +181,6 @@ class TestAnOldIdAskedOfARecordThatPointsAtTheArchive:
         outcome = fgraph(["show", asked], record)
         assert (outcome.status, outcome.out, last_line(outcome)) == (2, "", said(old, record))
 
-    @XFAIL
     def test_show_of_a_task_number_names_the_old_task_not_the_one_of_the_record(
         self, record: Path
     ) -> None:

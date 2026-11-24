@@ -2,7 +2,7 @@ id = "U-0011"
 state = "backlog"
 title = "Raise the refusals of fgraph note a test proves from none to every one: none or two kinds given, and a kind the file does not know"
 description = "Found during T-0269 of S-0063 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. Both refusals are made by the argparse group and the pydantic Literal, and no test states them. Beside it: the refusal of two kinds says argument --decision: not allowed with argument --finding, which names two of the three, while T-0269 says none or two are refused naming the three. Its Tasks are written when it is ordered."
-parent = "F-0018"
+parent = "F-0023"
 complexity = "low"
 created = 2026-11-22 11:20:25+00:00
 

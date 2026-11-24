@@ -2,6 +2,8 @@ id = "U-0014"
 state = "backlog"
 title = "Raise the refusals of fgraph relate on the branch of a work item that a test proves, in words that say the term is related, from none to one"
 description = "Found during T-0295 of S-0071 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. relate reuses save_term of src/flowgraph/scope.py, so the refusal reads gate is not added here, and no test proves it. Its Tasks are written when it is ordered."
+parent = "F-0018"
+complexity = "low"
 created = 2026-11-22 16:55:40+00:00
 
 [criterion]

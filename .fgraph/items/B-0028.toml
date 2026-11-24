@@ -49,3 +49,11 @@ mark = "open"
 kind = "decision"
 text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, under the /goal of Phase 1 the developer set on 2026-11-24, which has the coordinator write the Tasks before a Feature starts; the developer was not asked and reviews them at the close: (1) The read refuses an amends of every work item that is not completed -- in Backlog, started, blocked or removed -- the reading the item files: the read refuses what the write refuses. (2) The words follow the other refusals of the read, <file of the amending item>: amends names S-0002, which is not completed, not those of the write (a work item cannot amend S-0002: it is not completed). (3) No unit test of check_relations is added, as it has none today; the functional file states the rule and the guard."
 noted = 2026-11-24 23:04:45+00:00
+
+[[knowledge]]
+kind = "finding"
+text = "Settled on 2026-11-25 by a probe with fgraph of main in three throwaway git repositories, the development on: no sequence of fgraph commands left a copy of the record holding an amends of a work item that the same copy reads as started or blocked. An amends is written only for a work item the writing copy reads as completed (amends_asked of src/flowgraph/relation/depends.py, verify_item_no of src/flowgraph/item/verify.py); a work item completes on main alone (check_complete_on_main of src/flowgraph/development/scope.py); and fgraph sync refuses the merge when its own branch changed its file after the completion. So the narrower draft is dropped and the Tasks filed are those of B-0028 as filed, the read refusing every amends of a work item that is not completed: no change to its scope."
+noted = 2026-11-24 23:05:34+00:00
+supersedes = [
+    "B-0028#1",
+]

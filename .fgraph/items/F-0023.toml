@@ -1,0 +1,10 @@
+id = "F-0023"
+state = "backlog"
+title = "Raise the refusals of fgraph an agent acts on with no second read, each one line that names the way out, from some to every one"
+description = "Phase 1, Agent Execution Interface, Scope Gates and Governed Briefs. Split from F-0018 on the decision of the developer of 2026-11-24: the start of a Feature is refused while a work item of it holds no Task, so the ten work items of the refusals are taken off the path of the three JSON reads F-0022 waits for. Its criteria are the fourth, fifth and sixth of F-0018 as filed, in their words; its work items keep their ids: S-0109, B-0028, S-0079, B-0033, S-0124, U-0013, U-0015, U-0014, U-0017, U-0011. A refusal stays one line on stderr with exit 2, never JSON. The Tasks of its work items are written before it starts."
+created = 2026-11-24 21:18:48+00:00
+criteria = [
+    "an agent reads the refusal of a file of the record as one line in the words of fgraph",
+    "an agent reads in a refusal the command that gets past it",
+    "an agent is refused an option or a name fgraph does not keep",
+]

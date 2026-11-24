@@ -38,7 +38,7 @@ from flowgraph.feature.state import (
     make_feature,
     noted_feature,
 )
-from flowgraph.knowledge import KnowledgeKind, make_knowledge_line
+from flowgraph.knowledge import UNMARKED, KnowledgeKind, Mark, make_knowledge_line
 from flowgraph.parent import FeatureId, make_feature_id, parse_feature_id
 from flowgraph.record import Now
 
@@ -95,15 +95,16 @@ def note_feature(
     now: Now,
     about: tuple[str, ...] = (),
     governs: tuple[str, ...] = (),
+    mark: Mark = UNMARKED,
 ) -> None:
     """Keep a line of that kind and text on the Feature of that id, in any state, and save it.
 
-    The line is about the terms given, governs the files given and goes after the lines the
-    Feature keeps. Raises
+    The line is about the terms given, governs the files given, carries the mark given and goes
+    after the lines the Feature keeps. Raises
     FeatureNotFoundError when the record holds no such Feature and EmptyPartError when the text
     is blank; nothing is saved.
     """
-    line = make_knowledge_line(kind, text, now(), about, governs)
+    line = make_knowledge_line(kind, text, now(), about, governs, mark)
     save_feature(noted_feature(load_feature(feature_id), line))
 
 

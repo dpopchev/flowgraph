@@ -37,7 +37,7 @@ from flowgraph.item.hand import hand_item
 from flowgraph.item.moves import start_item
 from flowgraph.item.progress import note_progress
 from flowgraph.item.verify import verify_item, verify_item_no
-from flowgraph.knowledge import DECISION, DEVIATION, FINDING
+from flowgraph.knowledge import DECISION, DEVIATION, FINDING, make_mark
 from flowgraph.knowledge.governed import governs_asked
 from flowgraph.parent import NO_CRITERION, parent_asked, realizes_asked
 from flowgraph.parser.checks import check_command
@@ -163,7 +163,7 @@ def _written(
             )
             about = about_asked(args.about, store) or ()
             governs = governs_asked(args.governs, cwd, open_git)
-            return note_named(args.id, kind, text, store, now, about, governs)
+            return note_named(args.id, kind, text, store, now, about, governs, make_mark(args.mark))
         case "verify" if args.no is not None:
             return verify_item_no(args.id, args.no, store, now)
         case "verify":

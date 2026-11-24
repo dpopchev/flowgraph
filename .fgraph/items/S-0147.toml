@@ -1,9 +1,11 @@
 id = "S-0147"
-state = "backlog"
+state = "started"
 title = "Raise the items fgraph remove takes from a work item in Backlog and a Feature to a Task too"
 description = "Filed on the word of the developer of 2026-11-23, picked from the map made that day of what the skills and rules of ~/.claude ask of board 1 that fgraph does not do and no Backlog item builds, so that those skills can call fgraph in its place. In board 1: the prune of a Task, board move T pruned with its reason. Its Tasks are written when it is ordered."
 complexity = "high"
 created = 2026-11-23 20:39:05+00:00
+started = 2026-11-24 04:24:34+00:00
+agent = "opus-a12"
 depends_on = [
     "B-0026",
 ]

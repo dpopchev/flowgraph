@@ -991,8 +991,20 @@ commit, a Task as a work item.
 - `fgraph complete` needs `--commit` with the development on, of a Task as of
   a work item: without it, it exits 2 naming `--commit` and the key,
   `development.enabled`, and nothing is saved.
+- With the development on and the record inside a git work tree, a record git
+  ignores included, the commit given is asked of git as
+  `git rev-parse --verify <sha>^{commit}`: a sha, whole or abbreviated, that
+  names one commit of the repository is held, on `main`, on another branch or
+  on none. A sha git does not know, the sha of an object that is no commit, as
+  a tree, and an abbreviation several commits share exit 2 with the line
+  `fgraph: error: T-0001 cannot complete: the repository holds no commit c6e0f15`,
+  nothing is saved and no check of the Task is run. A Task is refused as a work
+  item is; `fgraph land` writes its own merge commit and is not asked. The
+  check is `src/flowgraph/development/commit_held.py`.
 - With the development off `fgraph complete` takes none, and a `--commit`
-  given is still kept as the evidence.
+  given is still kept as the evidence. The commit given is not looked up, and a
+  record outside a git work tree is not asked either, so a record whose shas
+  come from elsewhere completes.
 - The evidence is a value of its own in the model, a commit or none (`Commit`
   or `NoCommit`, `src/flowgraph/criterion/model.py`): no commit is a value of the
   evidence, not a missing one, as standing alone is a value of `parent`.
@@ -1030,8 +1042,8 @@ commit, a Task as a work item.
 - With the development on, a work item is completed only once it is on
   `main`, and names its commit there. With it off no commit proves it
   (Evidence).
-- Until `fgraph` wraps git, `complete` records the commit it is given and
-  does not check it against `main`.
+- With the development on, `complete` asks that the repository holds the commit
+  it is given (Evidence), and still does not ask that `main` holds it.
 
 ## Ids
 
@@ -1191,7 +1203,16 @@ and its merge tool.
   copied, and stays kept on the Spike as its `decision`. `--kind` narrows the list to
   `finding`, `decision` or `deviation`; any other word is refused naming the
   three, exit 2. A record with no line of the kind asked, or none, prints one
-  line saying so and exits 0.
+  line saying so and exits 0. `fgraph knowledge --search TEXT` narrows the list
+  to the lines whose text holds the text, whatever the case of either; `--kind`,
+  `--about` and `--search` narrow the same list, a line listed when it meets each
+  one given. Only the text of a line is searched, not the title or the id of its
+  item, its kind or its terms; with no such line it prints one line and exits 0
+  (`no knowledge lines holding 'zzz' in the record`, or with a kind or a term asked
+  too, `no decision lines about gate holding 'zzz' in the record`); a blank text is
+  refused, exit 2, `search is empty`. The search is one filter of the entries,
+  holding of `src/flowgraph/knowledge/list.py`, applied before the list is narrowed
+  and ordered (S-0146).
 - A blocked Task is kept as `state = "blocked"` with its `started` time, its
   `since` time, its `reason` and its `waiting_on`. Only a started work item's
   file may hold one, and it is read back through its start and its block.
@@ -1373,7 +1394,10 @@ and its merge tool.
   with the development on and `development.driver` agent, one whose work item
   in Backlog has no complexity, the first in start order named, `F-0001 cannot
   start: S-0002 has no complexity to start with: set it with fgraph amend
-  S-0002 --complexity low, medium or high`; and a start `[development] parallel` refuses (below).
+  S-0002 --complexity low, medium or high`; with the development on, one whose
+  first work item has its branch there already,
+  `F-0001 cannot start: the branch wi/S-0002-<slug> is there already -- delete it or give another --slug`;
+  and a start `[development] parallel` refuses (below).
 - A work item does not start before its Feature: the start of a work item in
   Backlog under a Feature that is not started is refused with exit 2, naming
   the Feature, `S-0001 cannot start: F-0001 is not started, start it first`.
@@ -1986,7 +2010,14 @@ agreed on 2026-11-21 that `fgraph` owns the record, its rituals and its rules:
 - A Task write of a started work item -- a Task added, started or completed --
   is taken in the worktree of that work item. In a work tree on any branch
   that no work item owns, `main` among them, it is refused with exit 2,
-  nothing written, and the refusal names that worktree.
+  nothing written, and the refusal names that worktree. The block and the
+  unblock of a Task are refused there too (B-0032), by a check that runs
+  before the copy of that work tree is read, so the answer is the worktree
+  and not what a stale copy says of the Task (before B-0032 the copy of
+  `main` answered `T-0001 is in Backlog: start it first`, `T-0001 is not
+  blocked` or `no Task T-0002 in the record`). It holds for a Task in any
+  state and for one added in the worktree after the start, with the line
+  `S-0001 is started: its Tasks are written in its worktree, <path>`.
 - The start, the complete and the landing of the work item itself stay on
   `main`.
 - A started work item whose branch is checked out in no worktree, and a
@@ -2023,8 +2054,9 @@ agreed on 2026-11-21 that `fgraph` owns the record, its rituals and its rules:
   its Tasks are written in its worktree, <path>`, nothing written. `main`
   keeps the file as started, and status and show on `main` read the row from
   the worktree, so they list it blocked. The unblock run on `main` answers
-  from the copy of `main`, as that of a Task does: that copy holds it
-  started, and the unblock is refused, `S-0001 is not blocked`. A worktree
+  from the copy of `main`: that copy holds it started, and the unblock is
+  refused, `S-0001 is not blocked`. The unblock of a Task names the worktree
+  since B-0032, as its block does. A worktree
   on code older than S-0138 refuses a file that holds `state = "blocked"`.
 
 The git steps `fgraph` takes, decided by the developer on 2026-11-21:
@@ -2061,7 +2093,12 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   `<parent>/<checkout name>.worktrees/<id>-<slug>`. The slug is given with
   `--slug`, else it is the first four words of the title, lower-cased and kept
   to their letters and digits. With the development off the start ends at its
-  commit.
+  commit. A start whose branch `wi/<id>-<slug>` is there already is refused
+  with exit 2 before anything is written, so the work item stays in Backlog,
+  `S-0001 cannot start: the branch wi/S-0001-<slug> is there already -- delete it or give another --slug`;
+  it holds for a Feature by the branch of its first work item. The developer deletes the branch or gives another `--slug`: the
+  start takes over no branch that is there, the developer's decision of
+  2026-11-23 (B-0027).
 - Outside a git work tree a write is made as before, without a commit and
   without a warning; only a start of a work item with the development on
   warns, that no branch was made. A write refused makes no commit and no
@@ -2084,8 +2121,8 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   completing the work item with no commit of the record. A worktree git
   refuses leaves the start written.
 - A git step refused exits 2 naming the command: a commit refused puts every
-  file the write changed back as it was, a worktree refused leaves the start
-  committed.
+  file the write changed back as it was, a worktree refused for another cause
+  than a branch there leaves the start committed.
 - With the development on, `fgraph land` lands a started work item, run in
   the checkout of `main`. It merges the branch `wi/<id>-*` into `main` as a
   merge of its own, held uncommitted; commits it under the message the
@@ -2647,10 +2684,11 @@ The four rows left unknown:
   branch `wi/<id>-*`, wherever that worktree is, so a branch git made, and a
   start written by hand, were taken through to `land`. The branch of board 1
   carries the old id, `wi/W-197-no-review-mark-is`, which matches no fgraph
-  id; it is taken only once renamed, which was not run. `start` does not
-  adopt a branch already there: it fails at `git worktree add` and leaves the
-  item started with no branch, its rerun refused `S-0004 is started
-  already`, and its Tasks then start on main.
+  id; it is taken only once renamed, which was not run. `start` did not
+  adopt a branch already there, as the probe saw: it failed at `git worktree
+  add`, left the item started with no branch, its rerun refused `S-0004 is
+  started already`, and its Tasks then started on main. Since B-0027 the start
+  is refused before it writes and adopts no branch.
 
 ### Gaps
 
@@ -2714,7 +2752,7 @@ Held by some records:
 | done with no sha in its evidence | 58: Tasks 53 (c 38, sm 15), work items 5 (c 4, sm 1) | not filed |
 | a Check in prose, no ` -- ` or ` -> ` | 83, all of c | not filed |
 | the Deviations a checkpoint moved to a ledger | 27 sections in 13 ledgers: c 5 in 4, st 1 in 1, sm 5 in 3, sv 16 in 5 | not filed |
-| the branch of the doing work item, named by its old id | 1, W-197 of sm | part, B-0027: "or leaves a way to make the branch of the started work item"; the rename not filed |
+| the branch of the doing work item, named by its old id | 1, W-197 of sm | B-0027 refuses the start before it writes and takes over no branch; a branch git made beside a start written by hand is read through to land (Probe); the rename not filed |
 | `depends_on` a pruned item | 39: c 14, sm 23, sv 2 | none needed: written before the removal, or by a file (Probe) |
 
 Lost by a decision taken, or of no use once converted. The decisions are

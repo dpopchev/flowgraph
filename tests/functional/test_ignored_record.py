@@ -43,8 +43,8 @@ WRITES: tuple[Sequence[str], ...] = (
     ["start", "T-0001"],
     ["block", "T-0001", "--reason", "a reason", "--waiting-on", "someone"],
     ["unblock", "T-0001"],
-    ["complete", "T-0001", "--commit", "3e9ae5c"],
-    ["complete", "S-0001", "--commit", "677f9b0"],
+    ["complete", "T-0001", "--commit", "HEAD"],
+    ["complete", "S-0001", "--commit", "HEAD"],
     ["remove", "S-0002", "--reason", "a reason"],
 )
 IDENTITY = {
@@ -137,11 +137,17 @@ class TestAStoryAddedOnARecordGitIgnores:
         assert git(checkout, "rev-list", "--count", "HEAD") == "1"
 
 
+def write(argv: Sequence[str], checkout: Path) -> Outcome:
+    """Run the write in the checkout, its word HEAD replaced by the commit that is HEAD there."""
+    head = git(checkout, "rev-parse", "HEAD")
+    return fgraph([head if word == "HEAD" else word for word in argv], checkout)
+
+
 def test_every_write_on_a_record_git_ignores_exits_with_zero(checkout: Path) -> None:
-    assert [fgraph(argv, checkout).status for argv in WRITES] == [0] * len(WRITES)
+    assert [write(argv, checkout).status for argv in WRITES] == [0] * len(WRITES)
 
 
 def test_every_write_on_a_record_git_ignores_leaves_no_commit(checkout: Path) -> None:
     for argv in WRITES:
-        fgraph(argv, checkout)
+        write(argv, checkout)
     assert git(checkout, "rev-list", "--count", "HEAD") == "1"

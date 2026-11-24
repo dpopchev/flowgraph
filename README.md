@@ -1178,6 +1178,16 @@ before and, with the development on, fgraph warns that no branch was made. A
 git step refused exits 2 and names the git command: a commit refused puts the
 file back as it was, a worktree refused leaves the start committed.
 
+A start whose branch is there already is refused before it writes: nothing is
+written and the Story stays in Backlog. Delete the branch or give another
+`--slug`; the start takes over no branch that is there.
+
+```sh
+git branch wi/S-0001-branch-on-start
+fgraph start S-0001 --slug branch-on-start
+# fgraph: error: S-0001 cannot start: the branch wi/S-0001-branch-on-start is there already -- delete it or give another --slug
+```
+
 The rules of a branch that follow are those of a record with the development
 on: with it off fgraph makes no branch `wi/<id>-<slug>` and no worktree, so
 every write is taken on `main`. A start given `--slug` then exits 2 naming the
@@ -1250,11 +1260,14 @@ of its Story. A Feature starts on main alone as a Story does, since its start
 starts its first work item (further down).
 
 A Task of a started Story that has a worktree is written there: added,
-started and completed in it. On main the same write exits 2 and names the
-worktree:
+started and completed in it, and its block and its unblock are written there
+too. On main the same write exits 2 and names the worktree, and so do the
+block and the unblock of its Task, whatever the copy of main holds of the Task:
 
 ```sh
 fgraph add task "Add the show command" --parent S-0001 --output "changed: cli.py"
+# fgraph: error: S-0001 is started: its Tasks are written in its worktree, /src/project.worktrees/S-0001-raise-the-stories-fgraph
+fgraph unblock T-0001
 # fgraph: error: S-0001 is started: its Tasks are written in its worktree, /src/project.worktrees/S-0001-raise-the-stories-fgraph
 ```
 
@@ -1308,7 +1321,8 @@ fgraph start T-0002
 
 Complete each Task with the commit that holds its work, then the Story with
 the commit on `main` that holds it. `--commit` is a sha of 7 to 40 hex digits;
-`fgraph` does not look it up in git yet:
+with the development on `fgraph` looks it up in git, and with it off it is kept
+as given:
 
 ```sh
 fgraph complete T-0001 --commit 3e9ae5c
@@ -1327,8 +1341,8 @@ fgraph status
 `fgraph show` names the commit of the Story and of each completed Task. A
 complete exits 2 and names why when the item is still in Backlog, when a
 Story has Tasks not completed, when the item is completed already, when the
-commit is no sha, or when the record does not hold it. A completed Story takes
-no new Task.
+commit is no sha, or, with the development on, when the repository does not hold
+the commit. A completed Story takes no new Task.
 
 The commit is the evidence of the development: the work beside the record
 that the item is completed with. So `fgraph complete` needs `--commit` with
@@ -1338,6 +1352,9 @@ the option and the key:
 ```sh
 fgraph complete T-0001
 # fgraph: error: T-0001 is completed with --commit: the development is on, development.enabled = true
+
+fgraph complete T-0001 --commit c6e0f15
+# fgraph: error: T-0001 cannot complete: the repository holds no commit c6e0f15
 ```
 
 With the development off there is no such work to name, and `fgraph complete`
@@ -1370,8 +1387,8 @@ fgraph show S-0001
 #     expected output  changed: src/flowgraph/cli.py gains the show command
 ```
 
-A `--commit` given with the development off is still kept as the evidence,
-and status and show list it. The file of an item completed without a commit
+A `--commit` given with the development off is still kept as the evidence, not
+looked up, and status and show list it. The file of an item completed without a commit
 holds no `commit` key.
 
 A work item keeps what the work learned as lines of knowledge. `fgraph note`
@@ -1447,9 +1464,16 @@ fgraph show S-0001
 `fgraph knowledge` lists the lines of every work item and every Feature of the
 record, the last noted first, each with its date, its kind, the id of its item
 and its text. `--kind` narrows the list to `finding`, `decision` or `deviation`;
-another word exits 2 naming the three. The decision of a completed Spike is
-listed among the decisions at the time the Spike was completed, and stays kept
-on the Spike. A record with no line prints one line saying so:
+another word exits 2 naming the three. `fgraph knowledge --search TEXT` narrows
+the list to the lines whose text holds the text, whatever the case of either,
+as a part of a word too. `--kind`, `--about` and `--search` narrow the same
+list, a line being listed when it meets each one given. Only the text of the
+line is searched, as it is listed (the decision of a Spike with its answer),
+not the title or the id of its item, its kind or the terms it is about. With
+no such line it prints one line and exits 0; a blank text exits 2. The decision
+of a completed Spike is listed among the decisions at the time the Spike was
+completed, and stays kept on the Spike. A record with no line prints one line
+saying so:
 
 ```sh
 fgraph knowledge
@@ -1466,6 +1490,12 @@ fgraph knowledge --kind decision
 
 fgraph knowledge --kind finding
 # 2026-11-22  finding  S-0001  the file holds the lines in the order noted
+
+fgraph knowledge --search STORE
+# 2026-11-22  decision  S-0001  keep one store
+
+fgraph knowledge --search budget --kind finding
+# no finding lines holding 'budget' in the record
 ```
 
 A line is never amended or removed. The id of a Task with a kind of knowledge,
@@ -1557,10 +1587,12 @@ fgraph status
 
 A block exits 2 and names why when the Task is still in Backlog, blocked
 already or completed, when the reason or what it waits on is blank, when the
-text is no id, or when the record does not hold the Task. A blocked Task is
-not started or completed, and its Story is not completed, while it is
-blocked. `fgraph block` and `fgraph unblock` take a started work item of any
-kind (next) and a started Feature too (below).
+text is no id, or when the record does not hold the Task. With the development
+on, run on `main` for a Task of a started Story that has a worktree, it names
+that worktree: `S-0001 is started: its Tasks are written in its worktree, <path>`.
+A blocked Task is not started or completed, and its Story is not completed,
+while it is blocked. `fgraph block` and `fgraph unblock` take a started work
+item of any kind (next) and a started Feature too (below).
 
 Unblock it once it can go on. It is started again, with the started time it
 had, and can be completed or blocked once more:
@@ -1571,7 +1603,9 @@ fgraph unblock T-0001
 ```
 
 An unblock exits 2 and names why when the Task is not blocked, when the text
-is no id, or when the record does not hold the Task.
+is no id, or when the record does not hold the Task. With the development on,
+run on `main` for a Task of a started Story that has a worktree, it names
+that worktree: `S-0001 is started: its Tasks are written in its worktree, <path>`.
 
 A started work item that cannot go on is blocked the same way, a Story, an
 Upkeep, a Bug or a Spike, with the reason and who or what it waits on. It
@@ -2198,6 +2232,9 @@ branch made:
 - with `development.driver` set to `agent`, when a work item of it in Backlog
   has no complexity, the first in start order named:
   `F-0001 cannot start: S-0002 has no complexity to start with: set it with fgraph amend S-0002 --complexity low, medium or high`;
+- with the development on, when the branch of its first work item is there
+  already:
+  `F-0001 cannot start: the branch wi/S-0002-<slug> is there already -- delete it or give another --slug`;
 - when `[development] parallel` refuses one more started work item:
   `F-0001 cannot start: development.parallel = 1, started already: S-0002`.
 

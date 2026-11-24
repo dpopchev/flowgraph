@@ -164,6 +164,9 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         help="list the lines of one kind alone: finding, decision or deviation",
     )
     knowledge.add_argument("--about", metavar="TERM", help="list the lines about one term alone")
+    knowledge.add_argument(
+        "--search", metavar="TEXT", help="list the lines whose text holds this text, in any case"
+    )
     terms = new_command(commands, "terms", "list the terms of the record with their meanings")
     graph = new_command(commands, "graph", "print the nodes and typed edges of the record")
     graph.add_argument(

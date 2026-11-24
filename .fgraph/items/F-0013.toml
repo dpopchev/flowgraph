@@ -1,8 +1,9 @@
 id = "F-0013"
-state = "backlog"
+state = "started"
 title = "Raise the criteria of a Feature fgraph shows as met from none to every one a completed work item realizes"
 description = "From the note of the ~/.claude session of 2026-11-22 on the gaps of the planning skill (output: criterion link), filed and ordered on the word of the developer of that day: update the backlog and prioritize. It answers the second open question of docs/domain-model.md: the link stays optional."
 created = 2026-11-22 21:03:50+00:00
+started = 2026-11-24 04:40:14+00:00
 criteria = [
     "a developer names the criterion of the Feature that the criterion of a work item is, or names none",
     "a developer sees the criteria of a Feature as met k of n",

@@ -1,12 +1,14 @@
 id = "S-0100"
-state = "started"
+state = "completed"
 title = "Raise the work items under a Feature that name the criterion of it they realize from none to every one given it"
 description = "A work item under a Feature without it is taken as before. Its Tasks are written when it is ordered."
 parent = "F-0013"
 complexity = "medium"
 created = 2026-11-22 21:03:52+00:00
 started = 2026-11-24 04:40:14+00:00
+completed = 2026-11-24 05:26:31+00:00
 agent = "sonnet-a14"
+commit = "9427c3e"
 depends_on = [
     "B-0026",
 ]

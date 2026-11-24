@@ -820,6 +820,7 @@ remote once, on a line of its own:
 ```sh
 fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
 # landed S-0001 at 3e9ae5c
+# run: a Story is added -> fgraph status lists it under Backlog
 # pushed main to origin
 ```
 
@@ -861,6 +862,7 @@ next patch, and `v0.1.0` when the repository holds no `v*` tag yet:
 ```sh
 fgraph land S-0002 --message "feat: land the Stories listed under InProgress"
 # landed S-0002 at 85c8d69
+# run: a second Story is added -> fgraph status lists both under Backlog
 
 fgraph release
 # tagged v0.2.0 at 3becb1b
@@ -930,6 +932,7 @@ tag. A tag made by a landing bumps no version in a file of the project:
 ```sh
 fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
 # landed S-0001 at 3e9ae5c
+# run: a Story is added -> fgraph status lists it under Backlog
 # pushed main to origin
 # tagged v0.1.0 at 3e9ae5c
 # pushed v0.1.0 to origin
@@ -1651,7 +1654,14 @@ Story is completed on its branch. The message of the merge commit is yours:
 ```sh
 fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
 # landed S-0001 at 677f9b0
+# run: a Story is added -> fgraph status lists it under Backlog
 ```
+
+The second line names the When and the Then of the criterion of the Story, to
+run on `main` at the commit named above it; `fgraph verify S-0001 --yes` or
+`fgraph verify S-0001 --no` keeps the answer. A Bug prints its expected alone,
+as `run: <expected>`; a Spike lands with its answer and prints no such line; a
+part written over several lines is printed on one.
 
 It merges the branch `wi/S-0001-*` into `main` as one merge commit under
 that message, completes the Story at that commit, commits the record as
@@ -1674,6 +1684,7 @@ message, and the Story is completed at the tip:
 ```sh
 fgraph land S-0001
 # landed S-0001 at 2c41d07
+# run: a Story is added -> fgraph status lists it under Backlog
 ```
 
 The message goes with the commit a landing makes. A landing by `merge-commit`
@@ -2001,6 +2012,7 @@ made by hand, branches the next one the same way:
 ```sh
 fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
 # landed S-0001 at 3e9ae5c
+# run: a Story is added -> fgraph status lists it under Backlog
 # started S-0003
 # branch wi/S-0003-raise-the-stories-fgraph in /src/project.worktrees/S-0003-raise-the-stories-fgraph
 ```
@@ -2071,6 +2083,7 @@ Feature the same way, at the commit the landing leaves main on:
 ```sh
 fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
 # landed S-0001 at 3e9ae5c
+# run: a Story is added -> fgraph status lists it under Backlog
 # completed F-0001 at 3e9ae5c
 ```
 
@@ -2167,7 +2180,8 @@ fgraph complete S-0001 --commit 677f9b0
 # not started: S-0003 cannot start: F-0001 is blocked, waiting on the sponsor: unblock it first
 ```
 
-`fgraph land S-0001` says the same after `landed S-0001 at 3e9ae5c`. The
+`fgraph land S-0001` says the same after `landed S-0001 at 3e9ae5c` and its
+`run:` line. The
 completion of its last work item completes a blocked Feature as it completes
 a started one (above): the block holds back a start, never a completion. The
 alternative, that every write under a blocked Feature is refused, the Tasks

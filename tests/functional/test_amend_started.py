@@ -224,7 +224,6 @@ def test_a_blocked_feature_is_amended_with_its_deviation(tmp_path: Path) -> None
     assert (outcome.status, outcome.out) == (0, "amended F-0001\n")
 
 
-@XFAIL
 @pytest.mark.parametrize("setup", [FEATURE_STARTED, FEATURE_BLOCKED], ids=["started", "blocked"])
 def test_an_amend_without_a_deviation_of_a_feature_is_refused(
     setup: tuple[list[str], ...], tmp_path: Path

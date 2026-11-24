@@ -20,8 +20,8 @@ from flowgraph.feature.amend import FeatureAmendment, amend_named, amended_featu
 from flowgraph.item.commands import Written
 from flowgraph.parent import STANDALONE, CriterionPlace, FeatureId, make_feature_id
 from flowgraph.record.store import FeatureStore, Store
-from flowgraph.task import BlockedError, CompletedAlreadyError, StartedAlreadyError
-from flowgraph.work_item import Amendment, NoPartError, NoSuchPartError
+from flowgraph.task import CompletedAlreadyError
+from flowgraph.work_item import Amendment, DeviationError, NoPartError, NoSuchPartError
 
 CREATED = datetime(2026, 1, 1, 12, 30, 15, tzinfo=UTC)
 ON = datetime(2026, 1, 2, 9, 0, 0, tzinfo=UTC)
@@ -31,6 +31,9 @@ STARTED = started_feature(FEATURE, ON)
 BLOCKED = blocked_feature(STARTED, "a reason", "someone", ON)
 COMPLETED = completed_feature(STARTED, ON, make_commit("abc1234"))
 RETITLED = replace(FEATURE, title="another title")
+NEEDED = (
+    r"^F-0001 is started: amend it with --deviation TEXT, what changes in what it was agreed to do$"
+)
 ONLY_A_FEATURE = "a Feature is amended by its title, its description and its criteria"
 
 
@@ -119,8 +122,8 @@ def test_an_amendment_naming_no_part_is_refused() -> None:
 @pytest.mark.parametrize(
     ("feature", "refusal", "error"),
     [
-        (STARTED, StartedAlreadyError, r"^F-0001 is started already$"),
-        (BLOCKED, BlockedError, r"^F-0001 is blocked$"),
+        (STARTED, DeviationError, NEEDED),
+        (BLOCKED, DeviationError, NEEDED),
         (COMPLETED, CompletedAlreadyError, r"^F-0001 is completed already$"),
     ],
     ids=["started", "blocked", "completed"],
@@ -191,7 +194,7 @@ def test_a_feature_the_record_does_not_hold_is_not_amended() -> None:
 @pytest.mark.command
 def test_an_amend_of_a_started_feature_saves_nothing() -> None:
     saved: list[FeatureState] = []
-    with pytest.raises(StartedAlreadyError):
+    with pytest.raises(DeviationError):
         amend_named("F-0001", Amendment(title="another title"), None, store(saved, STARTED))
     assert saved == []
 

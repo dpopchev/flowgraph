@@ -65,8 +65,12 @@ def test_a_record_without_terms_holds_no_name(tmp_path: Path) -> None:
         ('name = "gate"\nmeaning = " "\nadded = 2026-01-01T00:00:00Z\n', "holds no term: meaning"),
         ('name = "Gate"\nmeaning = "m"\nadded = 2026-01-01T00:00:00Z\n', "holds no term: 'Gate'"),
         ('name = "other"\nmeaning = "m"\nadded = 2026-01-01T00:00:00Z\n', "holds no term: it is"),
+        (
+            'name = "gate"\nmeaning = "m"\nadded = 2026-10-11\n',
+            "holds no term: added = 2026-10-11 is a time with no offset",
+        ),
     ],
-    ids=["no-toml", "no-meaning", "blank-meaning", "bad-name", "name-of-another-file"],
+    ids=["no-toml", "no-meaning", "blank-meaning", "bad-name", "name-of-another-file", "day-alone"],
 )
 def test_a_file_that_holds_no_term_is_refused_naming_it(
     tmp_path: Path, content: str, why: str

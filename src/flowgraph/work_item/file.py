@@ -11,7 +11,7 @@ from pathlib import Path
 from pydantic import ValidationError
 
 from flowgraph.criterion import CommitError, CriterionError, DecisionError, EmptyPartError
-from flowgraph.item import task_row, write_checked
+from flowgraph.item import NoOffsetError, task_row, write_checked
 from flowgraph.knowledge import KnowledgeRow
 from flowgraph.parent import FeatureIdError
 from flowgraph.record import ITEMS
@@ -48,10 +48,13 @@ from flowgraph.work_item.views import DependsRow, VerifiedRow, WorkItemDetail, W
 
 
 def _read_file(path: Path, kind: Kind) -> HeldItemFile:
-    """The content of one file of a work item of that kind; raises WorkItemFileError naming it."""
+    """The content of one file of a work item of that kind; raises WorkItemFileError naming it.
+
+    A time with no offset is refused so.
+    """
     try:
         return HELD_ITEM.validate_python(tomllib.loads(path.read_text(encoding="utf-8")))
-    except (tomllib.TOMLDecodeError, ValidationError) as error:
+    except (tomllib.TOMLDecodeError, ValidationError, NoOffsetError) as error:
         raise WorkItemFileError(f"{path} holds no {kind.noun}: {error}") from error
 
 

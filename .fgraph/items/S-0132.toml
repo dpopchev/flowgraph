@@ -42,9 +42,10 @@ commit = "b04ca8e0e24f29e6022b979bc357cdc48f576435"
 
 [[tasks]]
 id = "T-0590"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say InProgress is listed whole with no flag"
 description = "Change README.md and docs/domain-model.md only; find each passage by grep, never by line number. Each file must hold the words every item of InProgress on one line, which the check reads. docs/domain-model.md: (1) the bullet S-0130 rewrote on what status lists with no flag (grep -n \"can start\" and \"--backlog\"): InProgress is no longer among the buckets with a top of 5 -- with no flag status lists every item of InProgress, the developer's frame of 2026-11-23 (S-0132): all started, with the hierarchy; Completed and Removed keep their top 5. (2) The bullet on the mark `?`, the sentence on a marked line the top leaves out: with no flag InProgress has no top, so the sentence holds only where a top of InProgress is set (the configuration of S-0136 will set one); say it in those words without naming a key. (3) The bullets on a Task line and on the lines under a Feature that say they count toward no top: still true, leave them. README.md: (1) the paragraph S-0130 rewrote, starting `fgraph status` lists (grep -n \"more, 0 can start\\|--backlog\" README.md): say the Backlog lists its top line, InProgress every item, Completed and Removed their top 5. (2) The line of the block of fgraph watch on --all and the sentence on JSON: unchanged. No example block changes: none shows more than five lines of InProgress. Keep each edit inside its paragraph or bullet. Plain ASCII. No source or test change."
 check = "grep -q \"every item of InProgress\" README.md && grep -q \"every item of InProgress\" docs/domain-model.md"
 expected_output = "changed: README.md and docs/domain-model.md say fgraph status and fgraph watch list every item of InProgress with no flag, each started work item under its Feature when it has one with the Task being worked below it, and that a top and `... N more` remain for Completed and Removed, and the top line for the Backlog"
 created = 2026-11-23 21:04:19+00:00
+started = 2026-11-24 13:20:16+00:00

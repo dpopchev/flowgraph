@@ -13,6 +13,11 @@ depends_on = [
 ]
 filed_during = "Q-0001"
 
+[verified]
+answer = "yes"
+text = "at b4e209f on main, the merge of wi/B-0029-cut-the-completions-fgraph, in a throwaway repository with the development on, S-0001 started in its worktree with T-0001 started and one commit of work: git cat-file -t c6e0f15 said Not a valid object name; fgraph complete T-0001 --commit c6e0f15 exit 2 printed fgraph: error: T-0001 cannot complete: the repository holds no commit c6e0f15, and fgraph show lists the Task InProgress; the complete at the commit that holds the work exit 0 printed completed T-0001 of S-0001 at 38b04b4. make check on main at b4e209f: 3672 passed, all checks passed. Handed whole to one subagent on haiku: its first hand-back held a make check that failed at the lint, an unused import and a line ruff format rewraps, in two test files its Tasks name; handed back to it, it fixed both in the commit 79cf035. The coordinator merged main into the branch and kept, in the docstring of check_command of src/flowgraph/parser/checks.py, the sentence of B-0029 beside that of B-0027. Seen by the subagent and left as T-0466 asks: the examples of README.md complete at 3e9ae5c and 677f9b0, shas no repository of a reader holds."
+on = 2026-11-24 04:35:23+00:00
+
 [criterion]
 observed = "fgraph complete T-0001 --commit c6e0f15 exits 0 and prints completed T-0001 of S-0001 at c6e0f15 in a repository where git cat-file -t c6e0f15 says Not a valid object name; seen by the coordinator with the development off, and by the subagent with it on, completed T-0013 of S-0001 at c6e0f15"
 expected = "with the development on, a commit the repository does not hold is refused, as docs/domain-model.md, Evidence, says the commit that holds its work"

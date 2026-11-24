@@ -16,6 +16,7 @@ from flowgraph.development.scope import check_complete_on_main, check_start_on_m
 from flowgraph.development.start_branch import check_branch_free
 from flowgraph.development.task_check import check_task_checked
 from flowgraph.development.task_run import check_task_run
+from flowgraph.development.task_scope import check_task_in_worktree
 from flowgraph.feature.start import check_start_under_feature
 from flowgraph.record import CONFIG, Config
 from flowgraph.record.store import Store
@@ -36,6 +37,8 @@ def check_command(
 
     A complete refuses a commit the repository does not hold before the check of its Task runs.
     A start checks, last, that the branch it would make is not there already.
+    A block or an unblock of a Task is checked in the worktree of its work item before the copy
+    of main is read (B-0032).
     """
     if args.command == "complete":
         check_complete_on_main(args.id, record, open_git)
@@ -54,3 +57,5 @@ def check_command(
         check_task_checked(args.check, config.development.enabled, record / CONFIG)
     if args.command == "hand":
         check_agent_taken(args.id, args.agent, config.development.enabled, record / CONFIG)
+    if args.command in ("block", "unblock"):
+        check_task_in_worktree(args.id, store, record, open_git)

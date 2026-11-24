@@ -25,11 +25,13 @@ def note_item(
     about: tuple[str, ...] = (),
     governs: tuple[str, ...] = (),
     mark: Mark = UNMARKED,
+    supersedes: tuple[str, ...] = (),
 ) -> Written:
     """Keep the line of that kind and text, about the terms given, on the work item of that id.
 
-    It governs the files given, is kept with the mark given, in any state, after the lines the
-    item keeps already, none of which is amended. Raises WorkItemIdError when the text is the id
+    It governs the files given, is kept with the mark given and the refs of the lines it
+    supersedes, in any state, after the lines the item keeps already, none of which is amended:
+    neither is a line it supersedes. Raises WorkItemIdError when the text is the id
     of no kind, WorkItemNotFoundError when the record holds no such item and EmptyPartError when
     the text is blank; nothing is saved.
     """
@@ -44,6 +46,7 @@ def note_item(
         about=about,
         governs=governs,
         mark=mark,
+        supersedes=supersedes,
     )
     named = work_item_id_text(item_id)
     return Written(f"noted {named}\n", MESSAGE.format(f"note {named}"))
@@ -58,15 +61,17 @@ def note_named(
     about: tuple[str, ...] = (),
     governs: tuple[str, ...] = (),
     mark: Mark = UNMARKED,
+    supersedes: tuple[str, ...] = (),
 ) -> Written:
     """Keep the line of that kind and text, about the terms given, on the Feature or work item.
 
-    It governs the files given and is kept with the mark given. Returns what the write says.
-    Raises FeatureNotFoundError when the record holds no such Feature and EmptyPartError when the
+    It governs the files given and is kept with the mark given and the refs of the lines it
+    supersedes, in the file of that item alone. Returns what the write says. Raises
+    FeatureNotFoundError when the record holds no such Feature and EmptyPartError when the
     text is blank; for any other id the refusal of `note_item`. Nothing is saved then.
     """
     if not is_feature_id(item):
-        return note_item(item, kind, text, store, now, about, governs, mark)
+        return note_item(item, kind, text, store, now, about, governs, mark, supersedes)
     feature_id = parse_feature_id(item)
     note_feature(
         feature_id=feature_id,
@@ -78,6 +83,7 @@ def note_named(
         about=about,
         governs=governs,
         mark=mark,
+        supersedes=supersedes,
     )
     named = feature_id_text(feature_id)
     return Written(f"noted {named}\n", MESSAGE.format(f"note {named}"))

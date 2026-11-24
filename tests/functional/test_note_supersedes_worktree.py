@@ -17,8 +17,6 @@ from flowgraph.cli import open_files, open_git, read_config, run
 
 pytestmark = pytest.mark.functional
 
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0103: fgraph note takes no --supersedes")
-
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_TASK = [
@@ -126,11 +124,9 @@ class TestASupersedeNotedInTheWorktreeOfAStartedWorkItem:
     def noted(self, before: str, tmp_path: Path) -> Outcome:
         return fgraph(SUPERSEDE, tmp_path / WORKTREE)
 
-    @XFAIL
     def test_note_exits_with_zero_and_says_noted(self, noted: Outcome) -> None:
         assert (noted.status, noted.out) == (0, "noted S-0002\n")
 
-    @XFAIL
     def test_the_worktree_commits_the_file_of_the_work_item_alone(
         self, noted: Outcome, tmp_path: Path
     ) -> None:
@@ -140,7 +136,6 @@ class TestASupersedeNotedInTheWorktreeOfAStartedWorkItem:
             git(worktree, "show", "--name-only", "--format=", "HEAD"),
         ) == ("chore: note S-0002 in the record", ".fgraph/items/S-0002.toml")
 
-    @XFAIL
     def test_main_is_left_clean_and_the_file_of_the_first_as_written(
         self, noted: Outcome, before: str, checkout: Path
     ) -> None:
@@ -150,13 +145,11 @@ class TestASupersedeNotedInTheWorktreeOfAStartedWorkItem:
             True,
         )
 
-    @XFAIL
     def test_show_on_main_lists_the_first_as_superseded(
         self, noted: Outcome, checkout: Path
     ) -> None:
         assert SUPERSEDED in fgraph(["show", "S-0001"], checkout).out
 
-    @XFAIL
     def test_show_in_the_worktree_lists_the_first_as_superseded(
         self, noted: Outcome, tmp_path: Path
     ) -> None:

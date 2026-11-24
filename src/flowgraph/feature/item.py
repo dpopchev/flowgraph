@@ -5,6 +5,7 @@ Each runs on the store of a record, as the commands of a work item do (`flowgrap
 
 import re
 from collections.abc import Iterable
+from dataclasses import replace
 from typing import assert_never
 
 from flowgraph.criterion import (
@@ -29,6 +30,7 @@ from flowgraph.feature import (
 )
 from flowgraph.item.commands import MESSAGE, Written, show_item
 from flowgraph.item.id import parse_shown_id
+from flowgraph.knowledge.supersede import superseded_rows
 from flowgraph.parent import (
     STANDALONE,
     FeatureId,
@@ -94,6 +96,7 @@ def show_feature_item(feature: str, store: Store) -> str:
     feature_id = parse_feature_id(feature)
     shown = store.features.load_feature(feature_id)
     detail = feature_detail(shown)
+    detail = replace(detail, knowledge=superseded_rows(detail.id, detail.knowledge, store))
     held = rows_under(feature_id, store)
     rows = in_show_order(held, backlog_as_added(held), store.load_queue())
     return feature_text(detail, rows, feature_bucket(shown, [row.state for row in rows]))

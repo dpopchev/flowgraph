@@ -3,7 +3,7 @@
 from collections.abc import Iterable, Sequence
 
 from flowgraph.feature import CriterionRow, FeatureDetail, criteria_rows
-from flowgraph.knowledge import KnowledgeRow, about_text, governs_text, mark_text
+from flowgraph.knowledge import KnowledgeRow, about_text, governs_text, mark_text, superseded_text
 from flowgraph.status.buckets import BUCKETS
 from flowgraph.story import StoryDetail, StoryRow
 from flowgraph.upkeep import UpkeepDetail, UpkeepRow
@@ -13,7 +13,8 @@ from flowgraph.work_item import BLOCKED, ProgressRow
 def _knowledge_lines(knowledge: Sequence[KnowledgeRow]) -> list[str]:
     """The knowledge lines under their heading, each with its kind, its date and its text.
 
-    A line lists its mark, when it has one, before its terms.
+    A line lists its mark, when it has one, before its terms; a superseded line ends with the
+    refs of the lines that supersede it.
 
     There is no heading without a line.
     """
@@ -23,7 +24,8 @@ def _knowledge_lines(knowledge: Sequence[KnowledgeRow]) -> list[str]:
         f"Knowledge ({len(knowledge)})\n",
         *(
             f"  {line.kind}  {line.noted.date().isoformat()}  {line.text}{mark_text(line.mark)}"
-            f"{about_text(line.about)}{governs_text(line.governs)}\n"
+            f"{about_text(line.about)}{governs_text(line.governs)}"
+            f"{superseded_text(line.superseded_by)}\n"
             for line in knowledge
         ),
     ]
@@ -107,8 +109,8 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     Task only once it has left Backlog. A blocked work item or Task is listed in InProgress as
     blocked, with its reason and what it waits on; a removed Task in Removed with its reason.
     The knowledge lines follow, in the order
-    noted, each with its kind, its date and its text, then the terms it is about; there is no
-    heading without one.
+    noted, each with its kind, its date and its text, then the terms it is about; a superseded
+    line ends with the refs of the lines that supersede it; there is no heading without one.
     The progress lines of a Task follow its description, those of the work item follow the
     knowledge lines under Progress (n), each with its day and its text, in the order noted;
     there is no heading without one.

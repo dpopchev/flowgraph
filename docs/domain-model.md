@@ -175,7 +175,7 @@ the work item and of the Task, and is never amended or removed (S-0143).
 
 A completed Story, Bug or Upkeep also holds the answer of its closing once it
 is verified, none before. It is its own fact, a `Verification` of the
-completed work item and never a knowledge line: the answer, yes so far, the
+completed work item and never a knowledge line: the answer, yes or no, the
 text the run of its criterion printed and the time. The question per kind is
 the one its criterion states: for a Story, does the Then hold on the trunk; for
 a Bug, is the expected seen; for an Upkeep, does it still hold. A Spike is not
@@ -1208,14 +1208,17 @@ and its merge tool.
   it as `progress`, with the day and the text, and those of the work item under
   `Progress (n)` after `Knowledge (n)`, with no heading when there is none.
 - The answer of a closing is one `[verified]` table inside the file of a
-  completed work item, with its `answer` (`yes`), its `text` and its `on` time,
-  held only once there is one: a file without it, as every file written before,
-  is read as before, and a Spike's file holding it is refused when read.
+  completed work item, with its `answer` (`yes` or `no`), its `text` and its
+  `on` time, held only once there is one: a file without it, as every file
+  written before, is read as before, and a Spike's file holding it is refused
+  when read.
   `fgraph verify ID --yes TEXT` writes it as one write and one commit,
   `chore: verify S-0001 in the record`, and says `verified S-0001`, on `main`
-  as a note of a completed item is. It is refused, exit 2 and nothing written,
-  for an item not completed, a Spike, a Feature, a Task, an id the record does
-  not hold, a blank text, a second answer and a call without `--yes`.
+  as a note of a completed item is. With `--no TEXT` it writes the answer no and
+  files a Bug in the same write, as Amends states. It is refused, exit 2 and
+  nothing written, for an item not completed, a Spike, a Feature, a Task, an id
+  the record does not hold, a blank text, a second answer and a call with
+  neither or both of `--yes` and `--no`.
   `fgraph show` lists it as `verified`, the answer, the day and the text, after
   the commit.
 - The file of a work item holds the key `complexity` (`low`, `medium` or

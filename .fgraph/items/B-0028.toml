@@ -11,3 +11,9 @@ filed_during = "Q-0001"
 [criterion]
 observed = "an item file whose amends names a work item in Backlog is read with exit 0, fgraph show listing amends S-0001 and amended by S-0002, while fgraph add story --amends S-0003 of one in Backlog exits 2 with a work item cannot amend S-0003: it is not completed"
 expected = "the read of a file refuses what the write refuses, naming the file in one line"
+
+[[knowledge]]
+kind = "finding"
+text = "Found on 2026-11-25 while its Tasks were drafted under the /goal of Phase 1: the drafted Tasks (kept by the coordinator, not filed) refuse at the read an amends of a work item in Backlog or removed alone, narrower than its expected, the read refuses what the write refuses, which is every work item not completed. The reason given: a started or blocked work item may be completed in a copy of the record that another copy lags, and the full rule would then refuse every command in the lagging copy. Whether B-0028 is built narrow or whole is a change to its scope and is the developer's: its Tasks are filed on that word, before F-0023 starts."
+noted = 2026-11-24 22:20:03+00:00
+mark = "open"

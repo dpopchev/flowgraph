@@ -2247,9 +2247,20 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 - A tag is never moved or deleted. A release is refused, exiting 2 with no
   tag made, when the record is outside a git work tree, when the work tree it
   runs in is not on `main`, named as a start names it, when `--version` is
-  no version or names a tag that exists, and when nothing is completed since
-  the last tag, or nothing at all without one. Git refuses an existing tag
-  too, so no step of `fgraph` moves one.
+  no version or names a tag that exists, when nothing is completed since
+  the last tag, or nothing at all without one, and while a work item completed
+  since the last tag holds no answer of `fgraph verify`: the line is
+  `S-0001, U-0001 not verified since v0.1.0: no release -- run fgraph verify
+  on each first`, without `since <tag>` when there is no tag, and every such
+  work item is named on it, Story then Upkeep then Bug, each by number. The
+  kinds asked are those `fgraph verify` takes, a Story, a Bug and an Upkeep,
+  so a Spike is not asked; a yes and a no both count as an answer. It is read
+  from the row of each work item completed since the last tag
+  (`WorkItemRow.verified`), every completed one when there is no tag, and a
+  `--version` asked for does not pass it. It is an `UnverifiedError`, a
+  `ReleaseError`, and `release_landing` is not asked: the tag of a landing
+  asks for no answer (S-0149). Git refuses an existing tag too, so no step of
+  `fgraph` moves one.
 - With `[delivery] push = true` the tag is pushed to the remote `main`
   tracks, once it is made, and the release says `pushed <version> to
   <remote>`. A push git refuses leaves the tag made and exits 2 naming the

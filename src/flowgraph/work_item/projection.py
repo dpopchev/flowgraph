@@ -21,6 +21,7 @@ from flowgraph.work_item.model import (
     WorkItem,
     WorkItemState,
 )
+from flowgraph.work_item.progress import progress_row
 from flowgraph.work_item.removal import reason_of, superseded_by_of
 from flowgraph.work_item.state import commit_sha, state_name
 from flowgraph.work_item.verification import Verification
@@ -114,5 +115,6 @@ def work_item_detail(item: WorkItemState) -> WorkItemDetail:
         amends=_named_text(item.relations.amends),
         amended_by=[],
         verified=_verified_row(item),
+        progress=[progress_row(line) for line in item.progress],
         **criterion_parts(item.criterion),
     )

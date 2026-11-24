@@ -20,7 +20,7 @@ from flowgraph.criterion import (
 from flowgraph.knowledge import KnowledgeLine
 from flowgraph.parent import STANDALONE, Parent
 from flowgraph.relation import Relations, make_relations
-from flowgraph.task import CompletedTask, Task, TaskState
+from flowgraph.task import CompletedTask, Task, TaskState, task_of
 from flowgraph.work_item.agent import Agent
 from flowgraph.work_item.complexity import Complexity
 from flowgraph.work_item.errors import (
@@ -36,6 +36,7 @@ from flowgraph.work_item.errors import (
     WorkItemNotFoundError as WorkItemNotFoundError,
 )
 from flowgraph.work_item.id import WorkItemId
+from flowgraph.work_item.progress import ProgressLine
 from flowgraph.work_item.verification import Verification
 from flowgraph.work_item.views import WorkItemRow
 
@@ -58,6 +59,7 @@ class WorkItem:
     knowledge: tuple[KnowledgeLine, ...] = ()
     relations: Relations[WorkItemId] = NO_RELATIONS
     about: tuple[str, ...] = ()
+    progress: tuple[ProgressLine, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -77,6 +79,7 @@ class StartedWorkItem:
     knowledge: tuple[KnowledgeLine, ...] = ()
     relations: Relations[WorkItemId] = NO_RELATIONS
     about: tuple[str, ...] = ()
+    progress: tuple[ProgressLine, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -99,6 +102,7 @@ class BlockedWorkItem:
     knowledge: tuple[KnowledgeLine, ...] = ()
     relations: Relations[WorkItemId] = NO_RELATIONS
     about: tuple[str, ...] = ()
+    progress: tuple[ProgressLine, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -124,6 +128,7 @@ class CompletedWorkItem:
     relations: Relations[WorkItemId] = NO_RELATIONS
     about: tuple[str, ...] = ()
     verified: Verification | None = None
+    progress: tuple[ProgressLine, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -147,6 +152,7 @@ class RemovedWorkItem:
     relations: Relations[WorkItemId] = NO_RELATIONS
     superseded_by: WorkItemId | None = None
     about: tuple[str, ...] = ()
+    progress: tuple[ProgressLine, ...] = ()
 
 
 # A work item that still takes Tasks: in Backlog, started or blocked.
@@ -219,3 +225,14 @@ def append_task[W: OpenWorkItem](item: W, task: Task) -> W:
 def noted_work_item[W: WorkItemState](item: W, line: KnowledgeLine) -> W:
     """The work item, in whatever state, with the line after the lines it already keeps."""
     return replace(item, knowledge=(*item.knowledge, line))
+
+
+def progressed_work_item[W: WorkItemState](item: W, line: ProgressLine) -> W:
+    """The work item, in whatever state, with the progress line after those it already keeps.
+
+    A line records, it moves nothing. Raises TaskNotFoundError when the line names a Task the
+    work item does not hold.
+    """
+    if line.task is not None:
+        task_of(item.tasks, line.task)
+    return replace(item, progress=(*item.progress, line))

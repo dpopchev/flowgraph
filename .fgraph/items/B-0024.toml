@@ -10,6 +10,11 @@ agent = "haiku-a26"
 commit = "bc4a6bb"
 filed_during = "S-0094"
 
+[verified]
+answer = "yes"
+text = "at bc4a6bb on main, the merge of wi/B-0024-cut-the-passages-of: docs/domain-model.md says, under Attributes, the answer, yes or no, the text the run; under Persistence, its answer (yes or no), its text and its on time, and that a verify is refused for a call with neither or both of --yes and --no, with one sentence added on --no TEXT filing a Bug in the same write; grep finds yes so far nowhere; the check of T-0477 exits 0 on the file of main; fgraph verify --help prints (--yes TEXT | --no TEXT), as the passages now say. The one file changed is docs/domain-model.md, 10 lines added and 7 removed; make check on the branch before the merge of main, run by its subagent: 4299 passed, all checks passed. Handed whole to one subagent on haiku, which made its three edits before the start of T-0477 and started the Task before its commit."
+on = 2026-11-24 07:11:34+00:00
+
 [criterion]
 observed = "after S-0094, docs/domain-model.md says under Attributes the answer, yes so far, and under Persistence that the verified table holds its answer (yes) and that a verify is refused for a call without --yes"
 expected = "each passage says the answer is yes or no, and that neither or both of --yes and --no is refused"

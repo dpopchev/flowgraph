@@ -12,3 +12,8 @@ criteria = [
 kind = "decision"
 text = "The developer gave the go on 2026-11-24, with the word file, to the plan shown that day (F-0018, its decision). For F-0019: the draft, Atomic Agent Handoff and Lease Protocol, is narrowed to the two Bugs of the writes of main made at one time, B-0035 and B-0036; the claim, the hand and the hand back are built and not filed. The lease and the session metadata of the draft are not filed until the developer says what the metadata holds and whether an agent claims its work or the coordinator keeps handing it, the decision of 2026-11-23 on F-0016."
 noted = 2026-11-24 19:55:52+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer decided on 2026-11-24: no lease and no session metadata are filed. The agent word of a started work item is its binding, the coordinator keeps handing the work (F-0016, the decision of 2026-11-23), and B-0035 with B-0036 are the atomic claim. Taken up again if agents pull work themselves or outlive their session, so that a stale hold needs an expiry."
+noted = 2026-11-24 21:11:33+00:00

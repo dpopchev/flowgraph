@@ -160,9 +160,9 @@ def test_a_story_taken_out_of_a_feature_keeps_the_place_the_queue_gave_it(tmp_pa
     )
     assert fgraph(["status", "--backlog"], tmp_path).out.splitlines()[:4] == [
         "Backlog (3)",
-        "> S-0003  a title",
+        "> S-0003  []  a title",
         "  F-0001  0/1 W  a feature title",
-        "  S-0002  a title",
+        "  S-0002  []  a title",
     ]
 
 

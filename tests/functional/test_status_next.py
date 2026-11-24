@@ -80,7 +80,7 @@ def test_status_of_a_backlog_whose_first_item_waits_exits_0(tmp_path: Path) -> N
 
 def test_status_names_the_second_item_as_the_next_to_start(tmp_path: Path) -> None:
     out = runs(tmp_path, *FIRST_WAITS, STATUS).out
-    assert marked(out) == ["> S-0002  a second title"]
+    assert marked(out) == ["> S-0002  []  a second title"]
 
 
 def test_status_counts_the_next_to_start_in_the_more_line_when_the_top_leaves_it_out(

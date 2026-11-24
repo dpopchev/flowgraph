@@ -71,7 +71,7 @@ class TestARecordWithAFeatureAndAStoryAddedUnderIt:
     ) -> None:
         assert listed.out == (
             "Backlog (2)\n"
-            "> S-0002  a title that stands alone\n"
+            "> S-0002  []  a title that stands alone\n"
             "  F-0001  0/1 W  a feature title\n"
             "InProgress (0)\n"
             "Completed (0)\n"

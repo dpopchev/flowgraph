@@ -60,7 +60,7 @@ class TestASpikeAddedToARecordWithNoItems:
 
     def test_status_lists_it_as_q_0001_under_backlog(self, added: Outcome, tmp_path: Path) -> None:
         assert fgraph(["status"], tmp_path).out == (
-            "Backlog (1)\n> Q-0001  a spike title\nInProgress (0)\nCompleted (0)\n"
+            "Backlog (1)\n> Q-0001  []  a spike title\nInProgress (0)\nCompleted (0)\n"
         )
 
     def test_the_spike_is_kept_in_the_file_of_its_q_id(

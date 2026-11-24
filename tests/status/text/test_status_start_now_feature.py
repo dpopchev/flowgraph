@@ -46,8 +46,8 @@ def progress(rows: list[FeatureRow]) -> list[str]:
 def test_each_marked_work_item_is_listed_under_its_feature_after_the_started_ones() -> None:
     assert progress([WITH_TWO])[1:] == [
         "    S-0001  0/0 T  a title",
-        "  > S-0002  a title",
-        "  > S-0003  a title",
+        "  > S-0002  []  a title",
+        "  > S-0003  []  a title",
     ]
 
 
@@ -65,6 +65,6 @@ def test_the_feature_holding_a_marked_work_item_is_listed_after_the_top_that_lea
         "  F-0002  0/1 W  a feature",
         "  F-0001  0/3 W  a feature",
         "    S-0001  0/0 T  a title",
-        "  > S-0002  a title",
-        "  > S-0003  a title",
+        "  > S-0002  []  a title",
+        "  > S-0003  []  a title",
     ]

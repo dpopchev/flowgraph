@@ -148,7 +148,7 @@ class TestAStoryLeftInBacklog:
     def test_its_line_says_nothing_of_an_age(self, tmp_path: Path) -> None:
         path = started_under(tmp_path, AGED)
         fgraph(story(2), path)
-        assert "  S-0002  title 2" in lines_of(fgraph(["status"], path, TWO_DAYS))
+        assert "  S-0002  []  title 2" in lines_of(fgraph(["status"], path, TWO_DAYS))
 
 
 class TestAStoryUnderAFeature:

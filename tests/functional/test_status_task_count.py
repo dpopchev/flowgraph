@@ -54,12 +54,6 @@ def after(cwd: Path, argvs: Sequence[Sequence[str]], last: Sequence[str]) -> Out
     return fgraph(last, cwd, START + timedelta(seconds=len(argvs)))
 
 
-XFAIL = pytest.mark.xfail(
-    strict=True,
-    reason="S-0131: a work item of the Backlog is listed with its id and its title alone",
-)
-
-
 def story(number: int) -> list[str]:
     """The command that adds the Story of that number."""
     return ["add", "story", f"title {number}", *CRITERION]
@@ -89,7 +83,6 @@ MOVED = [
 ]
 
 
-@XFAIL
 def test_status_backlog_lists_the_count_of_tasks_in_brackets(tmp_path: Path) -> None:
     listed = after(tmp_path, HELD, ["status", "--backlog"])
     assert listed.out.splitlines()[:3] == [
@@ -99,7 +92,6 @@ def test_status_backlog_lists_the_count_of_tasks_in_brackets(tmp_path: Path) -> 
     ]
 
 
-@XFAIL
 def test_a_plain_status_lists_the_count_of_tasks_in_brackets(tmp_path: Path) -> None:
     listed = after(tmp_path, HELD, ["status"])
     assert listed.out.splitlines()[1:3] == [
@@ -108,7 +100,6 @@ def test_a_plain_status_lists_the_count_of_tasks_in_brackets(tmp_path: Path) -> 
     ]
 
 
-@XFAIL
 def test_watch_lists_the_count_of_tasks_in_brackets(tmp_path: Path) -> None:
     listed = after(tmp_path, HELD, ["watch", "--backlog", "--count", "1"])
     assert listed.out.splitlines()[:3] == [
@@ -118,7 +109,6 @@ def test_watch_lists_the_count_of_tasks_in_brackets(tmp_path: Path) -> None:
     ]
 
 
-@XFAIL
 def test_a_line_that_waits_keeps_its_mark_and_its_words(tmp_path: Path) -> None:
     listed = after(tmp_path, WAITS, ["status", "--backlog"])
     assert listed.out.splitlines()[2] == "~ S-0002  []  title 2  -- depends on S-0001"

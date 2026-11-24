@@ -1602,7 +1602,9 @@ fgraph show S-0001
 record, the last noted first, each with its date, its kind, the ref of the line
 and its text: the id of its item, `#` and its place among the lines of that
 item, counted from 1 in the order noted, as `S-0001#2`. `--kind` narrows the list to `finding`, `decision` or `deviation`;
-another word exits 2 naming the three. `fgraph knowledge --search TEXT` narrows
+another word exits 2 naming the three. `fgraph knowledge --live` lists the live
+lines alone, those no later line supersedes, a line with no mark among them; it is
+the list to read at the start of a session. `fgraph knowledge --search TEXT` narrows
 the list to the lines whose text holds the text, whatever the case of either,
 as a part of a word too. `--kind`, `--about` and `--search` narrow the same
 list, a line being listed when it meets each one given. Only the text of the
@@ -1627,6 +1629,14 @@ fgraph knowledge --kind decision
 # 2026-11-22  decision  S-0001#2  keep one store
 
 fgraph knowledge --kind finding
+# 2026-11-22  finding  S-0001#1  the file holds the lines in the order noted
+
+fgraph knowledge --live
+# after: fgraph note S-0001 --decision "keep one file per item" --supersedes S-0001#2
+# 2026-11-24  decision  S-0001#4  keep one file per item
+# 2026-11-24  deviation  S-0001#3  the second Task was dropped
+# 2026-11-23  decision  Q-0001  one file per work item (answer yes)
+# 2026-11-22  decision  F-0001#1  the budget is agreed
 # 2026-11-22  finding  S-0001#1  the file holds the lines in the order noted
 
 fgraph knowledge --search STORE

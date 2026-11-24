@@ -64,4 +64,9 @@ def knowledge_command(commands: Commands) -> argparse.ArgumentParser:
     knowledge.add_argument(
         "--search", metavar="TEXT", help="list the lines whose text holds this text, in any case"
     )
+    knowledge.add_argument(
+        "--live",
+        action="store_true",
+        help="list the live lines alone: those no later line supersedes",
+    )
     return knowledge

@@ -1089,6 +1089,7 @@ fgraph config show
 # development.driver = "developer"
 # development.mode = "branch"
 # development.branch_max = none
+# development.approver = "agent"
 # delivery.push = false
 # delivery.tag = "none"
 # archive.board = none
@@ -1145,6 +1146,7 @@ fgraph config show
 # development.driver = "developer"
 # development.mode = "branch"
 # development.branch_max = none
+# development.approver = "agent"
 # delivery.push = false
 # delivery.tag = "none"
 # archive.board = none
@@ -1163,6 +1165,7 @@ so `fgraph config set development.gate true` names the command `true`:
 | `development.driver`   | `developer` or `agent`                                     | `fgraph config set development.driver agent`      |
 | `development.mode`     | `branch` or `trunk`                                        | `fgraph config set development.mode trunk`        |
 | `development.branch_max` | a whole number of days as `1d`                           | `fgraph config set development.branch_max 1d`     |
+| `development.approver` | `agent` or `developer`                                     | `fgraph config set development.approver developer` |
 | `delivery.push`        | `true` or `false`                                          | `fgraph config set delivery.push true`            |
 | `delivery.tag`         | `feature-close`, `close` or `none`                         | `fgraph config set delivery.tag close`            |
 | `archive.board`        | the path of the `.board/` of board 1                       | `fgraph config set archive.board .board`          |
@@ -1878,6 +1881,22 @@ holds a commit the branch lacks, the landing exits 2 with nothing merged:
 ```sh
 fgraph land S-0001
 # fgraph: error: S-0001 cannot land by fast-forward: main holds a commit wi/S-0001-raise-the-stories-fgraph lacks -- rebase wi/S-0001-raise-the-stories-fgraph on main or merge main into it
+```
+
+A record whose `config.toml` names `[development] approver = "developer"` holds
+every landing for the developer: the landing waits, nothing is merged, and the
+command says why. The developer approves it by the same command with
+`--approved`, which is the word of the developer and is kept in no record:
+
+```sh
+fgraph config set development.approver developer
+
+fgraph land S-0001 --message "feat: land the first Story"
+# fgraph: error: S-0001 cannot land: development.approver = developer, the landing waits for the developer -- run fgraph land S-0001 --approved once the developer approves it
+
+fgraph land S-0001 --message "feat: land the first Story" --approved
+# landed S-0001 at 3e9ae5c
+# run: a Story is added -> fgraph status lists it under Backlog
 ```
 
 Every other rule of a landing holds for each way: what it refuses, that

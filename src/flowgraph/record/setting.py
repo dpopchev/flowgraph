@@ -19,6 +19,7 @@ from flowgraph.record.archive import ARCHIVE_BOARD, Archive, Archived, Unarchive
 from flowgraph.record.config import (
     DELIVERY_PUSH,
     DELIVERY_TAG,
+    DEVELOPMENT_APPROVER,
     DEVELOPMENT_BRANCH_MAX,
     DEVELOPMENT_DRIVER,
     DEVELOPMENT_ENABLED,
@@ -121,6 +122,7 @@ KEYS = (
     Key(DEVELOPMENT_DRIVER, Takes.TEXT, lambda config: config.development.driver.value),
     Key(DEVELOPMENT_MODE, Takes.TEXT, lambda config: config.development.mode.value),
     Key(DEVELOPMENT_BRANCH_MAX, Takes.TEXT, lambda c: age_text(c.development.branch_max)),
+    Key(DEVELOPMENT_APPROVER, Takes.TEXT, lambda config: config.development.approver.value),
     Key(DELIVERY_PUSH, Takes.TRUTH, lambda config: config.delivery.push),
     Key(DELIVERY_TAG, Takes.TEXT, lambda config: config.delivery.tag.value),
     Key(ARCHIVE_BOARD, Takes.TEXT, lambda config: _board(config.archive)),

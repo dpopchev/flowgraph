@@ -9,6 +9,7 @@ from pathlib import Path
 
 from flowgraph.development import RunGate, check_slug_branched
 from flowgraph.development.commit import OpenGit
+from flowgraph.development.commit_held import check_commit_held
 from flowgraph.development.driver import check_complexity
 from flowgraph.development.parallel import check_parallel
 from flowgraph.development.scope import check_complete_on_main, check_start_on_main
@@ -30,9 +31,13 @@ def check_command(
     cwd: Path,
     run_check: RunGate,
 ) -> None:
-    """Raise the refusal of the command when one of the checks before its write fails."""
+    """Raise the refusal of the command when one of the checks before its write fails.
+
+    A complete refuses a commit the repository does not hold before the check of its Task runs.
+    """
     if args.command == "complete":
         check_complete_on_main(args.id, record, open_git)
+        check_commit_held(args.id, args.commit, record, open_git, config)
         check_task_run(args.id, store, record, open_git, cwd, run_check)
     if args.command == "start":
         check_slug_branched(args.id, args.slug, config.development.enabled, record / CONFIG)

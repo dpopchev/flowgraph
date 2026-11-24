@@ -1,8 +1,7 @@
 """The criterion of B-0029: with the development on, a commit the repository lacks is refused.
 
 Run end to end through `run` on a real git repository in a temporary directory, never a faked
-git; the identity of its commits comes from the environment and no git config is read. The
-red tests are marked xfail (strict) until the check of the commit is wired into the complete.
+git; the identity of its commits comes from the environment and no git config is read.
 """
 
 import subprocess
@@ -33,9 +32,6 @@ IDENTITY = {
 }
 UNKNOWN = "c6e0f15"
 NOT_HELD = "fgraph: error: {id} cannot complete: the repository holds no commit {sha}"
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="B-0029: a commit the repository does not hold is taken"
-)
 
 
 @dataclass(frozen=True)
@@ -124,7 +120,6 @@ def worktree(tmp_path: Path) -> Path:
     return started_task(tmp_path, "true")
 
 
-@XFAIL
 class TestATaskCompletedAtACommitTheRepositoryDoesNotHold:
     def test_complete_exits_with_two_and_names_the_task_and_the_commit(
         self, worktree: Path
@@ -145,14 +140,12 @@ class TestATaskCompletedAtACommitTheRepositoryDoesNotHold:
         assert f"  S-0001  0/1 T  {TITLE}\n" in fgraph(["status"], worktree).out
 
 
-@XFAIL
 def test_the_sha_of_a_tree_is_refused(worktree: Path) -> None:
     tree = git(worktree, "rev-parse", "HEAD^{tree}")
     refused = complete_at(worktree, tree)
     assert (refused.status, refused.err.splitlines()[-1:]) == (2, [not_held("T-0001", tree)])
 
 
-@XFAIL
 def test_the_check_of_the_task_is_not_run_for_a_commit_the_repository_does_not_hold(
     tmp_path: Path,
 ) -> None:
@@ -161,7 +154,6 @@ def test_the_check_of_the_task_is_not_run_for_a_commit_the_repository_does_not_h
     assert refused.err.splitlines()[-1:] == [not_held("T-0001", UNKNOWN)]
 
 
-@XFAIL
 class TestAStoryCompletedOnMainAtACommitTheRepositoryDoesNotHold:
     @pytest.fixture
     def merged(self, tmp_path: Path) -> Path:
@@ -187,7 +179,6 @@ class TestAStoryCompletedOnMainAtACommitTheRepositoryDoesNotHold:
         assert git(merged, "rev-parse", "HEAD") == before
 
 
-@XFAIL
 def test_a_task_of_a_record_git_ignores_is_refused_the_same(tmp_path: Path) -> None:
     checkout = tmp_path / "project"
     checkout.mkdir()

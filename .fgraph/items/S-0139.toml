@@ -6,6 +6,7 @@ parent = "F-0017"
 complexity = "low"
 created = 2026-11-23 12:05:15+00:00
 started = 2026-11-24 16:13:24+00:00
+agent = "sonnet-a48"
 depends_on = [
     "S-0137",
 ]

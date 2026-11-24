@@ -1,14 +1,11 @@
 id = "B-0030"
-state = "blocked"
+state = "started"
 title = "Cut the passages of README.md and docs/domain-model.md that say fgraph config has no unset or five keys from four to none"
 description = "Found by the planner of S-0115 on 2026-11-23 while reading the configuration; filed at the end of the queue and left out of S-0115 on purpose. Its Tasks are written when it is ordered."
 complexity = "low"
 created = 2026-11-23 09:12:23+00:00
 started = 2026-11-24 06:58:58+00:00
 agent = "haiku-a27"
-since = 2026-11-24 07:00:50+00:00
-reason = "the check and the text of T-0478 ask docs/domain-model.md to say These eight keys are built and lists the eight defaults; fgraph config show lists nine since S-0120 landed archive.board on 2026-11-24, so the Task as written would state a false count -- whether T-0478 and T-0479 say nine, with archive.board in the list, is for the developer; nothing of B-0030 is started or changed"
-waiting_on = "developer"
 filed_during = "S-0115"
 
 [criterion]

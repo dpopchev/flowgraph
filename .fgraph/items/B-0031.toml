@@ -38,13 +38,15 @@ commit = "4d400d110e62d9030474ecb72c50c88492b29de4"
 
 [[tasks]]
 id = "T-0453"
-state = "started"
+state = "completed"
 title = "Refuse fgraph goal of a Feature that holds a work item in Backlog with no Task or no complexity, in the words of its start"
 description = "Change src/flowgraph/goal/read.py (32 lines, about 37 after) and tests/functional/test_goal_planned.py (remove XFAIL and its six marks, nothing else). In read.py: one import, from flowgraph.feature.start import check_planned, by its module path (never through flowgraph.feature, whose __init__ names its lower modules alone); in goal_output, right after check_scope(feature_id, items) and before the return, one call: check_planned(feature_id, store, complexity=True). The complexity is always asked there: check_driven_by_agent has passed at the top of the function, so the development is on and an agent drives it. Extend the docstring of goal_output: it raises NoTaskError or NoComplexityError, in the words of the start of the Feature, when a work item of it in Backlog holds no Task or no complexity, the first in start order named; still nothing is written. The order of the refusals stays driver, hours, id, Feature not found, no work item in Backlog, then the plan. Red first: remove the six xfail marks, see the six tests fail for the reason in their names (exit 0 and a line printed), then add the import and the call. No unit test is added under tests/goal/: that directory tests goal/model.py, which stays pure and untouched, and the wiring is seen red on the functional tests, as the wiring of fgraph goal itself was. Leave alone: src/flowgraph/goal/model.py, src/flowgraph/feature/start.py, src/flowgraph/parser/refusals.py (NoTaskError and NoComplexityError are in REFUSED already), src/flowgraph/parser/views.py, src/flowgraph/parser/command.py, src/flowgraph/cli.py, tests/functional/test_goal.py, the docs. Do not import from src/flowgraph/development/driver.py in goal/: the words come through check_planned."
 check = "uv run pytest tests/functional/test_goal_planned.py tests/functional/test_goal.py tests/goal tests/parser -q && ! grep -q xfail tests/functional/test_goal_planned.py"
 expected_output = "changed: with the development on and development.driver agent, fgraph goal F-0001 of a Feature that holds a work item in Backlog with no Task exits 2, prints nothing on stdout and says F-0001 cannot start: S-0002 has no Task to start with; with a Task on each and no complexity on one it says F-0001 cannot start: S-0002 has no complexity to start with: set it with fgraph amend S-0002 --complexity low, medium or high; the first such work item in start order is named; a Feature planned whole is worded as before, and so are the refusals of the driver, the hours, the id and a Feature with no work item in Backlog, each before the plan. No xfail mark is left in tests/functional/test_goal_planned.py"
 created = 2026-11-23 20:10:28+00:00
 started = 2026-11-24 03:39:49+00:00
+completed = 2026-11-24 03:41:04+00:00
+commit = "1ec17b523716cd71a6b9331783000cdd9bf14e53"
 
 [[tasks]]
 id = "T-0454"

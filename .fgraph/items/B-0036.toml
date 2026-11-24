@@ -18,13 +18,15 @@ expected = "of two starts of one work item run at one time one starts it and the
 
 [[tasks]]
 id = "T-0641"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_starts_at_one_time.py, failing on the criterion of B-0036"
 description = "New file only (about 140 lines), no source change; functional as its pytestmark, one assert per test. B-0035 landed first: read tests/functional/test_writes_at_one_time.py, whose module fixture on real processes this file is shaped as. Copy NOW, TITLE, ADD_STORY, ADD_TASK, IDENTITY, Outcome, fgraph, git and the fixtures repository and checkout from tests/functional/test_start_agent.py (205 lines): a git repository on main whose first commit holds the config.toml with the development on. XFAIL = pytest.mark.xfail(strict=True, reason=\"B-0036: the refusal of a second start does not name who holds it\"). One after the other, through run(): (a) under XFAIL, start S-0001 --agent sonnet-a1, then start S-0001 --agent opus-b2: (status, last error line) equals (2, \"fgraph: error: S-0001 is started already: sonnet-a1 holds it\"); (b) guard: after (a), fgraph show S-0001 still holds the line agent sonnet-a1; (c) guard: start S-0001 with no agent, then start S-0001 --agent opus-b2: (2, \"fgraph: error: S-0001 is started already\"). At one time, on real processes: a module fixture makes the repository, adds the Story and its Task, starts together two subprocess.Popen of [sys.executable, -m, flowgraph.cli, start, S-0001, --agent, NAME] for a and b in the checkout, IDENTITY in the environment, and waits for both; the winner is the agent of the process that exited 0. One test each: the exit statuses sorted are [0, 2]; under XFAIL, the last error line of the other is fgraph: error: S-0001 is started already: <winner> holds it; git status --porcelain of the checkout is empty; the agent of S-0001 in fgraph status --format json is the winner; git log holds one commit chore: start S-0001 in the record. See each marked test fail under --runxfail for the reason in its name, none on the arrangement. If a guard on real processes fails, stop and say so: the lock of B-0035 does not hold the start, and B-0036 is planned again. Out of bounds: every file under src/, every other test file, the docs."
 check = "uv run pytest tests/functional/test_starts_at_one_time.py -q -p no:cacheprovider && grep -q xfail tests/functional/test_starts_at_one_time.py"
 expected_output = "created: tests/functional/test_starts_at_one_time.py states that a second fgraph start of a work item an agent holds exits 2 with the last error line fgraph: error: S-0001 is started already: sonnet-a1 holds it; and that of two fgraph start S-0001 run at one time as real processes with the development on, one with --agent a and one with --agent b, one exits 0 and the other 2, the refusal names the agent whose start was taken, git status of main is empty and fgraph status lists that agent. The tests on the words of the refusal carry a strict xfail naming B-0036; the others pass as guards"
 created = 2026-11-24 21:20:24+00:00
 started = 2026-11-24 22:23:15+00:00
+completed = 2026-11-24 22:24:05+00:00
+commit = "3e0445dfd9d4fee81b7283a2c30fae1c6628b7a3"
 
 [[tasks]]
 id = "T-0642"

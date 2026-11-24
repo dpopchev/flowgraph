@@ -32,7 +32,7 @@ TWO_STORIES = (*ADDED, ADD_OTHER, TASK_FOR_OTHER, ["start", "F-0001"])
 TASK_DONE = (["start", "T-0001"], ["complete", "T-0001", "--commit", "abc1234"])
 COMPLETE_STORY = ["complete", "S-0001", "--commit", "def5678"]
 HELD = "F-0001 is blocked, waiting on the sponsor: unblock it first"
-MARKED = "! F-0001  0/1 W  a feature title  -- waiting on the sponsor: the budget is not agreed"
+MARKED = "! F-0001  0/1 W  a feature title\n  waiting on the sponsor: the budget is not agreed"
 
 
 @dataclass(frozen=True)
@@ -111,10 +111,11 @@ class TestAStartedFeatureBlockedWithAReasonAndWhatItWaitsOn:
         self, blocked: Outcome, tmp_path: Path
     ) -> None:
         runs(tmp_path, ["start", "T-0001"], BLOCK_TASK)
-        assert fgraph(["status"], tmp_path, LATER).out.splitlines()[2:5] == [
-            MARKED,
+        assert fgraph(["status"], tmp_path, LATER).out.splitlines()[2:7] == [
+            *MARKED.splitlines(),
             "    S-0001  0/1 T  a title",
-            "      !  T-0001  a task title  -- waiting on the reviewer: no review",
+            "      !  T-0001  a task title",
+            "         waiting on the reviewer: no review",
         ]
 
     def test_the_completion_of_its_last_story_completes_it(
@@ -155,8 +156,8 @@ class TestAStartedFeatureBlockedWhileItHoldsAStoryInBacklog:
         assert fgraph(["status"], tmp_path, LATER).out == (
             "Backlog (0)\n"
             "InProgress (1)\n"
-            "! F-0001  1/2 W  a feature title  "
-            "-- waiting on the sponsor: the budget is not agreed\n"
+            "! F-0001  1/2 W  a feature title\n"
+            "  waiting on the sponsor: the budget is not agreed\n"
             "    S-0001  1/1 T  a title\n"
             "Completed (0)\n"
         )

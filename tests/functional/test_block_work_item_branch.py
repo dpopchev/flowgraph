@@ -138,8 +138,8 @@ def test_the_block_in_the_worktree_is_one_commit_of_its_branch_holding_its_file_
 
 
 def test_status_on_main_lists_it_blocked(blocked: Outcome, checkout: Path) -> None:
-    assert f"! S-0001  0/1 T  {TITLE}  -- waiting on developer: no key" in (
-        fgraph(["status"], checkout).out.splitlines()
+    assert f"! S-0001  0/1 T  {TITLE}\n  waiting on developer: no key\n" in (
+        fgraph(["status"], checkout).out
     )
 
 

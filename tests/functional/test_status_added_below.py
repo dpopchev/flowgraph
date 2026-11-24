@@ -47,9 +47,6 @@ REMOVE_FEATURE = ["remove", "F-0001", "--reason", "filed by mistake"]
 SUPERSEDE = ["remove", "S-0001", "--superseded-by", "S-0002", "--reason", "folded in"]
 DEPEND = ["amend", "S-0002", "--depends-on", "S-0001"]
 STATUS = ["status", "--all"]
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="S-0135: what a line adds ends the line, after two dashes"
-)
 XFAIL_FEATURE = pytest.mark.xfail(
     strict=True, reason="S-0135: what a line adds ends the line, after two dashes"
 )
@@ -95,7 +92,6 @@ def below(out: str, item: str, count: int = 2) -> list[str]:
     return lines[first : first + count]
 
 
-@XFAIL
 def test_a_blocked_feature_waits_on_a_line_below_it(tmp_path: Path) -> None:
     out = runs(
         tmp_path, ADD_FEATURE, ADD_UNDER, ADD_TASK, ["start", "F-0001"], BLOCK_FEATURE, STATUS
@@ -106,13 +102,11 @@ def test_a_blocked_feature_waits_on_a_line_below_it(tmp_path: Path) -> None:
     ]
 
 
-@XFAIL
 def test_a_removed_work_item_gives_its_reason_on_a_line_below_it(tmp_path: Path) -> None:
     out = runs(tmp_path, ADD_FIRST, REMOVE, STATUS).out
     assert below(out, "S-0001") == ["  S-0001  a title", "  filed by mistake"]
 
 
-@XFAIL
 def test_a_work_item_of_the_backlog_gives_what_it_depends_on_on_a_line_below_it(
     tmp_path: Path,
 ) -> None:
@@ -120,7 +114,6 @@ def test_a_work_item_of_the_backlog_gives_what_it_depends_on_on_a_line_below_it(
     assert below(out, "S-0002") == ["~ S-0002  []  a second title", "  depends on S-0001"]
 
 
-@XFAIL
 def test_a_blocked_work_item_waits_on_a_line_below_it_and_above_its_task(tmp_path: Path) -> None:
     started = [ADD_FIRST, ADD_TASK, ["start", "S-0001"], ["start", "T-0001"], BLOCK_STORY]
     out = runs(tmp_path, *started, STATUS).out
@@ -131,7 +124,6 @@ def test_a_blocked_work_item_waits_on_a_line_below_it_and_above_its_task(tmp_pat
     ]
 
 
-@XFAIL
 def test_a_blocked_task_waits_on_a_line_below_it_under_its_id(tmp_path: Path) -> None:
     started = [ADD_FIRST, ADD_TASK, ["start", "S-0001"], ["start", "T-0001"], BLOCK_TASK]
     out = runs(tmp_path, *started, STATUS).out
@@ -141,7 +133,6 @@ def test_a_blocked_task_waits_on_a_line_below_it_under_its_id(tmp_path: Path) ->
     ]
 
 
-@XFAIL
 def test_a_superseded_work_item_gives_what_supersedes_it_on_a_line_below_it(
     tmp_path: Path,
 ) -> None:
@@ -149,13 +140,11 @@ def test_a_superseded_work_item_gives_what_supersedes_it_on_a_line_below_it(
     assert below(out, "S-0001") == ["  S-0001  a title", "  superseded by S-0002, folded in"]
 
 
-@XFAIL
 def test_no_line_of_the_listing_holds_two_dashes_before_what_it_adds(tmp_path: Path) -> None:
     out = runs(tmp_path, ADD_FIRST, ADD_SECOND, DEPEND, SUPERSEDE, STATUS).out
     assert [line for line in out.splitlines() if "  -- " in line] == []
 
 
-@XFAIL
 def test_watch_lists_a_blocked_feature_with_its_words_on_a_line_below_it(tmp_path: Path) -> None:
     started = [ADD_FEATURE, ADD_UNDER, ADD_TASK, ["start", "F-0001"], BLOCK_FEATURE]
     out = runs(tmp_path, *started, ["watch", "--all", "--count", "1"]).out

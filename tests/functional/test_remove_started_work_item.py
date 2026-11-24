@@ -174,7 +174,8 @@ class TestAStartedStoryRemovedOnMain:
             "InProgress (0)\n"
             "Completed (0)\n"
             "Removed (1)\n"
-            f"  S-0001  {TITLE}  -- pivoted\n"
+            f"  S-0001  {TITLE}\n"
+            "  pivoted\n"
         )
 
     def test_show_names_the_bucket_and_the_reason(self, removed: Outcome, checkout: Path) -> None:
@@ -258,7 +259,7 @@ def test_a_story_superseded_by_another_names_it_on_itself_and_its_tasks(
     fgraph(["remove", "S-0001", "--superseded-by", "S-0002"], checkout)
     of_t2 = fgraph(["show", "S-0001"], checkout).out.split("T-0002")[1].split("T-0003")[0]
     assert (
-        f"  S-0001  {TITLE}  -- superseded by S-0002" in fgraph(["status"], checkout).out,
+        f"  S-0001  {TITLE}\n  superseded by S-0002\n" in fgraph(["status"], checkout).out,
         "    reason           superseded by S-0002" in of_t2,
     ) == (True, True)
 

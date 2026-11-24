@@ -133,9 +133,10 @@ def test_a_removed_feature_is_listed_after_the_removed_work_items_and_none_of_it
 ) -> None:
     add_under = ["add", "story", "another title", *CRITERION, "--parent", "F-0001"]
     listed = runs(tmp_path, ADD_ALONE, ADD_FEATURE, add_under, REMOVE_STORY, REMOVE, ["status"])
-    assert listed.out.splitlines()[-3:] == [
+    assert listed.out.splitlines()[-4:] == [
         "Removed (2)",
-        "  S-0001  a title  -- superseded",
+        "  S-0001  a title",
+        "  superseded",
         "  F-0001  a feature title  -- filed by mistake",
     ]
 

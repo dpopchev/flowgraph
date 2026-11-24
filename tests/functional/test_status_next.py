@@ -87,7 +87,7 @@ def test_status_counts_the_next_to_start_in_the_more_line_when_the_top_leaves_it
     tmp_path: Path,
 ) -> None:
     out = runs(tmp_path, *SEVEN, ["status"]).out
-    assert out.splitlines()[2] == "  ... 6 more, 1 can start"
+    assert out.splitlines()[3] == "  ... 6 more, 1 can start"
 
 
 def test_status_names_none_when_no_item_of_the_backlog_can_start(tmp_path: Path) -> None:

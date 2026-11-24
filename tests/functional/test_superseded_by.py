@@ -63,7 +63,7 @@ def test_remove_superseded_by_the_second_exits_with_zero(tmp_path: Path) -> None
 
 def test_status_lists_the_first_under_removed_as_superseded_by_the_second(tmp_path: Path) -> None:
     listed = runs(tmp_path, ADD_STORY, ADD_OTHER, SUPERSEDE, ["status"]).out
-    assert "Removed (1)\n  S-0001  a title  -- superseded by S-0002\n" in listed
+    assert "Removed (1)\n  S-0001  a title\n  superseded by S-0002\n" in listed
 
 
 def test_show_of_the_second_lists_that_it_supersedes_the_first(tmp_path: Path) -> None:

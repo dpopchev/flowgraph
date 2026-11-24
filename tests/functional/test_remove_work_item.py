@@ -76,7 +76,8 @@ class TestAStoryInBacklogRemovedWithAReason:
             "InProgress (0)\n"
             "Completed (0)\n"
             "Removed (1)\n"
-            "  S-0001  a title  -- filed by mistake\n"
+            "  S-0001  a title\n"
+            "  filed by mistake\n"
         )
 
     def test_show_names_the_bucket_and_the_reason_and_keeps_its_task(
@@ -105,7 +106,7 @@ class TestAStartedStoryWithATaskCompletedAndOneInBacklogRemoved:
         assert (removed.status, removed.out) == (0, "removed S-0001\n")
 
     def test_status_lists_it_under_removed(self, removed: Outcome, tmp_path: Path) -> None:
-        assert "Removed (1)\n  S-0001  a title  -- filed by mistake\n" in (
+        assert "Removed (1)\n  S-0001  a title\n  filed by mistake\n" in (
             fgraph(["status"], tmp_path).out
         )
 

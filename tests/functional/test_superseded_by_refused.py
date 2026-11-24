@@ -69,7 +69,7 @@ def test_show_of_the_removed_work_item_lists_what_supersedes_it(tmp_path: Path) 
 def test_status_lists_what_supersedes_it_before_a_reason_given_beside_it(tmp_path: Path) -> None:
     remove = [*SUPERSEDE, "--reason", "refiled"]
     listed = runs(tmp_path, *TWO, remove, ["status"]).out
-    assert "  S-0001  a title  -- superseded by S-0002, refiled\n" in listed
+    assert "  S-0001  a title\n  superseded by S-0002, refiled\n" in listed
 
 
 def test_show_lists_the_reason_given_beside_what_supersedes_it(tmp_path: Path) -> None:

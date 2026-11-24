@@ -70,14 +70,16 @@ def test_status_exits_with_zero_on_a_record_with_a_blocked_task(tmp_path: Path) 
 def test_the_line_of_a_blocked_task_names_its_reason_beside_what_it_waits_on(
     tmp_path: Path,
 ) -> None:
-    assert status_after(tmp_path, *TASK_BLOCKED).out.splitlines()[4] == (
-        "      !  T-0001  a task title  -- waiting on developer: no key"
-    )
+    assert status_after(tmp_path, *TASK_BLOCKED).out.splitlines()[5:7] == [
+        "      !  T-0001  a task title",
+        "         waiting on developer: no key",
+    ]
 
 
 def test_the_line_of_a_blocked_feature_names_its_reason_beside_what_it_waits_on(
     tmp_path: Path,
 ) -> None:
-    assert status_after(tmp_path, *FEATURE_BLOCKED).out.splitlines()[2] == (
-        "! F-0001  0/1 W  a feature title  -- waiting on sponsor: no budget"
-    )
+    assert status_after(tmp_path, *FEATURE_BLOCKED).out.splitlines()[2:4] == [
+        "! F-0001  0/1 W  a feature title",
+        "  waiting on sponsor: no budget",
+    ]

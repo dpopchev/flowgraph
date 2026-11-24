@@ -65,7 +65,8 @@ def test_a_removed_work_item_is_listed_under_removed_with_its_reason() -> None:
         "InProgress (0)\n"
         "Completed (0)\n"
         "Removed (1)\n"
-        "  CH-0001  a title  -- filed by mistake\n"
+        "  CH-0001  a title\n"
+        "  filed by mistake\n"
     )
 
 

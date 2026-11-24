@@ -210,8 +210,8 @@ def test_a_blocked_task_in_its_worktree_shows_in_the_status_of_main(
 ) -> None:
     fgraph(START_TASK, worktree)
     fgraph(BLOCK, worktree)
-    lines = fgraph(["status"], checkout).out.splitlines()
-    assert "    !  T-0001  a task title  -- waiting on developer: no key" in lines
+    out = fgraph(["status"], checkout).out
+    assert "    !  T-0001  a task title\n       waiting on developer: no key\n" in out
 
 
 def test_an_unblock_of_a_story_blocked_in_its_worktree_on_main_says_it_is_not_blocked(

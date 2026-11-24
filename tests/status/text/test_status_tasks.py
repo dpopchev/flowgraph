@@ -37,14 +37,16 @@ def test_the_started_task_is_listed_under_its_work_item_marked_as_the_one_worked
 
 
 def test_a_blocked_task_is_listed_marked_as_blocked_with_what_it_waits_on() -> None:
-    assert status_text([started(1, HELD)]).splitlines()[3] == (
-        "    !  T-0002  a held task  -- waiting on a reviewer: a reason"
-    )
+    assert status_text([started(1, HELD)]).splitlines()[3:5] == [
+        "    !  T-0002  a held task",
+        "       waiting on a reviewer: a reason",
+    ]
 
 
 def test_the_tasks_being_worked_are_listed_in_the_order_of_the_file() -> None:
     assert status_text([started(1, HELD, BEGUN)]).splitlines()[3:] == [
-        "    !  T-0002  a held task  -- waiting on a reviewer: a reason",
+        "    !  T-0002  a held task",
+        "       waiting on a reviewer: a reason",
         "    => T-0003  a begun task",
         "Completed (0)",
     ]

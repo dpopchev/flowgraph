@@ -82,7 +82,8 @@ def test_line_of_a_waiting_story_is_marked(tmp_path: Path) -> None:
 
 def test_line_of_a_waiting_story_names_what_it_waits_for(tmp_path: Path) -> None:
     out = runs(tmp_path, *WAITING, STATUS).out
-    assert line_of(out, "S-0002").endswith("-- depends on S-0001")
+    lines = out.splitlines()
+    assert lines[lines.index(line_of(out, "S-0002")) + 1] == "  depends on S-0001"
 
 
 def test_line_of_a_story_whose_dependency_is_completed_carries_no_mark(tmp_path: Path) -> None:

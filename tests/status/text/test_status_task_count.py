@@ -45,7 +45,7 @@ def test_a_work_item_in_backlog_with_no_task_reads_empty_brackets() -> None:
 
 def test_one_that_waits_keeps_its_mark_and_its_words_around_the_brackets() -> None:
     row = WorkItemRow("S-0002", "a title", "backlog", created=CREATED, waits_for=["S-0001"])
-    assert lines(row)[1] == "~ S-0002  []  a title  -- depends on S-0001"
+    assert lines(row)[1:3] == ["~ S-0002  []  a title", "  depends on S-0001"]
 
 
 def test_the_next_to_start_keeps_its_mark_before_the_brackets() -> None:

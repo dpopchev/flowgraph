@@ -45,13 +45,15 @@ commit = "01c1e6c"
 
 [[tasks]]
 id = "T-0519"
-state = "started"
+state = "completed"
 title = "Say on the status line of a started work item that its branch is older than an age, from a field of its row"
 description = "Change src/flowgraph/work_item/views.py (106 lines, about 109 after), src/flowgraph/status/text.py (226 lines, about 231 after) and add tests/status/text/test_status_branch_age.py (about 70 lines) only. views.py: WorkItemRow gains branch_older_than: str = field(default=\"\", kw_only=True) after next_to_start, and one sentence of its docstring: the age its branch is older than, as development.branch_max writes it, set by the store that reads the clock and empty where no age is set. text.py: in _status_line, in the branch of a row in IN_PROGRESS, the line gains the suffix f\"  -- its branch is older than {row.branch_older_than}\" right after the title when the field is not empty; the block of a blocked row follows it, since _marked appends to the line; say it in the docstring of _status_line. Nothing else of text.py changes: _feature_lines writes its started work items through _status_line, so the word shows under a Feature with no change there. Tests seen red first, in the new file under pytestmark = pytest.mark.view, built as tests/status/text/test_status_agent.py (its CREATED, TASKS and row helper), each with the word older in its name so the check selects it: a started row holding \"1d\" is written \"  S-0001  1/2 T  a title  -- its branch is older than 1d\"; a started row holding none is written as before; a row handed to an agent keeps the agent before the title and the word after it; a blocked row is written \"! S-0001  1/2 T  a title  -- its branch is older than 1d  -- waiting on a developer: no key\" (build it with waiting_on and block_reason as tests/status/text/test_status_blocked_item.py does); under a FeatureRow the line is two columns further in and ends with the word; a row in Backlog and a completed row holding the field are written as before. Out of bounds: src/flowgraph/status/view.py (247 of 250 lines), next.py, document.py (the JSON document does not list the field), show.py, watch.py, src/flowgraph/work_item/projection.py, src/flowgraph/cli.py, tests/functional/ (the marks stay)."
 check = "uv run pytest tests/status -q -k older && uv run pytest tests/status tests/functional/test_branch_age.py tests/functional/test_status_review.py -q && make lines"
 expected_output = "changed: WorkItemRow holds branch_older_than, the age its branch is older than as the key writes it, empty by default; the text of status ends the line of a started or blocked work item that holds one with -- its branch is older than 1d, after its title and before a block, under a Feature as alone; a row without it, and a row in any other bucket, is written as before. No command sets the field yet: the XFAIL_SAID tests still xfail"
 created = 2026-11-23 20:51:38+00:00
 started = 2026-11-24 08:00:37+00:00
+completed = 2026-11-24 08:02:25+00:00
+commit = "0dadf4a"
 
 [[tasks]]
 id = "T-0520"

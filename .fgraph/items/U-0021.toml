@@ -45,3 +45,11 @@ noted = 2026-11-24 23:00:42+00:00
 governs = [
     "tests/task/test_task_check.py",
 ]
+
+[[knowledge]]
+kind = "finding"
+text = "red proof of U-0021: with each behavior taken out in turn, a test of this file failed by name -- task_primitives writes the check, checked = {}: test_a_task_with_its_check_reads_back_whole_in_any_state[backlog], [started], [blocked], [done], [removed] and test_the_detail_of_a_work_item_lists_the_check_of_its_task; backlog_task reads it, None in place of held.check: the same six; task_row lists it, check='' in place of check=held.check or '': test_the_detail_of_a_work_item_lists_the_check_of_its_task; a table with no check reads, the field check of TaskFile loses its default None: test_a_file_whose_task_holds_no_check_reads_with_none; the table of a started Task holds a check, field check deleted from StartedTaskFile: test_a_task_with_its_check_reads_back_whole_in_any_state[started]; of a blocked Task, from BlockedTaskFile: test_a_task_with_its_check_reads_back_whole_in_any_state[blocked]; of a completed Task, from CompletedTaskFile: test_a_task_with_its_check_reads_back_whole_in_any_state[done]; of a removed Task, from RemovedTaskFile: no test of this file failed, so GONE = removed_task(HALF, make_task_id(3), 'a reason', ON) joined the parametrize of test_a_task_with_its_check_reads_back_whole_in_any_state with the id removed, commit aacf4218, red with the mutation in ([removed])"
+noted = 2026-11-24 23:01:11+00:00
+governs = [
+    "tests/work_item/test_work_item_task_check.py",
+]

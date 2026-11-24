@@ -82,7 +82,7 @@ def _watch(
 
     A frame is cut to the width and the height the terminal has then and replaces the one
     before it; without a width it is whole and follows it. The configuration sets how many
-    lines a frame marks as able to start and the buckets a frame lists. Raises PaceError when
+    lines a frame counts as able to start and the buckets a frame lists. Raises PaceError when
     the seconds or the count asked for are no positive number; no frame is written then.
     """
     pace = make_pace(args.seconds, args.count)

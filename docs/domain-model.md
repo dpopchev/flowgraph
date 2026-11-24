@@ -349,9 +349,14 @@ of work item. The developer said so on 2026-11-21.
   number, then a Feature by number.
 - A work item that leaves the Backlog leaves the queue with it, and so does a
   Feature: the other buckets are not listed by the queue.
-- `fgraph status` marks every work item that can start now with `=`, within
+- `fgraph status` counts every work item that can start now, within
   `[development] parallel` (S-0110, which takes over S-0108 and replaces the
-  reading of S-0086 that marked the next to start alone). The places are
+  reading of S-0086 that marked the next to start alone). The text marks no such
+  line: a line of the Backlog that can start carries none, `[N T]` telling a
+  planned line and `[]` one that is not, and which lines can start is read from
+  `can_start` of the JSON, from the more-line and from `fgraph start` with no id.
+  The developer dropped the mark of a line that can start, the equals sign, on
+  2026-11-24 (S-0152). The places are
   `parallel` less the work items started, those under a Feature counted. The
   first to take them are the work items in Backlog of a started Feature that
   are not blocked and wait for nothing, the started Features in the order
@@ -362,21 +367,21 @@ of work item. The developer said so on 2026-11-21.
   one place. A line that waits is skipped, and the limit, not a dependency,
   leaves out the rest. A Feature holding no work item in Backlog, a blocked
   Feature and one never started give none. With `parallel` left out every one
-  that waits for nothing is marked; with the development off the next to start
+  that waits for nothing can start; with the development off the next to start
   alone, the first such line of the queue, as before. With the development on
-  a line is marked only once planned (S-0127): a work item holds a Task, a
+  a line can start only once planned (S-0127): a work item holds a Task, a
   Feature's work items in Backlog each hold one, under a started Feature as in
   the Backlog; with `development.driver` agent planned also means each work
   item holds a complexity (S-0129), and with the driver a developer the Tasks
-  alone decide; a line not planned is unmarked, with no suffix. With the
-  development off the Tasks are not read. Each marked line the top
+  alone decide; a line not planned reads `[]`. With the
+  development off the Tasks are not read. Each line that can start which the top
   of the Backlog leaves out is counted in its more-line, `... N more, M can
-  start`, and not listed; a Backlog where nothing can start marks none. It is a view of
+  start`, and not listed; a Backlog where nothing can start counts none. It is a view of
   `fgraph status` and `fgraph watch`: no `next` command exists. The view holds
   it as data on the row, beside what the row waits for.
 - `fgraph start` given no id starts the first of them (S-0121, the decision of
-  the developer of 2026-11-23: the first line of the Backlog that can start, the
-  one status marks). The id is read from the rows of status before the checks
+  the developer of 2026-11-23: the first line of the Backlog that can start).
+  The id is read from the rows of status before the checks
   of a start run, so every refusal of a start names it, the one that holds a
   start to main among them. The rule is written once, in
   `src/flowgraph/status/next.py`, and `src/flowgraph/status/top.py` reads it. The
@@ -435,7 +440,7 @@ of work item. The developer said so on 2026-11-21.
   is listed in, then one line `... N more` for the N it does not list. The
   Backlog lists its first line alone, the developer's decision of 2026-11-23
   (S-0130), then one line `... N more, M can start`, N the lines
-  it does not list and M those of them marked as able to start, the same lines
+  it does not list and M those of them that can start, the same lines
   `can_start` of the JSON names. The count beside the heading stays that of
   all its items, and a heading with no more than its top has no such line.
   `fgraph status --backlog` lists the whole Backlog and leaves Completed and
@@ -467,7 +472,7 @@ of work item. The developer said so on 2026-11-21.
   its own, so the line ends with its title, and the JSON does not change. Under a Feature the
   same two lines stand two columns further in. It is not
   marked `@`, whatever its Tasks, and it takes a place of
-  `development.parallel` in the marks `=`, as a started one does.
+  `development.parallel` in the places that can start, as a started one does.
 - Under a work item of InProgress `fgraph status` lists each Task of it being
   worked, the developer's decision of 2026-11-21, after board 1's watch: the
   started Task as `    => T-0001  <title>`, and a blocked one as
@@ -479,11 +484,12 @@ of work item. The developer said so on 2026-11-21.
   the count beside it.
 - `fgraph status` marks `@` a started work item that holds a Task with every Task
   completed, as ready for review, the reading of S-0114: the mark stands in the first
-  column of its line, beside `=`, `~`, `!` and `=>`, alone in InProgress or under a
+  column of its line, beside `~`, `!` and `=>`, alone in InProgress or under a
   started Feature, with the development on or off, and `fgraph watch` shows it the same.
-  The marks are `=`, `@`, `~`, `!` and `=>`, the set the developer chose on 2026-11-23 from
-  three (S-0139): a greater-than sign at the start of a line pasted into Markdown opens a quote and a
-  question mark is special in a search by a regular expression, and these five are neither; the JSON carries
+  The marks are `@`, `~`, `!` and `=>`, the set the developer chose on 2026-11-23 from
+  three (S-0139), less the mark of a line that can start (S-0152): a greater-than sign at the start
+  of a line pasted into Markdown opens a quote and a
+  question mark is special in a search by a regular expression, and these are neither; the JSON carries
   `can_start` and `ready_for_review` and no mark, so a client that reads it is not touched.
   It is read from the rows as status reads them, from the worktree of the work item with
   the development on, derived at each listing and kept in no file, so no field of a row
@@ -492,7 +498,7 @@ of work item. The developer said so on 2026-11-21.
   Task counts neither way: a work item whose Tasks left are each completed is marked, and
   one whose every Task is removed is not (S-0147). With no key InProgress has
   no top, so the next sentence holds only where `status.in-progress` sets a
-  top: a marked line the top leaves out is listed
+  top: a line that can start which the top leaves out is listed
   after it, apart from the count of those more, in InProgress; in the Backlog a line that can start beyond the top is counted
   in the more-line, `... N more, M can start`, and not listed.
 - Under a Feature of InProgress `fgraph status` lists each started work item
@@ -2081,7 +2087,7 @@ development too.
   A started or blocked work item removed is not counted any more, so the
   start it held back is taken (S-0148).
   The start of a Feature, which starts one work item, is refused the same
-  way, naming the Feature (Persistence). `fgraph status` marks as able to
+  way, naming the Feature (Persistence). `fgraph status` counts as able to
   start now only as many work items as `parallel` leaves places for (Order).
 - The start of a Task is neither counted nor limited by `parallel`: a work
   item has one started Task at a time whatever the key. A work item that is

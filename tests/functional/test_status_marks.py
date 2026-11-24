@@ -1,9 +1,9 @@
 """The criterion of S-0139: `fgraph status` marks a line without a character to escape.
 
-The line that can start is marked `=` and a started work item whose Tasks are all completed `@`;
-a blocked one keeps `!`, a waiting one `~` and a Task being worked `=>`. Run end to end on a
-record in a temporary directory, through the file adapters of the package, each command one
-second after the one before it, with no git and the development off.
+A started work item whose Tasks are all completed is marked `@`; a blocked one keeps `!`, a
+waiting one `~` and a Task being worked `=>`. The line that can start is marked no more (S-0152).
+Run end to end on a record in a temporary directory, through the file adapters of the package,
+each command one second after the one before it, with no git and the development off.
 """
 
 import json
@@ -91,9 +91,6 @@ class TestStatusOfMarkedLines:
     def test_status_exits_with_zero(self, listed: Outcome) -> None:
         assert listed.status == 0
 
-    def test_the_line_that_can_start_is_marked_with_an_equals_sign(self, listed: Outcome) -> None:
-        assert line_of(listed.out, "S-0001").startswith("= S-0001")
-
     def test_the_line_ready_for_review_is_marked_with_an_at_sign(self, listed: Outcome) -> None:
         assert line_of(listed.out, "S-0003").startswith("@ S-0003")
 
@@ -114,9 +111,6 @@ class TestWatchOfMarkedLines:
     @pytest.fixture
     def watched(self, tmp_path: Path) -> Outcome:
         return after(tmp_path, MARKED, ["watch", "--backlog", "--count", "1"])
-
-    def test_the_line_that_can_start_is_marked_with_an_equals_sign(self, watched: Outcome) -> None:
-        assert line_of(watched.out, "S-0001").startswith("= S-0001")
 
     def test_the_line_ready_for_review_is_marked_with_an_at_sign(self, watched: Outcome) -> None:
         assert line_of(watched.out, "S-0003").startswith("@ S-0003")

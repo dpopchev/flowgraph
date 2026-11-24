@@ -13,10 +13,9 @@ from flowgraph.task import TaskRow
 from flowgraph.upkeep import UpkeepRow
 from flowgraph.work_item import BLOCKED, IN_PROGRESS, STARTED
 
-# Neither mark is special at the start of a line pasted into Markdown nor in a search by a
-# regular expression: the set the developer chose on 2026-11-23 (S-0139).
-# The line that can start now.
-CAN_START = "="
+# The mark is not special at the start of a line pasted into Markdown nor in a search by a
+# regular expression: the set the developer chose on 2026-11-23 (S-0139), whose mark of a line
+# that can start the developer dropped on 2026-11-24 (S-0152).
 # A started work item whose Tasks are all completed.
 READY_FOR_REVIEW = "@"
 
@@ -60,7 +59,7 @@ def work_item_lines(row: StoryRow | UpkeepRow) -> str:
     named = (
         f"{row.id}  {_held(row)}  {row.title}" if row.state == BACKLOG else f"{row.id}  {row.title}"
     )
-    return f"{waiting_line(named, row.waits_for, next_up=row.next_to_start)}\n"
+    return f"{waiting_line(named, row.waits_for)}\n"
 
 
 def completed_line(row: StoryRow | UpkeepRow) -> str:
@@ -83,15 +82,15 @@ def _progress(row: StoryRow | UpkeepRow) -> tuple[int, int]:
     return sum(task.state == COMPLETED for task in tasks), len(tasks)
 
 
-def waiting_line(line: str, waits_for: Sequence[str], *, next_up: bool = False) -> str:
+def waiting_line(line: str, waits_for: Sequence[str]) -> str:
     """The line of an item of a bucket: marked `~`, with the ids it depends on below it, if any.
 
     The mark and the words differ from a block, `!` and `waiting on`: a block waits on a person.
-    The next to start waits for nothing and is marked `=`.
+    A line that waits for nothing is not marked, whether or not it can start.
     """
     if waits_for:
         return added_below(f"~ {line}", f"depends on {', '.join(waits_for)}")
-    return f"{CAN_START} {line}" if next_up else f"  {line}"
+    return f"  {line}"
 
 
 def added_below(line: str, added: str, under: int = 2) -> str:

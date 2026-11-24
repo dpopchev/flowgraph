@@ -71,7 +71,7 @@ class TestARecordWithAFeatureAndAStoryAddedUnderIt:
     ) -> None:
         assert listed.out == (
             "backlog (2)\n"
-            "= S-0002  []  a title that stands alone\n"
+            "  S-0002  []  a title that stands alone\n"
             "  F-0001  0/1 W  a feature title\n"
             "in-progress (0)\n"
             "completed (0)\n"
@@ -103,7 +103,7 @@ def test_the_features_added_at_one_time_are_listed_by_number(tmp_path: Path) -> 
     listed = status_after(tmp_path, ADD_FEATURE, ADD_OTHER_FEATURE, ADD_STORY)
     assert listed.out.splitlines()[:3] == [
         "backlog (2)",
-        "= F-0001  0/1 W  a feature title",
+        "  F-0001  0/1 W  a feature title",
         "  F-0002  0/0 W  another feature title",
     ]
 

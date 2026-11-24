@@ -54,11 +54,7 @@ def feature_lines(feature: FeatureRow) -> str:
     line = f"{feature.id}  {progress}{commit}{feature.title}"
     own = (feature.waiting_on, feature.block_reason)
     block = own if feature.waiting_on else _waited_on(feature.started)
-    head = (
-        blocked_line(line, block)
-        if block[0]
-        else waiting_line(line, feature.waits_for, next_up=feature.next_to_start)
-    )
+    head = blocked_line(line, block) if block[0] else waiting_line(line, feature.waits_for)
     return f"{head}\n{under}"
 
 

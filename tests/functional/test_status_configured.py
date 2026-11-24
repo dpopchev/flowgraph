@@ -165,7 +165,7 @@ class TestFlagWinsOverKey:
         listed = after(tmp_path, BUILT, KEYS, ["status", "--all"])
         assert from_heading(listed.out, "backlog (3)", "in-progress (1)") == [
             "backlog (3)",
-            "= S-0005  []  title 5",
+            "  S-0005  []  title 5",
             "  S-0006  []  title 6",
             "  S-0007  []  title 7",
         ]
@@ -190,7 +190,7 @@ class TestStatusLists:
         listed = after(tmp_path, BUILT, KEYS, ["status"])
         assert from_heading(listed.out, "backlog (3)", "in-progress (1)") == [
             "backlog (3)",
-            "= S-0005  []  title 5",
+            "  S-0005  []  title 5",
             "  S-0006  []  title 6",
             "  ... 1 more, 0 can start",
         ]
@@ -211,7 +211,7 @@ class TestStatusLists:
         listed = after(tmp_path, BUILT, KEYS, ["status", "--backlog"])
         assert from_heading(listed.out, "backlog (3)", "in-progress (1)") == [
             "backlog (3)",
-            "= S-0005  []  title 5",
+            "  S-0005  []  title 5",
             "  S-0006  []  title 6",
             "  S-0007  []  title 7",
         ]
@@ -224,7 +224,7 @@ class TestStatusLists:
         listed = after(tmp_path, BUILT, '[status]\nbacklog = "all"\n', ["status"])
         assert from_heading(listed.out, "backlog (3)", "in-progress (1)") == [
             "backlog (3)",
-            "= S-0005  []  title 5",
+            "  S-0005  []  title 5",
             "  S-0006  []  title 6",
             "  S-0007  []  title 7",
         ]
@@ -274,7 +274,7 @@ class TestNoConfiguration:
         listed = after(tmp_path, BUILT, None, ["status"])
         assert from_heading(listed.out, "backlog (3)", "in-progress (1)") == [
             "backlog (3)",
-            "= S-0005  []  title 5",
+            "  S-0005  []  title 5",
             "  ... 2 more, 0 can start",
         ]
 

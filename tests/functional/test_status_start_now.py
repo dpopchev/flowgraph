@@ -94,11 +94,6 @@ def git(cwd: Path, *args: str) -> str:
     return done.stdout.strip()
 
 
-def marked(out: str) -> list[str]:
-    """The ids of the lines marked `=`, in the order written."""
-    return [line.split()[1] for line in out.splitlines() if line.startswith("= ")]
-
-
 @pytest.fixture(autouse=True)
 def environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """The identity of every commit from the environment, and no git config of the machine."""
@@ -133,9 +128,6 @@ class TestStatusAsText:
     def test_status_exits_with_zero(self, printed: Outcome) -> None:
         assert printed.status == 0
 
-    def test_the_two_places_the_limit_leaves_are_marked(self, printed: Outcome) -> None:
-        assert marked(printed.out) == ["S-0003", "S-0004"]
-
     def test_the_story_that_waits_is_marked_with_a_tilde(self, printed: Outcome) -> None:
         assert next(line for line in printed.out.splitlines() if "S-0002" in line)[0] == "~"
 
@@ -169,9 +161,6 @@ class TestWatchOneFrame:
     def test_watch_exits_with_zero(self, watched: Outcome) -> None:
         assert watched.status == 0
 
-    def test_the_two_places_the_limit_leaves_are_marked(self, watched: Outcome) -> None:
-        assert marked(watched.out) == ["S-0003", "S-0004"]
-
 
 FEATURE = [
     ["add", "feature", "a feature title", "--criterion", "a developer sees it"],
@@ -197,13 +186,6 @@ class TestAStartedFeatureOfFourStoriesUnderParallelThree:
         for argv in FEATURE:
             fgraph(argv, path)
         return path
-
-    def test_the_second_and_the_third_are_listed_under_the_feature_marked(
-        self, feature: Path
-    ) -> None:
-        printed = fgraph(["status"], feature).out
-        under = [line for line in printed.splitlines() if line.startswith("  = ")]
-        assert [line.split()[1] for line in under] == ["S-0002", "S-0003"]
 
     def test_can_start_lists_them(self, feature: Path) -> None:
         document = json.loads(fgraph(["status", "--format", "json"], feature).out)

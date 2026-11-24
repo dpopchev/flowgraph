@@ -33,8 +33,8 @@ SECOND = "a second title"
 THIRD = "a third title"
 FEATURE = ["add", "feature", "a feature title", "--criterion", "a developer sees it"]
 NONE = (
-    "fgraph: error: nothing to start: no line of the Backlog can start now, fgraph status marks"
-    " none -- fgraph start {} says why its first line cannot"
+    "fgraph: error: nothing to start: no line of the Backlog can start now --"
+    " fgraph start {} says why its first line cannot"
 )
 EMPTY = "fgraph: error: nothing to start: the Backlog is empty"
 NO_SLUG = "fgraph: error: S-0002 takes no --slug: the development is off"

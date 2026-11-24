@@ -92,11 +92,6 @@ def git(cwd: Path, *args: str) -> str:
     return done.stdout.strip()
 
 
-def marked(out: str) -> list[str]:
-    """The ids of the lines marked `=`, in the order written."""
-    return [line.split()[1] for line in out.splitlines() if line.startswith("= ")]
-
-
 @pytest.fixture(autouse=True)
 def environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """The identity of every commit from the environment, and no git config of the machine."""
@@ -134,11 +129,6 @@ def developer_checkout(tmp_path: Path) -> Path:
     return checkout_with(tmp_path, DEVELOPMENT_ON)
 
 
-class TestStatusAsTextDrivenByAnAgent:
-    def test_the_work_item_with_a_complexity_is_marked_alone(self, agent_checkout: Path) -> None:
-        assert marked(fgraph(["status"], agent_checkout).out) == ["S-0001"]
-
-
 class TestStatusAsJsonDrivenByAnAgent:
     def test_can_start_lists_the_work_item_with_a_complexity_alone(
         self, agent_checkout: Path
@@ -147,12 +137,6 @@ class TestStatusAsJsonDrivenByAnAgent:
             fgraph(["status", "--format", "json"], agent_checkout).out
         )
         assert document["can_start"] == ["S-0001"]
-
-
-class TestStatusAsTextDrivenByADeveloper:
-    def test_both_work_items_are_marked(self, developer_checkout: Path) -> None:
-        listed = fgraph(["status", "--backlog"], developer_checkout).out
-        assert marked(listed) == ["S-0001", "S-0002"]
 
 
 class TestStatusAsJsonDrivenByADeveloper:

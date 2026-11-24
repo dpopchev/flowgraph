@@ -34,7 +34,7 @@ SECOND = Path("project.worktrees") / "S-0002-title-2"
 WORKTREES = [FIRST, SECOND]
 FRAME = (
     "backlog (1)\n"
-    "= S-0003  [1 T]  title 3\n"
+    "  S-0003  [1 T]  title 3\n"
     "in-progress (2)\n"
     "  S-0001  0/1 T  title 1\n"
     "    => T-0001  a task title\n"
@@ -158,7 +158,7 @@ class TestGuardsThatPassToday:
         self, checkout: Path, tmp_path: Path
     ) -> None:
         git(checkout, "switch", "--quiet", "--create", "elsewhere")
-        assert "= S-0002  [1 T]  title 2" in fgraph(["status"], tmp_path / FIRST).out.splitlines()
+        assert "  S-0002  [1 T]  title 2" in fgraph(["status"], tmp_path / FIRST).out.splitlines()
 
     def test_show_in_a_worktree_reads_the_record_of_that_worktree(
         self, checkout: Path, tmp_path: Path

@@ -1,0 +1,14 @@
+id = "U-0029"
+state = "backlog"
+title = "Cut the rules of src/flowgraph that say whether a text names a path from two to one"
+description = "Filed on the decision of the developer of 2026-11-24 on S-0142. Open: the cases the two rules still read apart -- the title of a Task, a directory with a trailing slash, a path after = -- are decided when it is ordered. Its Tasks are written when it is ordered."
+complexity = "low"
+created = 2026-11-24 21:12:06+00:00
+depends_on = [
+    "S-0142",
+]
+
+[criterion]
+given = "main after S-0142, where governing of src/flowgraph/brief/model.py and files_not_named of src/flowgraph/development/named_files.py each say by a rule of its own whether a text names a path"
+when = "fgraph brief of a work item and fgraph complete of a Task are run on Tasks that name a path bare, with a line number and under a directory written with a trailing slash"
+then = "a text that names a path for the one names it for the other, both answers come from one function, and make check passes"

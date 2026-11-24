@@ -78,7 +78,7 @@ def succeeded(outcome: Outcome) -> Outcome:
 def land(checkout: Path, add: Sequence[str], *closing: str) -> None:
     """Add one work item and a Task, start, work and land it, and ask no answer of verify."""
     item = succeeded(fgraph(add, checkout)).out.split()[1]
-    add_task = ["add", "task", "a task title", "--parent", item, "--output", "an output"]
+    add_task = ["add", "task", "a task title", "--parent", item, "--output", f"{item}.txt"]
     task = succeeded(fgraph([*add_task, "--check", "make test"], checkout)).out.split()[1]
     started = succeeded(fgraph(["start", item], checkout)).out.splitlines()[-1]
     worktree = Path(started.split(" in ", 1)[1])

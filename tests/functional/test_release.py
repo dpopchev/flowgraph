@@ -66,7 +66,7 @@ def git(cwd: Path, *args: str) -> str:
 def land(checkout: Path, add: Sequence[str]) -> None:
     """Add one work item and a Task, start, work and land it, then keep the yes of its closing."""
     item = fgraph(add, checkout).out.split()[1]
-    add_task = ["add", "task", "a task title", "--parent", item, "--output", "an output"]
+    add_task = ["add", "task", "a task title", "--parent", item, "--output", f"{item}.txt"]
     task = fgraph([*add_task, "--check", "make test"], checkout).out.split()[1]
     started = fgraph(["start", item], checkout).out.splitlines()[-1]
     worktree = Path(started.split(" in ", 1)[1])

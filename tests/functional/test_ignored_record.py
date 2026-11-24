@@ -26,7 +26,7 @@ ADD_TASK = [
     "--parent",
     "S-0001",
     "--output",
-    "an output",
+    ".gitignore",
     "--check",
     "make test",
 ]

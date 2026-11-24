@@ -83,7 +83,7 @@ def landed(checkout: Path, add: Sequence[str], *closing: str) -> Outcome:
     The closing arguments go to fgraph land after its message: a Spike takes its decision.
     """
     item = fgraph(add, checkout).out.split()[1]
-    add_task = ["add", "task", "a task title", "--parent", item, "--output", "an output"]
+    add_task = ["add", "task", "a task title", "--parent", item, "--output", f"{item}.txt"]
     task = fgraph([*add_task, "--check", "make test"], checkout).out.split()[1]
     started = fgraph(["start", item], checkout).out.splitlines()[-1]
     worktree = Path(started.split(" in ", 1)[1])
@@ -161,7 +161,7 @@ def test_a_spike_landed_with_its_decision_prints_no_run_line(project: Path) -> N
 
 def test_a_story_completed_on_main_prints_only_the_completed_line(project: Path) -> None:
     fgraph(ADD_STORY, project)
-    add_task = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
+    add_task = ["add", "task", "a task title", "--parent", "S-0001", "--output", "work.txt"]
     fgraph([*add_task, "--check", "make test"], project)
     started = fgraph(["start", "S-0001"], project).out.splitlines()[-1]
     worktree = Path(started.split(" in ", 1)[1])

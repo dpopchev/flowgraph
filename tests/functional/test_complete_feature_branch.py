@@ -30,7 +30,7 @@ ADD_TASK = [
     "--parent",
     "S-0001",
     "--output",
-    "an output",
+    "work.txt",
     "--check",
     "make test",
 ]

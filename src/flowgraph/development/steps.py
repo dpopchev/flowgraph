@@ -30,8 +30,9 @@ class LandingSteps:
     short sha; `remove_worktree` and `delete_branch` remove the worktree and the branch,
     `delete_unmerged_branch` a branch whose commits the work tree does not hold; `push` pushes a
     branch to the one it tracks and returns the name of the remote; `upstream` names the remote
-    a branch tracks and its ref there, refused for a branch that tracks none. Each step raises
-    GitError when git refuses it.
+    a branch tracks and its ref there, refused for a branch that tracks none. `publish` pushes a
+    branch, under its own name, to the remote another branch tracks and returns the name of the
+    remote. Each step raises GitError when git refuses it.
     """
 
     merge: Callable[[str], str | None]
@@ -45,6 +46,7 @@ class LandingSteps:
     delete_unmerged_branch: Callable[[str], None]
     push: Callable[[str], str]
     upstream: Callable[[str], tuple[str, str]]
+    publish: Callable[[str, str], str] = _lands_nothing
 
 
 # The steps of a landing in a work tree built without them: each one refuses, as no such work

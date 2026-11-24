@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
 
-from flowgraph.development import git, tag_git
+from flowgraph.development import git, pull_git, tag_git
 from flowgraph.development.branch import branch_of
 from flowgraph.development.git import GitError
 from flowgraph.development.steps import NO_LANDING, NO_RELEASE, LandingSteps, ReleaseSteps
@@ -103,6 +103,7 @@ def open_git(directory: Path) -> WorkTree | None:
             delete_unmerged_branch=partial(git.delete_unmerged_branch, top),
             push=partial(git.push, top),
             upstream=partial(git.upstream_of, top),
+            publish=partial(pull_git.push_beside, top),
         ),
         release=ReleaseSteps(
             find_tags=partial(tag_git.tags_like, top),

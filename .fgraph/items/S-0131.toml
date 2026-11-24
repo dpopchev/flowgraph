@@ -49,3 +49,8 @@ description = "Change README.md and docs/domain-model.md only; find each passage
 check = "grep -q \"\\[3 T\\]\" docs/domain-model.md && grep -q \"\\[\\]  \" README.md && ! grep -q \"The lines of Backlog, Completed and Removed carry no\" docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md says a work item in Backlog is listed as `S-0001  [3 T]  <title>`, and `S-0001  []  <title>` with no Task, the developer's frame of 2026-11-23 (S-0131), and no longer that the lines of the Backlog carry no progress; README.md says the same once and every example line of a work item in Backlog under fgraph status or fgraph watch carries its brackets"
 created = 2026-11-23 21:03:55+00:00
+
+[[knowledge]]
+kind = "deviation"
+text = "The developer agreed on 2026-11-24: T-0586 also corrects the expected Backlog lines its brief does not cover, in tests landed or changed on 2026-11-24 after the Task was written: tests/functional/test_watch_worktree.py (10 tests, S-0141), tests/functional/test_remove_started_work_item.py (1, S-0148), tests/functional/test_branch_age.py (1, S-0098), tests/status/text/test_status_branch_age.py (1, S-0098), and all six failing tests of tests/status/text/test_status_top.py where the brief says three (changed by S-0130). Expected lines only, the brackets read from the run; nothing else of those files changes."
+noted = 2026-11-24 12:49:11+00:00

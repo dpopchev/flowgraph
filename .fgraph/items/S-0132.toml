@@ -1,14 +1,22 @@
 id = "S-0132"
-state = "started"
+state = "completed"
 title = "Raise the started items fgraph status lists under in-progress with no flag from the top 5 to every one"
 description = "Filed on the word of the developer of 2026-11-23, from the frame drawn that day. Its Tasks are written when it is ordered. Today in-progress lists its top 5, as each bucket does."
 parent = "F-0017"
 complexity = "low"
 created = 2026-11-23 12:01:40+00:00
 started = 2026-11-24 11:11:42+00:00
+completed = 2026-11-24 13:29:20+00:00
+agent = "haiku-a44"
+commit = "52472c1"
 depends_on = [
     "S-0130",
 ]
+
+[verified]
+answer = "yes"
+text = "at 3efc639, on a scratch record with six started Stories, two of them under the started Feature F-0001, fgraph status with no flag prints \"InProgress (5)\" and lists S-0004, S-0005, S-0006 and S-0003 each with its \"=> T\" line, then \"F-0001  0/2 W\" with S-0001 and S-0002 under it, each with its \"=> T\" line, and no \"... N more\""
+on = 2026-11-24 13:29:46+00:00
 
 [criterion]
 given = "a record with six started work items, two of them under one started Feature"
@@ -17,27 +25,36 @@ then = "all six are listed under in-progress, each under its Feature when it has
 
 [[tasks]]
 id = "T-0588"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_status_in_progress_whole.py, failing on the criterion of S-0132"
 description = "Frame before, seven started work items, two under F-0001: `InProgress (6)`, the five last started with their Tasks, then `  ... 1 more` -- the Feature and its two work items on no line. After: `InProgress (6)`, `  S-0007  0/1 T  title 7`, `    => T-0007  a task title`, ... `  S-0003  0/1 T  title 3`, `    => T-0003  a task title`, `  F-0001  0/2 W  a feature title`, `    S-0002  0/1 T  title 2`, `      => T-0002  a task title`, `    S-0001  0/1 T  title 1`, `      => T-0001  a task title`, and no more-line. One new file, no source change: tests/functional/test_status_in_progress_whole.py (about 130 lines), functional as its pytestmark, one assert per test, through run() of src/flowgraph/cli.py with no git and the development off. Copy from tests/functional/test_status_top.py: START, CRITERION, Outcome, fgraph and after, each command a second after the one before, so the order last started first is fixed. Record builder started(count): [\"add\", \"feature\", \"a feature title\", \"--criterion\", \"a criterion\"]; add story `title 1` and `title 2` with \"--parent\", \"F-0001\"; add story `title 3` to `title {count}` standing alone; one Task for each Story, in order (T-000n under S-000n); [\"start\", \"F-0001\"], which starts S-0001; [\"start\", \"S-0002\"], taken beside it by the started Feature; [\"start\", \"S-000n\"] for 3 to count; [\"start\", \"T-000n\"] for 1 to count. SEVEN = started(7), SIX = started(6). XFAIL = pytest.mark.xfail(strict=True, reason=\"S-0132: InProgress lists its top 5\"). Red tests, each marked, on SEVEN: the lines of status from `InProgress (6)` up to and without `Completed (0)` equal the frame after, sixteen lines; no line of status starts with `  ... `; the same slice of watch --count 1 equals that of status. Guards, no mark, passing today and after: on SIX, the record the criterion words, status lists all five lines of `InProgress (5)` with the two work items under F-0001 (today's top 5 holds them, so the criterion as written is green on main; see FINDINGS); on tests/functional/test_status_top.py's SIX_COMPLETED a plain status still ends `  ... 1 more`, Completed keeping its top 5. Read every literal from the run before it is marked: the order under F-0001 and the placing of the Feature are those of the code and were not run here. See each marked test xfail and each guard pass before the commit. Out of bounds: every file under src/, every other test file, the docs."
 check = "uv run pytest tests/functional/test_status_in_progress_whole.py -q && grep -q xfail tests/functional/test_status_in_progress_whole.py"
 expected_output = "created: tests/functional/test_status_in_progress_whole.py states that on a record with seven started work items, two of them under one started Feature, each with its Task started, fgraph status and fgraph watch --count 1 with no flag list all six lines of InProgress, the Feature with its two work items under it and the Task being worked under each, and no more-line; and, as guards, the record of the criterion as written (six started, five lines) and Completed kept at its top 5. Each red test carries a strict xfail naming S-0132"
 created = 2026-11-23 21:04:07+00:00
+started = 2026-11-24 13:17:06+00:00
+completed = 2026-11-24 13:18:15+00:00
+commit = "1dcaa7c"
 
 [[tasks]]
 id = "T-0589"
-state = "backlog"
+state = "completed"
 title = "List every item of InProgress with no flag: the top of that bucket set to every one in SHORT of src/flowgraph/status/tops.py"
 description = "Change src/flowgraph/status/tops.py (about 60 lines, the same after) and tests/status/test_tops.py (about 60 lines). In tops.py: SHORT = Tops(backlog=1, in_progress=None, completed=5, removed=5); its comment says InProgress is listed whole, the developer's frame of 2026-11-23 (S-0132): every started item is read with its hierarchy. tops_asked is not touched: with backlog true it still replaces the backlog of SHORT alone, so --backlog gives Tops(None, None, 5, 5). Red first: remove XFAIL and its marks from tests/functional/test_status_in_progress_whole.py and change the two expectations of tests/status/test_tops.py -- tops_asked(every=False, backlog=False) equals Tops(backlog=1, in_progress=None, completed=5, removed=5); tops_asked(every=False, backlog=True) equals Tops(None, None, 5, 5) -- see them fail, then change SHORT. Leave as they are: status_text and _top_of of src/flowgraph/status/text.py, which still list a top of InProgress when a Tops holds one (S-0136 sets it from the configuration), with a line ready for review or holding a work item that can start listed after that top; the unit tests of tests/status/text/ that pass same_top(n) and pin `  ... 1 more` under InProgress (test_status_features.py, test_status_tasks.py, test_status_review.py, test_status_start_now_feature.py) pass untouched. Existing functional tests that change: none found -- no test of tests/functional/ pins a more-line under InProgress, and none builds more than five lines of it (grep for `InProgress (` with a count above 5 finds nothing); the check runs the files that list InProgress through watch and the review mark. If another fails, its record holds more than five lines of InProgress: correct its expected text to the whole bucket. Out of bounds: src/flowgraph/parser/item_commands.py (the help of --all and --backlog names no number), src/flowgraph/cli.py, src/flowgraph/status/view.py and document.py, the docs."
 check = "uv run pytest tests/status tests/item tests/functional/test_status_in_progress_whole.py tests/functional/test_status_backlog_top.py tests/functional/test_status_top.py tests/functional/test_watch.py tests/functional/test_status_review.py -q && ! grep -q xfail tests/functional/test_status_in_progress_whole.py"
 expected_output = "changed: SHORT of src/flowgraph/status/tops.py holds no top for InProgress, so fgraph status and fgraph watch with no flag, and with --backlog, list every started item, each under its Feature when it has one with the Task being worked below it, and no more-line under InProgress; the Backlog keeps its top line, Completed and Removed their top 5; the JSON does not change. No xfail mark is left in tests/functional/test_status_in_progress_whole.py"
 created = 2026-11-23 21:04:13+00:00
+started = 2026-11-24 13:18:22+00:00
+completed = 2026-11-24 13:20:08+00:00
+commit = "b04ca8e0e24f29e6022b979bc357cdc48f576435"
 
 [[tasks]]
 id = "T-0590"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say InProgress is listed whole with no flag"
 description = "Change README.md and docs/domain-model.md only; find each passage by grep, never by line number. Each file must hold the words every item of InProgress on one line, which the check reads. docs/domain-model.md: (1) the bullet S-0130 rewrote on what status lists with no flag (grep -n \"can start\" and \"--backlog\"): InProgress is no longer among the buckets with a top of 5 -- with no flag status lists every item of InProgress, the developer's frame of 2026-11-23 (S-0132): all started, with the hierarchy; Completed and Removed keep their top 5. (2) The bullet on the mark `?`, the sentence on a marked line the top leaves out: with no flag InProgress has no top, so the sentence holds only where a top of InProgress is set (the configuration of S-0136 will set one); say it in those words without naming a key. (3) The bullets on a Task line and on the lines under a Feature that say they count toward no top: still true, leave them. README.md: (1) the paragraph S-0130 rewrote, starting `fgraph status` lists (grep -n \"more, 0 can start\\|--backlog\" README.md): say the Backlog lists its top line, InProgress every item, Completed and Removed their top 5. (2) The line of the block of fgraph watch on --all and the sentence on JSON: unchanged. No example block changes: none shows more than five lines of InProgress. Keep each edit inside its paragraph or bullet. Plain ASCII. No source or test change."
 check = "grep -q \"every item of InProgress\" README.md && grep -q \"every item of InProgress\" docs/domain-model.md"
 expected_output = "changed: README.md and docs/domain-model.md say fgraph status and fgraph watch list every item of InProgress with no flag, each started work item under its Feature when it has one with the Task being worked below it, and that a top and `... N more` remain for Completed and Removed, and the top line for the Backlog"
 created = 2026-11-23 21:04:19+00:00
+started = 2026-11-24 13:20:16+00:00
+completed = 2026-11-24 13:21:11+00:00
+commit = "329ed1cc79695cd52a16bbb9254e22070d20fda6"

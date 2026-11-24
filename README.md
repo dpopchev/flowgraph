@@ -2725,8 +2725,8 @@ fgraph status
 #   S-0002  87c0307  Raise the kinds of work item fgraph adds from 1 to 2
 ```
 
-`fgraph status` lists the top of each heading in the order above, and then how
-many more the heading holds: the top 5 of InProgress, Completed and Removed,
+`fgraph status` lists the headings in the order above, and then how many more
+the heading holds: every item of InProgress, the top 5 of Completed and Removed,
 and the first line of the Backlog alone, with `... N more, M can start`, M the
 lines of those more that can start. A Feature counts as one item, as a work
 item does. The count beside the heading stays that of all its items:
@@ -2755,8 +2755,8 @@ fgraph status
 # Completed (0)
 ```
 
-`fgraph status --backlog` lists the whole Backlog and leaves the other buckets
-short; `fgraph status --all` lists every item of every bucket, with no such line.
+`fgraph status --backlog` lists the whole Backlog and leaves Completed and
+Removed short; `fgraph status --all` lists every item of every bucket, with no such line.
 
 On a terminal `fgraph status` cuts each line to the width of the terminal and
 ends a line it cut with `...`, so every item stays on one line. The commit of

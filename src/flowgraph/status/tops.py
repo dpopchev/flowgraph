@@ -27,8 +27,9 @@ def same_top(top: int | None) -> Tops:
 
 WHOLE = same_top(None)
 
-# What status lists with no flag, the decision of the developer of 2026-11-23 on S-0130.
-SHORT = Tops(backlog=1, in_progress=5, completed=5, removed=5)
+# What status lists with no flag: InProgress is listed whole, the developer's frame of
+# 2026-11-23 (S-0132), each started item read with its hierarchy; the others keep their top.
+SHORT = Tops(backlog=1, in_progress=None, completed=5, removed=5)
 
 
 def tops_asked(*, every: bool, backlog: bool) -> Tops:

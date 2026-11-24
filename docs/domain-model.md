@@ -420,15 +420,18 @@ of work item. The developer said so on 2026-11-21.
   removed Feature are on no line either, and its show lists them Completed
   (Persistence).
 - `fgraph status` lists the top of each heading, the developer's decision of
-  2026-11-21: the first five of InProgress, of Completed and of Removed, in
-  the order each is listed in, then one line `... N more` for the N it does
-  not list. The Backlog lists its first line alone, the developer's decision
-  of 2026-11-23 (S-0130), then one line `... N more, M can start`, N the lines
+  2026-11-21, but not for InProgress, which has no top: with no flag it lists
+  every item of InProgress (S-0132, the developer's frame of 2026-11-23), each
+  started work item under its Feature when it has one, with the Task being
+  worked below it. Completed and Removed keep the first five, in the order each
+  is listed in, then one line `... N more` for the N it does not list. The
+  Backlog lists its first line alone, the developer's decision of 2026-11-23
+  (S-0130), then one line `... N more, M can start`, N the lines
   it does not list and M those of them marked as able to start, the same lines
   `can_start` of the JSON names. The count beside the heading stays that of
   all its items, and a heading with no more than its top has no such line.
-  `fgraph status --backlog` lists the whole Backlog and leaves the other
-  buckets short; `fgraph status --all` lists every line of every bucket. A
+  `fgraph status --backlog` lists the whole Backlog and leaves Completed and
+  Removed short; `fgraph status --all` lists every line of every bucket. A
   Feature is one item of its bucket: it counts once toward the top of the
   heading and once beside the heading (Persistence). Until the Features were
   listed inside their buckets they had a heading of their own, with a top of
@@ -471,9 +474,10 @@ of work item. The developer said so on 2026-11-21.
   holds it. A work item with no Task is not marked, nor is one whose Task is in Backlog,
   started or blocked, nor a completed one; the line of a Feature carries no mark. A removed
   Task counts neither way: a work item whose Tasks left are each completed is marked, and
-  one whose every Task is removed is not (S-0147). A marked
-  line the top leaves out is listed after it, apart from the count of those more,
-  in InProgress; in the Backlog a line that can start beyond the top is counted
+  one whose every Task is removed is not (S-0147). With no flag InProgress has
+  no top, so the next sentence holds only where a top of InProgress is set (a
+  configuration will set one): a marked line the top leaves out is listed
+  after it, apart from the count of those more, in InProgress; in the Backlog a line that can start beyond the top is counted
   in the more-line, `... N more, M can start`, and not listed.
 - Under a Feature of InProgress `fgraph status` lists each started work item
   of it, the developer's words of 2026-11-21 -- a Feature is to its work

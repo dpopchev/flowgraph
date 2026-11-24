@@ -1,9 +1,11 @@
 id = "U-0025"
-state = "backlog"
+state = "started"
 title = "Cut the lines of src/flowgraph/parser/command.py from 244 to 226 or fewer, the checks that run before a move taken into a module of their own"
 description = "Found on 2026-11-23 while the Tasks of B-0027, B-0032 and B-0029 were planned: each wires a check into command_said, 2, 3 and 2 lines, and together they take the module from 244 to 251 lines, one over the limit make lines holds, so the last of the three to land would fail make check on main. Filed on the go of the developer of that day, who chose this Upkeep first over a split folded into the last Bug; the three Bugs wait for it and each add one check to the new module. A move with no change of behavior."
 complexity = "low"
 created = 2026-11-23 20:08:57+00:00
+started = 2026-11-24 03:33:54+00:00
+agent = "haiku-a3"
 
 [criterion]
 given = "main, where make check passes, src/flowgraph/parser/command.py holds 244 of the 250 lines mk/python.mk allows, and B-0027, B-0032 and B-0029 each add a check to it, 7 lines in all"

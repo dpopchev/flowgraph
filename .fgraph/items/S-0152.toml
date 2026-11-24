@@ -10,6 +10,11 @@ agent = "sonnet-s152"
 commit = "2538808"
 amends = "S-0139"
 
+[verified]
+answer = "yes"
+text = "at 84d480d, on a scratch record with the development on: fgraph status --backlog prints \"  S-0001  [1 T]  title 1\" for the Story with a Task, which can start, and \"  S-0002  []  title 2\" for the one with no Task, no line marked =; can_start of the JSON is [\"S-0001\"]; tests/functional/test_status_no_start_mark.py, 11 passed, holds the marks @, ~, ! and => as before"
+on = 2026-11-24 19:33:14+00:00
+
 [criterion]
 given = "a record with the development on that holds a Story with a Task, which can start, and a Story with no Task"
 when = "fgraph status --backlog is run"

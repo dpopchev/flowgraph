@@ -21,10 +21,12 @@ from flowgraph.knowledge.model import (
     governs_text,
     kind_name,
     knowledge_row,
+    line_ref,
     make_knowledge_line,
     make_mark,
     mark_name,
     mark_text,
+    superseded_text,
 )
 
 __all__ = [
@@ -43,8 +45,10 @@ __all__ = [
     "governs_text",
     "kind_name",
     "knowledge_row",
+    "line_ref",
     "make_knowledge_line",
     "make_mark",
     "mark_name",
     "mark_text",
+    "superseded_text",
 ]

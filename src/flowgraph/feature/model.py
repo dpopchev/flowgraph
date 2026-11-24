@@ -96,15 +96,16 @@ def note_feature(
     about: tuple[str, ...] = (),
     governs: tuple[str, ...] = (),
     mark: Mark = UNMARKED,
+    supersedes: tuple[str, ...] = (),
 ) -> None:
     """Keep a line of that kind and text on the Feature of that id, in any state, and save it.
 
-    The line is about the terms given, governs the files given, carries the mark given and goes
-    after the lines the Feature keeps. Raises
+    The line is about the terms given, governs the files given, carries the mark given, keeps the
+    refs of the lines it supersedes and goes after the lines the Feature keeps. Raises
     FeatureNotFoundError when the record holds no such Feature and EmptyPartError when the text
     is blank; nothing is saved.
     """
-    line = make_knowledge_line(kind, text, now(), about, governs, mark)
+    line = make_knowledge_line(kind, text, now(), about, governs, mark, supersedes)
     save_feature(noted_feature(load_feature(feature_id), line))
 
 

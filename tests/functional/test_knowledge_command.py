@@ -76,8 +76,8 @@ class TestARecordWithKnowledgeOnSeveralItemsAndACompletedSpike:
     ) -> None:
         assert listed.out == (
             "2026-01-05  decision  Q-0001  yes: one file per item (answer yes)\n"
-            "2026-01-04  decision  F-0001  ship in two steps\n"
-            "2026-01-03  decision  S-0001  keep one store\n"
+            "2026-01-04  decision  F-0001#1  ship in two steps\n"
+            "2026-01-03  decision  S-0001#2  keep one store\n"
         )
 
 
@@ -85,19 +85,19 @@ def test_knowledge_without_a_kind_lists_every_line_of_every_kind_newest_first(
     listed: Outcome, tmp_path: Path
 ) -> None:
     assert fgraph(["knowledge"], tmp_path, 7).out == (
-        "2026-01-06  deviation  S-0001  a task was dropped\n"
+        "2026-01-06  deviation  S-0001#3  a task was dropped\n"
         "2026-01-05  decision  Q-0001  yes: one file per item (answer yes)\n"
-        "2026-01-04  decision  F-0001  ship in two steps\n"
-        "2026-01-03  decision  S-0001  keep one store\n"
-        "2026-01-02  finding  S-0001  the store is plain files\n"
+        "2026-01-04  decision  F-0001#1  ship in two steps\n"
+        "2026-01-03  decision  S-0001#2  keep one store\n"
+        "2026-01-02  finding  S-0001#1  the store is plain files\n"
     )
 
 
 @pytest.mark.parametrize(
     ("kind", "line"),
     [
-        ("finding", "2026-01-02  finding  S-0001  the store is plain files\n"),
-        ("deviation", "2026-01-06  deviation  S-0001  a task was dropped\n"),
+        ("finding", "2026-01-02  finding  S-0001#1  the store is plain files\n"),
+        ("deviation", "2026-01-06  deviation  S-0001#3  a task was dropped\n"),
     ],
 )
 def test_knowledge_narrowed_to_a_kind_lists_the_lines_of_that_kind_alone(

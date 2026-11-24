@@ -168,7 +168,13 @@ one. The mark is given when the line is noted and, as the line, never amended;
 no command reads it, `fgraph show` and `fgraph knowledge` list it. The text says
 something, so a blank one is refused where the line is built. A line is noted
 with `fgraph note` in Backlog, started, Completed or Removed alike, and is never
-amended or removed: it is added after the lines the item keeps already.
+amended or removed: it is added after the lines the item keeps already. A line
+is named by its ref, `<id>#<place>`, as `S-0001#2`, the place counted from 1
+among every line of the item in the order noted; it is stable because a line is
+never amended or removed and each is added last. A later line supersedes an
+earlier one by naming its ref, on any work item or Feature; the supersede is
+kept on the later line and the earlier one is never rewritten, so a superseded
+line stays in the record.
 
 A work item also keeps its progress lines, in the order noted: each holds its
 text, the time it was noted and, when it is of a Task, that Task. A progress
@@ -1280,7 +1286,23 @@ and its merge tool.
   lines under `Knowledge (n)` after the Tasks, each with its kind, its date and
   its text, and no heading when there is none; the mark follows the text as
   `(standing)` or `(open)`, as in the line
-  `  finding  2026-11-22  is the queue one file too  (open)`.
+  `  finding  2026-11-22  is the queue one file too  (open)`. The later line of
+  a supersede holds the key `supersedes`, the list of the refs it names, only
+  when it names some; `fgraph note` takes `--supersedes REF` once per line. The
+  file written is that of the item the later line is noted on, saved whole as
+  every note saves it, the table of the earlier line as it was, and the file of
+  another item it names is not written at all, so the scope of a branch holds:
+  a started work item notes it in its worktree and every other on `main`,
+  whichever item holds the line superseded. The ref is checked at the note
+  against the lines of the record where the note is written, read in any
+  spelling of the id (`s1#2` is `S-0001#2`), and refused, exit 2 and nothing
+  written, with `--supersedes names S-0001#9, which is no knowledge line of the
+  record: fgraph knowledge lists each line with its ref`. A line may be
+  superseded by several lines, and a superseded line may be superseded again.
+  The other side is derived: `fgraph show` ends the superseded line, after its
+  mark, terms and files, with `(superseded by S-0001#2)`, every superseding line
+  named, read from the whole record, the started work items where `fgraph
+  status` reads them.
 - A progress line is one `[[progress]]` table inside the file of its work item,
   in the order noted, apart from `[[knowledge]]`, with its `text`, its `noted`
   time and, for a line of a Task, `task = "T-0001"`; a file without the table
@@ -1353,14 +1375,17 @@ and its merge tool.
   its work items. It is written on `main` alone: on the branch of a work item,
   which writes that work item alone, the note of a Feature is refused naming it,
   as the write of any other item is, exit 2 and nothing written. A Task takes a
-  progress line alone.
+  progress line alone. A line of a Feature supersedes and is superseded the same
+  way, named as `F-0001#1`.
 - `fgraph knowledge` is a view of the whole record: it reads every work item and
   every Feature and writes nothing. It lists every line of each, with its date,
-  its kind, the id of its item and its text, then its mark when it has one, the
+  its kind, its ref in place of the id of its item, as `S-0001#2`, and its text,
+  then its mark when it has one, the
   last noted first; lines noted
   at one time come in the reverse of the order they were collected, the work
   items by kind and id before the Features. The decision of a completed Spike is
-  listed among the decisions at the time the Spike was completed; it is not
+  listed among the decisions at the time the Spike was completed, under the id of
+  the Spike: it has no ref and cannot be named by `--supersedes`; it is not
   copied, and stays kept on the Spike as its `decision`. `--kind` narrows the list to
   `finding`, `decision` or `deviation`; any other word is refused naming the
   three, exit 2. A record with no line of the kind asked, or none, prints one
@@ -2884,8 +2909,8 @@ The knowledge lines:
 |---|---|---|---|
 | a Finding, `<day> <text>` | E-018, W-187 | `fgraph note --finding`, its text and the time noted | converted: the day becomes a time |
 | the type of a Finding, `fact`, `open`, `standing` | E-018 | `--standing` or `--open` on `fgraph note`, on a line of any kind; a `fact` is a line with no mark (Attributes) | converted: a `fact` becomes no mark |
-| `supersedes: <ref>` ending a Finding or a Decision | E-018, W-187, W-195 | none (F-0014, S-0103) | lost |
-| the ref of a line, `<item>#<k>`, `#d<k>`, `#v<k>` | `knowledge --search` (c), W-143#d3 in W-143 (c) | none: a line holds no ref | lost |
+| `supersedes: <ref>` ending a Finding or a Decision | E-018, W-187, W-195 | `--supersedes REF` on `fgraph note`, kept on the later line (S-0103) | converted: each ref rewritten as `<id>#<place>` |
+| the ref of a line, `<item>#<k>`, `#d<k>`, `#v<k>` | `knowledge --search` (c), W-143#d3 in W-143 (c) | `<id>#<place>`, the place among every line of the item, no letter per kind (S-0103) | converted |
 | `about: <term>` ending a line, of `[knowledge] terms` | on no item read; ledger E-044 (c); `config show knowledge` (c) | `--about TERM`, of a term the record holds (Terms) | converted: each word a term added first |
 | a Decision, `<day>: <text>` | E-019, W-195 | `--decision` | converted: the day becomes a time |
 | the burn Decision, `burn: ... (stop after 8 hours)` | E-019, W-664 (c) | a decision line; no command reads its stop | converted: the text alone |
@@ -3121,7 +3146,7 @@ Held by every record that holds items:
 | `done.evidence` beyond a bare sha | 4,046, every done item: Epics 104, work items 1,248, Tasks 2,694 | not filed |
 | the type of a Finding | 991 lines: fact 505, open 186, standing 300; g 10 | S-0102 keeps open and standing as the mark of a line, a `fact` is a line with no mark, and a line with no mark is live until a later line supersedes it, the decision of the developer of 2026-11-23 (S-0104) |
 | `supersedes:` ending a line | 593 lines: in Findings 454, Decisions 111, Deviations 28; g 3 | S-0103: "lists the first as superseded by the later" |
-| the ref of a line, `#k`, `#dk`, `#vk` | every knowledge line, 2,711: Findings 991, Decisions 1,213, Deviations 507 | not filed; S-0103 needs one, its form not stated |
+| the ref of a line, `#k`, `#dk`, `#vk` | every knowledge line, 2,711: Findings 991, Decisions 1,213, Deviations 507 | S-0103: `<id>#<place>`, listed by `fgraph knowledge` |
 
 Held by some records:
 
@@ -3229,10 +3254,10 @@ its relations". The decision of what to build is the developer's.
 
 - Before any record converts, held by all six: the write path by files with
   times (S-0107), the old id (S-0106), the criterion link (S-0100, S-0101),
-  the type of a Finding (S-0102) and `supersedes` (S-0103); not
-  filed: the Epic Hypothesis and Outcome, `reasoning`, the Hypothesis of an
-  issue, the expected result of a Check, the evidence beyond its sha, the
-  ref of a knowledge line.
+  the type of a Finding (S-0102), `supersedes` and the ref of a knowledge
+  line (S-0103); not filed: the Epic Hypothesis and Outcome, `reasoning`, the
+  Hypothesis of an issue, the expected result of a Check, the evidence beyond
+  its sha.
 - For some records: the refused states, 309 items in c, cts, st, sm and sv
   (B-0025, part); the rest of the second table, each with its records. On
   top of the first list `gflow` holds 3 issues with no `then`, 9 Tasks with

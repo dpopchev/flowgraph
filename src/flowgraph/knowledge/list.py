@@ -1,8 +1,10 @@
 """The knowledge of a record, listed: every line of every work item and Feature, newest first.
 
-A view: it reads the record as plain data and changes nothing. The decision of a completed Spike
-is listed among the decisions at the time the Spike was completed; it stays kept on the Spike.
-A search keeps the lines whose text holds the text searched for, whatever the case of either.
+A view: it reads the record as plain data and changes nothing. Each line is listed under its ref,
+the id of its item and its place there. The decision of a completed Spike is listed among the
+decisions at the time the Spike was completed, under the id of the Spike and with no ref; it
+stays kept on the Spike. A search keeps the lines whose text holds the text searched for,
+whatever the case of either.
 """
 
 from collections.abc import Iterable
@@ -18,6 +20,7 @@ from flowgraph.knowledge.model import (
     KnowledgeRow,
     about_text,
     kind_name,
+    line_ref,
     mark_text,
 )
 from flowgraph.parent import parse_feature_id
@@ -37,7 +40,8 @@ class KindListedError(ValueError):
 class KnowledgeEntry:
     """One line of knowledge as the list shows it: the id of its item, its kind, time and text.
 
-    The terms it is about follow, then the files it governs.
+    The terms it is about follow, then the files it governs, its mark, its ref (empty for the
+    decision of a Spike) and the refs of the lines it supersedes.
     """
 
     item: str
@@ -47,6 +51,8 @@ class KnowledgeEntry:
     about: list[str] = field(default_factory=list[str])
     governs: list[str] = field(default_factory=list[str])
     mark: str = ""
+    ref: str = ""
+    supersedes: list[str] = field(default_factory=list[str])
 
 
 def chosen_kind(kind: str | None) -> str | None:
@@ -68,10 +74,23 @@ def sought(text: str | None) -> str | None:
 
 
 def entries_of(item: str, rows: Iterable[KnowledgeRow]) -> list[KnowledgeEntry]:
-    """The lines of the item of that id as entries, in the order they were noted."""
+    """The lines of the item of that id as entries, in the order they were noted.
+
+    Each is under its ref, its place counted from 1 among the lines of the item.
+    """
     return [
-        KnowledgeEntry(item, row.kind, row.noted, row.text, row.about, row.governs, row.mark)
-        for row in rows
+        KnowledgeEntry(
+            item,
+            row.kind,
+            row.noted,
+            row.text,
+            row.about,
+            row.governs,
+            row.mark,
+            line_ref(item, place),
+            row.supersedes,
+        )
+        for place, row in enumerate(rows, start=1)
     ]
 
 
@@ -115,16 +134,31 @@ def newest_first(
 def knowledge_text(
     entries: list[KnowledgeEntry], kind: str | None, about: str | None, search: str | None = None
 ) -> str:
-    """The entries as the lines fgraph knowledge writes, or one line saying there are none."""
+    """The entries as the lines fgraph knowledge writes, or one line saying there are none.
+
+    Each line is under its ref, or under the id of its item when it has none.
+    """
     if not entries:
         about_it = "" if about is None else f" about {about}"
         held = "" if search is None else f" holding {search!r}"
         return f"no {kind or 'knowledge'} lines{about_it}{held} in the record\n"
     return "".join(
-        f"{entry.noted.date().isoformat()}  {entry.kind}  {entry.item}  {entry.text}"
+        f"{entry.noted.date().isoformat()}  {entry.kind}  {entry.ref or entry.item}  {entry.text}"
         f"{mark_text(entry.mark)}{about_text(entry.about)}\n"
         for entry in entries
     )
+
+
+def superseded_by(entries: Iterable[KnowledgeEntry]) -> dict[str, list[str]]:
+    """Each ref some entry names as superseded, under the refs of the entries that name it.
+
+    The refs that name one are in the order the entries are given.
+    """
+    named: dict[str, list[str]] = {}
+    for entry in entries:
+        for ref in entry.supersedes:
+            named.setdefault(ref, []).append(entry.ref)
+    return named
 
 
 def collected(store: Store) -> list[KnowledgeEntry]:

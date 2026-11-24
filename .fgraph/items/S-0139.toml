@@ -13,6 +13,11 @@ depends_on = [
     "S-0137",
 ]
 
+[verified]
+answer = "yes"
+text = "at 2b68a37, on a scratch record: fgraph status --all prints \"= S-0001  [1 T]  title 1\" for the line that can start, \"@ S-0003  1/1 T  title 3\" for the one ready for review, \"~ S-0002\" with \"depends on S-0001\" below, \"! S-0004\" with \"waiting on developer: no key\" below and \"=> T-0005  task 5\" for the Task being worked; no line starts with > or ?"
+on = 2026-11-24 16:52:58+00:00
+
 [criterion]
 given = "a record with a line that can start, a started work item whose Tasks are all completed, a blocked one, one that waits for another and a Task being worked"
 when = "fgraph status is run"

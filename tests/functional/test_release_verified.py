@@ -33,9 +33,6 @@ IDENTITY = {
     "GIT_COMMITTER_EMAIL": "developer@example.com",
 }
 NOT_VERIFIED = "fgraph: error: {} not verified{}: no release -- run fgraph verify on each first"
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="S-0149: fgraph release tags while a completed work item holds no answer"
-)
 
 
 @dataclass(frozen=True)
@@ -136,16 +133,13 @@ class TestAReleaseWhileAStoryCompletedSinceTheLastTagIsNotVerified:
         land(tagged, ADD_STORY)
         return fgraph(["release"], tagged)
 
-    @XFAIL
     def test_the_release_exits_with_two_naming_the_story(self, refused: Outcome) -> None:
         last = refused.err.splitlines()[-1] if refused.err else ""
         assert (refused.status, last) == (2, NOT_VERIFIED.format("S-0001", " since v0.1.0"))
 
-    @XFAIL
     def test_no_tag_is_made(self, refused: Outcome, tagged: Path) -> None:
         assert (refused.status, tags(tagged)) == (2, "v0.1.0")
 
-    @XFAIL
     def test_the_release_run_again_after_the_answer_tags_the_next_minor(
         self, refused: Outcome, tagged: Path
     ) -> None:
@@ -154,7 +148,6 @@ class TestAReleaseWhileAStoryCompletedSinceTheLastTagIsNotVerified:
         assert (again.status, tags(tagged)) == (0, "v0.1.0\nv0.2.0")
 
 
-@XFAIL
 def test_a_bug_completed_since_the_last_tag_is_asked_as_a_story_is(tagged: Path) -> None:
     land(tagged, ADD_BUG)
     refused = fgraph(["release"], tagged)
@@ -162,7 +155,6 @@ def test_a_bug_completed_since_the_last_tag_is_asked_as_a_story_is(tagged: Path)
     assert (refused.status, last) == (2, NOT_VERIFIED.format("B-0001", " since v0.1.0"))
 
 
-@XFAIL
 def test_a_story_and_an_upkeep_are_both_named_on_the_one_line(tagged: Path) -> None:
     land(tagged, ADD_STORY)
     land(tagged, ADD_UPKEEP)
@@ -171,7 +163,6 @@ def test_a_story_and_an_upkeep_are_both_named_on_the_one_line(tagged: Path) -> N
     assert (refused.status, last) == (2, NOT_VERIFIED.format("S-0001, U-0001", " since v0.1.0"))
 
 
-@XFAIL
 def test_with_no_tag_the_line_reads_without_since(untagged: Path) -> None:
     land(untagged, ADD_STORY)
     refused = fgraph(["release"], untagged)

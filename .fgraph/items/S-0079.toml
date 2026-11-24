@@ -38,3 +38,8 @@ description = "Change README.md (3367 lines on 2026-11-24) and docs/domain-model
 check = "grep -q 'F-0001 is not started: fgraph start F-0001 starts it' README.md && grep -q 'F-0001 is not started: fgraph start F-0001 starts it' docs/domain-model.md && ! grep -q 'start it first' README.md docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, in the bullet A work item does not start before its Feature, and README.md, in the paragraph and the example of the start of a work item under a Feature, give the refusal S-0001 cannot start: F-0001 is not started: fgraph start F-0001 starts it in place of the old one"
 created = 2026-11-24 22:17:25+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, under the /goal of Phase 1 the developer set on 2026-11-24, which has the coordinator write the Tasks before a Feature starts; the developer was not asked and reviews them at the close: (1) The words: S-0001 cannot start: F-0001 is not started: fgraph start F-0001 starts it -- the old head kept, the command named as the criterion says it; the command is given with no --dir or other option. (2) Only the refusal of a Feature in Backlog changes; a blocked Feature (unblock it first) and a completed or removed one keep their words, though the blocked one could name fgraph unblock F-0001 by the same reading."
+noted = 2026-11-24 22:19:17+00:00

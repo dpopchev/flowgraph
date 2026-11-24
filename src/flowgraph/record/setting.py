@@ -1,10 +1,10 @@
 """The configuration through fgraph: every key of it shown, one key of it set.
 
 A key is listed dotted, `development.enabled`, with its value as the file writes it, at its
-default when the file leaves it out. A key that holds no value -- no limit, no gate -- is listed
-as `none`, which is no value of the file, so no text is mistaken for it. A set writes one key
-among the settings of the record and keeps the others; its value arrives as a text and is read
-by what the key takes, never guessed from the text.
+default when the file leaves it out. A key that holds no value -- no limit, no gate, no archive --
+is listed as `none`, which is no value of the file, so no text is mistaken for it. A set writes
+one key among the settings of the record and keeps the others; its value arrives as a text and is
+read by what the key takes, never guessed from the text.
 """
 
 import json
@@ -15,6 +15,7 @@ from enum import Enum
 from typing import assert_never
 
 from flowgraph.item.commands import Written
+from flowgraph.record.archive import ARCHIVE_BOARD, Archive, Archived, Unarchived
 from flowgraph.record.config import (
     DELIVERY_PUSH,
     DELIVERY_TAG,
@@ -97,6 +98,17 @@ def _command(gate: Gate) -> str | None:
             assert_never(unreachable)
 
 
+def _board(archive: Archive) -> str | None:
+    """The path the archive holds; None for no archive."""
+    match archive:
+        case Archived(board):
+            return board
+        case Unarchived():
+            return None
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
 # Every key of the configuration, in the order it is listed.
 KEYS = (
     Key(GIT_COMMIT, Takes.TRUTH, lambda config: config.git.commit),
@@ -107,6 +119,7 @@ KEYS = (
     Key(DEVELOPMENT_DRIVER, Takes.TEXT, lambda config: config.development.driver.value),
     Key(DELIVERY_PUSH, Takes.TRUTH, lambda config: config.delivery.push),
     Key(DELIVERY_TAG, Takes.TEXT, lambda config: config.delivery.tag.value),
+    Key(ARCHIVE_BOARD, Takes.TEXT, lambda config: _board(config.archive)),
 )
 
 

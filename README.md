@@ -51,6 +51,7 @@ the typed edges of the whole record as JSON.
 | git                             | every write of the record committed, unless turned off   |
 | the layers of a record          | `.fgraph/config.toml`: commits on, development off       |
 | the configuration               | every key shown and set by `fgraph config`               |
+| the archive of an old board     | `archive.board` points at it, `fgraph show` names an id  |
 | the knowledge of an item        | lines noted by `fgraph note` on a work item or a Feature |
 | the knowledge of the record     | every line listed by `fgraph knowledge`, newest first    |
 | the progress of the work        | `fgraph note --progress` on a work item or a Task        |
@@ -357,10 +358,11 @@ record:
 
 ```sh
 fgraph start --help
-# usage: fgraph start [-h] [--slug TEXT] [--agent NAME] ID
+# usage: fgraph start [-h] [--slug TEXT] [--agent NAME] [ID]
 #
 # positional arguments:
-#   ID            the id of the work item, of the Task or of the Feature
+#   ID            the id of the work item, of the Task or of the Feature; left
+#                 out, the first fgraph status marks as able to start
 #
 # options:
 #   -h, --help    show the help of this command and exit
@@ -388,6 +390,23 @@ nothing is written. It is the one command that runs with no record:
 fgraph init
 # record: /path/to/project/.fgraph
 ```
+
+A repository that holds a `.board/` of board 1 keeps it whole as an archive: it
+runs `fgraph init` beside it, points the record at it, and asks for an id of the
+old board, which `fgraph show` answers by naming the archive and the command
+that shows it:
+
+```sh
+fgraph init
+fgraph config set archive.board .board
+# set archive.board = ".board"
+
+fgraph show W-123
+# fgraph: error: W-123 is in the archive of board 1 at /path/to/project/.board -- show it with: uv run ~/.claude/skills/board/scripts/board.py --root /path/to/project show W-123
+```
+
+The open work is filed by hand with `fgraph add`; fgraph reads and writes no
+file of the old board, and `fgraph show` alone answers an E-, W- or T- id so.
 
 Add a Story with its
 title and its one Given / When / Then, then list the record by bucket. The
@@ -523,6 +542,25 @@ fgraph status        # parallel = 3, S-0001 started, S-0002 waits for S-0004
 #   S-0005  a fifth title
 # InProgress (1)
 #   S-0001  0/1 T  a first title
+```
+
+`fgraph start` with no id starts the first of them, the `next_to_start` of the
+JSON: the Backlog is a stack `fgraph reorder` reorders, and the start takes its
+top that can start (S-0121). It says and does what `fgraph start` of that id
+does: a Feature on top starts with its first work item, and `--slug` and
+`--agent` are read as with an id. With the development on, a work item in
+Backlog of a started Feature comes before the lines of the Backlog, and a line
+not planned is passed over. With it off, the first line that waits for nothing
+is taken, and one that holds no Task is refused in the words of its start. When
+status marks none, it exits 2 and writes nothing, and names the first line of
+the Backlog, whose own start says why.
+
+```sh
+fgraph start
+# started S-0003
+# branch wi/S-0003-a-third-title in /src/project.worktrees/S-0003-a-third-title
+# fgraph: error: nothing to start: no line of the Backlog can start now, fgraph status marks none -- fgraph start S-0002 says why its first line cannot
+# fgraph: error: nothing to start: the Backlog is empty
 ```
 
 `fgraph status --format json` prints the same view as one JSON document another
@@ -1049,6 +1087,7 @@ fgraph config show
 # development.driver = "developer"
 # delivery.push = false
 # delivery.tag = "none"
+# archive.board = none
 ```
 
 `none` is how a key that holds no value is listed: `parallel` without a
@@ -1083,6 +1122,7 @@ fgraph config show
 # development.driver = "developer"
 # delivery.push = false
 # delivery.tag = "none"
+# archive.board = none
 ```
 
 VALUE is a text, read by what its key takes and never guessed from the text,
@@ -1098,6 +1138,7 @@ so `fgraph config set development.gate true` names the command `true`:
 | `development.driver`   | `developer` or `agent`                     | `fgraph config set development.driver agent`      |
 | `delivery.push`        | `true` or `false`                          | `fgraph config set delivery.push true`            |
 | `delivery.tag`         | `feature-close`, `close` or `none`         | `fgraph config set delivery.tag close`            |
+| `archive.board`        | the path of the `.board/` of board 1       | `fgraph config set archive.board .board`          |
 
 The whole file is read back as a configuration before it replaces the one in
 the record. A key the configuration does not have, a value the key does not
@@ -1154,8 +1195,8 @@ the file whole from its keys, so a comment written in it is not kept. A
 command, and is mended in the file.
 
 Start a Story once it has a Task, then start its Tasks one by one. `fgraph
-start` takes a Story id or a Task id; with the development on, the start of a
-Story names its branch:
+start` takes a Story id or a Task id, or none, and then the first `fgraph status`
+marks; with the development on, the start of a Story names its branch:
 
 ```sh
 fgraph start S-0001
@@ -1426,7 +1467,8 @@ A work item keeps what the work learned as lines of knowledge. `fgraph note`
 appends a finding, a decision or a deviation to a work item in any state, Completed and Removed included,
 as one write and one commit of the record; `fgraph show` lists the lines after
 the Tasks, each with its kind, the date it was noted and its text, and no
-heading when there is none. A note takes exactly one of `--finding`,
+heading when there is none. A note takes at most one of `--standing` and
+`--open`, the mark of the line, listed after its text. A note takes exactly one of `--finding`,
 `--decision`, `--deviation` and `--progress`, with its text:
 
 ```sh
@@ -1490,6 +1532,24 @@ fgraph show S-0001
 #     progress         2026-11-22  red: 1 failed
 # Progress (1)
 #   2026-11-22  the parser is read; next the show
+```
+
+A line of knowledge may be marked when it is noted: `--open` for a line not
+settled yet, `--standing` for one that holds until a later line supersedes it.
+`fgraph show` and `fgraph knowledge` list the mark right after the text:
+
+```sh
+fgraph note S-0001 --finding "is the queue one file too" --open
+# noted S-0001
+
+fgraph note S-0001 --decision "keep one file per item" --standing
+# noted S-0001
+
+fgraph show S-0001
+# ...
+# Knowledge (2)
+#   finding  2026-11-22  is the queue one file too  (open)
+#   decision  2026-11-22  keep one file per item  (standing)
 ```
 
 `fgraph knowledge` lists the lines of every work item and every Feature of the

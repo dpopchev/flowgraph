@@ -160,7 +160,11 @@ A work item in any state also keeps its knowledge: the lines noted on it, in
 the order noted. A line holds its kind, its text and the time it was noted; the
 kind is one of three, a sum type: a finding records what was learned, a decision
 what was decided, and a deviation a change to what a started item was agreed to
-do, since `fgraph amend` refuses one once it is started. The text says
+do, since `fgraph amend` refuses one once it is started. A line may carry one
+mark, a sum of three with no mark: standing, the line holds until a later line
+supersedes it, and open, the line is not settled yet; a line of any kind takes
+one. The mark is given when the line is noted and, as the line, never amended;
+no command reads it, `fgraph show` and `fgraph knowledge` list it. The text says
 something, so a blank one is refused where the line is built. A line is noted
 with `fgraph note` in Backlog, started, Completed or Removed alike, and is never
 amended or removed: it is added after the lines the item keeps already.
@@ -355,6 +359,17 @@ of work item. The developer said so on 2026-11-21.
   those more; a Backlog where nothing can start marks none. It is a view of
   `fgraph status` and `fgraph watch`: no `next` command exists. The view holds
   it as data on the row, beside what the row waits for.
+- `fgraph start` given no id starts the first of them (S-0121, the decision of
+  the developer of 2026-11-23: the first line of the Backlog that can start, the
+  one status marks). The id is read from the rows of status before the checks
+  of a start run, so every refusal of a start names it, the one that holds a
+  start to main among them. The rule is written once, in
+  `src/flowgraph/status/next.py`, and `src/flowgraph/status/top.py` reads it. The
+  same cases as the README paragraph hold, the development off and on. The two
+  refusals, exit 2 and nothing written: `nothing to start: the Backlog is empty`
+  and `nothing to start: no line of the Backlog can start now, fgraph status
+  marks none -- fgraph start {first} says why its first line cannot`. A start
+  that names its id is unchanged.
 - A reorder names two items in Backlog; one that is not there, or the same
   one twice, is refused. A Feature in progress, completed or removed is not
   in Backlog, and is refused as a started work item is:
@@ -933,8 +948,8 @@ criterion. It is added and then it stands.
   file may be renamed or not yet written. A file stores nothing of it; the lines
   that govern a file are read from the record, as the other side of a relation is.
 - `fgraph show` of an item lists `about` with its terms, and each of its lines
-  ends with `(about gate, lane)` when it has terms, then `(governs src/gate.py)`
-  when it governs files. `fgraph show` of a term lists,
+  ends with its mark when it has one, then `(about gate, lane)` when it has
+  terms, then `(governs src/gate.py)` when it governs files. `fgraph show` of a term lists,
   after its relations, `items` with the ids of the work items and Features about
   it and `knowledge` with the lines about it, the last noted first, each with the
   id of its item; both are read from the record, the started work items where
@@ -1107,6 +1122,9 @@ read. `fgraph` writes and prints the canonical form, and reads the files of the
 record in it alone. A number of 0 is no id, so `f-0` is refused as before, and a
 text that is no such spelling is left as typed.
 
+`E-nnn`, `W-nnn` and `T-nnn` of board 1 are no ids of fgraph, see From board 1,
+Archive.
+
 | Kind | Id |
 |---|---|
 | `Feature` | `F-0001` |
@@ -1194,9 +1212,16 @@ and its merge tool.
   `finding`, `decision` or `deviation`; a file with any other kind is refused
   when read, naming the file. The id of a Task with one of the three kinds of
   knowledge, an id the record does not hold, a blank text and none or more than
-  one of the four are refused, exit 2, nothing written. `fgraph show` lists the
+  one of the four are refused, exit 2, nothing written. The table holds the key
+  `mark`, `standing` or `open`, only when the line has one, so a file without
+  it, as every file written before, is read as no mark, and a file with another
+  word is refused when read, naming the file. `fgraph note` takes at most one of
+  `--standing` and `--open` beside its kind, both together refused by the
+  command line, exit 2, nothing written. `fgraph show` lists the
   lines under `Knowledge (n)` after the Tasks, each with its kind, its date and
-  its text, and no heading when there is none.
+  its text, and no heading when there is none; the mark follows the text as
+  `(standing)` or `(open)`, as in the line
+  `  finding  2026-11-22  is the queue one file too  (open)`.
 - A progress line is one `[[progress]]` table inside the file of its work item,
   in the order noted, apart from `[[knowledge]]`, with its `text`, its `noted`
   time and, for a line of a Task, `task = "T-0001"`; a file without the table
@@ -1269,7 +1294,8 @@ and its merge tool.
   progress line alone.
 - `fgraph knowledge` is a view of the whole record: it reads every work item and
   every Feature and writes nothing. It lists every line of each, with its date,
-  its kind, the id of its item and its text, the last noted first; lines noted
+  its kind, the id of its item and its text, then its mark when it has one, the
+  last noted first; lines noted
   at one time come in the reverse of the order they were collected, the work
   items by kind and id before the Features. The decision of a completed Spike is
   listed among the decisions at the time the Spike was completed; it is not
@@ -2051,6 +2077,9 @@ development too.
   and `development.gate`. So `fgraph config set development.gate true` names
   the command `true`. A text that names no value of its key stays a text,
   which the configuration refuses.
+- `archive.board` holds the path of the `.board/` of board 1 the record points
+  at, a text read as it is; it is `none` when left out, and a blank is refused
+  with `archive.board is "": it takes a path`.
 - The whole file is read back through the constructor of the configuration
   before it replaces the one in the record (`write_settings`,
   `src/flowgraph/record/config.py`). A key the configuration does not have, a value
@@ -2467,6 +2496,34 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 | done | `CompletedX` |
 | pruned | `RemovedX` |
 
+### Archive
+
+The developer decided on 2026-11-23, on S-0120, after Q-0001 answered no: a
+repository that adopts fgraph keeps its `.board/` whole as an archive. It
+starts a record beside it with `fgraph init`, points at it with `fgraph config
+set archive.board .board`, and files the open work by hand with `fgraph add`.
+fgraph converts no item, and the closed ones stay where they are.
+
+The pointer is `[archive] board` of `config.toml`, a path as written, taken
+from the directory that holds the record. It has no default and `fgraph init`
+writes none. With it set, `fgraph show` of the letter E, W or T in either
+case, a dash and a number of 1 or more exits 2 with one line, the id as board
+1 writes it, at least three digits. For W-123 in a project under
+`/src/project`:
+
+```text
+fgraph: error: W-123 is in the archive of board 1 at /src/project/.board -- show it with: uv run ~/.claude/skills/board/scripts/board.py --root /src/project show W-123
+```
+
+fgraph reads the shape of the text alone: it opens no file of the archive,
+does not ask whether the path is there, and writes there never -- its commits
+name the files of the record alone. A T id is read as `T-0456` by the rule of
+Ids and named back as `T-456`, and `fgraph show` takes no Task, so under a
+pointer a T id asked of `show` is named as the old one even when the record
+holds a Task of that number. `w123` and `e7`, with no dash, stay names of
+terms. With no pointer every such text is refused as before, and `show` alone
+answers: every other command refuses an old id as it did.
+
 ### Records measured
 
 The seven board 1 records, read on 2026-11-23 by the board script alone:
@@ -2568,7 +2625,7 @@ Every item:
 
 | Field | Seen on | In fgraph | Verdict |
 |---|---|---|---|
-| id `E-nnn`, `W-nnn`, `T-nnn` | every item | a new id by kind, `F-`, `S-`, `U-`, `B-`, `Q-`, `T-` and four digits (Ids); the old id has no place (S-0106) | converted: a new id; the old one lost |
+| id `E-nnn`, `W-nnn`, `T-nnn` | every item | a new id by kind, `F-`, `S-`, `U-`, `B-`, `Q-`, `T-` and four digits (Ids); the old id stays in the archive, named by `fgraph show` (S-0120, Archive) | converted: a new id; the old one lost |
 | title | every item | the title | kept |
 | `created`, a day | raw W-187, T-492 | `created`, a time | converted: the day becomes a time |
 | the external token, `W-008 (AB#3128)`, and `remote:` -- `token`, `synced`, `pushed`, `text`, `parent` | raw W-008 (s), W-125 (s) | none; no item of the Backlog names it | lost |
@@ -2671,7 +2728,7 @@ The knowledge lines:
 | Field | Seen on | In fgraph | Verdict |
 |---|---|---|---|
 | a Finding, `<day> <text>` | E-018, W-187 | `fgraph note --finding`, its text and the time noted | converted: the day becomes a time |
-| the type of a Finding, `fact`, `open`, `standing` | E-018 | none (F-0014, S-0102) | lost |
+| the type of a Finding, `fact`, `open`, `standing` | E-018 | `--standing` or `--open` on `fgraph note`, on a line of any kind; a `fact` is a line with no mark (Attributes) | converted: a `fact` becomes no mark |
 | `supersedes: <ref>` ending a Finding or a Decision | E-018, W-187, W-195 | none (F-0014, S-0103) | lost |
 | the ref of a line, `<item>#<k>`, `#d<k>`, `#v<k>` | `knowledge --search` (c), W-143#d3 in W-143 (c) | none: a line holds no ref | lost |
 | `about: <term>` ending a line, of `[knowledge] terms` | on no item read; ledger E-044 (c); `config show knowledge` (c) | `--about TERM`, of a term the record holds (Terms) | converted: each word a term added first |
@@ -2898,7 +2955,7 @@ Held by every record that holds items:
 
 | Gap | Items that hold it | Closed by |
 |---|---|---|
-| the old id | 4,358, every item | S-0106: "fgraph show of the item lists W-0123 as its reference" |
+| the old id | 4,358, every item | S-0120, the Archive passage: `fgraph show` of the old id names the archive |
 | the days of an item: `created`, `done.on`, `pruned.on`, `since`, the History and knowledge lines; no command takes one (Probe) | 4,358 hold `created` | part, S-0107: "every item under its kind and its bucket"; no word of a date |
 | Epic `## Hypothesis` | 108, every Epic: c 48, cts 20, g 1, st 3, sm 20, sv 16 | not filed |
 | Epic `## Outcome` | 108, every Epic | not filed |
@@ -2907,7 +2964,7 @@ Held by every record that holds items:
 | `## Hypothesis` of an issue | 822, every issue: c 378, cts 156, g 3, st 26, sm 149, sv 110 | not filed |
 | the expected result of a Check, after ` -- ` or ` -> ` | 2,832 of 2,915 Tasks: c 1,281, cts 520, g 12, st 88, sm 518, sv 413 | not filed |
 | `done.evidence` beyond a bare sha | 4,046, every done item: Epics 104, work items 1,248, Tasks 2,694 | not filed |
-| the type of a Finding | 991 lines: fact 505, open 186, standing 300; g 10 | part, S-0102: "a finding is noted on it as open ... list the line with its mark"; a `fact` would be a line with no mark, whether it is live left open (S-0104, description) |
+| the type of a Finding | 991 lines: fact 505, open 186, standing 300; g 10 | S-0102 keeps open and standing as the mark of a line, a `fact` is a line with no mark, and a line with no mark is live until a later line supersedes it, the decision of the developer of 2026-11-23 (S-0104) |
 | `supersedes:` ending a line | 593 lines: in Findings 454, Decisions 111, Deviations 28; g 3 | S-0103: "lists the first as superseded by the later" |
 | the ref of a line, `#k`, `#dk`, `#vk` | every knowledge line, 2,711: Findings 991, Decisions 1,213, Deviations 507 | not filed; S-0103 needs one, its form not stated |
 
@@ -3017,7 +3074,7 @@ its relations". The decision of what to build is the developer's.
 
 - Before any record converts, held by all six: the write path by files with
   times (S-0107), the old id (S-0106), the criterion link (S-0100, S-0101),
-  the type of a Finding (S-0102, part) and `supersedes` (S-0103); not
+  the type of a Finding (S-0102) and `supersedes` (S-0103); not
   filed: the Epic Hypothesis and Outcome, `reasoning`, the Hypothesis of an
   issue, the expected result of a Check, the evidence beyond its sha, the
   ref of a knowledge line.

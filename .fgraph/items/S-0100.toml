@@ -13,6 +13,11 @@ depends_on = [
     "B-0026",
 ]
 
+[verified]
+answer = "yes"
+text = "at 9427c3e on main, the merge of wi/S-0100-raise-the-work-items, on a throwaway record with a Feature of two criteria, first and second: fgraph add story a story --given a --when b --then c --parent F-0001 --realizes 2 exit 0 printed added S-0001, and fgraph show S-0001 lists realizes 2 second after parent F-0001; --realizes 3 exit 2 printed fgraph: error: F-0001 has no criterion 3: its criteria count from 1 to 2. make check on the tree of the landing, the branch with main merged at f5074cb: 3956 passed, all checks passed. Handed whole to one subagent on sonnet. The coordinator merged main into the branch and kept, in started_work_item and completed_work_item of src/flowgraph/work_item/moves.py and in removed_work_item of removal.py, the realizes of S-0100 beside the progress of S-0143. Its deviations, each inside a file its Tasks name: check_realized of src/flowgraph/feature/realizes.py matches the criterion and the parent in two nested matches, not one on a pair; a few tests beyond the list of the brief in tests/work_item/test_work_item_amend_realizes.py and tests/feature/test_feature_realizes.py; the row of the table of README.md reads criterion a work item realizes, without the, to fit its cell. src/flowgraph/parser/item_commands.py holds 248 lines on main."
+on = 2026-11-24 05:27:57+00:00
+
 [criterion]
 given = "a Feature with two criteria"
 when = "fgraph add story is run with --parent F-0001 and --realizes 2"

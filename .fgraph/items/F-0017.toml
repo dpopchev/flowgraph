@@ -1,9 +1,11 @@
 id = "F-0017"
-state = "started"
+state = "completed"
 title = "Raise the rules of the frame the developer drew that fgraph status and fgraph watch follow from some to every one"
 description = "The frame of fgraph status and fgraph watch as the developer drew it on 2026-11-23, filed on the word of that day: file everything. The words: I want to see only the top most in the backlog, in watch and status, without a flag such as --full-backlog; a Feature is an umbrella and shows the count of its work items, W; a work item shows its count of Tasks in brackets, and no Task means an empty []; in-progress shows all started with the hierarchy -- F 1/4 W, under it S 1/3 T with its Task until it is done, a completed work item of the Feature shown and staying to be read with no descent to its Tasks, and a work item standing alone with the Task being worked; completed shows the most recent on top, a Feature whole with no breakdown, the commit beside it, the count of children bringing little; removed shows the latest on top with its id, its title and its reason; the additional information is put below, aligned with the id of who has it; which buckets fgraph watch shows is a configuration; the names are in kebab case, backlog, in-progress, completed, in fgraph itself. Not in this Feature, by the word of the developer: the marks of a line, of which three sets are shown to choose from first. Already built: the count W of a Feature, the Task being worked under its work item, the completed with the last first and the commit beside them. Beside it in the Backlog: S-0122, the removed with the last first; S-0121, fgraph start with no id; S-0105, what a frame of fgraph watch shows."
 created = 2026-11-23 12:01:09+00:00
 started = 2026-11-24 09:13:34+00:00
+completed = 2026-11-24 16:52:34+00:00
+commit = "01df57d"
 criteria = [
     "a developer sees the top item of the backlog alone, and the whole of it with a flag",
     "a developer sees how many Tasks a work item of the backlog holds, and [] for none",

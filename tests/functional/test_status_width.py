@@ -80,7 +80,8 @@ class TestAStoryWhoseLineIsLongerThanTheTerminal:
         self, listed: Outcome
     ) -> None:
         assert listed.out == (
-            "Backlog (1)\n> S-0001  []  a title that is much lo...\nInProgress (0)\nCompleted (0)\n"
+            "backlog (1)\n> S-0001  []  a title that is much lo...\n"
+            "in-progress (0)\ncompleted (0)\n"
         )
 
 

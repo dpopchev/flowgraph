@@ -4,7 +4,7 @@ from collections.abc import Iterable, Sequence
 
 from flowgraph.feature import CriterionRow, FeatureDetail, criteria_rows
 from flowgraph.knowledge import KnowledgeRow, about_text, governs_text, mark_text, superseded_text
-from flowgraph.status.buckets import BUCKETS
+from flowgraph.status.buckets import BACKLOG_BUCKET, BUCKETS
 from flowgraph.story import StoryDetail, StoryRow
 from flowgraph.upkeep import UpkeepDetail, UpkeepRow
 from flowgraph.work_item import BLOCKED, ProgressRow
@@ -184,7 +184,7 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
             lines.append(f"    bucket           {task_bucket}, blocked\n")
             lines.append(f"    reason           {task.reason}\n")
             lines.append(f"    waiting on       {task.waiting_on}\n")
-        elif task_bucket != "Backlog":
+        elif task_bucket != BACKLOG_BUCKET:
             lines.append(f"    bucket           {task_bucket}\n")
             if task.reason:
                 lines.append(f"    reason           {task.reason}\n")

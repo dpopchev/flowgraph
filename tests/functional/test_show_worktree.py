@@ -125,7 +125,7 @@ class TestAStoryWithItsTaskCompletedInItsWorktree:
         sha = git(tmp_path / WORKTREE, "rev-parse", "--short", "HEAD~1")
         assert shown.out.splitlines()[-5:] == [
             "  T-0001  a task title",
-            "    bucket           Completed",
+            "    bucket           completed",
             f"    commit           {sha}",
             "    expected output  an output",
             "    check            make test",

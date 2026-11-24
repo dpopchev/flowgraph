@@ -90,10 +90,10 @@ class TestABlockedFeatureTakenApartRemovedWithAReason:
         self, removed: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["status"], tmp_path).out == (
-            "Backlog (0)\n"
-            "InProgress (0)\n"
-            "Completed (0)\n"
-            "Removed (1)\n"
+            "backlog (0)\n"
+            "in-progress (0)\n"
+            "completed (0)\n"
+            "removed (1)\n"
             "  F-0001  a feature title\n"
             "  pivoted\n"
         )
@@ -103,20 +103,20 @@ class TestABlockedFeatureTakenApartRemovedWithAReason:
     ) -> None:
         assert fgraph(["show", "F-0001"], tmp_path).out == (
             "F-0001  a feature title\n"
-            "  bucket       Removed\n"
+            "  bucket       removed\n"
             "  reason       pivoted\n"
             "Criteria (1)\n"
             "  a criterion\n"
             "Work items (2)\n"
-            "  S-0001  a title  Completed\n"
-            "  S-0002  another title  Removed\n"
+            "  S-0001  a title  completed\n"
+            "  S-0002  another title  removed\n"
         )
 
     def test_status_json_lists_it_under_removed_with_its_progress_and_work_items(
         self, removed: Outcome, tmp_path: Path
     ) -> None:
         document = json.loads(fgraph(["status", "--format", "json"], tmp_path).out)
-        bucket = next(b for b in document["buckets"] if b["name"] == "Removed")
+        bucket = next(b for b in document["buckets"] if b["name"] == "removed")
         assert [
             (
                 item["id"],
@@ -131,7 +131,7 @@ class TestABlockedFeatureTakenApartRemovedWithAReason:
         self, removed: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["show", "S-0001"], tmp_path).out.splitlines()[1:3] == [
-            "  bucket       Completed",
+            "  bucket       completed",
             "  parent       F-0001",
         ]
 
@@ -158,7 +158,7 @@ class TestABlockedFeatureRemovedWithItsStoryInBacklog:
         self, removed: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["show", "S-0002"], tmp_path).out.splitlines()[1:4] == [
-            "  bucket       Removed",
+            "  bucket       removed",
             "  parent       F-0001",
             "  reason       pivoted",
         ]

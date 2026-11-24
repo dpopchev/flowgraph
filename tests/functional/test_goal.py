@@ -38,7 +38,7 @@ ENABLED = ["config", "set", "development.enabled", "true"]
 PARALLEL = ["config", "set", "development.parallel", "3"]
 DRIVER = ["config", "set", "development.driver", "agent"]
 LINE = (
-    "/goal Develop F-0001 until fgraph show F-0001 lists S-0001, S-0002 and S-0003 Completed, "
+    "/goal Develop F-0001 until fgraph show F-0001 lists S-0001, S-0002 and S-0003 completed, "
     "or stop after 8 hours. This session is the coordinator: it hands each whole work item to "
     "one subagent, at most 3 at once as development.parallel says. The goal is met as well when "
     "this session prints [HALT] <id>: <the decision needed> on a change to a criterion, a Task "

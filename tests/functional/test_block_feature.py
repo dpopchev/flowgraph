@@ -85,7 +85,7 @@ class TestAStartedFeatureBlockedWithAReasonAndWhatItWaitsOn:
         self, blocked: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["status"], tmp_path, LATER).out == (
-            f"Backlog (0)\nInProgress (1)\n{MARKED}\n    S-0001  0/1 T  a title\nCompleted (0)\n"
+            f"backlog (0)\nin-progress (1)\n{MARKED}\n    S-0001  0/1 T  a title\ncompleted (0)\n"
         )
 
     def test_show_lists_it_in_inprogress_as_blocked_with_its_reason_and_what_it_waits_on(
@@ -93,13 +93,13 @@ class TestAStartedFeatureBlockedWithAReasonAndWhatItWaitsOn:
     ) -> None:
         assert fgraph(["show", "F-0001"], tmp_path, LATER).out == (
             "F-0001  a feature title\n"
-            "  bucket       InProgress, blocked\n"
+            "  bucket       in-progress, blocked\n"
             "  reason       the budget is not agreed\n"
             "  waiting on   the sponsor\n"
             "Criteria (1)\n"
             "  a criterion\n"
             "Work items (1)\n"
-            "  S-0001  a title  InProgress\n"
+            "  S-0001  a title  in-progress\n"
         )
 
     def test_its_started_story_goes_on_with_the_start_of_its_task(
@@ -154,12 +154,12 @@ class TestAStartedFeatureBlockedWhileItHoldsAStoryInBacklog:
     ) -> None:
         runs(tmp_path, *TASK_DONE, COMPLETE_STORY)
         assert fgraph(["status"], tmp_path, LATER).out == (
-            "Backlog (0)\n"
-            "InProgress (1)\n"
+            "backlog (0)\n"
+            "in-progress (1)\n"
             "! F-0001  1/2 W  a feature title\n"
             "  waiting on the sponsor: the budget is not agreed\n"
             "    S-0001  1/1 T  a title\n"
-            "Completed (0)\n"
+            "completed (0)\n"
         )
 
 

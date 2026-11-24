@@ -41,7 +41,7 @@ SEVEN = started(7)
 SIX = started(6)
 
 SEVEN_FRAME = (
-    "InProgress (6)\n"
+    "in-progress (6)\n"
     "  S-0007  0/1 T  title 7\n"
     "    => T-0007  a task title\n"
     "  S-0006  0/1 T  title 6\n"
@@ -60,7 +60,7 @@ SEVEN_FRAME = (
 )
 
 SIX_FRAME = (
-    "InProgress (5)\n"
+    "in-progress (5)\n"
     "  S-0006  0/1 T  title 6\n"
     "    => T-0006  a task title\n"
     "  S-0005  0/1 T  title 5\n"
@@ -114,8 +114,8 @@ def after(cwd: Path, argvs: Sequence[Sequence[str]], last: Sequence[str]) -> Out
 def in_progress(text: str) -> str:
     """The lines from the InProgress heading up to, not including, the Completed heading."""
     lines = text.splitlines(keepends=True)
-    start = next(i for i, line in enumerate(lines) if line.startswith("InProgress ("))
-    end = next(i for i, line in enumerate(lines) if line.startswith("Completed ("))
+    start = next(i for i, line in enumerate(lines) if line.startswith("in-progress ("))
+    end = next(i for i, line in enumerate(lines) if line.startswith("completed ("))
     return "".join(lines[start:end])
 
 

@@ -21,9 +21,6 @@ START = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 NAMES = ["backlog", "in-progress", "completed", "removed"]
 OLD = re.compile(r"\b(Backlog|InProgress|Completed|Removed)\b")
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="S-0137: a bucket is printed as Backlog, InProgress, Completed or Removed"
-)
 
 EACH = [
     ["add", "feature", "a feature title", "--criterion", "a criterion"],
@@ -99,7 +96,6 @@ def printed(cwd: Path, argv: Sequence[str]) -> str:
 
 
 class TestStatus:
-    @XFAIL
     def test_the_headings_of_status_are_the_four_names(self, tmp_path: Path) -> None:
         text = printed(tmp_path, ["status", "--all"])
         headings = [
@@ -107,7 +103,6 @@ class TestStatus:
         ]
         assert headings == NAMES
 
-    @XFAIL
     def test_the_json_of_status_names_the_four_buckets(self, tmp_path: Path) -> None:
         buckets = json.loads(printed(tmp_path, ["status", "--all", "--format", "json"]))["buckets"]
         assert [bucket["name"] for bucket in buckets] == NAMES
@@ -119,7 +114,6 @@ class TestStatus:
 
 
 class TestShow:
-    @XFAIL
     @pytest.mark.parametrize(
         ("item", "name"),
         [
@@ -134,25 +128,21 @@ class TestShow:
     ) -> None:
         assert printed(tmp_path, ["show", item]).splitlines()[1] == f"  bucket       {name}"
 
-    @XFAIL
     def test_a_dependency_is_named_with_its_bucket(self, tmp_path: Path) -> None:
         assert (
             "  depends on   S-0004 (completed)"
             in printed(tmp_path, ["show", "S-0002"]).splitlines()
         )
 
-    @XFAIL
     def test_a_feature_names_its_bucket(self, tmp_path: Path) -> None:
         assert "  bucket       backlog" in printed(tmp_path, ["show", "F-0001"]).splitlines()
 
-    @XFAIL
     def test_a_feature_lists_its_work_item_with_its_bucket(self, tmp_path: Path) -> None:
         lines = printed(tmp_path, ["show", "F-0001"]).splitlines()
         assert [line for line in lines if line.startswith("  S-0001")] == [
             "  S-0001  title 1  backlog"
         ]
 
-    @XFAIL
     def test_a_task_names_its_bucket(self, tmp_path: Path) -> None:
         assert (
             "    bucket           in-progress" in printed(tmp_path, ["show", "S-0003"]).splitlines()
@@ -160,7 +150,6 @@ class TestShow:
 
 
 class TestGraphAndBrief:
-    @XFAIL
     def test_the_graph_names_the_bucket_of_each_node(self, tmp_path: Path) -> None:
         nodes = json.loads(printed(tmp_path, ["graph", "--format", "json"]))["nodes"]
         assert {node["id"]: node["bucket"] for node in nodes} == {
@@ -174,20 +163,17 @@ class TestGraphAndBrief:
             "T-0002": "completed",
         }
 
-    @XFAIL
     def test_the_brief_names_its_dependency_as_completed(self, tmp_path: Path) -> None:
         assert (
             "  depends on   S-0004 (completed)"
             in printed(tmp_path, ["brief", "S-0002"]).splitlines()
         )
 
-    @XFAIL
     def test_the_json_of_the_brief_holds_the_bucket(self, tmp_path: Path) -> None:
         assert '"bucket": "backlog"' in printed(tmp_path, ["brief", "S-0002", "--format", "json"])
 
 
 class TestNoOldName:
-    @XFAIL
     @pytest.mark.parametrize("argv", OUTPUTS, ids=[" ".join(argv) for argv in OUTPUTS])
     def test_no_output_holds_an_old_name_as_a_word(self, tmp_path: Path, argv: list[str]) -> None:
         assert OLD.findall(printed(tmp_path, argv)) == []

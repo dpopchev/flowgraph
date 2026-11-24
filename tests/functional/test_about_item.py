@@ -63,10 +63,10 @@ class TestAStoryWithAFeatureADependencyATermAndAKnowledgeLine:
         assert about.status == 0
 
     def test_about_lists_the_feature_of_the_story(self, about: Outcome) -> None:
-        assert "feature (1)\n    F-0001  Backlog  a feature title\n" in about.out
+        assert "feature (1)\n    F-0001  backlog  a feature title\n" in about.out
 
     def test_about_lists_the_work_item_it_depends_on(self, about: Outcome) -> None:
-        assert "depends on (1)\n    S-0001  Backlog  the first title\n" in about.out
+        assert "depends on (1)\n    S-0001  backlog  the first title\n" in about.out
 
     def test_about_lists_its_term(self, about: Outcome) -> None:
         assert "terms (1)\n    gate  a check before a landing\n" in about.out

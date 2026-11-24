@@ -126,7 +126,7 @@ class TestAStoryAddedUnderAFeatureRealizingTheSecondCriterion:
         self, added: Outcome, tmp_path: Path
     ) -> None:
         shown = fgraph(["show", "S-0001"], tmp_path).out.splitlines()
-        assert shown[1:4] == ["  bucket       Backlog", "  parent       F-0001", LINE]
+        assert shown[1:4] == ["  bucket       backlog", "  parent       F-0001", LINE]
 
     def test_its_file_holds_realizes_2(self, added: Outcome, tmp_path: Path) -> None:
         assert held(tmp_path)["realizes"] == 2

@@ -29,7 +29,7 @@ def test_a_started_work_item_lists_its_agent_between_the_progress_and_the_title(
 
 
 def test_a_started_work_item_under_a_feature_lists_its_agent_two_columns_further_in() -> None:
-    feature = FeatureRow("F-0001", "a feature", "InProgress", 0, 1, started=[handed()])
+    feature = FeatureRow("F-0001", "a feature", "in-progress", 0, 1, started=[handed()])
     assert status_text([feature]).splitlines()[2:4] == [
         "  F-0001  0/1 W  a feature",
         "    S-0001  1/2 T  [sonnet-a1]  a title",

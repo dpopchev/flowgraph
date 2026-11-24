@@ -33,14 +33,14 @@ FIRST = Path("project.worktrees") / "S-0001-title-1"
 SECOND = Path("project.worktrees") / "S-0002-title-2"
 WORKTREES = [FIRST, SECOND]
 FRAME = (
-    "Backlog (1)\n"
+    "backlog (1)\n"
     "> S-0003  [1 T]  title 3\n"
-    "InProgress (2)\n"
+    "in-progress (2)\n"
     "  S-0001  0/1 T  title 1\n"
     "    => T-0001  a task title\n"
     "  S-0002  0/1 T  title 2\n"
     "    => T-0002  a task title\n"
-    "Completed (0)\n"
+    "completed (0)\n"
 )
 
 
@@ -164,7 +164,7 @@ class TestGuardsThatPassToday:
         self, checkout: Path, tmp_path: Path
     ) -> None:
         shown = fgraph(["show", "S-0002"], tmp_path / FIRST).out.splitlines()
-        assert shown[1].split() == ["bucket", "Backlog"]
+        assert shown[1].split() == ["bucket", "backlog"]
 
 
 @pytest.mark.parametrize("worktree", WORKTREES, ids=["of-S-0001", "of-S-0002"])

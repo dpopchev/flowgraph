@@ -74,7 +74,7 @@ class TestABlockedTaskUnblocked:
     def test_show_lists_it_started_again(self, unblocked: Outcome, tmp_path: Path) -> None:
         assert fgraph(["show", "S-0001"], tmp_path).out.splitlines()[-3:] == [
             "  T-0001  a task title",
-            "    bucket           InProgress",
+            "    bucket           in-progress",
             "    expected output  an output",
         ]
 

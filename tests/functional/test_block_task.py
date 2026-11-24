@@ -73,13 +73,13 @@ class TestAStartedTaskBlockedWithAReasonAndWhatItWaitsOn:
     ) -> None:
         assert fgraph(["show", "S-0001"], tmp_path).out == (
             "S-0001  a title\n"
-            "  bucket       InProgress\n"
+            "  bucket       in-progress\n"
             "  given        a state\n"
             "  when         an action\n"
             "  then         another\n"
             "Tasks (1)\n"
             "  T-0001  a task title\n"
-            "    bucket           InProgress, blocked\n"
+            "    bucket           in-progress, blocked\n"
             "    reason           the review is not back\n"
             "    waiting on       the reviewer\n"
             "    expected output  an output\n"
@@ -89,12 +89,12 @@ class TestAStartedTaskBlockedWithAReasonAndWhatItWaitsOn:
         self, blocked: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["status"], tmp_path).out == (
-            "Backlog (0)\n"
-            "InProgress (1)\n"
+            "backlog (0)\n"
+            "in-progress (1)\n"
             "  S-0001  0/1 T  a title\n"
             "    !  T-0001  a task title\n"
             "       waiting on the reviewer: the review is not back\n"
-            "Completed (0)\n"
+            "completed (0)\n"
         )
 
 

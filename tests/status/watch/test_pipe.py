@@ -41,4 +41,4 @@ def first_line(process: subprocess.Popen[str]) -> str:
 def test_the_first_frame_of_watch_reaches_a_pipe_before_the_second_is_due(
     watching: subprocess.Popen[str],
 ) -> None:
-    assert first_line(watching) == "Backlog (0)\n"
+    assert first_line(watching) == "backlog (0)\n"

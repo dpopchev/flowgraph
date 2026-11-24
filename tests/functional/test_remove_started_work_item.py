@@ -169,18 +169,18 @@ class TestAStartedStoryRemovedOnMain:
 
     def test_status_on_main_lists_it_under_removed(self, removed: Outcome, checkout: Path) -> None:
         assert fgraph(["status"], checkout).out == (
-            "Backlog (1)\n"
+            "backlog (1)\n"
             "> S-0002  [1 T]  another title\n"
-            "InProgress (0)\n"
-            "Completed (0)\n"
-            "Removed (1)\n"
+            "in-progress (0)\n"
+            "completed (0)\n"
+            "removed (1)\n"
             f"  S-0001  {TITLE}\n"
             "  pivoted\n"
         )
 
     def test_show_names_the_bucket_and_the_reason(self, removed: Outcome, checkout: Path) -> None:
         assert fgraph(["show", "S-0001"], checkout).out.splitlines()[1:3] == [
-            "  bucket       Removed",
+            "  bucket       removed",
             "  reason       pivoted",
         ]
 
@@ -188,7 +188,7 @@ class TestAStartedStoryRemovedOnMain:
         self, removed: Outcome, worked: str, checkout: Path
     ) -> None:
         show = fgraph(["show", "S-0001"], checkout).out
-        assert task_facts(show) == ["Completed", worked, "Removed", "pivoted", "Removed", "pivoted"]
+        assert task_facts(show) == ["completed", worked, "removed", "pivoted", "removed", "pivoted"]
 
     def test_the_remove_is_one_commit_of_main_holding_its_file_alone(
         self, removed: Outcome, checkout: Path
@@ -248,7 +248,7 @@ def test_a_blocked_story_is_removed(checkout: Path, worktree: Path) -> None:
     show = fgraph(["show", "S-0001"], checkout).out.splitlines()
     assert (outcome.status, show[1:3], [line for line in show if "waiting on" in line]) == (
         0,
-        ["  bucket       Removed", "  reason       pivoted"],
+        ["  bucket       removed", "  reason       pivoted"],
         [],
     )
 
@@ -284,4 +284,4 @@ def test_under_a_started_feature_no_next_work_item_starts(tmp_path: Path) -> Non
         [line for line in outcome.out.splitlines() if line.startswith("started")],
         fgraph(["show", "S-0002"], feature).out.splitlines()[1],
         fgraph(["show", "F-0001"], feature).out.splitlines()[1],
-    ) == (["removed S-0001"], [], "  bucket       Backlog", "  bucket       InProgress")
+    ) == (["removed S-0001"], [], "  bucket       backlog", "  bucket       in-progress")

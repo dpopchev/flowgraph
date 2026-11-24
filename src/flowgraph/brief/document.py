@@ -24,7 +24,7 @@ TEXT = "text"
 JSON = "json"
 
 # The bucket a dependency is listed in once it is done.
-_COMPLETED = "Completed"
+_COMPLETED = "completed"
 
 type Part = dict[str, Any]
 

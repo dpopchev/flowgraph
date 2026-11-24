@@ -156,7 +156,7 @@ def test_the_feature_completed_by_its_last_story_shows_its_criteria_met_1_of_2(
         fgraph(["show", "F-0001"], tmp_path, LATER).out.splitlines()[1],
         criteria(tmp_path)[0],
     ) == (
-        "  bucket       Completed",
+        "  bucket       completed",
         "Criteria (2), met 1 of 2",
     )
 
@@ -184,8 +184,8 @@ def test_the_work_items_shown_on_the_first_record_keep_their_buckets(tmp_path: P
     runs(tmp_path, FEATURE, FIRST, OTHER, TASK, TASK_FOR_OTHER, ["start", "F-0001"], *COMPLETIONS)
     assert work_items(tmp_path) == [
         "Work items (2)",
-        "  S-0001  a title  Completed",
-        "  S-0002  another title  InProgress",
+        "  S-0001  a title  completed",
+        "  S-0002  another title  in-progress",
     ]
 
 

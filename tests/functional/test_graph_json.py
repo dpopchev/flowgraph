@@ -97,7 +97,7 @@ class TestARecordWithAFeatureAWorkItemATaskTwoTermsAndADependency:
 
     def test_graph_prints_the_bucket_of_a_work_item(self, graph: Outcome) -> None:
         nodes = json.loads(graph.out)["nodes"]
-        assert [node["bucket"] for node in nodes if node["id"] == "S-0002"] == ["Backlog"]
+        assert [node["bucket"] for node in nodes if node["id"] == "S-0002"] == ["backlog"]
 
     def test_graph_prints_the_same_bytes_twice(self, graph: Outcome, tmp_path: Path) -> None:
         assert fgraph(["graph"], tmp_path).out == graph.out

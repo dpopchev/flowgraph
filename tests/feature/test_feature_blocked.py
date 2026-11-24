@@ -141,7 +141,7 @@ def test_a_blocked_feature_completed_holds_its_started_time_and_no_block() -> No
 
 @pytest.mark.view
 def test_the_row_of_a_blocked_feature_is_in_progress_by_its_own_state() -> None:
-    assert feature_row(BLOCKED, ["completed", "backlog"]).bucket == "InProgress"
+    assert feature_row(BLOCKED, ["completed", "backlog"]).bucket == "in-progress"
 
 
 @pytest.mark.edge

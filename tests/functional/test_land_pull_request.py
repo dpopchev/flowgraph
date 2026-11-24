@@ -181,7 +181,7 @@ class TestALandingThroughAPullRequest:
 
     def test_the_story_stays_in_progress(self, requested: Outcome, checkout: Path) -> None:
         assert fgraph(["show", "S-0001"], checkout).out.splitlines()[1] == (
-            "  bucket       InProgress"
+            "  bucket       in-progress"
         )
 
     def test_the_branch_and_its_worktree_stay(

@@ -28,7 +28,7 @@ def task(item: str, state: str, **more: str) -> TaskRow:
 
 
 def feature(
-    item: str = "F-0001", bucket: str = "Backlog", completed: int = 0, **more: Any
+    item: str = "F-0001", bucket: str = "backlog", completed: int = 0, **more: Any
 ) -> FeatureRow:
     """A Feature in that bucket holding two work items, that many of them completed."""
     return FeatureRow(item, "a feature", bucket, completed, 2, **more)
@@ -51,34 +51,34 @@ def only(row: WorkItemRow | FeatureRow) -> dict[str, Any]:
 
 def test_the_buckets_are_listed_in_the_order_of_the_flow() -> None:
     assert [each["name"] for each in document()["buckets"]] == [
-        "Backlog",
-        "InProgress",
-        "Completed",
-        "Removed",
+        "backlog",
+        "in-progress",
+        "completed",
+        "removed",
     ]
 
 
 def test_a_bucket_holding_nothing_is_listed_with_a_count_of_zero() -> None:
-    assert bucket([], "Removed") == {"count": 0, "items": [], "name": "Removed"}
+    assert bucket([], "removed") == {"count": 0, "items": [], "name": "removed"}
 
 
 def test_each_bucket_holds_the_count_of_its_items() -> None:
     rows = [story("S-0001"), story("S-0002"), story("S-0003", "completed")]
     assert [(each["name"], each["count"]) for each in document(*rows)["buckets"]] == [
-        ("Backlog", 2),
-        ("InProgress", 0),
-        ("Completed", 1),
-        ("Removed", 0),
+        ("backlog", 2),
+        ("in-progress", 0),
+        ("completed", 1),
+        ("removed", 0),
     ]
 
 
 def test_a_bucket_lists_every_item_of_it_in_the_order_given() -> None:
     rows = [story(f"S-{number:04d}") for number in range(1, 9)]
-    assert [item["id"] for item in bucket(rows, "Backlog")["items"]] == [row.id for row in rows]
+    assert [item["id"] for item in bucket(rows, "backlog")["items"]] == [row.id for row in rows]
 
 
 def test_a_blocked_work_item_is_listed_under_inprogress() -> None:
-    assert bucket([story("S-0001", "blocked")], "InProgress")["count"] == 1
+    assert bucket([story("S-0001", "blocked")], "in-progress")["count"] == 1
 
 
 def test_an_item_holds_its_id_its_title_and_its_state() -> None:
@@ -189,7 +189,7 @@ def test_a_work_item_that_is_not_blocked_holds_no_block() -> None:
 
 def test_a_blocked_work_item_of_a_feature_holds_its_block() -> None:
     held = [story("S-0001", "blocked", block_reason="no key", waiting_on="developer")]
-    listed = only(feature(bucket="InProgress", work_items=held))["work_items"][0]
+    listed = only(feature(bucket="in-progress", work_items=held))["work_items"][0]
     assert listed["block"] == {"reason": "no key", "waiting_on": "developer"}
 
 
@@ -208,7 +208,7 @@ def test_a_feature_holds_every_work_item_under_it_with_its_state_in_the_order_gi
         story("S-0005", "backlog", waits_for=["S-0004"]),
         story("S-0006", "removed"),
     ]
-    listed = only(feature(bucket="InProgress", work_items=held))["work_items"]
+    listed = only(feature(bucket="in-progress", work_items=held))["work_items"]
     assert [(each["id"], each["state"]) for each in listed] == [
         ("S-0003", "completed"),
         ("S-0004", "started"),
@@ -224,7 +224,7 @@ def test_a_work_item_of_a_feature_holds_its_tasks_and_the_ids_it_waits_for() -> 
 
 
 def test_a_blocked_feature_holds_its_reason_and_what_it_waits_on() -> None:
-    blocked = feature(bucket="InProgress", waiting_on="the sponsor", block_reason="no budget")
+    blocked = feature(bucket="in-progress", waiting_on="the sponsor", block_reason="no budget")
     assert only(blocked)["block"] == {"reason": "no budget", "waiting_on": "the sponsor"}
 
 
@@ -233,7 +233,7 @@ def test_a_feature_that_is_not_blocked_holds_no_block() -> None:
 
 
 def test_a_removed_feature_holds_its_reason() -> None:
-    assert only(feature(bucket="Removed", reason="not wanted"))["reason"] == "not wanted"
+    assert only(feature(bucket="removed", reason="not wanted"))["reason"] == "not wanted"
 
 
 def test_the_next_to_start_is_the_id_of_the_line_marked() -> None:

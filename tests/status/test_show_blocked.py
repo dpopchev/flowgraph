@@ -22,7 +22,7 @@ def test_a_blocked_work_item_is_shown_blocked_with_its_reason_and_what_it_waits_
         waiting_on="developer",
     )
     assert show_text(blocked).splitlines()[1:4] == [
-        "  bucket       InProgress, blocked",
+        "  bucket       in-progress, blocked",
         "  reason       no key",
         "  waiting on   developer",
     ]
@@ -33,6 +33,6 @@ def test_a_started_work_item_is_shown_with_no_block() -> None:
         "S-0001", "a title", "started", "", [], given="a state", when="an action", then="another"
     )
     assert show_text(started).splitlines()[1:3] == [
-        "  bucket       InProgress",
+        "  bucket       in-progress",
         "  given        a state",
     ]

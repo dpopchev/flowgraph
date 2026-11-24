@@ -252,7 +252,7 @@ def test_a_removed_feature_is_not_amended() -> None:
 @pytest.mark.view
 def test_the_row_of_a_removed_feature_is_in_removed_by_its_own_state_with_its_reason() -> None:
     assert feature_row(GONE, ["removed"]) == FeatureRow(
-        "F-0001", "a title", "Removed", completed=0, held=0, reason=REASON
+        "F-0001", "a title", "removed", completed=0, held=0, reason=REASON
     )
 
 
@@ -264,9 +264,9 @@ def test_the_detail_of_a_removed_feature_names_its_reason_and_waits_on_nothing()
 
 @pytest.mark.view
 def test_a_removed_feature_is_listed_under_removed_with_its_reason_and_no_progress() -> None:
-    row = FeatureRow("F-0001", "a title", "Removed", completed=0, held=0, reason=REASON)
+    row = FeatureRow("F-0001", "a title", "removed", completed=0, held=0, reason=REASON)
     assert status_text([row]).splitlines()[-3:] == [
-        "Removed (1)",
+        "removed (1)",
         "  F-0001  a title",
         "  filed by mistake",
     ]
@@ -277,14 +277,14 @@ def test_a_removed_feature_is_shown_removed_with_its_reason_and_its_work_items()
     held = [removed_work_item(story(1), REASON, ON)]
     assert show_feature_item("F-0001", store(held, GONE)) == (
         "F-0001  a title\n"
-        "  bucket       Removed\n"
+        "  bucket       removed\n"
         "  reason       filed by mistake\n"
         "  description  why\n"
         "Criteria (2)\n"
         "  a criterion\n"
         "  another\n"
         "Work items (1)\n"
-        "  S-0001  title 1  Removed\n"
+        "  S-0001  title 1  removed\n"
     )
 
 

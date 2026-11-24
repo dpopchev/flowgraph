@@ -36,6 +36,6 @@ def test_a_work_item_without_an_agent_holds_null() -> None:
 
 def test_a_work_item_of_a_feature_holds_its_agent_in_the_work_items() -> None:
     feature = FeatureRow(
-        "F-0001", "a feature", "InProgress", 0, 1, work_items=[story(agent="sonnet-a1")]
+        "F-0001", "a feature", "in-progress", 0, 1, work_items=[story(agent="sonnet-a1")]
     )
     assert only(feature)["work_items"][0]["agent"] == "sonnet-a1"

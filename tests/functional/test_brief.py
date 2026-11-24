@@ -144,7 +144,7 @@ class TestTheBriefAsText:
         )
 
     def test_it_lists_the_feature(self, printed: Outcome) -> None:
-        assert "Feature\n  F-0001  InProgress  the gate\n" in printed.out
+        assert "Feature\n  F-0001  in-progress  the gate\n" in printed.out
 
     def test_it_lists_the_knowledge_of_the_feature(self, printed: Outcome) -> None:
         assert f"  Knowledge (1)\n    decision  2026-01-01  {FEATURE_DECISION}\n" in printed.out
@@ -192,7 +192,7 @@ class TestTheBriefAsJson:
 
     def test_it_holds_each_work_item_it_depends_on_with_its_bucket(self, checkout: Path) -> None:
         assert document(checkout, "S-0002")["depends_on"] == [
-            {"bucket": "Completed", "id": "S-0001"}
+            {"bucket": "completed", "id": "S-0001"}
         ]
 
     def test_it_waits_for_none(self, checkout: Path) -> None:

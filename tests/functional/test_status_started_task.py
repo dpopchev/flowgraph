@@ -68,11 +68,11 @@ class TestAStoryStartedWithATaskOfItStarted:
 
     def test_status_lists_the_started_task_under_its_story(self, listed: Outcome) -> None:
         assert listed.out == (
-            "Backlog (0)\n"
-            "InProgress (1)\n"
+            "backlog (0)\n"
+            "in-progress (1)\n"
             "  S-0001  0/2 T  a title\n"
             "    => T-0001  a task title\n"
-            "Completed (0)\n"
+            "completed (0)\n"
         )
 
 

@@ -77,7 +77,7 @@ class TestAStartedBugWhoseTaskIsCompletedCompletedWithACommit:
         self, completed: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["status"], tmp_path).out == (
-            "Backlog (0)\nInProgress (0)\nCompleted (1)\n  B-0001  def5678  a bug title\n"
+            "backlog (0)\nin-progress (0)\ncompleted (1)\n  B-0001  def5678  a bug title\n"
         )
 
 
@@ -90,7 +90,7 @@ def test_a_bug_is_shown_with_what_is_observed_and_expected(tmp_path: Path) -> No
     runs(tmp_path, ADD_BUG, ADD_TASK)
     assert fgraph(["show", "B-0001"], tmp_path).out == (
         "B-0001  a bug title\n"
-        "  bucket       Backlog\n"
+        "  bucket       backlog\n"
         "  observed     it prints a traceback\n"
         "  expected     it exits 2 and names the path\n"
         "Tasks (1)\n"
@@ -102,7 +102,7 @@ def test_a_bug_is_shown_with_what_is_observed_and_expected(tmp_path: Path) -> No
 def test_a_bug_joins_the_backlog_after_the_work_items_added_before_it(tmp_path: Path) -> None:
     runs(tmp_path, ADD_STORY, ADD_BUG)
     assert fgraph(["status", "--backlog"], tmp_path).out.splitlines()[:3] == [
-        "Backlog (2)",
+        "backlog (2)",
         "> S-0001  []  a title",
         "  B-0001  []  a bug title",
     ]

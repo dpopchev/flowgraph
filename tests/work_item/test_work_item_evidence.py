@@ -139,7 +139,7 @@ def test_the_row_of_a_task_completed_without_a_commit_carries_none() -> None:
 @pytest.mark.view
 def test_status_lists_a_work_item_completed_without_a_commit_by_id_and_title_alone() -> None:
     assert status_text([work_item_row(WHOLE)]) == (
-        "Backlog (0)\nInProgress (0)\nCompleted (1)\n  CH-0001  a title\n"
+        "backlog (0)\nin-progress (0)\ncompleted (1)\n  CH-0001  a title\n"
     )
 
 
@@ -147,13 +147,13 @@ def test_status_lists_a_work_item_completed_without_a_commit_by_id_and_title_alo
 def test_show_lists_no_commit_line_of_a_work_item_completed_without_one() -> None:
     assert show_text(work_item_detail(WHOLE)) == (
         "CH-0001  a title\n"
-        "  bucket       Completed\n"
+        "  bucket       completed\n"
         "  given        a state\n"
         "  when         an action\n"
         "  then         another state\n"
         "Tasks (1)\n"
         "  T-0003  a task title\n"
-        "    bucket           Completed\n"
+        "    bucket           completed\n"
         "    expected output  an output\n"
     )
 

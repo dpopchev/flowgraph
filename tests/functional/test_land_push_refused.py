@@ -155,7 +155,7 @@ class TestALandingWhosePushIsRefused:
         return refused_land(tmp_path, origin, DEVELOPMENT, LAND)
 
     def test_show_lists_the_story_under_in_progress(self, refused: Refused) -> None:
-        assert "bucket       InProgress" in fgraph(["show", "S-0001"], refused.checkout).out
+        assert "bucket       in-progress" in fgraph(["show", "S-0001"], refused.checkout).out
 
     def test_main_is_on_the_merge_with_no_commit_of_the_record_after_it(
         self, refused: Refused
@@ -192,7 +192,7 @@ class TestTheLandingTakenUpOnceTheOriginIsBack:
         self, again: Refused
     ) -> None:
         shown = fgraph(["show", "S-0001"], again.checkout).out
-        assert (again.land.status, "bucket       Completed" in shown) == (0, True)
+        assert (again.land.status, "bucket       completed" in shown) == (0, True)
 
     def test_main_of_the_origin_is_main_of_the_checkout(self, again: Refused, origin: Path) -> None:
         assert git(origin, "rev-parse", "main") == git(again.checkout, "rev-parse", "main")
@@ -234,4 +234,4 @@ class TestAStoryWhoseBranchIsMergedByHand:
         assert (landed.land.status, landed.land.out) == (0, out)
 
     def test_show_lists_the_story_under_completed(self, landed: Refused) -> None:
-        assert "bucket       Completed" in fgraph(["show", "S-0001"], landed.checkout).out
+        assert "bucket       completed" in fgraph(["show", "S-0001"], landed.checkout).out

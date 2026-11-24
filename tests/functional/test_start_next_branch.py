@@ -199,12 +199,12 @@ class TestAStoryOfAStartedFeatureLandedWhileTheNextIsInBacklog:
         self, landed: Outcome, checkout: Path
     ) -> None:
         assert fgraph(["status"], checkout).out == (
-            "Backlog (0)\n"
-            "InProgress (1)\n"
+            "backlog (0)\n"
+            "in-progress (1)\n"
             "  F-0001  1/2 W  a feature title\n"
             "    S-0002  0/1 T  another title\n"
             "    S-0001  1/1 T  Raise the Stories fgraph lists\n"
-            "Completed (0)\n"
+            "completed (0)\n"
         )
 
     def test_nothing_is_left_to_commit(self, landed: Outcome, checkout: Path) -> None:

@@ -68,11 +68,11 @@ class TestAStoryInBacklogWithOneTaskStarted:
 
     def test_status_lists_it_under_in_progress(self, started: Outcome, tmp_path: Path) -> None:
         assert fgraph(["status"], tmp_path).out == (
-            "Backlog (0)\nInProgress (1)\n  S-0001  0/1 T  a title\nCompleted (0)\n"
+            "backlog (0)\nin-progress (1)\n  S-0001  0/1 T  a title\ncompleted (0)\n"
         )
 
     def test_show_names_its_bucket(self, started: Outcome, tmp_path: Path) -> None:
-        assert "  bucket       InProgress\n" in fgraph(["show", "S-0001"], tmp_path).out
+        assert "  bucket       in-progress\n" in fgraph(["show", "S-0001"], tmp_path).out
 
 
 class TestATaskOfAStartedStoryStarted:
@@ -87,7 +87,7 @@ class TestATaskOfAStartedStoryStarted:
         assert fgraph(["show", "S-0001"], tmp_path).out.endswith(
             "Tasks (1)\n"
             "  T-0001  a task title\n"
-            "    bucket           InProgress\n"
+            "    bucket           in-progress\n"
             "    expected output  an output\n"
         )
 

@@ -49,17 +49,18 @@ BESIDE = [*SIX_COMPLETED, *(story(number) for number in range(7, 12))]
 ONE = [story(1)]
 
 WHOLE = (
-    "Backlog (5)\n"
+    "backlog (5)\n"
     "> S-0001  []  title 1\n"
     "  S-0002  []  title 2\n"
     "  S-0003  []  title 3\n"
     "  S-0004  []  title 4\n"
     "  S-0005  []  title 5\n"
-    "InProgress (0)\n"
-    "Completed (0)\n"
+    "in-progress (0)\n"
+    "completed (0)\n"
 )
 SHORT = (
-    "Backlog (5)\n> S-0001  []  title 1\n  ... 4 more, 0 can start\nInProgress (0)\nCompleted (0)\n"
+    "backlog (5)\n> S-0001  []  title 1\n  ... 4 more, 0 can start\n"
+    "in-progress (0)\ncompleted (0)\n"
 )
 
 
@@ -133,8 +134,8 @@ def test_watch_backlog_lists_the_whole_backlog(tmp_path: Path) -> None:
 def test_status_backlog_leaves_completed_at_its_top_five(tmp_path: Path) -> None:
     listed = after(tmp_path, BESIDE, ["status", "--backlog"])
     lines = listed.out.splitlines()
-    assert lines[lines.index("Completed (6)") :] == [
-        "Completed (6)",
+    assert lines[lines.index("completed (6)") :] == [
+        "completed (6)",
         "  S-0006  abc1236  title 6",
         "  S-0005  abc1235  title 5",
         "  S-0004  abc1234  title 4",
@@ -155,10 +156,10 @@ def test_watch_all_lists_the_whole_backlog(tmp_path: Path) -> None:
 def test_status_json_lists_every_item_of_the_backlog(tmp_path: Path) -> None:
     listed = after(tmp_path, FIVE, ["status", "--format", "json"])
     buckets = {bucket["name"]: bucket["items"] for bucket in json.loads(listed.out)["buckets"]}
-    assert len(buckets["Backlog"]) == 5
+    assert len(buckets["backlog"]) == 5
 
 
 def test_status_lists_a_backlog_of_one_line_with_no_more_line(tmp_path: Path) -> None:
     assert after(tmp_path, ONE, ["status"]).out == (
-        "Backlog (1)\n> S-0001  []  title 1\nInProgress (0)\nCompleted (0)\n"
+        "backlog (1)\n> S-0001  []  title 1\nin-progress (0)\ncompleted (0)\n"
     )

@@ -76,14 +76,14 @@ class TestAFeatureWithOneOfItsTwoStoriesCompleted:
         self, listed: Outcome
     ) -> None:
         assert listed.out == (
-            "Backlog (0)\n"
-            "InProgress (1)\n"
+            "backlog (0)\n"
+            "in-progress (1)\n"
             "  F-0001  1/2 W  a feature title\n"
             "    S-0001  1/1 T  a title\n"
-            "Completed (0)\n"
+            "completed (0)\n"
         )
 
 
 def test_a_removed_story_is_counted_in_neither_number(tmp_path: Path) -> None:
     listed = status_after(tmp_path, *ONE_OF_TWO, ["remove", "S-0002", "--reason", "a reason"])
-    assert listed.out.splitlines()[1:3] == ["InProgress (1)", "  F-0001  1/1 W  a feature title"]
+    assert listed.out.splitlines()[1:3] == ["in-progress (1)", "  F-0001  1/1 W  a feature title"]

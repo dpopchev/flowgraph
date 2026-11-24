@@ -80,13 +80,13 @@ class TestTheWorkItemThatOthersDependOnAreFiledDuringAndSupersede:
         assert listed.splitlines()[0] == "S-0002  the second title"
 
     def test_it_lists_what_it_depends_on(self, listed: str) -> None:
-        assert "  depends on (1)\n    S-0001  Completed  the first title\n" in listed
+        assert "  depends on (1)\n    S-0001  completed  the first title\n" in listed
 
     def test_it_lists_what_was_filed_during_it(self, listed: str) -> None:
-        assert "  filed here (1)\n    S-0003  Backlog  the third title\n" in listed
+        assert "  filed here (1)\n    S-0003  backlog  the third title\n" in listed
 
     def test_it_lists_what_it_supersedes_with_its_bucket(self, listed: str) -> None:
-        assert "  supersedes (1)\n    S-0005  Removed  the old title\n" in listed
+        assert "  supersedes (1)\n    S-0005  removed  the old title\n" in listed
 
     def test_it_lists_no_relation_that_holds_of_nothing(self, listed: str) -> None:
         assert "feature" not in listed
@@ -98,26 +98,26 @@ class TestTheWorkItemThatOthersWaitFor:
         return about("S-0001", tmp_path)
 
     def test_it_lists_its_feature(self, listed: str) -> None:
-        assert "  feature (1)\n    F-0001  Completed  a feature title\n" in listed
+        assert "  feature (1)\n    F-0001  completed  a feature title\n" in listed
 
     def test_it_lists_the_work_items_that_depend_on_it(self, listed: str) -> None:
-        assert "  depended on by (1)\n    S-0002  Backlog  the second title\n" in listed
+        assert "  depended on by (1)\n    S-0002  backlog  the second title\n" in listed
 
     def test_it_lists_the_work_items_that_amend_it(self, listed: str) -> None:
-        assert "  amended by (1)\n    S-0004  Backlog  the amending title\n" in listed
+        assert "  amended by (1)\n    S-0004  backlog  the amending title\n" in listed
 
 
 class TestTheWorkItemFiledDuringAnotherAndTheOneSuperseding:
     def test_it_lists_the_work_item_it_was_filed_during(self, tmp_path: Path) -> None:
-        assert "  filed during (1)\n    S-0002  Backlog  the second title\n" in about(
+        assert "  filed during (1)\n    S-0002  backlog  the second title\n" in about(
             "S-0003", tmp_path
         )
 
     def test_it_lists_the_work_item_it_amends(self, tmp_path: Path) -> None:
-        assert "  amends (1)\n    S-0001  Completed  the first title\n" in about("S-0004", tmp_path)
+        assert "  amends (1)\n    S-0001  completed  the first title\n" in about("S-0004", tmp_path)
 
     def test_the_removed_one_lists_the_work_item_that_supersedes_it(self, tmp_path: Path) -> None:
-        assert "  superseded by (1)\n    S-0002  Backlog  the second title\n" in about(
+        assert "  superseded by (1)\n    S-0002  backlog  the second title\n" in about(
             "S-0005", tmp_path
         )
 
@@ -131,7 +131,7 @@ class TestAFeature:
         assert listed.splitlines()[0] == "F-0001  a feature title"
 
     def test_it_lists_its_work_items(self, listed: str) -> None:
-        assert "  work items (1)\n    S-0001  Completed  the first title\n" in listed
+        assert "  work items (1)\n    S-0001  completed  the first title\n" in listed
 
     def test_it_lists_its_terms(self, listed: str) -> None:
         assert "  terms (1)\n    gate  a check before a landing\n" in listed

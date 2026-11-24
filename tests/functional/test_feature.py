@@ -76,12 +76,12 @@ class TestAFeatureWithAStoryAddedUnderIt:
     ) -> None:
         assert shown.out == (
             "F-0001  a feature title\n"
-            "  bucket       Backlog\n"
+            "  bucket       backlog\n"
             "Criteria (2)\n"
             "  a developer sees every work item by bucket\n"
             "  a developer adds every kind of work\n"
             "Work items (1)\n"
-            "  S-0001  a title  Backlog\n"
+            "  S-0001  a title  backlog\n"
         )
 
 
@@ -94,7 +94,7 @@ def test_a_story_under_a_feature_names_its_parent(tmp_path: Path) -> None:
     runs(tmp_path, ADD_FEATURE, ADD_STORY)
     assert fgraph(["show", "S-0001"], tmp_path).out.splitlines()[:3] == [
         "S-0001  a title",
-        "  bucket       Backlog",
+        "  bucket       backlog",
         "  parent       F-0001",
     ]
 
@@ -104,10 +104,10 @@ def test_a_feature_is_in_progress_once_a_work_item_of_it_is_started(tmp_path: Pa
     assert fgraph(["show", "F-0001"], tmp_path).out.splitlines()[1:2] + fgraph(
         ["show", "F-0001"], tmp_path
     ).out.splitlines()[-3:] == [
-        "  bucket       InProgress",
+        "  bucket       in-progress",
         "Work items (2)",
-        "  S-0001  a title  InProgress",
-        "  B-0001  a bug title  Backlog",
+        "  S-0001  a title  in-progress",
+        "  B-0001  a bug title  backlog",
     ]
 
 
@@ -126,7 +126,7 @@ def test_a_feature_is_completed_by_the_completion_that_leaves_each_work_item_com
         ["remove", "B-0001", "--reason", "not a bug"],
         ["complete", "S-0001", "--commit", "def5678"],
     )
-    assert fgraph(["show", "F-0001"], tmp_path).out.splitlines()[1] == "  bucket       Completed"
+    assert fgraph(["show", "F-0001"], tmp_path).out.splitlines()[1] == "  bucket       completed"
 
 
 @pytest.mark.parametrize(

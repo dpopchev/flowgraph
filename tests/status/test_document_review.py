@@ -41,7 +41,7 @@ def test_ready_for_review_lists_a_ready_work_item_under_a_feature() -> None:
     feature = FeatureRow(
         "F-0001",
         "a feature",
-        "InProgress",
+        "in-progress",
         0,
         1,
         started=[started(1, DONE)],

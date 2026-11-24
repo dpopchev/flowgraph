@@ -39,7 +39,7 @@ def test_an_entry_carries_the_refs_its_row_supersedes() -> None:
 
 def test_the_decision_of_a_completed_spike_has_no_ref() -> None:
     detail = WorkItemDetail(
-        "Q-0001", "a title", "Completed", "", [], decision="one file", answer="yes"
+        "Q-0001", "a title", "completed", "", [], decision="one file", answer="yes"
     )
     assert decision_entries(detail, NOW)[0].ref == ""
 

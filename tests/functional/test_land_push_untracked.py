@@ -156,7 +156,7 @@ class TestALandingWhoseMainTracksNoRemote:
         assert (refused.land.status, refused.land.err.splitlines()[-1:]) == (2, [REFUSAL])
 
     def test_show_lists_the_story_under_in_progress(self, refused: Refused) -> None:
-        assert "bucket       InProgress" in fgraph(["show", "S-0001"], refused.checkout).out
+        assert "bucket       in-progress" in fgraph(["show", "S-0001"], refused.checkout).out
 
     def test_the_branch_of_the_story_stands(self, refused: Refused) -> None:
         assert git(refused.checkout, "branch", "--list", BRANCHES) != ""

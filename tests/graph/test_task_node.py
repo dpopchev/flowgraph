@@ -16,10 +16,10 @@ def task(state: str) -> TaskRow:
 @pytest.mark.parametrize(
     ("state", "bucket"),
     [
-        ("backlog", "Backlog"),
-        ("started", "InProgress"),
-        ("blocked", "InProgress"),
-        ("completed", "Completed"),
+        ("backlog", "backlog"),
+        ("started", "in-progress"),
+        ("blocked", "in-progress"),
+        ("completed", "completed"),
     ],
 )
 def test_a_task_node_is_in_the_bucket_its_state_is_listed_in(state: str, bucket: str) -> None:
@@ -34,7 +34,7 @@ def test_a_task_node_carries_its_state_in_the_words_of_status(state: str) -> Non
 @pytest.mark.parametrize("state", ["backlog", "started", "blocked", "completed"])
 def test_a_task_of_a_removed_work_item_is_in_removed_with_its_state_kept(state: str) -> None:
     node = task_node(task(state), "removed")
-    assert (node["bucket"], node["state"]) == ("Removed", state)
+    assert (node["bucket"], node["state"]) == ("removed", state)
 
 
 def test_a_task_node_keeps_its_id_its_kind_and_its_title_in_the_first_keys() -> None:

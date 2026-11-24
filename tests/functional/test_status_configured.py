@@ -163,8 +163,8 @@ class TestFlagWinsOverKey:
 
     def test_status_all_lists_the_three_lines_of_the_backlog(self, tmp_path: Path) -> None:
         listed = after(tmp_path, BUILT, KEYS, ["status", "--all"])
-        assert from_heading(listed.out, "Backlog (3)", "InProgress (1)") == [
-            "Backlog (3)",
+        assert from_heading(listed.out, "backlog (3)", "in-progress (1)") == [
+            "backlog (3)",
             "> S-0005  []  title 5",
             "  S-0006  []  title 6",
             "  S-0007  []  title 7",
@@ -172,8 +172,8 @@ class TestFlagWinsOverKey:
 
     def test_status_all_lists_the_four_lines_of_completed(self, tmp_path: Path) -> None:
         listed = after(tmp_path, BUILT, KEYS, ["status", "--all"])
-        assert from_heading(listed.out, "Completed (4)") == [
-            "Completed (4)",
+        assert from_heading(listed.out, "completed (4)") == [
+            "completed (4)",
             "  S-0004  abc1234  title 4",
             "  S-0003  abc1233  title 3",
             "  S-0002  abc1232  title 2",
@@ -182,14 +182,14 @@ class TestFlagWinsOverKey:
 
     def test_status_under_the_keys_holds_the_heading_of_completed(self, tmp_path: Path) -> None:
         listed = after(tmp_path, BUILT, KEYS, ["status"])
-        assert "Completed (4)" in listed.out.splitlines()
+        assert "completed (4)" in listed.out.splitlines()
 
 
 class TestStatusLists:
     def test_the_backlog_lists_two_lines_then_its_more_line(self, tmp_path: Path) -> None:
         listed = after(tmp_path, BUILT, KEYS, ["status"])
-        assert from_heading(listed.out, "Backlog (3)", "InProgress (1)") == [
-            "Backlog (3)",
+        assert from_heading(listed.out, "backlog (3)", "in-progress (1)") == [
+            "backlog (3)",
             "> S-0005  []  title 5",
             "  S-0006  []  title 6",
             "  ... 1 more, 0 can start",
@@ -197,8 +197,8 @@ class TestStatusLists:
 
     def test_completed_lists_three_lines_then_its_more_line(self, tmp_path: Path) -> None:
         listed = after(tmp_path, BUILT, KEYS, ["status"])
-        assert from_heading(listed.out, "Completed (4)") == [
-            "Completed (4)",
+        assert from_heading(listed.out, "completed (4)") == [
+            "completed (4)",
             "  S-0004  abc1234  title 4",
             "  S-0003  abc1233  title 3",
             "  S-0002  abc1232  title 2",
@@ -209,8 +209,8 @@ class TestStatusLists:
         self, tmp_path: Path
     ) -> None:
         listed = after(tmp_path, BUILT, KEYS, ["status", "--backlog"])
-        assert from_heading(listed.out, "Backlog (3)", "InProgress (1)") == [
-            "Backlog (3)",
+        assert from_heading(listed.out, "backlog (3)", "in-progress (1)") == [
+            "backlog (3)",
             "> S-0005  []  title 5",
             "  S-0006  []  title 6",
             "  S-0007  []  title 7",
@@ -218,12 +218,12 @@ class TestStatusLists:
 
     def test_backlog_leaves_completed_at_its_three_lines(self, tmp_path: Path) -> None:
         listed = after(tmp_path, BUILT, KEYS, ["status", "--backlog"])
-        assert from_heading(listed.out, "Completed (4)")[-1] == "  ... 1 more"
+        assert from_heading(listed.out, "completed (4)")[-1] == "  ... 1 more"
 
     def test_a_backlog_set_to_all_lists_its_three_lines(self, tmp_path: Path) -> None:
         listed = after(tmp_path, BUILT, '[status]\nbacklog = "all"\n', ["status"])
-        assert from_heading(listed.out, "Backlog (3)", "InProgress (1)") == [
-            "Backlog (3)",
+        assert from_heading(listed.out, "backlog (3)", "in-progress (1)") == [
+            "backlog (3)",
             "> S-0005  []  title 5",
             "  S-0006  []  title 6",
             "  S-0007  []  title 7",
@@ -233,13 +233,13 @@ class TestStatusLists:
         self, tmp_path: Path
     ) -> None:
         listed = after(tmp_path, TWO_STARTED, "[status]\nin-progress = 1\n", ["status"])
-        assert from_heading(listed.out, "InProgress (2)", "Completed (0)")[-1] == "  ... 1 more"
+        assert from_heading(listed.out, "in-progress (2)", "completed (0)")[-1] == "  ... 1 more"
 
     def test_watch_under_the_status_table_alone_lists_the_backlog_as_status_does(
         self, tmp_path: Path
     ) -> None:
         framed = after(tmp_path, BUILT, STATUS_KEYS, ["watch", "--count", "1"])
-        assert from_heading(framed.out, "Backlog (3)", "InProgress (1)")[-1] == (
+        assert from_heading(framed.out, "backlog (3)", "in-progress (1)")[-1] == (
             "  ... 1 more, 0 can start"
         )
 
@@ -249,8 +249,8 @@ class TestReadyForReview:
         self, tmp_path: Path
     ) -> None:
         listed = after(tmp_path, ONE_READY, "[status]\nin-progress = 1\n", ["status"])
-        assert from_heading(listed.out, "InProgress (2)", "Completed (0)") == [
-            "InProgress (2)",
+        assert from_heading(listed.out, "in-progress (2)", "completed (0)") == [
+            "in-progress (2)",
             "  S-0002  0/1 T  title 2",
             "    => T-0002  a task title",
             "? S-0001  1/1 T  title 1",
@@ -262,26 +262,26 @@ class TestWatchShows:
         self, tmp_path: Path
     ) -> None:
         framed = after(tmp_path, BUILT, KEYS, ["watch", "--count", "1"])
-        assert headings(framed.out) == ["Backlog (3)", "InProgress (1)"]
+        assert headings(framed.out) == ["backlog (3)", "in-progress (1)"]
 
     def test_all_shows_the_same_two_buckets_whole(self, tmp_path: Path) -> None:
         framed = after(tmp_path, BUILT, KEYS, ["watch", "--all", "--count", "1"])
-        assert headings(framed.out) == ["Backlog (3)", "InProgress (1)"]
+        assert headings(framed.out) == ["backlog (3)", "in-progress (1)"]
 
 
 class TestNoConfiguration:
     def test_status_lists_one_line_of_the_backlog_then_its_more_line(self, tmp_path: Path) -> None:
         listed = after(tmp_path, BUILT, None, ["status"])
-        assert from_heading(listed.out, "Backlog (3)", "InProgress (1)") == [
-            "Backlog (3)",
+        assert from_heading(listed.out, "backlog (3)", "in-progress (1)") == [
+            "backlog (3)",
             "> S-0005  []  title 5",
             "  ... 2 more, 0 can start",
         ]
 
     def test_status_lists_the_four_lines_of_completed(self, tmp_path: Path) -> None:
         listed = after(tmp_path, BUILT, None, ["status"])
-        assert len(from_heading(listed.out, "Completed (4)")) == 5
+        assert len(from_heading(listed.out, "completed (4)")) == 5
 
     def test_a_frame_holds_three_headings(self, tmp_path: Path) -> None:
         framed = after(tmp_path, BUILT, None, ["watch", "--count", "1"])
-        assert headings(framed.out) == ["Backlog (3)", "InProgress (1)", "Completed (4)"]
+        assert headings(framed.out) == ["backlog (3)", "in-progress (1)", "completed (4)"]

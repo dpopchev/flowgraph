@@ -25,7 +25,7 @@ BARE = WorkItemDetail("S-0001", "a title", "removed", "", [])
 
 def test_status_lists_a_removed_work_item_as_superseded_by_the_other() -> None:
     assert status_text([removed("")]) == (
-        "Backlog (0)\nInProgress (0)\nCompleted (0)\nRemoved (1)\n"
+        "backlog (0)\nin-progress (0)\ncompleted (0)\nremoved (1)\n"
         "  S-0001  a title\n"
         "  superseded by S-0002\n"
     )

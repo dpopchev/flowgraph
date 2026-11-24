@@ -21,9 +21,9 @@ CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "a title", *CRITERION]
 ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
 LONG = "a title that is much longer than a terminal of forty columns is wide"
-IN_BACKLOG = "Backlog (1)\n> S-0001  []  a title\nInProgress (0)\nCompleted (0)\n"
+IN_BACKLOG = "backlog (1)\n> S-0001  []  a title\nin-progress (0)\ncompleted (0)\n"
 HELD_IN_BACKLOG = IN_BACKLOG.replace("[]", "[1 T]")
-IN_PROGRESS = "Backlog (0)\nInProgress (1)\n  S-0001  0/1 T  a title\nCompleted (0)\n"
+IN_PROGRESS = "backlog (0)\nin-progress (1)\n  S-0001  0/1 T  a title\ncompleted (0)\n"
 
 # What a terminal reads as: put the cursor home and clear the screen.
 CLEAR = "\x1b[H\x1b[2J"
@@ -143,7 +143,7 @@ def test_on_a_terminal_watch_cuts_a_frame_taller_than_it_and_names_the_lines_lef
 ) -> None:
     watched = fgraph(["watch", "--all", "--count", "1"], six_in_backlog, width=80, height=6)
     assert watched.out == (
-        f"{CLEAR}Backlog (6)\n> S-0001  []  a title\n  S-0002  []  a title\n  S-0003  []  a title\n"
+        f"{CLEAR}backlog (6)\n> S-0001  []  a title\n  S-0002  []  a title\n  S-0003  []  a title\n"
         "... 5 more lines\n"
     )
 

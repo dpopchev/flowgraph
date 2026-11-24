@@ -18,7 +18,7 @@ def line(item: str, *governs: str) -> KnowledgeEntry:
 
 
 def task(expected_output: str, description: str = "") -> TaskRow:
-    return TaskRow("T-0001", "a title", expected_output, description, "Backlog")
+    return TaskRow("T-0001", "a title", expected_output, description, "backlog")
 
 
 def kept(entries: list[KnowledgeEntry], tasks: list[TaskRow]) -> list[str]:

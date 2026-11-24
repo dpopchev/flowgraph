@@ -88,7 +88,7 @@ def test_a_blocked_task_is_shown_in_inprogress_as_blocked_with_its_reason() -> N
     )
     assert show_text(detail).splitlines()[-6:] == [
         "  T-0004  a task",
-        "    bucket           InProgress, blocked",
+        "    bucket           in-progress, blocked",
         "    reason           a reason",
         "    waiting on       someone",
         "    expected output  an output",

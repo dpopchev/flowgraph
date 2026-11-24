@@ -93,7 +93,7 @@ class TestATaskAddedToAStoryInBacklog:
     def test_show_lists_the_task_inside_the_story(self, added: tuple[Outcome, Outcome]) -> None:
         assert added[1].out == (
             "S-0001  a title\n"
-            "  bucket       Backlog\n"
+            "  bucket       backlog\n"
             "  given        a state\n"
             "  when         an action\n"
             "  then         another\n"
@@ -109,7 +109,7 @@ def test_show_lists_the_descriptions_of_a_story_and_its_task() -> None:
     fgraph([*ADD_TASK, "--description", "how"], saved)
     assert fgraph(["show", "S-0001"], saved).out == (
         "S-0001  a title\n"
-        "  bucket       Backlog\n"
+        "  bucket       backlog\n"
         "  description  why\n"
         "  given        a state\n"
         "  when         an action\n"

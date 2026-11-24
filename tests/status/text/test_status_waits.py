@@ -34,7 +34,7 @@ def test_a_work_item_in_backlog_that_waits_for_nothing_carries_no_mark() -> None
 
 
 def test_a_feature_in_backlog_whose_first_work_item_waits_is_marked_as_it_is() -> None:
-    feature = FeatureRow("F-0001", "a feature", "Backlog", 0, 2, waits_for=["S-0001"])
+    feature = FeatureRow("F-0001", "a feature", "backlog", 0, 2, waits_for=["S-0001"])
     assert status_text([feature]).splitlines()[1:3] == [
         "~ F-0001  0/2 W  a feature",
         "  depends on S-0001",

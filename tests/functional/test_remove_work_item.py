@@ -71,11 +71,11 @@ class TestAStoryInBacklogRemovedWithAReason:
         self, removed: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["status"], tmp_path).out == (
-            "Backlog (1)\n"
+            "backlog (1)\n"
             "> S-0002  []  another title\n"
-            "InProgress (0)\n"
-            "Completed (0)\n"
-            "Removed (1)\n"
+            "in-progress (0)\n"
+            "completed (0)\n"
+            "removed (1)\n"
             "  S-0001  a title\n"
             "  filed by mistake\n"
         )
@@ -85,7 +85,7 @@ class TestAStoryInBacklogRemovedWithAReason:
     ) -> None:
         assert fgraph(["show", "S-0001"], tmp_path).out == (
             "S-0001  a title\n"
-            "  bucket       Removed\n"
+            "  bucket       removed\n"
             "  reason       filed by mistake\n"
             "  given        a state\n"
             "  when         an action\n"
@@ -106,7 +106,7 @@ class TestAStartedStoryWithATaskCompletedAndOneInBacklogRemoved:
         assert (removed.status, removed.out) == (0, "removed S-0001\n")
 
     def test_status_lists_it_under_removed(self, removed: Outcome, tmp_path: Path) -> None:
-        assert "Removed (1)\n  S-0001  a title\n  filed by mistake\n" in (
+        assert "removed (1)\n  S-0001  a title\n  filed by mistake\n" in (
             fgraph(["status"], tmp_path).out
         )
 
@@ -115,8 +115,8 @@ class TestAStartedStoryWithATaskCompletedAndOneInBacklogRemoved:
     ) -> None:
         lines = fgraph(["show", "S-0001"], tmp_path).out.splitlines()
         assert [line.split()[-1] for line in lines if line.startswith("    bucket")] == [
-            "Completed",
-            "Removed",
+            "completed",
+            "removed",
         ]
 
 
@@ -163,4 +163,4 @@ def test_a_remove_refused_exits_with_two_and_names_why(
 
 
 def test_status_of_a_record_with_nothing_removed_lists_no_removed_heading(tmp_path: Path) -> None:
-    assert fgraph(["status"], tmp_path).out == "Backlog (0)\nInProgress (0)\nCompleted (0)\n"
+    assert fgraph(["status"], tmp_path).out == "backlog (0)\nin-progress (0)\ncompleted (0)\n"

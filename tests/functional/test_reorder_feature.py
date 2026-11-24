@@ -76,11 +76,11 @@ class TestAFeaturePutBeforeAStoryAddedBeforeIt:
         self, reordered: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["status", "--backlog"], tmp_path, START + timedelta(minutes=1)).out == (
-            "Backlog (2)\n"
+            "backlog (2)\n"
             "  F-0001  0/0 W  a feature title\n"
             "> S-0001  []  a title that stands alone\n"
-            "InProgress (0)\n"
-            "Completed (0)\n"
+            "in-progress (0)\n"
+            "completed (0)\n"
         )
 
 
@@ -101,8 +101,8 @@ class TestAStoryOfAFeaturePutBeforeAnotherOfIt:
         self, reordered: Outcome, tmp_path: Path
     ) -> None:
         assert shown_under_the_feature(tmp_path) == [
-            "  S-0003  another title  Backlog",
-            "  S-0002  a title  Backlog",
+            "  S-0003  another title  backlog",
+            "  S-0002  a title  backlog",
         ]
 
     def test_a_reorder_of_the_feature_afterwards_keeps_the_order_of_its_stories(
@@ -110,8 +110,8 @@ class TestAStoryOfAFeaturePutBeforeAnotherOfIt:
     ) -> None:
         fgraph(REORDER, tmp_path, START + timedelta(seconds=30))
         assert shown_under_the_feature(tmp_path) == [
-            "  S-0003  another title  Backlog",
-            "  S-0002  a title  Backlog",
+            "  S-0003  another title  backlog",
+            "  S-0002  a title  backlog",
         ]
 
     def test_the_queue_file_holds_the_feature_and_its_stories_in_one_list(

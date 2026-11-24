@@ -26,7 +26,7 @@ def started(number: int, *tasks: TaskRow) -> WorkItemRow:
 
 def test_a_removed_task_is_given_no_line_under_its_work_item() -> None:
     gone = TaskRow("T-0005", "a gone task", "an output", "", "removed", reason="not needed")
-    assert status_text([started(1, gone, LATER)]).splitlines()[3:] == ["Completed (0)"]
+    assert status_text([started(1, gone, LATER)]).splitlines()[3:] == ["completed (0)"]
 
 
 def test_the_started_task_is_listed_under_its_work_item_marked_as_the_one_worked() -> None:
@@ -48,16 +48,16 @@ def test_the_tasks_being_worked_are_listed_in_the_order_of_the_file() -> None:
         "    !  T-0002  a held task",
         "       waiting on a reviewer: a reason",
         "    => T-0003  a begun task",
-        "Completed (0)",
+        "completed (0)",
     ]
 
 
 def test_a_task_line_does_not_count_toward_the_top() -> None:
     rows = [started(1, BEGUN), started(2, BEGUN)]
     assert status_text(rows, same_top(1)).splitlines()[1:] == [
-        "InProgress (2)",
+        "in-progress (2)",
         "  S-0001  0/1 T  title 1",
         "    => T-0003  a begun task",
         "  ... 1 more",
-        "Completed (0)",
+        "completed (0)",
     ]

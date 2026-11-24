@@ -238,6 +238,6 @@ class TestAThirdStoryHandedThenLanded:
         self, landed: Outcome, started: Path
     ) -> None:
         assert shown(started, "bucket", "agent") == [
-            "  bucket       Completed",
+            "  bucket       completed",
             "  agent        opus-b2",
         ]

@@ -82,7 +82,7 @@ class TestAStartedSpikeWhoseTaskIsCompletedCompletedWithACommitAndItsDecision:
     ) -> None:
         assert fgraph(["show", "Q-0001"], tmp_path).out.splitlines()[:5] == [
             "Q-0001  a spike title",
-            "  bucket       Completed",
+            "  bucket       completed",
             "  commit       def5678",
             "  hypothesis   Can one file per item hold the record?",
             "  decision     yes: one file per work item, its Tasks inside",
@@ -92,7 +92,7 @@ class TestAStartedSpikeWhoseTaskIsCompletedCompletedWithACommitAndItsDecision:
         self, completed: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["status"], tmp_path).out == (
-            "Backlog (0)\nInProgress (0)\nCompleted (1)\n  Q-0001  def5678  a spike title\n"
+            "backlog (0)\nin-progress (0)\ncompleted (1)\n  Q-0001  def5678  a spike title\n"
         )
 
 
@@ -100,7 +100,7 @@ def test_a_spike_in_backlog_is_shown_with_its_hypothesis_alone(tmp_path: Path) -
     runs(tmp_path, ADD_STORY, ADD_SPIKE)
     assert fgraph(["show", "Q-0001"], tmp_path).out == (
         "Q-0001  a spike title\n"
-        "  bucket       Backlog\n"
+        "  bucket       backlog\n"
         "  hypothesis   Can one file per item hold the record?\n"
         "Tasks (0)\n"
     )

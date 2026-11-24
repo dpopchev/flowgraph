@@ -106,7 +106,7 @@ def test_show_lists_the_line_of_the_task_under_it_and_that_of_the_item_last(
     assert outcome.out.endswith(
         "Tasks (1)\n"
         "  T-0001  a task title\n"
-        "    bucket           InProgress\n"
+        "    bucket           in-progress\n"
         "    expected output  an output\n"
         "    progress         2026-01-01  red: 1 failed\n"
         "Progress (1)\n"

@@ -28,7 +28,7 @@ def test_a_removed_task_is_shown_in_removed_with_its_reason() -> None:
     gone = TaskRow("T-0001", "a task", "an output", "", "removed", reason="not needed")
     assert shown(gone) == [
         "  T-0001  a task",
-        "    bucket           Removed",
+        "    bucket           removed",
         "    reason           not needed",
         "    expected output  an output",
     ]

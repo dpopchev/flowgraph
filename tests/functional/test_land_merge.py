@@ -185,7 +185,7 @@ class TestAStoryLandedBySquash:
     ) -> None:
         commit = git(ready, "rev-parse", "--short", "HEAD~1")
         assert fgraph(["status"], ready).out == (
-            f"Backlog (0)\nInProgress (0)\nCompleted (1)\n  S-0001  {commit}  {TITLE}\n"
+            f"backlog (0)\nin-progress (0)\ncompleted (1)\n  S-0001  {commit}  {TITLE}\n"
         )
 
     def test_the_worktree_of_the_branch_is_removed(self, landed: Landed, tmp_path: Path) -> None:
@@ -229,7 +229,7 @@ class TestAStoryLandedByFastForward:
     ) -> None:
         tip = git(forward, "rev-parse", "--short", landed.tip)
         assert fgraph(["status"], forward).out == (
-            f"Backlog (0)\nInProgress (0)\nCompleted (1)\n  S-0001  {tip}  {TITLE}\n"
+            f"backlog (0)\nin-progress (0)\ncompleted (1)\n  S-0001  {tip}  {TITLE}\n"
         )
 
     def test_the_worktree_of_the_branch_is_removed(self, landed: Landed, tmp_path: Path) -> None:

@@ -6,15 +6,21 @@ false`. The development -- the branch and the worktree of a start, the scoping o
 landing -- is off unless `[development] enabled = true`. The layers build on each other: the
 branch of a work item carries its record, so the development needs the commits. `[development]
 parallel` is the most work items started at once; it has no default, so left out nothing limits
-them. `[development] merge` is how a landing merges: `merge-commit` unless it names `squash` or
-`fast-forward`. `[development] gate` is the one command line a landing runs before main moves;
-it has no default either, so left out a landing runs none. `[development] driver` names who
-drives the development: `developer` unless it names `agent`. `[delivery] push = true` pushes main
-once a landing is whole; it is false by default. `[delivery] tag` tags main with its version at
-`feature-close`, `close` (a work item alone too) or never, `none`, the default. `[archive] board`
-is the path of the `.board/` of board 1 the record points at, with no default, so left out the
-record points at none. Each layer is a value (`flowgraph.record.layers`); what a file refused
-says is `flowgraph.record.config_refusal`.
+them. `[development] merge` is how a landing merges: `merge-commit` unless it names `squash`,
+`fast-forward` or `pull-request`. `[development] gate` is the one command line a landing runs
+before main moves; it has no default either, so left out a landing runs none. `[development]
+driver` names who drives the development: `developer` unless it names `agent`. `[development]
+mode` is where a work item is developed: `branch` unless it names `trunk`, which makes no branch
+and holds one started work item, so its `parallel` is 1 left out and a number above 1 is
+refused. `[development] branch_max` is an age in whole days, `1d`, with no default: left out no
+age is said. `[development] approver` names who approves a landing: `agent` unless it names
+`developer`, whose landing waits for the developer (`fgraph land --approved`).
+`[delivery] push = true` pushes main once a landing is whole; it is false by
+default. `[delivery] tag` tags main with its version at `feature-close`, `close` (a work item
+alone too) or never, `none`, the default. `[archive] board` is the path of the `.board/` of
+board 1 the record points at, with no default, so left out the record points at none. Each layer
+is a value (`flowgraph.record.layers`); what a file refused says is
+`flowgraph.record.config_refusal`, and the tables of the file are `flowgraph.record.config_file`.
 """
 
 import tomllib
@@ -23,21 +29,22 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import tomli_w
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import ValidationError
 
-from flowgraph.record.archive import Archive, ArchiveTable, make_archive
+from flowgraph.record.archive import Archive, make_archive
+from flowgraph.record.config_file import ConfigFile
 from flowgraph.record.config_refusal import refusal
 from flowgraph.record.layers import (
+    NO_MAX,
     UNGATED,
     UNLIMITED,
     Delivery,
     Development,
-    Driver,
     Gated,
     Git,
-    Merge,
+    MaxDays,
+    Mode,
     Parallel,
-    TagAt,
 )
 
 # The file of the configuration inside a record.
@@ -57,6 +64,15 @@ DEVELOPMENT_PARALLEL = "development.parallel"
 
 # The key that names who drives the development, as a refusal names it.
 DEVELOPMENT_DRIVER = "development.driver"
+
+# The key that says where a work item is developed, as a refusal names it.
+DEVELOPMENT_MODE = "development.mode"
+
+# The key that sets the age a branch passes before status says so, as a refusal names it.
+DEVELOPMENT_BRANCH_MAX = "development.branch_max"
+
+# The key that names who approves a landing, as a refusal names it.
+DEVELOPMENT_APPROVER = "development.approver"
 
 # The key that turns the commits of the record off, as a refusal names it.
 GIT_COMMIT = "git.commit"
@@ -96,61 +112,17 @@ class ConfigError(ValueError):
     """A config.toml that holds no configuration; names the table or the key refused."""
 
 
-class _Table(BaseModel):
-    """A table of the file: it takes the keys it names alone, each a value of its type as written.
-
-    Strict, so that no value is read as another type: `"yes"` and `1` are no `true`.
-    """
-
-    model_config = ConfigDict(extra="forbid", strict=True)
-
-
-class _GitTable(_Table):
-    """What `[git]` holds; a key left out is its default."""
-
-    commit: bool = True
-
-
-class _DevelopmentTable(_Table):
-    """What `[development]` holds; a key left out is its default."""
-
-    enabled: bool = False
-    parallel: int | None = Field(default=None, ge=1)
-    # Not strict, so that the word of the file is read as the way of merging it names.
-    merge: Merge = Field(default=Merge.MERGE_COMMIT, strict=False)
-    # A text that holds a character other than a blank: an empty command line runs nothing.
-    gate: str | None = Field(default=None, pattern=r"\S")
-    # Not strict, so that the word of the file is read as the driver it names.
-    driver: Driver = Field(default=Driver.DEVELOPER, strict=False)
-
-
-class _DeliveryTable(_Table):
-    """What `[delivery]` holds; a key left out is its default."""
-
-    push: bool = False
-    # Not strict, so that the word of the file is read as the closes it names.
-    tag: TagAt = Field(default=TagAt.NONE, strict=False)
-
-
-class _ConfigFile(_Table):
-    """What the file holds: a table per layer; a table left out holds its defaults."""
-
-    git: _GitTable = _GitTable()
-    development: _DevelopmentTable = _DevelopmentTable()
-    delivery: _DeliveryTable = _DeliveryTable()
-    archive: ArchiveTable = ArchiveTable()
-
-
 def make_config(text: str) -> Config:
     """The configuration the text of a config.toml holds; a key it leaves out is its default.
 
     Raises ConfigError naming the first table or key the configuration does not have, or whose
     value is of another type than the key takes, a count below 1, no way of merging, a blank
-    gate, a blank archive path or no word of a tag, and when the text is no TOML; naming both
-    keys when it turns the development on with the commits off.
+    gate, a blank archive path, no word of a tag or no age in days, and when the text is no TOML;
+    naming both keys when it turns the development on with the commits off, or the trunk with a
+    parallel above 1; on the trunk the parallel left out is 1, with the development off too.
     """
     try:
-        held = _ConfigFile.model_validate(tomllib.loads(text))
+        held = ConfigFile.model_validate(tomllib.loads(text))
     except tomllib.TOMLDecodeError as error:
         raise ConfigError(f"no TOML: {error}") from error
     except ValidationError as error:
@@ -162,12 +134,23 @@ def make_config(text: str) -> Config:
         )
     most = held.development.parallel
     command = held.development.gate
+    mode = held.development.mode
+    if mode is Mode.TRUNK and most not in (None, 1):
+        raise ConfigError(
+            f"{DEVELOPMENT_PARALLEL} is {most} while {DEVELOPMENT_MODE} is trunk:"
+            " the trunk holds one started work item at a time"
+        )
+    limit = UNLIMITED if most is None else Parallel(most)
+    age = held.development.branch_max
     development = Development(
         enabled=held.development.enabled,
-        parallel=UNLIMITED if most is None else Parallel(most),
+        parallel=Parallel(1) if mode is Mode.TRUNK else limit,
         merge=held.development.merge,
         gate=UNGATED if command is None else Gated(command),
         driver=held.development.driver,
+        mode=mode,
+        branch_max=NO_MAX if age is None else MaxDays(int(age.removesuffix("d"))),
+        approver=held.development.approver,
     )
     delivery = Delivery(push=held.delivery.push, tag=held.delivery.tag)
     git = Git(commit=held.git.commit)

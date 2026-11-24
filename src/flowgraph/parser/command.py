@@ -130,6 +130,8 @@ def _written(
                 about_asked(args.about, store),
                 _complexity_asked(args.complexity),
                 realizes_asked(args.realizes),
+                args.output,
+                args.check,
             )
             return amend_named(args.id, parts, args.criterion, store)
         case "complete" if is_feature_id(args.id):

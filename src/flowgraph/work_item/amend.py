@@ -45,7 +45,8 @@ class Amendment:
     replace those it had; none given takes them all away. The terms it is about replace those it
     had too, none given as well. The complexity given replaces the one it had; none given keeps it.
     The criterion it realizes given replaces the one it had, NO_CRITERION takes it away and none
-    given keeps it, unless the parent changes, which drops it.
+    given keeps it, unless the parent changes, which drops it. The output and the check are the
+    parts of a Task, which fgraph amend takes too; a work item refuses them.
     """
 
     title: str | None = None
@@ -61,6 +62,8 @@ class Amendment:
     about: tuple[str, ...] | None = None
     complexity: Complexity | None = None
     realizes: Realizes | None = None
+    output: str | None = None
+    check: str | None = None
 
 
 # Check the move of the work item of that id from the parent it had to the one an amend names;
@@ -78,6 +81,10 @@ PARTS: Mapping[type[Criterion], tuple[str, ...]] = {
     Defect: ("observed", "expected"),
     Hypothesis: ("hypothesis",),
 }
+
+
+# The parts of an amendment that only a Task states.
+TASK_PARTS = ("output", "check")
 
 
 class NoPartError(ValueError):
@@ -141,6 +148,9 @@ def amended_work_item(item: WorkItemState, amendment: Amendment) -> WorkItem:
     named = work_item_id_text(item.id)
     match item:
         case WorkItem():
+            given = tuple(part for part in TASK_PARTS if getattr(amendment, part) is not None)
+            if given:
+                raise NoSuchPartError(f"{named} has no {_listed(given)}: only a Task states them")
             if amendment == Amendment():
                 raise NoPartError(f"amend rewrites no part of {named}: name one")
             criterion = _amended_criterion(named, item.criterion, amendment)

@@ -144,7 +144,8 @@ without `--check` is refused with exit 2 naming it. With the development off it
 is refused, naming `development.enabled`. A blank one is refused where the Task
 is built. It is kept in the file of the work item, listed by `fgraph show`
 under the Task, and carried by every move of the Task. A Task written before
-holds none and is read as before. `complete` runs it (Persistence).
+holds none and is read as before. `complete` runs it (Persistence). An amend of
+the Task in Backlog rewrites it (S-0144).
 
 A Story, a Bug, an Upkeep and a Spike carry a complexity: `low`, `medium` or
 `high`, none when it is left out, the reading of S-0112. It is set by `fgraph
@@ -179,7 +180,7 @@ the work item and of the Task, and is never amended or removed (S-0143).
 
 A completed Story, Bug or Upkeep also holds the answer of its closing once it
 is verified, none before. It is its own fact, a `Verification` of the
-completed work item and never a knowledge line: the answer, yes so far, the
+completed work item and never a knowledge line: the answer, yes or no, the
 text the run of its criterion printed and the time. The question per kind is
 the one its criterion states: for a Story, does the Then hold on the trunk; for
 a Bug, is the expected seen; for an Upkeep, does it still hold. A Spike is not
@@ -460,7 +461,10 @@ of work item. The developer said so on 2026-11-21.
   columns further in -- `    S-0001  1/3 T  <title>`, then
   `      => T-0001  <title>` -- the last started first. Those lines belong to
   the Feature: they count neither toward the top 5 of the heading nor in the
-  count beside it.
+  count beside it. A completed work item of a Feature in progress stays listed under it,
+  after the started ones and those that can start, in the order `fgraph show` lists them,
+  as `    S-0001  2/2 T  <title>`: its id, its Tasks completed of all and its title, with no
+  commit and no Task below it.
 - `fgraph status` marks a Feature blocked while a started work item of it
   holds a blocked Task (S-0055), the developer's words of 2026-11-21, "a
   Feature can be blocked, or gets blocked when its child work item is
@@ -549,8 +553,7 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
   text: a blank one clears it.
 - An amendment that names no part is refused.
 - Only a work item in Backlog is amended: a started or a completed one is
-  refused, since its wording is what the work was started on. A Task is not
-  amended yet.
+  refused, since its wording is what the work was started on.
 - Its parent is a part too, the reading of S-0059: `--parent F-0001` puts the
   work item under that Feature and `--parent none` takes it out to stand
   alone, alone or beside the other parts. It is still no move of the work
@@ -611,6 +614,31 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
   and `--criterion` given to a work item is refused the other way round,
   `S-0001 has no criteria: only a Feature states them`. Nothing is written
   then, the other parts named beside it neither.
+- A Task in Backlog is amended too, the reading of S-0144: `amend` of its id
+  rewrites its title (`--title`), its output (`--output`), its check
+  (`--check`) and its description (`--description`), one alone or several
+  together, each through the constructor an `add` uses, so a blank title,
+  output or check is refused and a blank description clears it. It is no move
+  of the Task: its id, its created time, its state and its place among the
+  Tasks stay. It is one write of the file of the work item that holds it,
+  saved whole.
+- The work items that take it are those that take a new Task: one in Backlog,
+  started or blocked; a completed or a removed one refuses. A Task that is not
+  in Backlog is refused naming its state, `T-0001 is started already`,
+  `T-0001 is blocked`, `T-0001 is completed already`. A part that is no part
+  of a Task is refused naming it, `T-0001 has no then: a Task is amended by
+  its title, its output, its check and its description`, and `--output` or
+  `--check` given to a work item the other way round, `S-0001 has no output:
+  only a Task states them`. An amendment that names no part is refused, `amend
+  rewrites no part of T-0002: name one`. Nothing is written then.
+- Its check follows the add of a Task: with the development off a check given
+  is refused in the words of the add, `a Task takes no --check: the
+  development is off -- set development.enabled = true in <file>`; with it on
+  a check given is kept; and none is asked of an amend that names none, since
+  an amend keeps the parts not given. It is committed as `chore: amend T-0001
+  of S-0001 in the record`. With the development on a Task in Backlog of a
+  started work item is amended in the worktree of that work item and refused
+  on `main` naming it, as every write of its Tasks is.
 
 ## Depends on
 
@@ -1027,7 +1055,8 @@ that holds nothing is `null`, never an empty text; a list that holds nothing is 
   work item under it as a work item above, in any state -- Backlog, started, blocked,
   completed or removed -- in the order `fgraph show` of the Feature lists them (the reading
   of T-0370: the hook that parses the document cannot ask again). The text lists the
-  started ones alone; the document lists all of them, and `progress` counts them as before.
+  started ones and, under a Feature in progress, the completed ones; the document lists all
+  of them, and `progress` counts them as before. The JSON does not change with the text (S-0133).
 
 A work item holds its `agent` on every item of a bucket and in the `work_items` of a
 Feature, the reading of S-0113: the name it is handed to, else `null`.
@@ -1152,14 +1181,36 @@ since history is not rewritten, and map to the new ids by the number.
 The record is plain TOML files tracked by git: git is its history, its backup
 and its merge tool.
 
-- `fgraph init` makes the record of a directory: `.fgraph/` in the directory it
-  runs in, or in the one `--dir` names. Inside it writes `config.toml` alone,
+- `fgraph init` makes the record of a directory: with the key `git config
+  fgraph.record` set and no `--dir`, the folder the key names, refused when that
+  folder is there or when its parent is no directory; else `.fgraph/` in the
+  directory it runs in, or in the one `--dir` names. A named folder is
+  committed or not by the rule of any record. Inside it writes `config.toml` alone,
   at the defaults (`[git] commit = true`, `[development] enabled = false`),
   since git commits no empty directory; `items/` comes with the first write. In
   a git work tree it commits that file as one write of the record, `chore: make
   the record`, unless git ignores the record. A directory that holds `.fgraph/`
   or `fgraph/` is refused, exit 2, naming it, and nothing is written; init is
   the one command that runs with no record located.
+- S-0128, the decision of the developer of 2026-11-23 (a key of the git
+  configuration of the clone, no variable of the environment and no file at the
+  root): the record is located in this order: `--dir`, then the folder the key
+  `git config fgraph.record` names, relative to the root of the repository, then
+  `.fgraph/`, then `fgraph/` in the directory it runs in. The developer writes
+  the key; fgraph never does. No key, an empty value and a directory outside a
+  git work tree read nothing, so a record outside git is located as before. A
+  key that names no directory exits 2 with `fgraph: error: git config
+  fgraph.record names <path>, which is no directory -- run fgraph init, or name
+  another with git config fgraph.record PATH`. Worktrees share the
+  configuration of their clone and each reads the folder under its own top, so a
+  tracked record is the directory at the same path inside each worktree, as the
+  bullets on the Task ids and on status already say, while a folder git ignores
+  is in the checkout of main alone and the same command in the worktree of a
+  work item exits 2 naming the key and the path there. fgraph asks git whether a
+  rule names the folder, as for `.fgraph/`, so a record meant to stay untracked
+  is named in `.git/info/exclude` or a `.gitignore` and takes the rules of the
+  bullets starting A record git ignores and With the development on, the start
+  of a work item on an ignored record, both left as written.
 - One directory, `items/`, holds every item: one file per work item with its
   Tasks inside it, named by its id, `items/S-0001.toml`. The prefix of the id
   is the one place that says the kind, so there is no directory per kind.
@@ -1219,14 +1270,17 @@ and its merge tool.
   it as `progress`, with the day and the text, and those of the work item under
   `Progress (n)` after `Knowledge (n)`, with no heading when there is none.
 - The answer of a closing is one `[verified]` table inside the file of a
-  completed work item, with its `answer` (`yes`), its `text` and its `on` time,
-  held only once there is one: a file without it, as every file written before,
-  is read as before, and a Spike's file holding it is refused when read.
+  completed work item, with its `answer` (`yes` or `no`), its `text` and its
+  `on` time, held only once there is one: a file without it, as every file
+  written before, is read as before, and a Spike's file holding it is refused
+  when read.
   `fgraph verify ID --yes TEXT` writes it as one write and one commit,
   `chore: verify S-0001 in the record`, and says `verified S-0001`, on `main`
-  as a note of a completed item is. It is refused, exit 2 and nothing written,
-  for an item not completed, a Spike, a Feature, a Task, an id the record does
-  not hold, a blank text, a second answer and a call without `--yes`.
+  as a note of a completed item is. With `--no TEXT` it writes the answer no and
+  files a Bug in the same write, as Amends states. It is refused, exit 2 and
+  nothing written, for an item not completed, a Spike, a Feature, a Task, an id
+  the record does not hold, a blank text, a second answer and a call with
+  neither or both of `--yes` and `--no`.
   `fgraph show` lists it as `verified`, the answer, the day and the text, after
   the commit.
 - The file of a work item holds the key `complexity` (`low`, `medium` or
@@ -1773,8 +1827,9 @@ and its merge tool.
   line is its id, its progress and its title, `F-0001  1/3 W  <title>`, in
   its bucket (above), placed there as Order says. It is one
   item of that bucket: counted once beside the heading and once toward the
-  top 5. Its work items in Backlog and its completed ones are listed on no
-  line of their own and counted beside no heading; they are counted in its
+  top 5. Its work items in Backlog are listed on no line of their own; the completed ones
+  of a Feature in progress are listed under its line and counted beside no heading, and
+  those of a completed or a removed Feature stay on no line. They are counted in its
   progress, and `fgraph show` of the Feature lists them with their buckets,
   those in Backlog in the order they start in (Order). A started one is
   listed under the line of its Feature (Order), and a removed one keeps its
@@ -1888,9 +1943,23 @@ development too.
   naming the option and the key without it (Evidence).
 - The rules that read a branch `wi/<id>-*` stay as they are: without the
   development `fgraph` makes no such branch, so none scopes a write and no
-  worktree takes the Tasks of a started work item.
+  worktree takes the Tasks of a started work item; on the trunk too no such
+  branch is made.
 - With `enabled = true` the start, the scoping and the landing are as this
   section states them below.
+- `[development] mode` is where a work item is developed, `branch` or `trunk`
+  (S-0096). `branch`, the default, is the development this section states.
+  `trunk` is for a repository whose work tree is the live artifact, the words
+  of the note being work on main, no worktree: a start is committed on `main`
+  and makes no branch and no worktree, the Tasks are started, checked and
+  completed in the checkout of `main`, and the work item is completed with
+  `fgraph complete S-0001 --commit` at the commit of `main` given.
+  `fgraph land` is refused with exit 2 before any git step, `S-0001 cannot
+  land: development.mode = trunk makes no branch to land -- complete it with
+  fgraph complete S-0001 --commit SHA`, so the gate, the push and the tag of
+  the delivery, steps of a landing, are not taken. The model is `Mode` and
+  `branched` of `src/flowgraph/record/layers.py`; a word that is neither is
+  refused naming the key and the two words.
 - The start of a work item is held to `main` with the development on or off,
   and it alone, the reading decided when S-0039 was ordered: no other write of
   a record is held to `main`.
@@ -1898,7 +1967,10 @@ development too.
   whole number of 1 or more. It has no default, decided when S-0044 was
   ordered: left out, nothing limits the started work items. It is a key of
   the development, so it limits nothing with the development off, where it is
-  held as written.
+  held as written. On the trunk it is 1, left out or written 1, and a number
+  above 1 is refused naming both keys, with the line `development.parallel is
+  2 while development.mode is trunk: the trunk holds one started work item at
+  a time`.
 - With the development on and `parallel` set, the start of a work item in
   Backlog is refused with exit 2, nothing written and no branch made, when
   that many work items are started already. The refusal names the key,
@@ -1915,26 +1987,29 @@ development too.
 - The start of a Task is neither counted nor limited by `parallel`: a work
   item has one started Task at a time whatever the key. A work item that is
   not in Backlog is left to the start, which refuses it for its own state.
-- `[development] merge` names how a landing merges, one of three words:
-  `merge-commit`, `squash` or `fast-forward`, the reading of the developer's
-  request for merging strategies taken when S-0043 was ordered. Left out it
-  is `merge-commit`, the one merge a landing made before the key, so a record
-  that names none lands as it did. It is a key of the development, so it says
-  nothing with the development off, where it is held as written. A landing
-  through a pull request is no way of merging: it is left out.
+- `[development] merge` names how a landing merges, one of four words:
+  `merge-commit`, `squash`, `fast-forward` or `pull-request`, the reading of
+  the developer's request for merging strategies taken when S-0043 was
+  ordered. Left out it is `merge-commit`, the one merge a landing made before
+  the key, so a record that names none lands as it did. It is a key of the
+  development, so it says nothing with the development off, where it is held
+  as written. `pull-request` leaves the merge to a pull request on the host of
+  the remote (S-0097).
 - What `main` gains by each: by `merge-commit` one merge commit of the
   branch, with two parents; by `squash` one commit of its own alone that
   holds the work of the branch, with one parent, so `main` holds none of the
   commits of the branch; by `fast-forward` no new commit, `main` moved to the
-  tip of the branch. `--message` words the commit a `merge-commit` or a
-  `squash` makes and is needed by both; a `fast-forward` makes none to word
-  and is refused with one. Both refusals exit 2 naming the option and the
-  key, `development.merge`, before any git step.
+  tip of the branch; by `pull-request` nothing from the landing itself.
+  `--message` words the commit a `merge-commit` or a `squash` makes and is
+  needed by both; a `fast-forward` or a `pull-request` makes none to word and
+  is refused with one. Both refusals exit 2 naming the option and the key,
+  `development.merge`, before any git step.
 - The way of merging is a closed set in the model (`Merge`,
   `src/flowgraph/record/layers.py`), and a landing is built from it with its message
-  as one of three values -- `MergeCommit` and `Squash`, each with the
-  message, and `FastForward`, with none (`src/flowgraph/development/way.py`) -- so a
-  fast-forward with a message and a commit without one cannot be built.
+  as one of four values -- `MergeCommit` and `Squash`, each with the
+  message, and `FastForward` and `PullRequest`, with none
+  (`src/flowgraph/development/way.py`) -- so a fast-forward with a message and a
+  commit without one cannot be built.
 - `[development] gate` names one command of the record, a command line run
   at a landing. It is the reading, decided when S-0042 was ordered, of the
   developer's words of 2026-11-21 on starting a work item, "checks if
@@ -1952,6 +2027,39 @@ development too.
   complexity is refused with exit 2, nothing written: `S-0002 has no complexity
   to start with: set it with fgraph amend S-0002 --complexity low, medium or
   high`. Which model a complexity maps to stays outside fgraph.
+- `[development] branch_max` is an age, a whole number of days of 1 or more
+  written with d, as `"1d"` (S-0098). It has no default: left out, nothing is
+  said. With the development on, by a branch, `fgraph status` and each frame of
+  `fgraph watch` end the line of a work item in InProgress, started or blocked,
+  alone or under its Feature, with `-- its branch is older than 1d` once more
+  than that many days have passed since its start. The age is read from the
+  started time of the record at each listing and kept in no file. It is said and
+  never refused -- no start, no Task and no landing is held -- the reading taken
+  when S-0098 was ordered, the note of F-0012 naming the key alone; board 1
+  warned on the oldest commit of the branch that main lacks, read from git,
+  which is not taken. It says nothing with the development off, on the trunk and
+  for a work item in any other bucket, and the JSON document of status does not
+  list it. A value that is no age is refused with the line
+  `development.branch_max is "soon": it takes a whole number of days of 1 or
+  more, as 1d`. The model is `MaxDays`, `NoMax` and `BranchMax` of
+  `src/flowgraph/record/layers.py`, the marking `aged` of
+  `src/flowgraph/development/branch_age.py`.
+- `[development] approver` names who approves a landing: `agent` by default, or
+  `developer` (the enum `Approver` of `src/flowgraph/record/layers.py`). Under
+  agent a landing is taken as before. Under developer, with the development on,
+  `fgraph land` of a work item exits 2 before any git step, nothing merged and
+  nothing written, with the line `S-0001 cannot land: development.approver =
+  developer, the landing waits for the developer -- run fgraph land S-0001
+  --approved once the developer approves it`. `--approved` is how fgraph is told:
+  the flag is the word of the developer, given by whoever runs the command on
+  that word, and nothing of it is kept in the record -- the reading taken when
+  S-0099 was ordered, the note of F-0012 naming the key alone. Every run of
+  `fgraph land` is held, the first run of a landing through a pull request among
+  them (S-0097); `fgraph complete` is no landing and is not held. The key says
+  nothing with the development off and on the trunk, where a landing is refused
+  in its own words; the flag given under agent changes nothing. The model is
+  `Approver` of `src/flowgraph/record/layers.py`, the hold `check_approved` of
+  `src/flowgraph/development/approval.py`.
 - `fgraph land` runs the gate through the shell at the top of the work tree
   of `main`, once the work of the branch is merged there, the merge held
   uncommitted, and before the landing is committed or the work item
@@ -2102,6 +2210,7 @@ held to `main`, and there is no landing:
 | add a work item | `main` |
 | add a Feature | `main` |
 | add a Task to a work item in Backlog | `main` |
+| amend a Task of a work item in Backlog | `main` |
 | reorder the Backlog | `main` |
 | amend a work item in Backlog | `main` |
 | amend a Feature in Backlog | `main` |
@@ -2114,6 +2223,7 @@ held to `main`, and there is no landing:
 | start a work item | `main`: `fgraph` commits it and makes its branch |
 | start a Feature | `main`: `fgraph` commits it with its first work item and makes the branch of that one |
 | add a Task to a started work item | its branch |
+| amend a Task in Backlog of a started work item | its branch |
 | start, block, unblock, complete and remove its Tasks | its branch |
 | hand a started work item to an agent | its branch: `fgraph hand` in its worktree, or from `main` with `--dir` on the record of that worktree |
 | block and unblock a started work item | its branch: `fgraph block` and `fgraph unblock` in its worktree, or from `main` with `--dir` on the record of that worktree |
@@ -2229,7 +2339,7 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   | add a work item | `chore: add S-0001 in the record` |
   | add a Feature | `chore: add F-0001 in the record` |
   | add a Task | `chore: add T-0001 of S-0001 in the record` |
-  | amend | `chore: amend S-0001 in the record`, `chore: amend F-0001 in the record` for a Feature |
+  | amend | `chore: amend S-0001 in the record`, `chore: amend F-0001 in the record` for a Feature, `chore: amend T-0001 of S-0001 in the record` for a Task |
   | reorder | `chore: reorder S-0002 before S-0001 in the record`, `chore: reorder F-0001 before S-0001 in the record` |
   | start | `chore: start S-0001 in the record`, `chore: start T-0001 of S-0001 in the record`, `chore: start F-0001 in the record` for a Feature and its first work item |
   | hand | `chore: hand S-0001 to opus-b2 in the record` |
@@ -2243,12 +2353,12 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 - A write that leaves its file as it was makes no commit. With the
   development on, completing a Task names the commit of its work, so the
   commit of the record follows it.
-- With the development on, a start of a work item then checks out the branch
-  `wi/<id>-<slug>` at its commit in a new worktree,
+- With the development on and the mode `branch`, a start of a work item then
+  checks out the branch `wi/<id>-<slug>` at its commit in a new worktree,
   `<parent>/<checkout name>.worktrees/<id>-<slug>`. The slug is given with
   `--slug`, else it is the first four words of the title, lower-cased and kept
-  to their letters and digits. With the development off the start ends at its
-  commit. A start whose branch `wi/<id>-<slug>` is there already is refused
+  to their letters and digits. With the development off, and on the trunk, the
+  start ends at its commit. A start whose branch `wi/<id>-<slug>` is there already is refused
   with exit 2 before anything is written, so the work item stays in Backlog,
   `S-0001 cannot start: the branch wi/S-0001-<slug> is there already -- delete it or give another --slug`;
   it holds for a Feature by the branch of its first work item. The developer deletes the branch or gives another `--slug`: the
@@ -2322,6 +2432,28 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   checked, then `main` is moved to the tip of the branch, and the branch is
   removed as a merged one. Either completes the work item at the short sha
   of the commit `main` is then on, with the commit of the record.
+- By `pull-request` the merge held is checked -- the work item completes, the
+  gate passes -- and dropped; the branch is pushed under its own name to the
+  remote `main` tracks (`requested`, `src/flowgraph/development/delivery.py`)
+  and the landing says its three lines, then exits 0 with `main`, the record,
+  the worktree and the branch as they were:
+
+  ```text
+  pushed <branch> to <remote>
+  open its pull request: gh pr create --base main --head <branch>
+  <id> is not completed: run fgraph land <id> again once main holds its pull request merged
+  ```
+
+  fgraph opens no pull request and names `gh pr create` as the command, the
+  smallest reading of the open point of S-0097. Run again while `main` lacks
+  the branch, it pushes again. Run once the branch brings no change to
+  `main` -- the pull request merged and `main` pulled by the developer -- it
+  is taken up as any landing: it completes the work item at the commit
+  `main` is on, commits the record on `main`, removes the worktree and
+  deletes the branch as an unmerged one, since the host may rebase or squash
+  it. fgraph fetches nothing. A `main` that tracks no branch of a remote is
+  refused by git's own words with `-- <branch> is not pushed, <id> is not
+  landed`.
 - The gate of the record, when `[development] gate` names one, is a step of
   every way, run on the merge held once the work item is checked to
   complete: before the commit of a `merge-commit` or a `squash`, and before
@@ -2384,8 +2516,11 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   in the checkout into the commit and drops it with the squash. The merge of
   its own refuses such a checkout, and committed with one parent it holds
   the same work.
-- A landing is refused, with nothing merged, when the development is off,
-  when `--message` is missing for a commit or given to a `fast-forward`,
+- A landing is refused, with nothing merged, when the development is off, on
+  the trunk (`development.mode = trunk makes no branch to land`), when the
+  approver is the developer and `--approved` is not given (before any git step),
+  when `--message` is missing for a commit or given to a `fast-forward` or a
+  `pull-request`,
   when the record is outside a git work tree, when the work tree it runs in
   is not on `main`, when `[delivery] push` is `true` and `main` tracks no
   branch of a remote (B-0023), with the line `<id> cannot land: main tracks no
@@ -2992,10 +3127,10 @@ and `fgraph config show`:
 
 | Board 1 | Records | Closed by |
 |---|---|---|
-| `main`, no branches | cts | S-0096: "no branch and no worktree was made" |
-| `pr` | g, sv | S-0097: "its branch is pushed with a pull request opened" |
-| `branch max 1d` | all but cts | S-0098: "the line of the work item says its branch is older than 1d" |
-| `approver agent`, `approver developer` | all seven | S-0099: "it exits 2 saying the landing waits for the developer" |
+| `main`, no branches | cts | `development.mode = trunk`, S-0096: "no branch and no worktree was made" |
+| `pr` | g, sv | `development.merge = pull-request`, S-0097: "its branch is pushed with a pull request opened" |
+| `branch max 1d` | all but cts | `development.branch_max`, S-0098: "the line of the work item says its branch is older than 1d" |
+| `approver agent`, `approver developer` | all seven | `development.approver` and `--approved`, S-0099: "it exits 2 saying the landing waits for the developer" |
 | `gate`, `lanes 3` | c, cts; c, sv | `development.gate`, `development.parallel`, kept |
 | `tag epic-close`; `tag root-close`; `tag none` | five; c; st | `delivery.tag`, `feature-close`, `close` or `none`; `close` tags a standalone root, S-0123 |
 | `ci pipeline`, `branch ids remote` | g, sv; sv | not filed; external sync is later (F-0007) |

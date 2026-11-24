@@ -62,13 +62,15 @@ def build_command_line() -> CommandLine:
         *DIR,
         type=Path,
         metavar="PATH",
-        help="the record directory, instead of .fgraph/ or else fgraph/ in this directory",
+        help="the record directory, instead of the folder git config fgraph.record names, "
+        ".fgraph/ or else fgraph/ in this directory",
     )
     commands = parser.add_subparsers(dest="command", metavar="COMMAND")
     init = new_command(
         commands,
         "init",
-        "make the record: .fgraph/ in this directory, or in the --dir one, which holds none",
+        "make the record: the folder git config fgraph.record names, else .fgraph/ in this "
+        "directory or in the --dir one",
     )
     add = new_command(commands, "add", "add an item to the record")
     kinds = add_kinds(add.add_subparsers(dest="kind", metavar="KIND", required=True))

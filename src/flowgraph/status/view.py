@@ -6,154 +6,30 @@ InProgress, a completed one of Completed, one never started of the bucket derive
 items.
 """
 
-from collections.abc import Collection, Iterable, Mapping
-from dataclasses import replace
+from collections.abc import Iterable, Mapping
 from datetime import datetime
-from typing import assert_never
 
-from flowgraph.feature import (
-    BlockedFeature,
-    CompletedFeature,
-    Feature,
-    FeatureRow,
-    FeatureState,
-    RemovedFeature,
-    StartedFeature,
-    feature_row,
-)
-from flowgraph.parent import FeatureId, feature_id_text, parse_feature_id
+from flowgraph.feature import FeatureRow
+from flowgraph.parent import parse_feature_id
 from flowgraph.record.queue import Entry, Inside, Line, Placed, queued
-from flowgraph.record.store import KINDS, Store
+from flowgraph.record.store import Store
+from flowgraph.status.buckets import (
+    BACKLOG_BUCKET,
+    COMPLETED_BUCKET,
+    IN_PROGRESS_BUCKET,
+    REMOVED_BUCKET,
+)
 from flowgraph.status.document import JSON, chosen_format, status_json
 from flowgraph.status.next import NEXT_ONLY, StartLimit, with_start_now
+from flowgraph.status.placed import PlacedFeature, placed_features, waiting_features, with_features
+from flowgraph.status.rows import BACKLOG, COMPLETED, backlog_as_added, rows_by_id
 from flowgraph.status.text import cut_lines, status_text
-from flowgraph.status.under import in_show_order
 from flowgraph.status.waits import with_waits
-from flowgraph.work_item import IN_PROGRESS, WorkItemId, WorkItemRow, parse_work_item_id
-
-# The state of a row in Backlog, as the record writes it.
-BACKLOG = "backlog"
-
-# The bucket a Feature never started is listed in while its work items are in Backlog.
-BACKLOG_BUCKET = "Backlog"
-
-# The state of a completed row, as the record writes it.
-COMPLETED = "completed"
-
-# The row of a Feature with the time that places it in its bucket.
-type _PlacedFeature = tuple[datetime, FeatureRow]
-
-
-def rows_by_id(store: Store) -> dict[WorkItemId, WorkItemRow]:
-    """The row of every work item in the record under its id, by kind and then by number."""
-    return {
-        parse_work_item_id(kind, row.id): row
-        for kind in KINDS
-        for row in store.find_work_item_rows(kind)
-    }
-
-
-def rows_under(feature: FeatureId, store: Store) -> dict[WorkItemId, WorkItemRow]:
-    """The row of every work item under the Feature under its id, by kind and then by number."""
-    named = feature_id_text(feature)
-    return {item_id: row for item_id, row in rows_by_id(store).items() if row.parent == named}
-
-
-def backlog_as_added(rows: Mapping[WorkItemId, WorkItemRow]) -> list[WorkItemId]:
-    """The work items in Backlog in the order added; those added at one time as the rows list."""
-    backlog = [item_id for item_id, row in rows.items() if row.state == BACKLOG]
-    return sorted(backlog, key=lambda item_id: rows[item_id].created)
-
-
-def _reached(row: WorkItemRow) -> datetime:
-    """The time the work item reached its state: completed, else started, else added."""
-    return row.completed or row.started or row.created
-
-
-def _last_first(rows: Iterable[WorkItemRow], states: Collection[str]) -> list[WorkItemRow]:
-    """The work items in those states, the last to reach one first; those of one time as given."""
-    return sorted((row for row in rows if row.state in states), key=_reached, reverse=True)
-
-
-def _placed_feature(feature: FeatureState, under: Collection[WorkItemRow]) -> _PlacedFeature:
-    """The row of the Feature over its work items, with the time that places it in its bucket.
-
-    The row holds its started work items, the last started first. A completed Feature is placed
-    by its own completed time and a removed one by its removed time. For any other the time is
-    that of its last started work item; with none started that of its last completed one, as
-    under Completed; with neither the time it was added, as in Backlog.
-    """
-    started = _last_first(under, IN_PROGRESS)
-    row = replace(feature_row(feature, [each.state for each in under]), started=started)
-    match feature:
-        case CompletedFeature():
-            return feature.completed, row
-        case RemovedFeature():
-            return feature.removed, row
-        case Feature() | StartedFeature() | BlockedFeature():
-            reached = [_reached(each) for each in started or _last_first(under, (COMPLETED,))]
-            return max(reached, default=feature.created), row
-        case _ as unreachable:
-            assert_never(unreachable)
-
-
-def _placed_features(store: Store, rows: Collection[WorkItemRow]) -> list[_PlacedFeature]:
-    """The Features of the record by number, each placed over the work items under it."""
-    held = sorted(
-        (parse_feature_id(text) for text in store.features.find_feature_ids()),
-        key=lambda feature_id: feature_id.number,
-    )
-    return [
-        _placed_feature(
-            store.features.load_feature(feature_id),
-            [row for row in rows if row.parent == feature_id_text(feature_id)],
-        )
-        for feature_id in held
-    ]
-
-
-def _waiting_features(
-    features: Iterable[_PlacedFeature], rows: Mapping[WorkItemId, WorkItemRow], store: Store
-) -> list[_PlacedFeature]:
-    """The Features given, each carrying its work items and, in Backlog, what its first waits for.
-
-    The first work item is the one its start takes: the first in the queue among those in Backlog.
-    Its work items are every one under it, in the order `fgraph show` of it lists them.
-    """
-    queue = store.load_queue()
-    waiting: list[_PlacedFeature] = []
-    for at, row in features:
-        under = {item_id: each for item_id, each in rows.items() if each.parent == row.id}
-        in_backlog = backlog_as_added(under)
-        first = min(in_backlog, key=queued(queue, in_backlog).index, default=None)
-        listed = first is not None and row.bucket == BACKLOG_BUCKET
-        waits_for = under[first].waits_for if listed and first is not None else []
-        work_items = in_show_order(under, in_backlog, queue)
-        waiting.append((at, replace(row, waits_for=waits_for, work_items=work_items)))
-    return waiting
-
-
-def _with_features(
-    rows: Iterable[WorkItemRow],
-    features: Iterable[_PlacedFeature],
-    bucket: str,
-    *,
-    last_first: bool,
-) -> list[WorkItemRow | FeatureRow]:
-    """The work items given and the Features of that bucket in one list, by the time of each.
-
-    A work item is placed by the time it reached its state. Those of one time keep the order
-    given, the work items before the Features.
-    """
-    placed: list[tuple[datetime, WorkItemRow | FeatureRow]] = [
-        *((_reached(row), row) for row in rows),
-        *((at, row) for at, row in features if row.bucket == bucket),
-    ]
-    return [row for _, row in sorted(placed, key=lambda each: each[0], reverse=last_first)]
+from flowgraph.work_item import IN_PROGRESS, WorkItemId, WorkItemRow
 
 
 def _backlog_lines(
-    alone: Mapping[WorkItemId, WorkItemRow], features: Iterable[_PlacedFeature]
+    alone: Mapping[WorkItemId, WorkItemRow], features: Iterable[PlacedFeature]
 ) -> dict[Placed, WorkItemRow | FeatureRow]:
     """The lines of the Backlog under the id of each, in the order added.
 
@@ -162,7 +38,11 @@ def _backlog_lines(
     """
     added: list[tuple[datetime, Placed, WorkItemRow | FeatureRow]] = [
         *((alone[item_id].created, item_id, alone[item_id]) for item_id in backlog_as_added(alone)),
-        *((at, parse_feature_id(row.id), row) for at, row in features if row.bucket == "Backlog"),
+        *(
+            (at, parse_feature_id(row.id), row)
+            for at, row in features
+            if row.bucket == BACKLOG_BUCKET
+        ),
     ]
     return {placed: row for _, placed, row in sorted(added, key=lambda each: each[0])}
 
@@ -174,7 +54,7 @@ def find_backlog(store: Store) -> list[Entry]:
     added, each inside its Feature: the Feature may have left the Backlog.
     """
     rows = rows_by_id(store)
-    features = _placed_features(store, rows.values())
+    features = placed_features(store, rows.values())
     alone = {item_id: row for item_id, row in rows.items() if not row.parent}
     under = {item_id: row for item_id, row in rows.items() if row.parent}
     inside = [
@@ -200,14 +80,14 @@ def status_rows(store: Store, limit: StartLimit = NEXT_ONLY) -> list[WorkItemRow
     since no line of a Feature lists it.
     """
     rows = with_waits(rows_by_id(store))
-    features = _waiting_features(_placed_features(store, rows.values()), rows, store)
+    features = waiting_features(placed_features(store, rows.values()), rows, store)
     held = {row.id for _, row in features}
     alone = {item_id: row for item_id, row in rows.items() if row.parent not in held}
     backlog = _backlog_lines(alone, features)
     in_queue = queued(store.load_queue(), backlog)
     started = [row for row in alone.values() if row.state in IN_PROGRESS]
     completed = [row for row in alone.values() if row.state == COMPLETED]
-    gone = [row for _, row in features if row.bucket == "Removed"]
+    gone = [row for _, row in features if row.bucket == REMOVED_BUCKET]
     with_them = {row.id for row in gone}
     removed = [
         row
@@ -217,8 +97,8 @@ def status_rows(store: Store, limit: StartLimit = NEXT_ONLY) -> list[WorkItemRow
     taken = sum(row.state in IN_PROGRESS for row in rows.values())
     listed = [
         *(backlog[placed] for placed in in_queue),
-        *_with_features(started, features, "InProgress", last_first=True),
-        *_with_features(completed, features, "Completed", last_first=True),
+        *with_features(started, features, IN_PROGRESS_BUCKET, last_first=True),
+        *with_features(completed, features, COMPLETED_BUCKET, last_first=True),
         *removed,
         *gone,
     ]

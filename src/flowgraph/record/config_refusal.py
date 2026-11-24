@@ -8,7 +8,7 @@ from enum import Enum
 
 from pydantic import ValidationError
 
-from flowgraph.record.layers import Driver, Merge, TagAt
+from flowgraph.record.layers import Approver, Driver, Merge, Mode, TagAt
 
 # What a count takes, whether its value is no whole number or one below 1.
 _COUNT = "a whole number of 1 or more"
@@ -37,14 +37,19 @@ _TAKES = {
 _WORDS = {
     "development.merge": _one_of(Merge),
     "development.driver": _one_of(Driver),
+    "development.mode": _one_of(Mode),
     "delivery.tag": _one_of(TagAt),
+    "development.approver": _one_of(Approver),
 }
 
 # What the archive board takes, whether its value is no text or a blank one.
 _PATH = "a path"
 
 # What a key takes whatever the type of its error, by the dotted key; it wins over _TAKES.
-_TAKES_BY_KEY = {"archive.board": _PATH}
+_TAKES_BY_KEY = {
+    "archive.board": _PATH,
+    "development.branch_max": "a whole number of days of 1 or more, as 1d",
+}
 
 
 def refusal(error: ValidationError) -> str:

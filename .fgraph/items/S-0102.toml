@@ -15,6 +15,11 @@ depends_on = [
     "S-0146",
 ]
 
+[verified]
+answer = "yes"
+text = "at d0cfaa7 on main, the merge of wi/S-0102-raise-the-knowledge-lines, on a throwaway record with a Story: fgraph note S-0001 --finding the queue is one file --open exit 0 printed noted S-0001; with a decision noted --standing and a finding with no mark, fgraph show S-0001 lists the first with (open), the second with (standing) and the third bare, and fgraph knowledge lists the three the same way, newest first; --standing with --open is refused by the parser, not allowed with argument --standing. make check on the tree of the landing, the branch with main merged by fgraph sync at b50e44e: 4345 passed, all checks passed. The landing started S-0103, the next work item of F-0014. Handed whole to one subagent on sonnet, no deviation; the parsers of note and knowledge moved to src/flowgraph/parser/knowledge.py, src/flowgraph/parser/item_commands.py at 220 lines. Found by it and run again by the coordinator: fgraph note S-0001 --progress half way --standing exits 0 and keeps the progress line with no mark, filed as a Bug during this Story."
+on = 2026-11-24 07:06:51+00:00
+
 [criterion]
 given = "a record with a Story"
 when = "a finding is noted on it as open"

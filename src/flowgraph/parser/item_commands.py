@@ -3,6 +3,7 @@
 import argparse
 
 from flowgraph.graph import JSON
+from flowgraph.parser.amend import amend_command
 from flowgraph.parser.base import Commands, new_command
 from flowgraph.parser.brief import brief_command
 from flowgraph.parser.knowledge import knowledge_command, note_command
@@ -22,39 +23,7 @@ ANSWERS = ("yes", "no")
 
 def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     """The parser of each command that reads or moves an item of the record, under its name."""
-    amend = new_command(commands, "amend", "rewrite parts of a work item or a Feature in Backlog")
-    amend.add_argument("id", metavar="ID", help="the id of the work item or of the Feature")
-    amend.add_argument("--title", metavar="TEXT", help="what is true once it is completed")
-    amend.add_argument("--description", metavar="TEXT", help="free text; a blank one clears it")
-    amend.add_argument("--complexity", metavar="WORD", help="low, medium or high, in Backlog alone")
-    amend.add_argument(
-        "--criterion",
-        action="append",
-        metavar="TEXT",
-        help="what the user experiences, of a Feature; once per criterion, in place of its own",
-    )
-    amend.add_argument("--given", metavar="STATE", help="the initial state")
-    amend.add_argument("--when", metavar="ACTION", help="the action")
-    amend.add_argument("--then", metavar="STATE", help="the expected state")
-    amend.add_argument("--observed", metavar="TEXT", help="what happens, of a Bug")
-    amend.add_argument("--expected", metavar="TEXT", help="what we wish to see, of a Bug")
-    amend.add_argument("--hypothesis", metavar="TEXT", help="the question, of a Spike")
-    amend.add_argument(
-        "--parent", metavar="ID", help="the Feature to put it under, or none to stand alone"
-    )
-    amend.add_argument("--realizes", metavar="N", help="the criterion it realizes: N or none")
-    amend.add_argument(
-        "--depends-on",
-        action="append",
-        metavar="ID",
-        help="a work item it waits for, once per id, in place of its own; none takes them away",
-    )
-    amend.add_argument(
-        "--about",
-        action="append",
-        metavar="TERM",
-        help="a term it is about, once per term, in place of its own; none takes them away",
-    )
+    amend = amend_command(commands)
     show = new_command(commands, "show", "show a work item with its Tasks, a Feature or a term")
     show.add_argument(
         "id",
@@ -101,7 +70,12 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     land.add_argument(
         "--message",
         metavar="TEXT",
-        help="the message of the commit the landing makes: needed unless it lands by fast-forward",
+        help="the message of the commit the landing makes: needed by merge-commit and by squash",
+    )
+    land.add_argument(
+        "--approved",
+        action="store_true",
+        help="the developer approved the landing: needed under development.approver = developer",
     )
     land.add_argument("--decision", metavar="TEXT", help="what answers the hypothesis, of a Spike")
     land.add_argument(

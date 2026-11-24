@@ -219,6 +219,7 @@ def test_a_feature_in_progress_is_placed_by_its_last_started_work_item_listed_un
         "  F-0001  1/4 W  feature 1\n"
         "    S-0003  0/0 T  title 3\n"
         "    S-0002  0/0 T  title 2\n"
+        "    S-0005  0/0 T  title 5\n"
         "  S-0001  0/0 T  title 1\n"
         "Completed (0)\n"
     )
@@ -233,9 +234,10 @@ def test_a_feature_in_progress_with_no_started_work_item_is_placed_by_its_last_c
         story(3, "backlog", "F-0001"),
         story(4, "started", started=DAY[5]),
     ]
-    assert status_item(store(rows, [feature(1)])).splitlines()[2:5] == [
+    assert status_item(store(rows, [feature(1)])).splitlines()[2:6] == [
         "  S-0004  0/0 T  title 4",
         "  F-0001  1/2 W  feature 1",
+        "    S-0002  0/0 T  title 2",
         "  S-0001  0/0 T  title 1",
     ]
 
@@ -282,6 +284,7 @@ def test_a_started_feature_whose_work_items_are_all_completed_or_removed_stays_i
         "Backlog (0)\n"
         "InProgress (1)\n"
         "  F-0001  1/1 W  feature 1\n"
+        "    S-0001  0/0 T  title 1\n"
         "Completed (0)\n"
         "Removed (1)\n"
         "  S-0002  title 2  -- a reason\n"

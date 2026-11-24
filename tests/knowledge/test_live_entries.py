@@ -1,4 +1,4 @@
-"""The live lines of a record: those no later line supersedes, and the text that says there are none."""
+"""The live lines of a record: those no later line supersedes, and the text for none of them."""
 
 from datetime import UTC, datetime
 
@@ -45,9 +45,7 @@ def test_an_entry_that_names_a_ref_no_entry_has_changes_nothing() -> None:
 
 
 def test_live_text_of_no_entry_says_there_are_no_live_knowledge_lines() -> None:
-    assert knowledge_text([], None, None, None, True) == (
-        "no live knowledge lines in the record\n"
-    )
+    assert knowledge_text([], None, None, None, True) == ("no live knowledge lines in the record\n")
 
 
 def test_live_text_of_no_entry_with_a_kind_and_a_term_names_all_three() -> None:

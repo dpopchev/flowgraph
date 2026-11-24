@@ -130,9 +130,7 @@ class TestALiveListNarrowedToFindings:
 
 
 class TestALineOfAnotherItemSupersedingALiveLine:
-    def test_live_lists_the_decision_that_supersedes_the_open_finding(
-        self, tmp_path: Path
-    ) -> None:
+    def test_live_lists_the_decision_that_supersedes_the_open_finding(self, tmp_path: Path) -> None:
         record(tmp_path, [*RECORD, FEATURE, FEATURE_SUPERSEDES])
         assert fgraph(["knowledge", "--live"], tmp_path).out == (
             "2026-01-05  decision  F-0001#1  the queue is one file\n" + STANDING_LINE

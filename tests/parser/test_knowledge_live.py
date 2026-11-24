@@ -1,4 +1,4 @@
-"""The option --live of knowledge: it lists the live lines alone, and knowledge alone lists every line."""
+"""The option --live of knowledge: the live lines alone; knowledge alone lists every line."""
 
 import pytest
 

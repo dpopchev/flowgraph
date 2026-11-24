@@ -86,3 +86,8 @@ commit = "6b0ec91"
 kind = "decision"
 text = "The developer decided on 2026-11-23, asked before its Tasks were drafted: the whole Backlog is listed with a new flag, --backlog, which leaves the other buckets short; --all still lists every line of every bucket."
 noted = 2026-11-23 20:31:01+00:00
+
+[[knowledge]]
+kind = "deviation"
+text = "The developer agreed on 2026-11-24: one commit on the branch, after its five Tasks, corrects the call status_text([BEGUN, ALONE], top=1) of tests/status/text/test_status_completed_under.py, landed with S-0133 after the Tasks were written, to same_top(1), the edit T-0582 made in the test files it names; no new Task. If the expected lines of that test move too, the work stops and is reported."
+noted = 2026-11-24 10:17:50+00:00

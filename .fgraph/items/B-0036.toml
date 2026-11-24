@@ -31,3 +31,12 @@ description = "src/flowgraph/work_item/moves.py (158 lines, about 162 after; mak
 check = "uv run pytest tests/work_item tests/functional -q -p no:cacheprovider && ! grep -q xfail tests/functional/test_starts_at_one_time.py && make lines"
 expected_output = "changed: started_work_item of src/flowgraph/work_item/moves.py refuses a started work item an agent holds with S-0001 is started already: sonnet-a1 holds it, and one no agent holds with S-0001 is started already, as before; tests/work_item/test_work_item_moves.py states both. No xfail mark is left in tests/functional/test_starts_at_one_time.py"
 created = 2026-11-24 21:20:30+00:00
+
+[[tasks]]
+id = "T-0643"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say a second start names the agent that holds the work item"
+description = "README.md and docs/domain-model.md only; find each passage by grep, never by line number; plain ASCII; keep the words is started already: sonnet-a1 holds it on one line in each file. README.md: in the paragraph starting A start can name the agent the work item is handed to, one sentence -- a second start of a work item an agent holds is refused naming it, and of two starts run at one time one holds it, by the lock of a write (B-0035); in the sh block under it, after the line # fgraph: error: --agent names the agent of a work item: T-0001 is a Task, the lines fgraph start S-0001 --agent opus-b2 and # fgraph: error: S-0001 is started already: sonnet-a1 holds it. docs/domain-model.md: in the bullet starting `fgraph start S-0001 --agent sonnet-a1` names the agent, where it says fgraph start of a work item started already stays refused, add the words of the refusal with the agent, that one no agent holds is refused as before, and that two starts at one time are made one after the other by the lock of the record (B-0035, B-0036). Keep each edit inside its paragraph, bullet or block."
+check = "grep -q \"is started already: sonnet-a1 holds it\" README.md && grep -q \"is started already: sonnet-a1 holds it\" docs/domain-model.md"
+expected_output = "changed: README.md and docs/domain-model.md say a second start of a work item an agent holds is refused naming the agent, with the refusal S-0001 is started already: sonnet-a1 holds it, and that of two starts run at one time one holds the work item"
+created = 2026-11-24 21:20:37+00:00

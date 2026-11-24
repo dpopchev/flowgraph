@@ -10,6 +10,7 @@ from flowgraph.item.held_time import HeldTime
 from flowgraph.task import (
     BlockedTask,
     CompletedTask,
+    RemovedTask,
     StartedTask,
     Task,
     TaskRow,
@@ -18,6 +19,7 @@ from flowgraph.task import (
     completed,
     make_task,
     parse_task_id,
+    removed,
     started,
     task_id_text,
     task_state_name,
@@ -88,14 +90,34 @@ class CompletedTaskFile(BaseModel):
     commit: str = ""
 
 
+class RemovedTaskFile(BaseModel):
+    """One table of the tasks of a work item file: a removed Task, with its reason."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    state: Literal["removed"]
+    title: str
+    description: str = ""
+    check: str | None = None
+    expected_output: str
+    created: HeldTime
+    removed: HeldTime
+    reason: str
+
+
 # One table of the tasks of a work item file past Backlog, told apart by its state line.
 HeldTask = Annotated[
-    TaskFile | StartedTaskFile | BlockedTaskFile | CompletedTaskFile, Field(discriminator="state")
+    TaskFile | StartedTaskFile | BlockedTaskFile | CompletedTaskFile | RemovedTaskFile,
+    Field(discriminator="state"),
 ]
+
+# One table of the tasks of a completed work item file: a completed Task or a removed one.
+DoneTask = Annotated[CompletedTaskFile | RemovedTaskFile, Field(discriminator="state")]
 
 
 # A Task table of a work item file, in any state.
-AnyTaskFile = TaskFile | StartedTaskFile | BlockedTaskFile | CompletedTaskFile
+AnyTaskFile = TaskFile | StartedTaskFile | BlockedTaskFile | CompletedTaskFile | RemovedTaskFile
 
 
 def task_primitives(task: TaskState) -> dict[str, object]:
@@ -120,6 +142,8 @@ def task_primitives(task: TaskState) -> dict[str, object]:
                 "completed": task.completed,
                 **evidence_primitives(task.commit),
             }
+        case RemovedTask():
+            moves = {"removed": task.removed, "reason": task.reason}
         case _ as unreachable:
             assert_never(unreachable)
     return {
@@ -160,6 +184,8 @@ def task_held(held: AnyTaskFile) -> TaskState:
         case CompletedTaskFile():
             evidence = evidence_written(held.commit)
             return completed(started(task, held.started), held.completed, evidence)
+        case RemovedTaskFile():
+            return removed(task, held.reason, held.removed)
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -167,7 +193,8 @@ def task_held(held: AnyTaskFile) -> TaskState:
 def task_row(held: AnyTaskFile) -> TaskRow:
     """The Task a validated table holds, as the row a view reads.
 
-    The commit it has once completed; its reason and what it waits on while blocked.
+    The commit it has once completed; its reason and what it waits on while blocked, its reason
+    once removed.
     """
     row = TaskRow(
         held.id,
@@ -185,6 +212,9 @@ def task_row(held: AnyTaskFile) -> TaskRow:
             return row
         case CompletedTaskFile():
             row.commit = held.commit
+            return row
+        case RemovedTaskFile():
+            row.reason = held.reason
             return row
         case _ as unreachable:
             assert_never(unreachable)

@@ -1159,7 +1159,8 @@ fgraph status
 
 A work item under InProgress is listed with its progress, `0/1 T`: its Tasks
 completed of all it holds. One of three completed reads `1/3 T`, so two are
-still to be completed; a started or a blocked Task is not completed yet.
+still to be completed; a started or a blocked Task is not completed yet. A
+removed Task is not counted at all (`fgraph remove`, below).
 
 Under it comes the Task being worked, marked `=>`: the started Task of the
 work item. A Task in Backlog or completed is not listed, and a Task line does
@@ -2560,7 +2561,7 @@ fgraph show S-0002
 several in one call when given together; `--description ""` clears the
 description. An amend exits 2 and names why when it names no part, when the
 title or a part of the criterion is blank, when the work item is started or
-completed already, when the id is a Task's, or when the record does not hold
+completed already, when the id names a Task, or when the record does not hold
 it.
 
 `--parent` puts a work item in Backlog under a Feature, and with the word
@@ -2685,9 +2686,8 @@ fgraph status
 
 The heading Removed is listed only when a work item or a Feature is removed.
 A remove exits 2 and names why when the reason is blank, when the work item
-is started, completed or removed already, when the id is a Task's, or when
-the record does not hold it. A removed work item takes no Task, no amend and
-no move.
+is started, completed or removed already, or when the record does not hold
+it. A removed work item takes no Task, no amend and no move.
 
 A work item superseded by another names it, `--superseded-by ID`, in place of
 the reason or beside it, in place of the free text of a reason such as
@@ -2722,6 +2722,40 @@ A remove with neither `--reason` nor `--superseded-by` is refused, naming both,
 as is an id that is no work item of the record, the work item itself and a
 removed work item, with exit 2 and nothing written. A Feature takes `--reason`
 alone, and is refused `--superseded-by`.
+
+A Task of a started work item -- in Backlog, started or blocked -- is removed
+the same way, with its reason, in the worktree of its work item once the
+development is on. It is kept in the file of its work item as removed, counts
+in no progress, and is no Task left to complete before its work item lands.
+Of S-0001 holding T-0001 started and T-0002 and T-0003 in Backlog:
+
+```sh
+fgraph remove T-0002 --reason "not needed"
+# removed T-0002 of S-0001
+
+fgraph remove T-0001 --reason "folded into T-0003"
+# removed T-0001 of S-0001
+
+fgraph status
+# ...
+#   S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
+# ...
+
+fgraph show S-0001
+# ...
+#   T-0002  <its title>
+#     bucket           Removed
+#     reason           not needed
+# ...
+
+fgraph remove T-0002 --reason "not needed"
+# fgraph: error: T-0002 is removed already
+```
+
+The remove of a Task is refused with exit 2 and nothing written when its work
+item is in Backlog, blocked, completed or removed, when the Task is completed
+or removed already, when the reason is blank, and when `--superseded-by` is
+given: a Task takes `--reason` alone.
 
 A Feature still in Backlog is removed the same way, `fgraph remove` with its
 id and the reason, and its work items are removed with it, each for the same
@@ -2822,7 +2856,8 @@ amend F-0001 in the record` --, `chore: reorder S-0002 before S-0001 in the
 record` -- a Feature by its id, `chore: reorder F-0001 before S-0001 in the
 record` --, `chore: start T-0001 of S-0001 in the record`,
 `chore: start F-0001 in the record` for a Feature and its first work item
-together, `chore: remove S-0001 in the record`, `chore: remove F-0001 in the
+together, `chore: remove S-0001 in the record`, `chore: remove T-0001 of
+S-0001 in the record` for a Task, `chore: remove F-0001 in the
 record` for a Feature and its work items together, `chore: block S-0001 in
 the record` and `chore: unblock S-0001 in the record` for a work item,
 `chore: block T-0001 of S-0001 in the record`, `chore: unblock T-0001 of

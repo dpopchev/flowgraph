@@ -1,13 +1,15 @@
 """The file of a work item of any kind: named by its id, read back by its kind in every state."""
 
 import tomllib
+from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
+import tomli_w
 
 from flowgraph.criterion import make_commit, make_scenario
-from flowgraph.task import TaskRow, make_task, make_task_id
+from flowgraph.task import TaskRow, make_task, make_task_id, removed_among
 from flowgraph.work_item import (
     WorkItemDetail,
     WorkItemFileError,
@@ -47,6 +49,10 @@ ITEM = append_task(BARE, TASK)
 HALF = started_task(started_work_item(ITEM, ON), make_task_id(3), ON)
 STUCK = blocked_work_item(HALF, "no key", "developer", ON)
 WHOLE = completed_work_item(completed_task(HALF, make_task_id(3), ON, COMMIT), ON, COMMIT)
+OTHER = make_task(make_task_id(4), "another task", "another output", "", CREATED)
+TWO = started_task(started_work_item(append_task(ITEM, OTHER), ON), make_task_id(3), ON)
+DROPPED = replace(TWO, tasks=removed_among(TWO.tasks, make_task_id(4), "not needed", ON))
+LEFT = completed_work_item(completed_task(DROPPED, make_task_id(3), ON, COMMIT), ON, COMMIT)
 FILE = Path("items") / "CH-0001.toml"
 
 
@@ -61,7 +67,7 @@ def test_a_work_item_is_written_as_its_one_file_named_by_its_id(tmp_path: Path) 
     }
 
 
-@pytest.mark.parametrize("item", [BARE, ITEM, HALF, STUCK, WHOLE])
+@pytest.mark.parametrize("item", [BARE, ITEM, HALF, STUCK, WHOLE, DROPPED, LEFT])
 def test_a_work_item_in_any_state_reads_back_whole(tmp_path: Path, item: WorkItemState) -> None:
     write_work_item(tmp_path, item)
     assert read_work_item(tmp_path, make_work_item_id(CHORE, 1)) == item
@@ -97,13 +103,55 @@ def test_a_started_work_item_is_read_as_a_row_with_its_started_time_and_its_task
 
 
 @pytest.mark.parametrize(
-    "item", [ITEM, HALF, STUCK, WHOLE], ids=["with-a-task", "started", "blocked", "completed"]
+    "item",
+    [ITEM, HALF, STUCK, WHOLE, DROPPED, LEFT],
+    ids=[
+        "with-a-task",
+        "started",
+        "blocked",
+        "completed",
+        "started-with-a-removed-task",
+        "completed-with-a-removed-task",
+    ],
 )
 def test_the_row_read_from_the_file_is_the_row_of_the_work_item(
     tmp_path: Path, item: WorkItemState
 ) -> None:
     write_work_item(tmp_path, item)
     assert read_work_item_rows(tmp_path, CHORE) == [work_item_row(item)]
+
+
+def test_the_table_of_a_removed_task_holds_its_keys_in_order(tmp_path: Path) -> None:
+    write_work_item(tmp_path, DROPPED)
+    tables = tomllib.loads((tmp_path / FILE).read_text("utf-8"))["tasks"]
+    assert list(tables[1]) == [
+        "id",
+        "state",
+        "title",
+        "expected_output",
+        "created",
+        "removed",
+        "reason",
+    ]
+
+
+def test_a_completed_file_that_holds_a_task_in_backlog_is_refused_naming_it(
+    tmp_path: Path,
+) -> None:
+    write_work_item(tmp_path, WHOLE)
+    held = tomllib.loads((tmp_path / FILE).read_text("utf-8"))
+    held["tasks"] = [
+        {
+            "id": "T-0003",
+            "state": "backlog",
+            "title": "a task title",
+            "expected_output": "an output",
+            "created": CREATED,
+        }
+    ]
+    (tmp_path / FILE).write_text(tomli_w.dumps(held), encoding="utf-8")
+    with pytest.raises(WorkItemFileError, match=r"CH-0001\.toml holds no Chore"):
+        read_work_item_rows(tmp_path, CHORE)
 
 
 def test_a_file_of_another_kind_is_left_alone(tmp_path: Path) -> None:

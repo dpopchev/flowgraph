@@ -11,7 +11,7 @@ from pydantic import BaseModel, ConfigDict, Field, PositiveInt, TypeAdapter
 
 from flowgraph.item import (
     AnyCriterionFile,
-    CompletedTaskFile,
+    DoneTask,
     HeldTask,
     HeldTime,
     KnowledgeFile,
@@ -98,7 +98,7 @@ class VerifiedFile(BaseModel):
 
 
 class CompletedItemFile(RelationsFile, ProgressTables, BaseModel):
-    """What the file of a completed work item holds: the commit it has, its Tasks all completed.
+    """What the file of a completed work item holds: its commit, its Tasks completed or removed.
 
     The answer of its closing is held once it has one; a file written before holds none.
     """
@@ -120,7 +120,7 @@ class CompletedItemFile(RelationsFile, ProgressTables, BaseModel):
     commit: str = ""
     verified: VerifiedFile | None = None
     criterion: AnyCriterionFile
-    tasks: list[CompletedTaskFile] = []
+    tasks: list[DoneTask] = []
     knowledge: list[KnowledgeFile] = []
 
 

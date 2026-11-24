@@ -20,7 +20,7 @@ from flowgraph.criterion import (
 from flowgraph.knowledge import KnowledgeLine
 from flowgraph.parent import NO_CRITERION, STANDALONE, Parent, Realizes, realizes_under
 from flowgraph.relation import Relations, make_relations
-from flowgraph.task import CompletedTask, Task, TaskState, task_of
+from flowgraph.task import CompletedTask, RemovedTask, Task, TaskState, task_of
 from flowgraph.work_item.agent import Agent
 from flowgraph.work_item.complexity import Complexity
 from flowgraph.work_item.errors import (
@@ -110,7 +110,7 @@ class BlockedWorkItem:
 
 @dataclass(frozen=True)
 class CompletedWorkItem:
-    """A work item in Completed: every Task of it completed, its commit on `main` or none named.
+    """A work item in Completed: each Task completed or removed, its commit on `main` or none.
 
     It holds the answer of its closing once verified, none before.
     """
@@ -124,7 +124,7 @@ class CompletedWorkItem:
     completed: datetime
     agent: Agent | None = field(default=None, kw_only=True)
     commit: Evidence
-    tasks: tuple[CompletedTask, ...]
+    tasks: tuple[CompletedTask | RemovedTask, ...]
     parent: Parent = STANDALONE
     realizes: Realizes = field(default=NO_CRITERION, kw_only=True)
     complexity: Complexity | None = None

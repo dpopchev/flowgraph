@@ -20,7 +20,13 @@ from flowgraph.work_item.model import (
     append_task,
 )
 from flowgraph.work_item.moves import still_open
-from flowgraph.work_item.tasks import blocked_task, completed_task, started_task, unblocked_task
+from flowgraph.work_item.tasks import (
+    blocked_task,
+    completed_task,
+    removed_task,
+    started_task,
+    unblocked_task,
+)
 
 # The work item that holds the Task of that id, whole; raises TaskNotFoundError when none does.
 LoadHolder = Callable[[TaskId], WorkItemState]
@@ -109,6 +115,24 @@ def unblock_task(
     """
     item = load_holder(task_id)
     save_work_item(unblocked_task(item, task_id))
+    return item.id
+
+
+def remove_task(
+    *,
+    task_id: TaskId,
+    reason: str,
+    load_holder: LoadHolder,
+    save_work_item: SaveWorkItem,
+    now: Now,
+) -> WorkItemId:
+    """Remove the Task of that id now for the reason, save its work item whole, return its id.
+
+    Raises TaskNotFoundError when no item holds the Task, or the refusal of `removed_task`;
+    nothing is saved.
+    """
+    item = load_holder(task_id)
+    save_work_item(removed_task(item, task_id, reason, now()))
     return item.id
 
 

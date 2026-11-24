@@ -89,12 +89,14 @@ from flowgraph.work_item.task_commands import (
     block_task,
     complete_task,
     holder_of,
+    remove_task,
     start_task,
     unblock_task,
 )
 from flowgraph.work_item.tasks import (
     blocked_task,
     completed_task,
+    removed_task,
     started_task,
     unblocked_task,
 )
@@ -180,7 +182,9 @@ __all__ = [
     "read_work_item",
     "read_work_item_detail",
     "read_work_item_rows",
+    "remove_task",
     "remove_work_item",
+    "removed_task",
     "removed_work_item",
     "start_task",
     "start_work_item",

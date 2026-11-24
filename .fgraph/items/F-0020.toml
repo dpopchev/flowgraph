@@ -1,0 +1,9 @@
+id = "F-0020"
+state = "backlog"
+title = "Cut the files a Task changes outside its brief that fgraph lets through, at its completion and before its commit, from every one to none"
+description = "Phase 1, Agent Execution Interface, Scope Gates and Governed Briefs: one of the five Features put on top of the Backlog on the plan the developer agreed on 2026-11-24 with the word file. From the draft of the developer, Task-Completion and Pre-Commit Scope Gates, reviewed that day against the code. Taken in: S-0142 with its five Tasks, written on 2026-11-23 and read again before it starts -- they cite src/flowgraph/development/commit.py at 244 lines, 180 on 2026-11-24, src/flowgraph/parser/refusals.py at about 141, 158, and README.md at 2787, 3367; and U-0021. New: the answer before the commit, read from the words Pre-Commit of the draft, as board scope of board 1. Left out: the structured report of fgraph verify, which runs nothing and keeps the answer it is given; and U-0024, the landing of a Spike, no scope gate, which stays in the Backlog."
+created = 2026-11-24 19:50:40+00:00
+criteria = [
+    "an agent is refused the completion of a Task at a commit that changed a file its brief does not name",
+    "an agent reads, before the commit, which files it changed that the brief of its started Task does not name",
+]

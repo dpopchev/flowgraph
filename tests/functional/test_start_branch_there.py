@@ -60,9 +60,6 @@ THERE = (
     " -- delete it or give another --slug"
 )
 BACKLOG_LINE = "  bucket       Backlog"
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="B-0027: the start is committed before git refuses the branch"
-)
 
 
 @dataclass(frozen=True)
@@ -206,11 +203,9 @@ class TestAFeatureStartedWhileTheBranchItWouldMakeIsThere:
     def refused(self, checkout: Path) -> Outcome:
         return fgraph(["start", "F-0001"], checkout)
 
-    @XFAIL
     def test_start_exits_with_two_naming_the_branch(self, refused: Outcome) -> None:
         assert refusal(refused) == (2, THERE.format("F-0001", FIRST_BRANCH))
 
-    @XFAIL
     def test_nothing_is_written_and_no_commit_is_made(
         self, refused: Outcome, checkout: Path
     ) -> None:
@@ -219,11 +214,9 @@ class TestAFeatureStartedWhileTheBranchItWouldMakeIsThere:
             git(checkout, "log", "-1", "--format=%s", "main"),
         ) == ("", LAST_ADD)
 
-    @XFAIL
     def test_the_feature_stays_in_backlog(self, refused: Outcome, checkout: Path) -> None:
         assert fgraph(["show", "F-0001"], checkout).out.splitlines()[1] == BACKLOG_LINE
 
-    @XFAIL
     def test_the_feature_starts_once_the_branch_is_deleted(
         self, refused: Outcome, checkout: Path, tmp_path: Path
     ) -> None:
@@ -236,7 +229,6 @@ class TestAFeatureStartedWhileTheBranchItWouldMakeIsThere:
         )
 
 
-@XFAIL
 def test_a_feature_started_under_a_slug_whose_branch_is_there_is_refused_naming_it(
     tmp_path: Path,
 ) -> None:

@@ -103,7 +103,8 @@ Notes:
 - A Feature is broken down into Stories, as a rule of thumb one Story per
   criterion. A work item may name the criterion it realizes (S-0100), by its
   place in the list; the link is optional, so a Feature may hold work items
-  whose criterion is none of its criteria.
+  whose criterion is none of its criteria. `fgraph show` of the Feature lists
+  which criteria are met (S-0101).
 - An Upkeep names the behavior that must still hold, never a test: the Upkeep
   may itself move or rename a test while the behavior holds.
 - A Task's title names the action, the artifact and its target state; its
@@ -1661,6 +1662,22 @@ and its merge tool.
   2`, a whole number from 1, right after `parent` and only when it names one;
   a file without the key reads as none. A file holding `0`, or the key with no
   `parent`, is refused naming the file. Every move carries it.
+- Nothing more is kept for a criterion met: `fgraph show` of a Feature derives
+  it at each read from the rows of the work items under the Feature, as the
+  bucket of a Feature never started is. It numbers the criteria as
+  `Criteria (2), met 1 of 2`, and a line reads `  1  met      <text>  S-0001`,
+  with the ids of the work items that realize it, or `  2  not met  <text>`
+  alone when none does. A criterion is met when a work item that realizes it
+  is completed; one is enough when several realize it. A removed work item is
+  not counted, as the progress of a Feature does not hold it; a completed work
+  item verified no still counts, since it stays completed. A work item whose
+  number the Feature does not have is on no criterion. `fgraph show` has no
+  JSON, and the text and the JSON of `fgraph status` do not change.
+- The completion of a Feature does not read its criteria: a Feature is
+  completed by its last work item, or by `fgraph complete`, whether or not each
+  criterion is met, without a word. This is the smallest reading of the
+  Finding kept open on F-0013 (refused, warned or silent); the decision is the
+  developer's.
 - `fgraph status` lists a Feature inside its bucket, as one line in place of
   its work items, the developer's words of 2026-11-21: a Feature is an
   umbrella, part of the Backlog, that just holds a couple of work items. The

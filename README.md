@@ -1272,8 +1272,9 @@ fgraph show S-0001
 #     expected output  changed: src/flowgraph/cli.py gains the show command
 ```
 
-Run in the worktree of a Story, `fgraph status` and `fgraph show` read the
-record of that worktree.
+Run in the worktree of a Story, `fgraph status` and `fgraph watch` list the record of main
+there, each started Story read from its own worktree, and `fgraph show` reads the record of
+that worktree.
 
 `fgraph show` then names the bucket of the Story and of each Task that has
 left Backlog (`    bucket           InProgress`). A start exits 2 and names

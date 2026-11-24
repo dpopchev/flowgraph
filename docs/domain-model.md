@@ -1956,9 +1956,15 @@ agreed on 2026-11-21 that `fgraph` owns the record, its rituals and its rules:
   and the Task being worked that status lists are current before the landing.
   A started work item without such a worktree, a record outside a git work
   tree and a record git ignores are read from the record itself. Run in a
-  work tree on the branch of a work item, status reads the record of that
-  work tree and no other. Every read of the rows goes this way, so the bucket
-  of a Feature does too.
+  work tree on the branch of a work item, status and watch list the record
+  of main, its queue, its Features, its configuration and every row, each
+  started work item read from its own worktree as on main, so every work
+  tree lists the same frame, the marks and the JSON too: the developer's
+  decision of 2026-11-23, S-0141, amending the rule of S-0035. With no work
+  tree on main, outside a git work tree and for a record git ignores they
+  read the record of that work tree; fgraph show, every other read and every
+  write stay with the record of that work tree. Every read of the rows goes
+  this way, so the bucket of a Feature does too.
 - `fgraph show` of a started work item on `main` reads it there too, as
   status does: the work item it shows, with the bucket and the commit of each
   Task, is the one the worktree of its branch `wi/<id>-*` holds, the same

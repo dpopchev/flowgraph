@@ -7,3 +7,8 @@ criteria = [
     "a developer reads in fgraph knowledge the files each line governs",
     "a developer asks fgraph about a file a later commit deleted and reads the work items that touched it",
 ]
+
+[[knowledge]]
+kind = "decision"
+text = "The developer gave the go on 2026-11-24, with the word file, to the plan shown that day (F-0018, its decision). For F-0021: S-0081 and S-0080 alone; the wiring of the brief the draft asks for is built by S-0116 and not filed; U-0011 is under F-0018."
+noted = 2026-11-24 19:56:05+00:00

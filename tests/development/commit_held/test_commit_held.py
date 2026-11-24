@@ -11,7 +11,7 @@ import pytest
 
 from flowgraph.development.commit import WorkTree
 from flowgraph.development.commit_held import CommitNotHeldError, check_commit_held
-from flowgraph.record import Config, make_config
+from flowgraph.record import make_config
 
 pytestmark = pytest.mark.command
 

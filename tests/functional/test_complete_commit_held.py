@@ -164,9 +164,7 @@ class TestAStoryCompletedOnMainAtACommitTheRepositoryDoesNotHold:
         git(checkout, "merge", "--quiet", "--no-ff", "--message", "feat: land S-0001", BRANCH)
         return checkout
 
-    def test_complete_exits_with_two_and_names_the_story_and_the_commit(
-        self, merged: Path
-    ) -> None:
+    def test_complete_exits_with_two_and_names_the_story_and_the_commit(self, merged: Path) -> None:
         refused = complete_at(merged, UNKNOWN, "S-0001")
         assert (refused.status, refused.err.splitlines()[-1:]) == (
             2,

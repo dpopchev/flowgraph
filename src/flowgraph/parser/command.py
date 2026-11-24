@@ -7,15 +7,10 @@ command, which the command line writes as a usage error.
 import argparse
 from pathlib import Path
 
-from flowgraph.development import RunGate, check_slug_branched
+from flowgraph.development import RunGate
 from flowgraph.development.commit import OpenGit, Said, commit_written
-from flowgraph.development.driver import check_complexity
 from flowgraph.development.land import land_item
-from flowgraph.development.parallel import check_parallel
 from flowgraph.development.release import release_trunk
-from flowgraph.development.scope import check_complete_on_main, check_start_on_main
-from flowgraph.development.task_check import check_task_checked
-from flowgraph.development.task_run import check_task_run
 from flowgraph.feature.amend import amend_named
 from flowgraph.feature.block import block_named, unblock_named
 from flowgraph.feature.item import (
@@ -27,10 +22,7 @@ from flowgraph.feature.item import (
 from flowgraph.feature.next import complete_and_start_next
 from flowgraph.feature.note import note_named
 from flowgraph.feature.remove import remove_named
-from flowgraph.feature.start import (
-    check_start_under_feature,
-    start_feature_item,
-)
+from flowgraph.feature.start import start_feature_item
 from flowgraph.item.commands import (
     Written,
     add_item,
@@ -44,18 +36,14 @@ from flowgraph.item.verify import verify_item, verify_item_no
 from flowgraph.knowledge import DECISION, DEVIATION, FINDING
 from flowgraph.knowledge.governed import governs_asked
 from flowgraph.parent import parent_asked
+from flowgraph.parser.checks import check_command
 from flowgraph.parser.item_commands import TOP
 from flowgraph.parser.stated import criterion_added, decision_given
 from flowgraph.parser.views import view_said
-from flowgraph.record import CONFIG, Config, Now
+from flowgraph.record import Config, Now
 from flowgraph.record.setting import set_setting, show_config, unset_setting
 from flowgraph.record.store import Store
-from flowgraph.relation.depends import (
-    amends_asked,
-    check_start_waits,
-    depends_asked,
-    filed_during_asked,
-)
+from flowgraph.relation.depends import amends_asked, depends_asked, filed_during_asked
 from flowgraph.status import status_output
 from flowgraph.status.next import start_limit
 from flowgraph.status.terminal import Width
@@ -66,7 +54,6 @@ from flowgraph.work_item import (
     Complexity,
     make_complexity,
 )
-from flowgraph.work_item.agent import check_agent_taken
 
 
 def _complexity_asked(word: str | None) -> Complexity | None:
@@ -193,6 +180,8 @@ def command_said(
 
     The directory fgraph runs in, cwd, is where the path of fgraph about a file is taken from.
 
+    The checks of the command run first, in check_command, before its write is made.
+
     A write is committed once it is made. The lines of status are cut to the width, when there
     is one. The configuration says whether a start branches, how many work items are started at
     once, whether a landing is taken and the gate it runs through run_gate; the complete of a
@@ -201,21 +190,7 @@ def command_said(
     off is left uncommitted. A release tags main, and pushes the tag when the configuration
     says so. Raises the refusal of the command, a git step refused among them.
     """
-    if args.command == "complete":
-        check_complete_on_main(args.id, record, open_git)
-        check_task_run(args.id, store, record, open_git, cwd, run_check)
-    if args.command == "start":
-        check_slug_branched(args.id, args.slug, config.development.enabled, record / CONFIG)
-        check_agent_taken(args.id, args.agent, config.development.enabled, record / CONFIG)
-        check_start_on_main(args.id, record, open_git)
-        check_start_under_feature(args.id, store)
-        check_start_waits(args.id, store)
-        check_parallel(args.id, store.find_work_item_rows, config)
-        check_complexity(args.id, store.load_work_item, config)
-    if args.command == "add" and args.kind == "task":
-        check_task_checked(args.check, config.development.enabled, record / CONFIG)
-    if args.command == "hand":
-        check_agent_taken(args.id, args.agent, config.development.enabled, record / CONFIG)
+    check_command(args, store, record, open_git, config, cwd, run_check)
     written = _written(args, store, now, config, cwd, open_git)
     if written is not None:
         return commit_written(written, store, record, open_git, config)

@@ -55,9 +55,6 @@ COMPLETED_LINES = [
     "  F-0001  5678def  a feature title",
     "  S-0003  abc1233  title 3",
 ]
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="S-0134: a completed Feature is listed with its work items completed of all"
-)
 
 
 @dataclass(frozen=True)
@@ -100,14 +97,12 @@ def completed_lines(text: str) -> list[str]:
 
 
 class TestAFeatureAndAStoryCompletedAreListedWithNoCount:
-    @XFAIL
     def test_status_lists_the_completed_items_with_their_commits_and_no_count(
         self, tmp_path: Path
     ) -> None:
         runs(tmp_path, *DONE)
         assert completed_lines(fgraph(["status"], tmp_path, LATER).out) == COMPLETED_LINES
 
-    @XFAIL
     def test_no_line_under_completed_holds_a_count_of_work_items_or_tasks(
         self, tmp_path: Path
     ) -> None:
@@ -115,7 +110,6 @@ class TestAFeatureAndAStoryCompletedAreListedWithNoCount:
         listed = completed_lines(fgraph(["status"], tmp_path, LATER).out)[1:]
         assert not any(" W  " in line or " T  " in line for line in listed)
 
-    @XFAIL
     def test_watch_lists_the_completed_items_as_status_does(self, tmp_path: Path) -> None:
         runs(tmp_path, *DONE)
         assert completed_lines(fgraph(["watch", "--count", "1"], tmp_path, LATER).out) == (

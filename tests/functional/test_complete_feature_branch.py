@@ -150,10 +150,7 @@ class TestTheLastStoryOfAStartedFeatureLanded:
     ) -> None:
         merge = git(checkout, "rev-parse", "--short", "HEAD~1")
         assert fgraph(["status"], checkout).out == (
-            "Backlog (0)\n"
-            "InProgress (0)\n"
-            "Completed (1)\n"
-            f"  F-0001  1/1 W  {merge}  a feature title\n"
+            f"Backlog (0)\nInProgress (0)\nCompleted (1)\n  F-0001  {merge}  a feature title\n"
         )
 
     def test_nothing_is_left_to_commit(self, landed: Outcome, checkout: Path) -> None:

@@ -1,0 +1,13 @@
+id = "S-0156"
+state = "backlog"
+title = "Raise the links fgraph about prints as JSON from none to every one: of an item, of a term and of a file"
+description = "New on the plan agreed on 2026-11-24. Seen on 2026-11-24 at 2d612af on main. fgraph about S-0002 --format json exits 2 with unrecognized arguments: --format json. The contract is that of the JSON of fgraph brief. Its Tasks are written before its Feature starts."
+parent = "F-0018"
+realizes = 3
+complexity = "low"
+created = 2026-11-24 19:51:35+00:00
+
+[criterion]
+given = "a record in a git repository with a completed Story about a term, whose commit changed a file a knowledge line governs"
+when = "fgraph about is run with --format json on the Story, on the term and on the file"
+then = "each prints one JSON document that holds the links the text lists, by relation, the same bytes on two runs"

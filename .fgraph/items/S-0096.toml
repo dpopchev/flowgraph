@@ -1,12 +1,14 @@
 id = "S-0096"
-state = "started"
+state = "completed"
 title = "Raise the modes of the development from one, a branch per work item, to two: the trunk"
 description = "The words of the note: work on main, no worktree. Its Tasks are written when it is ordered."
 parent = "F-0012"
 complexity = "medium"
 created = 2026-11-22 21:03:41+00:00
 started = 2026-11-24 07:13:44+00:00
+completed = 2026-11-24 07:51:55+00:00
 agent = "sonnet-a29"
+commit = "05babc2"
 depends_on = [
     "B-0023",
     "B-0027",

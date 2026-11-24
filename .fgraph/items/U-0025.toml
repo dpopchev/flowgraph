@@ -1,9 +1,13 @@
 id = "U-0025"
-state = "backlog"
+state = "completed"
 title = "Cut the lines of src/flowgraph/parser/command.py from 244 to 226 or fewer, the checks that run before a move taken into a module of their own"
 description = "Found on 2026-11-23 while the Tasks of B-0027, B-0032 and B-0029 were planned: each wires a check into command_said, 2, 3 and 2 lines, and together they take the module from 244 to 251 lines, one over the limit make lines holds, so the last of the three to land would fail make check on main. Filed on the go of the developer of that day, who chose this Upkeep first over a split folded into the last Bug; the three Bugs wait for it and each add one check to the new module. A move with no change of behavior."
 complexity = "low"
 created = 2026-11-23 20:08:57+00:00
+started = 2026-11-24 03:33:54+00:00
+completed = 2026-11-24 03:48:03+00:00
+agent = "haiku-a3"
+commit = "8d41823"
 
 [criterion]
 given = "main, where make check passes, src/flowgraph/parser/command.py holds 244 of the 250 lines mk/python.mk allows, and B-0027, B-0032 and B-0029 each add a check to it, 7 lines in all"
@@ -12,9 +16,12 @@ then = "it still passes with no test file changed, src/flowgraph/parser/command.
 
 [[tasks]]
 id = "T-0446"
-state = "backlog"
+state = "completed"
 title = "Move the checks that run before a move from src/flowgraph/parser/command.py into src/flowgraph/parser/checks.py"
 description = "A move with no change of behavior: no new test, the suite is its guard, a refactoring under green. New module src/flowgraph/parser/checks.py (about 60 lines): a one-paragraph docstring saying it holds the checks a command passes before it writes, each raising the refusal of the command; one public function check_command(args: argparse.Namespace, store: Store, record: Path, open_git: OpenGit, config: Config, cwd: Path, run_check: RunGate) -> None whose body is the four if blocks of command_said, lines 204 to 218 of src/flowgraph/parser/command.py today, moved as they are: for complete, check_complete_on_main then check_task_run; for start, check_slug_branched, check_agent_taken, check_start_on_main, check_start_under_feature, check_start_waits, check_parallel, check_complexity, in that order; for the add of a Task, check_task_checked; for hand, check_agent_taken. It takes the imports those calls need, by the paths command.py imports them from today. In src/flowgraph/parser/command.py (244 lines, about 222 after): command_said calls check_command(args, store, record, open_git, config, cwd, run_check) as its first statement, where the four blocks were; remove each import nothing else in the module uses after the move (check_slug_branched, check_complexity, check_parallel, check_complete_on_main, check_start_on_main, check_task_checked, check_task_run, check_start_under_feature, check_start_waits, check_agent_taken, and CONFIG when nothing else reads it), keep RunGate and every other name; the docstring of command_said says in one sentence that the checks of the command run first, in check_command. The imports stay acyclic: checks.py imports nothing from flowgraph.parser.command. Run make check (ruff, pyright, the 250 lines of make lines, the suite) and see it pass with no test file changed. Out of bounds: src/flowgraph/cli.py, src/flowgraph/parser/refusals.py, src/flowgraph/parser/views.py, every module the checks live in, every test file, README.md and docs/domain-model.md, neither of which names the module. B-0027, B-0032 and B-0029 wait for this work item and each add one check to check_command."
 check = "test \"$(wc -l < src/flowgraph/parser/command.py)\" -le 226 && grep -q \"^def check_command\" src/flowgraph/parser/checks.py && make check"
 expected_output = "created: src/flowgraph/parser/checks.py holds check_command(args, store, record, open_git, config, cwd, run_check), the checks command_said runs before a write -- those of a complete, of a start, of the add of a Task and of a hand -- in the order and with the arguments they have today; changed: command_said of src/flowgraph/parser/command.py calls it once, where those checks were, and the module holds 226 lines or fewer; no test file changes and every refusal reads as before"
 created = 2026-11-23 20:09:35+00:00
+started = 2026-11-24 03:35:47+00:00
+completed = 2026-11-24 03:41:19+00:00
+commit = "ddc1cb91532e887339fd30040b7a47275fffbbeb"

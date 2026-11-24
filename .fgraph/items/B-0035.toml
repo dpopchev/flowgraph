@@ -46,3 +46,8 @@ description = "Change README.md (3367 lines) and docs/domain-model.md (3343 line
 check = "grep -q \"is being written by another fgraph\" README.md && grep -q \"is being written by another fgraph\" docs/domain-model.md && grep -q \"record/lock.py\" docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, Persistence, says after the table of who writes what that every write takes the lock of its record before it reads and holds it through its commit, how the lock is taken, which commands take none, what a write that finds it taken does and the refusal <record> is being written by another fgraph: run the command again, naming src/flowgraph/record/lock.py; README.md says it in one paragraph with the refusal in an example"
 created = 2026-11-24 20:23:57+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer gave the go on 2026-11-24 to the Tasks and the rulings shown that day: the lock is flock on the directory of the record, no lock file, Linux and macOS alone; a write that finds it taken waits up to ten seconds, then exits 2 saying the record is being written by another fgraph and to run the command again; status, watch, show, about, brief, knowledge, terms, graph, goal and config show take none; a landing holds it through its gate, so another write of main during a landing is refused after the wait; each copy of the record has its own, so an agent in a worktree never waits for main."
+noted = 2026-11-24 20:24:03+00:00

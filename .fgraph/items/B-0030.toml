@@ -26,13 +26,15 @@ commit = "64c987c"
 
 [[tasks]]
 id = "T-0479"
-state = "started"
+state = "completed"
 title = "Update README.md to say a key of the configuration is taken back by fgraph config unset, in its one passage that says there is no unset"
 description = "Change README.md only; find the passage by grep \"there is no unset\", never by line number. Merge main first (fgraph sync in the worktree): the passage is read as main holds it. It is the paragraph starting A key is taken back to its default by setting that default, a few paragraphs under the one that documents `fgraph config unset KEY` and contradicting it. Its first two sentences, from A key is taken back to its default by setting that default, to are taken back to none only by removing their line from the file., become: A key is taken back to its default by `fgraph config unset KEY`, which leaves it out of the file, or by setting that default, `fgraph config set development.merge merge-commit`, which writes it there. `parallel` and `gate` have no default to set: an unset alone takes them back to none. Its third sentence, A set writes the file whole from its keys, so a comment written in it is not kept., becomes A set or an unset writes the file whole from its keys, so a comment written in it is not kept. Its last sentence, on a `config.toml` fgraph refuses, stays. Each is true to src/flowgraph/record/setting.py: unset_setting saves the settings without the key, set_setting with it, and a text that is no whole number is refused for development.parallel while the text none names a command for development.gate. Keep the edit inside that paragraph and rewrap it alone. Write no count of the keys, the developer's decision of 2026-11-24 (B-0030). Do not touch: the paragraph starting `fgraph config unset KEY` takes a key back to its default and its example, the two blocks of fgraph config show (they list every key already), the table of keys and values, the table at the top of README.md, docs/domain-model.md. No source or test changes."
 check = "tr -s ' \\n' ' ' < README.md | grep -q \"taken back to its default by .fgraph config unset KEY.\" && ! tr -s ' \\n' ' ' < README.md | grep -qE \"there is no unset|only by removing their line\""
 expected_output = "changed: README.md, the paragraph before Start a Story once it has a Task: a key is taken back to its default by fgraph config unset KEY, which leaves it out of the file, or by setting that default, which writes it there; parallel and gate have no default to set, so an unset alone takes them back to none; a set or an unset writes the file whole. The words there is no unset and only by removing their line from the file are gone"
 created = 2026-11-23 20:45:43+00:00
 started = 2026-11-24 10:24:27+00:00
+completed = 2026-11-24 10:24:48+00:00
+commit = "dae2673cca4826d602a7eeacb692dc04f4796646"
 
 [[knowledge]]
 kind = "deviation"

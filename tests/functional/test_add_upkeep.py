@@ -74,8 +74,8 @@ class TestAnUpkeepAddedToARecordWithOneStory:
     ) -> None:
         assert fgraph(["status", "--backlog"], tmp_path).out == (
             "Backlog (2)\n"
-            "> S-0001  a title\n"
-            "  U-0001  an upkeep title\n"
+            "> S-0001  []  a title\n"
+            "  U-0001  []  an upkeep title\n"
             "InProgress (0)\n"
             "Completed (0)\n"
         )

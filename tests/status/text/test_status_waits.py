@@ -15,7 +15,7 @@ WAITING = WorkItemRow("S-0002", "a title", "backlog", created=CREATED, waits_for
 
 
 def test_a_work_item_in_backlog_that_waits_is_marked_and_names_what_it_waits_for() -> None:
-    assert status_text([WAITING]).splitlines()[1] == "~ S-0002  a title  -- depends on S-0001"
+    assert status_text([WAITING]).splitlines()[1] == "~ S-0002  []  a title  -- depends on S-0001"
 
 
 def test_a_work_item_names_each_one_it_waits_for_in_the_order_given() -> None:
@@ -27,7 +27,7 @@ def test_a_work_item_names_each_one_it_waits_for_in_the_order_given() -> None:
 
 def test_a_work_item_in_backlog_that_waits_for_nothing_carries_no_mark() -> None:
     row = WorkItemRow("S-0002", "a title", "backlog", created=CREATED)
-    assert status_text([row]).splitlines()[1] == "  S-0002  a title"
+    assert status_text([row]).splitlines()[1] == "  S-0002  []  a title"
 
 
 def test_a_feature_in_backlog_whose_first_work_item_waits_is_marked_as_it_is() -> None:
@@ -38,4 +38,4 @@ def test_a_feature_in_backlog_whose_first_work_item_waits_is_marked_as_it_is() -
 
 
 def test_a_line_that_waits_is_cut_to_the_width_of_the_terminal_as_any_other() -> None:
-    assert cut_lines(status_text([WAITING]), 20).splitlines()[1] == "~ S-0002  a title..."
+    assert cut_lines(status_text([WAITING]), 20).splitlines()[1] == "~ S-0002  []  a t..."

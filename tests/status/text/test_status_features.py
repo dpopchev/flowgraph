@@ -36,7 +36,7 @@ ROWS = [
 def test_a_feature_is_listed_in_its_bucket_as_one_line_with_its_progress() -> None:
     assert status_text(ROWS).splitlines()[:3] == [
         "Backlog (2)",
-        "  S-0001  a title",
+        "  S-0001  []  a title",
         "  F-0001  0/2 W  a feature title",
     ]
 

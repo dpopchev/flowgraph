@@ -72,7 +72,7 @@ class TestAStoryInBacklogRemovedWithAReason:
     ) -> None:
         assert fgraph(["status"], tmp_path).out == (
             "Backlog (1)\n"
-            "> S-0002  another title\n"
+            "> S-0002  []  another title\n"
             "InProgress (0)\n"
             "Completed (0)\n"
             "Removed (1)\n"

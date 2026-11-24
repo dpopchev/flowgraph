@@ -13,6 +13,11 @@ depends_on = [
     "U-0025",
 ]
 
+[verified]
+answer = "yes"
+text = "at b6d34a2 on main, the merge of wi/S-0148-raise-the-work-items, in a throwaway repository with the development on and development.parallel 1, S-0001 started in its worktree with T-0001 completed, T-0002 started and T-0003 in Backlog, S-0002 in Backlog: fgraph start S-0002 exit 2 printed S-0002 cannot start: development.parallel = 1, started already: S-0001; fgraph remove S-0001 --reason pivoted on main exit 0 printed removed S-0001 and left branch wi/S-0001-one in its path: main does not hold every commit of it, committed as chore: remove S-0001 in the record; fgraph status lists S-0001 under Removed with -- pivoted, InProgress (0) and S-0002 marked able to start; fgraph show S-0001 lists T-0001 Completed with its commit and T-0002 and T-0003 Removed with the reason pivoted; fgraph start S-0002 then exit 0 printed started S-0002. make check on the tree of the landing, the branch with main merged at 76522ee: 4192 passed, all checks passed. Handed whole to one subagent on opus. The coordinator merged main into the branch and kept, in src/flowgraph/parser/command.py, the import of branch_removed beside that of sync_branch of S-0150; fgraph sync had refused that merge naming the file, the branch as it was. Its deviations: its fixture completes T-0001 at a real sha, abc1234 of the brief being refused since B-0029; src/flowgraph/work_item/removal.py holds 150 lines against about 122, with three private helpers; a test of its own T-0608 corrected in T-0612. Seen by it and left: between T-0609 and T-0612 some strict xfail tests of tests/functional/test_remove_started_work_item.py passed early, outside the checks of those Tasks; fgraph land of a removed started work item exits 2 with the words of a git merge that failed, not with a line of its own; fgraph remove loads a work item in Backlog twice. src/flowgraph/work_item/model.py and src/flowgraph/parser/item_commands.py each hold 248 of 250 lines."
+on = 2026-11-24 06:17:40+00:00
+
 [criterion]
 given = "a repository with the development on and a started work item that holds Tasks in Backlog, started and completed"
 when = "fgraph remove of the work item is run with a reason"

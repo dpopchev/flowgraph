@@ -16,6 +16,11 @@ depends_on = [
     "U-0027",
 ]
 
+[verified]
+answer = "yes"
+text = "at 3cf5abc on main, the merge of wi/S-0098-cut-the-branches-older, in a throwaway repository with the development on and development.branch_max 1d, fgraph driven through run() with a set clock: a Story started at a time T; fgraph status one day after T lists S-0001 0/1 T a title, and two days after T lists S-0001 0/1 T a title -- its branch is older than 1d; nothing is refused. make check on the tree of the landing, the branch holding every code commit of main: 4564 passed, all checks passed, run by its subagent to the end; ruff and make lines clean at the landing. The landing started S-0099, the next work item of F-0012. Handed whole to one subagent on sonnet. Its deviations: the test file of T-0517 written before the start of the Task; four tests of T-0517 that pass once the key exists marked for the key, not for the word, so no strict xfail passes early; an expected line of that file corrected in the commit of T-0518; the key added to _TAKES_BY_KEY of src/flowgraph/record/config_refusal.py, the order of _WORDS and _TAKES left as it was. fgraph config show lists eleven keys; src/flowgraph/status/text.py holds 233 lines."
+on = 2026-11-24 08:32:05+00:00
+
 [criterion]
 given = "development.branch_max set to 1d and a work item started two days ago"
 when = "fgraph status is run"

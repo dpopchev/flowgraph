@@ -112,7 +112,7 @@ fgraph amend S-0001 --about lane
 fgraph show S-0001          # about  lane, and the line: decision  2026-11-22  a gate runs on main  (about gate, lane)
 fgraph show gate            # gate, with the lines: items  S-0001, knowledge  S-0001  decision  2026-11-22  a gate runs on main
 fgraph knowledge --about gate
-# 2026-11-22  decision  S-0001  a gate runs on main  (about gate, lane)
+# 2026-11-22  decision  S-0001#1  a gate runs on main  (about gate, lane)
 ```
 
 A Story, an Upkeep, a Bug and a Spike carry a complexity, `low`, `medium` or
@@ -1597,8 +1597,9 @@ fgraph show S-0001
 ```
 
 `fgraph knowledge` lists the lines of every work item and every Feature of the
-record, the last noted first, each with its date, its kind, the id of its item
-and its text. `--kind` narrows the list to `finding`, `decision` or `deviation`;
+record, the last noted first, each with its date, its kind, the ref of the line
+and its text: the id of its item, `#` and its place among the lines of that
+item, counted from 1 in the order noted, as `S-0001#2`. `--kind` narrows the list to `finding`, `decision` or `deviation`;
 another word exits 2 naming the three. `fgraph knowledge --search TEXT` narrows
 the list to the lines whose text holds the text, whatever the case of either,
 as a part of a word too. `--kind`, `--about` and `--search` narrow the same
@@ -1607,27 +1608,27 @@ line is searched, as it is listed (the decision of a Spike with its answer),
 not the title or the id of its item, its kind or the terms it is about. With
 no such line it prints one line and exits 0; a blank text exits 2. The decision
 of a completed Spike is listed among the decisions at the time the Spike was
-completed, and stays kept on the Spike. A record with no line prints one line
-saying so:
+completed, under the id of the Spike with no ref, and stays kept on the Spike.
+A record with no line prints one line saying so:
 
 ```sh
 fgraph knowledge
-# 2026-11-24  deviation  S-0001  the second Task was dropped
+# 2026-11-24  deviation  S-0001#3  the second Task was dropped
 # 2026-11-23  decision  Q-0001  one file per work item (answer yes)
-# 2026-11-22  decision  F-0001  the budget is agreed
-# 2026-11-22  decision  S-0001  keep one store
-# 2026-11-22  finding  S-0001  the file holds the lines in the order noted
+# 2026-11-22  decision  F-0001#1  the budget is agreed
+# 2026-11-22  decision  S-0001#2  keep one store
+# 2026-11-22  finding  S-0001#1  the file holds the lines in the order noted
 
 fgraph knowledge --kind decision
 # 2026-11-23  decision  Q-0001  one file per work item (answer yes)
-# 2026-11-22  decision  F-0001  the budget is agreed
-# 2026-11-22  decision  S-0001  keep one store
+# 2026-11-22  decision  F-0001#1  the budget is agreed
+# 2026-11-22  decision  S-0001#2  keep one store
 
 fgraph knowledge --kind finding
-# 2026-11-22  finding  S-0001  the file holds the lines in the order noted
+# 2026-11-22  finding  S-0001#1  the file holds the lines in the order noted
 
 fgraph knowledge --search STORE
-# 2026-11-22  decision  S-0001  keep one store
+# 2026-11-22  decision  S-0001#2  keep one store
 
 fgraph knowledge --search budget --kind finding
 # no finding lines holding 'budget' in the record
@@ -1638,6 +1639,22 @@ an id the record does not hold, a blank text and a note with none or more than o
 started work item is noted in its worktree, as its Tasks are written, and every
 other one, a Feature too, on `main`; the branch of a work item writes that work
 item alone, so a Feature is not noted there.
+A later line supersedes an earlier one with `--supersedes REF`, once per line
+it supersedes, by the ref `fgraph knowledge` lists, of the same item or of any
+other. The later line keeps the refs and the earlier one is left as written;
+`fgraph show` ends the superseded line with the refs of the lines that
+supersede it, as `(superseded by S-0001#2)`. A ref that names no line exits 2 and writes nothing, with
+`--supersedes names S-0001#9, which is no knowledge line of the record: fgraph
+knowledge lists each line with its ref`:
+
+```sh
+fgraph note S-0001 --decision "keep one file per item" --supersedes S-0001#2
+# noted S-0001
+
+fgraph show S-0001
+# ...
+#   decision  2026-11-22  keep one store  (superseded by S-0001#4)
+```
 
 A completed Story, Bug or Upkeep is closed on a question: does its criterion
 hold on `main`? The run of the criterion is the agent's; `fgraph verify` keeps

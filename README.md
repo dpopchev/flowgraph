@@ -860,6 +860,9 @@ next patch, and `v0.1.0` when the repository holds no `v*` tag yet:
 fgraph land S-0002 --message "feat: land the Stories listed under InProgress"
 # landed S-0002 at 85c8d69
 
+fgraph verify S-0002 --yes "make check: all checks passed"
+# verified S-0002
+
 fgraph release
 # tagged v0.2.0 at 3becb1b
 
@@ -877,7 +880,9 @@ development off, is taken by its completed time against the time of the tag.
 for a major.
 
 A tag is never moved or deleted: a version that is tagged already is refused,
-and so is a release with nothing completed since the last tag. Each exits 2
+and so is a release with nothing completed since the last tag, and one while a
+Story, a Bug or an Upkeep completed since the last tag holds no answer of
+`fgraph verify`, yes or no, each one named. Each exits 2
 and tags nothing, and so does a release run off the checkout of `main`, as a
 start is:
 
@@ -887,7 +892,15 @@ fgraph release
 
 fgraph release --version v0.2.1
 # fgraph: error: v0.2.1 is tagged already: a tag is never moved or deleted -- name another with --version
+
+fgraph release
+# fgraph: error: S-0003 not verified since v0.2.1: no release -- run fgraph verify on each first
 ```
+
+A Spike closes on its own answer and is not asked; a no is an answer, and the
+Bug it files is its own work item. With no `v*` tag yet every completed Story,
+Bug and Upkeep is asked. The tag a landing makes under `[delivery] tag` asks
+for none.
 
 With `[delivery] push = true` the tag is pushed to the remote `main` tracks,
 once it is made, on a line of its own. A push git refuses leaves the tag as

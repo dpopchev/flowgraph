@@ -15,6 +15,11 @@ depends_on = [
     "S-0134",
 ]
 
+[verified]
+answer = "yes"
+text = "at bb43080, on a scratch record with a blocked Feature, a blocked Story, a removed Story and a Story of the Backlog that waits for another, fgraph status --all prints \"! F-0001  0/1 W  a feature title\" then \"  waiting on the sponsor: the budget is not agreed\"; \"! S-0001  0/1 T  title 1\" then \"  waiting on developer: no key\"; \"  S-0002  title 2\" then \"  not wanted\"; \"~ S-0003  []  title 3\" then \"  depends on S-0004\"; each line ends with its title and no line holds \" -- \""
+on = 2026-11-24 14:44:42+00:00
+
 [criterion]
 given = "a record with a blocked Feature, a removed work item with its reason and a work item of the backlog that waits for another"
 when = "fgraph status is run"

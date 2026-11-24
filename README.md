@@ -226,8 +226,10 @@ reads the record and writes nothing, and fgraph never sets the goal itself. The 
 `development.parallel` and the hours come from the record and the option; the rest
 is fixed text. `--hours N` bounds the goal, 8 by default. It is refused, exit 2, for
 a record whose `development.enabled` is off or whose `development.driver` is not
-`agent`, for a Feature with no work item in Backlog, and for hours that are not a
-whole number of 1 or more:
+`agent`, for a Feature with no work item in Backlog, for a Feature holding a work item in
+Backlog with no Task or no complexity, refused in the words of the start of the Feature (the
+Task line is `F-0001 cannot start: S-0002 has no Task to start with`), and for hours that are
+not a whole number of 1 or more:
 
 ```sh
 fgraph goal F-0001 --hours 4

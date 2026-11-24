@@ -28,3 +28,8 @@ description = "Change docs/domain-model.md only (3343 lines on 2026-11-24); find
 check = "grep -q 'is not related here' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, in the bullet that says fgraph relate is a write of a term, gives the refusal gate is not related here: the branch wi/S-0001-a-slug writes S-0001 alone beside the add term one"
 created = 2026-11-24 22:08:52+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, under the /goal of Phase 1 the developer set on 2026-11-24, which has the coordinator write the Tasks before a Feature starts; the developer was not asked and reviews them at the close: (1) The criterion asks for `the term is not related here`, so the code must change (the item description names only the missing test): save_term of within words the verb related for a term the record already holds and added for a new one; this is the smaller change, since relate_term_item and add_term_item stay as they are and save_term needs no new parameter. (2) The word chosen is `gate is not related here: the branch <branch> writes S-0001 alone`, the exact form of the add term line with related for added. (3) One Task for the source and its tests (a test seen failing first is part of the criterion), one for the passage of docs/domain-model.md; README.md does not state the refusal. (4) The unit tests sit in tests/development/scope/test_scope.py (command marker, a fake TermStore) and the end-to-end one in tests/functional/test_term_worktree.py, which already holds the fixture of a started S-0001 with the terms gate and lane."
+noted = 2026-11-24 22:10:06+00:00

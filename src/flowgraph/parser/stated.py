@@ -1,5 +1,5 @@
 """What the arguments of a command state of a work item: the criterion of an add, the decision of
-a complete or a land."""
+a complete or a land, and the deviation of an amend."""
 
 import argparse
 
@@ -11,6 +11,8 @@ from flowgraph.criterion import (
     make_hypothesis,
     make_scenario,
 )
+from flowgraph.knowledge import DEVIATION, KnowledgeLine, make_knowledge_line
+from flowgraph.record import Now
 
 
 def criterion_added(args: argparse.Namespace) -> Criterion:
@@ -33,3 +35,14 @@ def decision_given(args: argparse.Namespace) -> Decision | None:
     Raises DecisionError when an answer is given without its decision.
     """
     return make_decision(args.decision, args.answer)
+
+
+def deviation_given(args: argparse.Namespace, now: Now) -> KnowledgeLine | None:
+    """The deviation the arguments of an amend give, none when they give none.
+
+    It is a line of kind deviation about no term, governing no file; the clock is read only when
+    a text is given. Raises EmptyPartError when the text is blank.
+    """
+    if args.deviation is None:
+        return None
+    return make_knowledge_line(DEVIATION, args.deviation, now())

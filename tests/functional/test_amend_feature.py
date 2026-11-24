@@ -33,6 +33,9 @@ COMPLETE = [
     ["complete", "T-0001", "--commit", "abc1234"],
     ["complete", "S-0001", "--commit", "abc1234"],
 ]
+NEEDED = (
+    "F-0001 is started: amend it with --deviation TEXT, what changes in what it was agreed to do"
+)
 ONLY_A_FEATURE = "a Feature is amended by its title, its description and its criteria"
 
 
@@ -109,7 +112,9 @@ def test_the_criteria_given_replace_the_ones_it_had_and_its_story_stays_under_it
 
 def test_a_feature_amended_keeps_the_place_the_queue_gave_it(tmp_path: Path) -> None:
     reorder = ["reorder", "F-0001", "--before", "S-0001"]
-    listed = runs(tmp_path, ADD_ALONE, ADD_FEATURE, reorder, AMEND_TITLE, ["status"]).out
+    listed = runs(
+        tmp_path, ADD_ALONE, ADD_FEATURE, reorder, AMEND_TITLE, ["status", "--backlog"]
+    ).out
     assert listed.splitlines()[:3] == [
         "Backlog (2)",
         "  F-0001  0/0 W  another title",
@@ -128,8 +133,8 @@ def test_a_feature_amended_keeps_the_place_the_queue_gave_it(tmp_path: Path) -> 
             [ADD_FEATURE, [*AMEND_TITLE, "--parent", "none"]],
             f"F-0001 has no parent: {ONLY_A_FEATURE}",
         ),
-        ([*STARTED, AMEND_TITLE], "F-0001 is started already"),
-        ([*STARTED, BLOCK, AMEND_TITLE], "F-0001 is blocked"),
+        ([*STARTED, AMEND_TITLE], NEEDED),
+        ([*STARTED, BLOCK, AMEND_TITLE], NEEDED),
         ([*STARTED, *COMPLETE, AMEND_TITLE], "F-0001 is completed already"),
         ([ADD_FEATURE, ["amend", "F-0009", "--title", "new"]], "no Feature F-0009 in the record"),
         (

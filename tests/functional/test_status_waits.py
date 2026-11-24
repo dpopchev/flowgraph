@@ -30,7 +30,7 @@ FIRST_DONE = (
     ["complete", "T-0001", "--commit", "abc1234"],
     ["complete", "S-0001", "--commit", "def5678"],
 )
-STATUS = ["status"]
+STATUS = ["status", "--backlog"]
 
 
 @dataclass(frozen=True)

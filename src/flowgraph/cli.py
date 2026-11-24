@@ -20,7 +20,7 @@ from flowgraph.development.config_git import record_named
 from flowgraph.development.scope import scope_in, within, worktree_of_item
 from flowgraph.development.worktrees import across_worktrees, held_elsewhere, record_of_main
 from flowgraph.item.commands import status_item
-from flowgraph.parser import REFUSED, TOP, build_command_line, help_asked
+from flowgraph.parser import REFUSED, build_command_line, help_asked
 from flowgraph.parser.command import command_said
 from flowgraph.parser.ids import ids_read
 from flowgraph.parser.not_given import no_check, no_config, no_dir, no_gate, no_removal, no_wait
@@ -45,6 +45,7 @@ from flowgraph.record.store import OpenStore, Store, open_files
 from flowgraph.relation.read import check_relations
 from flowgraph.status.next import start_limit
 from flowgraph.status.terminal import Height, Width, no_terminal, terminal_height, terminal_width
+from flowgraph.status.tops import tops_asked
 from flowgraph.status.watch import Wait, framed, make_pace, watch
 
 __all__ = ["Store", "open_files", "open_git", "read_config", "record_named", "run", "run_gate"]
@@ -84,11 +85,11 @@ def _watch(
     for are no positive number; no frame is written then.
     """
     pace = make_pace(args.seconds, args.count)
-    top = None if args.all else TOP
+    tops = tops_asked(every=args.all, backlog=args.backlog)
     limit = start_limit(config.development)
 
     def read_frame() -> str:
-        return framed(status_item(store, top, limit), width(), height())
+        return framed(status_item(store, tops, limit), width(), height())
 
     watch(read_frame, write, wait, pace)
 

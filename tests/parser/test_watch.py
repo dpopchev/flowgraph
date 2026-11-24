@@ -39,6 +39,15 @@ def test_watch_asks_for_every_item_with_all_alone(argv: list[str], every: bool) 
 
 
 @pytest.mark.parametrize(
+    ("argv", "whole"),
+    [(["watch"], False), (["watch", "--backlog"], True)],
+    ids=["the-top", "whole-backlog"],
+)
+def test_watch_asks_for_the_whole_backlog_with_backlog_alone(argv: list[str], whole: bool) -> None:
+    assert PARSER.parse_args(argv).backlog is whole
+
+
+@pytest.mark.parametrize(
     "argv",
     [["watch", "-n", "soon"], ["watch", "--count", "1.5"], ["watch", "--count", "many"]],
     ids=["seconds-no-number", "count-no-whole-number", "count-no-number"],

@@ -1,12 +1,14 @@
 id = "S-0134"
-state = "started"
+state = "completed"
 title = "Cut the completed items fgraph status lists with a count of what they hold from every Feature to none"
 description = "Filed on the word of the developer of 2026-11-23, from the frame drawn that day. Its Tasks are written when it is ordered. Today a completed Feature is listed with its work items completed of all, as 10/10 W, before its commit."
 parent = "F-0017"
 complexity = "low"
 created = 2026-11-23 12:01:46+00:00
 started = 2026-11-24 09:49:44+00:00
-agent = "haiku-a37"
+completed = 2026-11-24 11:11:40+00:00
+agent = "haiku-a38"
+commit = "cd18b47"
 depends_on = [
     "S-0133",
 ]
@@ -18,27 +20,41 @@ then = "each is listed with its id, its commit and its title, and neither with a
 
 [[tasks]]
 id = "T-0594"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_status_completed_count.py, failing on the criterion of S-0134"
 description = "Frame before: `Completed (2)`, `  F-0001  2/2 W  5678def  a feature title`, `  S-0003  abc1233  title 3`. After: `Completed (2)`, `  F-0001  5678def  a feature title`, `  S-0003  abc1233  title 3`. One new file, no source change: tests/functional/test_status_completed_count.py (about 120 lines), functional as its pytestmark, one assert per test, through run() of src/flowgraph/cli.py with no git and the development off. Copy from tests/functional/test_complete_feature.py (281 lines): START, CRITERION, Outcome, fgraph and runs, and its way to a completed Feature of two Stories: TWO_STORIES, FIRST_COMPLETED, SECOND_READY and COMPLETE_SECOND, which completes S-0002 at 5678def and the Feature with it. Record DONE: a Story standing alone first so that the Feature is the last completed -- add story `title 3` is added after the two of the Feature (it is S-0003), given a Task (T-0003), started, its Task started and completed and itself completed at abc1233 -- then the commands that complete the Feature. Record ONE_DONE: the Feature with its first Story completed and its second started (SECOND_AWAITED of that file). Record ADDED: add feature, add story under it. XFAIL = pytest.mark.xfail(strict=True, reason=\"S-0134: a completed Feature is listed with its work items completed of all\"). Red tests, each marked, on DONE: the lines of status from `Completed (2)` on equal [`Completed (2)`, `  F-0001  5678def  a feature title`, `  S-0003  abc1233  title 3`]; no line under Completed holds ` W  ` or ` T  `; the same lines of watch --count 1 equal those of status. Guards, no mark, passing today and after: on ONE_DONE the line of F-0001 under InProgress holds `1/2 W`; on ADDED the line of F-0001 under Backlog reads `> F-0001  0/1 W  a feature title`; on DONE status --format json gives the progress of F-0001 as {\"completed\": 2, \"total\": 2}, the document unchanged. Read every literal from the run before it is marked: the order of the two lines is the last completed first, and the commit of the Feature is that of its last completed Story. See each marked test xfail and each guard pass before the commit. Out of bounds: every file under src/, every other test file, the docs."
 check = "uv run pytest tests/functional/test_status_completed_count.py -q && grep -q xfail tests/functional/test_status_completed_count.py"
 expected_output = "created: tests/functional/test_status_completed_count.py states that on a record with a completed Feature of two work items and a completed Story standing alone, fgraph status lists under Completed `  F-0001  5678def  a feature title` and `  S-0003  abc1233  title 3`, neither with a count of what it holds; that fgraph watch lists the same; and, as guards, that a Feature of InProgress and one of Backlog keep their `N/M W` and that the JSON keeps the progress of the completed Feature. Each red test carries a strict xfail naming S-0134"
 created = 2026-11-23 21:04:54+00:00
+started = 2026-11-24 09:50:17+00:00
+completed = 2026-11-24 09:51:39+00:00
+commit = "9523ba42feacbd648c9de2ed8bdb0f3d1740c00b"
 
 [[tasks]]
 id = "T-0595"
-state = "backlog"
+state = "completed"
 title = "List a Feature under Completed with its id, its commit and its title, and no count of its work items"
 description = "Change src/flowgraph/status/feature_lines.py (about 75 lines, about 80 after) and tests. In feature_lines: the line of the Feature is f\"{feature.id}  {progress}  {commit}{feature.title}\" today; for a Feature whose bucket is COMPLETED_BUCKET (import it from flowgraph.status.buckets) it is f\"{feature.id}  {commit}{feature.title}\", commit the one it holds followed by two spaces, or nothing. The rule reads the bucket of the row, so a Feature never started whose work items are all completed -- Completed by its derived bucket, with no commit -- reads its id and its title alone. Everything after the line stays: a Feature of Completed has no started work item and no block, so it is one line. Rewrite the sentence of the docstring that says a completed one is listed with its commit after the progress every line of a Feature holds: a Feature of Completed is listed whole, id, commit, title, the count of its children bringing little (the developer's frame of 2026-11-23, S-0134). Red first: change the unit tests, see them fail, then the line. Tests in tests/status/text/test_status_features.py (131 lines): test_a_feature_is_listed_among_the_work_items_of_its_bucket_in_the_order_given expects `  F-0003  a done feature`; test_a_feature_completed_in_a_commit_is_listed_with_it_between_its_progress_and_its_title is renamed to say between its id and its title and expects `  F-0004  def5678  a landed feature`; add: a FeatureRow of Completed with completed work_items and a commit is one line (no line under it), and a FeatureRow of InProgress with a commit-less row keeps `1/4 W` (BEGUN of that file). Existing tests that pin `N/M W` on a line of Completed, 12 in 5 files (counted by a run with the count patched out): tests/functional/test_complete_feature.py 5, test_complete_feature_branch.py 1, test_status_features.py 1; tests/item/test_status_features.py 3; tests/status/text/test_status_features.py 2 (the two above). Correct each expected line by removing `N/M W` and its two spaces; rename a test whose name says with its progress. Then remove XFAIL and its marks from tests/functional/test_status_completed_count.py. Out of bounds: src/flowgraph/status/work_item_lines.py (a completed work item holds no count today), document.py (the progress of a completed Feature stays in the JSON), src/flowgraph/status/show.py (fgraph show of a Feature lists its work items as before), the docs."
 check = "uv run pytest tests/functional tests/status tests/item -q && ! grep -q xfail tests/functional/test_status_completed_count.py && make lines"
 expected_output = "changed: feature_lines of src/flowgraph/status/feature_lines.py writes a Feature whose bucket is Completed as its id, its commit when it holds one, and its title, with no `N/M W`; one with no commit reads its id and its title alone; a Feature of Backlog and of InProgress keeps its count, a removed one its reason; a completed work item reads as before, id, commit, title; the JSON does not change. No xfail mark is left in tests/functional/test_status_completed_count.py"
 created = 2026-11-23 21:05:00+00:00
+started = 2026-11-24 09:51:46+00:00
+completed = 2026-11-24 10:49:33+00:00
+commit = "b81f4fc37e712c5533a01d16f2c36f35568dd1cb"
 
 [[tasks]]
 id = "T-0596"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a completed Feature is listed with its commit and no count of its work items"
 description = "Change README.md and docs/domain-model.md only; find each passage by grep, never by line number. Each file must hold the words no count of its work items on one line. docs/domain-model.md: (1) the bullet starting On a terminal `fgraph status` cuts each line -- its clause a completed Feature holds its commit there too, after its progress, `F-0001  2/2 W  677f9b0  <title>`: a completed Feature holds its commit there too, right after its id, `F-0001  677f9b0  <title>`, with no count of its work items (S-0134). (2) The bullet starting `fgraph status` lists a Feature inside its bucket -- The line is its id, its progress and its title: add that under Completed the line holds no progress, the Feature listed whole. (3) Any other passage the grep \"W  677f9b0\\|W  <commit>\" finds. (4) Say once that the JSON keeps the progress of a completed Feature. README.md: (1) the paragraph that explains the progress of a Feature (grep -n \"1/3 W\" README.md): add one sentence, a Feature under Completed is listed with its commit and no count of its work items. (2) Every example line of a Feature under a `# Completed` heading: grep -En \"^#   F-[0-9]{4}  [0-9]+/[0-9]+ W\" README.md finds five lines; those under `# Completed (N)` -- the one with 677f9b0 and the one in the block of the first example of the README, `#   F-0001  1/1 W  Raise the kinds of work ...` listed between two completed work items -- lose `N/M W`; those under `# Backlog` and `# InProgress` stay. Check each of the five against the heading above it. Do not touch the blocks of fgraph show. Keep each edit inside its paragraph, bullet or block. Plain ASCII. No source or test change."
 check = "! grep -q \"2/2 W  677f9b0\" docs/domain-model.md && ! grep -Eq \"^#   F-[0-9]{4}  [0-9]+/[0-9]+ W  [0-9a-f]{7}  \" README.md && grep -q \"no count of its work items\" README.md && grep -q \"no count of its work items\" docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md and README.md say a Feature under Completed is listed as `F-0001  677f9b0  <title>`, its id, its commit and its title with no `N/M W`, the developer's frame of 2026-11-23 (S-0134); no passage or example shows `W` on a line of a Feature under Completed"
 created = 2026-11-23 21:05:06+00:00
+started = 2026-11-24 10:52:54+00:00
+completed = 2026-11-24 10:53:59+00:00
+commit = "e09e032e87751a700f7bbb1846bd092a3ff5d943"
+
+[[knowledge]]
+kind = "deviation"
+text = "The developer agreed on 2026-11-24: T-0595 also corrects one expected line its brief does not name, in tests/status/text/test_status_completed_under.py::test_a_completed_feature_lists_its_work_items_on_no_line, landed with S-0133 after the Tasks were written: \"  F-0003  2/2 W  a done feature\" loses 2/2 W and its two spaces, the thirteenth pin by the rule of the twelve. Nothing else of that file changes."
+noted = 2026-11-24 10:17:41+00:00

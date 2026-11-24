@@ -42,15 +42,14 @@ from flowgraph.knowledge.governed import governs_asked
 from flowgraph.knowledge.supersede import supersedes_asked
 from flowgraph.parent import NO_CRITERION, parent_asked, realizes_asked
 from flowgraph.parser.checks import check_command
-from flowgraph.parser.item_commands import TOP
 from flowgraph.parser.start import start_named
-from flowgraph.parser.stated import criterion_added, decision_given
+from flowgraph.parser.stated import criterion_added, decision_given, deviation_given
 from flowgraph.parser.views import view_said
 from flowgraph.record import Config, Now
 from flowgraph.record.setting import set_setting, show_config, unset_setting
 from flowgraph.record.store import Store
 from flowgraph.relation.depends import amends_asked, depends_asked, filed_during_asked
-from flowgraph.status import status_output
+from flowgraph.status import status_output, tops_asked
 from flowgraph.status.next import start_limit
 from flowgraph.status.terminal import Width
 from flowgraph.status.top import top_to_start
@@ -134,7 +133,7 @@ def _written(
                 args.output,
                 args.check,
             )
-            return amend_named(args.id, parts, args.criterion, store)
+            return amend_named(args.id, parts, args.criterion, store, deviation_given(args, now))
         case "complete" if is_feature_id(args.id):
             return complete_feature_item(args.id, args.commit, store, now)
         case "complete":
@@ -232,8 +231,7 @@ def command_said(
             return sync_branch(record, open_git, config)
         case "status":
             limit = start_limit(config.development)
-            return Said(
-                status_output(store, None if args.all else TOP, args.format, width(), limit)
-            )
+            tops = tops_asked(every=args.all, backlog=args.backlog)
+            return Said(status_output(store, tops, args.format, width(), limit))
         case _:
             return view_said(args, store, cwd, open_git, record, config)

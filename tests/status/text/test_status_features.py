@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 import pytest
 
 from flowgraph.feature import FeatureRow
-from flowgraph.status import status_text
+from flowgraph.status import same_top, status_text
 from flowgraph.task import TaskRow
 from flowgraph.work_item import WorkItemRow
 
@@ -44,16 +44,25 @@ def test_a_feature_is_listed_in_its_bucket_as_one_line_with_its_progress() -> No
 def test_a_feature_is_listed_among_the_work_items_of_its_bucket_in_the_order_given() -> None:
     assert status_text(ROWS).splitlines()[-3:] == [
         "Completed (2)",
-        "  F-0003  2/2 W  a done feature",
+        "  F-0003  a done feature",
         "  S-0006  abc1234  a done title",
     ]
 
 
-def test_a_feature_completed_in_a_commit_is_listed_with_it_between_its_progress_and_its_title() -> (
-    None
-):
+def test_a_feature_completed_in_a_commit_is_listed_with_it_between_its_id_and_its_title() -> None:
     landed = FeatureRow("F-0004", "a landed feature", "Completed", 2, 2, commit="def5678")
-    assert status_text([landed]).splitlines()[-1] == "  F-0004  2/2 W  def5678  a landed feature"
+    assert status_text([landed]).splitlines()[-1] == "  F-0004  def5678  a landed feature"
+
+
+def test_a_completed_feature_with_its_completed_work_items_is_one_line_with_its_commit() -> None:
+    done = WorkItemRow("S-0006", "a done title", "completed", "abc1234", created=CREATED)
+    landed = FeatureRow(
+        "F-0004", "a landed feature", "Completed", 1, 1, work_items=[done], commit="def5678"
+    )
+    assert status_text([landed]).splitlines()[-2:] == [
+        "Completed (1)",
+        "  F-0004  def5678  a landed feature",
+    ]
 
 
 def test_the_started_work_items_of_a_feature_are_listed_under_its_line_indented() -> None:
@@ -69,7 +78,7 @@ def test_the_started_work_items_of_a_feature_are_listed_under_its_line_indented(
 def test_a_work_item_under_its_feature_counts_neither_beside_the_heading_nor_toward_the_top() -> (
     None
 ):
-    assert status_text([BEGUN, ALONE, OTHER], top=2).splitlines()[1:] == [
+    assert status_text([BEGUN, ALONE, OTHER], same_top(2)).splitlines()[1:] == [
         "InProgress (3)",
         "  F-0002  1/4 W  a begun feature",
         "    S-0003  1/2 T  a worked title",

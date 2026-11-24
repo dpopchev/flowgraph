@@ -4,9 +4,11 @@ from flowgraph.work_item.amend import (
     Amendment,
     CheckMove,
     CheckRealizes,
+    DeviationError,
     NoPartError,
     NoSuchPartError,
     amended_work_item,
+    check_deviation,
 )
 from flowgraph.work_item.block import (
     block_of,
@@ -124,6 +126,7 @@ __all__ = [
     "Complexity",
     "ComplexityError",
     "DependsRow",
+    "DeviationError",
     "FindTaskIds",
     "FindWorkItemRows",
     "JoinParent",
@@ -165,6 +168,7 @@ __all__ = [
     "block_work_item",
     "blocked_task",
     "blocked_work_item",
+    "check_deviation",
     "commit_sha",
     "complete_task",
     "completed_task",

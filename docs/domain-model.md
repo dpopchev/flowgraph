@@ -149,8 +149,7 @@ the Task in Backlog rewrites it (S-0144).
 
 A Story, a Bug, an Upkeep and a Spike carry a complexity: `low`, `medium` or
 `high`, none when it is left out, the reading of S-0112. It is set by `fgraph
-add` and by `fgraph amend`, the latter in Backlog alone, as every part of an
-amend is, and every move carries it: the start, the completion and the removal
+add` and by `fgraph amend`, the latter in Backlog alone, and every move carries it: the start, the completion and the removal
 keep the complexity the item had. It is built by `make_complexity`, so any other
 word is refused, exit 2, naming `low`, `medium` and `high`. It is not taken back
 to none by an amend. A Feature and a Task carry none. Which model, or which
@@ -161,7 +160,8 @@ A work item in any state also keeps its knowledge: the lines noted on it, in
 the order noted. A line holds its kind, its text and the time it was noted; the
 kind is one of three, a sum type: a finding records what was learned, a decision
 what was decided, and a deviation a change to what a started item was agreed to
-do, since `fgraph amend` refuses one once it is started. A line may carry one
+do: `fgraph amend` of a started item keeps one with the part it rewrites, and
+`fgraph note` keeps one alone. A line may carry one
 mark, a sum of three with no mark: standing, the line holds until a later line
 supersedes it, and open, the line is not settled yet; a line of any kind takes
 one. The mark is given when the line is noted and, as the line, never amended;
@@ -362,8 +362,8 @@ of work item. The developer said so on 2026-11-21.
   item holds a complexity (S-0129), and with the driver a developer the Tasks
   alone decide; a line not planned is unmarked, with no suffix. With the
   development off the Tasks are not read. Each marked line the top
-  of the Backlog leaves out is listed after the top, apart from the count of
-  those more; a Backlog where nothing can start marks none. It is a view of
+  of the Backlog leaves out is counted in its more-line, `... N more, M can
+  start`, and not listed; a Backlog where nothing can start marks none. It is a view of
   `fgraph status` and `fgraph watch`: no `next` command exists. The view holds
   it as data on the row, beside what the row waits for.
 - `fgraph start` given no id starts the first of them (S-0121, the decision of
@@ -415,15 +415,20 @@ of work item. The developer said so on 2026-11-21.
   line of their own, those removed before it too; the completed ones of a
   removed Feature are on no line either, and its show lists them Completed
   (Persistence).
-- `fgraph status` lists the top 5 under each heading, the developer's
-  decision of 2026-11-21: the first five of the Backlog, of InProgress, of
-  Completed and of Removed, in the order each is listed in, then one line
-  `... N more` for the N it does not list. The count beside the heading stays
-  that of all its items, and a heading of five or fewer has no such line.
-  `fgraph status --all` lists every one. A Feature is one item of its bucket:
-  it counts once toward the top 5 and once beside the heading (Persistence).
-  Until the Features were listed inside their buckets they had a heading of
-  their own, with a top 5 of its own.
+- `fgraph status` lists the top of each heading, the developer's decision of
+  2026-11-21: the first five of InProgress, of Completed and of Removed, in
+  the order each is listed in, then one line `... N more` for the N it does
+  not list. The Backlog lists its first line alone, the developer's decision
+  of 2026-11-23 (S-0130), then one line `... N more, M can start`, N the lines
+  it does not list and M those of them marked as able to start, the same lines
+  `can_start` of the JSON names. The count beside the heading stays that of
+  all its items, and a heading with no more than its top has no such line.
+  `fgraph status --backlog` lists the whole Backlog and leaves the other
+  buckets short; `fgraph status --all` lists every line of every bucket. A
+  Feature is one item of its bucket: it counts once toward the top of the
+  heading and once beside the heading (Persistence). Until the Features were
+  listed inside their buckets they had a heading of their own, with a top of
+  its own.
 - `fgraph status` lists a work item under InProgress with its progress, the
   developer's decision of 2026-11-21: `<completed>/<all> T`, its Tasks
   completed of all it holds, between its id and its title, written as board
@@ -447,7 +452,7 @@ of work item. The developer said so on 2026-11-21.
   file holds them (S-0084: the line names the reason of the block beside what
   it waits on; with an empty reason the `: <reason>` is left out). A Task in Backlog,
   completed or removed is not listed. A Task line belongs to
-  its work item: it does not count toward the top 5 of the heading, nor in
+  its work item: it does not count toward the top of the heading, nor in
   the count beside it.
 - `fgraph status` marks `?` a started work item that holds a Task with every Task
   completed, as ready for review, the reading of S-0114: the mark stands in the first
@@ -459,14 +464,16 @@ of work item. The developer said so on 2026-11-21.
   started or blocked, nor a completed one; the line of a Feature carries no mark. A removed
   Task counts neither way: a work item whose Tasks left are each completed is marked, and
   one whose every Task is removed is not (S-0147). A marked
-  line the top leaves out is listed after it, apart from the count of those more.
+  line the top leaves out is listed after it, apart from the count of those more,
+  in InProgress; in the Backlog a line that can start beyond the top is counted
+  in the more-line, `... N more, M can start`, and not listed.
 - Under a Feature of InProgress `fgraph status` lists each started work item
   of it, the developer's words of 2026-11-21 -- a Feature is to its work
   items what a work item is to its Tasks: the work item as one of InProgress
   is written, with its progress and under it its Tasks being worked, two
   columns further in -- `    S-0001  1/3 T  <title>`, then
   `      => T-0001  <title>` -- the last started first. Those lines belong to
-  the Feature: they count neither toward the top 5 of the heading nor in the
+  the Feature: they count neither toward the top of the heading nor in the
   count beside it. A completed work item of a Feature in progress stays listed under it,
   after the started ones and those that can start, in the order `fgraph show` lists them,
   as `    S-0001  2/2 T  <title>`: its id, its Tasks completed of all and its title, with no
@@ -515,8 +522,9 @@ of work item. The developer said so on 2026-11-21.
   is whole. So that the cut keeps it, a completed work item is listed with
   its commit before its title, `S-0001  677f9b0  <title>`, and one completed
   without a commit with its id and its title alone (Evidence); a completed
-  Feature holds its commit there too, after its progress,
-  `F-0001  2/2 W  677f9b0  <title>` (Persistence); the reason of a removed
+  Feature holds its commit there too, right after its id,
+  `F-0001  677f9b0  <title>`, with no count of its work items (S-0134,
+  Persistence); the reason of a removed
   one still ends its line. Only status is cut, and a frame of watch
   with it. The width is an effect: `run()` takes it as a callable, none when
   the output is no terminal, and `main()` reads it from the terminal.
@@ -528,8 +536,8 @@ of work item. The developer said so on 2026-11-21.
   writes, read anew from the record each time: watch writes a frame, waits
   and writes the next, every 5 seconds or every `-n SECS`, a part of a
   second too. Each line is cut to the width of the terminal as status cuts
-  it, the width asked for again at every frame. `--all` lists every item, as
-  on status. It ends after `--count N` frames with exit 0, no wait after the
+  it, the width asked for again at every frame. `--all` lists every item and
+  `--backlog` the whole Backlog, as on status. It ends after `--count N` frames with exit 0, no wait after the
   last; without a count Ctrl-C ends it, with exit 0 and no traceback, since
   that is how a watch is left. A `-n` or a `--count` that is no positive
   number is refused with exit 2 before a frame is written.
@@ -558,8 +566,28 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
   blank part of the criterion is refused. The description is optional free
   text: a blank one clears it.
 - An amendment that names no part is refused.
-- Only a work item in Backlog is amended: a started or a completed one is
-  refused, since its wording is what the work was started on.
+- Only a work item in Backlog is amended: a started or blocked one is amended
+  with its deviation, a completed or removed one refused.
+- A started or blocked item is amended with `--deviation TEXT`, the change to
+  what it was agreed to do (S-0145). The line is one knowledge line of kind
+  deviation, built by the constructor `fgraph note --deviation` goes through,
+  about no term and governing no file, and saved with the item whole: one
+  commit, `chore: amend S-0001 in the record`, and the amend still says
+  `amended S-0001`.
+- The parts taken once started are the title, the description, the parts of
+  the criterion and the terms; the complexity, the parent and what it depends
+  on are of the Backlog alone, refused with their line, `S-0001 is started:
+  its complexity, its parent and what it depends on are amended in Backlog
+  alone`. A blocked item counts as started.
+- Two lines of `DeviationError` refuse it: without the text, `S-0001 is
+  started: amend it with --deviation TEXT, what changes in what it was agreed
+  to do`; with it for an item in Backlog, `S-0001 is in Backlog: it has no
+  agreed plan to deviate from -- amend it without --deviation`. A deviation
+  alone is `fgraph note`; a Task takes none, `T-0001 takes no --deviation: a
+  Task keeps no knowledge line`.
+- With the development on, a started work item is amended in its worktree,
+  one commit of its branch, and refused on main naming that worktree; a
+  started Feature is amended on main.
 - Its parent is a part too, the reading of S-0059: `--parent F-0001` puts the
   work item under that Feature and `--parent none` takes it out to stand
   alone, alone or beside the other parts. It is still no move of the work
@@ -609,9 +637,11 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
   never writes. It is one write of the file of the Feature, committed as
   `chore: amend F-0001 in the record`, made where a Feature is written: on
   the branch of a work item it is refused, as every write of a Feature is.
-- Only a Feature in Backlog by its own state is amended, as only a work item
-  in Backlog is: a started, a blocked or a completed one is refused, `F-0001
-  is started already`, `F-0001 is blocked`, `F-0001 is completed already`. An
+- A Feature is amended by its own state as a work item is: a started or
+  blocked one with its deviation, the same change, refused without it with
+  the line `F-0001 is started: amend it with --deviation TEXT, what changes
+  in what it was agreed to do`; a completed one is refused, `F-0001 is
+  completed already`. An
   amendment that names no part is refused, and so is a Feature the record
   does not hold. The parts of a work item are not those of a Feature:
   `--given`, `--when`, `--then`, `--observed`, `--expected`, `--hypothesis`
@@ -1025,7 +1055,7 @@ reading of S-0087: no fact is computed again and none is read back from the text
 read by a consumer that parses it, so the keys below are a contract. `text` is the default
 and prints what status printed before; another word is refused naming both, exit 2, as
 `fgraph graph` refuses one. `--all` changes nothing for JSON, which lists every item
-anyway; `fgraph watch` stays text. The keys of every object are sorted, the indent is two
+anyway, and neither does `--backlog`; `fgraph watch` stays text. The keys of every object are sorted, the indent is two
 and the text ends with a newline, so two runs on one record print the same bytes. A key
 that holds nothing is `null`, never an empty text; a list that holds nothing is `[]`.
 
@@ -1401,9 +1431,9 @@ and its merge tool.
   unblock it first`, and the check of a Task of it is not run. A Task is
   still added to it and a line still noted. Its start, complete and hand are
   refused, `S-0001 is blocked: unblock it first`, and so is its landing,
-  which drops the merge held; its amend is refused, `S-0001 is blocked`, and
-  so is the remove of a Feature holding it, `F-0001 cannot be removed: S-0001
-  is blocked`. Its own remove is no longer refused: it is removed on main as
+  which drops the merge held; its amend is taken with its deviation, as a
+  started one's; the remove of a Feature holding it is refused, `F-0001
+  cannot be removed: S-0001 is blocked`. Its own remove is no longer refused: it is removed on main as
   a started one is (S-0148, below). `fgraph block` still takes a Task and a
   Feature, as before.
 - A completed item is kept as `state = "completed"` with its `started` and
@@ -1850,9 +1880,10 @@ and its merge tool.
   its work items, the developer's words of 2026-11-21: a Feature is an
   umbrella, part of the Backlog, that just holds a couple of work items. The
   line is its id, its progress and its title, `F-0001  1/3 W  <title>`, in
-  its bucket (above), placed there as Order says. It is one
+  its bucket (above), placed there as Order says; under Completed the line
+  holds no progress, the Feature listed whole (S-0134). It is one
   item of that bucket: counted once beside the heading and once toward the
-  top 5. Its work items in Backlog are listed on no line of their own; the completed ones
+  top of it. Its work items in Backlog are listed on no line of their own; the completed ones
   of a Feature in progress are listed under its line and counted beside no heading, and
   those of a completed or a removed Feature stay on no line. They are counted in its
   progress, and `fgraph show` of the Feature lists them with their buckets,
@@ -1860,10 +1891,10 @@ and its merge tool.
   listed under the line of its Feature (Order), and a removed one keeps its
   line under Removed while its Feature is not removed itself (above).
 - A completed Feature is listed under Completed with its commit between its
-  progress and its title, `F-0001  2/2 W  677f9b0  <title>`: the progress
-  stays right after the id, as on the line of a Feature in any bucket, and
-  the commit right before the title, as on the line of a completed work item,
-  so a line cut to the width keeps both. One completed without a commit, and
+  id and its title, `F-0001  677f9b0  <title>`, and no count of its work
+  items (S-0134): the commit stands right after the id, as the commit of a
+  completed work item stands before its title, so a line cut to the width
+  keeps it. The JSON keeps the progress of a completed Feature. One completed without a commit, and
   a Feature never started that is derived Completed, are listed without one,
   `F-0001  2/2 W  <title>`. `fgraph show` of a completed Feature lists
   `bucket       Completed` and under it `commit       677f9b0`, the commit
@@ -1882,9 +1913,10 @@ and its merge tool.
   are completed of all it holds, written as board 1's watch writes it. A
   removed work item is counted in neither number, a started or a Backlog one
   only in the second, and a Feature without a work item reads `0/0 W`. Every
-  Feature is listed with it, in any bucket of the flow:
+  Feature is listed with it, in any bucket of the flow but Completed:
   `F-0001  1/3 W  <title>`. A removed one alone is listed without it
-  (above).
+  (above), and a completed one with no count, its progress kept in the JSON
+  (S-0134).
 - A Feature takes every operation of a work item, each built: it is added
   and shown, reordered in the queue (Order), started with its first work
   item, its next work item started with the completion of the one before,
@@ -2166,16 +2198,19 @@ development too.
 - The configuration is read at the edge into a value of the model
   (`src/flowgraph/record/config.py`). Reading it is an effect: `run()` takes it as a
   callable, the defaults when none is given, and `main()` reads the file.
-- Only these five keys are built: `git.commit`, `development.enabled`,
-  `development.parallel`, `development.merge` and `development.gate`, each
-  named dotted, its table and its key. The record of flowgraph holds
+- The keys built are the ones `fgraph config show` lists, in its order:
+  `git.commit`, `development.enabled`, `development.parallel`,
+  `development.merge`, `development.gate`, `development.driver`,
+  `development.mode`, `development.branch_max`, `development.approver`,
+  `delivery.push`, `delivery.tag` and `archive.board`, each named dotted, its
+  table and its key. The record of flowgraph holds
   `[development] enabled = true`, no `parallel`, no `merge` and no `gate`.
 - The configuration is shown and set through `fgraph config`, the reading of
   S-0045, so the file is no longer written by hand.
 - `fgraph config show` lists every key, dotted, with its value, one a line,
   `<key> = <value>`. The value is written as the file writes it: `true`, `2`,
   `"squash"`, `"make check"`. A key the file leaves out is listed at its
-  default, so a record without the file lists the five defaults.
+  default, so a record without the file lists the default of each key.
 - A key that holds no value -- `parallel` without a limit, `gate` without a
   command -- is listed as `none`, chosen when S-0045 was built. `none` is no
   value of the file, so the gate `"none"`, listed in its quotes, is not
@@ -2210,11 +2245,16 @@ development too.
   states below: `config.toml` is no file of the work item. In any other work
   tree it is written, held to `main` no more than any write but the start of
   a work item. `fgraph config show` writes nothing and runs anywhere.
-- A key is taken back to its default by setting that default; no unset is
-  built. `git.commit`, `development.enabled` and `development.merge` have a
-  default to set. `development.parallel` and `development.gate` have none:
-  once set they take another value by a set, and are taken back to none only
-  by removing their line from the file.
+- A key is taken back to its default by `fgraph config unset KEY`
+  (`unset_setting`, `src/flowgraph/record/setting.py`): it removes the key
+  from `config.toml`, and a table left with no key with it, so the key reads
+  as its default, and says `unset development.gate = none`, the key with the
+  value it is back to. `development.parallel` and `development.gate` have no
+  default to set: unset they are `none` again, which no set writes. A key the
+  configuration does not have is refused with exit 2 naming it, nothing
+  written. An unset is a write of the record as a set is, committed under
+  `chore: unset development.gate in the record`. Setting the default of a key
+  that has one takes it back too, and writes the key into the file.
 - A set writes the file whole from its keys, so a comment written in it is
   not kept. A `config.toml` that is refused is refused by `fgraph config`
   too, as by every command: it is mended in the file.
@@ -2239,6 +2279,8 @@ held to `main`, and there is no landing:
 | reorder the Backlog | `main` |
 | amend a work item in Backlog | `main` |
 | amend a Feature in Backlog | `main` |
+| amend a started work item, with its deviation | its branch |
+| amend a started Feature, with its deviation | `main` |
 | remove a work item in Backlog | `main` |
 | remove a started or blocked work item | `main`: read from its worktree, its branch and worktree removed or left (S-0148) |
 | remove a Feature in Backlog, with its work items | `main` |

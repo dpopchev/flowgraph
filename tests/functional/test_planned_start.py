@@ -144,7 +144,7 @@ class TestStatusAsText:
     def test_the_planned_work_item_and_the_planned_feature_are_marked_alone(
         self, checkout: Path
     ) -> None:
-        assert marked(fgraph(["status"], checkout).out) == ["S-0002", "F-0003"]
+        assert marked(fgraph(["status", "--backlog"], checkout).out) == ["S-0002", "F-0003"]
 
 
 class TestStatusAsJson:

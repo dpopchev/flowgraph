@@ -55,7 +55,7 @@ def status_after(cwd: Path, *argvs: Sequence[str]) -> Outcome:
     """Run each command in cwd in turn, then `fgraph status`; the outcome of the status."""
     for argv in argvs:
         fgraph(argv, cwd)
-    return fgraph(["status"], cwd)
+    return fgraph(["status", "--backlog"], cwd)
 
 
 class TestARecordWithAFeatureAndAStoryAddedUnderIt:
@@ -95,7 +95,7 @@ def test_a_feature_whose_story_is_completed_is_listed_completed_with_the_commit_
     listed = status_after(tmp_path, *UNDER_A_FEATURE)
     assert listed.out.splitlines()[2:] == [
         "Completed (1)",
-        "  F-0001  1/1 W  def5678  a feature title",
+        "  F-0001  def5678  a feature title",
     ]
 
 

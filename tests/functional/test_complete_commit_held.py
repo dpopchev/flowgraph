@@ -1,4 +1,4 @@
-"""The criterion of B-0029: with the development on, a commit the repository does not hold is refused.
+"""The criterion of B-0029: with the development on, a commit the repository lacks is refused.
 
 Run end to end through `run` on a real git repository in a temporary directory, never a faked
 git; the identity of its commits comes from the environment and no git config is read. The

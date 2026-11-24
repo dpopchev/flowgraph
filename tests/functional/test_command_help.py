@@ -94,7 +94,7 @@ class TestTheHelpOfStartInAnyDirectory:
 
     def test_prints_the_usage_of_start(self, helped: Outcome) -> None:
         assert helped.out.splitlines()[0] == (
-            "usage: fgraph start [-h] [--slug TEXT] [--agent NAME] ID"
+            "usage: fgraph start [-h] [--slug TEXT] [--agent NAME] [ID]"
         )
 
     def test_prints_the_options_of_start(self, helped: Outcome) -> None:
@@ -105,8 +105,10 @@ class TestTheHelpOfStartInAnyDirectory:
         ]
 
     def test_names_the_feature_among_the_ids_start_takes(self, helped: Outcome) -> None:
-        assert helped.out.splitlines()[3] == (
-            "  ID            the id of the work item, of the Task or of the Feature"
+        positional = helped.out.split("options:")[0].split("positional arguments:")[-1]
+        assert " ".join(positional.split()) == (
+            "ID the id of the work item, of the Task or of the Feature; left out, the first"
+            " fgraph status marks as able to start"
         )
 
     def test_says_the_slug_names_the_branch_of_a_work_item_or_of_the_first_of_a_feature(
@@ -145,7 +147,7 @@ def test_the_help_of_a_command_is_printed_wherever_the_option_stands(argv: list[
     outcome = fgraph(argv)
     assert (outcome.status, outcome.out.splitlines()[:1]) == (
         0,
-        ["usage: fgraph start [-h] [--slug TEXT] [--agent NAME] ID"],
+        ["usage: fgraph start [-h] [--slug TEXT] [--agent NAME] [ID]"],
     )
 
 

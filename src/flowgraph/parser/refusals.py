@@ -37,6 +37,7 @@ from flowgraph.relation import RelationError
 from flowgraph.relation.depends import StartWaitsError
 from flowgraph.relation.read import RelationReadError
 from flowgraph.status import PaceError, StatusFormatError
+from flowgraph.status.top import NothingToStartError
 from flowgraph.task import (
     BlockedError,
     CompletedAlreadyError,
@@ -134,6 +135,7 @@ REFUSED = (
     RelationError,
     RelationReadError,
     StartWaitsError,
+    NothingToStartError,
     PaceError,
     KindListedError,
     ComplexityError,

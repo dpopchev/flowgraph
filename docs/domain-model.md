@@ -355,6 +355,17 @@ of work item. The developer said so on 2026-11-21.
   those more; a Backlog where nothing can start marks none. It is a view of
   `fgraph status` and `fgraph watch`: no `next` command exists. The view holds
   it as data on the row, beside what the row waits for.
+- `fgraph start` given no id starts the first of them (S-0121, the decision of
+  the developer of 2026-11-23: the first line of the Backlog that can start, the
+  one status marks). The id is read from the rows of status before the checks
+  of a start run, so every refusal of a start names it, the one that holds a
+  start to main among them. The rule is written once, in
+  `src/flowgraph/status/next.py`, and `src/flowgraph/status/top.py` reads it. The
+  same cases as the README paragraph hold, the development off and on. The two
+  refusals, exit 2 and nothing written: `nothing to start: the Backlog is empty`
+  and `nothing to start: no line of the Backlog can start now, fgraph status
+  marks none -- fgraph start {first} says why its first line cannot`. A start
+  that names its id is unchanged.
 - A reorder names two items in Backlog; one that is not there, or the same
   one twice, is refused. A Feature in progress, completed or removed is not
   in Backlog, and is refused as a started work item is:

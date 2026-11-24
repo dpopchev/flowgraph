@@ -349,10 +349,11 @@ record:
 
 ```sh
 fgraph start --help
-# usage: fgraph start [-h] [--slug TEXT] [--agent NAME] ID
+# usage: fgraph start [-h] [--slug TEXT] [--agent NAME] [ID]
 #
 # positional arguments:
-#   ID            the id of the work item, of the Task or of the Feature
+#   ID            the id of the work item, of the Task or of the Feature; left
+#                 out, the first fgraph status marks as able to start
 #
 # options:
 #   -h, --help    show the help of this command and exit
@@ -530,6 +531,25 @@ fgraph status        # parallel = 3, S-0001 started, S-0002 waits for S-0004
 #   S-0005  a fifth title
 # InProgress (1)
 #   S-0001  0/1 T  a first title
+```
+
+`fgraph start` with no id starts the first of them, the `next_to_start` of the
+JSON: the Backlog is a stack `fgraph reorder` reorders, and the start takes its
+top that can start (S-0121). It says and does what `fgraph start` of that id
+does: a Feature on top starts with its first work item, and `--slug` and
+`--agent` are read as with an id. With the development on, a work item in
+Backlog of a started Feature comes before the lines of the Backlog, and a line
+not planned is passed over. With it off, the first line that waits for nothing
+is taken, and one that holds no Task is refused in the words of its start. When
+status marks none, it exits 2 and writes nothing, and names the first line of
+the Backlog, whose own start says why.
+
+```sh
+fgraph start
+# started S-0003
+# branch wi/S-0003-a-third-title in /src/project.worktrees/S-0003-a-third-title
+# fgraph: error: nothing to start: no line of the Backlog can start now, fgraph status marks none -- fgraph start S-0002 says why its first line cannot
+# fgraph: error: nothing to start: the Backlog is empty
 ```
 
 `fgraph status --format json` prints the same view as one JSON document another
@@ -1164,8 +1184,8 @@ the file whole from its keys, so a comment written in it is not kept. A
 command, and is mended in the file.
 
 Start a Story once it has a Task, then start its Tasks one by one. `fgraph
-start` takes a Story id or a Task id; with the development on, the start of a
-Story names its branch:
+start` takes a Story id or a Task id, or none, and then the first `fgraph status`
+marks; with the development on, the start of a Story names its branch:
 
 ```sh
 fgraph start S-0001

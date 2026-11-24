@@ -16,7 +16,7 @@ A Feature holds its `id`, `kind`, `title`, `commit`, `reason`,
 item under it, in any state, shaped as a work item of a bucket, in the order `fgraph show` of
 the Feature lists them. `can_start` lists the ids of every line marked as able to start now, in
 order, and `next_to_start` is the first of them. `ready_for_review` lists the ids of the work
-items marked `?` in the text, in the order it lists them.
+items marked `@` in the text, in the order it lists them.
 """
 
 import json

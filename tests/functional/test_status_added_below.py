@@ -158,7 +158,7 @@ def test_a_removed_feature_gives_its_reason_on_a_line_below_it(tmp_path: Path) -
 
 def test_a_story_of_the_backlog_that_waits_for_nothing_is_one_line(tmp_path: Path) -> None:
     out = runs(tmp_path, ADD_FIRST, ADD_SECOND, STATUS).out
-    assert below(out, "S-0001") == ["> S-0001  []  a title", "  S-0002  []  a second title"]
+    assert below(out, "S-0001") == ["= S-0001  []  a title", "  S-0002  []  a second title"]
 
 
 def test_the_json_of_a_blocked_feature_holds_who_it_waits_on(tmp_path: Path) -> None:

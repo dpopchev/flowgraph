@@ -1,4 +1,4 @@
-"""The JSON document of status: `ready_for_review` lists the work items marked `?`."""
+"""The JSON document of status: `ready_for_review` lists the work items marked `@`."""
 
 import json
 from datetime import UTC, datetime

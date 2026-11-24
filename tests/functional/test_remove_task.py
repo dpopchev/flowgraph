@@ -168,7 +168,7 @@ class TestTheTaskLeftCompleted:
         self, done: Outcome, tmp_path: Path
     ) -> None:
         lines = fgraph(["status"], tmp_path, LATER).out.splitlines()
-        assert "? S-0001  1/1 T  a title" in lines
+        assert "@ S-0001  1/1 T  a title" in lines
 
     def test_the_story_completes(self, done: Outcome, tmp_path: Path) -> None:
         outcome = runs(tmp_path, STORY_DONE)

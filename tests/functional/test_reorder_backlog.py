@@ -69,7 +69,7 @@ class TestAStoryPutBeforeAnotherInBacklog:
     def test_status_lists_it_above_the_other(self, reordered: Outcome, tmp_path: Path) -> None:
         assert fgraph(["status", "--backlog"], tmp_path).out == (
             "backlog (2)\n"
-            "> S-0002  []  another title\n"
+            "= S-0002  []  another title\n"
             "  S-0001  []  a title\n"
             "in-progress (0)\n"
             "completed (0)\n"
@@ -79,7 +79,7 @@ class TestAStoryPutBeforeAnotherInBacklog:
         self, reordered: Outcome, tmp_path: Path
     ) -> None:
         assert runs(tmp_path, ADD_STORY, ["status", "--backlog"]).out.splitlines()[1:4] == [
-            "> S-0002  []  another title",
+            "= S-0002  []  another title",
             "  S-0001  []  a title",
             "  S-0003  []  a title",
         ]

@@ -237,7 +237,7 @@ def test_the_tasks_and_the_completion_of_a_started_story_take_a_feature_never_st
 def test_a_feature_start_refused_leaves_the_feature_in_backlog(tmp_path: Path) -> None:
     runs(tmp_path, ADD_FEATURE, ADD_STORY, ADD_OTHER, TASK_FOR_OTHER, START_FEATURE)
     assert fgraph(["status"], tmp_path, LATER).out == (
-        "backlog (1)\n> F-0001  0/2 W  a feature title\nin-progress (0)\ncompleted (0)\n"
+        "backlog (1)\n= F-0001  0/2 W  a feature title\nin-progress (0)\ncompleted (0)\n"
     )
 
 

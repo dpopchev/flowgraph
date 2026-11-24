@@ -1,4 +1,4 @@
-"""The text of status for a started work item ready for review, marked `?` in the first column."""
+"""The text of status for a started work item ready for review, marked `@` in the first column."""
 
 from datetime import UTC, datetime
 
@@ -35,13 +35,13 @@ def progress(text: str) -> list[str]:
     return lines[first + 1 : lines.index("completed (0)")]
 
 
-def test_a_started_work_item_with_every_task_completed_is_marked_with_a_question_mark() -> None:
-    assert progress(status_text([started(1, DONE)])) == ["? S-0001  1/1 T  title 1"]
+def test_a_started_work_item_with_every_task_completed_is_marked_with_an_at_sign() -> None:
+    assert progress(status_text([started(1, DONE)])) == ["@ S-0001  1/1 T  title 1"]
 
 
 def test_the_marked_line_keeps_the_agent_before_the_title() -> None:
     assert progress(status_text([started(1, DONE, agent="sonnet-1")])) == [
-        "? S-0001  1/1 T  [sonnet-1]  title 1"
+        "@ S-0001  1/1 T  [sonnet-1]  title 1"
     ]
 
 
@@ -59,17 +59,17 @@ def test_a_marked_work_item_is_marked_under_its_feature_two_columns_further_in()
         started=[started(1, DONE)],
         is_started=True,
     )
-    assert progress(status_text([feature]))[1:] == ["  ? S-0001  1/1 T  title 1"]
+    assert progress(status_text([feature]))[1:] == ["  @ S-0001  1/1 T  title 1"]
 
 
 def test_a_marked_line_cut_to_a_width_keeps_the_mark() -> None:
     cut = cut_lines(status_text([started(1, DONE)]), 12)
-    assert cut.splitlines()[2] == "? S-0001 ..."
+    assert cut.splitlines()[2] == "@ S-0001 ..."
 
 
 def test_a_marked_work_item_beyond_the_top_is_listed_after_the_top() -> None:
     rows = [started(number, LATER) for number in range(1, 7)] + [started(7, DONE)]
     assert progress(status_text(rows, same_top(5)))[5:] == [
-        "? S-0007  1/1 T  title 7",
+        "@ S-0007  1/1 T  title 7",
         "  ... 1 more",
     ]

@@ -36,7 +36,7 @@ def removed(number: int) -> TaskRow:
 
 @pytest.mark.parametrize(
     ("state", "line"),
-    [("backlog", "  S-0001  0/1 T  a title"), ("completed", "? S-0001  1/1 T  a title")],
+    [("backlog", "  S-0001  0/1 T  a title"), ("completed", "@ S-0001  1/1 T  a title")],
     ids=["in-backlog", "completed"],
 )
 def test_a_started_work_item_counts_the_one_task_beside_two_removed(state: str, line: str) -> None:

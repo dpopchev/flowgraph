@@ -349,7 +349,7 @@ of work item. The developer said so on 2026-11-21.
   number, then a Feature by number.
 - A work item that leaves the Backlog leaves the queue with it, and so does a
   Feature: the other buckets are not listed by the queue.
-- `fgraph status` marks every work item that can start now with `>`, within
+- `fgraph status` marks every work item that can start now with `=`, within
   `[development] parallel` (S-0110, which takes over S-0108 and replaces the
   reading of S-0086 that marked the next to start alone). The places are
   `parallel` less the work items started, those under a Feature counted. The
@@ -466,8 +466,8 @@ of work item. The developer said so on 2026-11-21.
   (S-0135): what a line adds is put below it, aligned with the id of who has it, as a line of
   its own, so the line ends with its title, and the JSON does not change. Under a Feature the
   same two lines stand two columns further in. It is not
-  marked `?`, whatever its Tasks, and it takes a place of
-  `development.parallel` in the marks `>`, as a started one does.
+  marked `@`, whatever its Tasks, and it takes a place of
+  `development.parallel` in the marks `=`, as a started one does.
 - Under a work item of InProgress `fgraph status` lists each Task of it being
   worked, the developer's decision of 2026-11-21, after board 1's watch: the
   started Task as `    => T-0001  <title>`, and a blocked one as
@@ -477,10 +477,14 @@ of work item. The developer said so on 2026-11-21.
   completed or removed is not listed. A Task line belongs to
   its work item: it does not count toward the top of the heading, nor in
   the count beside it.
-- `fgraph status` marks `?` a started work item that holds a Task with every Task
+- `fgraph status` marks `@` a started work item that holds a Task with every Task
   completed, as ready for review, the reading of S-0114: the mark stands in the first
-  column of its line, beside `>`, `~`, `!` and `=>`, alone in InProgress or under a
+  column of its line, beside `=`, `~`, `!` and `=>`, alone in InProgress or under a
   started Feature, with the development on or off, and `fgraph watch` shows it the same.
+  The marks are `=`, `@`, `~`, `!` and `=>`, the set the developer chose on 2026-11-23 from
+  three (S-0139): a greater-than sign at the start of a line pasted into Markdown opens a quote and a
+  question mark is special in a search by a regular expression, and these five are neither; the JSON carries
+  `can_start` and `ready_for_review` and no mark, so a client that reads it is not touched.
   It is read from the rows as status reads them, from the worktree of the work item with
   the development on, derived at each listing and kept in no file, so no field of a row
   holds it. A work item with no Task is not marked, nor is one whose Task is in Backlog,
@@ -1093,7 +1097,7 @@ that holds nothing is `null`, never an empty text; a list that holds nothing is 
   of every work item that can start now, in the order they take their places, the work
   items of a started Feature first (S-0110, which adds it to the reading of S-0087), `[]`
   for none; `next_to_start`, the first of them, or `null`; `ready_for_review`, the ids of
-  every work item the text marks `?`, in the order it lists them, a work item under a
+  every work item the text marks `@`, in the order it lists them, a work item under a
   started Feature in its place (S-0114), `[]` for none.
 - Bucket: `name`; `count`, the number of its items; `items`, every one of them, in the
   order the text lists them.

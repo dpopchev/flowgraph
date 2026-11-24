@@ -2,7 +2,7 @@
 
 The record turns the development on with `parallel = 3` and holds S-0001 started, S-0002 to
 S-0005 in Backlog, each with a Task, S-0002 waiting for S-0004. The limit leaves two places, so
-S-0003 and S-0004 are marked `>`, and S-0005 is left out by the limit, not by a dependency. Run
+S-0003 and S-0004 are marked `=`, and S-0005 is left out by the limit, not by a dependency. Run
 end to end through `run` on a real git repository in a temporary directory, never a faked git;
 the identity of its commits comes from the environment and no git config is read.
 """
@@ -95,8 +95,8 @@ def git(cwd: Path, *args: str) -> str:
 
 
 def marked(out: str) -> list[str]:
-    """The ids of the lines marked `>`, in the order written."""
-    return [line.split()[1] for line in out.splitlines() if line.startswith("> ")]
+    """The ids of the lines marked `=`, in the order written."""
+    return [line.split()[1] for line in out.splitlines() if line.startswith("= ")]
 
 
 @pytest.fixture(autouse=True)
@@ -202,7 +202,7 @@ class TestAStartedFeatureOfFourStoriesUnderParallelThree:
         self, feature: Path
     ) -> None:
         printed = fgraph(["status"], feature).out
-        under = [line for line in printed.splitlines() if line.startswith("  > ")]
+        under = [line for line in printed.splitlines() if line.startswith("  = ")]
         assert [line.split()[1] for line in under] == ["S-0002", "S-0003"]
 
     def test_can_start_lists_them(self, feature: Path) -> None:

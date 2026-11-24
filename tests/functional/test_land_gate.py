@@ -177,7 +177,7 @@ class TestALandOfAStartedStoryUnderAGateThatFails:
         self, refused: Landed, gated: Path
     ) -> None:
         assert fgraph(["status"], gated).out == (
-            f"backlog (0)\nin-progress (1)\n? S-0001  1/1 T  {TITLE}\ncompleted (0)\n"
+            f"backlog (0)\nin-progress (1)\n@ S-0001  1/1 T  {TITLE}\ncompleted (0)\n"
         )
 
 

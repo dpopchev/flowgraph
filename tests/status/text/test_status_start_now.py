@@ -1,4 +1,4 @@
-"""The text of status when several lines can start now: each marked `>`, counted past the top."""
+"""The text of status when several lines can start now: each marked `=`, counted past the top."""
 
 from datetime import UTC, datetime
 
@@ -20,9 +20,9 @@ def line(item: int, *, marked: bool = False) -> WorkItemRow:
 def test_every_line_that_can_start_is_marked() -> None:
     rows = [line(1, marked=True), line(2), line(3, marked=True)]
     assert status_text(rows).splitlines()[1:-2] == [
-        "> S-0001  []  a title",
+        "= S-0001  []  a title",
         "  S-0002  []  a title",
-        "> S-0003  []  a title",
+        "= S-0003  []  a title",
     ]
 
 
@@ -38,7 +38,7 @@ def test_every_marked_line_the_top_leaves_out_is_counted_in_the_more_line_and_no
 def test_a_marked_line_inside_the_top_is_listed_and_one_beyond_it_is_counted() -> None:
     rows = [line(1, marked=True), line(2), line(3, marked=True)]
     assert status_text(rows, same_top(2)).splitlines()[1:-2] == [
-        "> S-0001  []  a title",
+        "= S-0001  []  a title",
         "  S-0002  []  a title",
         "  ... 1 more, 1 can start",
     ]

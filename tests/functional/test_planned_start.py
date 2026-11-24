@@ -110,8 +110,8 @@ def git(cwd: Path, *args: str) -> str:
 
 
 def marked(out: str) -> list[str]:
-    """The ids of the lines marked `>`, in the order written."""
-    return [line.split()[1] for line in out.splitlines() if line.startswith("> ")]
+    """The ids of the lines marked `=`, in the order written."""
+    return [line.split()[1] for line in out.splitlines() if line.startswith("= ")]
 
 
 @pytest.fixture(autouse=True)

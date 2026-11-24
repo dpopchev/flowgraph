@@ -128,7 +128,7 @@ def checkout(tmp_path: Path) -> Path:
 class TestStatusAsText:
     @pytest.fixture
     def printed(self, checkout: Path) -> Outcome:
-        return fgraph(["status"], checkout)
+        return fgraph(["status", "--backlog"], checkout)
 
     def test_status_exits_with_zero(self, printed: Outcome) -> None:
         assert printed.status == 0
@@ -164,7 +164,7 @@ class TestStatusAsJson:
 class TestWatchOneFrame:
     @pytest.fixture
     def watched(self, checkout: Path) -> Outcome:
-        return fgraph(["watch", "--count", "1"], checkout)
+        return fgraph(["watch", "--backlog", "--count", "1"], checkout)
 
     def test_watch_exits_with_zero(self, watched: Outcome) -> None:
         assert watched.status == 0

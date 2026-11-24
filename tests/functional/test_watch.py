@@ -153,9 +153,11 @@ def test_watch_written_to_no_terminal_lists_a_line_whole(tmp_path: Path) -> None
     assert watched.out.splitlines()[1] == f"> S-0001  {LONG}"
 
 
-def test_watch_lists_the_top_five_under_a_heading(six_in_backlog: Path) -> None:
+def test_watch_lists_the_first_line_of_the_backlog_then_how_many_more(
+    six_in_backlog: Path,
+) -> None:
     watched = fgraph(["watch", "--count", "1"], six_in_backlog)
-    assert watched.out.splitlines()[5:7] == ["  S-0005  a title", "  ... 1 more"]
+    assert watched.out.splitlines()[1:3] == ["> S-0001  a title", "  ... 5 more, 0 can start"]
 
 
 def test_watch_all_lists_every_item(six_in_backlog: Path) -> None:

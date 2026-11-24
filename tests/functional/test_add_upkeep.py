@@ -72,7 +72,7 @@ class TestAnUpkeepAddedToARecordWithOneStory:
     def test_status_lists_it_under_backlog_beside_the_story(
         self, added: Outcome, tmp_path: Path
     ) -> None:
-        assert fgraph(["status"], tmp_path).out == (
+        assert fgraph(["status", "--backlog"], tmp_path).out == (
             "Backlog (2)\n"
             "> S-0001  a title\n"
             "  U-0001  an upkeep title\n"

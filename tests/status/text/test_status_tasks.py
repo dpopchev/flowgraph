@@ -4,7 +4,7 @@ from datetime import UTC, datetime
 
 import pytest
 
-from flowgraph.status import status_text
+from flowgraph.status import same_top, status_text
 from flowgraph.task import TaskRow
 from flowgraph.work_item import WorkItemRow
 
@@ -52,7 +52,7 @@ def test_the_tasks_being_worked_are_listed_in_the_order_of_the_file() -> None:
 
 def test_a_task_line_does_not_count_toward_the_top() -> None:
     rows = [started(1, BEGUN), started(2, BEGUN)]
-    assert status_text(rows, top=1).splitlines()[1:] == [
+    assert status_text(rows, same_top(1)).splitlines()[1:] == [
         "InProgress (2)",
         "  S-0001  0/1 T  title 1",
         "    => T-0003  a begun task",

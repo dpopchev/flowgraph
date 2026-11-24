@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 import pytest
 
 from flowgraph.feature import FeatureRow
-from flowgraph.status import cut_lines, status_text
+from flowgraph.status import cut_lines, same_top, status_text
 from flowgraph.task import TaskRow
 from flowgraph.work_item import WorkItemRow
 
@@ -69,7 +69,7 @@ def test_a_marked_line_cut_to_a_width_keeps_the_mark() -> None:
 
 def test_a_marked_work_item_beyond_the_top_is_listed_after_the_top() -> None:
     rows = [started(number, LATER) for number in range(1, 7)] + [started(7, DONE)]
-    assert progress(status_text(rows, top=5))[5:] == [
+    assert progress(status_text(rows, same_top(5)))[5:] == [
         "? S-0007  1/1 T  title 7",
         "  ... 1 more",
     ]

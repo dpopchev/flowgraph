@@ -75,7 +75,7 @@ class TestAFeaturePutBeforeAStoryAddedBeforeIt:
     def test_status_lists_the_feature_before_the_story(
         self, reordered: Outcome, tmp_path: Path
     ) -> None:
-        assert fgraph(["status"], tmp_path, START + timedelta(minutes=1)).out == (
+        assert fgraph(["status", "--backlog"], tmp_path, START + timedelta(minutes=1)).out == (
             "Backlog (2)\n"
             "  F-0001  0/0 W  a feature title\n"
             "> S-0001  a title that stands alone\n"

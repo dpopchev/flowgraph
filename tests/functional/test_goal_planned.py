@@ -4,7 +4,7 @@ A work item with no Task, or with no complexity while the development is driven 
 refused in the words of the start of the Feature, the first such work item in start order named.
 Run end to end through `run` on a real git repository in a temporary directory, never a faked
 git; the identity of its commits comes from the environment and no git config is read. The red
-tests are strict xfails until the goal is wired; the guards pass before and after.
+tests were seen failing before the goal was wired; the guards pass before and after.
 """
 
 import subprocess
@@ -37,9 +37,6 @@ NO_COMPLEXITY_LINE = (
     "set it with fgraph amend S-0002 --complexity low, medium or high"
 )
 GOAL_START = "/goal Develop F-0001 until fgraph show F-0001 lists S-0001 and S-0002 Completed,"
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="B-0031: fgraph goal words a line over work items no start takes"
-)
 
 
 def story(title: str, complexity: str | None = None) -> list[str]:
@@ -185,32 +182,26 @@ class TestGoalOfAPlannedFeature:
 
 
 class TestGoalOfAFeatureNotPlanned:
-    @XFAIL
     def test_no_task_exits_with_two(self, no_task: Path) -> None:
         refused = goal(no_task, "F-0001")
         assert (refused.status, refused.err.splitlines()[-1]) == (2, NO_TASK_LINE)
 
-    @XFAIL
     def test_no_task_prints_nothing(self, no_task: Path) -> None:
         assert goal(no_task, "F-0001").out == ""
 
-    @XFAIL
     def test_no_complexity_exits_with_two(self, no_complexity: Path) -> None:
         refused = goal(no_complexity, "F-0001")
         assert (refused.status, refused.err.splitlines()[-1]) == (2, NO_COMPLEXITY_LINE)
 
-    @XFAIL
     def test_a_missing_task_is_named_before_a_missing_complexity(self, mixed: Path) -> None:
         refused = goal(mixed, "F-0001")
         assert (refused.status, refused.err.splitlines()[-1]) == (2, NO_TASK_LINE)
 
-    @XFAIL
     def test_the_first_missing_task_in_the_queue_order_is_named(self, no_task: Path) -> None:
         fgraph(["reorder", "S-0003", "--before", "S-0002"], no_task)
         refused = goal(no_task, "F-0001")
         assert (refused.status, refused.err.splitlines()[-1]) == (2, NO_TASK_OF_S0003)
 
-    @XFAIL
     def test_the_last_error_line_is_the_one_of_the_start(self, no_complexity: Path) -> None:
         started = fgraph(["start", "F-0001"], no_complexity)
         refused = goal(no_complexity, "F-0001")

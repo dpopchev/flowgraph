@@ -37,6 +37,15 @@ from flowgraph.record.config import (
     settings_text,
 )
 from flowgraph.record.layers import Gate, Gated, Limit, Parallel, Ungated, Unlimited, age_text
+from flowgraph.record.listing import (
+    STATUS_BACKLOG,
+    STATUS_COMPLETED,
+    STATUS_IN_PROGRESS,
+    STATUS_REMOVED,
+    WATCH_BUCKETS,
+    buckets_text,
+    listed_text,
+)
 
 # How a key that holds no value is listed: no value of the file.
 NONE = "none"
@@ -126,6 +135,11 @@ KEYS = (
     Key(DELIVERY_PUSH, Takes.TRUTH, lambda config: config.delivery.push),
     Key(DELIVERY_TAG, Takes.TEXT, lambda config: config.delivery.tag.value),
     Key(ARCHIVE_BOARD, Takes.TEXT, lambda config: _board(config.archive)),
+    Key(STATUS_BACKLOG, Takes.COUNT, lambda config: listed_text(config.status.backlog)),
+    Key(STATUS_IN_PROGRESS, Takes.COUNT, lambda config: listed_text(config.status.in_progress)),
+    Key(STATUS_COMPLETED, Takes.COUNT, lambda config: listed_text(config.status.completed)),
+    Key(STATUS_REMOVED, Takes.COUNT, lambda config: listed_text(config.status.removed)),
+    Key(WATCH_BUCKETS, Takes.TEXT, lambda config: buckets_text(config.watch)),
 )
 
 

@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from flowgraph.record.archive import ArchiveTable
 from flowgraph.record.layers import Approver, Driver, Merge, Mode, TagAt
+from flowgraph.record.listing import StatusTable, WatchTable
 
 
 class _Table(BaseModel):
@@ -59,3 +60,5 @@ class ConfigFile(_Table):
     development: _DevelopmentTable = _DevelopmentTable()
     delivery: _DeliveryTable = _DeliveryTable()
     archive: ArchiveTable = ArchiveTable()
+    status: StatusTable = StatusTable()
+    watch: WatchTable = WatchTable()

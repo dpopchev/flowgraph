@@ -94,7 +94,12 @@ def test_show_lists_every_key_at_its_default_on_a_record_without_a_config_file(
         'development.approver = "agent"\n'
         "delivery.push = false\n"
         'delivery.tag = "none"\n'
-        "archive.board = none\n",
+        "archive.board = none\n"
+        "status.backlog = 1\n"
+        'status.in-progress = "all"\n'
+        "status.completed = 5\n"
+        "status.removed = 5\n"
+        'watch.buckets = "backlog, in-progress, completed, removed"\n',
         "",
     )
 

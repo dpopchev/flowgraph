@@ -19,8 +19,10 @@ age is said. `[development] approver` names who approves a landing: `agent` unle
 default. `[delivery] tag` tags main with its version at `feature-close`, `close` (a work item
 alone too) or never, `none`, the default. `[archive] board` is the path of the `.board/` of
 board 1 the record points at, with no default, so left out the record points at none. Each layer
-is a value (`flowgraph.record.layers`); what a file refused says is
-`flowgraph.record.config_refusal`, and the tables of the file are `flowgraph.record.config_file`.
+is a value (`flowgraph.record.layers`). `[status]` sets how many lines each bucket lists and
+`[watch] buckets` the buckets a frame of watch shows (`flowgraph.record.listing`). What a file
+refused says is `flowgraph.record.config_refusal`, and the tables of the file are
+`flowgraph.record.config_file`.
 """
 
 import tomllib
@@ -45,6 +47,12 @@ from flowgraph.record.layers import (
     MaxDays,
     Mode,
     Parallel,
+)
+from flowgraph.record.listing import (
+    StatusLists,
+    WatchShows,
+    make_status_lists,
+    make_watch_shows,
 )
 
 # The file of the configuration inside a record.
@@ -92,6 +100,8 @@ class Config:
     development: Development
     delivery: Delivery
     archive: Archive
+    status: StatusLists
+    watch: WatchShows
 
 
 # The configuration of the record in that directory; the defaults when it holds no config.toml.
@@ -155,7 +165,12 @@ def make_config(text: str) -> Config:
     delivery = Delivery(push=held.delivery.push, tag=held.delivery.tag)
     git = Git(commit=held.git.commit)
     return Config(
-        git=git, development=development, delivery=delivery, archive=make_archive(held.archive)
+        git=git,
+        development=development,
+        delivery=delivery,
+        archive=make_archive(held.archive),
+        status=make_status_lists(held.status),
+        watch=make_watch_shows(held.watch),
     )
 
 

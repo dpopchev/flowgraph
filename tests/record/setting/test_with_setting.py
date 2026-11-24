@@ -10,6 +10,11 @@ pytestmark = pytest.mark.model
 ENABLED = {"development": {"enabled": True}}
 TAKES_A_COUNT = "it takes a whole number of 1 or more"
 TAKES_A_TAG = "it takes feature-close, close or none"
+TAKES_LINES = "it takes a count of lines of 1 or more, or all"
+TAKES_BUCKETS = (
+    "it takes the buckets to show, among backlog, in-progress, completed and removed,"
+    " separated by commas"
+)
 
 
 @pytest.mark.parametrize(
@@ -33,6 +38,11 @@ TAKES_A_TAG = "it takes feature-close, close or none"
         ("delivery.tag", "close", {"delivery": {"tag": "close"}}),
         ("delivery.tag", "none", {"delivery": {"tag": "none"}}),
         ("archive.board", ".board", {"archive": {"board": ".board"}}),
+        ("status.backlog", "3", {"status": {"backlog": 3}}),
+        ("status.in-progress", "all", {"status": {"in-progress": "all"}}),
+        ("status.completed", "all", {"status": {"completed": "all"}}),
+        ("status.removed", "2", {"status": {"removed": 2}}),
+        ("watch.buckets", "backlog, in-progress", {"watch": {"buckets": "backlog, in-progress"}}),
     ],
     ids=[
         "false",
@@ -53,6 +63,11 @@ TAKES_A_TAG = "it takes feature-close, close or none"
         "a-tag-at-the-close-of-a-work-item",
         "no-tag",
         "a-path",
+        "a-count-of-lines",
+        "all-lines-of-in-progress",
+        "all-lines-of-completed",
+        "a-count-of-removed",
+        "a-pair-of-buckets",
     ],
 )
 def test_the_text_of_a_value_is_read_as_the_value_its_key_takes(
@@ -137,6 +152,9 @@ def test_a_key_the_configuration_does_not_have_is_refused_naming_it(key: str) ->
         ("delivery.tag", "true", f'delivery.tag is "true": {TAKES_A_TAG}'),
         ("archive.board", "", 'archive.board is "": it takes a path'),
         ("archive.board", "  ", 'archive.board is "  ": it takes a path'),
+        ("status.backlog", "0", f"status.backlog is 0: {TAKES_LINES}"),
+        ("status.in-progress", "many", f'status.in-progress is "many": {TAKES_LINES}'),
+        ("watch.buckets", "backlog, done", f'watch.buckets is "backlog, done": {TAKES_BUCKETS}'),
     ],
     ids=[
         "another-word-for-false",
@@ -159,6 +177,9 @@ def test_a_key_the_configuration_does_not_have_is_refused_naming_it(key: str) ->
         "a-truth-for-a-tag",
         "an-empty-path",
         "a-blank-path",
+        "no-line-count",
+        "no-word-for-the-lines",
+        "no-bucket",
     ],
 )
 def test_a_value_its_key_does_not_take_is_refused_naming_the_key(

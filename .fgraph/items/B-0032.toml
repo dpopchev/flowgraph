@@ -41,13 +41,15 @@ commit = "32332cf39cf3517dbcdfdc719d3253dc0ca0678f"
 
 [[tasks]]
 id = "T-0461"
-state = "started"
+state = "completed"
 title = "Run the check of the worktree before fgraph block and fgraph unblock of a Task"
 description = "src/flowgraph/parser/checks.py, the module U-0025 moved the checks that run before a move into (B-0032 waits for it): import check_task_in_worktree from flowgraph.development.task_scope and, in check_command, after the check of the command hand, add: if args.command in (\"block\", \"unblock\"): check_task_in_worktree(args.id, store, record, open_git); say it in the docstring of check_command. src/flowgraph/parser/command.py is not touched. The store given there is the one cli.run composes across the worktrees, so the rows of a started work item are those of its worktree; args.id is already in its canonical form (ids_read). OutOfScopeError is in REFUSED of src/flowgraph/parser/refusals.py already: cli.run writes the usage error and returns 2, and since the check runs before _written no file of the record is written and no commit is made. tests/functional/test_block_task_branch.py: remove RED and its eight marks, keeping each parameter and its id; every test of the file passes. No unit test is added here: check_command has none of its own, the functional file is its test. Run make check before the commit (ruff, the 250 lines of make lines, pyright, the suite). Out of bounds, decided by the developer on 2026-11-23: the start and the complete of a Task on main and the unblock of a work item on main stay as they are, so the check is wired to block and unblock alone and no check is added to start or complete; src/flowgraph/cli.py, src/flowgraph/item/moves.py, src/flowgraph/feature/block.py, src/flowgraph/development/scope.py, task_scope.py and worktrees.py, and every test file but tests/functional/test_block_task_branch.py, are not touched."
 check = "uv run pytest tests/functional/test_block_task_branch.py tests/functional/test_block_task.py tests/functional/test_unblock_task.py tests/functional/test_block_work_item_branch.py tests/functional/test_block_feature_branch.py tests/functional/test_main_scope.py tests/functional/test_ignored_record.py -q && ! grep -q xfail tests/functional/test_block_task_branch.py"
 expected_output = "changed: with the development on, fgraph block T-0001 and fgraph unblock T-0001 run on main, for a Task of a started work item whose branch is checked out in a worktree, exit 2 with S-0001 is started: its Tasks are written in its worktree, <path> before the copy of main is read, nothing written and nothing committed, a Task added in the worktree after the start included; in the worktree, with --dir on its record, without a worktree and with the development off both moves are written as before. No xfail mark is left in tests/functional/test_block_task_branch.py"
 created = 2026-11-23 20:11:03+00:00
 started = 2026-11-24 04:09:47+00:00
+completed = 2026-11-24 04:11:37+00:00
+commit = "3272b571e1f278f50f97a576f8fae34f414d24ee"
 
 [[tasks]]
 id = "T-0462"

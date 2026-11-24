@@ -356,8 +356,8 @@ of work item. The developer said so on 2026-11-21.
   item holds a complexity (S-0129), and with the driver a developer the Tasks
   alone decide; a line not planned is unmarked, with no suffix. With the
   development off the Tasks are not read. Each marked line the top
-  of the Backlog leaves out is listed after the top, apart from the count of
-  those more; a Backlog where nothing can start marks none. It is a view of
+  of the Backlog leaves out is counted in its more-line, `... N more, M can
+  start`, and not listed; a Backlog where nothing can start marks none. It is a view of
   `fgraph status` and `fgraph watch`: no `next` command exists. The view holds
   it as data on the row, beside what the row waits for.
 - `fgraph start` given no id starts the first of them (S-0121, the decision of
@@ -409,15 +409,20 @@ of work item. The developer said so on 2026-11-21.
   line of their own, those removed before it too; the completed ones of a
   removed Feature are on no line either, and its show lists them Completed
   (Persistence).
-- `fgraph status` lists the top 5 under each heading, the developer's
-  decision of 2026-11-21: the first five of the Backlog, of InProgress, of
-  Completed and of Removed, in the order each is listed in, then one line
-  `... N more` for the N it does not list. The count beside the heading stays
-  that of all its items, and a heading of five or fewer has no such line.
-  `fgraph status --all` lists every one. A Feature is one item of its bucket:
-  it counts once toward the top 5 and once beside the heading (Persistence).
-  Until the Features were listed inside their buckets they had a heading of
-  their own, with a top 5 of its own.
+- `fgraph status` lists the top of each heading, the developer's decision of
+  2026-11-21: the first five of InProgress, of Completed and of Removed, in
+  the order each is listed in, then one line `... N more` for the N it does
+  not list. The Backlog lists its first line alone, the developer's decision
+  of 2026-11-23 (S-0130), then one line `... N more, M can start`, N the lines
+  it does not list and M those of them marked as able to start, the same lines
+  `can_start` of the JSON names. The count beside the heading stays that of
+  all its items, and a heading with no more than its top has no such line.
+  `fgraph status --backlog` lists the whole Backlog and leaves the other
+  buckets short; `fgraph status --all` lists every line of every bucket. A
+  Feature is one item of its bucket: it counts once toward the top of the
+  heading and once beside the heading (Persistence). Until the Features were
+  listed inside their buckets they had a heading of their own, with a top of
+  its own.
 - `fgraph status` lists a work item under InProgress with its progress, the
   developer's decision of 2026-11-21: `<completed>/<all> T`, its Tasks
   completed of all it holds, between its id and its title, written as board
@@ -441,7 +446,7 @@ of work item. The developer said so on 2026-11-21.
   file holds them (S-0084: the line names the reason of the block beside what
   it waits on; with an empty reason the `: <reason>` is left out). A Task in Backlog,
   completed or removed is not listed. A Task line belongs to
-  its work item: it does not count toward the top 5 of the heading, nor in
+  its work item: it does not count toward the top of the heading, nor in
   the count beside it.
 - `fgraph status` marks `?` a started work item that holds a Task with every Task
   completed, as ready for review, the reading of S-0114: the mark stands in the first
@@ -453,14 +458,16 @@ of work item. The developer said so on 2026-11-21.
   started or blocked, nor a completed one; the line of a Feature carries no mark. A removed
   Task counts neither way: a work item whose Tasks left are each completed is marked, and
   one whose every Task is removed is not (S-0147). A marked
-  line the top leaves out is listed after it, apart from the count of those more.
+  line the top leaves out is listed after it, apart from the count of those more,
+  in InProgress; in the Backlog a line that can start beyond the top is counted
+  in the more-line, `... N more, M can start`, and not listed.
 - Under a Feature of InProgress `fgraph status` lists each started work item
   of it, the developer's words of 2026-11-21 -- a Feature is to its work
   items what a work item is to its Tasks: the work item as one of InProgress
   is written, with its progress and under it its Tasks being worked, two
   columns further in -- `    S-0001  1/3 T  <title>`, then
   `      => T-0001  <title>` -- the last started first. Those lines belong to
-  the Feature: they count neither toward the top 5 of the heading nor in the
+  the Feature: they count neither toward the top of the heading nor in the
   count beside it.
 - `fgraph status` marks a Feature blocked while a started work item of it
   holds a blocked Task (S-0055), the developer's words of 2026-11-21, "a
@@ -519,8 +526,8 @@ of work item. The developer said so on 2026-11-21.
   writes, read anew from the record each time: watch writes a frame, waits
   and writes the next, every 5 seconds or every `-n SECS`, a part of a
   second too. Each line is cut to the width of the terminal as status cuts
-  it, the width asked for again at every frame. `--all` lists every item, as
-  on status. It ends after `--count N` frames with exit 0, no wait after the
+  it, the width asked for again at every frame. `--all` lists every item and
+  `--backlog` the whole Backlog, as on status. It ends after `--count N` frames with exit 0, no wait after the
   last; without a count Ctrl-C ends it, with exit 0 and no traceback, since
   that is how a watch is left. A `-n` or a `--count` that is no positive
   number is refused with exit 2 before a frame is written.
@@ -1016,7 +1023,7 @@ reading of S-0087: no fact is computed again and none is read back from the text
 read by a consumer that parses it, so the keys below are a contract. `text` is the default
 and prints what status printed before; another word is refused naming both, exit 2, as
 `fgraph graph` refuses one. `--all` changes nothing for JSON, which lists every item
-anyway; `fgraph watch` stays text. The keys of every object are sorted, the indent is two
+anyway, and neither does `--backlog`; `fgraph watch` stays text. The keys of every object are sorted, the indent is two
 and the text ends with a newline, so two runs on one record print the same bytes. A key
 that holds nothing is `null`, never an empty text; a list that holds nothing is `[]`.
 
@@ -1823,7 +1830,7 @@ and its merge tool.
   line is its id, its progress and its title, `F-0001  1/3 W  <title>`, in
   its bucket (above), placed there as Order says. It is one
   item of that bucket: counted once beside the heading and once toward the
-  top 5. Its work items in Backlog and its completed ones are listed on no
+  top of it. Its work items in Backlog and its completed ones are listed on no
   line of their own and counted beside no heading; they are counted in its
   progress, and `fgraph show` of the Feature lists them with their buckets,
   those in Backlog in the order they start in (Order). A started one is

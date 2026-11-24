@@ -14,7 +14,8 @@ once a landing is whole; it is false by default. `[delivery] tag` tags main with
 `feature-close`, `close` (a work item alone too) or never, `none`, the default. `[archive] board`
 is the path of the `.board/` of board 1 the record points at, with no default, so left out the
 record points at none. Each layer is a value (`flowgraph.record.layers`); what a file refused
-says is `flowgraph.record.config_refusal`.
+says is `flowgraph.record.config_refusal`, and the tables of the file are
+`flowgraph.record.config_file`.
 """
 
 import tomllib
@@ -23,21 +24,19 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import tomli_w
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import ValidationError
 
-from flowgraph.record.archive import Archive, ArchiveTable, make_archive
+from flowgraph.record.archive import Archive, make_archive
+from flowgraph.record.config_file import ConfigFile
 from flowgraph.record.config_refusal import refusal
 from flowgraph.record.layers import (
     UNGATED,
     UNLIMITED,
     Delivery,
     Development,
-    Driver,
     Gated,
     Git,
-    Merge,
     Parallel,
-    TagAt,
 )
 
 # The file of the configuration inside a record.
@@ -96,51 +95,6 @@ class ConfigError(ValueError):
     """A config.toml that holds no configuration; names the table or the key refused."""
 
 
-class _Table(BaseModel):
-    """A table of the file: it takes the keys it names alone, each a value of its type as written.
-
-    Strict, so that no value is read as another type: `"yes"` and `1` are no `true`.
-    """
-
-    model_config = ConfigDict(extra="forbid", strict=True)
-
-
-class _GitTable(_Table):
-    """What `[git]` holds; a key left out is its default."""
-
-    commit: bool = True
-
-
-class _DevelopmentTable(_Table):
-    """What `[development]` holds; a key left out is its default."""
-
-    enabled: bool = False
-    parallel: int | None = Field(default=None, ge=1)
-    # Not strict, so that the word of the file is read as the way of merging it names.
-    merge: Merge = Field(default=Merge.MERGE_COMMIT, strict=False)
-    # A text that holds a character other than a blank: an empty command line runs nothing.
-    gate: str | None = Field(default=None, pattern=r"\S")
-    # Not strict, so that the word of the file is read as the driver it names.
-    driver: Driver = Field(default=Driver.DEVELOPER, strict=False)
-
-
-class _DeliveryTable(_Table):
-    """What `[delivery]` holds; a key left out is its default."""
-
-    push: bool = False
-    # Not strict, so that the word of the file is read as the closes it names.
-    tag: TagAt = Field(default=TagAt.NONE, strict=False)
-
-
-class _ConfigFile(_Table):
-    """What the file holds: a table per layer; a table left out holds its defaults."""
-
-    git: _GitTable = _GitTable()
-    development: _DevelopmentTable = _DevelopmentTable()
-    delivery: _DeliveryTable = _DeliveryTable()
-    archive: ArchiveTable = ArchiveTable()
-
-
 def make_config(text: str) -> Config:
     """The configuration the text of a config.toml holds; a key it leaves out is its default.
 
@@ -150,7 +104,7 @@ def make_config(text: str) -> Config:
     keys when it turns the development on with the commits off.
     """
     try:
-        held = _ConfigFile.model_validate(tomllib.loads(text))
+        held = ConfigFile.model_validate(tomllib.loads(text))
     except tomllib.TOMLDecodeError as error:
         raise ConfigError(f"no TOML: {error}") from error
     except ValidationError as error:

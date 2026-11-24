@@ -111,7 +111,7 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         "--answer", choices=ANSWERS, help="the yes or no of the hypothesis, of a Spike"
     )
     remove = new_command(
-        commands, "remove", "remove a work item in Backlog, a Task or a Feature, with its reason"
+        commands, "remove", "remove a work item, a Task or a Feature, kept with its reason"
     )
     remove.add_argument("id", metavar="ID", help="the id of the work item, Task or Feature")
     remove.add_argument("--reason", metavar="TEXT", help="why it is removed")

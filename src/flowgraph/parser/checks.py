@@ -12,6 +12,7 @@ from flowgraph.development.commit import OpenGit
 from flowgraph.development.commit_held import check_commit_held
 from flowgraph.development.driver import check_complexity
 from flowgraph.development.parallel import check_parallel
+from flowgraph.development.remove_started import check_remove_on_main
 from flowgraph.development.scope import check_complete_on_main, check_start_on_main
 from flowgraph.development.start_branch import check_branch_free
 from flowgraph.development.task_check import check_task_checked
@@ -38,7 +39,7 @@ def check_command(
     A complete refuses a commit the repository does not hold before the check of its Task runs.
     A start checks, last, that the branch it would make is not there already.
     A block or an unblock of a Task is checked in the worktree of its work item before the copy
-    of main is read (B-0032).
+    of main is read (B-0032). A remove of a started or a blocked work item is made on main alone.
     """
     if args.command == "complete":
         check_complete_on_main(args.id, record, open_git)
@@ -59,3 +60,5 @@ def check_command(
         check_agent_taken(args.id, args.agent, config.development.enabled, record / CONFIG)
     if args.command in ("block", "unblock"):
         check_task_in_worktree(args.id, store, record, open_git)
+    if args.command == "remove":
+        check_remove_on_main(args.id, store, record, open_git)

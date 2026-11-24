@@ -4,7 +4,7 @@ Every bucket but those its own state gives is derived from the states of its wor
 record writes them.
 """
 
-from collections.abc import Collection
+from collections.abc import Collection, Iterable, Sequence
 from dataclasses import dataclass, field
 from typing import assert_never
 
@@ -85,6 +85,21 @@ class FeatureRow:
     is_started: bool = field(default=False, kw_only=True)
 
 
+@dataclass
+class CriterionRow:
+    """One criterion of a Feature as a view reads it: its number from 1, its text, its work items.
+
+    The ids of the work items that realize it, in the order given, and whether it is met. A
+    removed work item is not held, as the progress of a Feature counts; met reads the state
+    completed alone, so a completed work item verified no still meets it.
+    """
+
+    number: int
+    text: str
+    realized_by: list[str]
+    met: bool
+
+
 def feature_detail(feature: FeatureState) -> FeatureDetail:
     """The Feature as the plain data a view reads."""
     reason, waiting_on = block_of(feature)
@@ -99,6 +114,23 @@ def feature_detail(feature: FeatureState) -> FeatureDetail:
         [knowledge_row(line) for line in feature.knowledge],
         list(feature.about),
     )
+
+
+def criteria_rows(criteria: Sequence[str], rows: Iterable[WorkItemRow]) -> list[CriterionRow]:
+    """The criteria of a Feature as rows, each with the work items under it that realize it.
+
+    A row that realizes no number, or one the criteria do not have, is on no criterion.
+    """
+    held = [row for row in rows if row.realizes is not None and row.state != REMOVED]
+    return [
+        CriterionRow(
+            number,
+            text,
+            [row.id for row in held if row.realizes == number],
+            any(row.realizes == number and row.state == COMPLETED for row in held),
+        )
+        for number, text in enumerate(criteria, 1)
+    ]
 
 
 def bucket_of(states: Collection[str]) -> str:

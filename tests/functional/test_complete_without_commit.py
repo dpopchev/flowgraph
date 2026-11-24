@@ -64,6 +64,7 @@ def fgraph(argv: Sequence[str], cwd: Path) -> Outcome:
         open_git=lambda _: None,
         now=lambda: NOW,
         load_config=read_config,
+        run_check=lambda command, directory: 0,
     )
     return Outcome(status, "".join(out), "".join(err))
 

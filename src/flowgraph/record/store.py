@@ -140,7 +140,8 @@ class Store:
     """The reads and writes of one record, each already bound to its directory.
 
     A store built without its Features holds none, and so does one built without its terms or
-    its settings.
+    its settings. load_written is the load of a work item where its Tasks are written, set by a
+    store composed across the worktrees of a repository; a store without it loads its own record.
     """
 
     find_work_item_rows: FindKindRows
@@ -156,6 +157,7 @@ class Store:
     terms: TermStore = NO_TERMS
     load_settings: LoadSettings = dict
     save_settings: SaveSettings = _take_no_settings
+    load_written: LoadWorkItem | None = None
 
 
 # The store of the record in that directory.

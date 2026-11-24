@@ -103,7 +103,8 @@ Notes:
 - A Feature is broken down into Stories, as a rule of thumb one Story per
   criterion. A work item may name the criterion it realizes (S-0100), by its
   place in the list; the link is optional, so a Feature may hold work items
-  whose criterion is none of its criteria.
+  whose criterion is none of its criteria. `fgraph show` of the Feature lists
+  which criteria are met (S-0101).
 - An Upkeep names the behavior that must still hold, never a test: the Upkeep
   may itself move or rename a test while the behavior holds.
 - A Task's title names the action, the artifact and its target state; its
@@ -213,6 +214,10 @@ needs. The same five exist for `Story`, `Bug`, `Spike`, `Upkeep` and `Task`;
 | `BlockedStory` | InProgress, shown as blocked | reason, since, waiting on |
 | `CompletedStory` | Completed | completed on, evidence, the agent it had or none |
 | `RemovedStory` | Removed | removed on, reason, superseded by or none |
+
+A `RemovedStory` reached from a `StartedStory` or a `BlockedStory` holds no
+started time, no agent and no block: its completed Tasks are kept and its
+others are each a `RemovedTask` (S-0148).
 
 The five of a Task are `Task`, `StartedTask`, `BlockedTask`, `CompletedTask`
 and `RemovedTask`; the last adds removed on and reason, with no superseded by
@@ -1291,9 +1296,10 @@ and its merge tool.
   unblock it first`, and the check of a Task of it is not run. A Task is
   still added to it and a line still noted. Its start, complete and hand are
   refused, `S-0001 is blocked: unblock it first`, and so is its landing,
-  which drops the merge held; its amend and its remove are refused, `S-0001
-  is blocked`, and the remove of a Feature holding it, `F-0001 cannot be
-  removed: S-0001 is blocked`. `fgraph block` still takes a Task and a
+  which drops the merge held; its amend is refused, `S-0001 is blocked`, and
+  so is the remove of a Feature holding it, `F-0001 cannot be removed: S-0001
+  is blocked`. Its own remove is no longer refused: it is removed on main as
+  a started one is (S-0148, below). `fgraph block` still takes a Task and a
   Feature, as before.
 - A completed item is kept as `state = "completed"` with its `started` and
   `completed` times and its `commit` sha. A started Story's file may hold
@@ -1308,12 +1314,33 @@ and its merge tool.
   id and its title alone, `S-0001  <title>`, and `fgraph show` lists no
   `commit` line of it, nor of a Task completed without one.
 - A removed work item is kept as `state = "removed"` with its `removed` time
-  and its `reason`, beside the fields and the Tasks it had in Backlog.
-  `fgraph remove` removes a work item in Backlog; a removed one takes no Task,
-  no amend and no move, and leaves the queue as a started one does. A
-  Feature in Backlog is removed too, its work items with it (below).
-  Removing a started work item, which has a branch and a worktree once the
-  development is on, is not built; the remove of a Task is (below).
+  and its `reason`, beside the fields and the Tasks it had: in Backlog when
+  it is removed from Backlog; completed or removed when it is removed from
+  InProgress. `fgraph remove` removes a work item in Backlog, started or
+  blocked; a removed one takes no Task, no amend and no move, and leaves the
+  queue as a started one does. A Feature in Backlog is removed too, its work
+  items with it (below). A started or blocked work item is removed by
+  `fgraph remove S-0001 --reason <why>` on main alone (S-0148); run in a work
+  tree on another branch it exits 2 and writes nothing, `S-0001 is removed on
+  main, in <path>: <work tree> is on <branch>`. With the development on, the
+  whole work item is read from the worktree of its branch, as `fgraph show`
+  reads its detail there, and the one file `.fgraph/items/S-0001.toml` is
+  saved and committed on main, `chore: remove S-0001 in the record`; the copy
+  of the worktree is left as it is, stale, as after a landing. Its completed
+  Tasks are kept with their commits and each other Task is removed for its
+  reason, or `superseded by S-0002` when the reason is blank and
+  `--superseded-by S-0002` names what supersedes it, taken as from Backlog.
+  A landing of it is then refused, and main stays where the remove left it.
+- The branch and the worktree of a started or blocked work item removed go
+  once the remove is committed, when main holds every commit of the branch:
+  `removed branch wi/S-0001-<slug> in <path>` is said after `removed S-0001`,
+  and `removed branch wi/S-0001-<slug>` for a branch with no worktree, which
+  git deletes when merged. Otherwise both are left, with `left branch
+  wi/S-0001-<slug> in <path>: main does not hold every commit of it`; the
+  developer then removes them by hand, with `git worktree remove <path>` and
+  `git branch -D wi/S-0001-<slug>`. A worktree holding a change is refused by
+  git and left. A step git refuses exits 2 after the write, with its words
+  and `-- S-0001 is removed, its branch wi/S-0001-<slug> is not`.
 - A removed Task is kept in the file of its started work item as a
   `[[tasks]]` table with `state = "removed"`, its `removed` time and its
   `reason` after its `created` time, and no `started` time and no block
@@ -1636,7 +1663,11 @@ and its merge tool.
   is refused naming the first such work item, `F-0001 cannot be removed:
   S-0001 is started already`, `F-0001 cannot be removed: S-0001 is completed
   already`. Nothing is written then. No refusal is a new one: each is that
-  of a work item, naming the Feature.
+  of a work item, naming the Feature. While a work item of it is started or
+  blocked, `fgraph remove F-0001` still refuses, so that work item is removed
+  first (S-0148); the remove of a started work item of a started Feature
+  starts no other work item and completes no Feature, as the remove of one in
+  Backlog does not, and the Feature stays started.
 - `fgraph status` lists a removed Feature under Removed as a removed work
   item is listed, its id, its title and its reason, `F-0001  <title>  --
   <reason>`, after the removed work items (Order). The line holds no
@@ -1694,6 +1725,22 @@ and its merge tool.
   2`, a whole number from 1, right after `parent` and only when it names one;
   a file without the key reads as none. A file holding `0`, or the key with no
   `parent`, is refused naming the file. Every move carries it.
+- Nothing more is kept for a criterion met: `fgraph show` of a Feature derives
+  it at each read from the rows of the work items under the Feature, as the
+  bucket of a Feature never started is. It numbers the criteria as
+  `Criteria (2), met 1 of 2`, and a line reads `  1  met      <text>  S-0001`,
+  with the ids of the work items that realize it, or `  2  not met  <text>`
+  alone when none does. A criterion is met when a work item that realizes it
+  is completed; one is enough when several realize it. A removed work item is
+  not counted, as the progress of a Feature does not hold it; a completed work
+  item verified no still counts, since it stays completed. A work item whose
+  number the Feature does not have is on no criterion. `fgraph show` has no
+  JSON, and the text and the JSON of `fgraph status` do not change.
+- The completion of a Feature does not read its criteria: a Feature is
+  completed by its last work item, or by `fgraph complete`, whether or not each
+  criterion is met, without a word. This is the smallest reading of the
+  Finding kept open on F-0013 (refused, warned or silent); the decision is the
+  developer's.
 - `fgraph status` lists a Feature inside its bucket, as one line in place of
   its work items, the developer's words of 2026-11-21: a Feature is an
   umbrella, part of the Backlog, that just holds a couple of work items. The
@@ -1834,6 +1881,8 @@ development too.
   started work item is the one its worktree holds. Those under a Feature are
   counted among them, and so are those blocked (S-0138): a blocked work item
   is started still, and the refusal names it among those `started already`.
+  A started or blocked work item removed is not counted any more, so the
+  start it held back is taken (S-0148).
   The start of a Feature, which starts one work item, is refused the same
   way, naming the Feature (Persistence). `fgraph status` marks as able to
   start now only as many work items as `parallel` leaves places for (Order).
@@ -1864,9 +1913,9 @@ development too.
   at a landing. It is the reading, decided when S-0042 was ordered, of the
   developer's words of 2026-11-21 on starting a work item, "checks if
   criteria are met before closing": one gate of the record, on top of the
-  rule that every Task is completed. It is no check per Task run at a
-  complete, and the Given / When / Then of the work item is neither run nor
-  confirmed. It has no default: left out, a landing runs no gate. It is a
+  rule that every Task is completed. It is apart from the check of a
+  Task, which the complete of that Task runs (S-0089), and the Given / When /
+  Then of the work item is neither run nor confirmed. It has no default: left out, a landing runs no gate. It is a
   key of the development, so it gates nothing with the development off,
   where it is held as written.
 - `development.driver` names who drives the development, `developer` by default
@@ -1930,7 +1979,9 @@ development too.
   callable, `RunGate`, `run_check`, and `main()` binds `run_gate` to it; the
   decision from its status is the core's (`check_task_passes`,
   `src/flowgraph/development/task_check.py`). The default of `run()` runs no
-  check: every one passes.
+  check: a run that completes a Task that holds one is given its runner, and
+  the default raises, a contract as that of the gate (U-0023), so no run
+  passes a check it did not run.
 - `[git] commit` turns the commits of the record off. It is on by default,
   the reading of S-0040, off until set shown and not taken: inside a git work
   tree that does not ignore the record `fgraph` commits every write of it, as
@@ -2026,6 +2077,7 @@ held to `main`, and there is no landing:
 | amend a work item in Backlog | `main` |
 | amend a Feature in Backlog | `main` |
 | remove a work item in Backlog | `main` |
+| remove a started or blocked work item | `main`: read from its worktree, its branch and worktree removed or left (S-0148) |
 | remove a Feature in Backlog, with its work items | `main` |
 | remove a started or blocked Feature, with its work items in Backlog | `main` |
 | block and unblock a started Feature | `main`: an unblock that starts the next work item commits both and makes the branch of that one |
@@ -2197,6 +2249,25 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 - A git step refused exits 2 naming the command: a commit refused puts every
   file the write changed back as it was, a worktree refused for another cause
   than a branch there leaves the start committed.
+- `fgraph sync` (S-0150) takes the place of `board sync-main` of board 1. Run
+  in the worktree of a started work item, with the development on, it merges
+  `main` into its branch. `main` is `refs/heads/main` as the repository holds
+  it: nothing is fetched. The merge is `git merge --no-ff`, so one merge commit,
+  `chore: merge main into <branch>`, even where a fast-forward would do; a
+  branch that holds `main` already says so and makes none. A conflict is
+  aborted with `git merge --abort` after its files are read, and since a
+  changed tracked file is refused first, the abort leaves the work tree as it
+  was: `main does not merge into <branch>: conflict in <files>`. The record
+  merges as any file: `main` alone writes the queue, the Features, the terms,
+  the configuration and the other work items, and the branch alone writes the
+  file of its work item (the scope of a branch), so no file of `.fgraph/` is
+  changed on both sides unless one was edited by hand or the work item was
+  completed on `main` by hand while its branch lived -- then it is a conflict
+  as any other, named and aborted, and fgraph derives nothing. The steps are in
+  `src/flowgraph/development/sync_git.py`, called by name and not bound by
+  `open_git`; the work item is the one the branch names, its state is not read;
+  in a record git ignores the worktree holds no `.fgraph/`, so the command
+  finds no record there and the merge is git's.
 - With the development on, `fgraph land` lands a started work item, run in
   the checkout of `main`. It merges the branch `wi/<id>-*` into `main` as a
   merge of its own, held uncommitted; commits it under the message the
@@ -2554,9 +2625,9 @@ The payload of each state:
 | `done.evidence` of a Task | T-476 `65312dd; make test ...: [DONE] tests passed` | `commit` | converted: the sha; what the check printed lost |
 | `done.evidence` of an Epic | E-018, a ledger, the ACs, a tag | the commit of its last work item (Evidence) | converted: that commit; the text lost |
 | `pruned.on`, `pruned.reason` of a work item in todo | W-044, W-045 | `removed`, `reason` (`fgraph remove`) | kept |
-| `pruned` of a work item from doing | W-143 (c), its History `doing` then `pruned` | none: the remove of a started work item is not built (Persistence) | lost |
+| `pruned` of a work item from doing | W-143 (c), its History `doing` then `pruned` | a `RemovedWorkItem` reached from InProgress, `fgraph remove` on main (S-0148, Persistence) | kept |
 | `pruned` of a Task | T-492, T-311 (c) | a `RemovedTask`: `removed` and `reason`, kept inside a started or completed work item (S-0147, `src/flowgraph/task/model.py`); its successor still lost (below) | kept |
-| the done Tasks of a pruned work item | W-143 (c), T-314 and T-315 | none: a removed work item holds Tasks in Backlog alone | lost |
+| the done Tasks of a pruned work item | W-143 (c), T-314 and T-315 | a `RemovedWorkItem` holding its completed Tasks with their commits (S-0148) | kept |
 | `pruned.on`, `pruned.reason` of an Epic | E-007 | a `RemovedFeature`: removed on, reason | kept |
 
 The relations:
@@ -2824,8 +2895,8 @@ Held by some records:
 |---|---|---|
 | a pruned Task, a state the read refuses | 186: c 68, cts 8, st 1, sm 77, sv 32 | part, S-0147: "each Task is kept as removed with its reason"; in a started or completed work item alone |
 | a work item that holds a pruned Task | 123: c 51, cts 7, st 1, sm 40, sv 24; of them done 74, pruned 48, doing 1 (W-197) | part, S-0147: a removed work item holds Tasks in Backlog alone |
-| a work item pruned after `doing` | 6: c 2, cts 1, sv 3, each holding a pruned Task | part, B-0025 |
-| the done Tasks of a pruned work item | 3 work items: c 1, sv 2 | not filed |
+| a work item pruned after `doing` | 6: c 2, cts 1, sv 3, each holding a pruned Task | part, B-0025; S-0148: "it is listed under Removed with its reason, its Tasks that were not completed removed with it" |
+| the done Tasks of a pruned work item | 3 work items: c 1, sv 2 | S-0148: a removed work item keeps its completed Tasks |
 | a blocked work item | 0 today; 67 `blocked` History lines on work items | part, B-0025 |
 | the successor of a pruned Task | 49: c 26, cts 4, sm 14, sv 5 | not filed |
 | an issue with no `then` | 601: c 281, cts 156, g 3, sm 90, sv 71 | not filed: its kind is a rule of the developer (Probe) |

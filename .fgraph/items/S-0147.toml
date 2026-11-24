@@ -12,6 +12,11 @@ depends_on = [
     "B-0026",
 ]
 
+[verified]
+answer = "yes"
+text = "at e58c978 on main, the merge of wi/S-0147-raise-the-items-fgraph, in a throwaway repository with the development on, S-0001 started in its worktree holding T-0001 started and T-0002 and T-0003 in Backlog: fgraph remove T-0002 --reason not needed exit 0 printed removed T-0002 of S-0001; fgraph remove T-0001 --reason folded into T-0003 exit 0 printed removed T-0001 of S-0001; fgraph status lists S-0001 0/1 T with no Task being worked; fgraph show lists both with bucket Removed and their reason; fgraph start T-0002 exit 2 printed T-0002 is removed already; with T-0003 completed the line reads ? S-0001 1/1 T and fgraph land S-0001 exit 0 landed it, the Tasks then Removed, Removed and Completed. make check on main at b082e7e, which holds it with S-0100 and S-0151: 4053 passed, all checks passed. Handed whole to one subagent on opus. Its last Task, T-0607, was first refused by its check, which asks README.md for no when the id is a Task's while the paragraph of amend held those words too: on the word of the coordinator the check stayed and that clause now reads when the id names a Task, commit d576002. The subagent merged main into the branch and kept both sides in src/flowgraph/work_item/held_file.py and model.py. Its deviations: the xfail marks of three lists tests removed in T-0605, where they passed already; tests/functional/test_wrong_kind_id.py, which pins the refusal of remove, corrected under the clause of T-0605; the README example removes T-0002 then T-0001. Seen by it and left: a remove whose id and whose --superseded-by are both wrong now names the id first."
+on = 2026-11-24 05:46:50+00:00
+
 [criterion]
 given = "a started work item that holds a Task in Backlog and a started Task"
 when = "fgraph remove of each Task is run with a reason"

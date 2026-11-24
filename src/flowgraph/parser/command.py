@@ -11,6 +11,8 @@ from flowgraph.development import RunGate
 from flowgraph.development.commit import OpenGit, Said, commit_written
 from flowgraph.development.land import land_item
 from flowgraph.development.release import release_trunk
+from flowgraph.development.remove_started import branch_removed
+from flowgraph.development.sync import sync_branch
 from flowgraph.feature.amend import amend_named
 from flowgraph.feature.block import block_named, unblock_named
 from flowgraph.feature.item import (
@@ -198,7 +200,8 @@ def command_said(
     check_command(args, store, record, open_git, config, cwd, run_check)
     written = _written(args, store, now, config, cwd, open_git)
     if written is not None:
-        return commit_written(written, store, record, open_git, config)
+        said = commit_written(written, store, record, open_git, config)
+        return branch_removed(written, said, record, open_git, config)
     match args.command:
         case "config" if args.action == "set":
             done = set_setting(args.key, args.value, store.load_settings, store.save_settings)
@@ -215,6 +218,8 @@ def command_said(
             )
         case "release":
             return release_trunk(args.version, store, record, open_git, config)
+        case "sync":
+            return sync_branch(record, open_git, config)
         case "status":
             limit = start_limit(config.development)
             return Said(

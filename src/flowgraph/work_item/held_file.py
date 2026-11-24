@@ -14,6 +14,7 @@ from flowgraph.item import (
     DoneTask,
     HeldTask,
     HeldTime,
+    KeptTask,
     KnowledgeFile,
     TaskFile,
 )
@@ -125,7 +126,7 @@ class CompletedItemFile(RelationsFile, ProgressTables, BaseModel):
 
 
 class RemovedItemFile(RelationsFile, ProgressTables, BaseModel):
-    """What the file of a removed work item holds: its removal, its Tasks all in Backlog."""
+    """What the file of a removed work item holds: its removal, its Tasks in Backlog or done."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -142,7 +143,7 @@ class RemovedItemFile(RelationsFile, ProgressTables, BaseModel):
     reason: str = ""
     superseded_by: str = ""
     criterion: AnyCriterionFile
-    tasks: list[TaskFile] = []
+    tasks: list[KeptTask] = []
     knowledge: list[KnowledgeFile] = []
 
 

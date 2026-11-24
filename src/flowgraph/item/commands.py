@@ -64,12 +64,15 @@ class Written:
     `branch` names the branch to check out at that commit: set by the start of a work item only.
     `completes` names the Feature the write completes: set by the completion of the last work
     item of a started Feature only, which a landing tags main at under `delivery.tag`.
+    `unbranches` names the started work item a write removes, whose branch and worktree go once
+    it is committed: set by the remove of a started or a blocked work item only.
     """
 
     out: str
     message: str
     branch: ToBranch | None = None
     completes: FeatureId | None = None
+    unbranches: WorkItemId | None = None
 
 
 def reorder_item(item: str, before: str, store: Store) -> Written:
@@ -175,23 +178,28 @@ def remove_item(
     now: Now,
     superseded_by: WorkItemId | None = None,
 ) -> Written:
-    """Remove the work item in Backlog of that id for the reason given; what the write says.
+    """Remove the work item in Backlog or InProgress of that id for the reason; what it says.
 
-    It names the work item that supersedes it when one is given. Raises ItemIdError naming the
-    Feature too when the text is the id of no kind, or the refusal of the remove.
+    It names the work item that supersedes it when one is given. A started or a blocked one is
+    loaded where its Tasks are written, by load_written of the store when it has one, and the
+    write names it to unbranch; the copy of main says started even when that one is blocked.
+    Raises ItemIdError naming the Feature too when the text is the id of no kind, or the
+    refusal of the remove.
     """
     item_id = parse_amended_id(item)
-    load, save = store.load_work_item, store.save_work_item
+    started = work_item.state_name(store.load_work_item(item_id)) in work_item.IN_PROGRESS
+    load = store.load_written if started and store.load_written else store.load_work_item
     work_item.remove_work_item(
         item_id=item_id,
         reason=reason,
         load_work_item=load,
-        save_work_item=save,
+        save_work_item=store.save_work_item,
         now=now,
         superseded_by=superseded_by,
     )
     text = work_item_id_text(item_id)
-    return Written(f"removed {text}\n", MESSAGE.format(f"remove {text}"))
+    unbranches = item_id if started else None
+    return Written(f"removed {text}\n", MESSAGE.format(f"remove {text}"), unbranches=unbranches)
 
 
 def write_task(

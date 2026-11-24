@@ -1,0 +1,16 @@
+id = "S-0153"
+state = "backlog"
+title = "Raise the files changed in the worktree of a started Task that fgraph names as outside its brief before the commit from none to every one"
+description = "New on the plan agreed on 2026-11-24, read from the words Pre-Commit of the draft of F-0020; in board 1, board scope. Today the agent learns it at fgraph complete, after the commit. Its Tasks are written before its Feature starts."
+parent = "F-0020"
+realizes = 2
+complexity = "medium"
+created = 2026-11-24 19:51:16+00:00
+depends_on = [
+    "S-0142",
+]
+
+[criterion]
+given = "a repository with the development on and a started work item whose started Task names the files it changes, in a worktree where a file it names and a file it does not name are changed and not committed"
+when = "the agent asks fgraph, before the commit, which changed files the brief of the Task does not name"
+then = "it lists the file the brief does not name and not the one it names, by the rule fgraph complete of the Task holds the commit to (S-0142), and writes nothing"

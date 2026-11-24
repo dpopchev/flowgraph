@@ -21,6 +21,7 @@ from flowgraph.feature import (
 from flowgraph.feature.start import (
     FeatureNotStartedError,
     NoWorkItemError,
+    check_planned,
     check_start_under_feature,
     start_feature_item,
 )
@@ -399,3 +400,59 @@ def test_what_is_no_work_item_passes_without_a_read_of_the_record(item: str) -> 
         restore_files=never,
     )
     assert check_start_under_feature(item, unread) is None
+
+
+def test_a_feature_planned_whole_passes_with_a_complexity() -> None:
+    items = [story(1, complexity="low"), story(2, complexity="high")]
+    assert check_planned(F1, store(items), complexity=True) is None
+
+
+@pytest.mark.parametrize("complexity", [True, False], ids=["complexity", "no-complexity"])
+def test_a_second_story_with_no_task_is_refused_planned_naming_it(complexity: bool) -> None:
+    items = [story(1, complexity="low"), story(2, tasks=0, complexity="low")]
+    with pytest.raises(
+        NoTaskError, match=r"^F-0001 cannot start: S-0002 has no Task to start with$"
+    ):
+        check_planned(F1, store(items), complexity=complexity)
+
+
+def test_a_second_story_with_a_task_and_no_complexity_is_refused_planned_naming_it() -> None:
+    items = [story(1, complexity="low"), story(2)]
+    with pytest.raises(
+        NoComplexityError,
+        match=r"^F-0001 cannot start: S-0002 has no complexity to start with: "
+        r"set it with fgraph amend S-0002 --complexity low, medium or high$",
+    ):
+        check_planned(F1, store(items), complexity=True)
+
+
+def test_the_same_record_planned_passes_with_no_complexity_asked() -> None:
+    items = [story(1, complexity="low"), story(2)]
+    assert check_planned(F1, store(items), complexity=False) is None
+
+
+def test_a_first_story_with_no_complexity_and_a_second_with_no_task_planned_names_the_task() -> (
+    None
+):
+    items = [story(1), story(2, tasks=0)]
+    with pytest.raises(
+        NoTaskError, match=r"^F-0001 cannot start: S-0002 has no Task to start with$"
+    ):
+        check_planned(F1, store(items), complexity=True)
+
+
+def test_the_work_item_planned_named_is_the_first_in_the_queue_order() -> None:
+    items = [
+        story(1, complexity="low"),
+        story(2, tasks=0, complexity="low"),
+        story(3, tasks=0, complexity="low"),
+    ]
+    with pytest.raises(
+        NoTaskError, match=r"^F-0001 cannot start: S-0003 has no Task to start with$"
+    ):
+        check_planned(F1, store(items, queue=make_queue([S3, S1, S2])), complexity=True)
+
+
+def test_a_completed_story_with_no_complexity_planned_passes_beside_a_rated_one() -> None:
+    items = [completed(1), story(2, complexity="medium")]
+    assert check_planned(F1, store(items), complexity=True) is None

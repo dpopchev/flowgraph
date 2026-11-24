@@ -796,8 +796,13 @@ text.
 It is refused, exit 2, naming why: for a record whose development is off, naming
 `development.enabled`; for one whose driver is a developer, naming `development.driver`; each
 message says how to set the key with `fgraph config set`. A Feature with no work item in
-Backlog is refused saying it holds none. Hours that are not a whole number of 1 or more are
-refused saying so.
+Backlog is refused saying it holds none. A Feature holding a work item in Backlog with no Task,
+or with no complexity, is refused in the words of the start of the Feature (B-0031), since no
+start would take it and no coordinator could meet the goal: `F-0001 cannot start: S-0002 has no
+Task to start with`, or `F-0001 cannot start: S-0002 has no complexity to start with: set it
+with fgraph amend S-0002 --complexity low, medium or high`. The first such work item in start
+order is named, and a missing Task is named before a missing complexity. Hours that are not a
+whole number of 1 or more are refused saying so.
 
 The wording follows the page of the documentation of Claude Code on `/goal`
 (code.claude.com/docs/en/goal): one measurable end state, a stated check, the constraints that

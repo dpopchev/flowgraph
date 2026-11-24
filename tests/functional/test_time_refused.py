@@ -8,6 +8,7 @@ import tomllib
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta, timezone
 from pathlib import Path
+from typing import Any
 
 import pytest
 import tomli_w
@@ -67,7 +68,7 @@ def fgraph(argv: list[str], cwd: Path) -> Outcome:
 def rewritten(path: Path, value: object, *keys: str | int) -> None:
     """Write the file again with the value at the end of the keys."""
     held = tomllib.loads(path.read_text("utf-8"))
-    place = held
+    place: Any = held
     for key in keys[:-1]:
         place = place[key]
     place[keys[-1]] = value

@@ -4,6 +4,7 @@ import re
 import tomllib
 from datetime import UTC, date, datetime, timedelta, timezone
 from pathlib import Path
+from typing import Any
 
 import pytest
 import tomli_w
@@ -42,7 +43,7 @@ DAY = date(2026, 10, 11)
 def rewritten(path: Path, value: object, *keys: str | int) -> None:
     """Write the file again with the value at the end of the keys."""
     held = tomllib.loads(path.read_text("utf-8"))
-    place = held
+    place: Any = held
     for key in keys[:-1]:
         place = place[key]
     place[keys[-1]] = value

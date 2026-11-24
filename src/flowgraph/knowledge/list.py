@@ -1,10 +1,11 @@
 """The knowledge of a record, listed: every line of every work item and Feature, newest first.
 
 A view: it reads the record as plain data and changes nothing. Each line is listed under its ref,
-the id of its item and its place there. The decision of a completed Spike is listed among the
-decisions at the time the Spike was completed, under the id of the Spike and with no ref; it
-stays kept on the Spike. A search keeps the lines whose text holds the text searched for,
-whatever the case of either.
+the id of its item and its place there. The list is every line, or the live ones alone: those no
+later line supersedes. The decision of a completed Spike is listed among the decisions at the
+time the Spike was completed, under the id of the Spike and with no ref; it stays kept on the
+Spike. A search keeps the lines whose text holds the text searched for, whatever the case of
+either.
 """
 
 from collections.abc import Iterable
@@ -131,8 +132,24 @@ def newest_first(
     return sorted(reversed(kept), key=lambda entry: entry.noted, reverse=True)
 
 
+def live_entries(entries: Iterable[KnowledgeEntry]) -> list[KnowledgeEntry]:
+    """The entries no entry among them supersedes, in the order given.
+
+    A line is live until a later line supersedes it, whatever its mark, as the developer decided
+    on 2026-11-23: a line stays superseded when the line that supersedes it is superseded too.
+    An entry with no ref, the decision of a Spike, is always kept.
+    """
+    read = list(entries)
+    named = superseded_by(read)
+    return [entry for entry in read if not entry.ref or entry.ref not in named]
+
+
 def knowledge_text(
-    entries: list[KnowledgeEntry], kind: str | None, about: str | None, search: str | None = None
+    entries: list[KnowledgeEntry],
+    kind: str | None,
+    about: str | None,
+    search: str | None = None,
+    live: bool = False,
 ) -> str:
     """The entries as the lines fgraph knowledge writes, or one line saying there are none.
 
@@ -141,7 +158,8 @@ def knowledge_text(
     if not entries:
         about_it = "" if about is None else f" about {about}"
         held = "" if search is None else f" holding {search!r}"
-        return f"no {kind or 'knowledge'} lines{about_it}{held} in the record\n"
+        only = "live " if live else ""
+        return f"no {only}{kind or 'knowledge'} lines{about_it}{held} in the record\n"
     return "".join(
         f"{entry.noted.date().isoformat()}  {entry.kind}  {entry.ref or entry.item}  {entry.text}"
         f"{mark_text(entry.mark)}{about_text(entry.about)}\n"
@@ -176,18 +194,26 @@ def collected(store: Store) -> list[KnowledgeEntry]:
 
 
 def show_knowledge(
-    kind: str | None, about: str | None, store: Store, search: str | None = None
+    kind: str | None,
+    about: str | None,
+    store: Store,
+    search: str | None = None,
+    live: bool = False,
 ) -> str:
     """The text fgraph knowledge gives: the lines of the record, of that kind when one is named.
 
     The lines about that term alone when one is named, and those whose text holds the search when
-    one is given. Raises KindListedError when the kind is none of the three, TermError when the
-    record holds no term of that name and EmptyPartError when the search is blank. Nothing is
-    written.
+    one is given. With live the live lines alone: the supersede is read over every line of the
+    record before the kind and the term narrow the list. Raises KindListedError when the kind is
+    none of the three, TermError when the record holds no term of that name and EmptyPartError
+    when the search is blank. Nothing is written.
     """
     narrowed = chosen_kind(kind)
     term = None if about is None else term_asked(about, store)
     text = sought(search)
+    lines = collected(store)
+    if live:
+        lines = live_entries(lines)
     return knowledge_text(
-        newest_first(holding(collected(store), text), narrowed, term), narrowed, term, text
+        newest_first(holding(lines, text), narrowed, term), narrowed, term, text, live
     )

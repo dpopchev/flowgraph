@@ -2,8 +2,8 @@
 
 On main the frame is live: both started work items are InProgress with their Task being worked,
 and the work item added on main after both starts is in Backlog. The same two commands run in the
-worktree of each started work item write that same frame, until S-0141 lands; the eight red tests
-here are strict xfail until then, the guards pass today. Run end to end through `run` on a real
+worktree of each started work item write that same frame; the eight tests that check it in a
+worktree are parametrized over both started work items. Run end to end through `run` on a real
 git repository in a temporary directory, never a faked git; the identity of its commits comes
 from the environment and no git config is read.
 """
@@ -41,9 +41,6 @@ FRAME = (
     "  S-0002  0/1 T  title 2\n"
     "    => T-0002  a task title\n"
     "Completed (0)\n"
-)
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="S-0141: status and watch in the worktree of a work item list its own record"
 )
 
 
@@ -172,19 +169,16 @@ class TestGuardsThatPassToday:
 
 @pytest.mark.parametrize("worktree", WORKTREES, ids=["of-S-0001", "of-S-0002"])
 class TestWorktreesListTheRecordOfMain:
-    @XFAIL
     def test_watch_in_a_worktree_draws_the_frame_main_draws(
         self, checkout: Path, tmp_path: Path, worktree: Path
     ) -> None:
         assert fgraph(["watch", "--count", "1"], tmp_path / worktree).out == FRAME
 
-    @XFAIL
     def test_status_in_a_worktree_prints_the_frame_main_prints(
         self, checkout: Path, tmp_path: Path, worktree: Path
     ) -> None:
         assert fgraph(["status"], tmp_path / worktree).out == FRAME
 
-    @XFAIL
     def test_status_as_json_in_a_worktree_prints_the_bytes_main_prints(
         self, checkout: Path, tmp_path: Path, worktree: Path
     ) -> None:
@@ -193,7 +187,6 @@ class TestWorktreesListTheRecordOfMain:
             == fgraph(["status", "--format", "json"], checkout).out
         )
 
-    @XFAIL
     def test_under_parallel_two_a_worktree_lists_the_one_added_after_unmarked(
         self, limited: Path, tmp_path: Path, worktree: Path
     ) -> None:

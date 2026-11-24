@@ -505,7 +505,7 @@ fgraph show S-0002
 #   depends on   S-0001 (Backlog)
 #   ...
 
-fgraph status
+fgraph status --backlog
 # Backlog (2)
 # > S-0001  Add the show command
 # ~ S-0002  Raise the Stories fgraph lists under Backlog from 1 to 2  -- depends on S-0001
@@ -530,13 +530,13 @@ planned: a work item holds a Task, and a Feature's work items in Backlog each
 hold one; with `development.driver` set to `agent` planned also means each
 work item holds a complexity, and with the driver a developer the Tasks alone
 decide; a line not planned is unmarked, with no suffix, and with the
-development off the Tasks are not read. A marked line the top of the heading leaves out is listed
-after the top, apart from the count of those more; a Backlog where nothing can
-start marks none. No `next` command is added. This replaces the next to start
+development off the Tasks are not read. A marked line the top of the Backlog leaves out is
+counted in its more-line, `... N more, M can start`, and not listed; a Backlog where
+nothing can start marks none. No `next` command is added. This replaces the next to start
 alone of S-0086.
 
 ```sh
-fgraph status        # parallel = 3, S-0001 started, S-0002 waits for S-0004
+fgraph status --backlog   # parallel = 3, S-0001 started, S-0002 waits for S-0004
 # Backlog (4)
 # ~ S-0002  a second title  -- depends on S-0004
 # > S-0003  a third title
@@ -567,14 +567,15 @@ fgraph start
 
 `fgraph status --format json` prints the same view as one JSON document another
 tool reads, such as the SessionStart hook of an agent harness: each bucket with
-its count and every item of it, not the top 5, the Tasks of each work item with
+its count and every item of it, not the top of it, the Tasks of each work item with
 their state, the reason and what a block waits on, the ids a work item waits for,
 and the next to start. A Feature holds in `work_items` every work item under it,
 in any state -- Backlog, started, blocked, completed or removed -- where the text
 lists the started ones and, under a Feature in progress, the completed ones. `text` is the
 default and prints what `fgraph status` has
 always printed; another word is refused naming both, with exit 2. `--all` changes
-nothing for JSON, which lists every item anyway, and `fgraph watch` stays text.
+nothing for JSON, which lists every item anyway, and neither does `--backlog`;
+`fgraph watch` stays text.
 The keys are sorted, so two runs on one record print the same bytes; every key is
 listed in `docs/domain-model.md`, section Status as JSON.
 
@@ -1218,13 +1219,13 @@ fgraph config set development.parallel 2
 # fgraph: error: the configuration is not set here: the branch wi/S-0001-raise-the-stories-fgraph writes S-0001 alone
 ```
 
-A key is taken back to its default by setting that default, `fgraph config
-set development.merge merge-commit`: there is no unset. `parallel` and `gate`
-have no default to set, so once set they take another value by a set, and are
-taken back to none only by removing their line from the file. A set writes
-the file whole from its keys, so a comment written in it is not kept. A
-`config.toml` fgraph refuses is refused by `fgraph config` too, as by every
-command, and is mended in the file.
+A key is taken back to its default by `fgraph config unset KEY`, which leaves
+it out of the file, or by setting that default, `fgraph config set
+development.merge merge-commit`, which writes it there. `parallel` and `gate`
+have no default to set: an unset alone takes them back to none. A set or an
+unset writes the file whole from its keys, so a comment written in it is not
+kept. A `config.toml` fgraph refuses is refused by `fgraph config` too, as by
+every command, and is mended in the file.
 
 Start a Story once it has a Task, then start its Tasks one by one. `fgraph
 start` takes a Story id or a Task id, or none, and then the first `fgraph status`
@@ -1253,7 +1254,7 @@ removed Task is not counted at all (`fgraph remove`, below).
 
 Under it comes the Task being worked, marked `=>`: the started Task of the
 work item. A Task in Backlog or completed is not listed, and a Task line does
-not count toward the top 5 of a heading (below).
+not count toward the top of a heading (below).
 
 A started work item that holds a Task, with every Task completed, is ready for
 review, and `fgraph status` marks it `?` in the first column of its line, beside
@@ -2139,7 +2140,7 @@ alone, S-0002, was added after the Feature, and the Story under the Feature
 is on no line of its own:
 
 ```sh
-fgraph status
+fgraph status --backlog
 # Backlog (2)
 # > F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
@@ -2155,7 +2156,7 @@ item reads `0/0 W`.
 A Feature holds a place of its own in the Backlog: it joins the end when it
 is added, after the work items and the Features `fgraph reorder` placed and
 those added before it, and `fgraph reorder` places it as a work item (below).
-It is counted once, beside the heading and toward the top 5 (below). Its
+It is counted once, beside the heading and toward the top of it (below). Its
 work items in Backlog are listed on no line of their own. A completed one of a
 Feature in progress stays listed under its line, counted beside no heading; those
 of a completed or a removed Feature stay on no line. They are counted in its
@@ -2203,7 +2204,7 @@ fgraph status
 ```
 
 The lines under a Feature belong to it: they count neither beside the heading
-nor toward the top 5.
+nor toward the top of the heading.
 
 A blocked Task marks its Feature: while the started work item of a Feature
 holds a blocked Task, `fgraph status` lists the Feature with `!` before its
@@ -2569,7 +2570,7 @@ its kind, and so does a Feature; `fgraph reorder` puts one right before
 another:
 
 ```sh
-fgraph status
+fgraph status --backlog
 # Backlog (2)
 # > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 #   U-0002  Cut the lines one kind of work item holds from 885 to 250
@@ -2579,7 +2580,7 @@ fgraph status
 fgraph reorder U-0002 --before S-0002
 # moved U-0002 before S-0002
 
-fgraph status
+fgraph status --backlog
 # Backlog (2)
 # > U-0002  Cut the lines one kind of work item holds from 885 to 250
 #   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
@@ -2596,7 +2597,7 @@ Feature before it again:
 fgraph reorder S-0002 --before F-0001
 # moved S-0002 before F-0001
 
-fgraph status
+fgraph status --backlog
 # Backlog (2)
 # > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 #   F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
@@ -2606,7 +2607,7 @@ fgraph status
 fgraph reorder F-0001 --before S-0002
 # moved F-0001 before S-0002
 
-fgraph status
+fgraph status --backlog
 # Backlog (2)
 # > F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
@@ -2693,10 +2694,11 @@ fgraph status
 #   S-0002  87c0307  Raise the kinds of work item fgraph adds from 1 to 2
 ```
 
-`fgraph status` lists the top 5 under each heading -- Backlog, InProgress,
-Completed and Removed -- in the order above, and then how many more the
-heading holds. A Feature counts as one item, as a work item does. The count
-beside the heading stays that of all its items:
+`fgraph status` lists the top of each heading in the order above, and then how
+many more the heading holds: the top 5 of InProgress, Completed and Removed,
+and the first line of the Backlog alone, with `... N more, M can start`, M the
+lines of those more that can start. A Feature counts as one item, as a work
+item does. The count beside the heading stays that of all its items:
 
 ```sh
 fgraph status
@@ -2711,7 +2713,19 @@ fgraph status
 #   ... 2 more
 ```
 
-`fgraph status --all` lists every item, with no such line.
+A Backlog of five under a plain `fgraph status` lists its first line:
+
+```sh
+fgraph status
+# Backlog (5)
+# > S-0001  Add the show command
+#   ... 4 more, 0 can start
+# InProgress (0)
+# Completed (0)
+```
+
+`fgraph status --backlog` lists the whole Backlog and leaves the other buckets
+short; `fgraph status --all` lists every item of every bucket, with no such line.
 
 On a terminal `fgraph status` cuts each line to the width of the terminal and
 ends a line it cut with `...`, so every item stays on one line. The commit of
@@ -2746,6 +2760,7 @@ it, with exit 0:
 fgraph watch            # a frame every 5 seconds, until Ctrl-C
 fgraph watch -n 2       # a frame every 2 seconds; -n 0.5 for two a second
 fgraph watch --all      # every item in each frame, as fgraph status --all
+fgraph watch --backlog   # the whole Backlog in each frame
 fgraph watch --count 3  # three frames, then exit 0
 ```
 

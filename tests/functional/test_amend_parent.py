@@ -158,7 +158,7 @@ def test_a_story_taken_out_of_a_feature_keeps_the_place_the_queue_gave_it(tmp_pa
         ["reorder", "S-0003", "--before", "F-0001"],
         ["amend", "S-0002", "--parent", "none"],
     )
-    assert fgraph(["status"], tmp_path).out.splitlines()[:4] == [
+    assert fgraph(["status", "--backlog"], tmp_path).out.splitlines()[:4] == [
         "Backlog (3)",
         "> S-0003  a title",
         "  F-0001  0/1 W  a feature title",

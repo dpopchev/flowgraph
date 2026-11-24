@@ -112,7 +112,9 @@ def test_the_criteria_given_replace_the_ones_it_had_and_its_story_stays_under_it
 
 def test_a_feature_amended_keeps_the_place_the_queue_gave_it(tmp_path: Path) -> None:
     reorder = ["reorder", "F-0001", "--before", "S-0001"]
-    listed = runs(tmp_path, ADD_ALONE, ADD_FEATURE, reorder, AMEND_TITLE, ["status"]).out
+    listed = runs(
+        tmp_path, ADD_ALONE, ADD_FEATURE, reorder, AMEND_TITLE, ["status", "--backlog"]
+    ).out
     assert listed.splitlines()[:3] == [
         "Backlog (2)",
         "  F-0001  0/0 W  another title",

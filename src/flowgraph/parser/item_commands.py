@@ -11,9 +11,6 @@ from flowgraph.parser.start import start_command
 from flowgraph.status import document
 from flowgraph.term import KINDS
 
-# The items status lists under one heading, unless every one is asked for.
-TOP = 5
-
 # The seconds watch waits between two frames, unless others are given.
 EVERY = 5
 
@@ -142,9 +139,10 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     status.add_argument(
         "--all",
         action="store_true",
-        help=f"list every item, instead of the top {TOP} under each heading; {document.JSON} lists"
-        " every item whether or not it is given",
+        help="list every item of every heading, instead of the top of each; "
+        f"{document.JSON} lists every item whether or not it is given",
     )
+    status.add_argument("--backlog", action="store_true", help="list the whole Backlog")
     status.add_argument(
         "--format",
         default=document.TEXT,
@@ -168,8 +166,9 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     watch.add_argument(
         "--all",
         action="store_true",
-        help=f"list every item, instead of the top {TOP} under each heading",
+        help="list every item of every heading, instead of the top of each",
     )
+    watch.add_argument("--backlog", action="store_true", help="list the whole Backlog")
     return {
         "amend": amend,
         "show": show,

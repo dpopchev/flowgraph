@@ -4,7 +4,8 @@
 push. The version is the next minor when a Story or a Bug was completed since the last v* tag,
 else the next patch, and v0.1.0 when there is no tag (flowgraph.development.version); one asked
 for by --version is tagged in its place. A tag is never moved or deleted: one that exists is
-refused, and so is a release with nothing completed since the last tag.
+refused, and so is a release with nothing completed since the last tag, and one while a Story, a
+Bug or an Upkeep completed since it holds no answer of `fgraph verify`, each one named.
 
 A work item is completed since the last tag unless that tag holds it: by the commit it names,
 which the tag holds when it is on that commit or after it, so a work item landed just before the
@@ -17,13 +18,14 @@ leaves the tag as it is, since a tag is never deleted.
 A landing tags main too (`release_landing`), before the write that completes its work item: the
 version counts the kinds completed since the last tag and the kind landed, and a tag that holds
 the commit of the landing, as a landing taken up finds, is the tag of it and is not made again.
+It asks no answer of `fgraph verify`.
 """
 
 from collections.abc import Iterator
-from datetime import datetime
 from pathlib import Path
 from typing import assert_never
 
+from flowgraph.criterion import Hypothesis
 from flowgraph.development.branch import MAIN
 from flowgraph.development.commit import OpenGit, ReleaseSteps, Said
 from flowgraph.development.git import GitError
@@ -41,7 +43,7 @@ from flowgraph.development.version import (
 from flowgraph.record import Config
 from flowgraph.record.layers import TagAt
 from flowgraph.record.store import KINDS, Store
-from flowgraph.work_item import Kind
+from flowgraph.work_item import Kind, WorkItemRow
 
 # The tags a release reads and makes.
 RELEASE_TAGS = "v*"
@@ -51,35 +53,61 @@ COMPLETED = "completed"
 
 
 class ReleaseError(Exception):
-    """A release refused: outside a git work tree, of a tag that exists, or of nothing new."""
+    """A release refused: outside a git work tree, of a tag that exists, of nothing new, or of
+    work that holds no answer."""
 
 
-def _completed_kinds(store: Store) -> Iterator[tuple[Kind, str, datetime]]:
-    """The kind, the commit and the time of each completed work item of the record."""
+class UnverifiedError(ReleaseError):
+    """A release refused while a work item completed since the last tag holds no answer."""
+
+
+def _completed_kinds(store: Store) -> Iterator[tuple[Kind, WorkItemRow]]:
+    """The kind and the row of each completed work item of the record."""
     for kind in KINDS:
         for row in store.find_work_item_rows(kind):
             if row.state == COMPLETED and row.completed is not None:
-                yield kind, row.commit, row.completed
+                yield kind, row
+
+
+def _completed_since(
+    store: Store, last: Version | None, steps: ReleaseSteps
+) -> list[tuple[Kind, WorkItemRow]]:
+    """The kind and the row of the work items completed since the last tag; all without one."""
+    completed = list(_completed_kinds(store))
+    if last is None:
+        return completed
+    tag = version_text(last)
+    tagged = steps.tagged_at(tag)
+    return [
+        (kind, row)
+        for kind, row in completed
+        if row.completed is not None
+        if not is_released(
+            steps.holds_commit(tag, row.commit) if row.commit else None, row.completed, tagged
+        )
+    ]
 
 
 def _kinds_since(store: Store, last: Version | None, steps: ReleaseSteps) -> list[Kind]:
     """The kinds of the work items completed since the last tag; every completed one without it."""
-    completed = list(_completed_kinds(store))
-    if last is None:
-        return [kind for kind, _, _ in completed]
-    tag = version_text(last)
-    tagged = steps.tagged_at(tag)
-    return [
-        kind
-        for kind, commit, on in completed
-        if not is_released(steps.holds_commit(tag, commit) if commit else None, on, tagged)
-    ]
+    return [kind for kind, _ in _completed_since(store, last, steps)]
+
+
+def _unverified(since: list[tuple[Kind, WorkItemRow]]) -> list[str]:
+    """The ids of the work items that take an answer of their closing and hold none, as read."""
+    return [row.id for kind, row in since if kind.takes is not Hypothesis and not row.verified]
 
 
 def _nothing_since(last: Version | None) -> str:
     """What a release with nothing completed since the last tag says."""
     since = "" if last is None else f" since {version_text(last)}"
     return f"nothing is completed{since}: no release -- complete a work item first"
+
+
+def _not_verified(ids: list[str], last: Version | None) -> str:
+    """What a release says while work items completed since the last tag hold no answer."""
+    since = "" if last is None else f" since {version_text(last)}"
+    return f"{', '.join(ids)} not verified{since}: no release -- run fgraph verify on each first"
 
 
 def _pushed_tag(steps: ReleaseSteps, tag: str, sha: str, config: Config) -> str:
@@ -102,8 +130,10 @@ def release_trunk(
     """Tag the head of main with its next version, annotated; what fgraph says of the release.
 
     The version asked for is tagged in place of the next one. Raises ReleaseError when the record
-    is outside a git work tree, when the version asked for is tagged already and when nothing is
-    completed since the last tag; VersionError when the version asked for is none;
+    is outside a git work tree, when the version asked for is tagged already, when nothing is
+    completed since the last tag and, as UnverifiedError, when a Story, a Bug or an Upkeep
+    completed since it holds no answer of `fgraph verify`, a version asked for included;
+    VersionError when the version asked for is none;
     NotOnMainError when the work tree of the record is not on main, as a start does; and
     GitError when git refuses a step. With the push of the delivery on, the tag is pushed to the
     remote main tracks once it is made: a push git refuses says the tag is made and not pushed.
@@ -119,9 +149,12 @@ def release_trunk(
     if named is not None and version_text(named) in tags:
         tagged = f"{version_text(named)} is tagged already: a tag is never moved or deleted"
         raise ReleaseError(f"{tagged} -- name another with --version")
-    bump = bump_of(_kinds_since(store, last, steps))
+    since = _completed_since(store, last, steps)
+    bump = bump_of([kind for kind, _ in since])
     if bump is None:
         raise ReleaseError(_nothing_since(last))
+    if unverified := _unverified(since):
+        raise UnverifiedError(_not_verified(unverified, last))
     tag = version_text(next_version(last, bump) if named is None else named)
     sha = steps.make_tag(tag, f"release {tag}", MAIN)
     return Said(f"tagged {tag} at {sha}\n{_pushed_tag(steps, tag, sha, config)}")

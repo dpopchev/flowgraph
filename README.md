@@ -20,7 +20,8 @@ lands it. `fgraph release` tags `main` with its next `v*` version, from the
 work completed since the last one. `fgraph config` shows the configuration
 and sets a key of it. A work item, and a Feature, keeps the findings,
 decisions and deviations noted on it with `fgraph note`, in any state, and
-`fgraph show` lists them. `fgraph knowledge` lists the lines of the whole
+`fgraph show` lists them; a work item and a Task of it also take a progress
+line, where the work stands, which `fgraph show` lists too. `fgraph knowledge` lists the lines of the whole
 record. The closing of a completed Story, Bug or
 Upkeep is answered with `fgraph verify`: yes or no, with what the run of its
 criterion printed, which `fgraph show` lists; a no files a Bug that amends it.
@@ -52,6 +53,7 @@ the typed edges of the whole record as JSON.
 | the configuration               | every key shown and set by `fgraph config`               |
 | the knowledge of an item        | lines noted by `fgraph note` on a work item or a Feature |
 | the knowledge of the record     | every line listed by `fgraph knowledge`, newest first    |
+| the progress of the work        | `fgraph note --progress` on a work item or a Task        |
 | the closing of a work item      | `fgraph verify --yes` keeps the yes of a completed one   |
 |                                 | `--no` keeps the no and files a Bug that amends it       |
 | the development                 | once enabled: start branches, `fgraph land` lands        |
@@ -861,6 +863,9 @@ next patch, and `v0.1.0` when the repository holds no `v*` tag yet:
 fgraph land S-0002 --message "feat: land the Stories listed under InProgress"
 # landed S-0002 at 85c8d69
 
+fgraph verify S-0002 --yes "make check: all checks passed"
+# verified S-0002
+
 fgraph release
 # tagged v0.2.0 at 3becb1b
 
@@ -878,7 +883,9 @@ development off, is taken by its completed time against the time of the tag.
 for a major.
 
 A tag is never moved or deleted: a version that is tagged already is refused,
-and so is a release with nothing completed since the last tag. Each exits 2
+and so is a release with nothing completed since the last tag, and one while a
+Story, a Bug or an Upkeep completed since the last tag holds no answer of
+`fgraph verify`, yes or no, each one named. Each exits 2
 and tags nothing, and so does a release run off the checkout of `main`, as a
 start is:
 
@@ -888,7 +895,15 @@ fgraph release
 
 fgraph release --version v0.2.1
 # fgraph: error: v0.2.1 is tagged already: a tag is never moved or deleted -- name another with --version
+
+fgraph release
+# fgraph: error: S-0003 not verified since v0.2.1: no release -- run fgraph verify on each first
 ```
+
+A Spike closes on its own answer and is not asked; a no is an answer, and the
+Bug it files is its own work item. With no `v*` tag yet every completed Story,
+Bug and Upkeep is asked. The tag a landing makes under `[delivery] tag` asks
+for none.
 
 With `[delivery] push = true` the tag is pushed to the remote `main` tracks,
 once it is made, on a line of its own. A push git refuses leaves the tag as
@@ -1395,7 +1410,7 @@ appends a finding, a decision or a deviation to a work item in any state, Comple
 as one write and one commit of the record; `fgraph show` lists the lines after
 the Tasks, each with its kind, the date it was noted and its text, and no
 heading when there is none. A note takes exactly one of `--finding`,
-`--decision` and `--deviation`, with its text:
+`--decision`, `--deviation` and `--progress`, with its text:
 
 ```sh
 fgraph note S-0001 --finding "the file holds the lines in the order noted"
@@ -1434,12 +1449,45 @@ fgraph show F-0001
 #   decision  2026-11-22  the budget is agreed
 ```
 
+A work item also keeps progress lines, where the work stands: a hand-off, a
+structure note, the red line of a Task. `fgraph note ID --progress TEXT` keeps
+one on a work item in any state, or on a Task of it, kept on its work item and
+naming the Task, as one write and one commit. A progress line is no knowledge:
+`fgraph knowledge` never lists it, and it takes no `--about` and no `--governs`;
+a Feature takes none. `fgraph show` lists the lines of a Task under it, and
+those of the work item under `Progress (n)` after the knowledge lines:
+
+```sh
+fgraph note S-0001 --progress "the parser is read; next the show"
+# noted S-0001
+
+fgraph note T-0001 --progress "red: 1 failed"
+# noted T-0001 of S-0001
+
+fgraph show S-0001
+# ...
+# Tasks (1)
+#   T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
+#     bucket           InProgress
+#     expected output  changed: src/flowgraph/cli.py gains the show command
+#     progress         2026-11-22  red: 1 failed
+# Progress (1)
+#   2026-11-22  the parser is read; next the show
+```
+
 `fgraph knowledge` lists the lines of every work item and every Feature of the
 record, the last noted first, each with its date, its kind, the id of its item
 and its text. `--kind` narrows the list to `finding`, `decision` or `deviation`;
-another word exits 2 naming the three. The decision of a completed Spike is
-listed among the decisions at the time the Spike was completed, and stays kept
-on the Spike. A record with no line prints one line saying so:
+another word exits 2 naming the three. `fgraph knowledge --search TEXT` narrows
+the list to the lines whose text holds the text, whatever the case of either,
+as a part of a word too. `--kind`, `--about` and `--search` narrow the same
+list, a line being listed when it meets each one given. Only the text of the
+line is searched, as it is listed (the decision of a Spike with its answer),
+not the title or the id of its item, its kind or the terms it is about. With
+no such line it prints one line and exits 0; a blank text exits 2. The decision
+of a completed Spike is listed among the decisions at the time the Spike was
+completed, and stays kept on the Spike. A record with no line prints one line
+saying so:
 
 ```sh
 fgraph knowledge
@@ -1456,10 +1504,16 @@ fgraph knowledge --kind decision
 
 fgraph knowledge --kind finding
 # 2026-11-22  finding  S-0001  the file holds the lines in the order noted
+
+fgraph knowledge --search STORE
+# 2026-11-22  decision  S-0001  keep one store
+
+fgraph knowledge --search budget --kind finding
+# no finding lines holding 'budget' in the record
 ```
 
-A line is never amended or removed. The id of a Task, an id the record does
-not hold, a blank text and a note with none or more than one of the three kinds exit 2 and write nothing. With the development on, a
+A line is never amended or removed. The id of a Task with a kind of knowledge,
+an id the record does not hold, a blank text and a note with none or more than one of the four exit 2 and write nothing. With the development on, a
 started work item is noted in its worktree, as its Tasks are written, and every
 other one, a Feature too, on `main`; the branch of a work item writes that work
 item alone, so a Feature is not noted there.

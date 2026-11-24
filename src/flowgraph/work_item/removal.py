@@ -62,6 +62,7 @@ def removed_work_item(
                 _superseded_by_kept(item.id, superseded_by),
                 item.about,
                 realizes=item.realizes,
+                progress=item.progress,
             )
         case StartedWorkItem():
             raise StartedAlreadyError(f"{work_item_id_text(item.id)} is started already")

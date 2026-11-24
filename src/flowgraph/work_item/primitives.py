@@ -46,8 +46,10 @@ from flowgraph.work_item.model import (
     WorkItemState,
     append_task,
     make_work_item,
+    progressed_work_item,
 )
 from flowgraph.work_item.moves import completed_work_item, started_work_item
+from flowgraph.work_item.progress_file import progress_held, progress_primitives
 from flowgraph.work_item.removal import removed_work_item
 from flowgraph.work_item.state import state_name
 from flowgraph.work_item.verification import make_verification
@@ -109,6 +111,8 @@ def item_primitives(item: WorkItemState) -> dict[str, object]:
     tasks = {"tasks": [task_primitives(task) for task in item.tasks]} if item.tasks else {}
     lines = [knowledge_primitives(line) for line in item.knowledge]
     knowledge = {"knowledge": lines} if lines else {}
+    noted = [progress_primitives(line) for line in item.progress]
+    progress = {"progress": noted} if noted else {}
     about = {"about": list(item.about)} if item.about else {}
     rated = {"complexity": item.complexity} if item.complexity else {}
     return {
@@ -125,6 +129,7 @@ def item_primitives(item: WorkItemState) -> dict[str, object]:
         "criterion": criterion_primitives(item.criterion),
         **tasks,
         **knowledge,
+        **progress,
         **relations_primitives(item.relations),
     }
 
@@ -149,7 +154,8 @@ def item_held(held: HeldItemFile, kind: Kind, kinds: Sequence[Kind] = ()) -> Wor
     holds no state those moves could not reach. Raises TaskInProgressError when it holds more
     than one started Task, CriterionError when it holds the criterion of another kind or a
     decision before it is completed, DecisionError when its completion lacks its decision,
-    WorkItemIdError when it depends on an id of none of the kinds and RelationError when on itself.
+    WorkItemIdError when it depends on an id of none of the kinds, RelationError when on itself,
+    and TaskIdError or TaskNotFoundError when a progress line names no Task of it.
     """
     criterion = criterion_held(held.criterion)
     decision = decision_held(held.criterion)
@@ -173,6 +179,8 @@ def item_held(held: HeldItemFile, kind: Kind, kinds: Sequence[Kind] = ()) -> Wor
         item = append_task(item, backlog_task(task))
     relations = relations_held(item_id, held, (kind, *kinds))
     item = replace(item, knowledge=tuple(knowledge_held(line) for line in held.knowledge))
+    for line in held.progress:
+        item = progressed_work_item(item, progress_held(line))
     item = replace(item, relations=relations)
     match held:
         case ItemFile():

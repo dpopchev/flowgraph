@@ -164,6 +164,14 @@ something, so a blank one is refused where the line is built. A line is noted
 with `fgraph note` in Backlog, started, Completed or Removed alike, and is never
 amended or removed: it is added after the lines the item keeps already.
 
+A work item also keeps its progress lines, in the order noted: each holds its
+text, the time it was noted and, when it is of a Task, that Task. A progress
+line says where the work stands -- a hand-off, a structure note, the red line of
+a Task -- and is no knowledge line: a type and a table of its own, about no
+term, governing no file, listed by `fgraph show` alone and never by `fgraph
+knowledge`, `about`, `brief`, `graph` or `status`. It is kept in any state of
+the work item and of the Task, and is never amended or removed (S-0143).
+
 A completed Story, Bug or Upkeep also holds the answer of its closing once it
 is verified, none before. It is its own fact, a `Verification` of the
 completed work item and never a knowledge line: the answer, yes so far, the
@@ -189,7 +197,8 @@ are built. The relations are listed in one table under Relations below.
 
 A Feature keeps its knowledge lines as a work item does, in each of its five
 states, and they stay on it through every move and every amend. A Task keeps
-none: what a Task learns is noted on its work item.
+no knowledge line: what a Task learns is noted on its work item. A Task takes a
+progress line, kept on its work item and naming the Task; a Feature takes none.
 
 ## States are types
 
@@ -1139,13 +1148,31 @@ and its merge tool.
   S-0001 in the record`, and says `noted S-0001`. With the development on, a
   started work item is noted in its worktree, where its Tasks are written, and
   every other one on `main`. `fgraph note` takes exactly one of `--finding`,
-  `--decision` and `--deviation`, and the `kind` of the table is `finding`,
-  `decision` or `deviation`; a file with any other kind is refused when read,
-  naming the file. The id of a Task, an id the record does not hold, a blank
-  text and none or more than one of the three kinds are refused, exit 2,
-  nothing written. `fgraph show` lists the
+  `--decision`, `--deviation` and `--progress`, and the `kind` of the table is
+  `finding`, `decision` or `deviation`; a file with any other kind is refused
+  when read, naming the file. The id of a Task with one of the three kinds of
+  knowledge, an id the record does not hold, a blank text and none or more than
+  one of the four are refused, exit 2, nothing written. `fgraph show` lists the
   lines under `Knowledge (n)` after the Tasks, each with its kind, its date and
   its text, and no heading when there is none.
+- A progress line is one `[[progress]]` table inside the file of its work item,
+  in the order noted, apart from `[[knowledge]]`, with its `text`, its `noted`
+  time and, for a line of a Task, `task = "T-0001"`; a file without the table
+  keeps none. `fgraph note S-0001 --progress TEXT` writes it as one write and
+  one commit, `chore: note S-0001 in the record`, and says `noted S-0001`; of a
+  Task, `fgraph note T-0001 --progress TEXT` says `noted T-0001 of S-0001` and
+  commits `chore: note T-0001 of S-0001 in the record`. With the development on,
+  a started work item that has a worktree is noted there, its Tasks too, or from
+  `main` with `--dir` on the record of that worktree; `main` refuses it with
+  `S-0001 is started: its Tasks are written in its worktree, <path>`, and every
+  other work item is noted on `main`. Refused, exit 2 and nothing written: a
+  Feature (`F-0001 keeps no progress line: fgraph note --progress takes a work
+  item or a Task of it`), `--about` or `--governs` (`a progress line takes no
+  --about and no --governs: it is no knowledge line`), a blank text (`text is
+  empty`) and an id the record does not hold (`no Task T-0009 in the record`,
+  `no Story S-0009 in the record`). `fgraph show` lists the lines of a Task under
+  it as `progress`, with the day and the text, and those of the work item under
+  `Progress (n)` after `Knowledge (n)`, with no heading when there is none.
 - The answer of a closing is one `[verified]` table inside the file of a
   completed work item, with its `answer` (`yes`), its `text` and its `on` time,
   held only once there is one: a file without it, as every file written before,
@@ -1196,8 +1223,8 @@ and its merge tool.
   says `noted F-0001`; `fgraph show` lists the lines under `Knowledge (n)` after
   its work items. It is written on `main` alone: on the branch of a work item,
   which writes that work item alone, the note of a Feature is refused naming it,
-  as the write of any other item is, exit 2 and nothing written. A Task takes no
-  note: its id is refused.
+  as the write of any other item is, exit 2 and nothing written. A Task takes a
+  progress line alone.
 - `fgraph knowledge` is a view of the whole record: it reads every work item and
   every Feature and writes nothing. It lists every line of each, with its date,
   its kind, the id of its item and its text, the last noted first; lines noted
@@ -1207,7 +1234,16 @@ and its merge tool.
   copied, and stays kept on the Spike as its `decision`. `--kind` narrows the list to
   `finding`, `decision` or `deviation`; any other word is refused naming the
   three, exit 2. A record with no line of the kind asked, or none, prints one
-  line saying so and exits 0.
+  line saying so and exits 0. `fgraph knowledge --search TEXT` narrows the list
+  to the lines whose text holds the text, whatever the case of either; `--kind`,
+  `--about` and `--search` narrow the same list, a line listed when it meets each
+  one given. Only the text of a line is searched, not the title or the id of its
+  item, its kind or its terms; with no such line it prints one line and exits 0
+  (`no knowledge lines holding 'zzz' in the record`, or with a kind or a term asked
+  too, `no decision lines about gate holding 'zzz' in the record`); a blank text is
+  refused, exit 2, `search is empty`. The search is one filter of the entries,
+  holding of `src/flowgraph/knowledge/list.py`, applied before the list is narrowed
+  and ordered (S-0146).
 - A blocked Task is kept as `state = "blocked"` with its `started` time, its
   `since` time, its `reason` and its `waiting_on`. Only a started work item's
   file may hold one, and it is read back through its start and its block.
@@ -1967,6 +2003,7 @@ held to `main`, and there is no landing:
 | start, block, unblock and complete its Tasks | its branch |
 | hand a started work item to an agent | its branch: `fgraph hand` in its worktree, or from `main` with `--dir` on the record of that worktree |
 | block and unblock a started work item | its branch: `fgraph block` and `fgraph unblock` in its worktree, or from `main` with `--dir` on the record of that worktree |
+| note a progress line on a started work item or on a Task of it | its branch: in its worktree, or from `main` with `--dir` on the record of that worktree |
 | land the work item | `main`: `fgraph land` merges its branch and completes it |
 | complete the work item | `main`, after a merge made by hand |
 | complete a Feature | `main`: with its last work item, by its landing or its complete, or by `fgraph complete F-0001` once each work item of it is completed or removed |
@@ -2245,9 +2282,20 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 - A tag is never moved or deleted. A release is refused, exiting 2 with no
   tag made, when the record is outside a git work tree, when the work tree it
   runs in is not on `main`, named as a start names it, when `--version` is
-  no version or names a tag that exists, and when nothing is completed since
-  the last tag, or nothing at all without one. Git refuses an existing tag
-  too, so no step of `fgraph` moves one.
+  no version or names a tag that exists, when nothing is completed since
+  the last tag, or nothing at all without one, and while a work item completed
+  since the last tag holds no answer of `fgraph verify`: the line is
+  `S-0001, U-0001 not verified since v0.1.0: no release -- run fgraph verify
+  on each first`, without `since <tag>` when there is no tag, and every such
+  work item is named on it, Story then Upkeep then Bug, each by number. The
+  kinds asked are those `fgraph verify` takes, a Story, a Bug and an Upkeep,
+  so a Spike is not asked; a yes and a no both count as an answer. It is read
+  from the row of each work item completed since the last tag
+  (`WorkItemRow.verified`), every completed one when there is no tag, and a
+  `--version` asked for does not pass it. It is an `UnverifiedError`, a
+  `ReleaseError`, and `release_landing` is not asked: the tag of a landing
+  asks for no answer (S-0149). Git refuses an existing tag too, so no step of
+  `fgraph` moves one.
 - With `[delivery] push = true` the tag is pushed to the remote `main`
   tracks, once it is made, and the release says `pushed <version> to
   <remote>`. A push git refuses leaves the tag made and exits 2 naming the
@@ -2504,8 +2552,8 @@ The History lines:
 | `blocked` | T-493 | `since` of the `BlockedTask` | converted: the day becomes a time |
 | `unblocked: <why>` | W-008 (s) | none: `fgraph unblock` takes no why | lost |
 | `progress: <text>`, `re-aim`, `halt at` | E-019 | none | lost |
-| `progress: red: <line>` | T-476 | none | lost |
-| `progress: structure: ...` | W-197, W-187 | none | lost |
+| `progress: red: <line>` | T-476 | `fgraph note T-0001 --progress`, kept on its work item naming the Task (S-0143) | converted: the day becomes the time noted |
+| `progress: structure: ...` | W-197, W-187 | `fgraph note --progress`, on the work item or a Task of it (S-0143) | converted: the day becomes the time noted |
 | `progress: verified: ...` of an issue or a bug | W-187, W-188 | `fgraph verify --yes`, the `Verification` (Attributes) | converted: the answer yes with its text |
 | `progress: verified: ...` of a spike | W-195 | none: a Spike is not verified (Attributes) | lost |
 | `progress: verified: ...` of an Epic | E-018 | none: a Feature is not verified | lost |
@@ -2764,8 +2812,8 @@ quoted; `reading` marks a judgment of this Task, not a fact:
 | the stop of a burn Decision | 243 burn Decisions, 147 burn History lines | decision on F-0007: burn "stays in the planning skill and not in fgraph"; the line converts as text |
 | a ledger as an archive | 106: c 48, cts 20, g 1, st 3, sm 18, sv 16 | reading: a view rebuilt from the items (`docs/board-review.md`, group 7); its checkpoint Deviations are not, above |
 | `note:` and `progress: tagged` History lines | 1,133 and 348 lines | reading: git holds each write and each tag (Field map) |
-| `progress: red:` | 1,366 lines | reading: the red proof gates a close in board 1; nothing reads it of a done Task, and no Task in flight holds one |
-| `progress: structure:`, the other progress lines, `unblocked: <why>` | 654, 339 and 174 lines | reading: a story of the work, read by no gate; not filed |
+| `progress: red:` | 1,366 lines | reading: the red proof gates a close in board 1; nothing reads it of a done Task, and no Task in flight holds one; since S-0143 `fgraph note --progress` keeps such a line on a work item or a Task |
+| `progress: structure:`, the other progress lines, `unblocked: <why>` | 654, 339 and 174 lines | reading: a story of the work, read by no gate; since S-0143 `fgraph note --progress` keeps such a line on a work item or a Task; the lines of an Epic and `unblocked: <why>` are not filed |
 | `progress: verified:` of a spike, of an Epic | 20 and 58 lines | reading: a Spike keeps its decision and answer, and S-0101 shows a Feature met k of n; not filed as such |
 
 The configuration, the `landing:` line of Records measured against F-0012

@@ -56,6 +56,7 @@ def blocked_work_item(
                 knowledge=item.knowledge,
                 relations=item.relations,
                 about=item.about,
+                progress=item.progress,
             )
         case BlockedWorkItem():
             raise BlockedError(f"{named} is blocked already")
@@ -90,6 +91,7 @@ def unblocked_work_item(item: WorkItemState) -> StartedWorkItem:
                 knowledge=item.knowledge,
                 relations=item.relations,
                 about=item.about,
+                progress=item.progress,
             )
         case WorkItem() | StartedWorkItem() | CompletedWorkItem() | RemovedWorkItem():
             raise NotBlockedError(f"{work_item_id_text(item.id)} is not blocked")

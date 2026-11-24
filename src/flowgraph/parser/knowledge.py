@@ -25,6 +25,21 @@ def note_command(commands: Commands) -> argparse.ArgumentParser:
         "--deviation", metavar="TEXT", help="a change to what a started item was agreed to do"
     )
     kinds.add_argument("--progress", metavar="TEXT", help=NOTE_PROGRESS)
+    marks = note.add_mutually_exclusive_group()
+    marks.add_argument(
+        "--standing",
+        dest="mark",
+        action="store_const",
+        const="standing",
+        help="mark the line as standing: it holds until a later line supersedes it",
+    )
+    marks.add_argument(
+        "--open",
+        dest="mark",
+        action="store_const",
+        const="open",
+        help="mark the line as open: not settled yet",
+    )
     return note
 
 

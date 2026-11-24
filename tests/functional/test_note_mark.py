@@ -18,7 +18,6 @@ ADD_STORY = ["add", "story", "a title", "--given", "a", "--when", "b", "--then",
 ADD_FEATURE = ["add", "feature", "a feature title", "--criterion", "a developer lists the record"]
 ADD_TERM = ["add", "term", "gate", "--means", "a check a landing runs"]
 OPEN_NOTE = ["note", "S-0001", "--finding", "the queue is one file", "--open"]
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0102: fgraph note takes no mark")
 
 
 @dataclass(frozen=True)
@@ -57,13 +56,11 @@ def story(tmp_path: Path) -> Path:
     return tmp_path
 
 
-@XFAIL
 def test_note_of_an_open_finding_exits_with_zero_and_says_noted(story: Path) -> None:
     outcome = fgraph(OPEN_NOTE, story)
     assert (outcome.status, outcome.out) == (0, "noted S-0001\n")
 
 
-@XFAIL
 def test_show_of_a_work_item_lists_an_open_finding_with_its_mark(story: Path) -> None:
     fgraph(OPEN_NOTE, story)
     assert fgraph(["show", "S-0001"], story).out.endswith(
@@ -71,7 +68,6 @@ def test_show_of_a_work_item_lists_an_open_finding_with_its_mark(story: Path) ->
     )
 
 
-@XFAIL
 def test_knowledge_lists_an_open_finding_with_its_mark(story: Path) -> None:
     fgraph(OPEN_NOTE, story)
     assert fgraph(["knowledge"], story).out == (
@@ -79,7 +75,6 @@ def test_knowledge_lists_an_open_finding_with_its_mark(story: Path) -> None:
     )
 
 
-@XFAIL
 def test_show_of_a_work_item_lists_a_standing_decision_with_its_mark(story: Path) -> None:
     fgraph(["note", "S-0001", "--decision", "keep one store", "--standing"], story)
     assert fgraph(["show", "S-0001"], story).out.endswith(
@@ -87,13 +82,11 @@ def test_show_of_a_work_item_lists_a_standing_decision_with_its_mark(story: Path
     )
 
 
-@XFAIL
 def test_knowledge_of_a_kind_lists_an_open_deviation_with_its_mark(story: Path) -> None:
     fgraph(["note", "S-0001", "--deviation", "a task was dropped", "--open"], story)
     assert fgraph(["knowledge", "--kind", "deviation"], story).out.endswith("  (open)\n")
 
 
-@XFAIL
 def test_show_of_a_feature_lists_a_standing_decision_with_its_mark(tmp_path: Path) -> None:
     fgraph(ADD_FEATURE, tmp_path)
     fgraph(["note", "F-0001", "--decision", "the budget is agreed", "--standing"], tmp_path)
@@ -102,7 +95,6 @@ def test_show_of_a_feature_lists_a_standing_decision_with_its_mark(tmp_path: Pat
     )
 
 
-@XFAIL
 def test_knowledge_lists_the_mark_before_the_term_the_line_is_about(story: Path) -> None:
     fgraph(ADD_TERM, story)
     fgraph([*OPEN_NOTE, "--about", "gate"], story)
@@ -111,7 +103,6 @@ def test_knowledge_lists_the_mark_before_the_term_the_line_is_about(story: Path)
     )
 
 
-@XFAIL
 def test_the_file_of_the_work_item_holds_the_mark_of_the_line(story: Path) -> None:
     fgraph(OPEN_NOTE, story)
     held = tomllib.loads((story / ".fgraph" / "items" / "S-0001.toml").read_text())

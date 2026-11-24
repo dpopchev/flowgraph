@@ -151,7 +151,8 @@ class TestStatusAsJsonDrivenByAnAgent:
 
 class TestStatusAsTextDrivenByADeveloper:
     def test_both_work_items_are_marked(self, developer_checkout: Path) -> None:
-        assert marked(fgraph(["status"], developer_checkout).out) == ["S-0001", "S-0002"]
+        listed = fgraph(["status", "--backlog"], developer_checkout).out
+        assert marked(listed) == ["S-0001", "S-0002"]
 
 
 class TestStatusAsJsonDrivenByADeveloper:

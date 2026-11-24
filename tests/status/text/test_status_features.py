@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 import pytest
 
 from flowgraph.feature import FeatureRow
-from flowgraph.status import status_text
+from flowgraph.status import same_top, status_text
 from flowgraph.task import TaskRow
 from flowgraph.work_item import WorkItemRow
 
@@ -78,7 +78,7 @@ def test_the_started_work_items_of_a_feature_are_listed_under_its_line_indented(
 def test_a_work_item_under_its_feature_counts_neither_beside_the_heading_nor_toward_the_top() -> (
     None
 ):
-    assert status_text([BEGUN, ALONE, OTHER], top=2).splitlines()[1:] == [
+    assert status_text([BEGUN, ALONE, OTHER], same_top(2)).splitlines()[1:] == [
         "InProgress (3)",
         "  F-0002  1/4 W  a begun feature",
         "    S-0003  1/2 T  a worked title",

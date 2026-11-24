@@ -1,18 +1,25 @@
 id = "S-0130"
-state = "started"
+state = "completed"
 title = "Cut the lines of the backlog fgraph status and fgraph watch list with no flag from the top 5 to the top one"
 description = "Filed on the word of the developer of 2026-11-23, from the frame drawn that day. Its Tasks are written when it is ordered. Today the top 5 of each bucket are listed, with each line that can start beyond them, and --all lists every bucket whole. Open: the name of the flag, --full-backlog being the example of the developer, and what --all does beside it."
 parent = "F-0017"
 complexity = "medium"
 created = 2026-11-23 12:01:35+00:00
 started = 2026-11-24 09:13:34+00:00
+completed = 2026-11-24 10:28:57+00:00
 agent = "sonnet-a35"
+commit = "a74b8e8"
 depends_on = [
     "S-0141",
     "U-0025",
     "U-0026",
     "U-0027",
 ]
+
+[verified]
+answer = "yes"
+text = "at 477e492, on a scratch record of five Stories in Backlog: fgraph status and fgraph watch --count 1 each print \"Backlog (5)\", \"> S-0001  title 1\", \"  ... 4 more, 0 can start\", \"InProgress (0)\", \"Completed (0)\"; fgraph status --backlog and fgraph watch --backlog --count 1 each list S-0001 to S-0005 and no more-line"
+on = 2026-11-24 10:30:11+00:00
 
 [criterion]
 given = "a record with five items in the backlog"
@@ -21,50 +28,70 @@ then = "with no flag each lists the first item of the backlog alone, then a line
 
 [[tasks]]
 id = "T-0580"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_status_backlog_top.py, failing on the criterion of S-0130"
 description = "Frame before, five Stories in Backlog, fgraph status: `Backlog (5)`, `> S-0001  title 1`, `  S-0002  title 2` ... `  S-0005  title 5`, `InProgress (0)`, `Completed (0)`. After: `Backlog (5)`, `> S-0001  title 1`, `  ... 4 more, 0 can start`, `InProgress (0)`, `Completed (0)`; with --backlog the five lines and no such line. One new file, no source change: tests/functional/test_status_backlog_top.py (about 150 lines), functional as its pytestmark, one assert per test, through run() of src/flowgraph/cli.py with no git. Copy from tests/functional/test_status_top.py (97 lines): START, CRITERION, Outcome, fgraph, after, completed(number) and SIX_COMPLETED. Records, as lists of commands: FIVE = add story `title 1` to `title 5`; WAITING = FIVE then [\"amend\", \"S-0001\", \"--depends-on\", \"S-0002\"]; BESIDE = SIX_COMPLETED (S-0001 to S-0006 completed) then add story `title 7` to `title 11`; ONE = add story `title 1`. Texts: WHOLE = the frame before above; SHORT = the frame after above. XFAIL = pytest.mark.xfail(strict=True, reason=\"S-0130: the Backlog lists its top 5 and takes no --backlog\"). Red tests, each marked, the pair (exit, output) where two facts are one behavior: status on FIVE is (0, SHORT); watch --count 1 on FIVE is (0, SHORT); status on WAITING has lines [1:3] equal to [`~ S-0001  title 1  -- depends on S-0002`, `  ... 4 more, 1 can start`], the next to start counted and not listed; status --backlog on FIVE is (0, WHOLE); watch --backlog --count 1 on FIVE is (0, WHOLE); status --backlog on BESIDE ends, from its line `Completed (6)`, with the five last completed, S-0006 first, then `  ... 1 more`, the flag leaving the other buckets short. Guards, no mark, passing today and after: status --all on FIVE is (0, WHOLE); watch --all --count 1 on FIVE is (0, WHOLE); status --format json on FIVE holds five items in the bucket named Backlog (json.loads, the length of its items); status on ONE is `Backlog (1)`, `> S-0001  title 1`, `InProgress (0)`, `Completed (0)`, no more-line. See each marked test xfail and each guard pass before the commit; a marked test that passes today is a wrong arrangement, not a guard to unmark. Out of bounds: every file under src/, every other test file, the docs."
 check = "uv run pytest tests/functional/test_status_backlog_top.py -q && grep -q xfail tests/functional/test_status_backlog_top.py"
 expected_output = "created: tests/functional/test_status_backlog_top.py states that on a record with five Stories in Backlog fgraph status and fgraph watch --count 1 list the first line alone, then `  ... 4 more, 0 can start`; that a next to start the top leaves out is counted in that line and not listed; that --backlog on each lists all five and leaves Completed at its top 5; and, as guards, that --all lists all five, that the JSON lists all five and that a Backlog of one line has no such line. Each red test carries a strict xfail naming S-0130"
 created = 2026-11-23 21:03:08+00:00
+started = 2026-11-24 09:15:39+00:00
+completed = 2026-11-24 09:16:55+00:00
+commit = "515156c"
 
 [[tasks]]
 id = "T-0581"
-state = "backlog"
+state = "completed"
 title = "Add src/flowgraph/status/tops.py: how many items each bucket lists, and the tops the flags of a command ask for"
 description = "New module src/flowgraph/status/tops.py (about 60 lines), pure, shaped as src/flowgraph/status/waits.py: a docstring saying it holds how many items each bucket of status lists, the first ones, and that the flags of a command choose them. @dataclass(frozen=True) class Tops with four fields in the order of the flow, backlog, in_progress, completed, removed, each int | None, None meaning every item. def same_top(top: int | None) -> Tops: that top for every bucket. WHOLE = same_top(None). SHORT = Tops(backlog=1, in_progress=5, completed=5, removed=5), with a comment: what status lists with no flag, the decision of the developer of 2026-11-23 on S-0130. def tops_asked(*, every: bool, backlog: bool) -> Tops: WHOLE when every is true, whatever backlog is; SHORT with its backlog None when backlog is true; SHORT otherwise. def top_of(tops: Tops, bucket: str) -> int | None: the field of that bucket, looked up by BACKLOG_BUCKET, IN_PROGRESS_BUCKET, COMPLETED_BUCKET and REMOVED_BUCKET of src/flowgraph/status/buckets.py (the Upkeep made them); a name that is no bucket raises KeyError, said in its docstring. Imports: dataclass and replace, and the four names of flowgraph.status.buckets; nothing else of status/. Do not name a constant EVERY: src/flowgraph/parser/item_commands.py holds EVERY for the seconds of watch. src/flowgraph/status/__init__.py (about 60 lines after the Upkeep, about 63 after): import Tops, same_top and tops_asked from flowgraph.status.tops and list them in __all__. Red first: write tops.py as typed stubs that raise NotImplementedError (the dataclass whole), write the tests, see each fail for its own reason and not at the import, then the bodies. New tests/status/test_tops.py (about 60 lines), view as its pytestmark, one assert per test: same_top(2) equals Tops(2, 2, 2, 2); same_top(None) equals WHOLE; tops_asked(every=False, backlog=False) equals Tops(backlog=1, in_progress=5, completed=5, removed=5); tops_asked(every=False, backlog=True) equals Tops(None, 5, 5, 5); tops_asked(every=True, backlog=...) equals WHOLE, parametrized over backlog false and true; top_of(Tops(1, 2, 3, 4), name) parametrized over the four names of buckets.py giving 1, 2, 3, 4; top_of with the name \"Other\" raises KeyError. Out of bounds: src/flowgraph/status/text.py and view.py (the next Tasks), src/flowgraph/parser/, src/flowgraph/cli.py, tests/functional/ (the xfail marks stay)."
 check = "uv run pytest tests/status/test_tops.py -q && make lines"
 expected_output = "created: src/flowgraph/status/tops.py holds Tops, a frozen dataclass of the top of each of the four buckets (None lists every one), same_top, WHOLE, SHORT -- 1 for the Backlog and 5 for each other bucket --, tops_asked(*, every, backlog) and top_of(tops, bucket); flowgraph.status exports Tops, same_top and tops_asked; tests/status/test_tops.py states them. Nothing calls them yet and every command prints what it printed before"
 created = 2026-11-23 21:03:13+00:00
+started = 2026-11-24 09:17:04+00:00
+completed = 2026-11-24 09:18:16+00:00
+commit = "c8411d8"
 
 [[tasks]]
 id = "T-0582"
-state = "backlog"
+state = "completed"
 title = "List each bucket of status_text by its own top, the Backlog ending with how many more there are and how many of them can start"
 description = "Change src/flowgraph/status/text.py (about 90 lines after the Upkeep, about 110 after) and one line of src/flowgraph/status/view.py (about 120). In text.py: status_text(rows, tops: Tops = WHOLE); in its loop the top of a bucket is top_of(tops, bucket); for BACKLOG_BUCKET the lines are those of a new private _top_of_backlog(items, top, can_start), for the other buckets those of _top_of as today. _top_of_backlog(items: Sequence[str], top: int | None, can_start: Collection[int]) -> list[str]: every item without a top or when the top leaves none out; else the first top items and one line f\"  ... {more} more, {able} can start\\n\", more = len(items) - top, able = the places in can_start at or beyond the top. The places are the pinned ones status_text computes today (start_now_ids or review_ids of the row; in Backlog no row is ready for review). Update the docstring of status_text: the top is per bucket, and a line of the Backlog that can start beyond its top is counted in the more-line, not listed. In view.py, status_item alone: status_text(status_rows(store, limit), same_top(top)) -- a bridge the next Task removes; status_output is not touched. Red first: change the signature with _top_of_backlog a stub that raises NotImplementedError, correct and add the tests, see them fail for their own reason. Tests in tests/status/text/. test_status_top.py (44 lines): its three tests pass same_top(2) or same_top(3); the two more-lines of a Backlog read `  ... 1 more, 0 can start` and `  ... 2 more, 0 can start`; add: Tops(backlog=1, in_progress=None, completed=None, removed=None) on THREE lists S-0001 then `  ... 2 more, 0 can start`; with the third row marked next_to_start the line reads `  ... 2 more, 1 can start` and S-0003 is on no line; three completed rows under same_top(2) still end `  ... 1 more`; a Backlog of two under same_top(2) has no more-line. test_status_next.py (lines 38, 48) and test_status_start_now.py (lines 31, 42, 51): status_text(rows, 2) or (rows, 1) becomes same_top(n); they pin a marked line listed after the top of the Backlog: it is now counted; correct each expected list from the run and rename a test whose name says the line is listed. test_status_start_now_feature.py (line 63), test_status_review.py (72), test_status_tasks.py (50), test_status_features.py (72): the number becomes same_top(n), the expected text stays (InProgress). Functional tests that change through the bridge, two: tests/functional/test_watch.py, test_watch_lists_the_top_five_under_a_heading (`  ... 1 more` becomes `  ... 1 more, 0 can start`); tests/functional/test_status_next.py, test_status_names_the_next_to_start_when_the_top_leaves_it_out (S-0007 is no longer listed after the top: `  ... 2 more, 1 can start`). The marks of tests/functional/test_status_backlog_top.py stay: the top of the Backlog is still 5. Out of bounds: src/flowgraph/status/document.py (the JSON lists every item and does not change), src/flowgraph/parser/, src/flowgraph/cli.py, the docs."
 check = "uv run pytest tests/status tests/item tests/functional/test_watch.py tests/functional/test_status_next.py tests/functional/test_status_top.py tests/functional/test_status_backlog_top.py -q && grep -q \"can start\" src/flowgraph/status/text.py && make lines"
 expected_output = "changed: status_text(rows, tops) of src/flowgraph/status/text.py takes a Tops in place of one number and lists each bucket by its own top; the Backlog under a top lists its first lines alone, then `  ... N more, M can start`, M the lines marked as able to start among the N, which are no longer listed after the top; InProgress, Completed and Removed list as before, a marked line after the top and `  ... N more`. status_item and status_output still take one number, the same for every bucket, so fgraph status with no flag still lists the top 5 of each"
 created = 2026-11-23 21:03:19+00:00
+started = 2026-11-24 09:18:24+00:00
+completed = 2026-11-24 09:21:08+00:00
+commit = "17caa45"
 
 [[tasks]]
 id = "T-0583"
-state = "backlog"
+state = "completed"
 title = "List the top line of the Backlog alone with no flag, and the whole Backlog with --backlog, on fgraph status and fgraph watch"
 description = "Source, five files. src/flowgraph/status/view.py (about 120 lines): status_item(store, tops: Tops = WHOLE, limit=NEXT_ONLY) and status_output(store, tops: Tops, format_, width, limit) pass the Tops through; the bridge same_top of the Task before is removed; docstrings say a top per bucket. src/flowgraph/parser/item_commands.py (241 lines, 240 to 248 after): remove TOP and its comment; status and watch each gain add_argument(\"--backlog\", action=\"store_true\", help=\"list the whole Backlog\"); the help of --all no longer names a number: list every item of every heading, instead of the top of each (status keeps its clause on JSON). src/flowgraph/parser/__init__.py (11 lines): TOP leaves the import and __all__. src/flowgraph/parser/command.py (244 lines today, about 222 after U-0025, one more after): the import of TOP goes; in the case of status, tops = tops_asked(every=args.all, backlog=args.backlog) passed to status_output; tops_asked joins the import of status_output from flowgraph.status. src/flowgraph/cli.py (217 today, about 235 after S-0141, one more after): TOP leaves the import of flowgraph.parser; in _watch, tops = tops_asked(every=args.all, backlog=args.backlog) passed to status_item; import tops_asked from flowgraph.status.tops. Red first: remove the six xfail marks and the XFAIL constant of tests/functional/test_status_backlog_top.py and see the six fail. Unit tests that change: tests/status/test_output.py (69 lines, five calls: 3 becomes same_top(3), None becomes WHOLE); tests/item/test_status_top.py (line 46: same_top(2)); tests/parser/test_status_all.py (18 lines) and tests/parser/test_watch.py (49): one parametrized test more each, .backlog false without the flag and true with it. Functional tests that pin a second line of the Backlog under a plain status or watch, 19 in 14 files (counted by a run with the top of the Backlog set to one): test_add_upkeep.py 1, test_amend_feature.py 1, test_amend_parent.py 1, test_complete_bug.py 1, test_planned_complexity.py 1, test_planned_start.py 1, test_reorder_backlog.py 2, test_reorder_feature.py 1, test_status_feature_bucket.py 1, test_status_features.py 2, test_status_next.py 2, test_status_start_now.py 2 (one on watch), test_status_waits.py 2, test_watch.py 1, all under tests/functional/. The rule: a test about the order, the marks or a line of the Backlog keeps its expected text and its command gains --backlog (the shared constant, as STATUS of test_status_waits.py, where one is shared); a test about the top itself is reworded to the new frame: test_watch_lists_the_top_five_under_a_heading (the first line, then `  ... 5 more, 0 can start`) and test_status_names_the_next_to_start_when_the_top_leaves_it_out (`  ... 6 more, 1 can start`), renamed to what they now state. Run the whole of tests/functional and correct what else fails by the same rule. Out of bounds: src/flowgraph/status/text.py, tops.py and document.py, src/flowgraph/item/commands.py (it re-exports status_item unchanged), the docs."
 check = "uv run pytest tests/functional tests/status tests/item tests/parser -q && ! grep -q xfail tests/functional/test_status_backlog_top.py && ! grep -rq \"TOP\" src/flowgraph/parser && make lines"
 expected_output = "changed: fgraph status and fgraph watch with no flag list the first line of the Backlog, then `  ... N more, M can start`, and the top 5 of each other bucket; --backlog lists every line of the Backlog and leaves the other buckets short; --all lists every line of every bucket; --format json lists every item whatever the flag. status_item and status_output take a Tops; TOP is gone from flowgraph.parser. No xfail mark is left in tests/functional/test_status_backlog_top.py"
 created = 2026-11-23 21:03:25+00:00
+started = 2026-11-24 09:21:18+00:00
+completed = 2026-11-24 09:41:28+00:00
+commit = "b647968"
 
 [[tasks]]
 id = "T-0584"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say status lists the top line of the Backlog with no flag and the whole of it with --backlog"
 description = "Change README.md (2787 lines) and docs/domain-model.md (2772 lines) only; find each passage by grep, never by line number. docs/domain-model.md: (1) the bullet starting `fgraph status` lists the top 5 under each heading -- rewrite: with no flag the Backlog lists its first line, the developer's decision of 2026-11-23 (S-0130), then one line `... N more, M can start`, N the lines it does not list and M those of them marked as able to start, the same lines can_start of the JSON names; InProgress, Completed and Removed keep their top 5 and `... N more`; `fgraph status --backlog` lists the whole Backlog and leaves the other buckets short; `--all` lists every line of every bucket; keep the sentences on the count beside the heading and on a Feature counting once. (2) Every other `top 5` the grep finds (the bullets on a Task line, on the lines under a Feature, on a Feature inside its bucket): say the top of the heading. (3) The bullet on the mark `?`, its last sentence A marked line the top leaves out is listed after it: true of InProgress; add that in the Backlog a line that can start beyond the top is counted in the more-line. (4) The bullet starting `fgraph watch` follows the record live: `--all` and `--backlog` as on status. (5) The sentence `--all` changes nothing for JSON: neither does `--backlog`. README.md: (1) the paragraph starting `fgraph status` lists the top 5 under each heading and its example: reword as above, keep the example of Completed with `... 2 more`, add a short example of a Backlog of five under a plain status (`> S-0001 ...`, `... 4 more, 0 can start`) and the sentence on --backlog and --all. (2) The block of fgraph watch: add the line `fgraph watch --backlog   # the whole Backlog in each frame`. (3) The paragraph on `fgraph status --format json`: not the top of each bucket; --all and --backlog change nothing for JSON. (4) Each `top 5` elsewhere (grep): the top of a heading. (5) Each example block where a plain `fgraph status` is followed by `# Backlog (N)` with N of 2 or more, 7 blocks (grep -n \"^# Backlog ([2-9]\" README.md): the command becomes `fgraph status --backlog`, the lines stay. Write the more-line exactly as src/flowgraph/status/text.py words it. Keep each edit inside its paragraph, bullet or block. Plain ASCII. No source or test change."
 check = "grep -q -- \"--backlog\" README.md && grep -q -- \"--backlog\" docs/domain-model.md && grep -q \"more, M can start\" docs/domain-model.md && ! grep -q \"top 5 under each heading\" README.md docs/domain-model.md"
 expected_output = "changed: README.md and docs/domain-model.md say fgraph status and fgraph watch list the first line of the Backlog with no flag, then `... N more, M can start`, the top 5 of InProgress, Completed and Removed as before, the whole Backlog with --backlog, the other buckets left short, and every line of every bucket with --all; no passage says the top 5 of the Backlog, and each example of a plain fgraph status shows one line of the Backlog or is run with --backlog"
 created = 2026-11-23 21:03:31+00:00
+started = 2026-11-24 09:41:41+00:00
+completed = 2026-11-24 09:42:51+00:00
+commit = "6b0ec91"
 
 [[knowledge]]
 kind = "decision"
 text = "The developer decided on 2026-11-23, asked before its Tasks were drafted: the whole Backlog is listed with a new flag, --backlog, which leaves the other buckets short; --all still lists every line of every bucket."
 noted = 2026-11-23 20:31:01+00:00
+
+[[knowledge]]
+kind = "deviation"
+text = "The developer agreed on 2026-11-24: one commit on the branch, after its five Tasks, corrects the call status_text([BEGUN, ALONE], top=1) of tests/status/text/test_status_completed_under.py, landed with S-0133 after the Tasks were written, to same_top(1), the edit T-0582 made in the test files it names; no new Task. If the expected lines of that test move too, the work stops and is reported."
+noted = 2026-11-24 10:17:50+00:00

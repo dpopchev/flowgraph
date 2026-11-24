@@ -55,7 +55,7 @@ def status_after(cwd: Path, *argvs: Sequence[str]) -> Outcome:
     """Run each command in cwd in turn, then `fgraph status`; the outcome of the status."""
     for argv in argvs:
         fgraph(argv, cwd)
-    return fgraph(["status"], cwd)
+    return fgraph(["status", "--backlog"], cwd)
 
 
 class TestARecordWithAFeatureAndAStoryAddedUnderIt:

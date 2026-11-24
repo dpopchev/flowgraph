@@ -6,7 +6,7 @@ from datetime import UTC, datetime
 import pytest
 
 from flowgraph.feature import FeatureRow
-from flowgraph.status import status_text
+from flowgraph.status import same_top, status_text
 from flowgraph.work_item import WorkItemRow
 
 pytestmark = pytest.mark.view
@@ -60,7 +60,7 @@ def test_the_feature_holding_a_marked_work_item_is_listed_after_the_top_that_lea
     None
 ):
     plain = [feature(number, [story(number + 10)], []) for number in (2, 3)]
-    lines = status_text([*plain, WITH_TWO], 1).splitlines()
+    lines = status_text([*plain, WITH_TWO], same_top(1)).splitlines()
     assert lines[lines.index("InProgress (3)") + 1 :][:5] == [
         "  F-0002  0/1 W  a feature",
         "  F-0001  0/3 W  a feature",

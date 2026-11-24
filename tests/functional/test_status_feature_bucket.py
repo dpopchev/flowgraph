@@ -54,7 +54,7 @@ def status_after(cwd: Path, *argvs: Sequence[str]) -> Outcome:
     """Run each command in cwd a second after the last, then `fgraph status`; its outcome."""
     for seconds, argv in enumerate(argvs):
         fgraph(argv, cwd, START + timedelta(seconds=seconds))
-    return fgraph(["status"], cwd, START + timedelta(seconds=len(argvs)))
+    return fgraph(["status", "--backlog"], cwd, START + timedelta(seconds=len(argvs)))
 
 
 def test_status_lists_the_story_then_the_feature_with_its_progress_and_neither_story_of_it(

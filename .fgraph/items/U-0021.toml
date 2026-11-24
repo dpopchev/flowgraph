@@ -11,6 +11,11 @@ agent = "sonnet-u21"
 commit = "b40ae118"
 filed_during = "S-0093"
 
+[verified]
+answer = "yes"
+text = "at b40ae118 on main, the merge of wi/U-0021-raise-the-unit-tests, in a scratch clone of main at f5f559ea, three of its behaviors taken out in turn and put back: removed of src/flowgraph/task/moves.py given None for the check failed tests/task/test_task_check.py::test_every_move_of_a_task_carries_its_check[removed], the case U-0021 added; completed given None failed the same test at [done]; RemovedTaskFile of src/flowgraph/item/task_file.py without its check failed tests/work_item/test_work_item_task_check.py::test_a_task_with_its_check_reads_back_whole_in_any_state[removed], the other case it added; with the behaviors back the five test files said 57 passed. The agent ran all 44 behaviors of its two Tasks in the worktree, a test failing by name for each, and its make check said 5089 passed; the five findings fgraph about lists hold the table"
+on = 2026-11-24 23:31:23+00:00
+
 [criterion]
 given = "main, where the unit tests of the check of a Task and of the answer of a closing were written after their code, and the functional test of each Story alone was seen failing first"
 when = "each behavior those unit tests state is taken out in turn and make check runs"

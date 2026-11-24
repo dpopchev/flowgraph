@@ -79,3 +79,8 @@ kind = "finding"
 text = "Found by the agent on 2026-11-24: T-0540 names 17 files of tests/functional. A grep of that day, coarse and not the probe T-0540 describes, finds ten files added since 2026-11-23 that complete a Task at a commit of the real git while its output says an output or out: test_land_approver.py, test_land_pull_request.py, test_land_push_untracked.py, test_land_run_line.py, test_release_verified.py, test_remove_started_work_item.py, test_remove_task_branch.py, test_run_check_default.py, test_status_no_start_mark.py, test_trunk.py. As written T-0540 stops on a file it does not name."
 noted = 2026-11-24 21:11:39+00:00
 mark = "open"
+
+[[knowledge]]
+kind = "decision"
+text = "The developer decided on 2026-11-24: the probe of T-0540 is run and T-0540, T-0542 and T-0543 are amended right before F-0020 starts, after F-0019 lands and changes src/flowgraph/parser/refusals.py and README.md again, not before."
+noted = 2026-11-24 21:11:46+00:00

@@ -14,6 +14,11 @@ depends_on = [
     "B-0035",
 ]
 
+[verified]
+answer = "yes"
+text = "at ff1cc89d on main, the merge of wi/B-0036-cut-the-starts-of, with fgraph of 878b7a19 in three throwaway repositories with the development on: fgraph start S-0001 --agent a and fgraph start S-0001 --agent b run at one time as real processes; in each of the three trials a printed started S-0001 with its branch and exited 0, b exited 2 with fgraph: error: S-0001 is started already: a holds it, git status --porcelain printed nothing, git log held one commit of the start, and fgraph status --format json listed the agent a. Before the landing, in the worktree: tests/functional/test_starts_at_one_time.py said 8 passed on five runs in a row, and the agent's make check said 5087 passed"
+on = 2026-11-24 22:52:43+00:00
+
 [criterion]
 observed = "in a throwaway repository with the development on, with fgraph of 2d612af on 2026-11-24, three trials of fgraph start of one Story with --agent a and with --agent b run at one time: in two the second exited 2 with S-0004 is started already; in one, a exited 2 with the line fgraph: error: git commit --quiet --only --message chore: start S-0003 in the record -- .fgraph/items/S-0003.toml failed: and b exited 0 with started S-0003; after it git status lists .fgraph/items/S-0003.toml as modified and fgraph status lists S-0003 held by a, the agent whose start was refused"
 expected = "of two starts of one work item run at one time one starts it and the other exits 2 in one line of fgraph naming the work item and the agent that holds it; main is left clean and fgraph status lists the agent whose start was taken"

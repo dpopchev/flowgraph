@@ -14,6 +14,11 @@ depends_on = [
 ]
 filed_during = "S-0089"
 
+[verified]
+answer = "yes"
+text = "at 054aa11 on main, the merge of wi/U-0023-cut-the-runs-of: make check exit 0 printed 4131 passed, all checks passed; the default run_check of run() of src/flowgraph/cli.py is _no_check, which raises AssertionError run() was given no run_check to run the command, as _no_gate does; the three tests of tests/functional/test_run_check_default.py pass. Handed whole to one subagent on haiku. T-0490 gave the one line run_check=lambda command, directory: 0 to 23 test files, one more than its list, tests/functional/test_land_push_untracked.py, landed with B-0023 after the Task was written. Handed back twice by the coordinator to merge main and give the same line to the test files landed since, under the clause of T-0490 for a file its list missed: tests/functional/test_release_verified.py in 15b1652, tests/functional/test_land_run_line.py and tests/functional/test_remove_task_branch.py in ffb6607. Its first complete of T-0491 was cut by a timeout of its own and wrote nothing; the second completed it."
+on = 2026-11-24 06:03:51+00:00
+
 [criterion]
 given = "main, where run() of src/flowgraph/cli.py takes run_check with a default that returns 0, so a caller that leaves it out never runs the check of a Task, while the default of run_gate raises"
 when = "make check runs"

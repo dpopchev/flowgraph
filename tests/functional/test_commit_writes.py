@@ -83,7 +83,7 @@ STEPS = (
     Step(WORKTREE, ("start", "T-0001"), "chore: start T-0001 of S-0001 in the record", STORY_FILE),
     Step(
         WORKTREE,
-        ("complete", "T-0001", "--commit", "3e9ae5c"),
+        ("complete", "T-0001", "--commit", "HEAD"),
         "chore: complete T-0001 of S-0001 in the record",
         STORY_FILE,
     ),
@@ -113,6 +113,13 @@ def git(cwd: Path, *args: str) -> str:
     """The output of the git command run in cwd, stripped; fails the test on a non-zero exit."""
     done = subprocess.run(["git", *args], cwd=cwd, check=True, capture_output=True, text=True)
     return done.stdout.strip()
+
+
+def run_step(step: Step, tmp_path: Path) -> Outcome:
+    """Run the step where it runs, its word HEAD replaced by the commit that is HEAD there."""
+    cwd = tmp_path / step.where
+    argv = [git(cwd, "rev-parse", "HEAD") if word == "HEAD" else word for word in step.argv]
+    return fgraph(argv, cwd)
 
 
 def last_commit(cwd: Path) -> tuple[str, str]:
@@ -178,13 +185,13 @@ def test_a_write_leaves_its_commit_holding_only_its_file(
     last: int, checkout: Path, tmp_path: Path
 ) -> None:
     for step in STEPS[: last + 1]:
-        fgraph(step.argv, tmp_path / step.where)
+        run_step(step, tmp_path)
     assert last_commit(tmp_path / STEPS[last].where) == (STEPS[last].subject, STEPS[last].file)
 
 
 def test_a_story_completed_on_main_leaves_its_commit(checkout: Path, tmp_path: Path) -> None:
     for step in STEPS:
-        fgraph(step.argv, tmp_path / step.where)
+        run_step(step, tmp_path)
     git(checkout, "merge", "--quiet", "--no-ff", "--message", "feat: land S-0001", BRANCH)
     fgraph(["complete", "S-0001", "--commit", git(checkout, "rev-parse", "HEAD")], checkout)
     assert last_commit(checkout) == ("chore: complete S-0001 in the record", STORY_FILE)

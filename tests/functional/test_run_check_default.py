@@ -27,9 +27,6 @@ ADD_STORY = ["add", "story", TITLE, *CRITERION]
 WORKTREE = Path("project.worktrees") / "S-0001-raise-the-stories-fgraph"
 ON = "[development]\nenabled = true\n"
 CHECK = "make test"
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="U-0023: run() given no run_check passes every check without running it"
-)
 IDENTITY = {
     "GIT_AUTHOR_NAME": "a developer",
     "GIT_AUTHOR_EMAIL": "developer@example.com",
@@ -107,7 +104,6 @@ def environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setenv("GIT_CONFIG_NOSYSTEM", "1")
 
 
-@XFAIL
 def test_a_run_given_no_run_check_refuses_the_check_of_a_started_task(tmp_path: Path) -> None:
     worktree = started_task(tmp_path, CHECK)
     with pytest.raises(
@@ -116,7 +112,6 @@ def test_a_run_given_no_run_check_refuses_the_check_of_a_started_task(tmp_path: 
         complete(worktree)
 
 
-@XFAIL
 def test_a_refused_complete_leaves_the_task_started(tmp_path: Path) -> None:
     worktree = started_task(tmp_path, CHECK)
     with contextlib.suppress(AssertionError):
@@ -124,7 +119,6 @@ def test_a_refused_complete_leaves_the_task_started(tmp_path: Path) -> None:
     assert f"  S-0001  0/1 T  {TITLE}\n" in fgraph(["status"], worktree).out
 
 
-@XFAIL
 def test_a_refused_complete_writes_no_commit(tmp_path: Path) -> None:
     worktree = started_task(tmp_path, CHECK)
     before = git(worktree, "rev-parse", "HEAD")

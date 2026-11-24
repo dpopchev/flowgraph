@@ -7,7 +7,7 @@ supersedes it are held by the state that has them.
 from datetime import datetime
 from typing import Annotated, Literal, assert_never
 
-from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
+from pydantic import BaseModel, ConfigDict, Field, PositiveInt, TypeAdapter
 
 from flowgraph.item import (
     AnyCriterionFile,
@@ -19,10 +19,11 @@ from flowgraph.item import (
 )
 from flowgraph.work_item.complexity import Complexity
 from flowgraph.work_item.depends import RelationsFile
+from flowgraph.work_item.progress_file import ProgressTables
 from flowgraph.work_item.verification import Verdict
 
 
-class ItemFile(RelationsFile, BaseModel):
+class ItemFile(RelationsFile, ProgressTables, BaseModel):
     """What the file of a work item in Backlog holds: its Tasks are all in Backlog."""
 
     model_config = ConfigDict(extra="forbid")
@@ -32,6 +33,7 @@ class ItemFile(RelationsFile, BaseModel):
     title: str
     description: str = ""
     parent: str = ""
+    realizes: PositiveInt | None = None
     about: list[str] = []
     complexity: Complexity | None = None
     created: HeldTime
@@ -40,7 +42,7 @@ class ItemFile(RelationsFile, BaseModel):
     knowledge: list[KnowledgeFile] = []
 
 
-class StartedItemFile(RelationsFile, BaseModel):
+class StartedItemFile(RelationsFile, ProgressTables, BaseModel):
     """What the file of a started work item holds: its started time, its Tasks in any state."""
 
     model_config = ConfigDict(extra="forbid")
@@ -50,6 +52,7 @@ class StartedItemFile(RelationsFile, BaseModel):
     title: str
     description: str = ""
     parent: str = ""
+    realizes: PositiveInt | None = None
     about: list[str] = []
     complexity: Complexity | None = None
     created: HeldTime
@@ -60,7 +63,7 @@ class StartedItemFile(RelationsFile, BaseModel):
     knowledge: list[KnowledgeFile] = []
 
 
-class BlockedItemFile(RelationsFile, BaseModel):
+class BlockedItemFile(RelationsFile, ProgressTables, BaseModel):
     """What the file of a blocked work item holds: what a started one does, then its block."""
 
     model_config = ConfigDict(extra="forbid")
@@ -70,6 +73,7 @@ class BlockedItemFile(RelationsFile, BaseModel):
     title: str
     description: str = ""
     parent: str = ""
+    realizes: PositiveInt | None = None
     about: list[str] = []
     complexity: Complexity | None = None
     created: HeldTime
@@ -93,7 +97,7 @@ class VerifiedFile(BaseModel):
     on: HeldTime
 
 
-class CompletedItemFile(RelationsFile, BaseModel):
+class CompletedItemFile(RelationsFile, ProgressTables, BaseModel):
     """What the file of a completed work item holds: its commit, its Tasks completed or removed.
 
     The answer of its closing is held once it has one; a file written before holds none.
@@ -106,6 +110,7 @@ class CompletedItemFile(RelationsFile, BaseModel):
     title: str
     description: str = ""
     parent: str = ""
+    realizes: PositiveInt | None = None
     about: list[str] = []
     complexity: Complexity | None = None
     created: HeldTime
@@ -119,7 +124,7 @@ class CompletedItemFile(RelationsFile, BaseModel):
     knowledge: list[KnowledgeFile] = []
 
 
-class RemovedItemFile(RelationsFile, BaseModel):
+class RemovedItemFile(RelationsFile, ProgressTables, BaseModel):
     """What the file of a removed work item holds: its removal, its Tasks all in Backlog."""
 
     model_config = ConfigDict(extra="forbid")
@@ -129,6 +134,7 @@ class RemovedItemFile(RelationsFile, BaseModel):
     title: str
     description: str = ""
     parent: str = ""
+    realizes: PositiveInt | None = None
     about: list[str] = []
     complexity: Complexity | None = None
     created: HeldTime

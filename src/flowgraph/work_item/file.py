@@ -13,10 +13,10 @@ from pydantic import ValidationError
 from flowgraph.criterion import CommitError, CriterionError, DecisionError, EmptyPartError
 from flowgraph.item import NoOffsetError, task_row, write_checked
 from flowgraph.knowledge import KnowledgeRow
-from flowgraph.parent import FeatureIdError
+from flowgraph.parent import FeatureIdError, RealizesError
 from flowgraph.record import ITEMS
 from flowgraph.relation import RelationError
-from flowgraph.task import TaskInProgressError
+from flowgraph.task import TaskIdError, TaskInProgressError, TaskNotFoundError
 from flowgraph.work_item.agent import AgentError
 from flowgraph.work_item.held_file import (
     HELD_ITEM,
@@ -44,6 +44,7 @@ from flowgraph.work_item.model import (
     WorkItemState,
 )
 from flowgraph.work_item.primitives import item_held, item_primitives
+from flowgraph.work_item.progress import ProgressRow
 from flowgraph.work_item.views import DependsRow, VerifiedRow, WorkItemDetail, WorkItemRow
 
 
@@ -79,6 +80,12 @@ def _held_path(record: Path, item_id: WorkItemId) -> Path:
     return path
 
 
+def _answer_held(held: HeldItemFile) -> str:
+    """The answer of the closing a validated file holds as a text; empty for none."""
+    answer = verified_held(held)
+    return "" if answer is None else answer.answer
+
+
 def read_work_item_rows(record: Path, kind: Kind) -> list[WorkItemRow]:
     """Adapter: the rows of the work items of that kind in the record, by id, each with its Tasks.
 
@@ -92,6 +99,7 @@ def read_work_item_rows(record: Path, kind: Kind) -> list[WorkItemRow]:
             commit_held(held),
             reason_held(held),
             held.parent,
+            realizes=held.realizes,
             complexity=held.complexity or "",
             created=held.created,
             started=started_held(held),
@@ -104,6 +112,7 @@ def read_work_item_rows(record: Path, kind: Kind) -> list[WorkItemRow]:
             filed_during=held.filed_during,
             superseded_by=superseded_held(held),
             amends=held.amends,
+            verified=_answer_held(held),
         )
         for held in _files_of(record, kind)
     ]
@@ -116,8 +125,8 @@ def read_work_item(record: Path, item_id: WorkItemId, kinds: Sequence[Kind] = ()
     The ids it depends on are read as those of its own kind or of the kinds given. Raises
     WorkItemNotFoundError when the record holds no such item and WorkItemFileError when its file
     does not hold one, as when it holds more than one started Task, the criterion of another
-    kind, a commit that is no sha, an agent that is none, an id it depends on that is of no kind
-    or a blank title or reason.
+    kind, a commit that is no sha, an agent that is none, an id it depends on that is of no kind,
+    a progress line that names no Task of it or a blank title or reason.
     """
     path = _held_path(record, item_id)
     held = _read_file(path, item_id.kind)
@@ -129,10 +138,13 @@ def read_work_item(record: Path, item_id: WorkItemId, kinds: Sequence[Kind] = ()
         CriterionError,
         DecisionError,
         FeatureIdError,
+        RealizesError,
         CommitError,
         WorkItemIdError,
         RelationError,
         EmptyPartError,
+        TaskIdError,
+        TaskNotFoundError,
     ) as error:
         raise WorkItemFileError(f"{path} holds no {item_id.kind.noun}: {error}") from error
 
@@ -157,6 +169,7 @@ def read_work_item_detail(record: Path, item_id: WorkItemId) -> WorkItemDetail:
         reason=block_reason or reason_held(held),
         waiting_on=waiting_on,
         parent=held.parent,
+        realizes=held.realizes,
         complexity=held.complexity or "",
         knowledge=[
             KnowledgeRow(line.kind, line.noted, line.text, line.about, line.governs)
@@ -168,6 +181,7 @@ def read_work_item_detail(record: Path, item_id: WorkItemId) -> WorkItemDetail:
         superseded_by=superseded_held(held),
         amends=held.amends,
         verified=None if answer is None else VerifiedRow(answer.answer, answer.text, answer.on),
+        progress=[ProgressRow(line.noted, line.text, line.task) for line in held.progress],
         **held.criterion.model_dump(),
     )
 

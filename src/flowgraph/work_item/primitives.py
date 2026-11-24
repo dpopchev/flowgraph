@@ -22,7 +22,7 @@ from flowgraph.item import (
     task_held,
     task_primitives,
 )
-from flowgraph.parent import parent_text, parent_written
+from flowgraph.parent import parent_text, parent_written, realizes_number, realizes_written
 from flowgraph.task import at_most_one_started
 from flowgraph.work_item.agent import agent_written
 from flowgraph.work_item.block import blocked_work_item
@@ -46,8 +46,10 @@ from flowgraph.work_item.model import (
     WorkItemState,
     append_task,
     make_work_item,
+    progressed_work_item,
 )
 from flowgraph.work_item.moves import completed_work_item, started_work_item
+from flowgraph.work_item.progress_file import progress_held, progress_primitives
 from flowgraph.work_item.removal import removed_work_item
 from flowgraph.work_item.state import state_name
 from flowgraph.work_item.verification import make_verification
@@ -98,14 +100,19 @@ def _moves_primitives(item: WorkItemState) -> dict[str, object]:
 def item_primitives(item: WorkItemState) -> dict[str, object]:
     """The work item as the primitives its file holds.
 
-    A description, a parent, a commit and tasks are held only when there is one: a work item
-    that stands alone is written without a parent, one completed without a commit without one.
+    A description, a parent, a criterion realized, a commit and tasks are held only when there is
+    one: a work item that stands alone is written without a parent, one completed without a
+    commit without one.
     """
     described = {"description": item.description} if item.description else {}
     under = {"parent": parent_text(item.parent)} if parent_text(item.parent) else {}
+    number = realizes_number(item.realizes)
+    naming = {} if number is None else {"realizes": number}
     tasks = {"tasks": [task_primitives(task) for task in item.tasks]} if item.tasks else {}
     lines = [knowledge_primitives(line) for line in item.knowledge]
     knowledge = {"knowledge": lines} if lines else {}
+    noted = [progress_primitives(line) for line in item.progress]
+    progress = {"progress": noted} if noted else {}
     about = {"about": list(item.about)} if item.about else {}
     rated = {"complexity": item.complexity} if item.complexity else {}
     return {
@@ -114,6 +121,7 @@ def item_primitives(item: WorkItemState) -> dict[str, object]:
         "title": item.title,
         **described,
         **under,
+        **naming,
         **about,
         **rated,
         "created": item.created,
@@ -121,6 +129,7 @@ def item_primitives(item: WorkItemState) -> dict[str, object]:
         "criterion": criterion_primitives(item.criterion),
         **tasks,
         **knowledge,
+        **progress,
         **relations_primitives(item.relations),
     }
 
@@ -145,7 +154,8 @@ def item_held(held: HeldItemFile, kind: Kind, kinds: Sequence[Kind] = ()) -> Wor
     holds no state those moves could not reach. Raises TaskInProgressError when it holds more
     than one started Task, CriterionError when it holds the criterion of another kind or a
     decision before it is completed, DecisionError when its completion lacks its decision,
-    WorkItemIdError when it depends on an id of none of the kinds and RelationError when on itself.
+    WorkItemIdError when it depends on an id of none of the kinds, RelationError when on itself,
+    and TaskIdError or TaskNotFoundError when a progress line names no Task of it.
     """
     criterion = criterion_held(held.criterion)
     decision = decision_held(held.criterion)
@@ -163,11 +173,14 @@ def item_held(held: HeldItemFile, kind: Kind, kinds: Sequence[Kind] = ()) -> Wor
         parent,
         about=about,
         complexity=held.complexity,
+        realizes=realizes_written(held.realizes),
     )
     for task in held.tasks:
         item = append_task(item, backlog_task(task))
     relations = relations_held(item_id, held, (kind, *kinds))
     item = replace(item, knowledge=tuple(knowledge_held(line) for line in held.knowledge))
+    for line in held.progress:
+        item = progressed_work_item(item, progress_held(line))
     item = replace(item, relations=relations)
     match held:
         case ItemFile():

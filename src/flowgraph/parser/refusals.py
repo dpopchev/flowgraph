@@ -9,6 +9,7 @@ from flowgraph.criterion import (
     EmptyPartError,
 )
 from flowgraph.development import GateError, GitError, SlugError
+from flowgraph.development.commit_held import CommitNotHeldError
 from flowgraph.development.driver import NoComplexityError
 from flowgraph.development.parallel import ParallelError
 from flowgraph.development.release import ReleaseError
@@ -23,8 +24,9 @@ from flowgraph.feature.start import FeatureNotStartedError, NoWorkItemError
 from flowgraph.goal.model import EmptyGoalError, GoalDriverError, GoalHoursError
 from flowgraph.graph import FormatError
 from flowgraph.item.commands import ItemIdError
+from flowgraph.item.progress import ProgressLineError
 from flowgraph.knowledge.list import KindListedError
-from flowgraph.parent import FeatureIdError
+from flowgraph.parent import FeatureIdError, RealizesError
 from flowgraph.record import ConfigError
 from flowgraph.record.init import NoDirectoryError, RecordHeldError
 from flowgraph.record.queue import NotInBacklogError, SameItemError, UnderFeatureError
@@ -75,8 +77,10 @@ REFUSED = (
     FeatureFileError,
     QueueFileError,
     ItemIdError,
+    ProgressLineError,
     WorkItemIdError,
     FeatureIdError,
+    RealizesError,
     FeatureNotFoundError,
     NoCriterionError,
     NoWorkItemError,
@@ -96,6 +100,7 @@ REFUSED = (
     OutOfScopeError,
     CommitError,
     CommitNeededError,
+    CommitNotHeldError,
     EmptyPartError,
     CriterionError,
     DecisionError,

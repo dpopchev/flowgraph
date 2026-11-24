@@ -8,7 +8,7 @@ from typing import assert_never
 
 from flowgraph.criterion import criterion_parts
 from flowgraph.knowledge import knowledge_row
-from flowgraph.parent import parent_text
+from flowgraph.parent import parent_text, realizes_number
 from flowgraph.task import row_of
 from flowgraph.work_item.block import block_of
 from flowgraph.work_item.handed import agent_text
@@ -21,6 +21,7 @@ from flowgraph.work_item.model import (
     WorkItem,
     WorkItemState,
 )
+from flowgraph.work_item.progress import progress_row
 from flowgraph.work_item.removal import reason_of, superseded_by_of
 from flowgraph.work_item.state import commit_sha, state_name
 from flowgraph.work_item.verification import Verification
@@ -65,6 +66,7 @@ def _verified_row(item: WorkItemState) -> VerifiedRow | None:
 
 def work_item_row(item: WorkItemState) -> WorkItemRow:
     """The work item as the row a view reads, whole: the row its file is read as."""
+    answer = _verified_row(item)
     return WorkItemRow(
         work_item_id_text(item.id),
         item.title,
@@ -72,6 +74,7 @@ def work_item_row(item: WorkItemState) -> WorkItemRow:
         commit_sha(item),
         reason_of(item),
         parent_text(item.parent),
+        realizes=realizes_number(item.realizes),
         complexity=item.complexity or "",
         created=item.created,
         started=_started_on(item),
@@ -84,6 +87,7 @@ def work_item_row(item: WorkItemState) -> WorkItemRow:
         filed_during=_named_text(item.relations.filed_during),
         superseded_by=superseded_by_of(item),
         amends=_named_text(item.relations.amends),
+        verified="" if answer is None else answer.answer,
     )
 
 
@@ -101,6 +105,7 @@ def work_item_detail(item: WorkItemState) -> WorkItemDetail:
         reason=block_reason or reason_of(item),
         waiting_on=waiting_on,
         parent=parent_text(item.parent),
+        realizes=realizes_number(item.realizes),
         complexity=item.complexity or "",
         knowledge=[knowledge_row(line) for line in item.knowledge],
         about=list(item.about),
@@ -112,5 +117,6 @@ def work_item_detail(item: WorkItemState) -> WorkItemDetail:
         amends=_named_text(item.relations.amends),
         amended_by=[],
         verified=_verified_row(item),
+        progress=[progress_row(line) for line in item.progress],
         **criterion_parts(item.criterion),
     )

@@ -7,6 +7,7 @@ from flowgraph.knowledge import KnowledgeRow, about_text, governs_text
 from flowgraph.status.text import BLOCKED, BUCKETS
 from flowgraph.story import StoryDetail, StoryRow
 from flowgraph.upkeep import UpkeepDetail, UpkeepRow
+from flowgraph.work_item import ProgressRow
 
 
 def _knowledge_lines(knowledge: Sequence[KnowledgeRow]) -> list[str]:
@@ -23,6 +24,20 @@ def _knowledge_lines(knowledge: Sequence[KnowledgeRow]) -> list[str]:
             f"{about_text(line.about)}{governs_text(line.governs)}\n"
             for line in knowledge
         ),
+    ]
+
+
+def _progress_lines(progress: Sequence[ProgressRow]) -> list[str]:
+    """The progress lines of the work item itself under their heading, each with its date.
+
+    The lines of a Task are listed under that Task; there is no heading without a line.
+    """
+    own = [line for line in progress if line.task == ""]
+    if not own:
+        return []
+    return [
+        f"Progress ({len(own)})\n",
+        *(f"  {line.noted.date().isoformat()}  {line.text}\n" for line in own),
     ]
 
 
@@ -62,7 +77,9 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
 
     The criterion is listed by the parts its kind states: a Given / When / Then, what is
     observed and expected, or a hypothesis with, once it is answered, its decision under it.
-    A parent, the work items it depends on each with its bucket, the work item it was filed
+    A parent, the criterion of it that it realizes by its place and its text, or the words none
+    of the criteria of the parent when it has none there, the work items it depends on each with
+    its bucket, the work item it was filed
     during, the work items filed during it, the work items it supersedes, the completed one it
     amends, the work items that amend it, a description, an agent, a commit, the answer of its
     closing with its day and the text the run printed, the work item that supersedes a removed
@@ -72,11 +89,18 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     The knowledge lines follow, in the order
     noted, each with its kind, its date and its text, then the terms it is about; there is no
     heading without one.
+    The progress lines of a Task follow its description, those of the work item follow the
+    knowledge lines under Progress (n), each with its day and its text, in the order noted;
+    there is no heading without one.
     The terms the item is about are listed after its description, only when there are some, and
     its complexity after them, only when it has one.
     """
     bucket = next(name for name, states in BUCKETS if detail.state in states)
     under = [f"  parent       {detail.parent}\n"] if detail.parent else []
+    realized = detail.realized or f"none of the criteria of {detail.parent}"
+    realizes = (
+        [] if detail.realizes is None else [f"  realizes     {detail.realizes}  {realized}\n"]
+    )
     waits = ", ".join(f"{each.id} ({each.bucket})" for each in detail.depends_on)
     depends = [f"  depends on   {waits}\n"] if waits else []
     during = [f"  filed during {detail.filed_during}\n"] if detail.filed_during else []
@@ -112,6 +136,7 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
         f"{detail.id}  {detail.title}\n",
         f"  bucket       {bucket}{', blocked' if detail.waiting_on else ''}\n",
         *under,
+        *realizes,
         *depends,
         *during,
         *filed_here,
@@ -148,4 +173,7 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
             lines.append(f"    check            {task.check}\n")
         if task.description:
             lines.append(f"    description      {task.description}\n")
-    return "".join([*lines, *_knowledge_lines(detail.knowledge)])
+        for line in detail.progress:
+            if line.task == task.id:
+                lines.append(f"    progress         {line.noted.date().isoformat()}  {line.text}\n")
+    return "".join([*lines, *_knowledge_lines(detail.knowledge), *_progress_lines(detail.progress)])

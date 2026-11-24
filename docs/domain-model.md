@@ -101,7 +101,9 @@ One example per kind:
 Notes:
 
 - A Feature is broken down into Stories, as a rule of thumb one Story per
-  criterion.
+  criterion. A work item may name the criterion it realizes (S-0100), by its
+  place in the list; the link is optional, so a Feature may hold work items
+  whose criterion is none of its criteria.
 - An Upkeep names the behavior that must still hold, never a test: the Upkeep
   may itself move or rename a test while the behavior holds.
 - A Task's title names the action, the artifact and its target state; its
@@ -116,14 +118,24 @@ every type.
 | Type | Attributes |
 |---|---|
 | `Feature` | id, outcome title, description, experience criteria, created |
-| `Story` | id, outcome title, description, parent, complexity, Given / When / Then, created |
-| `Bug` | id, outcome title, description, parent, complexity, observed, expected, created |
-| `Upkeep` | id, outcome title, description, parent, complexity, Given / When / Then, created |
-| `Spike` | id, outcome title, description, parent, complexity, hypothesis, created |
+| `Story` | id, outcome title, description, parent, realizes, complexity, Given / When / Then, created |
+| `Bug` | id, outcome title, description, parent, realizes, complexity, observed, expected, created |
+| `Upkeep` | id, outcome title, description, parent, realizes, complexity, Given / When / Then, created |
+| `Spike` | id, outcome title, description, parent, realizes, complexity, hypothesis, created |
 | `Task` | id, output title, description, parent, expected output, check, created |
 
 `parent` is a Feature or standing alone for the four work items, and exactly
 one work item for a Task.
+
+`realizes` is the criterion of its Feature a Story, a Bug, an Upkeep or a Spike
+under a Feature may name, by its place in the list counted from 1, the reading
+of F-0013. Naming none is a value of it, as standing alone is one of `parent`,
+never a missing field. It is set by `fgraph add --realizes N` and by `fgraph
+amend --realizes N` or `none`, the latter in Backlog alone, and every move
+carries it: the start, the block, the unblock, the completion and the removal
+keep the criterion the item named. A work item that stands alone names none, so
+a place given to one is refused. It is built by `make_criterion_place`, which
+refuses a place below 1.
 
 The `check` of a Task is the command that checks it, one text, optional. With
 the development on (`development.enabled`) it is needed: `fgraph add task`
@@ -152,6 +164,14 @@ something, so a blank one is refused where the line is built. A line is noted
 with `fgraph note` in Backlog, started, Completed or Removed alike, and is never
 amended or removed: it is added after the lines the item keeps already.
 
+A work item also keeps its progress lines, in the order noted: each holds its
+text, the time it was noted and, when it is of a Task, that Task. A progress
+line says where the work stands -- a hand-off, a structure note, the red line of
+a Task -- and is no knowledge line: a type and a table of its own, about no
+term, governing no file, listed by `fgraph show` alone and never by `fgraph
+knowledge`, `about`, `brief`, `graph` or `status`. It is kept in any state of
+the work item and of the Task, and is never amended or removed (S-0143).
+
 A completed Story, Bug or Upkeep also holds the answer of its closing once it
 is verified, none before. It is its own fact, a `Verification` of the
 completed work item and never a knowledge line: the answer, yes so far, the
@@ -177,7 +197,8 @@ are built. The relations are listed in one table under Relations below.
 
 A Feature keeps its knowledge lines as a work item does, in each of its five
 states, and they stay on it through every move and every amend. A Task keeps
-none: what a Task learns is noted on its work item.
+no knowledge line: what a Task learns is noted on its work item. A Task takes a
+progress line, kept on its work item and naming the Task; a Feature takes none.
 
 ## States are types
 
@@ -531,6 +552,18 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
 - A parent that is the one the work item has moves it nowhere: no Feature is
   read and the amend is taken, as one that rewrites a part to the text it
   has.
+- The criterion it realizes is a part too, the reading of S-0100: `--realizes
+  N` gives it in place of the one it had, and `--realizes none` takes it away,
+  in Backlog alone, alone or beside the other parts. It is refused, exit 2,
+  nothing written: for a work item that stands alone, `--realizes names a
+  criterion of the Feature a work item is under: this one stands alone`; for a
+  number the Feature does not have, `F-0001 has no criterion 3: its criteria
+  count from 1 to 2`; for `0`, `a criterion is counted from 1: 0 is below 1`;
+  for a text that is neither, `--realizes 'two' is neither the number of a
+  criterion nor none`; and for a Feature id, `F-0001 has no realizes`, as for
+  any part of a work item. An amend to another parent, or to none, drops the
+  criterion it had unless `--realizes` is given with it, which is checked
+  against the Feature it is put under.
 - A Feature in Backlog is amended too, the reading of S-0057: `amend` of its
   id rewrites its title, its description and its criteria, one alone or
   several together, and a part it does not name stays as it was. `--criterion`
@@ -538,7 +571,10 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
   replace the ones the Feature had, whole: none is added to them and none is
   rewritten alone. Each part goes through the constructor an `add` uses, so a
   blank title or a blank criterion is refused and a blank description clears
-  it.
+  it. The criteria given replace the list and no work item is written: a work
+  item keeps the number it names and so names the criterion now at that
+  place, and a number past the end names none of the criteria, which `fgraph
+  show` of the work item says.
 - It is no move of the Feature: its state stays, and so do its id, its
   created time, its work items and its place in the queue, which the amend
   never writes. It is one write of the file of the Feature, committed as
@@ -689,6 +725,10 @@ names it stores, the other side derived from the record:
 | `filed during` | the work item, as `filed_during` | `filed here` in the show of the other | none |
 | `superseded by` | the removed work item, as `superseded_by` | `supersedes` in the show of the other | none |
 | `amends` | the work item, as `amends` | `amended by` in the show of the other | none |
+
+The criterion a work item realizes is kept on the work item beside its `parent`, as
+`realizes`: it is not one of the typed relations read by `fgraph about`, `fgraph graph` or
+the check of the read, and a number past the criteria of the Feature is no refusal of a read.
 
 Every relation is checked twice: at the write, by the command that makes it, and again at the
 read, by every command, on the record as the worktrees compose it, so a work item that a
@@ -997,8 +1037,20 @@ commit, a Task as a work item.
 - `fgraph complete` needs `--commit` with the development on, of a Task as of
   a work item: without it, it exits 2 naming `--commit` and the key,
   `development.enabled`, and nothing is saved.
+- With the development on and the record inside a git work tree, a record git
+  ignores included, the commit given is asked of git as
+  `git rev-parse --verify <sha>^{commit}`: a sha, whole or abbreviated, that
+  names one commit of the repository is held, on `main`, on another branch or
+  on none. A sha git does not know, the sha of an object that is no commit, as
+  a tree, and an abbreviation several commits share exit 2 with the line
+  `fgraph: error: T-0001 cannot complete: the repository holds no commit c6e0f15`,
+  nothing is saved and no check of the Task is run. A Task is refused as a work
+  item is; `fgraph land` writes its own merge commit and is not asked. The
+  check is `src/flowgraph/development/commit_held.py`.
 - With the development off `fgraph complete` takes none, and a `--commit`
-  given is still kept as the evidence.
+  given is still kept as the evidence. The commit given is not looked up, and a
+  record outside a git work tree is not asked either, so a record whose shas
+  come from elsewhere completes.
 - The evidence is a value of its own in the model, a commit or none (`Commit`
   or `NoCommit`, `src/flowgraph/criterion/model.py`): no commit is a value of the
   evidence, not a missing one, as standing alone is a value of `parent`.
@@ -1036,8 +1088,8 @@ commit, a Task as a work item.
 - With the development on, a work item is completed only once it is on
   `main`, and names its commit there. With it off no commit proves it
   (Evidence).
-- Until `fgraph` wraps git, `complete` records the commit it is given and
-  does not check it against `main`.
+- With the development on, `complete` asks that the repository holds the commit
+  it is given (Evidence), and still does not ask that `main` holds it.
 
 ## Ids
 
@@ -1111,13 +1163,31 @@ and its merge tool.
   S-0001 in the record`, and says `noted S-0001`. With the development on, a
   started work item is noted in its worktree, where its Tasks are written, and
   every other one on `main`. `fgraph note` takes exactly one of `--finding`,
-  `--decision` and `--deviation`, and the `kind` of the table is `finding`,
-  `decision` or `deviation`; a file with any other kind is refused when read,
-  naming the file. The id of a Task, an id the record does not hold, a blank
-  text and none or more than one of the three kinds are refused, exit 2,
-  nothing written. `fgraph show` lists the
+  `--decision`, `--deviation` and `--progress`, and the `kind` of the table is
+  `finding`, `decision` or `deviation`; a file with any other kind is refused
+  when read, naming the file. The id of a Task with one of the three kinds of
+  knowledge, an id the record does not hold, a blank text and none or more than
+  one of the four are refused, exit 2, nothing written. `fgraph show` lists the
   lines under `Knowledge (n)` after the Tasks, each with its kind, its date and
   its text, and no heading when there is none.
+- A progress line is one `[[progress]]` table inside the file of its work item,
+  in the order noted, apart from `[[knowledge]]`, with its `text`, its `noted`
+  time and, for a line of a Task, `task = "T-0001"`; a file without the table
+  keeps none. `fgraph note S-0001 --progress TEXT` writes it as one write and
+  one commit, `chore: note S-0001 in the record`, and says `noted S-0001`; of a
+  Task, `fgraph note T-0001 --progress TEXT` says `noted T-0001 of S-0001` and
+  commits `chore: note T-0001 of S-0001 in the record`. With the development on,
+  a started work item that has a worktree is noted there, its Tasks too, or from
+  `main` with `--dir` on the record of that worktree; `main` refuses it with
+  `S-0001 is started: its Tasks are written in its worktree, <path>`, and every
+  other work item is noted on `main`. Refused, exit 2 and nothing written: a
+  Feature (`F-0001 keeps no progress line: fgraph note --progress takes a work
+  item or a Task of it`), `--about` or `--governs` (`a progress line takes no
+  --about and no --governs: it is no knowledge line`), a blank text (`text is
+  empty`) and an id the record does not hold (`no Task T-0009 in the record`,
+  `no Story S-0009 in the record`). `fgraph show` lists the lines of a Task under
+  it as `progress`, with the day and the text, and those of the work item under
+  `Progress (n)` after `Knowledge (n)`, with no heading when there is none.
 - The answer of a closing is one `[verified]` table inside the file of a
   completed work item, with its `answer` (`yes`), its `text` and its `on` time,
   held only once there is one: a file without it, as every file written before,
@@ -1168,8 +1238,8 @@ and its merge tool.
   says `noted F-0001`; `fgraph show` lists the lines under `Knowledge (n)` after
   its work items. It is written on `main` alone: on the branch of a work item,
   which writes that work item alone, the note of a Feature is refused naming it,
-  as the write of any other item is, exit 2 and nothing written. A Task takes no
-  note: its id is refused.
+  as the write of any other item is, exit 2 and nothing written. A Task takes a
+  progress line alone.
 - `fgraph knowledge` is a view of the whole record: it reads every work item and
   every Feature and writes nothing. It lists every line of each, with its date,
   its kind, the id of its item and its text, the last noted first; lines noted
@@ -1179,7 +1249,16 @@ and its merge tool.
   copied, and stays kept on the Spike as its `decision`. `--kind` narrows the list to
   `finding`, `decision` or `deviation`; any other word is refused naming the
   three, exit 2. A record with no line of the kind asked, or none, prints one
-  line saying so and exits 0.
+  line saying so and exits 0. `fgraph knowledge --search TEXT` narrows the list
+  to the lines whose text holds the text, whatever the case of either; `--kind`,
+  `--about` and `--search` narrow the same list, a line listed when it meets each
+  one given. Only the text of a line is searched, not the title or the id of its
+  item, its kind or its terms; with no such line it prints one line and exits 0
+  (`no knowledge lines holding 'zzz' in the record`, or with a kind or a term asked
+  too, `no decision lines about gate holding 'zzz' in the record`); a blank text is
+  refused, exit 2, `search is empty`. The search is one filter of the entries,
+  holding of `src/flowgraph/knowledge/list.py`, applied before the list is narrowed
+  and ordered (S-0146).
 - A blocked Task is kept as `state = "blocked"` with its `started` time, its
   `since` time, its `reason` and its `waiting_on`. Only a started work item's
   file may hold one, and it is read back through its start and its block.
@@ -1611,6 +1690,10 @@ and its merge tool.
   when the work item is added and names a Feature the record holds; an amend
   gives it again, a Feature or `none`, while the work item and the Features
   it moves between are in Backlog (Amendment).
+- A work item under a Feature that names a criterion of it holds `realizes =
+  2`, a whole number from 1, right after `parent` and only when it names one;
+  a file without the key reads as none. A file holding `0`, or the key with no
+  `parent`, is refused naming the file. Every move carries it.
 - `fgraph status` lists a Feature inside its bucket, as one line in place of
   its work items, the developer's words of 2026-11-21: a Feature is an
   umbrella, part of the Backlog, that just holds a couple of work items. The
@@ -1953,6 +2036,7 @@ held to `main`, and there is no landing:
 | start, block, unblock, complete and remove its Tasks | its branch |
 | hand a started work item to an agent | its branch: `fgraph hand` in its worktree, or from `main` with `--dir` on the record of that worktree |
 | block and unblock a started work item | its branch: `fgraph block` and `fgraph unblock` in its worktree, or from `main` with `--dir` on the record of that worktree |
+| note a progress line on a started work item or on a Task of it | its branch: in its worktree, or from `main` with `--dir` on the record of that worktree |
 | land the work item | `main`: `fgraph land` merges its branch and completes it |
 | complete the work item | `main`, after a merge made by hand |
 | complete a Feature | `main`: with its last work item, by its landing or its complete, or by `fgraph complete F-0001` once each work item of it is completed or removed |
@@ -2000,7 +2084,14 @@ agreed on 2026-11-21 that `fgraph` owns the record, its rituals and its rules:
 - A Task write of a started work item -- a Task added, started or completed --
   is taken in the worktree of that work item. In a work tree on any branch
   that no work item owns, `main` among them, it is refused with exit 2,
-  nothing written, and the refusal names that worktree.
+  nothing written, and the refusal names that worktree. The block and the
+  unblock of a Task are refused there too (B-0032), by a check that runs
+  before the copy of that work tree is read, so the answer is the worktree
+  and not what a stale copy says of the Task (before B-0032 the copy of
+  `main` answered `T-0001 is in Backlog: start it first`, `T-0001 is not
+  blocked` or `no Task T-0002 in the record`). It holds for a Task in any
+  state and for one added in the worktree after the start, with the line
+  `S-0001 is started: its Tasks are written in its worktree, <path>`.
 - The start, the complete and the landing of the work item itself stay on
   `main`.
 - A started work item whose branch is checked out in no worktree, and a
@@ -2037,8 +2128,9 @@ agreed on 2026-11-21 that `fgraph` owns the record, its rituals and its rules:
   its Tasks are written in its worktree, <path>`, nothing written. `main`
   keeps the file as started, and status and show on `main` read the row from
   the worktree, so they list it blocked. The unblock run on `main` answers
-  from the copy of `main`, as that of a Task does: that copy holds it
-  started, and the unblock is refused, `S-0001 is not blocked`. A worktree
+  from the copy of `main`: that copy holds it started, and the unblock is
+  refused, `S-0001 is not blocked`. The unblock of a Task names the worktree
+  since B-0032, as its block does. A worktree
   on code older than S-0138 refuses a file that holds `state = "blocked"`.
 
 The git steps `fgraph` takes, decided by the developer on 2026-11-21:
@@ -2229,9 +2321,20 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 - A tag is never moved or deleted. A release is refused, exiting 2 with no
   tag made, when the record is outside a git work tree, when the work tree it
   runs in is not on `main`, named as a start names it, when `--version` is
-  no version or names a tag that exists, and when nothing is completed since
-  the last tag, or nothing at all without one. Git refuses an existing tag
-  too, so no step of `fgraph` moves one.
+  no version or names a tag that exists, when nothing is completed since
+  the last tag, or nothing at all without one, and while a work item completed
+  since the last tag holds no answer of `fgraph verify`: the line is
+  `S-0001, U-0001 not verified since v0.1.0: no release -- run fgraph verify
+  on each first`, without `since <tag>` when there is no tag, and every such
+  work item is named on it, Story then Upkeep then Bug, each by number. The
+  kinds asked are those `fgraph verify` takes, a Story, a Bug and an Upkeep,
+  so a Spike is not asked; a yes and a no both count as an answer. It is read
+  from the row of each work item completed since the last tag
+  (`WorkItemRow.verified`), every completed one when there is no tag, and a
+  `--version` asked for does not pass it. It is an `UnverifiedError`, a
+  `ReleaseError`, and `release_landing` is not asked: the tag of a landing
+  asks for no answer (S-0149). Git refuses an existing tag too, so no step of
+  `fgraph` moves one.
 - With `[delivery] push = true` the tag is pushed to the remote `main`
   tracks, once it is made, and the release says `pushed <version> to
   <remote>`. A push git refuses leaves the tag made and exits 2 naming the
@@ -2488,8 +2591,8 @@ The History lines:
 | `blocked` | T-493 | `since` of the `BlockedTask` | converted: the day becomes a time |
 | `unblocked: <why>` | W-008 (s) | none: `fgraph unblock` takes no why | lost |
 | `progress: <text>`, `re-aim`, `halt at` | E-019 | none | lost |
-| `progress: red: <line>` | T-476 | none | lost |
-| `progress: structure: ...` | W-197, W-187 | none | lost |
+| `progress: red: <line>` | T-476 | `fgraph note T-0001 --progress`, kept on its work item naming the Task (S-0143) | converted: the day becomes the time noted |
+| `progress: structure: ...` | W-197, W-187 | `fgraph note --progress`, on the work item or a Task of it (S-0143) | converted: the day becomes the time noted |
 | `progress: verified: ...` of an issue or a bug | W-187, W-188 | `fgraph verify --yes`, the `Verification` (Attributes) | converted: the answer yes with its text |
 | `progress: verified: ...` of a spike | W-195 | none: a Spike is not verified (Attributes) | lost |
 | `progress: verified: ...` of an Epic | E-018 | none: a Feature is not verified | lost |
@@ -2748,8 +2851,8 @@ quoted; `reading` marks a judgment of this Task, not a fact:
 | the stop of a burn Decision | 243 burn Decisions, 147 burn History lines | decision on F-0007: burn "stays in the planning skill and not in fgraph"; the line converts as text |
 | a ledger as an archive | 106: c 48, cts 20, g 1, st 3, sm 18, sv 16 | reading: a view rebuilt from the items (`docs/board-review.md`, group 7); its checkpoint Deviations are not, above |
 | `note:` and `progress: tagged` History lines | 1,133 and 348 lines | reading: git holds each write and each tag (Field map) |
-| `progress: red:` | 1,366 lines | reading: the red proof gates a close in board 1; nothing reads it of a done Task, and no Task in flight holds one |
-| `progress: structure:`, the other progress lines, `unblocked: <why>` | 654, 339 and 174 lines | reading: a story of the work, read by no gate; not filed |
+| `progress: red:` | 1,366 lines | reading: the red proof gates a close in board 1; nothing reads it of a done Task, and no Task in flight holds one; since S-0143 `fgraph note --progress` keeps such a line on a work item or a Task |
+| `progress: structure:`, the other progress lines, `unblocked: <why>` | 654, 339 and 174 lines | reading: a story of the work, read by no gate; since S-0143 `fgraph note --progress` keeps such a line on a work item or a Task; the lines of an Epic and `unblocked: <why>` are not filed |
 | `progress: verified:` of a spike, of an Epic | 20 and 58 lines | reading: a Spike keeps its decision and answer, and S-0101 shows a Feature met k of n; not filed as such |
 
 The configuration, the `landing:` line of Records measured against F-0012
@@ -2832,8 +2935,6 @@ its relations". The decision of what to build is the developer's.
 
 ## Open questions
 
-- Must a Story under a Feature name the Feature criterion it realizes? The
-  reading: no, one Story per criterion stays a rule of thumb.
 - Can a Task start before its work item is started? The reading: no.
 - Can a started work item whose Tasks were all removed still be completed, or
   must it be removed?

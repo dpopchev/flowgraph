@@ -116,9 +116,15 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         help="the work item that supersedes it, in place of the reason or beside it",
     )
     note = new_command(
-        commands, "note", "keep a finding, a decision or a deviation on a work item, in any state"
+        commands,
+        "note",
+        "keep a finding, a decision, a deviation or a progress line on a work item, in any state",
     )
-    note.add_argument("id", metavar="ID", help="the id of the work item")
+    note.add_argument(
+        "id",
+        metavar="ID",
+        help="the id of the work item or of the Feature, of a Task too with --progress",
+    )
     note.add_argument("--about", action="append", metavar="TERM", help="a term the line is about")
     note.add_argument(
         "--governs", action="append", metavar="PATH", help="a file the line governs; once per file"
@@ -128,6 +134,9 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     kinds.add_argument("--decision", metavar="TEXT", help="what was decided")
     kinds.add_argument(
         "--deviation", metavar="TEXT", help="a change to what a started item was agreed to do"
+    )
+    kinds.add_argument(
+        "--progress", metavar="TEXT", help="where the work stands; no knowledge line"
     )
     verify = new_command(
         commands, "verify", "keep the answer of the closing of a completed Story, Bug or Upkeep"

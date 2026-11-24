@@ -29,7 +29,6 @@ NOT_KNOWLEDGE = "a progress line takes no --about and no --governs: it is no kno
 NO_FEATURE = (
     "F-0001 keeps no progress line: fgraph note --progress takes a work item or a Task of it"
 )
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0143: fgraph note takes no progress line")
 
 
 @dataclass(frozen=True)
@@ -82,19 +81,16 @@ def held(cwd: Path) -> dict[str, object]:
     return tomllib.loads((cwd / ".fgraph" / "items" / "S-0001.toml").read_text())
 
 
-@XFAIL
 def test_a_progress_line_noted_on_a_work_item_says_noted(record: Path) -> None:
     outcome = fgraph(NOTE_ITEM, record)
     assert (outcome.status, outcome.out) == (0, "noted S-0001\n")
 
 
-@XFAIL
 def test_a_progress_line_noted_on_a_task_says_noted_of_its_work_item(record: Path) -> None:
     outcome = fgraph(NOTE_TASK, record)
     assert (outcome.status, outcome.out) == (0, "noted T-0001 of S-0001\n")
 
 
-@XFAIL
 def test_the_file_of_the_work_item_keeps_both_lines_with_their_time(record: Path) -> None:
     runs(record, NOTE_ITEM, NOTE_TASK)
     assert held(record).get("progress") == [
@@ -103,7 +99,6 @@ def test_the_file_of_the_work_item_keeps_both_lines_with_their_time(record: Path
     ]
 
 
-@XFAIL
 def test_show_lists_the_line_of_the_task_under_it_and_that_of_the_item_last(
     record: Path,
 ) -> None:
@@ -119,7 +114,6 @@ def test_show_lists_the_line_of_the_task_under_it_and_that_of_the_item_last(
     )
 
 
-@XFAIL
 def test_show_lists_the_lines_of_the_item_in_the_order_noted(record: Path) -> None:
     first = ["note", "S-0001", "--progress", "the first"]
     second = ["note", "S-0001", "--progress", "the second"]
@@ -127,14 +121,12 @@ def test_show_lists_the_lines_of_the_item_in_the_order_noted(record: Path) -> No
     assert outcome.out.endswith("Progress (2)\n  2026-01-01  the first\n  2026-01-01  the second\n")
 
 
-@XFAIL
 def test_knowledge_lists_no_progress_line(record: Path) -> None:
     noted = runs(record, NOTE_ITEM, NOTE_TASK)
     knowledge = fgraph(["knowledge"], record)
     assert (noted.status, knowledge.out) == (0, "no knowledge lines in the record\n")
 
 
-@XFAIL
 @pytest.mark.parametrize(
     "script",
     [
@@ -155,13 +147,11 @@ def test_a_work_item_in_any_state_takes_a_progress_line(
     assert (outcome.status, outcome.out) == (0, "noted S-0001\n")
 
 
-@XFAIL
 def test_a_task_in_backlog_takes_a_progress_line(tmp_path: Path) -> None:
     outcome = runs(tmp_path, ADD_STORY, ADD_TASK, NOTE_TASK)
     assert (outcome.status, outcome.out) == (0, "noted T-0001 of S-0001\n")
 
 
-@XFAIL
 @pytest.mark.parametrize(
     ("script", "line"),
     [
@@ -181,7 +171,6 @@ def test_a_refused_progress_line_names_why(
     assert (outcome.status, outcome.err.splitlines()[-1:]) == (2, [f"fgraph: error: {line}"])
 
 
-@XFAIL
 def test_a_blank_progress_line_writes_nothing(record: Path) -> None:
     before = (record / ".fgraph" / "items" / "S-0001.toml").read_text()
     outcome = fgraph(["note", "S-0001", "--progress", " "], record)
@@ -193,7 +182,6 @@ def test_a_blank_progress_line_writes_nothing(record: Path) -> None:
     )
 
 
-@XFAIL
 def test_a_progress_line_and_a_finding_in_one_note_are_refused(
     record: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:

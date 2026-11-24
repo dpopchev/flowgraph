@@ -2,7 +2,7 @@
 
 from collections.abc import Iterable, Sequence
 
-from flowgraph.feature import FeatureDetail
+from flowgraph.feature import CriterionRow, FeatureDetail, criteria_rows
 from flowgraph.knowledge import KnowledgeRow, about_text, governs_text
 from flowgraph.status.text import BLOCKED, BUCKETS
 from flowgraph.story import StoryDetail, StoryRow
@@ -41,12 +41,31 @@ def _progress_lines(progress: Sequence[ProgressRow]) -> list[str]:
     ]
 
 
+def _criteria_lines(criteria: Sequence[CriterionRow]) -> list[str]:
+    """The criteria under their heading: as their text alone, or met k of n with their work items.
+
+    The met form is used once a work item names a criterion; each line of it reads the number,
+    met or not met, the text and the ids of the work items that realize it, when there are any.
+    """
+    if not any(row.realized_by for row in criteria):
+        return [f"Criteria ({len(criteria)})\n", *(f"  {row.text}\n" for row in criteria)]
+    met = sum(row.met for row in criteria)
+    lines = [f"Criteria ({len(criteria)}), met {met} of {len(criteria)}\n"]
+    for row in criteria:
+        mark = "met" if row.met else "not met"
+        by = f"  {', '.join(row.realized_by)}" if row.realized_by else ""
+        lines.append(f"  {row.number}  {mark:<7}  {row.text}{by}\n")
+    return lines
+
+
 def feature_text(detail: FeatureDetail, rows: Iterable[StoryRow | UpkeepRow], bucket: str) -> str:
     """The Feature with its bucket, its criteria, then its work items with their buckets.
 
     The bucket of a Feature is read from its state and its work items, so it is given; a
     commit and a description are listed only when there is one. A blocked Feature is listed in
     its bucket as blocked, with its reason and what it waits on; a removed one with its reason.
+    Its criteria are listed as met k of n once a work item names one, each with the work items
+    that realize it; met is a completed one, and a removed one is not counted.
     """
     listed = list(rows)
     committed = [f"  commit       {detail.commit}\n"] if detail.commit else []
@@ -62,8 +81,7 @@ def feature_text(detail: FeatureDetail, rows: Iterable[StoryRow | UpkeepRow], bu
         *committed,
         *described,
         *about,
-        f"Criteria ({len(detail.criteria)})\n",
-        *(f"  {criterion}\n" for criterion in detail.criteria),
+        *_criteria_lines(criteria_rows(detail.criteria, listed)),
         f"Work items ({len(listed)})\n",
     ]
     for row in listed:

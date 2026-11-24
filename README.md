@@ -1961,6 +1961,25 @@ number a work item names as written: it then names the criterion now at that
 place, and `fgraph show` says `none of the criteria of F-0001` for a number
 past the end.
 
+Once a work item under a Feature names a criterion of it, `fgraph show` of the
+Feature numbers its criteria and lists them as met k of n, each with the work
+items that realize it. A criterion is met when one of them is completed; a
+removed one is not listed. A Feature none of whose work items names a criterion
+is listed as before, `Criteria (2)` and its criteria alone, since the link is
+optional. With S-0001, completed, realizing the first criterion:
+
+```sh
+fgraph show F-0001
+# F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
+#   bucket       InProgress
+# Criteria (2), met 1 of 2
+#   1  met      a developer sees every work item of the project by bucket  S-0001
+#   2  not met  a developer adds every kind of work  S-0002
+# Work items (2)
+#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  Completed
+#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2  Backlog
+```
+
 `fgraph status` lists a Feature inside its bucket, as one line in place of
 its work items: its id, its progress and its title. Here a Story that stands
 alone, S-0002, was added after the Feature, and the Story under the Feature

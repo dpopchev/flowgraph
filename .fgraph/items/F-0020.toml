@@ -7,3 +7,8 @@ criteria = [
     "an agent is refused the completion of a Task at a commit that changed a file its brief does not name",
     "an agent reads, before the commit, which files it changed that the brief of its started Task does not name",
 ]
+
+[[knowledge]]
+kind = "decision"
+text = "The developer gave the go on 2026-11-24, with the word file, to the plan shown that day (F-0018, its decision). For F-0020: S-0142 is taken in with its Tasks, read again before it starts; the answer before the commit, S-0153, is new; U-0021 is taken in; the structured report of fgraph verify is left out, since fgraph verify runs nothing; U-0024 stays in the Backlog."
+noted = 2026-11-24 19:55:58+00:00

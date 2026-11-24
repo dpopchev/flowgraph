@@ -2149,7 +2149,8 @@ fgraph status --backlog
 The progress, `0/1 W`, is the work items of the Feature completed of all it
 holds: one of three completed reads `1/3 W`, so two are still to be done. A
 removed work item is counted in neither number, and a Feature without a work
-item reads `0/0 W`.
+item reads `0/0 W`. A Feature under Completed is listed with its commit and no
+count of its work items.
 
 A Feature holds a place of its own in the Backlog: it joins the end when it
 is added, after the work items and the Features `fgraph reorder` placed and
@@ -2309,7 +2310,7 @@ fgraph status
 # > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (0)
 # Completed (1)
-#   F-0001  1/1 W  677f9b0  Raise the kinds of work a project tracks with fgraph from 1 to 5
+#   F-0001  677f9b0  Raise the kinds of work a project tracks with fgraph from 1 to 5
 
 fgraph show F-0001
 # F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
@@ -2325,10 +2326,10 @@ fgraph show F-0001
 The Feature holds the commit of that completion as its evidence, and none
 when the work item is completed without one, as with the development off:
 `completed S-0001`, then `completed F-0001`, and the line of the Feature is
-`F-0001  1/1 W  <title>`. The line of a completed Feature is its id, its
-progress, its commit and its title: the progress stays right after the id, as
-on its line in any bucket, and the commit stands before the title, as on the
-line of a completed work item. It is placed under Completed by its completed
+`F-0001  677f9b0  <title>`. The line of a completed Feature is its id, its
+commit and its title, with no count of its work items: the commit stands right
+after the id, as the commit of a completed work item stands before its title.
+It is placed under Completed by its completed
 time, and its completed work items stay within it: counted in its progress,
 listed by `fgraph show F-0001`, on no line of `fgraph status`. The Feature
 and the work item are completed in one commit of the record, `chore: complete
@@ -2688,7 +2689,7 @@ fgraph status
 #   S-0003  1/3 T  Raise the kinds of work item fgraph adds from 2 to 3
 # Completed (3)
 #   U-0002  757fbaf  Cut the lines one kind of work item holds from 885 to 250
-#   F-0001  1/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
+#   F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #   S-0002  87c0307  Raise the kinds of work item fgraph adds from 1 to 2
 ```
 

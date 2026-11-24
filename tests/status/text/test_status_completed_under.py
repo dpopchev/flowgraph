@@ -77,7 +77,7 @@ def test_a_completed_feature_lists_its_work_items_on_no_line() -> None:
     )
     assert status_text([feature]).splitlines()[-2:] == [
         "Completed (1)",
-        "  F-0003  2/2 W  a done feature",
+        "  F-0003  a done feature",
     ]
 
 

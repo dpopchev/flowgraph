@@ -254,7 +254,7 @@ def test_a_completed_feature_is_placed_by_its_last_completed_work_item_and_lists
     assert status_item(store(rows, [feature(1)])).splitlines()[2:] == [
         "Completed (3)",
         "  S-0004  abc1234  title 4",
-        "  F-0001  2/2 W  feature 1",
+        "  F-0001  feature 1",
         "  S-0001  abc1234  title 1",
     ]
 
@@ -271,7 +271,7 @@ def test_a_feature_completed_by_its_own_state_is_placed_by_its_completed_time_wi
     assert status_item(store(rows, [landed])).splitlines()[2:] == [
         "Completed (3)",
         "  S-0003  abc1234  title 3",
-        "  F-0001  1/1 W  def5678  feature 1",
+        "  F-0001  def5678  feature 1",
         "  S-0001  abc1234  title 1",
     ]
 
@@ -311,6 +311,6 @@ def test_a_feature_with_every_work_item_removed_is_placed_in_completed_as_it_was
     ]
     assert status_item(store(rows, [feature(1, DAY[3])])).splitlines()[3:6] == [
         "  S-0003  abc1234  title 3",
-        "  F-0001  0/0 W  feature 1",
+        "  F-0001  feature 1",
         "  S-0001  abc1234  title 1",
     ]

@@ -6,7 +6,7 @@ A block of the Feature, of a work item or of a Task comes first, as the line of 
 from collections.abc import Iterable
 
 from flowgraph.feature import FeatureRow
-from flowgraph.status.buckets import IN_PROGRESS_BUCKET
+from flowgraph.status.buckets import COMPLETED_BUCKET, IN_PROGRESS_BUCKET
 from flowgraph.status.rows import COMPLETED
 from flowgraph.status.work_item_lines import (
     blocked_line,
@@ -22,8 +22,8 @@ from flowgraph.work_item import BLOCKED
 def feature_lines(feature: FeatureRow) -> str:
     """One Feature: its id, its work items completed of all, then its title.
 
-    A completed one is listed with its commit before its title, as a completed work item is,
-    after the progress every line of a Feature holds right after its id. Under it each started
+    A completed one is listed whole, its id, its commit and its title, with no count of its work
+    items. Under it each started
     work item of it, written as one of a bucket is with its Tasks being worked, two columns
     further in. A completed work item of a Feature in progress stays listed under it, after those
     started, with no descent to its Tasks. A blocked one is marked `!` before its id and ends with
@@ -36,7 +36,9 @@ def feature_lines(feature: FeatureRow) -> str:
     """
     if feature.reason:
         return f"  {feature.id}  {feature.title}  -- {feature.reason}\n"
-    progress = f"{feature.completed}/{feature.held} W"
+    progress = (
+        "" if feature.bucket == COMPLETED_BUCKET else f"{feature.completed}/{feature.held} W  "
+    )
     commit = f"{feature.commit}  " if feature.commit else ""
     marked = (row for row in feature.work_items if row.next_to_start)
     started = (
@@ -49,7 +51,7 @@ def feature_lines(feature: FeatureRow) -> str:
         for line in completed_line(row).splitlines()
     )
     under = "".join(f"  {line}\n" for line in (*started, *done))
-    line = f"{feature.id}  {progress}  {commit}{feature.title}"
+    line = f"{feature.id}  {progress}{commit}{feature.title}"
     own = (feature.waiting_on, feature.block_reason)
     block = own if feature.waiting_on else _waited_on(feature.started)
     head = (

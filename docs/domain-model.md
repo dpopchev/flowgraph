@@ -516,8 +516,9 @@ of work item. The developer said so on 2026-11-21.
   is whole. So that the cut keeps it, a completed work item is listed with
   its commit before its title, `S-0001  677f9b0  <title>`, and one completed
   without a commit with its id and its title alone (Evidence); a completed
-  Feature holds its commit there too, after its progress,
-  `F-0001  2/2 W  677f9b0  <title>` (Persistence); the reason of a removed
+  Feature holds its commit there too, right after its id,
+  `F-0001  677f9b0  <title>`, with no count of its work items (S-0134,
+  Persistence); the reason of a removed
   one still ends its line. Only status is cut, and a frame of watch
   with it. The width is an effect: `run()` takes it as a callable, none when
   the output is no terminal, and `main()` reads it from the terminal.
@@ -1854,7 +1855,8 @@ and its merge tool.
   its work items, the developer's words of 2026-11-21: a Feature is an
   umbrella, part of the Backlog, that just holds a couple of work items. The
   line is its id, its progress and its title, `F-0001  1/3 W  <title>`, in
-  its bucket (above), placed there as Order says. It is one
+  its bucket (above), placed there as Order says; under Completed the line
+  holds no progress, the Feature listed whole (S-0134). It is one
   item of that bucket: counted once beside the heading and once toward the
   top of it. Its work items in Backlog are listed on no line of their own; the completed ones
   of a Feature in progress are listed under its line and counted beside no heading, and
@@ -1864,10 +1866,10 @@ and its merge tool.
   listed under the line of its Feature (Order), and a removed one keeps its
   line under Removed while its Feature is not removed itself (above).
 - A completed Feature is listed under Completed with its commit between its
-  progress and its title, `F-0001  2/2 W  677f9b0  <title>`: the progress
-  stays right after the id, as on the line of a Feature in any bucket, and
-  the commit right before the title, as on the line of a completed work item,
-  so a line cut to the width keeps both. One completed without a commit, and
+  id and its title, `F-0001  677f9b0  <title>`, and no count of its work
+  items (S-0134): the commit stands right after the id, as the commit of a
+  completed work item stands before its title, so a line cut to the width
+  keeps it. The JSON keeps the progress of a completed Feature. One completed without a commit, and
   a Feature never started that is derived Completed, are listed without one,
   `F-0001  2/2 W  <title>`. `fgraph show` of a completed Feature lists
   `bucket       Completed` and under it `commit       677f9b0`, the commit
@@ -1886,9 +1888,10 @@ and its merge tool.
   are completed of all it holds, written as board 1's watch writes it. A
   removed work item is counted in neither number, a started or a Backlog one
   only in the second, and a Feature without a work item reads `0/0 W`. Every
-  Feature is listed with it, in any bucket of the flow:
+  Feature is listed with it, in any bucket of the flow but Completed:
   `F-0001  1/3 W  <title>`. A removed one alone is listed without it
-  (above).
+  (above), and a completed one with no count, its progress kept in the JSON
+  (S-0134).
 - A Feature takes every operation of a work item, each built: it is added
   and shown, reordered in the queue (Order), started with its first work
   item, its next work item started with the completion of the one before,

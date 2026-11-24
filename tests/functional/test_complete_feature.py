@@ -105,14 +105,11 @@ class TestTheSecondStoryOfAStartedFeatureCompletedAfterTheFirst:
     ) -> None:
         assert completed.out == "completed S-0002 at 5678def\ncompleted F-0001 at 5678def\n"
 
-    def test_status_lists_the_feature_under_completed_with_its_progress_and_that_commit(
+    def test_status_lists_the_feature_under_completed_with_that_commit_and_no_count(
         self, completed: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["status"], tmp_path, LATER).out == (
-            "Backlog (0)\n"
-            "InProgress (0)\n"
-            "Completed (1)\n"
-            "  F-0001  2/2 W  5678def  a feature title\n"
+            "Backlog (0)\nInProgress (0)\nCompleted (1)\n  F-0001  5678def  a feature title\n"
         )
 
     def test_show_of_the_feature_names_its_bucket_that_commit_and_the_bucket_of_each_story(
@@ -181,7 +178,7 @@ def test_a_feature_whose_other_stories_are_completed_or_removed_completes_with_t
     runs(tmp_path, *SECOND_AWAITED, ADD_THIRD, remove, COMPLETE_SECOND)
     assert fgraph(["status"], tmp_path, LATER).out.splitlines()[2:4] == [
         "Completed (1)",
-        "  F-0001  2/2 W  5678def  a feature title",
+        "  F-0001  5678def  a feature title",
     ]
 
 
@@ -195,7 +192,7 @@ def test_a_feature_completed_without_a_commit_is_listed_and_shown_without_one(
         fgraph(["show", "F-0001"], tmp_path, LATER).out.splitlines()[1:3],
     ) == (
         "completed S-0002\ncompleted F-0001\n",
-        "  F-0001  2/2 W  a feature title",
+        "  F-0001  a feature title",
         ["  bucket       Completed", "Criteria (1)"],
     )
 
@@ -216,7 +213,7 @@ class TestTheLastStoryOfAFeatureNeverStartedCompleted:
         self, completed: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["status"], tmp_path, LATER).out == (
-            "Backlog (0)\nInProgress (0)\nCompleted (1)\n  F-0001  2/2 W  a feature title\n"
+            "Backlog (0)\nInProgress (0)\nCompleted (1)\n  F-0001  a feature title\n"
         )
 
     def test_the_file_of_the_feature_is_left_without_a_state_line(
@@ -251,7 +248,7 @@ class TestAStartedFeatureLeftWithEveryStoryCompletedOrRemovedCompleted:
     ) -> None:
         assert fgraph(["status"], tmp_path, LATER).out.splitlines()[2:4] == [
             "Completed (1)",
-            "  F-0001  1/1 W  def5678  a feature title",
+            "  F-0001  def5678  a feature title",
         ]
 
 

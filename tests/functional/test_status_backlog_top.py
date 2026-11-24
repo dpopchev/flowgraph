@@ -50,7 +50,7 @@ ONE = [story(1)]
 
 WHOLE = (
     "backlog (5)\n"
-    "> S-0001  []  title 1\n"
+    "= S-0001  []  title 1\n"
     "  S-0002  []  title 2\n"
     "  S-0003  []  title 3\n"
     "  S-0004  []  title 4\n"
@@ -59,7 +59,7 @@ WHOLE = (
     "completed (0)\n"
 )
 SHORT = (
-    "backlog (5)\n> S-0001  []  title 1\n  ... 4 more, 0 can start\n"
+    "backlog (5)\n= S-0001  []  title 1\n  ... 4 more, 0 can start\n"
     "in-progress (0)\ncompleted (0)\n"
 )
 
@@ -161,5 +161,5 @@ def test_status_json_lists_every_item_of_the_backlog(tmp_path: Path) -> None:
 
 def test_status_lists_a_backlog_of_one_line_with_no_more_line(tmp_path: Path) -> None:
     assert after(tmp_path, ONE, ["status"]).out == (
-        "backlog (1)\n> S-0001  []  title 1\nin-progress (0)\ncompleted (0)\n"
+        "backlog (1)\n= S-0001  []  title 1\nin-progress (0)\ncompleted (0)\n"
     )

@@ -22,9 +22,6 @@ pytestmark = pytest.mark.functional
 START = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 BLOCK = ["block", "S-0004", "--reason", "no key", "--waiting-on", "developer"]
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="S-0139: the line that can start is marked > and the one ready for review ?"
-)
 MARKED = [
     *(["add", "story", f"title {number}", *CRITERION] for number in range(1, 6)),
     *(
@@ -94,15 +91,12 @@ class TestStatusOfMarkedLines:
     def test_status_exits_with_zero(self, listed: Outcome) -> None:
         assert listed.status == 0
 
-    @XFAIL
     def test_the_line_that_can_start_is_marked_with_an_equals_sign(self, listed: Outcome) -> None:
         assert line_of(listed.out, "S-0001").startswith("= S-0001")
 
-    @XFAIL
     def test_the_line_ready_for_review_is_marked_with_an_at_sign(self, listed: Outcome) -> None:
         assert line_of(listed.out, "S-0003").startswith("@ S-0003")
 
-    @XFAIL
     def test_no_line_starts_with_a_greater_than_or_a_question_mark(self, listed: Outcome) -> None:
         assert [line for line in indented(listed.out) if line.startswith(("> ", "? "))] == []
 
@@ -121,11 +115,9 @@ class TestWatchOfMarkedLines:
     def watched(self, tmp_path: Path) -> Outcome:
         return after(tmp_path, MARKED, ["watch", "--backlog", "--count", "1"])
 
-    @XFAIL
     def test_the_line_that_can_start_is_marked_with_an_equals_sign(self, watched: Outcome) -> None:
         assert line_of(watched.out, "S-0001").startswith("= S-0001")
 
-    @XFAIL
     def test_the_line_ready_for_review_is_marked_with_an_at_sign(self, watched: Outcome) -> None:
         assert line_of(watched.out, "S-0003").startswith("@ S-0003")
 

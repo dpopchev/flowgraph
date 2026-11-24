@@ -2,7 +2,7 @@
 
 The record turns the development on and holds S-0001 started with its one Task completed and
 S-0002 started with one Task completed and one in Backlog, each Task completed in the worktree of
-its branch. Status and watch mark `?` the line of the first, not that of the second, and the JSON
+its branch. Status and watch mark `@` the line of the first, not that of the second, and the JSON
 lists the first under `ready_for_review`. With the development off the same mark is shown. Run
 end to end through `run` on a real git repository in a temporary directory, never a faked git;
 the identity of its commits comes from the environment and no git config is read.
@@ -25,7 +25,7 @@ pytestmark = pytest.mark.functional
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 DEVELOPMENT_ON = "[development]\nenabled = true\n"
-READY = "? S-0001  1/1 T  title 1"
+READY = "@ S-0001  1/1 T  title 1"
 NOT_READY = "  S-0002  1/2 T  title 2"
 IDENTITY = {
     "GIT_AUTHOR_NAME": "a developer",

@@ -1,7 +1,7 @@
 """The criterion of the next to start: `fgraph status` marks the first item that can start.
 
 A Backlog whose first item waits and whose second waits for nothing: the line of the second is
-marked `>`. When the top of the heading leaves it out it is counted in the more-line.
+marked `=`. When the top of the heading leaves it out it is counted in the more-line.
 Run end to end on a record in a temporary directory, through the file adapters of the package.
 """
 
@@ -71,7 +71,7 @@ def runs(cwd: Path, *argvs: Sequence[str]) -> Outcome:
 
 def marked(out: str) -> list[str]:
     """The lines of the status marked as the next to start, without their newline."""
-    return [line for line in out.splitlines() if line.startswith("> ")]
+    return [line for line in out.splitlines() if line.startswith("= ")]
 
 
 def test_status_of_a_backlog_whose_first_item_waits_exits_0(tmp_path: Path) -> None:
@@ -80,7 +80,7 @@ def test_status_of_a_backlog_whose_first_item_waits_exits_0(tmp_path: Path) -> N
 
 def test_status_names_the_second_item_as_the_next_to_start(tmp_path: Path) -> None:
     out = runs(tmp_path, *FIRST_WAITS, STATUS).out
-    assert marked(out) == ["> S-0002  []  a second title"]
+    assert marked(out) == ["= S-0002  []  a second title"]
 
 
 def test_status_counts_the_next_to_start_in_the_more_line_when_the_top_leaves_it_out(

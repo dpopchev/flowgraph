@@ -13,6 +13,13 @@ from flowgraph.task import TaskRow
 from flowgraph.upkeep import UpkeepRow
 from flowgraph.work_item import BLOCKED, IN_PROGRESS, STARTED
 
+# Neither mark is special at the start of a line pasted into Markdown nor in a search by a
+# regular expression: the set the developer chose on 2026-11-23 (S-0139).
+# The line that can start now.
+CAN_START = "="
+# A started work item whose Tasks are all completed.
+READY_FOR_REVIEW = "@"
+
 # The state of a completed Task, as the record writes it.
 COMPLETED = "completed"
 
@@ -20,7 +27,7 @@ COMPLETED = "completed"
 def work_item_lines(row: StoryRow | UpkeepRow) -> str:
     """One item of a bucket: its id and title, with its commit or the reason it was removed.
 
-    A started one is marked `?` before its id when it is ready for review; a blocked one `!`,
+    A started one is marked `@` before its id when it is ready for review; a blocked one `!`,
     with what it waits on and why below its line, as a blocked Task. One whose branch is older than
     its age says `its branch is older than 1d` on a line below its own, before a block. Each is
     listed with its Tasks completed of all but the removed, between its id and its title, then
@@ -39,7 +46,7 @@ def work_item_lines(row: StoryRow | UpkeepRow) -> str:
         if row.waiting_on:
             head = added_below(f"! {line}", older)
             return f"{added_below(head, block_text(row.waiting_on, row.block_reason))}\n{worked}"
-        mark = "? " if ready_for_review(row) else "  "
+        mark = f"{READY_FOR_REVIEW} " if ready_for_review(row) else "  "
         return f"{added_below(f'{mark}{line}', older)}\n{worked}"
     if row.commit:
         return f"  {row.id}  {row.commit}  {row.title}\n"
@@ -80,11 +87,11 @@ def waiting_line(line: str, waits_for: Sequence[str], *, next_up: bool = False) 
     """The line of an item of a bucket: marked `~`, with the ids it depends on below it, if any.
 
     The mark and the words differ from a block, `!` and `waiting on`: a block waits on a person.
-    The next to start waits for nothing and is marked `>`.
+    The next to start waits for nothing and is marked `=`.
     """
     if waits_for:
         return added_below(f"~ {line}", f"depends on {', '.join(waits_for)}")
-    return f"> {line}" if next_up else f"  {line}"
+    return f"{CAN_START} {line}" if next_up else f"  {line}"
 
 
 def added_below(line: str, added: str, under: int = 2) -> str:

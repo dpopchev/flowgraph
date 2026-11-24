@@ -136,4 +136,4 @@ class TestAFeatureInProgressKeepsItsCount:
 
     def test_status_lists_the_feature_in_backlog_with_its_count(self, tmp_path: Path) -> None:
         runs(tmp_path, *ADDED)
-        assert "> F-0001  0/1 W  a feature title" in fgraph(["status"], tmp_path, LATER).out
+        assert "= F-0001  0/1 W  a feature title" in fgraph(["status"], tmp_path, LATER).out

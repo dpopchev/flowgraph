@@ -1,8 +1,8 @@
 """The commit of a write of the record: fgraph commits the files the write changed, alone.
 
-Every write shares this one step. With the development turned on in the configuration of the
-record, the start of a work item also checks its branch out at that commit, in a worktree of its
-own. Outside a git work tree a write is left as its files, and so is the write of a record git
+Every write shares this one step. With the development on and the mode branch, not the trunk,
+the start of a work item also checks its branch out at that commit, in a worktree of its own.
+Outside a git work tree a write is left as its files, and so is the write of a record git
 ignores, whose start branches at HEAD, and every write of a record whose configuration turns
 the commits off.
 """
@@ -18,7 +18,7 @@ from flowgraph.development import git, tag_git
 from flowgraph.development.branch import branch_of
 from flowgraph.development.git import GitError
 from flowgraph.item.commands import ToBranch, Written
-from flowgraph.record import Config
+from flowgraph.record import Config, branched
 from flowgraph.record.store import Store
 from flowgraph.work_item import work_item_id_text
 
@@ -201,13 +201,13 @@ def commit_written(
     Outside a git work tree nothing is committed, and only the start of a work item warns, that
     no branch was made. For a record git ignores nothing is committed either, and the branch of
     a start is checked out at HEAD. A write that changed no file makes no commit. With the
-    development off in the configuration the start of a work item is a write as any other: no
+    development off or on the trunk the start of a work item is a write as any other: no
     branch, no worktree and no warning. With the commits off in the configuration a write is
     left as that of a record git ignores. Raises GitError naming the git command when git refuses
     a step: a commit refused puts the files back as they were, a worktree refused leaves the
     start as it is, committed or written.
     """
-    to_branch = written.branch if config.development.enabled else None
+    to_branch = written.branch if branched(config.development) else None
     work_tree = open_git(record)
     if work_tree is None:
         if to_branch is None:

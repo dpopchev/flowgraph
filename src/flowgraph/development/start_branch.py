@@ -2,7 +2,8 @@
 
 A work item makes the branch of its own; a Feature, the branch of its first work item in Backlog.
 The start takes over no branch that is there (the decision of the developer of 2026-11-23): the
-developer deletes the branch or gives another slug. Nothing is read unless the development is on.
+developer deletes the branch or gives another slug. A start on the trunk makes no branch, so none
+refuses it: nothing is read unless the development is on and its mode is branch.
 """
 
 from pathlib import Path
@@ -20,7 +21,7 @@ from flowgraph.feature import (
 from flowgraph.feature.start import first_in_backlog
 from flowgraph.item.commands import ItemIdError, parse_item_id
 from flowgraph.parent import FeatureIdError, feature_id_text, parse_feature_id
-from flowgraph.record import Config
+from flowgraph.record import Config, branched
 from flowgraph.record.store import Store
 from flowgraph.task import TaskId
 from flowgraph.work_item import (
@@ -116,7 +117,7 @@ def check_branch_free(
     in its own words. Nothing is read with the development off or outside a git work tree; a
     record git ignores is checked as any other.
     """
-    if not config.development.enabled:
+    if not branched(config.development):
         return
     try:
         parse_feature_id(item)

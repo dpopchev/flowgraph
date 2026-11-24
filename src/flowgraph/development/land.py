@@ -47,8 +47,10 @@ from flowgraph.item.commands import ToBranch, parse_work_item_id_of_any_kind
 from flowgraph.parent import Standalone
 from flowgraph.record import (
     DEVELOPMENT_ENABLED,
+    DEVELOPMENT_MODE,
     GIT_COMMIT,
     Config,
+    Mode,
     Now,
 )
 from flowgraph.record.store import Store
@@ -149,7 +151,8 @@ def land_item(
     Raises
     WorkItemIdError when the text is the id of no kind of work item, LandError when the
     development is off in the configuration, naming the fgraph config set that turns it on and,
-    with the commits off, the one that turns them on first, when the merge
+    with the commits off, the one that turns them on first, or the mode is trunk, which makes no
+    branch to land, when the merge
     makes a commit and no message is given or makes none and one is, when the record is outside
     a git work tree, when the work tree is not on main, when the push of the delivery is on and
     main tracks no branch of a remote, when the work item has no branch or
@@ -179,6 +182,11 @@ def land_item(
         commits = "" if config.git.commit else f"fgraph config set {GIT_COMMIT} true, then "
         turn_on = f"run {commits}fgraph config set {DEVELOPMENT_ENABLED} true"
         raise LandError(f"{text} cannot land: the development is off -- {turn_on}")
+    if config.development.mode is Mode.TRUNK:
+        raise LandError(
+            f"{text} cannot land: {DEVELOPMENT_MODE} = trunk makes no branch to land"
+            f" -- complete it with fgraph complete {text} --commit SHA"
+        )
     way = make_way(text, config.development.merge, message)
     work_tree = open_git(record)
     if work_tree is None:

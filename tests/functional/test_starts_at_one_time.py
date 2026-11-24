@@ -1,4 +1,4 @@
-"""The criterion of B-0036: of two starts of one work item at one time, one holds it, one is refused.
+"""The criterion of B-0036: of two starts of one work item at one time, one is refused.
 
 Run through `run` on a real git repository, one start after the other, the refusal of a second
 start naming the agent that holds the work item. Then two fgraph start as real processes at one

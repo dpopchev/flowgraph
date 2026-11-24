@@ -149,8 +149,7 @@ the Task in Backlog rewrites it (S-0144).
 
 A Story, a Bug, an Upkeep and a Spike carry a complexity: `low`, `medium` or
 `high`, none when it is left out, the reading of S-0112. It is set by `fgraph
-add` and by `fgraph amend`, the latter in Backlog alone, as every part of an
-amend is, and every move carries it: the start, the completion and the removal
+add` and by `fgraph amend`, the latter in Backlog alone, and every move carries it: the start, the completion and the removal
 keep the complexity the item had. It is built by `make_complexity`, so any other
 word is refused, exit 2, naming `low`, `medium` and `high`. It is not taken back
 to none by an amend. A Feature and a Task carry none. Which model, or which
@@ -161,7 +160,8 @@ A work item in any state also keeps its knowledge: the lines noted on it, in
 the order noted. A line holds its kind, its text and the time it was noted; the
 kind is one of three, a sum type: a finding records what was learned, a decision
 what was decided, and a deviation a change to what a started item was agreed to
-do, since `fgraph amend` refuses one once it is started. A line may carry one
+do: `fgraph amend` of a started item keeps one with the part it rewrites, and
+`fgraph note` keeps one alone. A line may carry one
 mark, a sum of three with no mark: standing, the line holds until a later line
 supersedes it, and open, the line is not settled yet; a line of any kind takes
 one. The mark is given when the line is noted and, as the line, never amended;
@@ -552,8 +552,28 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
   blank part of the criterion is refused. The description is optional free
   text: a blank one clears it.
 - An amendment that names no part is refused.
-- Only a work item in Backlog is amended: a started or a completed one is
-  refused, since its wording is what the work was started on.
+- Only a work item in Backlog is amended: a started or blocked one is amended
+  with its deviation, a completed or removed one refused.
+- A started or blocked item is amended with `--deviation TEXT`, the change to
+  what it was agreed to do (S-0145). The line is one knowledge line of kind
+  deviation, built by the constructor `fgraph note --deviation` goes through,
+  about no term and governing no file, and saved with the item whole: one
+  commit, `chore: amend S-0001 in the record`, and the amend still says
+  `amended S-0001`.
+- The parts taken once started are the title, the description, the parts of
+  the criterion and the terms; the complexity, the parent and what it depends
+  on are of the Backlog alone, refused with their line, `S-0001 is started:
+  its complexity, its parent and what it depends on are amended in Backlog
+  alone`. A blocked item counts as started.
+- Two lines of `DeviationError` refuse it: without the text, `S-0001 is
+  started: amend it with --deviation TEXT, what changes in what it was agreed
+  to do`; with it for an item in Backlog, `S-0001 is in Backlog: it has no
+  agreed plan to deviate from -- amend it without --deviation`. A deviation
+  alone is `fgraph note`; a Task takes none, `T-0001 takes no --deviation: a
+  Task keeps no knowledge line`.
+- With the development on, a started work item is amended in its worktree,
+  one commit of its branch, and refused on main naming that worktree; a
+  started Feature is amended on main.
 - Its parent is a part too, the reading of S-0059: `--parent F-0001` puts the
   work item under that Feature and `--parent none` takes it out to stand
   alone, alone or beside the other parts. It is still no move of the work
@@ -603,9 +623,11 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
   never writes. It is one write of the file of the Feature, committed as
   `chore: amend F-0001 in the record`, made where a Feature is written: on
   the branch of a work item it is refused, as every write of a Feature is.
-- Only a Feature in Backlog by its own state is amended, as only a work item
-  in Backlog is: a started, a blocked or a completed one is refused, `F-0001
-  is started already`, `F-0001 is blocked`, `F-0001 is completed already`. An
+- A Feature is amended by its own state as a work item is: a started or
+  blocked one with its deviation, the same change, refused without it with
+  the line `F-0001 is started: amend it with --deviation TEXT, what changes
+  in what it was agreed to do`; a completed one is refused, `F-0001 is
+  completed already`. An
   amendment that names no part is refused, and so is a Feature the record
   does not hold. The parts of a work item are not those of a Feature:
   `--given`, `--when`, `--then`, `--observed`, `--expected`, `--hypothesis`
@@ -1376,9 +1398,9 @@ and its merge tool.
   unblock it first`, and the check of a Task of it is not run. A Task is
   still added to it and a line still noted. Its start, complete and hand are
   refused, `S-0001 is blocked: unblock it first`, and so is its landing,
-  which drops the merge held; its amend is refused, `S-0001 is blocked`, and
-  so is the remove of a Feature holding it, `F-0001 cannot be removed: S-0001
-  is blocked`. Its own remove is no longer refused: it is removed on main as
+  which drops the merge held; its amend is taken with its deviation, as a
+  started one's; the remove of a Feature holding it is refused, `F-0001
+  cannot be removed: S-0001 is blocked`. Its own remove is no longer refused: it is removed on main as
   a started one is (S-0148, below). `fgraph block` still takes a Task and a
   Feature, as before.
 - A completed item is kept as `state = "completed"` with its `started` and
@@ -2214,6 +2236,8 @@ held to `main`, and there is no landing:
 | reorder the Backlog | `main` |
 | amend a work item in Backlog | `main` |
 | amend a Feature in Backlog | `main` |
+| amend a started work item, with its deviation | its branch |
+| amend a started Feature, with its deviation | `main` |
 | remove a work item in Backlog | `main` |
 | remove a started or blocked work item | `main`: read from its worktree, its branch and worktree removed or left (S-0148) |
 | remove a Feature in Backlog, with its work items | `main` |

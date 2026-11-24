@@ -17,7 +17,6 @@ pytestmark = pytest.mark.functional
 
 START = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0132: InProgress lists its top 5")
 SIX_COMPLETED_TOP = "  ... 1 more\n"
 
 
@@ -130,17 +129,14 @@ def seven_watch(tmp_path: Path) -> Outcome:
     return after(tmp_path, SEVEN, ["watch", "--count", "1"])
 
 
-@XFAIL
 def test_status_lists_all_seven_started_items_whole(seven_status: Outcome) -> None:
     assert in_progress(seven_status.out) == SEVEN_FRAME
 
 
-@XFAIL
 def test_status_has_no_more_line_under_in_progress(seven_status: Outcome) -> None:
     assert not any(line.startswith("  ... ") for line in seven_status.out.splitlines())
 
 
-@XFAIL
 def test_watch_lists_all_seven_started_items_whole(seven_watch: Outcome) -> None:
     assert in_progress(seven_watch.out) == SEVEN_FRAME
 

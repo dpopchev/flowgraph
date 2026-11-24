@@ -21,14 +21,14 @@ def test_the_same_top_of_none_is_the_whole() -> None:
     assert same_top(None) == WHOLE
 
 
-def test_no_flag_asks_the_first_line_of_the_backlog_and_five_of_each_other() -> None:
+def test_no_flag_asks_one_backlog_line_the_whole_in_progress_and_five_of_the_rest() -> None:
     assert tops_asked(every=False, backlog=False) == Tops(
-        backlog=1, in_progress=5, completed=5, removed=5
+        backlog=1, in_progress=None, completed=5, removed=5
     )
 
 
 def test_the_flag_of_the_backlog_asks_it_whole_and_the_others_short() -> None:
-    assert tops_asked(every=False, backlog=True) == Tops(None, 5, 5, 5)
+    assert tops_asked(every=False, backlog=True) == Tops(None, None, 5, 5)
 
 
 @pytest.mark.parametrize("backlog", [False, True])

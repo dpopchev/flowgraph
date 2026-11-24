@@ -28,6 +28,7 @@ from flowgraph.graph import FormatError
 from flowgraph.item.commands import ItemIdError
 from flowgraph.item.progress import ProgressLineError
 from flowgraph.knowledge.list import KindListedError
+from flowgraph.knowledge.supersede import LineRefError
 from flowgraph.parent import FeatureIdError, RealizesError
 from flowgraph.record import ConfigError
 from flowgraph.record.archive import ArchivedError
@@ -57,6 +58,7 @@ from flowgraph.term import TermError, TermFileError, TermNotFoundError
 from flowgraph.term.item import TermExistsError
 from flowgraph.work_item import (
     ComplexityError,
+    DeviationError,
     NoPartError,
     NoSuchPartError,
     NotVerifiableError,
@@ -113,6 +115,7 @@ REFUSED = (
     DecisionError,
     NoPartError,
     NoSuchPartError,
+    DeviationError,
     RemovedAlreadyError,
     NotVerifiableError,
     VerifiedAlreadyError,
@@ -140,6 +143,7 @@ REFUSED = (
     NothingToStartError,
     PaceError,
     KindListedError,
+    LineRefError,
     ComplexityError,
     FormatError,
     StatusFormatError,

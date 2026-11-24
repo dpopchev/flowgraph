@@ -7,7 +7,7 @@ of a work item in flowgraph.work_item.task_commands.
 from collections.abc import Iterable
 
 from flowgraph.criterion import Criterion
-from flowgraph.knowledge import UNMARKED, KnowledgeKind, Mark, make_knowledge_line
+from flowgraph.knowledge import UNMARKED, KnowledgeKind, KnowledgeLine, Mark, make_knowledge_line
 from flowgraph.parent import NO_CRITERION, STANDALONE, Parent, Realizes
 from flowgraph.record import Now
 from flowgraph.work_item.agent import Agent
@@ -105,18 +105,21 @@ def amend_work_item(
     save_work_item: SaveWorkItem,
     check_move: CheckMove,
     check_realizes: CheckRealizes,
+    deviation: KnowledgeLine | None = None,
 ) -> None:
     """Rewrite the parts the amendment names of the work item of that id and save it whole.
 
     A parent named that is not the one it has is a move, checked through check_move before the
-    save; a criterion named is checked through check_realizes after it. Raises
+    save; a criterion named is checked through check_realizes after it. A started or blocked
+    item is amended with its deviation, kept on it in the same save. Raises
     WorkItemNotFoundError when the record holds no such item, NoPartError when the
     amendment names no part, EmptyPartError when the title or a part of the criterion is blank,
-    StartedAlreadyError when the item is started, CompletedAlreadyError when it is completed
-    and the refusal of the check; nothing is saved.
+    DeviationError when the deviation is missing or given for one in Backlog,
+    StartedAlreadyError when a part of the Backlog alone is named for a started item,
+    CompletedAlreadyError when it is completed and the refusal of the check; nothing is saved.
     """
     was = load_work_item(item_id)
-    amended = amended_work_item(was, amendment)
+    amended = amended_work_item(was, amendment, deviation)
     if amended.parent != was.parent:
         check_move(item_id, was.parent, amended.parent)
     if amendment.realizes is not None:
@@ -153,13 +156,14 @@ def note_work_item(
     about: tuple[str, ...] = (),
     governs: tuple[str, ...] = (),
     mark: Mark = UNMARKED,
+    supersedes: tuple[str, ...] = (),
 ) -> None:
     """Keep a line of that kind and text on the work item of that id, in any state, and save it.
 
-    The line is about the terms given, governs the files given, carries the mark given and goes
-    after the lines the item keeps. Raises
+    The line is about the terms given, governs the files given, carries the mark given, keeps the
+    refs of the lines it supersedes and goes after the lines the item keeps. Raises
     WorkItemNotFoundError when the record holds no such item and EmptyPartError when the text is
     blank; nothing is saved.
     """
-    line = make_knowledge_line(kind, text, now(), about, governs, mark)
+    line = make_knowledge_line(kind, text, now(), about, governs, mark, supersedes)
     save_work_item(noted_work_item(load_work_item(item_id), line))

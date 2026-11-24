@@ -135,7 +135,11 @@ def test_an_upkeep_in_backlog_is_amended_as_a_story_is(tmp_path: Path) -> None:
         ([ADD_STORY, [*AMEND, "--then", " "]], "then is empty"),
         ([ADD_STORY, [*AMEND, "--title", ""]], "title is empty"),
         ([ADD_STORY, AMEND], "amend rewrites no part of S-0001: name one"),
-        ([ADD_STORY, ADD_TASK, ["start", "S-0001"], AMEND_THEN], "S-0001 is started already"),
+        (
+            [ADD_STORY, ADD_TASK, ["start", "S-0001"], AMEND_THEN],
+            "S-0001 is started: amend it with --deviation TEXT, what changes in what it was"
+            " agreed to do",
+        ),
         (
             [ADD_STORY, ADD_TASK, ["start", "S-0001"], *COMPLETE, AMEND_THEN],
             "S-0001 is completed already",

@@ -89,15 +89,20 @@ class KnowledgeFile(BaseModel):
     mark: Literal["standing", "open"] | None = None
     about: list[str] = []
     governs: list[str] = []
+    supersedes: list[str] = []
 
 
 def knowledge_primitives(line: KnowledgeLine) -> dict[str, object]:
-    """The knowledge line as the primitives its table holds: its mark, terms and files if any."""
+    """The knowledge line as the primitives its table holds.
+
+    Its mark, terms, files and the refs of the lines it supersedes are held only if any.
+    """
     mark = {"mark": mark_name(line.mark)} if mark_name(line.mark) else {}
     about = {"about": list(line.about)} if line.about else {}
     governs = {"governs": list(line.governs)} if line.governs else {}
+    supersedes = {"supersedes": list(line.supersedes)} if line.supersedes else {}
     head = {"kind": kind_name(line.kind), "text": line.text, "noted": line.noted}
-    return {**head, **mark, **about, **governs}
+    return {**head, **mark, **about, **governs, **supersedes}
 
 
 def knowledge_held(held: KnowledgeFile) -> KnowledgeLine:
@@ -105,13 +110,14 @@ def knowledge_held(held: KnowledgeFile) -> KnowledgeLine:
     about = tuple(held.about)
     governs = tuple(held.governs)
     mark = make_mark(held.mark)
+    rest = (about, governs, mark, tuple(held.supersedes))
     match held.kind:
         case "finding":
-            return make_knowledge_line(FINDING, held.text, held.noted, about, governs, mark)
+            return make_knowledge_line(FINDING, held.text, held.noted, *rest)
         case "decision":
-            return make_knowledge_line(DECISION, held.text, held.noted, about, governs, mark)
+            return make_knowledge_line(DECISION, held.text, held.noted, *rest)
         case "deviation":
-            return make_knowledge_line(DEVIATION, held.text, held.noted, about, governs, mark)
+            return make_knowledge_line(DEVIATION, held.text, held.noted, *rest)
         case _ as unreachable:
             assert_never(unreachable)
 

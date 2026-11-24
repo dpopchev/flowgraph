@@ -39,10 +39,11 @@ from flowgraph.item.progress import note_progress
 from flowgraph.item.verify import verify_item, verify_item_no
 from flowgraph.knowledge import DECISION, DEVIATION, FINDING, make_mark
 from flowgraph.knowledge.governed import governs_asked
+from flowgraph.knowledge.supersede import supersedes_asked
 from flowgraph.parent import NO_CRITERION, parent_asked, realizes_asked
 from flowgraph.parser.checks import check_command
 from flowgraph.parser.start import start_named
-from flowgraph.parser.stated import criterion_added, decision_given
+from flowgraph.parser.stated import criterion_added, decision_given, deviation_given
 from flowgraph.parser.views import view_said
 from flowgraph.record import Config, Now
 from flowgraph.record.setting import set_setting, show_config, unset_setting
@@ -132,7 +133,7 @@ def _written(
                 args.output,
                 args.check,
             )
-            return amend_named(args.id, parts, args.criterion, store)
+            return amend_named(args.id, parts, args.criterion, store, deviation_given(args, now))
         case "complete" if is_feature_id(args.id):
             return complete_feature_item(args.id, args.commit, store, now)
         case "complete":
@@ -164,7 +165,9 @@ def _written(
             )
             about = about_asked(args.about, store) or ()
             governs = governs_asked(args.governs, cwd, open_git)
-            return note_named(args.id, kind, text, store, now, about, governs, make_mark(args.mark))
+            mark = make_mark(args.mark)
+            supersedes = supersedes_asked(args.supersedes, store)
+            return note_named(args.id, kind, text, store, now, about, governs, mark, supersedes)
         case "verify" if args.no is not None:
             return verify_item_no(args.id, args.no, store, now)
         case "verify":

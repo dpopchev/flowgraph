@@ -22,6 +22,7 @@ from flowgraph.item.id import (
     parse_placed_id,
     parse_work_item_id_of_any_kind,
 )
+from flowgraph.knowledge import KnowledgeLine
 from flowgraph.parent import NO_CRITERION, STANDALONE, FeatureId, Parent, Realizes
 from flowgraph.record import Now
 from flowgraph.record.queue import placed_text, reorder
@@ -151,17 +152,21 @@ def add_item(
     return Written(f"added {text}\n", MESSAGE.format(f"add {text}"))
 
 
-def amend_item(item: str, parts: work_item.Amendment, store: Store) -> Written:
-    """Rewrite the parts named of the work item in Backlog of that id; what the write says.
+def amend_item(
+    item: str, parts: work_item.Amendment, store: Store, deviation: KnowledgeLine | None = None
+) -> Written:
+    """Rewrite the parts named of the work item of that id; what the write says.
 
-    A parent named puts it under that Feature or takes it out of the one it is under, both in
-    Backlog; its entry in the queue stays. Raises ItemIdError naming the Feature too when the
-    text is the id of no kind, or the refusal of the amend or of the move.
+    A started work item is amended with its deviation, kept on it in the same save. A parent
+    named puts it under that Feature or takes it out of the one it is under, both in Backlog; its
+    entry in the queue stays. Raises ItemIdError naming the Feature too when the text is the id
+    of no kind, or the refusal of the amend or of the move.
     """
     item_id = parse_amended_id(item)
     work_item.amend_work_item(
         item_id=item_id,
         amendment=parts,
+        deviation=deviation,
         load_work_item=store.load_work_item,
         save_work_item=store.save_work_item,
         check_move=partial(check_move, store.features.load_feature),

@@ -10,6 +10,7 @@ from dataclasses import replace
 
 from flowgraph.feature.realizes import realized_text
 from flowgraph.item.id import ItemIdError, parse_item_id, parse_work_item_id_of_any_kind
+from flowgraph.knowledge.supersede import superseded_rows
 from flowgraph.parent import NONE
 from flowgraph.record.store import Store
 from flowgraph.relation.model import (
@@ -147,7 +148,8 @@ def amends_asked(text: str | None, store: Store) -> WorkItemId | None:
 def bucketed(detail: WorkItemDetail, store: Store) -> WorkItemDetail:
     """The detail of a work item with the bucket each work item it depends on is listed in and
     the ids of the work items filed during it, of those it supersedes and of those that amend it,
-    and the text of the criterion of its Feature it realizes, read from the record."""
+    the text of the criterion of its Feature it realizes, and each of its knowledge lines with the
+    refs of the lines that supersede it, read from the record."""
     record = record_standing(store)
     return replace(
         detail,
@@ -156,6 +158,7 @@ def bucketed(detail: WorkItemDetail, store: Store) -> WorkItemDetail:
         filed_here=filed_during_it(detail.id, record),
         supersedes=superseding(detail.id, record),
         amended_by=amended_by(detail.id, record),
+        knowledge=superseded_rows(detail.id, detail.knowledge, store),
     )
 
 

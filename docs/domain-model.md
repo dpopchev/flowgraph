@@ -149,8 +149,7 @@ the Task in Backlog rewrites it (S-0144).
 
 A Story, a Bug, an Upkeep and a Spike carry a complexity: `low`, `medium` or
 `high`, none when it is left out, the reading of S-0112. It is set by `fgraph
-add` and by `fgraph amend`, the latter in Backlog alone, as every part of an
-amend is, and every move carries it: the start, the completion and the removal
+add` and by `fgraph amend`, the latter in Backlog alone, and every move carries it: the start, the completion and the removal
 keep the complexity the item had. It is built by `make_complexity`, so any other
 word is refused, exit 2, naming `low`, `medium` and `high`. It is not taken back
 to none by an amend. A Feature and a Task carry none. Which model, or which
@@ -161,14 +160,21 @@ A work item in any state also keeps its knowledge: the lines noted on it, in
 the order noted. A line holds its kind, its text and the time it was noted; the
 kind is one of three, a sum type: a finding records what was learned, a decision
 what was decided, and a deviation a change to what a started item was agreed to
-do, since `fgraph amend` refuses one once it is started. A line may carry one
+do: `fgraph amend` of a started item keeps one with the part it rewrites, and
+`fgraph note` keeps one alone. A line may carry one
 mark, a sum of three with no mark: standing, the line holds until a later line
 supersedes it, and open, the line is not settled yet; a line of any kind takes
 one. The mark is given when the line is noted and, as the line, never amended;
 no command reads it, `fgraph show` and `fgraph knowledge` list it. The text says
 something, so a blank one is refused where the line is built. A line is noted
 with `fgraph note` in Backlog, started, Completed or Removed alike, and is never
-amended or removed: it is added after the lines the item keeps already.
+amended or removed: it is added after the lines the item keeps already. A line
+is named by its ref, `<id>#<place>`, as `S-0001#2`, the place counted from 1
+among every line of the item in the order noted; it is stable because a line is
+never amended or removed and each is added last. A later line supersedes an
+earlier one by naming its ref, on any work item or Feature; the supersede is
+kept on the later line and the earlier one is never rewritten, so a superseded
+line stays in the record.
 
 A work item also keeps its progress lines, in the order noted: each holds its
 text, the time it was noted and, when it is of a Task, that Task. A progress
@@ -516,8 +522,9 @@ of work item. The developer said so on 2026-11-21.
   is whole. So that the cut keeps it, a completed work item is listed with
   its commit before its title, `S-0001  677f9b0  <title>`, and one completed
   without a commit with its id and its title alone (Evidence); a completed
-  Feature holds its commit there too, after its progress,
-  `F-0001  2/2 W  677f9b0  <title>` (Persistence); the reason of a removed
+  Feature holds its commit there too, right after its id,
+  `F-0001  677f9b0  <title>`, with no count of its work items (S-0134,
+  Persistence); the reason of a removed
   one still ends its line. Only status is cut, and a frame of watch
   with it. The width is an effect: `run()` takes it as a callable, none when
   the output is no terminal, and `main()` reads it from the terminal.
@@ -559,8 +566,28 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
   blank part of the criterion is refused. The description is optional free
   text: a blank one clears it.
 - An amendment that names no part is refused.
-- Only a work item in Backlog is amended: a started or a completed one is
-  refused, since its wording is what the work was started on.
+- Only a work item in Backlog is amended: a started or blocked one is amended
+  with its deviation, a completed or removed one refused.
+- A started or blocked item is amended with `--deviation TEXT`, the change to
+  what it was agreed to do (S-0145). The line is one knowledge line of kind
+  deviation, built by the constructor `fgraph note --deviation` goes through,
+  about no term and governing no file, and saved with the item whole: one
+  commit, `chore: amend S-0001 in the record`, and the amend still says
+  `amended S-0001`.
+- The parts taken once started are the title, the description, the parts of
+  the criterion and the terms; the complexity, the parent and what it depends
+  on are of the Backlog alone, refused with their line, `S-0001 is started:
+  its complexity, its parent and what it depends on are amended in Backlog
+  alone`. A blocked item counts as started.
+- Two lines of `DeviationError` refuse it: without the text, `S-0001 is
+  started: amend it with --deviation TEXT, what changes in what it was agreed
+  to do`; with it for an item in Backlog, `S-0001 is in Backlog: it has no
+  agreed plan to deviate from -- amend it without --deviation`. A deviation
+  alone is `fgraph note`; a Task takes none, `T-0001 takes no --deviation: a
+  Task keeps no knowledge line`.
+- With the development on, a started work item is amended in its worktree,
+  one commit of its branch, and refused on main naming that worktree; a
+  started Feature is amended on main.
 - Its parent is a part too, the reading of S-0059: `--parent F-0001` puts the
   work item under that Feature and `--parent none` takes it out to stand
   alone, alone or beside the other parts. It is still no move of the work
@@ -610,9 +637,11 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
   never writes. It is one write of the file of the Feature, committed as
   `chore: amend F-0001 in the record`, made where a Feature is written: on
   the branch of a work item it is refused, as every write of a Feature is.
-- Only a Feature in Backlog by its own state is amended, as only a work item
-  in Backlog is: a started, a blocked or a completed one is refused, `F-0001
-  is started already`, `F-0001 is blocked`, `F-0001 is completed already`. An
+- A Feature is amended by its own state as a work item is: a started or
+  blocked one with its deviation, the same change, refused without it with
+  the line `F-0001 is started: amend it with --deviation TEXT, what changes
+  in what it was agreed to do`; a completed one is refused, `F-0001 is
+  completed already`. An
   amendment that names no part is refused, and so is a Feature the record
   does not hold. The parts of a work item are not those of a Feature:
   `--given`, `--when`, `--then`, `--observed`, `--expected`, `--hypothesis`
@@ -1257,7 +1286,23 @@ and its merge tool.
   lines under `Knowledge (n)` after the Tasks, each with its kind, its date and
   its text, and no heading when there is none; the mark follows the text as
   `(standing)` or `(open)`, as in the line
-  `  finding  2026-11-22  is the queue one file too  (open)`.
+  `  finding  2026-11-22  is the queue one file too  (open)`. The later line of
+  a supersede holds the key `supersedes`, the list of the refs it names, only
+  when it names some; `fgraph note` takes `--supersedes REF` once per line. The
+  file written is that of the item the later line is noted on, saved whole as
+  every note saves it, the table of the earlier line as it was, and the file of
+  another item it names is not written at all, so the scope of a branch holds:
+  a started work item notes it in its worktree and every other on `main`,
+  whichever item holds the line superseded. The ref is checked at the note
+  against the lines of the record where the note is written, read in any
+  spelling of the id (`s1#2` is `S-0001#2`), and refused, exit 2 and nothing
+  written, with `--supersedes names S-0001#9, which is no knowledge line of the
+  record: fgraph knowledge lists each line with its ref`. A line may be
+  superseded by several lines, and a superseded line may be superseded again.
+  The other side is derived: `fgraph show` ends the superseded line, after its
+  mark, terms and files, with `(superseded by S-0001#2)`, every superseding line
+  named, read from the whole record, the started work items where `fgraph
+  status` reads them.
 - A progress line is one `[[progress]]` table inside the file of its work item,
   in the order noted, apart from `[[knowledge]]`, with its `text`, its `noted`
   time and, for a line of a Task, `task = "T-0001"`; a file without the table
@@ -1330,14 +1375,17 @@ and its merge tool.
   its work items. It is written on `main` alone: on the branch of a work item,
   which writes that work item alone, the note of a Feature is refused naming it,
   as the write of any other item is, exit 2 and nothing written. A Task takes a
-  progress line alone.
+  progress line alone. A line of a Feature supersedes and is superseded the same
+  way, named as `F-0001#1`.
 - `fgraph knowledge` is a view of the whole record: it reads every work item and
   every Feature and writes nothing. It lists every line of each, with its date,
-  its kind, the id of its item and its text, then its mark when it has one, the
+  its kind, its ref in place of the id of its item, as `S-0001#2`, and its text,
+  then its mark when it has one, the
   last noted first; lines noted
   at one time come in the reverse of the order they were collected, the work
   items by kind and id before the Features. The decision of a completed Spike is
-  listed among the decisions at the time the Spike was completed; it is not
+  listed among the decisions at the time the Spike was completed, under the id of
+  the Spike: it has no ref and cannot be named by `--supersedes`; it is not
   copied, and stays kept on the Spike as its `decision`. `--kind` narrows the list to
   `finding`, `decision` or `deviation`; any other word is refused naming the
   three, exit 2. A record with no line of the kind asked, or none, prints one
@@ -1383,9 +1431,9 @@ and its merge tool.
   unblock it first`, and the check of a Task of it is not run. A Task is
   still added to it and a line still noted. Its start, complete and hand are
   refused, `S-0001 is blocked: unblock it first`, and so is its landing,
-  which drops the merge held; its amend is refused, `S-0001 is blocked`, and
-  so is the remove of a Feature holding it, `F-0001 cannot be removed: S-0001
-  is blocked`. Its own remove is no longer refused: it is removed on main as
+  which drops the merge held; its amend is taken with its deviation, as a
+  started one's; the remove of a Feature holding it is refused, `F-0001
+  cannot be removed: S-0001 is blocked`. Its own remove is no longer refused: it is removed on main as
   a started one is (S-0148, below). `fgraph block` still takes a Task and a
   Feature, as before.
 - A completed item is kept as `state = "completed"` with its `started` and
@@ -1832,7 +1880,8 @@ and its merge tool.
   its work items, the developer's words of 2026-11-21: a Feature is an
   umbrella, part of the Backlog, that just holds a couple of work items. The
   line is its id, its progress and its title, `F-0001  1/3 W  <title>`, in
-  its bucket (above), placed there as Order says. It is one
+  its bucket (above), placed there as Order says; under Completed the line
+  holds no progress, the Feature listed whole (S-0134). It is one
   item of that bucket: counted once beside the heading and once toward the
   top of it. Its work items in Backlog are listed on no line of their own; the completed ones
   of a Feature in progress are listed under its line and counted beside no heading, and
@@ -1842,10 +1891,10 @@ and its merge tool.
   listed under the line of its Feature (Order), and a removed one keeps its
   line under Removed while its Feature is not removed itself (above).
 - A completed Feature is listed under Completed with its commit between its
-  progress and its title, `F-0001  2/2 W  677f9b0  <title>`: the progress
-  stays right after the id, as on the line of a Feature in any bucket, and
-  the commit right before the title, as on the line of a completed work item,
-  so a line cut to the width keeps both. One completed without a commit, and
+  id and its title, `F-0001  677f9b0  <title>`, and no count of its work
+  items (S-0134): the commit stands right after the id, as the commit of a
+  completed work item stands before its title, so a line cut to the width
+  keeps it. The JSON keeps the progress of a completed Feature. One completed without a commit, and
   a Feature never started that is derived Completed, are listed without one,
   `F-0001  2/2 W  <title>`. `fgraph show` of a completed Feature lists
   `bucket       Completed` and under it `commit       677f9b0`, the commit
@@ -1864,9 +1913,10 @@ and its merge tool.
   are completed of all it holds, written as board 1's watch writes it. A
   removed work item is counted in neither number, a started or a Backlog one
   only in the second, and a Feature without a work item reads `0/0 W`. Every
-  Feature is listed with it, in any bucket of the flow:
+  Feature is listed with it, in any bucket of the flow but Completed:
   `F-0001  1/3 W  <title>`. A removed one alone is listed without it
-  (above).
+  (above), and a completed one with no count, its progress kept in the JSON
+  (S-0134).
 - A Feature takes every operation of a work item, each built: it is added
   and shown, reordered in the queue (Order), started with its first work
   item, its next work item started with the completion of the one before,
@@ -2148,16 +2198,19 @@ development too.
 - The configuration is read at the edge into a value of the model
   (`src/flowgraph/record/config.py`). Reading it is an effect: `run()` takes it as a
   callable, the defaults when none is given, and `main()` reads the file.
-- Only these five keys are built: `git.commit`, `development.enabled`,
-  `development.parallel`, `development.merge` and `development.gate`, each
-  named dotted, its table and its key. The record of flowgraph holds
+- The keys built are the ones `fgraph config show` lists, in its order:
+  `git.commit`, `development.enabled`, `development.parallel`,
+  `development.merge`, `development.gate`, `development.driver`,
+  `development.mode`, `development.branch_max`, `development.approver`,
+  `delivery.push`, `delivery.tag` and `archive.board`, each named dotted, its
+  table and its key. The record of flowgraph holds
   `[development] enabled = true`, no `parallel`, no `merge` and no `gate`.
 - The configuration is shown and set through `fgraph config`, the reading of
   S-0045, so the file is no longer written by hand.
 - `fgraph config show` lists every key, dotted, with its value, one a line,
   `<key> = <value>`. The value is written as the file writes it: `true`, `2`,
   `"squash"`, `"make check"`. A key the file leaves out is listed at its
-  default, so a record without the file lists the five defaults.
+  default, so a record without the file lists the default of each key.
 - A key that holds no value -- `parallel` without a limit, `gate` without a
   command -- is listed as `none`, chosen when S-0045 was built. `none` is no
   value of the file, so the gate `"none"`, listed in its quotes, is not
@@ -2192,11 +2245,16 @@ development too.
   states below: `config.toml` is no file of the work item. In any other work
   tree it is written, held to `main` no more than any write but the start of
   a work item. `fgraph config show` writes nothing and runs anywhere.
-- A key is taken back to its default by setting that default; no unset is
-  built. `git.commit`, `development.enabled` and `development.merge` have a
-  default to set. `development.parallel` and `development.gate` have none:
-  once set they take another value by a set, and are taken back to none only
-  by removing their line from the file.
+- A key is taken back to its default by `fgraph config unset KEY`
+  (`unset_setting`, `src/flowgraph/record/setting.py`): it removes the key
+  from `config.toml`, and a table left with no key with it, so the key reads
+  as its default, and says `unset development.gate = none`, the key with the
+  value it is back to. `development.parallel` and `development.gate` have no
+  default to set: unset they are `none` again, which no set writes. A key the
+  configuration does not have is refused with exit 2 naming it, nothing
+  written. An unset is a write of the record as a set is, committed under
+  `chore: unset development.gate in the record`. Setting the default of a key
+  that has one takes it back too, and writes the key into the file.
 - A set writes the file whole from its keys, so a comment written in it is
   not kept. A `config.toml` that is refused is refused by `fgraph config`
   too, as by every command: it is mended in the file.
@@ -2221,6 +2279,8 @@ held to `main`, and there is no landing:
 | reorder the Backlog | `main` |
 | amend a work item in Backlog | `main` |
 | amend a Feature in Backlog | `main` |
+| amend a started work item, with its deviation | its branch |
+| amend a started Feature, with its deviation | `main` |
 | remove a work item in Backlog | `main` |
 | remove a started or blocked work item | `main`: read from its worktree, its branch and worktree removed or left (S-0148) |
 | remove a Feature in Backlog, with its work items | `main` |
@@ -2849,8 +2909,8 @@ The knowledge lines:
 |---|---|---|---|
 | a Finding, `<day> <text>` | E-018, W-187 | `fgraph note --finding`, its text and the time noted | converted: the day becomes a time |
 | the type of a Finding, `fact`, `open`, `standing` | E-018 | `--standing` or `--open` on `fgraph note`, on a line of any kind; a `fact` is a line with no mark (Attributes) | converted: a `fact` becomes no mark |
-| `supersedes: <ref>` ending a Finding or a Decision | E-018, W-187, W-195 | none (F-0014, S-0103) | lost |
-| the ref of a line, `<item>#<k>`, `#d<k>`, `#v<k>` | `knowledge --search` (c), W-143#d3 in W-143 (c) | none: a line holds no ref | lost |
+| `supersedes: <ref>` ending a Finding or a Decision | E-018, W-187, W-195 | `--supersedes REF` on `fgraph note`, kept on the later line (S-0103) | converted: each ref rewritten as `<id>#<place>` |
+| the ref of a line, `<item>#<k>`, `#d<k>`, `#v<k>` | `knowledge --search` (c), W-143#d3 in W-143 (c) | `<id>#<place>`, the place among every line of the item, no letter per kind (S-0103) | converted |
 | `about: <term>` ending a line, of `[knowledge] terms` | on no item read; ledger E-044 (c); `config show knowledge` (c) | `--about TERM`, of a term the record holds (Terms) | converted: each word a term added first |
 | a Decision, `<day>: <text>` | E-019, W-195 | `--decision` | converted: the day becomes a time |
 | the burn Decision, `burn: ... (stop after 8 hours)` | E-019, W-664 (c) | a decision line; no command reads its stop | converted: the text alone |
@@ -3086,7 +3146,7 @@ Held by every record that holds items:
 | `done.evidence` beyond a bare sha | 4,046, every done item: Epics 104, work items 1,248, Tasks 2,694 | not filed |
 | the type of a Finding | 991 lines: fact 505, open 186, standing 300; g 10 | S-0102 keeps open and standing as the mark of a line, a `fact` is a line with no mark, and a line with no mark is live until a later line supersedes it, the decision of the developer of 2026-11-23 (S-0104) |
 | `supersedes:` ending a line | 593 lines: in Findings 454, Decisions 111, Deviations 28; g 3 | S-0103: "lists the first as superseded by the later" |
-| the ref of a line, `#k`, `#dk`, `#vk` | every knowledge line, 2,711: Findings 991, Decisions 1,213, Deviations 507 | not filed; S-0103 needs one, its form not stated |
+| the ref of a line, `#k`, `#dk`, `#vk` | every knowledge line, 2,711: Findings 991, Decisions 1,213, Deviations 507 | S-0103: `<id>#<place>`, listed by `fgraph knowledge` |
 
 Held by some records:
 
@@ -3194,10 +3254,10 @@ its relations". The decision of what to build is the developer's.
 
 - Before any record converts, held by all six: the write path by files with
   times (S-0107), the old id (S-0106), the criterion link (S-0100, S-0101),
-  the type of a Finding (S-0102) and `supersedes` (S-0103); not
-  filed: the Epic Hypothesis and Outcome, `reasoning`, the Hypothesis of an
-  issue, the expected result of a Check, the evidence beyond its sha, the
-  ref of a knowledge line.
+  the type of a Finding (S-0102), `supersedes` and the ref of a knowledge
+  line (S-0103); not filed: the Epic Hypothesis and Outcome, `reasoning`, the
+  Hypothesis of an issue, the expected result of a Check, the evidence beyond
+  its sha.
 - For some records: the refused states, 309 items in c, cts, st, sm and sv
   (B-0025, part); the rest of the second table, each with its records. On
   top of the first list `gflow` holds 3 issues with no `then`, 9 Tasks with

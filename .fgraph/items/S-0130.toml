@@ -16,6 +16,11 @@ depends_on = [
     "U-0027",
 ]
 
+[verified]
+answer = "yes"
+text = "at 477e492, on a scratch record of five Stories in Backlog: fgraph status and fgraph watch --count 1 each print \"Backlog (5)\", \"> S-0001  title 1\", \"  ... 4 more, 0 can start\", \"InProgress (0)\", \"Completed (0)\"; fgraph status --backlog and fgraph watch --backlog --count 1 each list S-0001 to S-0005 and no more-line"
+on = 2026-11-24 10:30:11+00:00
+
 [criterion]
 given = "a record with five items in the backlog"
 when = "fgraph status and fgraph watch --count 1 are run with no flag, then with the flag that lists the backlog whole"

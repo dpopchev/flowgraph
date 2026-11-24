@@ -46,6 +46,7 @@ the typed edges of the whole record as JSON.
 |                                 | `--amends` the completed one it changes, `fgraph remove` |
 |                                 | `--superseded-by` the one that replaces it               |
 | the wording of a work item      | `fgraph amend` in Backlog: parent too, a Feature's too   |
+| a change once started           | `fgraph amend --deviation`, the part and its line        |
 | the wording of a Task           | `fgraph amend T-0001` in Backlog                         |
 | the complexity of a work item   | `--complexity low`, `medium` or `high`, on add and amend |
 | criterion a work item realizes  | `--realizes N` beside `--parent`, on add and amend       |
@@ -112,7 +113,7 @@ fgraph amend S-0001 --about lane
 fgraph show S-0001          # about  lane, and the line: decision  2026-11-22  a gate runs on main  (about gate, lane)
 fgraph show gate            # gate, with the lines: items  S-0001, knowledge  S-0001  decision  2026-11-22  a gate runs on main
 fgraph knowledge --about gate
-# 2026-11-22  decision  S-0001  a gate runs on main  (about gate, lane)
+# 2026-11-22  decision  S-0001#1  a gate runs on main  (about gate, lane)
 ```
 
 A Story, an Upkeep, a Bug and a Spike carry a complexity, `low`, `medium` or
@@ -1218,13 +1219,13 @@ fgraph config set development.parallel 2
 # fgraph: error: the configuration is not set here: the branch wi/S-0001-raise-the-stories-fgraph writes S-0001 alone
 ```
 
-A key is taken back to its default by setting that default, `fgraph config
-set development.merge merge-commit`: there is no unset. `parallel` and `gate`
-have no default to set, so once set they take another value by a set, and are
-taken back to none only by removing their line from the file. A set writes
-the file whole from its keys, so a comment written in it is not kept. A
-`config.toml` fgraph refuses is refused by `fgraph config` too, as by every
-command, and is mended in the file.
+A key is taken back to its default by `fgraph config unset KEY`, which leaves
+it out of the file, or by setting that default, `fgraph config set
+development.merge merge-commit`, which writes it there. `parallel` and `gate`
+have no default to set: an unset alone takes them back to none. A set or an
+unset writes the file whole from its keys, so a comment written in it is not
+kept. A `config.toml` fgraph refuses is refused by `fgraph config` too, as by
+every command, and is mended in the file.
 
 Start a Story once it has a Task, then start its Tasks one by one. `fgraph
 start` takes a Story id or a Task id, or none, and then the first `fgraph status`
@@ -1598,8 +1599,9 @@ fgraph show S-0001
 ```
 
 `fgraph knowledge` lists the lines of every work item and every Feature of the
-record, the last noted first, each with its date, its kind, the id of its item
-and its text. `--kind` narrows the list to `finding`, `decision` or `deviation`;
+record, the last noted first, each with its date, its kind, the ref of the line
+and its text: the id of its item, `#` and its place among the lines of that
+item, counted from 1 in the order noted, as `S-0001#2`. `--kind` narrows the list to `finding`, `decision` or `deviation`;
 another word exits 2 naming the three. `fgraph knowledge --search TEXT` narrows
 the list to the lines whose text holds the text, whatever the case of either,
 as a part of a word too. `--kind`, `--about` and `--search` narrow the same
@@ -1608,27 +1610,27 @@ line is searched, as it is listed (the decision of a Spike with its answer),
 not the title or the id of its item, its kind or the terms it is about. With
 no such line it prints one line and exits 0; a blank text exits 2. The decision
 of a completed Spike is listed among the decisions at the time the Spike was
-completed, and stays kept on the Spike. A record with no line prints one line
-saying so:
+completed, under the id of the Spike with no ref, and stays kept on the Spike.
+A record with no line prints one line saying so:
 
 ```sh
 fgraph knowledge
-# 2026-11-24  deviation  S-0001  the second Task was dropped
+# 2026-11-24  deviation  S-0001#3  the second Task was dropped
 # 2026-11-23  decision  Q-0001  one file per work item (answer yes)
-# 2026-11-22  decision  F-0001  the budget is agreed
-# 2026-11-22  decision  S-0001  keep one store
-# 2026-11-22  finding  S-0001  the file holds the lines in the order noted
+# 2026-11-22  decision  F-0001#1  the budget is agreed
+# 2026-11-22  decision  S-0001#2  keep one store
+# 2026-11-22  finding  S-0001#1  the file holds the lines in the order noted
 
 fgraph knowledge --kind decision
 # 2026-11-23  decision  Q-0001  one file per work item (answer yes)
-# 2026-11-22  decision  F-0001  the budget is agreed
-# 2026-11-22  decision  S-0001  keep one store
+# 2026-11-22  decision  F-0001#1  the budget is agreed
+# 2026-11-22  decision  S-0001#2  keep one store
 
 fgraph knowledge --kind finding
-# 2026-11-22  finding  S-0001  the file holds the lines in the order noted
+# 2026-11-22  finding  S-0001#1  the file holds the lines in the order noted
 
 fgraph knowledge --search STORE
-# 2026-11-22  decision  S-0001  keep one store
+# 2026-11-22  decision  S-0001#2  keep one store
 
 fgraph knowledge --search budget --kind finding
 # no finding lines holding 'budget' in the record
@@ -1639,6 +1641,22 @@ an id the record does not hold, a blank text and a note with none or more than o
 started work item is noted in its worktree, as its Tasks are written, and every
 other one, a Feature too, on `main`; the branch of a work item writes that work
 item alone, so a Feature is not noted there.
+A later line supersedes an earlier one with `--supersedes REF`, once per line
+it supersedes, by the ref `fgraph knowledge` lists, of the same item or of any
+other. The later line keeps the refs and the earlier one is left as written;
+`fgraph show` ends the superseded line with the refs of the lines that
+supersede it, as `(superseded by S-0001#2)`. A ref that names no line exits 2 and writes nothing, with
+`--supersedes names S-0001#9, which is no knowledge line of the record: fgraph
+knowledge lists each line with its ref`:
+
+```sh
+fgraph note S-0001 --decision "keep one file per item" --supersedes S-0001#2
+# noted S-0001
+
+fgraph show S-0001
+# ...
+#   decision  2026-11-22  keep one store  (superseded by S-0001#4)
+```
 
 A completed Story, Bug or Upkeep is closed on a question: does its criterion
 hold on `main`? The run of the criterion is the agent's; `fgraph verify` keeps
@@ -1772,8 +1790,9 @@ are, and refused on main naming that worktree. No Task of a blocked work item
 moves: its start, complete, block and unblock exit 2 naming the block, `T-0001
 cannot start: S-0001 is blocked, waiting on developer: unblock it first`,
 while a Task is still added to it and a line still noted. Its start, complete,
-hand and landing exit 2 with `S-0001 is blocked: unblock it first`, its amend
-and its remove with `S-0001 is blocked`, and it counts against
+hand and landing exit 2 with `S-0001 is blocked: unblock it first`, its remove
+with `S-0001 is blocked`, its amend being taken with `--deviation` as for a
+started one, and it counts against
 `development.parallel` as a started one does. A block exits 2 when the work
 item is in Backlog, blocked already, completed or removed, or the reason or
 what it waits on is blank; an unblock when it is not blocked. `fgraph unblock
@@ -2149,7 +2168,8 @@ fgraph status --backlog
 The progress, `0/1 W`, is the work items of the Feature completed of all it
 holds: one of three completed reads `1/3 W`, so two are still to be done. A
 removed work item is counted in neither number, and a Feature without a work
-item reads `0/0 W`.
+item reads `0/0 W`. A Feature under Completed is listed with its commit and no
+count of its work items.
 
 A Feature holds a place of its own in the Backlog: it joins the end when it
 is added, after the work items and the Features `fgraph reorder` placed and
@@ -2309,7 +2329,7 @@ fgraph status
 # > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (0)
 # Completed (1)
-#   F-0001  1/1 W  677f9b0  Raise the kinds of work a project tracks with fgraph from 1 to 5
+#   F-0001  677f9b0  Raise the kinds of work a project tracks with fgraph from 1 to 5
 
 fgraph show F-0001
 # F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
@@ -2325,10 +2345,10 @@ fgraph show F-0001
 The Feature holds the commit of that completion as its evidence, and none
 when the work item is completed without one, as with the development off:
 `completed S-0001`, then `completed F-0001`, and the line of the Feature is
-`F-0001  1/1 W  <title>`. The line of a completed Feature is its id, its
-progress, its commit and its title: the progress stays right after the id, as
-on its line in any bucket, and the commit stands before the title, as on the
-line of a completed work item. It is placed under Completed by its completed
+`F-0001  677f9b0  <title>`. The line of a completed Feature is its id, its
+commit and its title, with no count of its work items: the commit stands right
+after the id, as the commit of a completed work item stands before its title.
+It is placed under Completed by its completed
 time, and its completed work items stay within it: counted in its progress,
 listed by `fgraph show F-0001`, on no line of `fgraph status`. The Feature
 and the work item are completed in one commit of the record, `chore: complete
@@ -2688,7 +2708,7 @@ fgraph status
 #   S-0003  1/3 T  Raise the kinds of work item fgraph adds from 2 to 3
 # Completed (3)
 #   U-0002  757fbaf  Cut the lines one kind of work item holds from 885 to 250
-#   F-0001  1/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
+#   F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #   S-0002  87c0307  Raise the kinds of work item fgraph adds from 1 to 2
 ```
 
@@ -2788,8 +2808,29 @@ fgraph show S-0002
 `--title`, `--description`, `--given` and `--when` rewrite the other parts,
 several in one call when given together; `--description ""` clears the
 description. An amend exits 2 and names why when it names no part, when the
-title or a part of the criterion is blank, when the work item is started or
-completed already, or when the record does not hold it.
+title or a part of the criterion is blank, when the work item is completed or
+removed already, or started and given no deviation, or when the record does not
+hold it.
+
+Once started, or blocked, a work item is amended with `--deviation TEXT`, the
+change to what it was agreed to do: the part is rewritten and the text kept as
+one deviation line in the same write and the same commit. `--complexity`,
+`--parent` and `--depends-on` stay of the Backlog alone, and `--deviation` given
+for a work item in Backlog is refused. With the development on it is run in the
+worktree of the work item, and on main it is refused naming that worktree:
+
+```sh
+fgraph amend S-0002 --then "fgraph status lists both kinds and their count" --deviation "the count was asked for"
+# amended S-0002
+
+fgraph show S-0002
+# ...
+# Knowledge (1)
+#   deviation  2026-11-24  the count was asked for
+
+fgraph amend S-0002 --then "fgraph status lists both kinds"
+# fgraph: error: S-0002 is started: amend it with --deviation TEXT, what changes in what it was agreed to do
+```
 
 `--parent` puts a work item in Backlog under a Feature, and with the word
 `none` takes it out of the one it is under, to stand alone; it is given alone
@@ -2877,8 +2918,9 @@ writes nothing and names why:
 - when the title or a criterion is blank;
 - when it is given an option of a work item: `--given`, `--when`, `--then`,
   `--observed`, `--expected`, `--hypothesis` or `--parent`;
-- when the Feature is started, blocked or completed: only one in Backlog is
-  amended, as only a work item in Backlog is;
+- when the Feature is completed or removed;
+- when the Feature is started or blocked and given no `--deviation`, taken as
+  for a work item;
 - when the record does not hold it.
 
 `--criterion` given to a work item is refused the same way: only a Feature
@@ -2889,7 +2931,7 @@ fgraph amend F-0001 --then "fgraph status lists it under Backlog"
 # fgraph: error: F-0001 has no then: a Feature is amended by its title, its description and its criteria
 
 fgraph amend F-0001 --title "Raise the kinds of work a project tracks with fgraph from 1 to 4"
-# fgraph: error: F-0001 is started already
+# fgraph: error: F-0001 is started: amend it with --deviation TEXT, what changes in what it was agreed to do
 
 fgraph amend S-0002 --criterion "a developer adds every kind of work"
 # fgraph: error: S-0002 has no criteria: only a Feature states them

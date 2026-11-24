@@ -482,8 +482,8 @@ of work item. The developer said so on 2026-11-21.
   column of its line, beside `=`, `~`, `!` and `=>`, alone in InProgress or under a
   started Feature, with the development on or off, and `fgraph watch` shows it the same.
   The marks are `=`, `@`, `~`, `!` and `=>`, the set the developer chose on 2026-11-23 from
-  three (S-0139): `>` at the start of a line pasted into Markdown opens a quote and `?` is
-  special in a search by a regular expression, and these five are neither; the JSON carries
+  three (S-0139): a greater-than sign at the start of a line pasted into Markdown opens a quote and a
+  question mark is special in a search by a regular expression, and these five are neither; the JSON carries
   `can_start` and `ready_for_review` and no mark, so a client that reads it is not touched.
   It is read from the rows as status reads them, from the worktree of the work item with
   the development on, derived at each listing and kept in no file, so no field of a row

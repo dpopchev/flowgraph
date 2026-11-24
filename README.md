@@ -532,9 +532,9 @@ would take, a work item that waits for nothing or a Feature whose first work
 item waits for nothing, which takes one place. With `parallel = 3` and one work
 item started, two lines are marked `=` (S-0003 and S-0004 below: S-0002 waits for
 S-0004, and the limit leaves out S-0005). The marks are `=`, `@`, `~`, `!` and `=>`, the set
-the developer chose on 2026-11-23 from three (S-0139): `>` at the start of a line pasted into
-Markdown opens a quote and `?` is special in a search by a regular expression, and these five
-are neither. With `parallel` left out
+the developer chose on 2026-11-23 from three (S-0139): a greater-than sign at the start of a line
+pasted into Markdown opens a quote and a question mark is special in a search by a regular
+expression, and these five are neither. With `parallel` left out
 every one that waits for nothing is marked; with the development off the next to
 start alone, as before. With the development on a line is marked only once
 planned: a work item holds a Task, and a Feature's work items in Backlog each

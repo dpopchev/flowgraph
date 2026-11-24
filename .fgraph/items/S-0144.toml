@@ -13,6 +13,11 @@ depends_on = [
     "U-0025",
 ]
 
+[verified]
+answer = "yes"
+text = "at 8fa08bc on main, the merge of wi/S-0144-raise-the-tasks-in, in a throwaway repository with the development on, S-0001 started in its worktree holding T-0001 started and T-0002 in Backlog: fgraph amend T-0002 --title new two --check make lint in the worktree exit 0 printed amended T-0002 of S-0001, committed as chore: amend T-0002 of S-0001 in the record; fgraph show lists T-0002 with the new title and check and the output and description it had; fgraph amend T-0001 --title x exit 2 printed fgraph: error: T-0001 is started already, the head of the branch unchanged; on main the amend of T-0002 exit 2 names the worktree its Tasks are written in. make check on the branch with main merged at 0577c49: 4429 passed, all checks passed; with main merged again at d733262, the tree of the landing, which adds S-0128: the 426 tests either side brought and those of the parser passed, ruff, pyright and make lines clean. Handed whole to one subagent on sonnet. It stopped before any change: the check of T-0544 asked src/flowgraph/parser/item_commands.py for 215 lines or fewer, which its move could not reach; on the word of the developer of 2026-11-24 T-0544 was removed and T-0633 added with the bound 217, worked first. Its deviations: amended() refuses a removed Task too, T-0001 is removed already, with one test row, a state S-0147 added after the Tasks were written, on the word of the coordinator; one test appended to tests/work_item/test_work_item_amend.py with a shell heredoc, against the rule of Edit and Write alone; output and check sit after realizes in Amendment. Seen by it and not run: what fgraph amend of a Task prints when given --depends-on. src/flowgraph/parser/item_commands.py holds 189 lines on main, src/flowgraph/parser/command.py 236."
+on = 2026-11-24 07:24:07+00:00
+
 [criterion]
 given = "a work item that holds a Task in Backlog and a started Task"
 when = "fgraph amend of the Task in Backlog is run with a new title, output, check or description, and fgraph amend of the started Task"

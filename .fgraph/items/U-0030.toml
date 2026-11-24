@@ -1,0 +1,16 @@
+id = "U-0030"
+state = "backlog"
+title = "Cut the places in src/flowgraph that write a knowledge line as JSON from three to one"
+description = "Found on 2026-11-24 while the Tasks of F-0018 were written: its three Stories are built side by side on three branches, so each writes the JSON of a knowledge line itself. Filed at the end of the Backlog, outside Phase 1. Its Tasks are written when it is ordered."
+complexity = "low"
+created = 2026-11-24 21:53:10+00:00
+depends_on = [
+    "S-0154",
+    "S-0155",
+    "S-0156",
+]
+
+[criterion]
+given = "main after S-0154, S-0155 and S-0156, where fgraph show, fgraph knowledge and fgraph about each write the JSON of a knowledge line in a module of its own"
+when = "fgraph show, fgraph knowledge and fgraph about are run with --format json on a record holding knowledge lines"
+then = "each prints the bytes it printed before, the line written by one function, and make check passes"

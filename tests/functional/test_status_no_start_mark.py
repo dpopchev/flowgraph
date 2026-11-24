@@ -21,8 +21,6 @@ from flowgraph.cli import open_files, open_git, read_config, run
 
 pytestmark = pytest.mark.functional
 
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0152: the line that can start is marked =")
-
 START = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 BLOCK = ["block", "S-0004", "--reason", "no key", "--waiting-on", "developer"]
@@ -165,7 +163,6 @@ class TestAStoryThatCanStartWithTheDevelopmentOn:
     def listed(self, tmp_path: Path) -> Outcome:
         return after_on(tmp_path, WITH_CHECKED_TASK, ["status", "--backlog"])
 
-    @XFAIL
     def test_its_line_begins_with_two_spaces_and_its_id(self, listed: Outcome) -> None:
         assert line_of(listed.out, "S-0001").startswith("  S-0001")
 
@@ -175,7 +172,6 @@ class TestAStoryWithNoTask:
     def listed(self, tmp_path: Path) -> Outcome:
         return after(tmp_path, NO_TASK, ["status", "--backlog"])
 
-    @XFAIL
     def test_its_line_begins_with_two_spaces_and_its_id(self, listed: Outcome) -> None:
         assert line_of(listed.out, "S-0001").startswith("  S-0001")
 
@@ -185,7 +181,6 @@ class TestAFeatureInBacklog:
     def listed(self, tmp_path: Path) -> Outcome:
         return after(tmp_path, FEATURE_IN_BACKLOG, ["status", "--backlog"])
 
-    @XFAIL
     def test_its_line_begins_with_two_spaces_and_its_id(self, listed: Outcome) -> None:
         assert line_of(listed.out, "F-0001").startswith("  F-0001")
 
@@ -195,7 +190,6 @@ class TestAWorkItemInBacklogUnderAStartedFeature:
     def listed(self, tmp_path: Path) -> Outcome:
         return after_on(tmp_path, STARTED_FEATURE, ["status"])
 
-    @XFAIL
     def test_its_line_is_two_columns_in_and_begins_with_two_spaces(self, listed: Outcome) -> None:
         assert line_of(listed.out, "S-0002").startswith("    S-0002")
 
@@ -205,7 +199,6 @@ class TestWatchOfAStoryThatCanStart:
     def watched(self, tmp_path: Path) -> Outcome:
         return after(tmp_path, WITH_TASK, ["watch", "--backlog", "--count", "1"])
 
-    @XFAIL
     def test_its_line_begins_with_two_spaces_and_its_id(self, watched: Outcome) -> None:
         assert line_of(watched.out, "S-0001").startswith("  S-0001")
 

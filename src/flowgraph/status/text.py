@@ -30,8 +30,8 @@ def status_text(
     Removed stands apart from the flow: its heading is listed only when an item is removed. A
     Feature is one item of its bucket, listed among the work items in the order given. Under a
     top, each heading having its own, it lists that many of its items, the first ones given,
-    then how many more it holds; its count stays that of all of them. A line marked `=` as able
-    to start that the top leaves out is listed after it in InProgress; in the Backlog it is counted
+    then how many more it holds; its count stays that of all of them. A line that can
+    start that the top leaves out is listed after it in InProgress; in the Backlog it is counted
     in the more-line, `... N more, M can start`, and not listed. Only the buckets named in
     `buckets` are listed, heading and items; none lists every bucket.
     """

@@ -170,7 +170,7 @@ class TestAStartedStoryRemovedOnMain:
     def test_status_on_main_lists_it_under_removed(self, removed: Outcome, checkout: Path) -> None:
         assert fgraph(["status"], checkout).out == (
             "backlog (1)\n"
-            "= S-0002  [1 T]  another title\n"
+            "  S-0002  [1 T]  another title\n"
             "in-progress (0)\n"
             "completed (0)\n"
             "removed (1)\n"

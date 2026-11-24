@@ -195,7 +195,7 @@ def command_said(
     The directory fgraph runs in, cwd, is where the path of fgraph about a file is taken from.
 
     The checks of the command run first, in check_command, before its write is made. A start
-    given no id takes the first fgraph status marks, read before those checks.
+    given no id takes the first line of the Backlog that can start, read before those checks.
 
     A write is committed once it is made. The lines of status are cut to the width, when there
     is one. The configuration says whether a start branches, how many work items are started at

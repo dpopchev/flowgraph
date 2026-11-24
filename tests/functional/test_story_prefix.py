@@ -60,7 +60,7 @@ class TestAStoryAddedToARecordWithNoItems:
 
     def test_status_lists_it_as_s_0001_under_backlog(self, added: Outcome, tmp_path: Path) -> None:
         assert fgraph(["status"], tmp_path).out == (
-            "backlog (1)\n= S-0001  []  a story title\nin-progress (0)\ncompleted (0)\n"
+            "backlog (1)\n  S-0001  []  a story title\nin-progress (0)\ncompleted (0)\n"
         )
 
     def test_the_story_is_kept_in_the_file_of_its_s_id(

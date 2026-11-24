@@ -26,7 +26,7 @@ BACKLOG = "backlog"
 
 @dataclass(frozen=True)
 class NextOnly:
-    """The development is off: the next to start is the one line marked."""
+    """The development is off: the next to start is the one line."""
 
 
 @dataclass(frozen=True)
@@ -39,12 +39,12 @@ class Within:
 
 @dataclass(frozen=True)
 class NoLimit:
-    """The development is on and limits nothing: every line that waits for nothing is marked."""
+    """The development is on and limits nothing: every line that waits for nothing can start."""
 
     driver: Driver = Driver.DEVELOPER
 
 
-# How many lines status marks as able to start now.
+# How many lines can start now.
 type StartLimit = NextOnly | Within | NoLimit
 
 # The one value of the next to start alone, the default of a view.

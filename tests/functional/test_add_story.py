@@ -80,7 +80,7 @@ class TestAStoryAddedToARecordWithNoItems:
 
     def test_status_lists_it_under_backlog(self, added: tuple[Outcome, Outcome]) -> None:
         assert added[1].out == (
-            "backlog (1)\n= S-0001  []  a title\nin-progress (0)\ncompleted (0)\n"
+            "backlog (1)\n  S-0001  []  a title\nin-progress (0)\ncompleted (0)\n"
         )
 
 

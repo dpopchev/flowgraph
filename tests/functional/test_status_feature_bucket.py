@@ -63,7 +63,7 @@ def test_status_lists_the_story_then_the_feature_with_its_progress_and_neither_s
     listed = status_after(tmp_path, ADD_ALONE, ADD_FEATURE, ADD_STORY, ADD_OTHER)
     assert listed.out == (
         "backlog (2)\n"
-        "= S-0001  []  a title that stands alone\n"
+        "  S-0001  []  a title that stands alone\n"
         "  F-0001  0/2 W  a feature title\n"
         "in-progress (0)\n"
         "completed (0)\n"

@@ -5,7 +5,7 @@ from collections.abc import Callable
 
 from flowgraph.parser.base import Commands, new_command
 
-# The id of the top of the Backlog, read anew; it raises the refusal of a start when none is marked.
+# The id of the top of the Backlog, read anew; it raises the refusal of a start when none can start.
 Top = Callable[[], str]
 
 
@@ -25,7 +25,7 @@ def start_command(commands: Commands) -> argparse.ArgumentParser:
         nargs="?",
         help=(
             "the id of the work item, of the Task or of the Feature; left out, the first"
-            " fgraph status marks as able to start"
+            " line of the Backlog that can start"
         ),
     )
     start.add_argument(

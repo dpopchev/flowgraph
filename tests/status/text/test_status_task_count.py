@@ -49,7 +49,7 @@ def test_one_that_waits_keeps_its_mark_and_its_words_around_the_brackets() -> No
 
 
 def test_the_next_to_start_keeps_its_mark_before_the_brackets() -> None:
-    assert lines(backlog(0, marked=True))[1] == "= S-0001  []  a title"
+    assert lines(backlog(0, marked=True))[1] == "  S-0001  []  a title"
 
 
 def test_a_completed_work_item_with_no_commit_reads_as_before() -> None:
@@ -69,4 +69,4 @@ def test_a_work_item_marked_under_a_started_feature_reads_its_brackets_two_colum
     feature = FeatureRow(
         "F-0001", "a feature", "in-progress", 0, 1, work_items=[row], is_started=True
     )
-    assert "  = S-0003  [1 T]  a title" in status_text([feature]).splitlines()
+    assert "    S-0003  [1 T]  a title" in status_text([feature]).splitlines()

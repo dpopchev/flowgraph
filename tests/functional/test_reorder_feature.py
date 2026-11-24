@@ -78,7 +78,7 @@ class TestAFeaturePutBeforeAStoryAddedBeforeIt:
         assert fgraph(["status", "--backlog"], tmp_path, START + timedelta(minutes=1)).out == (
             "backlog (2)\n"
             "  F-0001  0/0 W  a feature title\n"
-            "= S-0001  []  a title that stands alone\n"
+            "  S-0001  []  a title that stands alone\n"
             "in-progress (0)\n"
             "completed (0)\n"
         )

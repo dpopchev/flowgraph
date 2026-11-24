@@ -118,7 +118,7 @@ def test_a_feature_amended_keeps_the_place_the_queue_gave_it(tmp_path: Path) -> 
     assert listed.splitlines()[:3] == [
         "backlog (2)",
         "  F-0001  0/0 W  another title",
-        "= S-0001  []  a title",
+        "  S-0001  []  a title",
     ]
 
 

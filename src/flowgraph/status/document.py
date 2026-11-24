@@ -3,7 +3,7 @@
 A second formatter of the rows `flowgraph.status.view` lists, beside the text: no fact is
 computed here. The document holds `buckets`, each with its `name`, its `count` and every one of
 its `items`, in the order of the flow and of the rows given, and `next_to_start`, the id of the
-line marked as such or null. A work item holds its `id`, `kind`, `title`, `state`, `commit`,
+line that can start first, or null. A work item holds its `id`, `kind`, `title`, `state`, `commit`,
 `reason` and `superseded_by` (null while empty), `progress` (its Tasks `completed` of `total`,
 counting no removed Task), its `tasks` and the ids it `waits_for`. A work item holds its
 `complexity` too, the word or null, and its `agent`, the name or null. A work item holds its
@@ -14,7 +14,7 @@ A Feature holds its `id`, `kind`, `title`, `commit`, `reason`,
 `progress` (its work items `completed` of `total`), the ids its first work item `waits_for`, its
 `block` -- the `reason` and what it is `waiting_on`, or null -- and its `work_items`: every work
 item under it, in any state, shaped as a work item of a bucket, in the order `fgraph show` of
-the Feature lists them. `can_start` lists the ids of every line marked as able to start now, in
+the Feature lists them. `can_start` lists the ids of every line that can start now, in
 order, and `next_to_start` is the first of them. `ready_for_review` lists the ids of the work
 items marked `@` in the text, in the order it lists them.
 """

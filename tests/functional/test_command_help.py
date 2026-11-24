@@ -108,7 +108,7 @@ class TestTheHelpOfStartInAnyDirectory:
         positional = helped.out.split("options:")[0].split("positional arguments:")[-1]
         assert " ".join(positional.split()) == (
             "ID the id of the work item, of the Task or of the Feature; left out, the first"
-            " fgraph status marks as able to start"
+            " line of the Backlog that can start"
         )
 
     def test_says_the_slug_names_the_branch_of_a_work_item_or_of_the_first_of_a_feature(

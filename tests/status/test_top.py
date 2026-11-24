@@ -1,4 +1,4 @@
-"""The top of the Backlog: the first line status marks, or the refusal naming why none is marked."""
+"""The top of the Backlog: the first line that can start, or the refusal naming why none can."""
 
 import re
 from dataclasses import replace

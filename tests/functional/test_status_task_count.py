@@ -87,7 +87,7 @@ def test_status_backlog_lists_the_count_of_tasks_in_brackets(tmp_path: Path) -> 
     listed = after(tmp_path, HELD, ["status", "--backlog"])
     assert listed.out.splitlines()[:3] == [
         "backlog (2)",
-        "= S-0001  [3 T]  title 1",
+        "  S-0001  [3 T]  title 1",
         "  S-0002  []  title 2",
     ]
 
@@ -95,7 +95,7 @@ def test_status_backlog_lists_the_count_of_tasks_in_brackets(tmp_path: Path) -> 
 def test_a_plain_status_lists_the_count_of_tasks_in_brackets(tmp_path: Path) -> None:
     listed = after(tmp_path, HELD, ["status"])
     assert listed.out.splitlines()[1:3] == [
-        "= S-0001  [3 T]  title 1",
+        "  S-0001  [3 T]  title 1",
         "  ... 1 more, 0 can start",
     ]
 
@@ -104,7 +104,7 @@ def test_watch_lists_the_count_of_tasks_in_brackets(tmp_path: Path) -> None:
     listed = after(tmp_path, HELD, ["watch", "--backlog", "--count", "1"])
     assert listed.out.splitlines()[:3] == [
         "backlog (2)",
-        "= S-0001  [3 T]  title 1",
+        "  S-0001  [3 T]  title 1",
         "  S-0002  []  title 2",
     ]
 
@@ -116,7 +116,7 @@ def test_a_line_that_waits_keeps_its_mark_and_its_words(tmp_path: Path) -> None:
 
 def test_a_feature_keeps_its_count_of_work_items_and_gains_no_brackets(tmp_path: Path) -> None:
     listed = after(tmp_path, UNDER, ["status"])
-    assert "= F-0001  0/1 W  a feature title" in listed.out.splitlines()
+    assert "  F-0001  0/1 W  a feature title" in listed.out.splitlines()
 
 
 def test_a_started_work_item_reads_as_before(tmp_path: Path) -> None:

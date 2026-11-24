@@ -109,11 +109,6 @@ def git(cwd: Path, *args: str) -> str:
     return done.stdout.strip()
 
 
-def marked(out: str) -> list[str]:
-    """The ids of the lines marked `=`, in the order written."""
-    return [line.split()[1] for line in out.splitlines() if line.startswith("= ")]
-
-
 @pytest.fixture(autouse=True)
 def environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """The identity of every commit from the environment, and no git config of the machine."""
@@ -138,13 +133,6 @@ def checkout(tmp_path: Path) -> Path:
     for argv in RECORD:
         fgraph(argv, path)
     return path
-
-
-class TestStatusAsText:
-    def test_the_planned_work_item_and_the_planned_feature_are_marked_alone(
-        self, checkout: Path
-    ) -> None:
-        assert marked(fgraph(["status", "--backlog"], checkout).out) == ["S-0002", "F-0003"]
 
 
 class TestStatusAsJson:

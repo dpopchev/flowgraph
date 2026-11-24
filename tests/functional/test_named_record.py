@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from flowgraph.cli import open_files, open_git, read_config, run
+from flowgraph.cli import open_files, open_git, read_config, record_named, run
 
 pytestmark = pytest.mark.functional
 
@@ -41,9 +41,6 @@ DEVELOPMENT_ON = "[development]\nenabled = true\n"
 LINE = (
     "fgraph: error: git config fgraph.record names {}, which is no directory"
     " -- run fgraph init, or name another with git config fgraph.record PATH"
-)
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="S-0128: fgraph reads no key of the git configuration"
 )
 IDENTITY = {
     "GIT_AUTHOR_NAME": "a developer",
@@ -78,6 +75,7 @@ def fgraph(argv: Sequence[str], cwd: Path) -> Outcome:
         load_config=read_config,
         run_check=lambda command, directory: 0,
         make_dir=Path.mkdir,
+        find_named=record_named,
     )
     return Outcome(status, "".join(out), "".join(err))
 
@@ -159,39 +157,32 @@ def worktree(tmp_path: Path) -> Path:
 
 
 class TestARecordInTheFolderTheKeyNames:
-    @XFAIL
     def test_status_with_no_dir_prints_what_status_of_the_folder_prints(self, named: Path) -> None:
         by_dir = fgraph(["--dir", str(named / NAMED), "status"], named)
         outcome = fgraph(["status"], named)
         assert (outcome.status, outcome.out) == (0, by_dir.out)
 
-    @XFAIL
     def test_status_from_a_subdirectory_prints_the_same(self, named: Path) -> None:
         (named / "src").mkdir()
         by_dir = fgraph(["--dir", str(named / NAMED), "status"], named)
         outcome = fgraph(["status"], named / "src")
         assert (outcome.status, outcome.out) == (0, by_dir.out)
 
-    @XFAIL
     def test_the_help_names_the_folder(self, named: Path) -> None:
         assert fgraph([], named).out.endswith(f"record: {named / NAMED}\n")
 
-    @XFAIL
     def test_the_help_names_the_folder_with_a_fgraph_folder_beside_it(self, named: Path) -> None:
         (named / ".fgraph").mkdir()
         assert fgraph([], named).out.endswith(f"record: {named / NAMED}\n")
 
-    @XFAIL
     def test_show_finds_the_story(self, named: Path) -> None:
         outcome = fgraph(["show", "S-0001"], named)
         assert (outcome.status, outcome.out.splitlines()[0][:6]) == (0, "S-0001")
 
-    @XFAIL
     def test_add_writes_the_item_in_the_folder(self, named: Path) -> None:
         fgraph(ADD_OTHER, named)
         assert (named / NAMED / "items" / "S-0002.toml").is_file()
 
-    @XFAIL
     def test_add_leaves_no_commit(self, named: Path) -> None:
         outcome = fgraph(ADD_OTHER, named)
         assert (outcome.status, git(named, "rev-list", "--count", "HEAD")) == (0, "1")
@@ -211,7 +202,6 @@ class TestAKeyThatNamesNoDirectory:
         git(repository, "config", "fgraph.record", "missing")
         return repository
 
-    @XFAIL
     def test_status_exits_with_two_naming_the_key_and_the_path(self, missing: Path) -> None:
         outcome = fgraph(["status"], missing)
         assert (outcome.status, outcome.err.splitlines()[-1]) == (
@@ -219,7 +209,6 @@ class TestAKeyThatNamesNoDirectory:
             LINE.format(missing / "missing"),
         )
 
-    @XFAIL
     def test_status_exits_with_two_though_a_fgraph_folder_is_beside_it(self, missing: Path) -> None:
         (missing / ".fgraph").mkdir()
         outcome = fgraph(["status"], missing)
@@ -235,12 +224,10 @@ class TestInitWithTheKeySet:
         git(repository, "config", "fgraph.record", NAMED)
         return repository
 
-    @XFAIL
     def test_init_names_the_folder_it_makes(self, keyed: Path) -> None:
         outcome = fgraph(["init"], keyed)
         assert (outcome.status, outcome.out) == (0, f"record: {keyed / NAMED}\n")
 
-    @XFAIL
     def test_init_makes_the_record_in_the_folder_and_no_fgraph_folder(self, keyed: Path) -> None:
         fgraph(["init"], keyed)
         assert ((keyed / NAMED / "config.toml").is_file(), (keyed / ".fgraph").exists()) == (
@@ -248,7 +235,6 @@ class TestInitWithTheKeySet:
             False,
         )
 
-    @XFAIL
     def test_init_refuses_a_folder_that_is_there(self, named: Path) -> None:
         outcome = fgraph(["init"], named)
         assert (outcome.status, outcome.err.splitlines()[-1]) == (
@@ -258,7 +244,6 @@ class TestInitWithTheKeySet:
 
 
 class TestAStartOnARecordNamedAndIgnored:
-    @XFAIL
     def test_start_makes_its_branch(self, developed: Path, tmp_path: Path) -> None:
         outcome = fgraph(["start", "S-0001"], developed)
         assert (outcome.status, outcome.out) == (
@@ -266,7 +251,6 @@ class TestAStartOnARecordNamedAndIgnored:
             f"started S-0001\nbranch {BRANCH} in {tmp_path / WORKTREE}\n",
         )
 
-    @XFAIL
     def test_status_in_the_worktree_exits_with_two_naming_the_folder_there(
         self, developed: Path, worktree: Path
     ) -> None:
@@ -283,14 +267,12 @@ class TestAStartOnARecordNamedAndTracked:
     def started(self, tracked: Path) -> Outcome:
         return fgraph(["start", "S-0001"], tracked)
 
-    @XFAIL
     def test_show_reads_its_own_copy_in_the_worktree(
         self, started: Outcome, worktree: Path
     ) -> None:
         outcome = fgraph(["show", "S-0001"], worktree)
         assert (outcome.status, outcome.out.splitlines()[0][:6]) == (0, "S-0001")
 
-    @XFAIL
     def test_a_task_is_started_in_the_worktree(self, started: Outcome, worktree: Path) -> None:
         outcome = fgraph(["start", "T-0001"], worktree)
         assert (outcome.status, outcome.out) == (0, "started T-0001 of S-0001\n")

@@ -9,6 +9,7 @@ from flowgraph.criterion import (
     EmptyPartError,
 )
 from flowgraph.development import GateError, GitError, SlugError
+from flowgraph.development.commit_held import CommitNotHeldError
 from flowgraph.development.driver import NoComplexityError
 from flowgraph.development.parallel import ParallelError
 from flowgraph.development.release import ReleaseError
@@ -95,6 +96,7 @@ REFUSED = (
     OutOfScopeError,
     CommitError,
     CommitNeededError,
+    CommitNotHeldError,
     EmptyPartError,
     CriterionError,
     DecisionError,

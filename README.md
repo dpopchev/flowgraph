@@ -1316,7 +1316,8 @@ fgraph start T-0002
 
 Complete each Task with the commit that holds its work, then the Story with
 the commit on `main` that holds it. `--commit` is a sha of 7 to 40 hex digits;
-`fgraph` does not look it up in git yet:
+with the development on `fgraph` looks it up in git, and with it off it is kept
+as given:
 
 ```sh
 fgraph complete T-0001 --commit 3e9ae5c
@@ -1335,8 +1336,8 @@ fgraph status
 `fgraph show` names the commit of the Story and of each completed Task. A
 complete exits 2 and names why when the item is still in Backlog, when a
 Story has Tasks not completed, when the item is completed already, when the
-commit is no sha, or when the record does not hold it. A completed Story takes
-no new Task.
+commit is no sha, or, with the development on, when the repository does not hold
+the commit. A completed Story takes no new Task.
 
 The commit is the evidence of the development: the work beside the record
 that the item is completed with. So `fgraph complete` needs `--commit` with
@@ -1346,6 +1347,9 @@ the option and the key:
 ```sh
 fgraph complete T-0001
 # fgraph: error: T-0001 is completed with --commit: the development is on, development.enabled = true
+
+fgraph complete T-0001 --commit c6e0f15
+# fgraph: error: T-0001 cannot complete: the repository holds no commit c6e0f15
 ```
 
 With the development off there is no such work to name, and `fgraph complete`
@@ -1378,8 +1382,8 @@ fgraph show S-0001
 #     expected output  changed: src/flowgraph/cli.py gains the show command
 ```
 
-A `--commit` given with the development off is still kept as the evidence,
-and status and show list it. The file of an item completed without a commit
+A `--commit` given with the development off is still kept as the evidence, not
+looked up, and status and show list it. The file of an item completed without a commit
 holds no `commit` key.
 
 A work item keeps what the work learned as lines of knowledge. `fgraph note`

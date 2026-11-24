@@ -982,8 +982,20 @@ commit, a Task as a work item.
 - `fgraph complete` needs `--commit` with the development on, of a Task as of
   a work item: without it, it exits 2 naming `--commit` and the key,
   `development.enabled`, and nothing is saved.
+- With the development on and the record inside a git work tree, a record git
+  ignores included, the commit given is asked of git as
+  `git rev-parse --verify <sha>^{commit}`: a sha, whole or abbreviated, that
+  names one commit of the repository is held, on `main`, on another branch or
+  on none. A sha git does not know, the sha of an object that is no commit, as
+  a tree, and an abbreviation several commits share exit 2 with the line
+  `fgraph: error: T-0001 cannot complete: the repository holds no commit c6e0f15`,
+  nothing is saved and no check of the Task is run. A Task is refused as a work
+  item is; `fgraph land` writes its own merge commit and is not asked. The
+  check is `src/flowgraph/development/commit_held.py`.
 - With the development off `fgraph complete` takes none, and a `--commit`
-  given is still kept as the evidence.
+  given is still kept as the evidence. The commit given is not looked up, and a
+  record outside a git work tree is not asked either, so a record whose shas
+  come from elsewhere completes.
 - The evidence is a value of its own in the model, a commit or none (`Commit`
   or `NoCommit`, `src/flowgraph/criterion/model.py`): no commit is a value of the
   evidence, not a missing one, as standing alone is a value of `parent`.
@@ -1021,8 +1033,8 @@ commit, a Task as a work item.
 - With the development on, a work item is completed only once it is on
   `main`, and names its commit there. With it off no commit proves it
   (Evidence).
-- Until `fgraph` wraps git, `complete` records the commit it is given and
-  does not check it against `main`.
+- With the development on, `complete` asks that the repository holds the commit
+  it is given (Evidence), and still does not ask that `main` holds it.
 
 ## Ids
 

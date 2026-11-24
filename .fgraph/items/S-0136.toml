@@ -14,6 +14,11 @@ depends_on = [
     "S-0135",
 ]
 
+[verified]
+answer = "yes"
+text = "at c304faa, on a scratch record with four Stories in Backlog, one started and four completed, after fgraph config set status.backlog 2, status.completed 3 and watch.buckets \"backlog, in-progress\": fgraph status lists two lines of the Backlog then \"... 2 more, 0 can start\", and three of Completed then \"... 1 more\"; fgraph watch --count 1 prints the Backlog and InProgress headings and no other bucket"
+on = 2026-11-24 15:22:55+00:00
+
 [criterion]
 given = "a record whose configuration says the backlog lists two lines and the completed three, and that fgraph watch shows the backlog and in-progress alone"
 when = "fgraph status and fgraph watch --count 1 are run"

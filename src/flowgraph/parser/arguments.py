@@ -77,6 +77,9 @@ def build_command_line() -> CommandLine:
     config = new_command(commands, "config", "show the configuration of the record, or set a key")
     actions = _config_actions(config.add_subparsers(dest="action", metavar="ACTION", required=True))
     goal = goal_command(commands)
+    sync = new_command(
+        commands, "sync", "merge main into the branch of a started work item, run in its worktree"
+    )
     return CommandLine(
         parser,
         {
@@ -89,6 +92,7 @@ def build_command_line() -> CommandLine:
             ("config",): config,
             **{("config", name): action for name, action in actions.items()},
             ("goal",): goal,
+            ("sync",): sync,
         },
     )
 

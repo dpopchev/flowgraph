@@ -14,10 +14,7 @@ import pytest
 
 from flowgraph.cli import open_files, open_git, read_config, run
 
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="S-0150: fgraph has no command that merges main into a branch"
-)
-pytestmark = [pytest.mark.functional, XFAIL]
+pytestmark = pytest.mark.functional
 
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")

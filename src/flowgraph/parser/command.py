@@ -11,6 +11,7 @@ from flowgraph.development import RunGate
 from flowgraph.development.commit import OpenGit, Said, commit_written
 from flowgraph.development.land import land_item
 from flowgraph.development.release import release_trunk
+from flowgraph.development.sync import sync_branch
 from flowgraph.feature.amend import amend_named
 from flowgraph.feature.block import block_named, unblock_named
 from flowgraph.feature.item import (
@@ -213,6 +214,8 @@ def command_said(
             )
         case "release":
             return release_trunk(args.version, store, record, open_git, config)
+        case "sync":
+            return sync_branch(record, open_git, config)
         case "status":
             limit = start_limit(config.development)
             return Said(

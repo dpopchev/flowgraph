@@ -14,6 +14,11 @@ depends_on = [
     "S-0147",
 ]
 
+[verified]
+answer = "yes"
+text = "at ce5331a on main, the merge of wi/U-0026-cut-the-lines-of: make check exit 0 printed 4633 passed, all checks passed; no test file changed, git diff --stat over tests across the landing printed nothing; src/flowgraph/status/view.py holds 127 lines, of the 130 the criterion allows, and src/flowgraph/status/text.py 82, of 100; fgraph status, fgraph show U-0026 and fgraph show F-0017 printed the same bytes with the code before and after the moves, compared by its subagent on one record with diff; fgraph watch --count 1 on main exit 0 draws the frame of fgraph status. Handed whole to one subagent on haiku, no deviation; the buckets and the lines of one item moved to buckets.py, work_item_lines.py and feature_lines.py, the rows and the placed Features to rows.py and placed.py. It stopped before any change: src/flowgraph/status/top.py, landed with S-0121 after the Tasks were written, imports BUCKETS and is_listed_in from text.py and is no importer T-0578 names; on the word of the coordinator the Tasks were worked as written, top.py untouched, the two names still reached through text.py, which uses them itself. Seen by it and left: an import from buckets.py would be the direct one for top.py; next.py holds its own BACKLOG beside BACKLOG_BUCKET."
+on = 2026-11-24 09:18:54+00:00
+
 [criterion]
 given = "main, where make check passes, src/flowgraph/status/view.py holds 247 and src/flowgraph/status/text.py 226 of the 250 lines mk/python.mk allows, and the eleven Stories of the frame (S-0130 to S-0137, S-0139, S-0122, S-0105) each add to one of the two"
 when = "make check runs"

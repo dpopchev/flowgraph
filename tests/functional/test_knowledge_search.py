@@ -1,8 +1,7 @@
 """The criterion of S-0146: `fgraph knowledge --search TEXT` lists the lines whose text holds it.
 
 Run end to end through `run` on a record in a temporary directory, through the file adapters of
-the package. The red tests are strict xfails naming S-0146 until the search is taken; the guards
-pass today and after.
+the package. Each search test was red until the search was taken; the guards pass today and after.
 """
 
 from collections.abc import Sequence
@@ -15,8 +14,6 @@ import pytest
 from flowgraph.cli import open_files, run
 
 pytestmark = pytest.mark.functional
-
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0146: fgraph knowledge takes no --search")
 
 # What a Spike is completed with: its decision and its answer.
 DECIDED = ["--decision", "one file per item", "--answer", "yes"]
@@ -94,25 +91,21 @@ def search(cwd: Path, *options: str) -> Outcome:
     return fgraph(["knowledge", *options], cwd, 7)
 
 
-@XFAIL
 def test_search_lists_the_lines_whose_text_holds_the_text_newest_first(recorded: Path) -> None:
     result = search(recorded, "--search", "STORE")
     assert (result.status, result.out) == (0, STORE + PLAIN)
 
 
-@XFAIL
 def test_search_narrowed_to_a_kind_lists_the_lines_meeting_both(recorded: Path) -> None:
     result = search(recorded, "--search", "store", "--kind", "decision")
     assert (result.status, result.out) == (0, STORE)
 
 
-@XFAIL
 def test_search_narrowed_to_a_term_lists_the_lines_meeting_both(recorded: Path) -> None:
     result = search(recorded, "--search", "store", "--about", "gate")
     assert (result.status, result.out) == (0, STORE)
 
 
-@XFAIL
 def test_search_and_a_term_holding_no_such_line_says_so(recorded: Path) -> None:
     result = search(recorded, "--search", "plain", "--about", "gate")
     assert (result.status, result.out) == (
@@ -121,7 +114,6 @@ def test_search_and_a_term_holding_no_such_line_says_so(recorded: Path) -> None:
     )
 
 
-@XFAIL
 def test_search_finds_a_part_of_a_word(recorded: Path) -> None:
     result = search(recorded, "--search", "tw")
     assert (result.status, result.out) == (
@@ -130,7 +122,6 @@ def test_search_finds_a_part_of_a_word(recorded: Path) -> None:
     )
 
 
-@XFAIL
 def test_search_finds_the_decision_of_a_spike_with_its_answer(recorded: Path) -> None:
     result = search(recorded, "--search", "ANSWER YES")
     assert (result.status, result.out) == (
@@ -139,7 +130,6 @@ def test_search_finds_the_decision_of_a_spike_with_its_answer(recorded: Path) ->
     )
 
 
-@XFAIL
 @pytest.mark.parametrize("text", ["a title", "S-0001", "gate", "finding"])
 def test_search_does_not_search_the_title_the_id_the_term_or_the_kind(
     text: str, recorded: Path
@@ -148,13 +138,11 @@ def test_search_does_not_search_the_title_the_id_the_term_or_the_kind(
     assert (result.status, result.out) == (0, none(f"knowledge lines holding {text!r}"))
 
 
-@XFAIL
 def test_search_of_a_kind_holding_no_such_line_says_so(recorded: Path) -> None:
     result = search(recorded, "--search", "zzz", "--kind", "finding")
     assert (result.status, result.out) == (0, none("finding lines holding 'zzz'"))
 
 
-@XFAIL
 def test_a_blank_search_is_refused_with_exit_two(recorded: Path) -> None:
     result = search(recorded, "--search", " ")
     assert (result.status, result.err.splitlines()[-1:]) == (

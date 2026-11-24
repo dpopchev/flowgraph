@@ -2,6 +2,8 @@ id = "U-0015"
 state = "backlog"
 title = "Raise the parts the refusal of fgraph amend of a Feature names from three to four, its terms too"
 description = "Found during T-0298 of S-0072 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. src/flowgraph/feature_amend.py still says a Feature is amended by its title, its description and its criteria, held by tests/feature/test_feature_amend.py and tests/functional/test_amend_feature.py. Its Tasks are written when it is ordered."
+parent = "F-0018"
+complexity = "low"
 created = 2026-11-22 17:09:16+00:00
 
 [criterion]

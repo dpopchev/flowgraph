@@ -18,6 +18,7 @@ from flowgraph.status.terminal import (
     terminal_width,
 )
 from flowgraph.status.text import cut_lines, status_text
+from flowgraph.status.tops import Tops, same_top, tops_asked
 from flowgraph.status.under import in_show_order
 from flowgraph.status.view import find_backlog, status_item, status_output
 from flowgraph.status.watch import CLEAR, Pace, PaceError, Wait, framed, make_pace, watch
@@ -34,6 +35,7 @@ __all__ = [
     "Pace",
     "PaceError",
     "StatusFormatError",
+    "Tops",
     "Wait",
     "Width",
     "backlog_as_added",
@@ -46,11 +48,13 @@ __all__ = [
     "no_terminal",
     "rows_by_id",
     "rows_under",
+    "same_top",
     "show_text",
     "status_item",
     "status_output",
     "status_text",
     "terminal_height",
     "terminal_width",
+    "tops_asked",
     "watch",
 ]

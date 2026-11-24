@@ -22,9 +22,6 @@ pytestmark = pytest.mark.functional
 START = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 SIX = range(1, 7)
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="S-0130: the Backlog lists its top 5 and takes no --backlog"
-)
 
 
 def story(number: int) -> list[str]:
@@ -104,17 +101,14 @@ def pair(listed: Outcome) -> tuple[int, str]:
     return listed.status, listed.out
 
 
-@XFAIL
 def test_status_lists_the_first_line_of_the_backlog_alone(tmp_path: Path) -> None:
     assert pair(after(tmp_path, FIVE, ["status"])) == (0, SHORT)
 
 
-@XFAIL
 def test_watch_lists_the_first_line_of_the_backlog_alone(tmp_path: Path) -> None:
     assert pair(after(tmp_path, FIVE, ["watch", "--count", "1"])) == (0, SHORT)
 
 
-@XFAIL
 def test_status_counts_the_next_to_start_the_top_leaves_out_and_does_not_list_it(
     tmp_path: Path,
 ) -> None:
@@ -125,17 +119,14 @@ def test_status_counts_the_next_to_start_the_top_leaves_out_and_does_not_list_it
     ]
 
 
-@XFAIL
 def test_status_backlog_lists_the_whole_backlog(tmp_path: Path) -> None:
     assert pair(after(tmp_path, FIVE, ["status", "--backlog"])) == (0, WHOLE)
 
 
-@XFAIL
 def test_watch_backlog_lists_the_whole_backlog(tmp_path: Path) -> None:
     assert pair(after(tmp_path, FIVE, ["watch", "--backlog", "--count", "1"])) == (0, WHOLE)
 
 
-@XFAIL
 def test_status_backlog_leaves_completed_at_its_top_five(tmp_path: Path) -> None:
     listed = after(tmp_path, BESIDE, ["status", "--backlog"])
     lines = listed.out.splitlines()

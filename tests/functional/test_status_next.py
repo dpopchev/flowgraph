@@ -33,7 +33,7 @@ ALL_WAIT = (
     ["start", "S-0001"],
     ["amend", "S-0002", "--depends-on", "S-0001"],
 )
-STATUS = ["status"]
+STATUS = ["status", "--backlog"]
 
 
 @dataclass(frozen=True)
@@ -86,8 +86,8 @@ def test_status_names_the_second_item_as_the_next_to_start(tmp_path: Path) -> No
 def test_status_counts_the_next_to_start_in_the_more_line_when_the_top_leaves_it_out(
     tmp_path: Path,
 ) -> None:
-    out = runs(tmp_path, *SEVEN, STATUS).out
-    assert out.splitlines()[6] == "  ... 2 more, 1 can start"
+    out = runs(tmp_path, *SEVEN, ["status"]).out
+    assert out.splitlines()[2] == "  ... 6 more, 1 can start"
 
 
 def test_status_names_none_when_no_item_of_the_backlog_can_start(tmp_path: Path) -> None:

@@ -24,7 +24,7 @@ from flowgraph.status.next import NEXT_ONLY, StartLimit, with_start_now
 from flowgraph.status.placed import PlacedFeature, placed_features, waiting_features, with_features
 from flowgraph.status.rows import BACKLOG, COMPLETED, backlog_as_added, rows_by_id
 from flowgraph.status.text import cut_lines, status_text
-from flowgraph.status.tops import same_top
+from flowgraph.status.tops import WHOLE, Tops
 from flowgraph.status.waits import with_waits
 from flowgraph.work_item import IN_PROGRESS, WorkItemId, WorkItemRow
 
@@ -106,23 +106,23 @@ def status_rows(store: Store, limit: StartLimit = NEXT_ONLY) -> list[WorkItemRow
     return with_start_now(listed, limit, taken)
 
 
-def status_item(store: Store, top: int | None = None, limit: StartLimit = NEXT_ONLY) -> str:
+def status_item(store: Store, tops: Tops = WHOLE, limit: StartLimit = NEXT_ONLY) -> str:
     """The text of the work items standing alone and of the Features of the record, by bucket.
 
-    Under a top each heading lists that many, the first ones; the rows are those of
-    `status_rows` under the limit.
+    Under a top, each heading having its own, it lists that many, the first ones; the rows are
+    those of `status_rows` under the limit.
     """
-    return status_text(status_rows(store, limit), same_top(top))
+    return status_text(status_rows(store, limit), tops)
 
 
 def status_output(
-    store: Store, top: int | None, format_: str, width: int | None, limit: StartLimit
+    store: Store, tops: Tops, format_: str, width: int | None, limit: StartLimit
 ) -> str:
     """The status of the record in the format asked for: text cut to the width, or the document.
 
-    The document lists every item, whatever the top, and is never cut. Raises StatusFormatError
+    The document lists every item, whatever the tops, and is never cut. Raises StatusFormatError
     when the format is neither; the record is not read then.
     """
     if chosen_format(format_) == JSON:
         return status_json(status_rows(store, limit))
-    return cut_lines(status_item(store, top, limit), width)
+    return cut_lines(status_item(store, tops, limit), width)

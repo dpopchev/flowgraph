@@ -2141,16 +2141,19 @@ development too.
 - The configuration is read at the edge into a value of the model
   (`src/flowgraph/record/config.py`). Reading it is an effect: `run()` takes it as a
   callable, the defaults when none is given, and `main()` reads the file.
-- Only these five keys are built: `git.commit`, `development.enabled`,
-  `development.parallel`, `development.merge` and `development.gate`, each
-  named dotted, its table and its key. The record of flowgraph holds
+- The keys built are the ones `fgraph config show` lists, in its order:
+  `git.commit`, `development.enabled`, `development.parallel`,
+  `development.merge`, `development.gate`, `development.driver`,
+  `development.mode`, `development.branch_max`, `development.approver`,
+  `delivery.push`, `delivery.tag` and `archive.board`, each named dotted, its
+  table and its key. The record of flowgraph holds
   `[development] enabled = true`, no `parallel`, no `merge` and no `gate`.
 - The configuration is shown and set through `fgraph config`, the reading of
   S-0045, so the file is no longer written by hand.
 - `fgraph config show` lists every key, dotted, with its value, one a line,
   `<key> = <value>`. The value is written as the file writes it: `true`, `2`,
   `"squash"`, `"make check"`. A key the file leaves out is listed at its
-  default, so a record without the file lists the five defaults.
+  default, so a record without the file lists the default of each key.
 - A key that holds no value -- `parallel` without a limit, `gate` without a
   command -- is listed as `none`, chosen when S-0045 was built. `none` is no
   value of the file, so the gate `"none"`, listed in its quotes, is not
@@ -2185,11 +2188,16 @@ development too.
   states below: `config.toml` is no file of the work item. In any other work
   tree it is written, held to `main` no more than any write but the start of
   a work item. `fgraph config show` writes nothing and runs anywhere.
-- A key is taken back to its default by setting that default; no unset is
-  built. `git.commit`, `development.enabled` and `development.merge` have a
-  default to set. `development.parallel` and `development.gate` have none:
-  once set they take another value by a set, and are taken back to none only
-  by removing their line from the file.
+- A key is taken back to its default by `fgraph config unset KEY`
+  (`unset_setting`, `src/flowgraph/record/setting.py`): it removes the key
+  from `config.toml`, and a table left with no key with it, so the key reads
+  as its default, and says `unset development.gate = none`, the key with the
+  value it is back to. `development.parallel` and `development.gate` have no
+  default to set: unset they are `none` again, which no set writes. A key the
+  configuration does not have is refused with exit 2 naming it, nothing
+  written. An unset is a write of the record as a set is, committed under
+  `chore: unset development.gate in the record`. Setting the default of a key
+  that has one takes it back too, and writes the key into the file.
 - A set writes the file whole from its keys, so a comment written in it is
   not kept. A `config.toml` that is refused is refused by `fgraph config`
   too, as by every command: it is mended in the file.

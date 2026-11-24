@@ -150,8 +150,8 @@ def land_item(
     development is off in the configuration, naming the fgraph config set that turns it on and,
     with the commits off, the one that turns them on first, when the merge
     makes a commit and no message is given or makes none and one is, when the record is outside
-    a git work tree, when the work tree is not on main, when the push of the delivery is on and main tracks no branch
-    of a remote, when the work item has no branch or
+    a git work tree, when the work tree is not on main, when the push of the delivery is on and
+    main tracks no branch of a remote, when the work item has no branch or
     several or when a fast-forward finds a commit on main that the branch lacks, the refusal of
     the complete when a Task of it is not completed or its decision is missing, GateError when
     the gate exits with another status than 0, and GitError when git refuses a step. Nothing is

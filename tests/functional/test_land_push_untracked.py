@@ -1,4 +1,4 @@
-"""The expected of B-0023: a landing under delivery.push is refused before main moves while main tracks no branch of a remote.
+"""The expected of B-0023: a landing refused before main moves while main tracks no remote.
 
 Run end to end through `run` on a real git repository in a temporary directory, never a faked
 git; the identity of its commits comes from the environment and no git config of the machine is
@@ -59,7 +59,7 @@ class Outcome:
 
 @dataclass(frozen=True)
 class Refused:
-    """A land of a main that tracks no branch: the checkout, the land and the sha main was on before it."""
+    """A land of a main that tracks no branch: its checkout, its land and main's sha before."""
 
     checkout: Path
     land: Outcome
@@ -135,7 +135,9 @@ def started(tmp_path: Path, development: str = DEVELOPMENT, delivery: str = PUSH
     return checkout
 
 
-def land_untracked(tmp_path: Path, development: str = DEVELOPMENT, argv: Sequence[str] = LAND) -> Refused:
+def land_untracked(
+    tmp_path: Path, development: str = DEVELOPMENT, argv: Sequence[str] = LAND
+) -> Refused:
     """Land the started Story on a main that tracks no branch, with the sha main is on before it."""
     checkout = started(tmp_path, development)
     before = git(checkout, "rev-parse", "main")
@@ -163,7 +165,9 @@ class TestALandingWhoseMainTracksNoRemote:
 
 
 @pytest.mark.parametrize(("development", "argv"), WAYS, ids=WAY_IDS)
-def test_main_is_where_it_was_by_each_way(development: str, argv: list[str], tmp_path: Path) -> None:
+def test_main_is_where_it_was_by_each_way(
+    development: str, argv: list[str], tmp_path: Path
+) -> None:
     refused = land_untracked(tmp_path, development, argv)
     assert (refused.land.status, git(refused.checkout, "rev-parse", "main")) == (2, refused.before)
 

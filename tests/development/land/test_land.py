@@ -917,5 +917,5 @@ def test_a_landing_without_the_push_to_an_untracked_main_lands_tracks() -> None:
 
 def test_a_landing_pushed_on_another_branch_is_refused_for_it_first_tracks() -> None:
     tree = replace(untracked([]), current_branch=lambda: "wi/other")
-    with pytest.raises(LandError, match="^S-0001 lands on main: "):
+    with pytest.raises(LandError, match=r"^S-0001 lands on main: "):
         land(READY, tree, config=PUSHED)

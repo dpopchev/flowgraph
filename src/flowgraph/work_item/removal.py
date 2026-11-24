@@ -1,18 +1,31 @@
-"""The removal of a work item: one in Backlog drops out of the flow with its reason, kept whole.
+"""The removal of a work item: it drops out of Backlog or of InProgress with its reason.
 
 Removed stands apart from the flow: nothing is deleted, and a removed work item takes no move.
+One in Backlog is kept whole; a started or a blocked one keeps its completed Tasks, and its other
+Tasks are removed with it (S-0148).
 """
 
+from collections.abc import Iterable
 from datetime import datetime
 from typing import assert_never
 
 from flowgraph.criterion import said
 from flowgraph.relation import RelationError
-from flowgraph.task import BlockedError, CompletedAlreadyError, StartedAlreadyError
+from flowgraph.task import (
+    BlockedTask,
+    CompletedAlreadyError,
+    CompletedTask,
+    RemovedTask,
+    StartedTask,
+    Task,
+    TaskState,
+    removed,
+)
 from flowgraph.work_item.id import WorkItemId, work_item_id_text
 from flowgraph.work_item.model import (
     BlockedWorkItem,
     CompletedWorkItem,
+    OpenWorkItem,
     RemovedAlreadyError,
     RemovedWorkItem,
     StartedWorkItem,
@@ -33,41 +46,80 @@ def _superseded_by_kept(item: WorkItemId, superseded_by: WorkItemId | None) -> W
     return superseded_by
 
 
+def _removed_with(
+    tasks: Iterable[TaskState], why: str, on: datetime
+) -> tuple[CompletedTask | RemovedTask, ...]:
+    """The Tasks of a started work item removed: each completed or removed one as it is, every
+    other one removed on that time for that reason."""
+    kept: list[CompletedTask | RemovedTask] = []
+    for task in tasks:
+        match task:
+            case CompletedTask() | RemovedTask():
+                kept.append(task)
+            case Task() | StartedTask() | BlockedTask():
+                kept.append(removed(task, why, on))
+            case _ as unreachable:
+                assert_never(unreachable)
+    return tuple(kept)
+
+
+def _why(reason: str, superseded_by: WorkItemId | None) -> str:
+    """The reason the open Tasks go for: that of the work item, else what supersedes it."""
+    if reason or superseded_by is None:
+        return reason
+    return f"superseded by {work_item_id_text(superseded_by)}"
+
+
+def _gone(
+    item: OpenWorkItem, reason: str, on: datetime, superseded_by: WorkItemId | None
+) -> RemovedWorkItem:
+    """The open work item removed, its reason and what supersedes it checked before its Tasks."""
+    kept = _reason_kept(reason, superseded_by)
+    by = _superseded_by_kept(item.id, superseded_by)
+    match item:
+        case WorkItem():
+            tasks: tuple[Task | CompletedTask | RemovedTask, ...] = item.tasks
+        case StartedWorkItem() | BlockedWorkItem():
+            tasks = _removed_with(item.tasks, _why(kept, by), on)
+        case _ as unreachable:
+            assert_never(unreachable)
+    return RemovedWorkItem(
+        item.id,
+        item.title,
+        item.criterion,
+        item.description,
+        item.created,
+        on.replace(microsecond=0),
+        kept,
+        tasks,
+        item.parent,
+        item.complexity,
+        item.knowledge,
+        item.relations,
+        by,
+        item.about,
+        realizes=item.realizes,
+        progress=item.progress,
+    )
+
+
 def removed_work_item(
     item: WorkItemState, reason: str, on: datetime, superseded_by: WorkItemId | None = None
 ) -> RemovedWorkItem:
-    """The work item in Backlog removed on that time, kept to the second, for the reason given.
+    """The work item in Backlog or InProgress removed on that time, kept to the second.
 
-    Its Tasks stay as written. It may name the work item that supersedes it, and its reason may
-    then be blank. Raises EmptyPartError when the reason is blank with none named,
-    StartedAlreadyError when the item is started, BlockedError when it is blocked,
-    CompletedAlreadyError when it is completed, RemovedAlreadyError when it is removed and
-    RelationError when it names itself.
+    One in Backlog keeps its Tasks as written. A started or a blocked one loses its started
+    time, its agent and its block; its completed Tasks and those removed before are kept, and
+    each other Task is removed at that time for its reason, or as superseded by the work item
+    named when the reason is blank. It may name the work item that supersedes it, and its reason
+    may then be blank. The reason and what supersedes it are checked before any Task is moved.
+    Raises EmptyPartError when the reason is blank with none named, CompletedAlreadyError when
+    it is completed, RemovedAlreadyError when it is removed and RelationError when it names
+    itself.
     """
     match item:
-        case WorkItem():
-            return RemovedWorkItem(
-                item.id,
-                item.title,
-                item.criterion,
-                item.description,
-                item.created,
-                on.replace(microsecond=0),
-                _reason_kept(reason, superseded_by),
-                item.tasks,
-                item.parent,
-                item.complexity,
-                item.knowledge,
-                item.relations,
-                _superseded_by_kept(item.id, superseded_by),
-                item.about,
-                realizes=item.realizes,
-                progress=item.progress,
-            )
-        case StartedWorkItem():
-            raise StartedAlreadyError(f"{work_item_id_text(item.id)} is started already")
-        case BlockedWorkItem():
-            raise BlockedError(f"{work_item_id_text(item.id)} is blocked")
+        case WorkItem() | StartedWorkItem() | BlockedWorkItem():
+            return _gone(item, reason, on, superseded_by)
         case CompletedWorkItem():
             raise CompletedAlreadyError(f"{work_item_id_text(item.id)} is completed already")
         case RemovedWorkItem():

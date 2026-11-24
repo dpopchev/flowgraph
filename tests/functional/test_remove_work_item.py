@@ -95,10 +95,33 @@ class TestAStoryInBacklogRemovedWithAReason:
         )
 
 
+class TestAStartedStoryWithATaskCompletedAndOneInBacklogRemoved:
+    @pytest.fixture
+    def removed(self, tmp_path: Path) -> Outcome:
+        worked = (START, ["start", "T-0001"], ["complete", "T-0001", "--commit", "abc1234"])
+        return runs(tmp_path, ADD_STORY, ADD_TASK, ADD_TASK, *worked, REMOVE)
+
+    def test_remove_names_the_story(self, removed: Outcome) -> None:
+        assert (removed.status, removed.out) == (0, "removed S-0001\n")
+
+    def test_status_lists_it_under_removed(self, removed: Outcome, tmp_path: Path) -> None:
+        assert "Removed (1)\n  S-0001  a title  -- filed by mistake\n" in (
+            fgraph(["status"], tmp_path).out
+        )
+
+    def test_show_keeps_its_completed_task_and_removes_the_other(
+        self, removed: Outcome, tmp_path: Path
+    ) -> None:
+        lines = fgraph(["show", "S-0001"], tmp_path).out.splitlines()
+        assert [line.split()[-1] for line in lines if line.startswith("    bucket")] == [
+            "Completed",
+            "Removed",
+        ]
+
+
 @pytest.mark.parametrize(
     ("argvs", "error"),
     [
-        ([ADD_STORY, ADD_TASK, START, REMOVE], "S-0001 is started already"),
         ([ADD_STORY, REMOVE, REMOVE], "S-0001 is removed already"),
         ([ADD_STORY, ["remove", "S-0001", "--reason", " "]], "reason is empty"),
         (
@@ -121,7 +144,6 @@ class TestAStoryInBacklogRemovedWithAReason:
         ),
     ],
     ids=[
-        "started",
         "removed-already",
         "blank-reason",
         "no-such-story",

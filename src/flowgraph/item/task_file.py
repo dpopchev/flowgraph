@@ -115,6 +115,9 @@ HeldTask = Annotated[
 # One table of the tasks of a completed work item file: a completed Task or a removed one.
 DoneTask = Annotated[CompletedTaskFile | RemovedTaskFile, Field(discriminator="state")]
 
+# A table of a removed work item file: a Task in Backlog, a completed one or a removed one.
+KeptTask = Annotated[TaskFile | CompletedTaskFile | RemovedTaskFile, Field(discriminator="state")]
+
 
 # A Task table of a work item file, in any state.
 AnyTaskFile = TaskFile | StartedTaskFile | BlockedTaskFile | CompletedTaskFile | RemovedTaskFile

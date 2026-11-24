@@ -1,12 +1,14 @@
 id = "S-0132"
-state = "started"
+state = "completed"
 title = "Raise the started items fgraph status lists under in-progress with no flag from the top 5 to every one"
 description = "Filed on the word of the developer of 2026-11-23, from the frame drawn that day. Its Tasks are written when it is ordered. Today in-progress lists its top 5, as each bucket does."
 parent = "F-0017"
 complexity = "low"
 created = 2026-11-23 12:01:40+00:00
 started = 2026-11-24 11:11:42+00:00
+completed = 2026-11-24 13:29:20+00:00
 agent = "haiku-a44"
+commit = "52472c1"
 depends_on = [
     "S-0130",
 ]

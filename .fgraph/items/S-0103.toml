@@ -13,6 +13,11 @@ depends_on = [
     "S-0102",
 ]
 
+[verified]
+answer = "yes"
+text = "at 76713a4, on a scratch record: a decision \"keep two stores\" then a decision \"keep one store\" noted with --supersedes S-0001#1; fgraph show S-0001 lists \"decision  2026-11-24  keep two stores  (superseded by S-0001#2)\" and fgraph knowledge lists the two under S-0001#2 and S-0001#1; --supersedes S-0001#9 exits 2 naming it as no knowledge line"
+on = 2026-11-24 11:20:46+00:00
+
 [criterion]
 given = "a Story with a decision noted on it"
 when = "a later decision is noted as superseding the first"

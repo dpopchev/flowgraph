@@ -6,9 +6,15 @@ from flowgraph.parser.base import Commands, new_command
 
 
 def amend_command(commands: Commands) -> argparse.ArgumentParser:
-    """The parser of amend, which rewrites parts of a work item, a Feature or a Task in Backlog."""
+    """The parser of amend, which rewrites parts of a work item, a Feature or a Task.
+
+    One in Backlog, or a started work item or Feature with its deviation.
+    """
     amend = new_command(
-        commands, "amend", "rewrite parts of a work item, a Feature or a Task in Backlog"
+        commands,
+        "amend",
+        "rewrite parts of a work item, a Feature or a Task: in Backlog, or started with its"
+        " deviation",
     )
     amend.add_argument(
         "id", metavar="ID", help="the id of the work item, of the Feature or of the Task"
@@ -49,5 +55,11 @@ def amend_command(commands: Commands) -> argparse.ArgumentParser:
         action="append",
         metavar="TERM",
         help="a term it is about, once per term, in place of its own; none takes them away",
+    )
+    amend.add_argument(
+        "--deviation",
+        metavar="TEXT",
+        help="the change to what a started item was agreed to do; needed to amend one once"
+        " started, kept on it as a line",
     )
     return amend

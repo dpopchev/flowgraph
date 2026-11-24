@@ -20,6 +20,7 @@ from flowgraph.task import (
 )
 from flowgraph.work_item import (
     Amendment,
+    DeviationError,
     NotVerifiableError,
     RemovedAlreadyError,
     StartedWorkItem,
@@ -194,8 +195,9 @@ def test_a_blocked_work_item_is_removed_with_its_open_tasks() -> None:
 
 
 @pytest.mark.model
-def test_a_blocked_work_item_is_not_amended() -> None:
-    with pytest.raises(BlockedError, match=r"^CH-0001 is blocked$"):
+def test_a_blocked_work_item_is_not_amended_without_its_deviation() -> None:
+    needed = r"^CH-0001 is started: amend it with --deviation TEXT, what changes in what it was"
+    with pytest.raises(DeviationError, match=rf"{needed} agreed to do$"):
         amended_work_item(BLOCKED, Amendment(title="another title"))
 
 

@@ -41,7 +41,10 @@ ALONE_LINE = (
 NONE_SUCH = "fgraph: error: F-0001 has no criterion 3: its criteria count from 1 to 2"
 BELOW = "fgraph: error: a criterion is counted from 1: 0 is below 1"
 NO_NUMBER = "fgraph: error: --realizes 'two' is neither the number of a criterion nor none"
-STARTED = "fgraph: error: S-0001 is started already"
+STARTED = (
+    "fgraph: error: S-0001 is started: amend it with --deviation TEXT, "
+    "what changes in what it was agreed to do"
+)
 NO_REALIZES = (
     "fgraph: error: F-0001 has no realizes: "
     "a Feature is amended by its title, its description and its criteria"
@@ -222,7 +225,7 @@ def test_a_word_that_is_no_number_is_refused(tmp_path: Path) -> None:
     assert refusal(tmp_path, FEATURE, [*UNDER, "--realizes", "two"]) == (2, [NO_NUMBER])
 
 
-def test_a_started_story_is_not_amended(tmp_path: Path) -> None:
+def test_a_started_story_is_not_amended_without_its_deviation(tmp_path: Path) -> None:
     amend = ["amend", "S-0001", "--realizes", "1"]
     assert refusal(tmp_path, FEATURE, UNDER, TASK, ["start", "F-0001"], amend) == (2, [STARTED])
 

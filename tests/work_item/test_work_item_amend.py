@@ -8,12 +8,12 @@ import pytest
 from flowgraph.criterion import EmptyPartError, make_commit, make_scenario
 from flowgraph.task import (
     CompletedAlreadyError,
-    StartedAlreadyError,
     make_task,
     make_task_id,
 )
 from flowgraph.work_item import (
     Amendment,
+    DeviationError,
     NoPartError,
     NoSuchPartError,
     WorkItem,
@@ -111,8 +111,9 @@ def test_an_amendment_naming_no_part_is_refused() -> None:
         amended_work_item(ITEM, Amendment())
 
 
-def test_a_started_work_item_is_not_amended() -> None:
-    with pytest.raises(StartedAlreadyError, match=r"^CH-0001 is started already$"):
+def test_a_started_work_item_is_not_amended_without_its_deviation() -> None:
+    needed = r"^CH-0001 is started: amend it with --deviation TEXT, what changes in what it was"
+    with pytest.raises(DeviationError, match=rf"{needed} agreed to do$"):
         amended_work_item(BEGUN, Amendment(then="a new state"))
 
 

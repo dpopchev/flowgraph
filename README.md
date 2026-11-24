@@ -570,7 +570,8 @@ its count and every item of it, not the top 5, the Tasks of each work item with
 their state, the reason and what a block waits on, the ids a work item waits for,
 and the next to start. A Feature holds in `work_items` every work item under it,
 in any state -- Backlog, started, blocked, completed or removed -- where the text
-lists the started ones alone. `text` is the default and prints what `fgraph status` has
+lists the started ones and, under a Feature in progress, the completed ones. `text` is the
+default and prints what `fgraph status` has
 always printed; another word is refused naming both, with exit 2. `--all` changes
 nothing for JSON, which lists every item anyway, and `fgraph watch` stays text.
 The keys are sorted, so two runs on one record print the same bytes; every key is
@@ -2153,9 +2154,10 @@ A Feature holds a place of its own in the Backlog: it joins the end when it
 is added, after the work items and the Features `fgraph reorder` placed and
 those added before it, and `fgraph reorder` places it as a work item (below).
 It is counted once, beside the heading and toward the top 5 (below). Its
-work items in Backlog and its completed ones are listed on no line and
-counted beside no heading: they are counted in its progress, and `fgraph show
-F-0001` lists each with its bucket. A removed one keeps its line under
+work items in Backlog are listed on no line of their own. A completed one of a
+Feature in progress stays listed under its line, counted beside no heading; those
+of a completed or a removed Feature stay on no line. They are counted in its
+progress, and `fgraph show F-0001` lists each with its bucket. A removed one keeps its line under
 Removed, unless the Feature itself is removed: that Feature is listed there
 in place of its work items (below).
 
@@ -2250,6 +2252,7 @@ fgraph status
 # InProgress (1)
 #   F-0001  1/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #     S-0003  0/1 T  Raise the Stories fgraph lists under Completed from 0 to 1
+#     S-0001  1/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
 # Completed (0)
 ```
 

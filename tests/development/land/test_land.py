@@ -133,6 +133,7 @@ def work_tree(steps: list[object]) -> WorkTree:
             delete_branch=lambda branch: steps.append(("delete branch", branch)),
             delete_unmerged_branch=lambda branch: steps.append(("delete unmerged branch", branch)),
             push=push,
+            upstream=lambda _: ("origin", "refs/heads/main"),
         ),
     )
 

@@ -1760,9 +1760,9 @@ development too.
   at a landing. It is the reading, decided when S-0042 was ordered, of the
   developer's words of 2026-11-21 on starting a work item, "checks if
   criteria are met before closing": one gate of the record, on top of the
-  rule that every Task is completed. It is no check per Task run at a
-  complete, and the Given / When / Then of the work item is neither run nor
-  confirmed. It has no default: left out, a landing runs no gate. It is a
+  rule that every Task is completed. It is apart from the check of a
+  Task, which the complete of that Task runs (S-0089), and the Given / When /
+  Then of the work item is neither run nor confirmed. It has no default: left out, a landing runs no gate. It is a
   key of the development, so it gates nothing with the development off,
   where it is held as written.
 - `development.driver` names who drives the development, `developer` by default
@@ -1826,7 +1826,9 @@ development too.
   callable, `RunGate`, `run_check`, and `main()` binds `run_gate` to it; the
   decision from its status is the core's (`check_task_passes`,
   `src/flowgraph/development/task_check.py`). The default of `run()` runs no
-  check: every one passes.
+  check: a run that completes a Task that holds one is given its runner, and
+  the default raises, a contract as that of the gate (U-0023), so no run
+  passes a check it did not run.
 - `[git] commit` turns the commits of the record off. It is on by default,
   the reading of S-0040, off until set shown and not taken: inside a git work
   tree that does not ignore the record `fgraph` commits every write of it, as

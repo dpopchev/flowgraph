@@ -66,3 +66,8 @@ created = 2026-11-23 21:00:15+00:00
 started = 2026-11-24 04:25:56+00:00
 completed = 2026-11-24 04:26:29+00:00
 commit = "247552960395475726d561ce4d982374a7b93f5e"
+
+[[knowledge]]
+kind = "finding"
+text = "correction of the verified line of S-0146, written by the coordinator on 2026-11-24: the commit its subagent amended once is 71adec9, the work of T-0561; the words T-0461's sibling in that line are a slip of the coordinator -- T-0461 is a Task of B-0032 and has no part in S-0146."
+noted = 2026-11-24 04:50:50+00:00

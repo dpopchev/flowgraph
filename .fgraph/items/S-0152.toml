@@ -15,13 +15,15 @@ then = "no line of the Backlog is marked =: the first reads S-0001  [1 T] and it
 
 [[tasks]]
 id = "T-0634"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_status_no_start_mark.py, failing on the criterion of S-0152"
 description = "One new file, no source change: tests/functional/test_status_no_start_mark.py, functional as its pytestmark, one assert per test, through run() of src/flowgraph/cli.py. Copy the record MARKED, the helpers (Outcome, fgraph, after, line_of) and the shape of tests/functional/test_status_marks.py, the test of S-0139 this Story amends; take the record with the development on and a Task per Story from tests/functional/test_status_task_count.py, so that the line that can start reads [1 T]. Red tests, each marked XFAIL = pytest.mark.xfail(strict=True, reason=\"S-0152: the line that can start is marked =\"): the line of the Story that can start begins with two spaces and its id; the same for a Story with no Task with the development off, where today it is marked; for a Feature in Backlog that can start; for a work item in Backlog under a started Feature, two columns in; and the same first line in the frame of watch --backlog --count 1. Guards, passing on their first run and not marked: ~ with depends on below, ! with waiting on below, @ of a started work item whose Tasks are all completed, => of a Task being worked, the more-line of a Backlog of three with status.backlog 1 ends with can start, and can_start of status --format json lists the same ids. Do not spell the mark followed by an id anywhere in the file: assert on the two leading spaces. Commit: test: state that no line of the Backlog is marked as able to start (S-0152, T-nnnn), with no Claude or Anthropic attribution."
 check = "uv run pytest tests/functional/test_status_no_start_mark.py -q -p no:cacheprovider && grep -q xfail tests/functional/test_status_no_start_mark.py"
 expected_output = "created: tests/functional/test_status_no_start_mark.py states that fgraph status marks no line of the Backlog as able to start -- a Story with a Task, a Story with no Task, a Feature in Backlog and a work item in Backlog under a started Feature each begin with two spaces where the mark was -- that fgraph watch draws the same, and, as guards, that a waiting line keeps ~, a blocked one !, one ready for review @ and a Task being worked =>, that the more-line still reads N more, M can start, and that can_start of the JSON names the ids that can start. Each red test carries a strict xfail naming S-0152"
 created = 2026-11-24 17:18:25+00:00
 started = 2026-11-24 17:20:35+00:00
+completed = 2026-11-24 17:21:37+00:00
+commit = "cffc5ce"
 
 [[tasks]]
 id = "T-0635"

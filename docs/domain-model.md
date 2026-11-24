@@ -434,9 +434,13 @@ of work item. The developer said so on 2026-11-21.
   completed of all it holds, between its id and its title, written as board
   1's watch writes it -- `S-0001  1/3 T  <title>`. A started or a blocked
   Task is not completed; a removed Task is not counted, so one Task left
-  beside two removed reads `S-0001  0/1 T  <title>` (S-0147). The lines of
-  Backlog, Completed and Removed carry no
-  progress. The Tasks are those the record status reads holds: the row of a
+  beside two removed reads `S-0001  0/1 T  <title>` (S-0147). A work item in
+  Backlog is listed with the count of its Tasks in brackets between its id and
+  its title, `S-0001  [3 T]  <title>`, and `S-0001  []  <title>` when it holds
+  none, the developer's frame of 2026-11-23 (S-0131) -- a count, not a progress,
+  since no Task of it is started; the lines of Completed and Removed carry
+  neither, and the line of a Feature keeps `N/M W`. The JSON does not change: a
+  work item holds its progress and its tasks already. The Tasks are those the record status reads holds: the row of a
   work item is read with its Tasks, each with its state.
 - A blocked work item is listed under InProgress as a started one is, marked
   `!` before its id and ending with what it waits on and why (S-0138):
@@ -3041,7 +3045,7 @@ the validator; a time with no offset is refused in the one line alone.
 | a removed work item with `started` and completed Tasks | refused | `removed.tasks.0.state Input should be 'backlog'`; `removed.started Extra inputs are not permitted` |
 | a removed Task | refused | `Input tag 'removed' found using 'state' does not match any of the expected tags: 'backlog', 'started', 'blocked', 'completed'` |
 | a blocked work item | refused | `Input tag 'blocked' found using 'state' does not match any of the expected tags: 'backlog', 'started', 'completed', 'removed'` |
-| `depends_on` a removed work item | read | `~ S-0002 ... -- depends on S-0001`, `depends on S-0001 (Removed)` |
+| `depends_on` a removed work item | read | `~ S-0002  [] ... -- depends on S-0001`, `depends on S-0001 (Removed)` |
 | a Feature with `hypothesis`, `outcome`, `depends_on` | refused | `started.hypothesis Extra inputs are not permitted` (the same for each) |
 | a Bug with `input`, `steps`, `technical` | refused | `backlog.input Extra inputs are not permitted` (the same for each) |
 | a `token` | refused | `backlog.token Extra inputs are not permitted` |

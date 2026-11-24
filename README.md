@@ -424,10 +424,13 @@ fgraph add story "Raise the Stories fgraph lists under Backlog from 0 to 1" \
 
 fgraph status
 # Backlog (1)
-# > S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1
+# > S-0001  []  Raise the Stories fgraph lists under Backlog from 0 to 1
 # InProgress (0)
 # Completed (0)
 ```
+
+A work item in Backlog is listed with the count of its Tasks in brackets, `[]` while it holds
+none.
 
 Write the Tasks of a Story, then show it with them. A Task title names the
 output: an imperative verb, the specific artifact, and the target state or
@@ -507,8 +510,8 @@ fgraph show S-0002
 
 fgraph status --backlog
 # Backlog (2)
-# > S-0001  Add the show command
-# ~ S-0002  Raise the Stories fgraph lists under Backlog from 1 to 2  -- depends on S-0001
+# > S-0001  [1 T]  Add the show command
+# ~ S-0002  [1 T]  Raise the Stories fgraph lists under Backlog from 1 to 2  -- depends on S-0001
 ```
 
 `fgraph status` marks the line of a work item in Backlog that waits: it starts
@@ -538,10 +541,10 @@ alone of S-0086.
 ```sh
 fgraph status --backlog   # parallel = 3, S-0001 started, S-0002 waits for S-0004
 # Backlog (4)
-# ~ S-0002  a second title  -- depends on S-0004
-# > S-0003  a third title
-# > S-0004  a fourth title
-#   S-0005  a fifth title
+# ~ S-0002  []  a second title  -- depends on S-0004
+# > S-0003  []  a third title
+# > S-0004  []  a fourth title
+#   S-0005  []  a fifth title
 # InProgress (1)
 #   S-0001  0/1 T  a first title
 ```
@@ -1962,7 +1965,7 @@ fgraph add upkeep "Cut the lines of the largest module of src/flowgraph from 106
 
 fgraph status
 # Backlog (1)
-# > U-0001  Cut the lines of the largest module of src/flowgraph from 1068 to 400
+# > U-0001  []  Cut the lines of the largest module of src/flowgraph from 1068 to 400
 # InProgress (0)
 # Completed (0)
 ```
@@ -2160,7 +2163,7 @@ is on no line of its own:
 fgraph status --backlog
 # Backlog (2)
 # > F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
-#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+#   S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (0)
 # Completed (0)
 ```
@@ -2213,7 +2216,7 @@ under its line, indented, with its progress and its Task being worked:
 ```sh
 fgraph status
 # Backlog (1)
-# > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (1)
 #   F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #     S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
@@ -2235,7 +2238,7 @@ fgraph block T-0001 --reason "the review is not back" --waiting-on "the reviewer
 
 fgraph status
 # Backlog (1)
-# > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (1)
 # ! F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5  -- waiting on the reviewer: the review is not back
 #     S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
@@ -2269,7 +2272,7 @@ fgraph complete S-0001 --commit 677f9b0
 
 fgraph status
 # Backlog (1)
-# > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (1)
 #   F-0001  1/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #     S-0003  0/1 T  Raise the Stories fgraph lists under Completed from 0 to 1
@@ -2326,7 +2329,7 @@ fgraph complete S-0001 --commit 677f9b0
 
 fgraph status
 # Backlog (1)
-# > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (0)
 # Completed (1)
 #   F-0001  677f9b0  Raise the kinds of work a project tracks with fgraph from 1 to 5
@@ -2419,7 +2422,7 @@ fgraph block F-0001 --reason "the budget is not agreed" --waiting-on "the sponso
 
 fgraph status
 # Backlog (1)
-# > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (1)
 # ! F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5  -- waiting on the sponsor: the budget is not agreed
 #     S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
@@ -2590,8 +2593,8 @@ another:
 ```sh
 fgraph status --backlog
 # Backlog (2)
-# > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
-#   U-0002  Cut the lines one kind of work item holds from 885 to 250
+# > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
+#   U-0002  []  Cut the lines one kind of work item holds from 885 to 250
 # InProgress (0)
 # Completed (0)
 
@@ -2600,8 +2603,8 @@ fgraph reorder U-0002 --before S-0002
 
 fgraph status --backlog
 # Backlog (2)
-# > U-0002  Cut the lines one kind of work item holds from 885 to 250
-#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# > U-0002  []  Cut the lines one kind of work item holds from 885 to 250
+#   S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (0)
 # Completed (0)
 ```
@@ -2617,7 +2620,7 @@ fgraph reorder S-0002 --before F-0001
 
 fgraph status --backlog
 # Backlog (2)
-# > S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+# > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 #   F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 # InProgress (0)
 # Completed (0)
@@ -2628,7 +2631,7 @@ fgraph reorder F-0001 --before S-0002
 fgraph status --backlog
 # Backlog (2)
 # > F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
-#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+#   S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (0)
 # Completed (0)
 ```
@@ -2736,7 +2739,7 @@ A Backlog of five under a plain `fgraph status` lists its first line:
 ```sh
 fgraph status
 # Backlog (5)
-# > S-0001  Add the show command
+# > S-0001  [1 T]  Add the show command
 #   ... 4 more, 0 can start
 # InProgress (0)
 # Completed (0)

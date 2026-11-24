@@ -1,11 +1,13 @@
 id = "S-0141"
-state = "started"
+state = "completed"
 title = "Raise the work trees of a repository in which fgraph watch and fgraph status list the same record, the one main lists live, from one, main, to every one"
 description = "On the word of the developer of 2026-11-23: fgraph watch should agree regardless of which worktree it is run in; at least on main I should see live what is happening. Probed that day in a scratch repository, development on, S-0001 and S-0002 started, T-0001 started in the worktree of S-0001, T-0002 in that of S-0002, S-0003 added on main after: on main the frame is live, both work items in InProgress with their Task being worked and S-0003 in Backlog; in the worktree of S-0001 the frame lists S-0002 in Backlog, marked as able to start, and no S-0003; in the worktree of S-0002 it lists S-0001 in InProgress with no Task being worked and no S-0003. It changes the rule S-0035 landed, docs/domain-model.md, Persistence: run in a work tree on the branch of a work item, status reads the record of that work tree and no other. The frame of fgraph watch is fgraph status, so the reading of the agent is that both change together. Open, for the developer: whether fgraph show and the other reads in a worktree follow; and what a write in a worktree is answered from, beside B-0032. Its Tasks are written when it is ordered."
 complexity = "low"
 created = 2026-11-23 16:17:50+00:00
 started = 2026-11-24 03:33:33+00:00
+completed = 2026-11-24 03:57:46+00:00
 agent = "haiku-a1"
+commit = "953a824"
 amends = "S-0035"
 
 [criterion]

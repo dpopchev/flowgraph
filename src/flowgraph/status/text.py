@@ -19,7 +19,11 @@ from flowgraph.work_item import WorkItemRow
 CUT = "..."
 
 
-def status_text(rows: Iterable[WorkItemRow | FeatureRow], tops: Tops = WHOLE) -> str:
+def status_text(
+    rows: Iterable[WorkItemRow | FeatureRow],
+    tops: Tops = WHOLE,
+    buckets: Collection[str] | None = None,
+) -> str:
     """The items by bucket, in the order of the flow: a heading with its count, then its items.
 
     A completed item is listed with its commit when it holds one, a removed one with its reason.
@@ -28,11 +32,14 @@ def status_text(rows: Iterable[WorkItemRow | FeatureRow], tops: Tops = WHOLE) ->
     top, each heading having its own, it lists that many of its items, the first ones given,
     then how many more it holds; its count stays that of all of them. A line marked as able to
     start that the top leaves out is listed after it in InProgress; in the Backlog it is counted
-    in the more-line, `... N more, M can start`, and not listed.
+    in the more-line, `... N more, M can start`, and not listed. Only the buckets named in
+    `buckets` are listed, heading and items; none lists every bucket.
     """
     listed = list(rows)
     lines: list[str] = []
     for bucket, states in BUCKETS:
+        if buckets is not None and bucket not in buckets:
+            continue
         in_bucket = [row for row in listed if is_listed_in(row, bucket, states)]
         held = [_item_lines(row) for row in in_bucket]
         if bucket == APART and not held:

@@ -6,7 +6,7 @@ InProgress, a completed one of Completed, one never started of the bucket derive
 items.
 """
 
-from collections.abc import Iterable, Mapping
+from collections.abc import Collection, Iterable, Mapping
 from datetime import datetime
 
 from flowgraph.feature import FeatureRow
@@ -113,6 +113,14 @@ def status_item(store: Store, tops: Tops = WHOLE, limit: StartLimit = NEXT_ONLY)
     those of `status_rows` under the limit.
     """
     return status_text(status_rows(store, limit), tops)
+
+
+def watch_item(store: Store, tops: Tops, limit: StartLimit, buckets: Collection[str]) -> str:
+    """The text of a frame of watch: the items of the record by the buckets named.
+
+    A frame lists the buckets the configuration names, which status does not (S-0136).
+    """
+    return status_text(status_rows(store, limit), tops, buckets)
 
 
 def status_output(

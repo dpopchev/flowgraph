@@ -19,7 +19,6 @@ from flowgraph.development.commit import OpenGit, open_git
 from flowgraph.development.config_git import record_named
 from flowgraph.development.scope import scope_in, within, worktree_of_item
 from flowgraph.development.worktrees import across_worktrees, held_elsewhere, record_of_main
-from flowgraph.item.commands import status_item
 from flowgraph.parser import REFUSED, build_command_line, help_asked
 from flowgraph.parser.command import command_said
 from flowgraph.parser.ids import ids_read
@@ -43,9 +42,11 @@ from flowgraph.record import (
 from flowgraph.record.init import MakeDir, RemoveDir, init_record
 from flowgraph.record.store import OpenStore, Store, open_files
 from flowgraph.relation.read import check_relations
+from flowgraph.status.buckets import shown_buckets
 from flowgraph.status.next import start_limit
 from flowgraph.status.terminal import Height, Width, no_terminal, terminal_height, terminal_width
 from flowgraph.status.tops import tops_asked, tops_of
+from flowgraph.status.view import watch_item
 from flowgraph.status.watch import Wait, framed, make_pace, watch
 
 __all__ = ["Store", "open_files", "open_git", "read_config", "record_named", "run", "run_gate"]
@@ -81,15 +82,16 @@ def _watch(
 
     A frame is cut to the width and the height the terminal has then and replaces the one
     before it; without a width it is whole and follows it. The configuration sets how many
-    lines a frame marks as able to start. Raises PaceError when the seconds or the count asked
-    for are no positive number; no frame is written then.
+    lines a frame marks as able to start and the buckets a frame lists. Raises PaceError when
+    the seconds or the count asked for are no positive number; no frame is written then.
     """
     pace = make_pace(args.seconds, args.count)
     tops = tops_asked(tops_of(config.status), every=args.all, backlog=args.backlog)
     limit = start_limit(config.development)
+    shown = shown_buckets(config.watch)
 
     def read_frame() -> str:
-        return framed(status_item(store, tops, limit), width(), height())
+        return framed(watch_item(store, tops, limit, shown), width(), height())
 
     watch(read_frame, write, wait, pace)
 

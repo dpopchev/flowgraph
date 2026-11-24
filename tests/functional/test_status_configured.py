@@ -19,7 +19,6 @@ pytestmark = pytest.mark.functional
 
 START = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
-XFAIL_WATCH = pytest.mark.xfail(strict=True, reason="S-0136: a frame lists every bucket")
 KEYS = '[status]\nbacklog = 2\ncompleted = 3\n\n[watch]\nbuckets = "backlog, in-progress"\n'
 STATUS_KEYS = "[status]\nbacklog = 2\ncompleted = 3\n"
 HEADING = re.compile(r"^\S+ \(\d+\)$")
@@ -259,14 +258,12 @@ class TestReadyForReview:
 
 
 class TestWatchShows:
-    @XFAIL_WATCH
     def test_a_frame_holds_the_headings_of_the_backlog_and_in_progress_alone(
         self, tmp_path: Path
     ) -> None:
         framed = after(tmp_path, BUILT, KEYS, ["watch", "--count", "1"])
         assert headings(framed.out) == ["Backlog (3)", "InProgress (1)"]
 
-    @XFAIL_WATCH
     def test_all_shows_the_same_two_buckets_whole(self, tmp_path: Path) -> None:
         framed = after(tmp_path, BUILT, KEYS, ["watch", "--all", "--count", "1"])
         assert headings(framed.out) == ["Backlog (3)", "InProgress (1)"]

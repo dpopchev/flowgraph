@@ -1,5 +1,5 @@
 id = "S-0135"
-state = "started"
+state = "blocked"
 title = "Raise the lines of fgraph status that say what an item adds on a line of its own below it, under its id, from none to every one"
 description = "Filed on the word of the developer of 2026-11-23, from the frame drawn that day. Its Tasks are written when it is ordered. Today each is written after the title on the same line, after two dashes, and is cut with the line at the width of the terminal."
 parent = "F-0017"
@@ -7,6 +7,9 @@ complexity = "medium"
 created = 2026-11-23 12:01:49+00:00
 started = 2026-11-24 13:15:58+00:00
 agent = "sonnet-a45"
+since = 2026-11-24 13:58:16+00:00
+reason = "T-0598 cannot pass as written, source done and not committed. (1) Check: '! grep -q \"  -- \" src/flowgraph/status/work_item_lines.py' fails by design of code: line 38 writes the branch-age note f\"  -- its branch is older than ...\" (S-0121 branch age, kept by tests/functional/test_branch_age.py and tests/status/text/test_status_branch_age.py); the brief says nothing of it, a decision is needed: keep it (then the check must exclude it) or move it too. (2) Files the brief of T-0598 does not name that fail after the change (60 failed in tests/functional tests/status tests/item tests/work_item tests/feature, 8 of them the XPASS-strict of T-0597 expected until the marks are removed, 1 of mine): tests/functional/test_block_task_branch.py 1 (line 214 blocked Task), test_remove_started_work_item.py 2 (lines 177 and 261), test_status_backlog_top.py 1 (line 119), test_status_next.py 1, test_status_task_count.py 1 (line 114), tests/status/text/test_status_task_count.py 1 (line 48), tests/status/text/test_status_branch_age.py 1 (line 65, blocked item after the branch-age note); each fix would be an expected line only. (3) Counts that differ from the brief: tests/functional/test_remove_work_item.py fails 2 (brief 1); tests/status/text/test_status_waits.py fails 3 (brief 4); test_remove_started_feature.py and tests/feature/test_feature_remove.py fail 0 today (brief 1 each, they hold until T-0599); the others named match in kind. Decision needed: widen T-0598 to the 7 files named and settle the branch-age line (the check grep)."
+waiting_on = "developer"
 depends_on = [
     "S-0131",
     "S-0133",

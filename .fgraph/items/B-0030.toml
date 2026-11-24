@@ -5,7 +5,7 @@ description = "Found by the planner of S-0115 on 2026-11-23 while reading the co
 complexity = "low"
 created = 2026-11-23 09:12:23+00:00
 started = 2026-11-24 06:58:58+00:00
-agent = "haiku-a27"
+agent = "haiku-a41"
 filed_during = "S-0115"
 
 [criterion]

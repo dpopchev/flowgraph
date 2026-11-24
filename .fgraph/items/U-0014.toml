@@ -19,3 +19,12 @@ description = "Today (2026-11-24, a throwaway git repository with the developmen
 check = "uv run pytest tests/development/scope/test_scope.py tests/functional/test_term_worktree.py tests/functional/test_relate_terms.py tests/functional/test_term_refused.py -q -p no:cacheprovider && grep -q 'not {what} here' src/flowgraph/development/scope.py && make lines"
 expected_output = "changed: src/flowgraph/development/scope.py, within, refuses the save of a term the record already holds as `<term> is not related here: the branch <branch> writes <id> alone` and that of a new term as before, `<term> is not added here: ...`; changed: tests/development/scope/test_scope.py states both and that nothing is saved; changed: tests/functional/test_term_worktree.py states that fgraph relate gate part-of lane in the worktree of started S-0001 exits 2 with the last error line fgraph: error: gate is not related here: the branch wi/S-0001-raise-the-stories-fgraph writes S-0001 alone and writes no relation"
 created = 2026-11-24 22:08:38+00:00
+
+[[tasks]]
+id = "T-0670"
+state = "backlog"
+title = "Update docs/domain-model.md to say fgraph relate on the branch of a work item is refused as not related here"
+description = "Change docs/domain-model.md only (3343 lines on 2026-11-24); find the passage by grep -n 'fgraph relate` is a write of a term' docs/domain-model.md, never by line number; plain ASCII; no source or test change. The bullet reads: fgraph relate is a write of a term, so it is on main alone as fgraph add term is, and refused on the branch of a work item the same way. Add after the same way: with its own word, `gate is not related here: the branch wi/S-0001-a-slug writes S-0001 alone`, the refusal of add term being `... is not added here: ...`; a term the record holds is refused as related, a new one as added (within of src/flowgraph/development/scope.py). Keep the edit inside that bullet. README.md states no such refusal (grep -n 'not added here' README.md finds nothing) and stays. Out of bounds: README.md, every file of src/ and tests/."
+check = "grep -q 'is not related here' docs/domain-model.md"
+expected_output = "changed: docs/domain-model.md, in the bullet that says fgraph relate is a write of a term, gives the refusal gate is not related here: the branch wi/S-0001-a-slug writes S-0001 alone beside the add term one"
+created = 2026-11-24 22:08:52+00:00

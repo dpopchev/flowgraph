@@ -38,3 +38,8 @@ description = "Change README.md (3367 lines on 2026-11-24, more once F-0019, F-0
 check = "grep -q 'ends with the files it governs' README.md && grep -q 'ends with the files it governs' docs/domain-model.md && grep -q 'the gate holds no state  (governs src/gate.py)' README.md"
 expected_output = "changed: docs/domain-model.md, in the bullet of fgraph knowledge, says each line ends with its mark, its terms and the files it governs, as fgraph show ends it; README.md says it in the paragraph on --governs and shows a line of fgraph knowledge ending   (governs src/gate.py)"
 created = 2026-11-24 22:11:17+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, under the /goal of Phase 1 the developer set on 2026-11-24, which has the coordinator write the Tasks before a Feature starts; the developer was not asked and reviews them at the close: (1) The files go last on the line, after the mark and the terms, as '  (governs a, b)' through governs_text, the helper and the order fgraph show uses; superseded by is still not printed by fgraph knowledge, since the criterion names the files alone. (2) The change is in knowledge_text alone, so every filter (--kind, --about, --search, --live) lists the files and the line that says there are none is unchanged; --search still reads the text of a line alone, not its files. (3) The JSON of fgraph knowledge is kept as S-0155 defines it (governs already there); a guard test pins it. (4) Three Tasks, not four: the code and its wiring are one line of one module, so the unit tests and the removal of the xfail marks go in one Task."
+noted = 2026-11-24 22:12:18+00:00

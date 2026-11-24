@@ -90,6 +90,24 @@ def first_without_complexity(feature: FeatureId, store: Store) -> WorkItemId | N
     return _first_lacking(feature, store, lambda row: not row.complexity)
 
 
+def check_planned(feature: FeatureId, store: Store, *, complexity: bool) -> None:
+    """Check that each work item in Backlog of the Feature is planned, and rated when asked.
+
+    Raises NoTaskError, then NoComplexityError when `complexity` is true, naming the first
+    such work item in start order.
+    """
+    named = feature_id_text(feature)
+    unplanned = first_unplanned(feature, store)
+    if unplanned is not None:
+        raise NoTaskError(
+            f"{named} cannot start: {work_item_id_text(unplanned)} has no Task to start with"
+        )
+    unrated = first_without_complexity(feature, store) if complexity else None
+    if unrated is not None:
+        unrated_named = work_item_id_text(unrated)
+        raise NoComplexityError(f"{named} cannot start: {NO_COMPLEXITY.format(id=unrated_named)}")
+
+
 def start_feature_item(
     feature: str,
     slug: str | None,
@@ -120,15 +138,8 @@ def start_feature_item(
     first = first_in_backlog(feature_id, store)
     if first is None:
         raise NoWorkItemError(f"{named} has no work item in Backlog to start with")
-    unplanned = first_unplanned(feature_id, store) if config.development.enabled else None
-    if unplanned is not None:
-        raise NoTaskError(
-            f"{named} cannot start: {work_item_id_text(unplanned)} has no Task to start with"
-        )
-    unrated = first_without_complexity(feature_id, store) if asks_complexity(config) else None
-    if unrated is not None:
-        unrated_named = work_item_id_text(unrated)
-        raise NoComplexityError(f"{named} cannot start: {NO_COMPLEXITY.format(id=unrated_named)}")
+    if config.development.enabled:
+        check_planned(feature_id, store, complexity=asks_complexity(config))
     check_first_waits(named, first, store)
     check_feature_parallel(feature_id, store.find_work_item_rows, config)
     held = store.load_work_item(first)

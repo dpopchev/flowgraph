@@ -13,6 +13,11 @@ depends_on = [
     "S-0130",
 ]
 
+[verified]
+answer = "yes"
+text = "at 3efc639, on a scratch record with six started Stories, two of them under the started Feature F-0001, fgraph status with no flag prints \"InProgress (5)\" and lists S-0004, S-0005, S-0006 and S-0003 each with its \"=> T\" line, then \"F-0001  0/2 W\" with S-0001 and S-0002 under it, each with its \"=> T\" line, and no \"... N more\""
+on = 2026-11-24 13:29:46+00:00
+
 [criterion]
 given = "a record with six started work items, two of them under one started Feature"
 when = "fgraph status is run with no flag"

@@ -14,6 +14,11 @@ depends_on = [
     "U-0023",
 ]
 
+[verified]
+answer = "yes"
+text = "at 49c99e3 on main, the merge of wi/U-0027-cut-the-lines-of: src/flowgraph/cli.py holds 213 lines, of the 225 the criterion allows; no test file changed, git diff --stat of the branch against main over tests printed nothing; make check on the tree of the landing, the branch holding every code commit of main before it was merged: 4192 passed, all checks passed, run by its subagent to the end; ruff and make lines clean after the merge of main, which brought commits of the record alone; in a throwaway repository fgraph init and fgraph status printed what they print. Handed whole to one subagent on haiku, no deviation: the six defaults of a run given none moved to the new src/flowgraph/parser/not_given.py, 39 lines."
+on = 2026-11-24 06:44:44+00:00
+
 [criterion]
 given = "main, where make check passes and src/flowgraph/cli.py holds about 244 of the 250 lines mk/python.mk allows, S-0141, B-0022 and U-0023 landed, and S-0128, S-0098, S-0130 and the Stories of the frame each still add to it"
 when = "make check runs"

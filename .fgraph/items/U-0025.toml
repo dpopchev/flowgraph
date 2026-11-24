@@ -9,6 +9,11 @@ completed = 2026-11-24 03:48:03+00:00
 agent = "haiku-a3"
 commit = "8d41823"
 
+[verified]
+answer = "yes"
+text = "at 8d41823 on main, the merge of wi/U-0025-cut-the-lines-of: make check exit 0 printed 3484 passed, all checks passed; git diff --stat 44c3653 8d41823 -- tests printed nothing, no test file changed; wc -l src/flowgraph/parser/command.py printed 219, of the 226 the criterion allows; src/flowgraph/parser/checks.py holds check_command, 48 lines. Handed whole to one subagent on haiku, no deviation; its make check in the worktree printed 3484 passed before the landing. Seen by the subagent and not changed: the docstring of command_said wraps short after the sentence on run_check, as it did before the move."
+on = 2026-11-24 03:54:53+00:00
+
 [criterion]
 given = "main, where make check passes, src/flowgraph/parser/command.py holds 244 of the 250 lines mk/python.mk allows, and B-0027, B-0032 and B-0029 each add a check to it, 7 lines in all"
 when = "make check runs"

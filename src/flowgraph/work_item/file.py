@@ -92,6 +92,7 @@ def read_work_item_rows(record: Path, kind: Kind) -> list[WorkItemRow]:
             commit_held(held),
             reason_held(held),
             held.parent,
+            realizes=held.realizes,
             complexity=held.complexity or "",
             created=held.created,
             started=started_held(held),
@@ -158,6 +159,7 @@ def read_work_item_detail(record: Path, item_id: WorkItemId) -> WorkItemDetail:
         reason=block_reason or reason_held(held),
         waiting_on=waiting_on,
         parent=held.parent,
+        realizes=held.realizes,
         complexity=held.complexity or "",
         knowledge=[
             KnowledgeRow(line.kind, line.noted, line.text, line.about, line.governs)

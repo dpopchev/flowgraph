@@ -25,12 +25,16 @@ from flowgraph.work_item import (
     make_work_item,
     make_work_item_id,
     read_work_item,
+    read_work_item_detail,
+    read_work_item_rows,
     removed_work_item,
     started_task,
     started_work_item,
     unblocked_work_item,
     verified_work_item,
+    work_item_detail,
     work_item_path,
+    work_item_row,
     write_work_item,
 )
 from flowgraph.work_item.agent import make_agent
@@ -144,3 +148,47 @@ def test_a_file_holding_the_key_with_no_parent_is_refused_naming_it(tmp_path: Pa
     path.write_text(path.read_text(encoding="utf-8").replace('parent = "F-0001"\n', ""))
     with pytest.raises(WorkItemFileError, match=r"CH-0001\.toml"):
         read_work_item(tmp_path, ONE)
+
+
+@pytest.mark.view
+def test_the_row_projected_from_a_work_item_holds_the_number_of_its_place() -> None:
+    assert work_item_row(BARE).realizes == 2
+
+
+@pytest.mark.view
+def test_the_row_projected_from_a_work_item_naming_none_holds_none() -> None:
+    assert work_item_row(UNNAMED).realizes is None
+
+
+@pytest.mark.view
+def test_the_detail_projected_from_a_work_item_holds_the_number_of_its_place() -> None:
+    assert work_item_detail(BARE).realizes == 2
+
+
+@pytest.mark.view
+def test_the_detail_projected_from_a_work_item_naming_none_holds_none() -> None:
+    assert work_item_detail(UNNAMED).realizes is None
+
+
+@pytest.mark.edge
+def test_the_row_read_from_the_file_holds_the_number_of_its_place(tmp_path: Path) -> None:
+    write_work_item(tmp_path, BARE)
+    assert read_work_item_rows(tmp_path, CHORE)[0].realizes == 2
+
+
+@pytest.mark.edge
+def test_the_row_read_from_a_file_naming_none_holds_none(tmp_path: Path) -> None:
+    write_work_item(tmp_path, UNNAMED)
+    assert read_work_item_rows(tmp_path, CHORE)[0].realizes is None
+
+
+@pytest.mark.edge
+def test_the_detail_read_from_the_file_holds_the_number_of_its_place(tmp_path: Path) -> None:
+    write_work_item(tmp_path, BARE)
+    assert read_work_item_detail(tmp_path, ONE).realizes == 2
+
+
+@pytest.mark.edge
+def test_the_detail_read_from_a_file_naming_none_holds_none(tmp_path: Path) -> None:
+    write_work_item(tmp_path, UNNAMED)
+    assert read_work_item_detail(tmp_path, ONE).realizes is None

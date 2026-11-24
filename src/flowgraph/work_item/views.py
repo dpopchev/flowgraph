@@ -42,6 +42,7 @@ class WorkItemRow:
     it once removed. The ids it waits for are those it depends on that are not completed, set by
     the view that lists the Backlog and empty where it is not read from the whole record. It is
     the next to start when it is the first line of the Backlog its start would take, set there too.
+    It realizes the place of the criterion of its Feature it names, None for none.
     """
 
     id: str
@@ -50,6 +51,7 @@ class WorkItemRow:
     commit: str = ""
     reason: str = ""
     parent: str = ""
+    realizes: int | None = field(default=None, kw_only=True)
     complexity: str = field(default="", kw_only=True)
     created: datetime = field(kw_only=True)
     started: datetime | None = field(default=None, kw_only=True)
@@ -72,7 +74,9 @@ class WorkItemDetail:
 
     The parts of its criterion are those its kind states; the others are empty. Its reason and
     what it waits on while it is blocked; its reason alone once it is removed; both empty
-    otherwise.
+    otherwise. What it realizes is the place of the criterion of its Feature, and what is
+    realized the text of that criterion, set by the view that reads the Feature: empty where it
+    is not read or the Feature has none of that number.
     """
 
     id: str
@@ -93,6 +97,8 @@ class WorkItemDetail:
     reason: str = ""
     waiting_on: str = ""
     parent: str = ""
+    realizes: int | None = None
+    realized: str = ""
     complexity: str = ""
     knowledge: list[KnowledgeRow] = field(default_factory=list[KnowledgeRow])
     depends_on: list[DependsRow] = field(default_factory=list[DependsRow])

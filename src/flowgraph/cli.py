@@ -34,7 +34,7 @@ from flowgraph.record import (
     make_config,
     read_config,
 )
-from flowgraph.record.init import MakeDir, init_record
+from flowgraph.record.init import MakeDir, RemoveDir, init_record
 from flowgraph.record.store import OpenStore, Store, open_files
 from flowgraph.relation.read import check_relations
 from flowgraph.status.next import start_limit
@@ -72,6 +72,11 @@ def _no_check(command: str, directory: Path) -> int:
 def _no_dir(path: Path) -> Never:
     """The make_dir of a run given none: a contract, such a run makes no record."""
     raise AssertionError(f"run() was given no make_dir to make {path}")
+
+
+def _no_removal(path: Path) -> Never:
+    """The remove_dir of a run given none: a contract, such a run removes no record."""
+    raise AssertionError(f"run() was given no remove_dir to remove {path}")
 
 
 def _read_record(command: str | None, located: Path, open_git: OpenGit) -> Path:
@@ -128,12 +133,14 @@ def run(
     run_gate: RunGate = _no_gate,
     run_check: RunGate = _no_check,
     make_dir: MakeDir = _no_dir,
+    remove_dir: RemoveDir = _no_removal,
 ) -> int:
     """Read the arguments, locate the record in cwd, run the command and return the exit status.
 
     The help option needs no record, after a command as alone: it prints the help of the command
-    the arguments name; so does init, which makes the record through make_dir and fails with 2
-    where one is held. Every other call fails with 2 when there is no record. A write finds the
+    the arguments name; so does init, which makes the record through make_dir, removes it again
+    through remove_dir when git refuses its commit, and fails with 2 where one is held. Every
+    other call fails with 2 when there is no record. A write finds the
     git work tree of the record through open_git and is committed there. Run in the worktree of
     a work item, status and watch read the record of main, as a run on main does; every other
     command reads the record it is run on. The lines of status are
@@ -158,7 +165,7 @@ def run(
     args = ids_read(parser.parse_args(argv))
     if args.command == "init":
         try:
-            made = init_record(cwd, args.dir, is_dir, make_dir, open_store, open_git)
+            made = init_record(cwd, args.dir, is_dir, make_dir, remove_dir, open_store, open_git)
         except REFUSED as error:
             write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
             return 2
@@ -226,6 +233,7 @@ def main() -> None:
             run_gate=run_gate,
             run_check=run_gate,
             make_dir=Path.mkdir,
+            remove_dir=Path.rmdir,
         )
     )
 

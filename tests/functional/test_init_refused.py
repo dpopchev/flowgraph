@@ -23,11 +23,6 @@ IDENTITY = {
     "GIT_COMMITTER_NAME": "a developer",
     "GIT_COMMITTER_EMAIL": "developer@example.com",
 }
-XFAIL = pytest.mark.xfail(
-    strict=True,
-    raises=AssertionError,
-    reason="B-0022: a failed fgraph init leaves an empty .fgraph/ behind",
-)
 
 
 @dataclass(frozen=True)
@@ -54,6 +49,7 @@ def fgraph(argv: Sequence[str], cwd: Path) -> Outcome:
         now=lambda: NOW,
         load_config=read_config,
         make_dir=Path.mkdir,
+        remove_dir=Path.rmdir,
     )
     return Outcome(status, "".join(out), "".join(err))
 
@@ -119,7 +115,6 @@ class TestAnInitWhoseCommitGitRefuses:
     def test_leaves_git_status_nothing_to_list(self, refused: Outcome, repository: Path) -> None:
         assert git(repository, "status", "--porcelain") == ""
 
-    @XFAIL
     def test_leaves_no_dot_directory_behind(self, refused: Outcome, repository: Path) -> None:
         assert not (repository / ".fgraph").exists()
 
@@ -132,15 +127,12 @@ class TestAnInitAfterOneGitRefused:
         hook.unlink()
         return fgraph(["init"], repository)
 
-    @XFAIL
     def test_exits_with_zero(self, second: Outcome) -> None:
         assert second.status == 0
 
-    @XFAIL
     def test_prints_the_record_it_made(self, second: Outcome, repository: Path) -> None:
         assert second.out == f"record: {repository / '.fgraph'}\n"
 
-    @XFAIL
     def test_commits_the_record_alone(self, second: Outcome, repository: Path) -> None:
         assert (
             git(repository, "log", "-1", "--format=%s"),

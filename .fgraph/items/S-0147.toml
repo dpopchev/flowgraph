@@ -17,12 +17,13 @@ then = "each Task is kept as removed with its reason, counts in no progress of i
 
 [[tasks]]
 id = "T-0602"
-state = "backlog"
+state = "started"
 title = "Move the id of a Task from src/flowgraph/task/model.py into a new src/flowgraph/task/id.py"
 description = "A move with no change of behavior: no new test, the suite is its guard. It makes the room S-0147 needs: model.py is at 235 of 250 lines and the fifth state of a Task adds about 25. New module src/flowgraph/task/id.py (about 55 lines), shaped as src/flowgraph/work_item/id.py: a one-line docstring, the id of a Task, its number in the record, written T-0001; then, cut from model.py as they are with their docstrings: the dataclass TaskId (lines 15-19), TaskIdError (100-101), make_task_id, task_id_text, parse_task_id and next_task_id (148-176). It takes the imports of re, Collection and dataclass. In model.py (235 lines, about 192 after): remove those six and the imports of re and Collection; add `from flowgraph.task.id import TaskId, task_id_text`, which its dataclasses and TaskNotFoundError still use. src/flowgraph/task/moves.py (128 lines) and src/flowgraph/task/list.py (105 lines): import TaskId and task_id_text from flowgraph.task.id, every other name from flowgraph.task.model as today. src/flowgraph/task/__init__.py (78 lines, about 80 after): import the six names from flowgraph.task.id; __all__ stays as it is. TaskRow and row_of stay in model.py: src/flowgraph/brief/model.py, src/flowgraph/brief/document.py, tests/brief/test_governing.py and tests/brief/test_document.py import TaskRow from flowgraph.task.model, which is why the ids move and not the row. id.py imports nothing of the package, so no cycle is closed. Out of bounds: every other module, every test file, the docs. Run make check (ruff, pyright, make lines, the suite) before the commit."
 check = "test \"$(wc -l < src/flowgraph/task/model.py)\" -le 195 && grep -q \"^def parse_task_id\" src/flowgraph/task/id.py && test -z \"$(git status --porcelain tests)\" && make check"
 expected_output = "created: src/flowgraph/task/id.py holds TaskId, TaskIdError, make_task_id, task_id_text, parse_task_id and next_task_id, moved as they are; changed: src/flowgraph/task/model.py holds 195 lines or fewer, each of the six names is imported from flowgraph.task as before, no test file changes and every command of fgraph prints what it printed"
 created = 2026-11-23 21:07:56+00:00
+started = 2026-11-24 04:25:24+00:00
 
 [[tasks]]
 id = "T-0603"

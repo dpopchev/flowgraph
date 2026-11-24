@@ -1,7 +1,6 @@
 """The criterion of S-0121: fgraph start with no id starts the first Backlog line that can start.
 
-The red tests are strict xfails until the command asks for no id: each one fails on its own
-assert today, because argparse exits 2 on a start with no id. The guards pass today and after.
+Each test is one fact of a start given no id; the guards pin what a start that names its id does.
 Run end to end through `run` on a real git repository in a temporary directory, never a faked
 git; the identity of its commits comes from the environment and no git config is read.
 """
@@ -39,7 +38,6 @@ NONE = (
 )
 EMPTY = "fgraph: error: nothing to start: the Backlog is empty"
 NO_SLUG = "fgraph: error: S-0002 takes no --slug: the development is off"
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0121: fgraph start asks for an id")
 
 
 @dataclass(frozen=True)
@@ -145,42 +143,36 @@ def environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
 # Development off: a record with no config.toml.
 
 
-@XFAIL
 def test_a_start_with_no_id_starts_the_line_that_waits_for_nothing(tmp_path: Path) -> None:
     path = checkout_with(tmp_path, None, waits(checked=False))
     started = fgraph(["start"], path)
     assert (started.status, started.out) == (0, "started S-0002\n")
 
 
-@XFAIL
 def test_the_line_started_with_no_id_is_in_progress(tmp_path: Path) -> None:
     path = checkout_with(tmp_path, None, waits(checked=False))
     fgraph(["start"], path)
     assert "  bucket       InProgress\n" in fgraph(["show", "S-0002"], path).out
 
 
-@XFAIL
 def test_the_start_with_no_id_takes_the_id_status_names_as_next_to_start(tmp_path: Path) -> None:
     path = checkout_with(tmp_path, None, waits(checked=False))
     next_id = json.loads(fgraph(["status", "--format", "json"], path).out)["next_to_start"]
     assert fgraph(["start"], path).out == f"started {next_id}\n"
 
 
-@XFAIL
 def test_a_reorder_changes_the_line_a_start_with_no_id_takes(tmp_path: Path) -> None:
     path = checkout_with(tmp_path, None, free(checked=False))
     fgraph(["reorder", "S-0002", "--before", "S-0001"], path)
     assert fgraph(["start"], path).out == "started S-0002\n"
 
 
-@XFAIL
 def test_a_second_start_with_no_id_takes_the_next_line(tmp_path: Path) -> None:
     path = checkout_with(tmp_path, None, free(checked=False))
     fgraph(["start"], path)
     assert fgraph(["start"], path).out == "started S-0002\n"
 
 
-@XFAIL
 def test_a_feature_on_top_starts_as_its_id_does(tmp_path: Path) -> None:
     path = checkout_with(
         tmp_path,
@@ -196,7 +188,6 @@ def test_a_feature_on_top_starts_as_its_id_does(tmp_path: Path) -> None:
     assert fgraph(["start"], path).out == "started F-0001 with S-0001\n"
 
 
-@XFAIL
 def test_a_start_with_no_id_refuses_a_line_waiting_for_a_started_one(tmp_path: Path) -> None:
     path = checkout_with(
         tmp_path,
@@ -211,14 +202,12 @@ def test_a_start_with_no_id_refuses_a_line_waiting_for_a_started_one(tmp_path: P
     assert (outcome.status, last(outcome)) == (2, [NONE.format("S-0002")])
 
 
-@XFAIL
 def test_a_start_with_no_id_on_an_empty_record_says_the_backlog_is_empty(tmp_path: Path) -> None:
     path = checkout_with(tmp_path, None, [])
     outcome = fgraph(["start"], path)
     assert (outcome.status, last(outcome)) == (2, [EMPTY])
 
 
-@XFAIL
 def test_a_start_with_no_id_refuses_a_story_with_no_task(tmp_path: Path) -> None:
     path = checkout_with(tmp_path, None, [story(FIRST)])
     outcome = fgraph(["start"], path)
@@ -228,7 +217,6 @@ def test_a_start_with_no_id_refuses_a_story_with_no_task(tmp_path: Path) -> None
     )
 
 
-@XFAIL
 def test_a_start_with_no_id_and_a_slug_says_the_development_is_off(tmp_path: Path) -> None:
     path = checkout_with(tmp_path, None, waits(checked=False))
     outcome = fgraph(["start", "--slug", "a-slug"], path)
@@ -238,7 +226,6 @@ def test_a_start_with_no_id_and_a_slug_says_the_development_is_off(tmp_path: Pat
 # Development on: a record with the development on and each Task checked.
 
 
-@XFAIL
 def test_a_start_with_no_id_names_the_branch_and_the_worktree(tmp_path: Path) -> None:
     path = checkout_with(tmp_path, ON, waits(checked=True))
     worktree = tmp_path / "project.worktrees" / "S-0002-a-second-title"
@@ -246,20 +233,17 @@ def test_a_start_with_no_id_names_the_branch_and_the_worktree(tmp_path: Path) ->
     assert fgraph(["start"], path).out == expected
 
 
-@XFAIL
 def test_a_start_with_no_id_and_a_slug_names_the_slug_in_the_branch(tmp_path: Path) -> None:
     path = checkout_with(tmp_path, ON, waits(checked=True))
     assert "branch wi/S-0002-a-slug in " in fgraph(["start", "--slug", "a-slug"], path).out
 
 
-@XFAIL
 def test_a_start_with_no_id_and_an_agent_records_the_agent(tmp_path: Path) -> None:
     path = checkout_with(tmp_path, ON, waits(checked=True))
     fgraph(["start", "--agent", "sonnet-a1"], path)
     assert "  agent        sonnet-a1\n" in fgraph(["show", "S-0002"], path).out
 
 
-@XFAIL
 def test_a_start_with_no_id_passes_over_a_line_not_planned(tmp_path: Path) -> None:
     path = checkout_with(
         tmp_path,
@@ -269,14 +253,12 @@ def test_a_start_with_no_id_passes_over_a_line_not_planned(tmp_path: Path) -> No
     assert fgraph(["start"], path).out.splitlines()[:1] == ["started S-0002"]
 
 
-@XFAIL
 def test_a_start_with_no_id_under_one_place_refuses_once_it_is_taken(tmp_path: Path) -> None:
     path = checkout_with(tmp_path, ONE, [*free(checked=True), ["start", "S-0001"]])
     outcome = fgraph(["start"], path)
     assert (outcome.status, last(outcome)) == (2, [NONE.format("S-0002")])
 
 
-@XFAIL
 def test_a_start_with_no_id_takes_a_line_of_a_started_feature_first(tmp_path: Path) -> None:
     path = checkout_with(
         tmp_path,
@@ -295,7 +277,6 @@ def test_a_start_with_no_id_takes_a_line_of_a_started_feature_first(tmp_path: Pa
     assert fgraph(["start"], path).out.splitlines()[:1] == ["started S-0002"]
 
 
-@XFAIL
 def test_a_start_with_no_id_in_a_worktree_is_held_to_main(tmp_path: Path) -> None:
     checkout_with(tmp_path, ON, [*free(checked=True), ["start", "S-0001"]])
     worktree = tmp_path / "project.worktrees" / "S-0001-a-first-title"

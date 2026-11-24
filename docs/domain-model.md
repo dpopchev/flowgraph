@@ -160,7 +160,11 @@ A work item in any state also keeps its knowledge: the lines noted on it, in
 the order noted. A line holds its kind, its text and the time it was noted; the
 kind is one of three, a sum type: a finding records what was learned, a decision
 what was decided, and a deviation a change to what a started item was agreed to
-do, since `fgraph amend` refuses one once it is started. The text says
+do, since `fgraph amend` refuses one once it is started. A line may carry one
+mark, a sum of three with no mark: standing, the line holds until a later line
+supersedes it, and open, the line is not settled yet; a line of any kind takes
+one. The mark is given when the line is noted and, as the line, never amended;
+no command reads it, `fgraph show` and `fgraph knowledge` list it. The text says
 something, so a blank one is refused where the line is built. A line is noted
 with `fgraph note` in Backlog, started, Completed or Removed alike, and is never
 amended or removed: it is added after the lines the item keeps already.
@@ -933,8 +937,8 @@ criterion. It is added and then it stands.
   file may be renamed or not yet written. A file stores nothing of it; the lines
   that govern a file are read from the record, as the other side of a relation is.
 - `fgraph show` of an item lists `about` with its terms, and each of its lines
-  ends with `(about gate, lane)` when it has terms, then `(governs src/gate.py)`
-  when it governs files. `fgraph show` of a term lists,
+  ends with its mark when it has one, then `(about gate, lane)` when it has
+  terms, then `(governs src/gate.py)` when it governs files. `fgraph show` of a term lists,
   after its relations, `items` with the ids of the work items and Features about
   it and `knowledge` with the lines about it, the last noted first, each with the
   id of its item; both are read from the record, the started work items where
@@ -1172,9 +1176,16 @@ and its merge tool.
   `finding`, `decision` or `deviation`; a file with any other kind is refused
   when read, naming the file. The id of a Task with one of the three kinds of
   knowledge, an id the record does not hold, a blank text and none or more than
-  one of the four are refused, exit 2, nothing written. `fgraph show` lists the
+  one of the four are refused, exit 2, nothing written. The table holds the key
+  `mark`, `standing` or `open`, only when the line has one, so a file without
+  it, as every file written before, is read as no mark, and a file with another
+  word is refused when read, naming the file. `fgraph note` takes at most one of
+  `--standing` and `--open` beside its kind, both together refused by the
+  command line, exit 2, nothing written. `fgraph show` lists the
   lines under `Knowledge (n)` after the Tasks, each with its kind, its date and
-  its text, and no heading when there is none.
+  its text, and no heading when there is none; the mark follows the text as
+  `(standing)` or `(open)`, as in the line
+  `  finding  2026-11-22  is the queue one file too  (open)`.
 - A progress line is one `[[progress]]` table inside the file of its work item,
   in the order noted, apart from `[[knowledge]]`, with its `text`, its `noted`
   time and, for a line of a Task, `task = "T-0001"`; a file without the table
@@ -1247,7 +1258,8 @@ and its merge tool.
   progress line alone.
 - `fgraph knowledge` is a view of the whole record: it reads every work item and
   every Feature and writes nothing. It lists every line of each, with its date,
-  its kind, the id of its item and its text, the last noted first; lines noted
+  its kind, the id of its item and its text, then its mark when it has one, the
+  last noted first; lines noted
   at one time come in the reverse of the order they were collected, the work
   items by kind and id before the Features. The decision of a completed Spike is
   listed among the decisions at the time the Spike was completed; it is not
@@ -2649,7 +2661,7 @@ The knowledge lines:
 | Field | Seen on | In fgraph | Verdict |
 |---|---|---|---|
 | a Finding, `<day> <text>` | E-018, W-187 | `fgraph note --finding`, its text and the time noted | converted: the day becomes a time |
-| the type of a Finding, `fact`, `open`, `standing` | E-018 | none (F-0014, S-0102) | lost |
+| the type of a Finding, `fact`, `open`, `standing` | E-018 | `--standing` or `--open` on `fgraph note`, on a line of any kind; a `fact` is a line with no mark (Attributes) | converted: a `fact` becomes no mark |
 | `supersedes: <ref>` ending a Finding or a Decision | E-018, W-187, W-195 | none (F-0014, S-0103) | lost |
 | the ref of a line, `<item>#<k>`, `#d<k>`, `#v<k>` | `knowledge --search` (c), W-143#d3 in W-143 (c) | none: a line holds no ref | lost |
 | `about: <term>` ending a line, of `[knowledge] terms` | on no item read; ledger E-044 (c); `config show knowledge` (c) | `--about TERM`, of a term the record holds (Terms) | converted: each word a term added first |
@@ -2885,7 +2897,7 @@ Held by every record that holds items:
 | `## Hypothesis` of an issue | 822, every issue: c 378, cts 156, g 3, st 26, sm 149, sv 110 | not filed |
 | the expected result of a Check, after ` -- ` or ` -> ` | 2,832 of 2,915 Tasks: c 1,281, cts 520, g 12, st 88, sm 518, sv 413 | not filed |
 | `done.evidence` beyond a bare sha | 4,046, every done item: Epics 104, work items 1,248, Tasks 2,694 | not filed |
-| the type of a Finding | 991 lines: fact 505, open 186, standing 300; g 10 | part, S-0102: "a finding is noted on it as open ... list the line with its mark"; a `fact` would be a line with no mark, whether it is live left open (S-0104, description) |
+| the type of a Finding | 991 lines: fact 505, open 186, standing 300; g 10 | S-0102 keeps open and standing as the mark of a line, a `fact` is a line with no mark, and a line with no mark is live until a later line supersedes it, the decision of the developer of 2026-11-23 (S-0104) |
 | `supersedes:` ending a line | 593 lines: in Findings 454, Decisions 111, Deviations 28; g 3 | S-0103: "lists the first as superseded by the later" |
 | the ref of a line, `#k`, `#dk`, `#vk` | every knowledge line, 2,711: Findings 991, Decisions 1,213, Deviations 507 | not filed; S-0103 needs one, its form not stated |
 
@@ -2995,7 +3007,7 @@ its relations". The decision of what to build is the developer's.
 
 - Before any record converts, held by all six: the write path by files with
   times (S-0107), the old id (S-0106), the criterion link (S-0100, S-0101),
-  the type of a Finding (S-0102, part) and `supersedes` (S-0103); not
+  the type of a Finding (S-0102) and `supersedes` (S-0103); not
   filed: the Epic Hypothesis and Outcome, `reasoning`, the Hypothesis of an
   issue, the expected result of a Check, the evidence beyond its sha, the
   ref of a knowledge line.

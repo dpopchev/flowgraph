@@ -1415,7 +1415,8 @@ A work item keeps what the work learned as lines of knowledge. `fgraph note`
 appends a finding, a decision or a deviation to a work item in any state, Completed and Removed included,
 as one write and one commit of the record; `fgraph show` lists the lines after
 the Tasks, each with its kind, the date it was noted and its text, and no
-heading when there is none. A note takes exactly one of `--finding`,
+heading when there is none. A note takes at most one of `--standing` and
+`--open`, the mark of the line, listed after its text. A note takes exactly one of `--finding`,
 `--decision`, `--deviation` and `--progress`, with its text:
 
 ```sh
@@ -1479,6 +1480,24 @@ fgraph show S-0001
 #     progress         2026-11-22  red: 1 failed
 # Progress (1)
 #   2026-11-22  the parser is read; next the show
+```
+
+A line of knowledge may be marked when it is noted: `--open` for a line not
+settled yet, `--standing` for one that holds until a later line supersedes it.
+`fgraph show` and `fgraph knowledge` list the mark right after the text:
+
+```sh
+fgraph note S-0001 --finding "is the queue one file too" --open
+# noted S-0001
+
+fgraph note S-0001 --decision "keep one file per item" --standing
+# noted S-0001
+
+fgraph show S-0001
+# ...
+# Knowledge (2)
+#   finding  2026-11-22  is the queue one file too  (open)
+#   decision  2026-11-22  keep one file per item  (standing)
 ```
 
 `fgraph knowledge` lists the lines of every work item and every Feature of the

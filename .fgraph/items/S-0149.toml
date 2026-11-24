@@ -9,6 +9,11 @@ completed = 2026-11-24 05:15:16+00:00
 agent = "sonnet-a15"
 commit = "ad5f0ae"
 
+[verified]
+answer = "yes"
+text = "at ad5f0ae on main, the merge of wi/S-0149-cut-the-releases-fgraph, in a throwaway repository tagged v0.1.0 with a Story landed since and no answer of fgraph verify: fgraph release exit 2 printed fgraph: error: S-0001 not verified since v0.1.0: no release -- run fgraph verify on each first, the tags still v0.1.0 alone; after fgraph verify S-0001 --yes it holds printed verified S-0001, fgraph release exit 0 printed tagged v0.2.0 at the head of main, the tags v0.1.0 and v0.2.0. make check on the tree of the landing, the branch with main merged at 67b7a09: 3834 passed, all checks passed. Handed whole to one subagent on sonnet, no deviation; src/flowgraph/development/release.py holds 198 lines against the about 195 of the brief. Seen by it and left: the second if of the comprehension of _completed_since narrows a type alone."
+on = 2026-11-24 05:16:19+00:00
+
 [criterion]
 given = "a main with a v* tag and, completed since it, a Story that holds no answer of fgraph verify"
 when = "fgraph release is run, and run again once fgraph verify has kept a yes for the Story"

@@ -5,6 +5,7 @@ from collections.abc import Callable, Iterable
 from flowgraph.criterion import Evidence
 from flowgraph.record import Now
 from flowgraph.task import (
+    TaskAmendment,
     TaskId,
     TaskNotFoundError,
     make_task,
@@ -21,6 +22,7 @@ from flowgraph.work_item.model import (
 )
 from flowgraph.work_item.moves import still_open
 from flowgraph.work_item.tasks import (
+    amended_task,
     blocked_task,
     completed_task,
     removed_task,
@@ -115,6 +117,23 @@ def unblock_task(
     """
     item = load_holder(task_id)
     save_work_item(unblocked_task(item, task_id))
+    return item.id
+
+
+def amend_task(
+    *,
+    task_id: TaskId,
+    amendment: TaskAmendment,
+    load_holder: LoadHolder,
+    save_work_item: SaveWorkItem,
+) -> WorkItemId:
+    """Amend the Task in Backlog of that id, save its work item whole and return its id.
+
+    Raises TaskNotFoundError when no item holds the Task, or the refusal of `amended_task`;
+    nothing is saved.
+    """
+    item = load_holder(task_id)
+    save_work_item(amended_task(item, task_id, amendment))
     return item.id
 
 

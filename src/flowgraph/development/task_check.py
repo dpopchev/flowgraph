@@ -11,7 +11,7 @@ from flowgraph.record import DEVELOPMENT_ENABLED
 
 
 class CheckError(ValueError):
-    """A Task added without its check while the development is on, or with one while it is off."""
+    """A Task added without its check with the development on, or added or amended with one off."""
 
 
 class TaskCheckError(Exception):
@@ -32,6 +32,13 @@ def check_task_passes(task: str, check: str | None, directory: Path, run_check: 
         raise TaskCheckError(f"{task} cannot complete: {said}")
 
 
+def _refuse_check_off(check: str | None, development_on: bool, config_file: Path) -> None:
+    """Raise CheckError naming the key that turns the development on when a check is given off."""
+    if check is not None and not development_on:
+        turn_on = f"set {DEVELOPMENT_ENABLED} = true in {config_file}"
+        raise CheckError(f"a Task takes no --check: the development is off -- {turn_on}")
+
+
 def check_task_checked(check: str | None, development_on: bool, config_file: Path) -> None:
     """Refuse a Task added without a check with the development on, or with one with it off.
 
@@ -40,6 +47,13 @@ def check_task_checked(check: str | None, development_on: bool, config_file: Pat
     """
     if development_on and check is None:
         raise CheckError("the development is on, so a Task is added with --check COMMAND")
-    if check is not None and not development_on:
-        turn_on = f"set {DEVELOPMENT_ENABLED} = true in {config_file}"
-        raise CheckError(f"a Task takes no --check: the development is off -- {turn_on}")
+    _refuse_check_off(check, development_on, config_file)
+
+
+def check_task_amended(check: str | None, development_on: bool, config_file: Path) -> None:
+    """Refuse an amend of a Task that gives a check with the development off.
+
+    An amend keeps the parts not given, so none is asked of one that names none; with the
+    development on a check given is kept. Raises CheckError as the add of a Task does.
+    """
+    _refuse_check_off(check, development_on, config_file)

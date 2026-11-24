@@ -34,16 +34,21 @@ from flowgraph.record.layers import (
 )
 from flowgraph.record.location import (
     ITEMS,
+    KEY,
     NAMES,
+    FindNamed,
     Found,
     Given,
     GivenMissing,
     IsDir,
     Location,
     Missing,
+    NamedMissing,
     NotFound,
     Now,
     locate,
+    no_name,
+    why_missing,
 )
 
 __all__ = [
@@ -56,9 +61,11 @@ __all__ = [
     "DEVELOPMENT_PARALLEL",
     "GIT_COMMIT",
     "ITEMS",
+    "KEY",
     "NAMES",
     "Config",
     "ConfigError",
+    "FindNamed",
     "Found",
     "Gate",
     "Gated",
@@ -70,6 +77,7 @@ __all__ = [
     "Merge",
     "Missing",
     "Mode",
+    "NamedMissing",
     "NotFound",
     "Now",
     "Parallel",
@@ -79,5 +87,7 @@ __all__ = [
     "branched",
     "locate",
     "make_config",
+    "no_name",
     "read_config",
+    "why_missing",
 ]

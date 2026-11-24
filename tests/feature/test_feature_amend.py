@@ -157,6 +157,8 @@ def test_a_feature_amended_is_saved_whole_with_the_criteria_given_in_place_of_it
         (Amendment(hypothesis="a question"), "hypothesis"),
         (Amendment(parent=STANDALONE), "parent"),
         (Amendment(realizes=CriterionPlace(1)), "realizes"),
+        (Amendment(output="an output"), "output"),
+        (Amendment(check="make test"), "check"),
         (Amendment(title="another title", given="a state", then="another"), "given, then"),
     ],
     ids=[
@@ -168,6 +170,8 @@ def test_a_feature_amended_is_saved_whole_with_the_criteria_given_in_place_of_it
         "hypothesis",
         "parent",
         "realizes",
+        "output",
+        "check",
         "beside-a-title",
     ],
 )

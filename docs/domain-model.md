@@ -144,7 +144,8 @@ without `--check` is refused with exit 2 naming it. With the development off it
 is refused, naming `development.enabled`. A blank one is refused where the Task
 is built. It is kept in the file of the work item, listed by `fgraph show`
 under the Task, and carried by every move of the Task. A Task written before
-holds none and is read as before. `complete` runs it (Persistence).
+holds none and is read as before. `complete` runs it (Persistence). An amend of
+the Task in Backlog rewrites it (S-0144).
 
 A Story, a Bug, an Upkeep and a Spike carry a complexity: `low`, `medium` or
 `high`, none when it is left out, the reading of S-0112. It is set by `fgraph
@@ -549,8 +550,7 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
   text: a blank one clears it.
 - An amendment that names no part is refused.
 - Only a work item in Backlog is amended: a started or a completed one is
-  refused, since its wording is what the work was started on. A Task is not
-  amended yet.
+  refused, since its wording is what the work was started on.
 - Its parent is a part too, the reading of S-0059: `--parent F-0001` puts the
   work item under that Feature and `--parent none` takes it out to stand
   alone, alone or beside the other parts. It is still no move of the work
@@ -611,6 +611,31 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
   and `--criterion` given to a work item is refused the other way round,
   `S-0001 has no criteria: only a Feature states them`. Nothing is written
   then, the other parts named beside it neither.
+- A Task in Backlog is amended too, the reading of S-0144: `amend` of its id
+  rewrites its title (`--title`), its output (`--output`), its check
+  (`--check`) and its description (`--description`), one alone or several
+  together, each through the constructor an `add` uses, so a blank title,
+  output or check is refused and a blank description clears it. It is no move
+  of the Task: its id, its created time, its state and its place among the
+  Tasks stay. It is one write of the file of the work item that holds it,
+  saved whole.
+- The work items that take it are those that take a new Task: one in Backlog,
+  started or blocked; a completed or a removed one refuses. A Task that is not
+  in Backlog is refused naming its state, `T-0001 is started already`,
+  `T-0001 is blocked`, `T-0001 is completed already`. A part that is no part
+  of a Task is refused naming it, `T-0001 has no then: a Task is amended by
+  its title, its output, its check and its description`, and `--output` or
+  `--check` given to a work item the other way round, `S-0001 has no output:
+  only a Task states them`. An amendment that names no part is refused, `amend
+  rewrites no part of T-0002: name one`. Nothing is written then.
+- Its check follows the add of a Task: with the development off a check given
+  is refused in the words of the add, `a Task takes no --check: the
+  development is off -- set development.enabled = true in <file>`; with it on
+  a check given is kept; and none is asked of an amend that names none, since
+  an amend keeps the parts not given. It is committed as `chore: amend T-0001
+  of S-0001 in the record`. With the development on a Task in Backlog of a
+  started work item is amended in the worktree of that work item and refused
+  on `main` naming it, as every write of its Tasks is.
 
 ## Depends on
 
@@ -1152,14 +1177,36 @@ since history is not rewritten, and map to the new ids by the number.
 The record is plain TOML files tracked by git: git is its history, its backup
 and its merge tool.
 
-- `fgraph init` makes the record of a directory: `.fgraph/` in the directory it
-  runs in, or in the one `--dir` names. Inside it writes `config.toml` alone,
+- `fgraph init` makes the record of a directory: with the key `git config
+  fgraph.record` set and no `--dir`, the folder the key names, refused when that
+  folder is there or when its parent is no directory; else `.fgraph/` in the
+  directory it runs in, or in the one `--dir` names. A named folder is
+  committed or not by the rule of any record. Inside it writes `config.toml` alone,
   at the defaults (`[git] commit = true`, `[development] enabled = false`),
   since git commits no empty directory; `items/` comes with the first write. In
   a git work tree it commits that file as one write of the record, `chore: make
   the record`, unless git ignores the record. A directory that holds `.fgraph/`
   or `fgraph/` is refused, exit 2, naming it, and nothing is written; init is
   the one command that runs with no record located.
+- S-0128, the decision of the developer of 2026-11-23 (a key of the git
+  configuration of the clone, no variable of the environment and no file at the
+  root): the record is located in this order: `--dir`, then the folder the key
+  `git config fgraph.record` names, relative to the root of the repository, then
+  `.fgraph/`, then `fgraph/` in the directory it runs in. The developer writes
+  the key; fgraph never does. No key, an empty value and a directory outside a
+  git work tree read nothing, so a record outside git is located as before. A
+  key that names no directory exits 2 with `fgraph: error: git config
+  fgraph.record names <path>, which is no directory -- run fgraph init, or name
+  another with git config fgraph.record PATH`. Worktrees share the
+  configuration of their clone and each reads the folder under its own top, so a
+  tracked record is the directory at the same path inside each worktree, as the
+  bullets on the Task ids and on status already say, while a folder git ignores
+  is in the checkout of main alone and the same command in the worktree of a
+  work item exits 2 naming the key and the path there. fgraph asks git whether a
+  rule names the folder, as for `.fgraph/`, so a record meant to stay untracked
+  is named in `.git/info/exclude` or a `.gitignore` and takes the rules of the
+  bullets starting A record git ignores and With the development on, the start
+  of a work item on an ignored record, both left as written.
 - One directory, `items/`, holds every item: one file per work item with its
   Tasks inside it, named by its id, `items/S-0001.toml`. The prefix of the id
   is the one place that says the kind, so there is no directory per kind.
@@ -2122,6 +2169,7 @@ held to `main`, and there is no landing:
 | add a work item | `main` |
 | add a Feature | `main` |
 | add a Task to a work item in Backlog | `main` |
+| amend a Task of a work item in Backlog | `main` |
 | reorder the Backlog | `main` |
 | amend a work item in Backlog | `main` |
 | amend a Feature in Backlog | `main` |
@@ -2134,6 +2182,7 @@ held to `main`, and there is no landing:
 | start a work item | `main`: `fgraph` commits it and makes its branch |
 | start a Feature | `main`: `fgraph` commits it with its first work item and makes the branch of that one |
 | add a Task to a started work item | its branch |
+| amend a Task in Backlog of a started work item | its branch |
 | start, block, unblock, complete and remove its Tasks | its branch |
 | hand a started work item to an agent | its branch: `fgraph hand` in its worktree, or from `main` with `--dir` on the record of that worktree |
 | block and unblock a started work item | its branch: `fgraph block` and `fgraph unblock` in its worktree, or from `main` with `--dir` on the record of that worktree |
@@ -2249,7 +2298,7 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   | add a work item | `chore: add S-0001 in the record` |
   | add a Feature | `chore: add F-0001 in the record` |
   | add a Task | `chore: add T-0001 of S-0001 in the record` |
-  | amend | `chore: amend S-0001 in the record`, `chore: amend F-0001 in the record` for a Feature |
+  | amend | `chore: amend S-0001 in the record`, `chore: amend F-0001 in the record` for a Feature, `chore: amend T-0001 of S-0001 in the record` for a Task |
   | reorder | `chore: reorder S-0002 before S-0001 in the record`, `chore: reorder F-0001 before S-0001 in the record` |
   | start | `chore: start S-0001 in the record`, `chore: start T-0001 of S-0001 in the record`, `chore: start F-0001 in the record` for a Feature and its first work item |
   | hand | `chore: hand S-0001 to opus-b2 in the record` |

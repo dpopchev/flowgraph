@@ -13,3 +13,8 @@ criteria = [
 kind = "decision"
 text = "The developer gave the go on 2026-11-24, with the word file, to the plan shown that day: Phase 1, Agent Execution Interface, Scope Gates and Governed Briefs, is five Features on top of the Backlog in the order F-0019, F-0020, F-0018, F-0021, F-0022, the model holding no level above a Feature; 14 items of the Backlog are put under them with their ids and their Tasks, none removed. For F-0018: the JSON is --format json, never --json; a write keeps its one line and a refusal its one line on stderr with exit 2, neither as JSON, the smaller of two readings. The complexities of the work items of the five are the estimates of the agent the plan showed."
 noted = 2026-11-24 19:55:46+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer decided on 2026-11-24: F-0018 is split. It keeps its three reads as JSON, S-0154, S-0155 and S-0156; its refusals are F-0023, with their ten work items. Seen that day in a throwaway record: fgraph start of a Feature is refused while a work item of it holds no Task. Phase 1 is six Features in the order F-0019, F-0020, F-0018, F-0023, F-0021, F-0022."
+noted = 2026-11-24 21:20:11+00:00

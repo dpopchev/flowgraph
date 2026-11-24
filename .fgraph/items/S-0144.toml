@@ -1,14 +1,11 @@
 id = "S-0144"
-state = "blocked"
+state = "started"
 title = "Raise the Tasks in Backlog fgraph amend takes from none to every one: its title, its output, its check and its description"
 description = "Filed on the word of the developer of 2026-11-23, picked from the map made that day of what the skills and rules of ~/.claude ask of board 1 that fgraph does not do and no Backlog item builds, so that those skills can call fgraph in its place. In board 1: board amend of a todo Task: its action, output and check. Its Tasks are written when it is ordered."
 complexity = "medium"
 created = 2026-11-23 20:38:49+00:00
 started = 2026-11-24 05:41:11+00:00
 agent = "sonnet-a20"
-since = 2026-11-24 05:46:06+00:00
-reason = "the check of T-0544 asks src/flowgraph/parser/item_commands.py for 215 lines or fewer; the module holds 248 since S-0146, S-0143 and S-0100, its amend parser is 33 lines, and the move the Task describes leaves 217 -- the check or the scope of T-0544 changes on the word of the developer alone; nothing of S-0144 is started or changed"
-waiting_on = "developer"
 depends_on = [
     "S-0100",
     "U-0025",

@@ -3,20 +3,12 @@
 The moves between its states are in flowgraph.task.moves.
 """
 
-import re
-from collections.abc import Collection
 from dataclasses import dataclass
 from datetime import datetime
 from typing import assert_never
 
 from flowgraph.criterion import Evidence, evidence_text, said
-
-
-@dataclass(frozen=True)
-class TaskId:
-    """The identity of a Task: its number in the record, written `T-0001`."""
-
-    number: int
+from flowgraph.task.id import TaskId, task_id_text
 
 
 @dataclass(frozen=True)
@@ -75,15 +67,30 @@ class CompletedTask:
     check: str | None = None
 
 
+@dataclass(frozen=True)
+class RemovedTask:
+    """A Task in Removed: taken out of its started work item, with the reason it was."""
+
+    id: TaskId
+    title: str
+    expected_output: str
+    description: str
+    created: datetime
+    removed: datetime
+    reason: str
+    check: str | None = None
+
+
 # A Task in any of its states, as the file of its Story keeps it.
-TaskState = Task | StartedTask | BlockedTask | CompletedTask
+TaskState = Task | StartedTask | BlockedTask | CompletedTask | RemovedTask
 
 
 @dataclass
 class TaskRow:
     """One Task as plain data, as a view reads it from the record.
 
-    A commit once completed in one; a reason and what it waits on while blocked.
+    A commit once completed in one; a reason and what it waits on while blocked, a reason once
+    removed too.
     """
 
     id: str
@@ -95,10 +102,6 @@ class TaskRow:
     reason: str = ""
     waiting_on: str = ""
     check: str = ""
-
-
-class TaskIdError(ValueError):
-    """A number or a text that is no Task id."""
 
 
 class TaskNotFoundError(Exception):
@@ -129,6 +132,10 @@ class CompletedAlreadyError(ValueError):
     """A completed Story or Task moved once more, or a Task written for a completed Story."""
 
 
+class TaskRemovedError(ValueError):
+    """A removed Task moved once more."""
+
+
 class NotStartedError(ValueError):
     """A Story or a Task completed, or a Task blocked, while it is still in Backlog."""
 
@@ -143,37 +150,6 @@ class ItemInBacklogError(ValueError):
 
 class OpenTaskError(ValueError):
     """A work item completed while some of its Tasks are not."""
-
-
-def make_task_id(number: int) -> TaskId:
-    """The id of the Task with that number in the record.
-
-    Raises TaskIdError when the number is below 1.
-    """
-    if number < 1:
-        raise TaskIdError(f"a Task id counts from 1: {number} is below 1")
-    return TaskId(number)
-
-
-def task_id_text(task_id: TaskId) -> str:
-    """The id as it is written: `T-` and the number, at least four digits."""
-    return f"T-{task_id.number:04d}"
-
-
-def parse_task_id(text: str) -> TaskId:
-    """The id written as the text.
-
-    Raises TaskIdError when the text is not `T-` and a number.
-    """
-    written = re.fullmatch(r"T-(\d+)", text)
-    if written is None:
-        raise TaskIdError(f"{text!r} is no Task id: it is T- and a number")
-    return make_task_id(int(written.group(1)))
-
-
-def next_task_id(taken: Collection[TaskId]) -> TaskId:
-    """The next free id: one above the highest taken, the first when none is."""
-    return make_task_id(max((task_id.number for task_id in taken), default=0) + 1)
 
 
 def make_task(
@@ -205,6 +181,8 @@ def task_state_name(task: TaskState) -> str:
             return "blocked"
         case CompletedTask():
             return "completed"
+        case RemovedTask():
+            return "removed"
         case _ as unreachable:
             assert_never(unreachable)
 
@@ -212,7 +190,7 @@ def task_state_name(task: TaskState) -> str:
 def row_of(task: TaskState) -> TaskRow:
     """The Task as the row a view reads: its commit once completed, its block while blocked.
 
-    A Task completed without a commit reads with none.
+    A Task completed without a commit reads with none; a removed one reads with its reason.
     """
     row = TaskRow(
         task_id_text(task.id),
@@ -230,6 +208,9 @@ def row_of(task: TaskState) -> TaskRow:
             return row
         case CompletedTask():
             row.commit = evidence_text(task.commit)
+            return row
+        case RemovedTask():
+            row.reason = task.reason
             return row
         case _ as unreachable:
             assert_never(unreachable)

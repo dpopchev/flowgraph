@@ -39,6 +39,7 @@ from flowgraph.knowledge import FINDING, make_knowledge_line
 from flowgraph.parent import STANDALONE, FeatureId, Parent, make_feature_id
 from flowgraph.record.queue import make_queue
 from flowgraph.record.store import FeatureStore, Store
+from flowgraph.relation import RelationError
 from flowgraph.status import status_text
 from flowgraph.story import STORY, make_story_id
 from flowgraph.task import (
@@ -58,6 +59,7 @@ from flowgraph.work_item import (
     completed_task,
     completed_work_item,
     make_work_item,
+    removed_task,
     removed_work_item,
     started_task,
     started_work_item,
@@ -460,6 +462,31 @@ def test_a_feature_the_record_does_not_hold_is_not_removed() -> None:
 def test_any_other_id_is_removed_as_a_work_item() -> None:
     removed = remove_named("S-0001", REASON, store([story(1, STANDALONE)]), lambda: ON)
     assert removed == Written("removed S-0001\n", "chore: remove S-0001 in the record")
+
+
+@pytest.mark.command
+def test_a_task_of_a_started_story_is_removed_and_its_story_saved() -> None:
+    saved = Saved()
+    remove_named("T-0001", REASON, store([started(1)], saved=saved), lambda: ON)
+    assert saved.items == [removed_task(started(1), make_task_id(1), REASON, ON)]
+
+
+@pytest.mark.command
+def test_a_task_removed_says_its_id_its_story_and_the_message_of_its_commit() -> None:
+    removed = remove_named("T-0001", REASON, store([started(1)]), lambda: ON)
+    assert removed == Written(
+        "removed T-0001 of S-0001\n", "chore: remove T-0001 of S-0001 in the record"
+    )
+
+
+@pytest.mark.command
+def test_a_task_given_what_supersedes_it_is_refused_and_saves_nothing() -> None:
+    saved = Saved()
+    with pytest.raises(
+        RelationError, match=r"^T-0001 is a Task: it is removed with --reason alone$"
+    ):
+        remove_named("T-0001", REASON, store([started(1)], saved=saved), lambda: ON, "S-0002")
+    assert (saved.features, saved.items) == ([], [])
 
 
 @pytest.mark.command

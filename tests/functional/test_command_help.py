@@ -37,6 +37,7 @@ COMMANDS = [
     ("complete",),
     ("land",),
     ("release",),
+    ("sync",),
     ("note",),
     ("verify",),
     ("knowledge",),
@@ -170,10 +171,10 @@ def test_the_help_menu_says_a_landing_runs_its_gate() -> None:
     )
 
 
-def test_the_help_menu_says_a_remove_takes_a_work_item_in_backlog_or_a_feature() -> None:
+def test_the_help_menu_says_a_remove_takes_a_work_item_in_backlog_a_task_or_a_feature() -> None:
     menu = " ".join(fgraph(["--help"]).out.split())
     summary = menu.split(" remove ", 1)[1].split(" note ", 1)[0]
-    assert summary == "remove a work item in Backlog or a Feature, kept with its reason"
+    assert summary == "remove a work item in Backlog, a Task or a Feature, with its reason"
 
 
 def test_the_help_of_reorder_names_the_feature_beside_the_work_item() -> None:

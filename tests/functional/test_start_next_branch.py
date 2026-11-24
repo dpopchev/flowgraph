@@ -162,7 +162,8 @@ class TestAStoryOfAStartedFeatureLandedWhileTheNextIsInBacklog:
         worktree = tmp_path / "project.worktrees" / NEXT_LEAF
         assert (landed.status, landed.out) == (
             0,
-            f"landed S-0001 at {merge}\nstarted S-0002\nbranch {NEXT_BRANCH} in {worktree}\n",
+            f"landed S-0001 at {merge}\nrun: an action -> another\n"
+            f"started S-0002\nbranch {NEXT_BRANCH} in {worktree}\n",
         )
 
     def test_the_complete_and_the_start_are_one_commit_of_the_record_with_the_files_of_both(
@@ -225,7 +226,8 @@ class TestAStoryLandedWhileTheNextOfItsStartedFeatureHasNoTask:
         merge = git(checkout, "rev-parse", "--short", "HEAD~1")
         assert (landed.status, landed.out) == (
             0,
-            f"landed S-0001 at {merge}\nnot started: S-0002 has no Task to start with\n",
+            f"landed S-0001 at {merge}\nrun: an action -> another\n"
+            "not started: S-0002 has no Task to start with\n",
         )
 
     def test_the_complete_is_committed_with_the_file_of_the_story_alone(
@@ -262,7 +264,7 @@ class TestAStoryLandedWhileAsManyWorkItemsAreStartedAsParallelStarts:
         refusal = "S-0002 cannot start: development.parallel = 1, started already: S-0003"
         assert (landed.status, landed.out) == (
             0,
-            f"landed S-0001 at {merge}\nnot started: {refusal}\n",
+            f"landed S-0001 at {merge}\nrun: an action -> another\nnot started: {refusal}\n",
         )
 
     def test_status_lists_the_feature_in_progress_with_no_story_started_under_it(

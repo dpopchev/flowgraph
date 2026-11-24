@@ -15,6 +15,7 @@ from flowgraph.development.parallel import ParallelError
 from flowgraph.development.release import ReleaseError
 from flowgraph.development.scope import NotOnMainError, OutOfScopeError
 from flowgraph.development.start_branch import BranchExistsError
+from flowgraph.development.sync import SyncError
 from flowgraph.development.task_check import CheckError, TaskCheckError
 from flowgraph.development.version import VersionError
 from flowgraph.development.way import LandError
@@ -47,6 +48,7 @@ from flowgraph.task import (
     TaskIdError,
     TaskInProgressError,
     TaskNotFoundError,
+    TaskRemovedError,
 )
 from flowgraph.term import TermError, TermFileError, TermNotFoundError
 from flowgraph.term.item import TermExistsError
@@ -90,6 +92,7 @@ REFUSED = (
     LandError,
     GateError,
     ReleaseError,
+    SyncError,
     VersionError,
     CheckError,
     TaskCheckError,
@@ -122,6 +125,7 @@ REFUSED = (
     OpenTaskError,
     OpenWorkItemError,
     CompletedAlreadyError,
+    TaskRemovedError,
     NotInBacklogError,
     SameItemError,
     UnderFeatureError,

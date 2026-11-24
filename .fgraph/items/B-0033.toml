@@ -38,3 +38,8 @@ description = "Change README.md (3367 lines on 2026-11-24) and docs/domain-model
 check = "grep -q 'a progress line takes no --standing: it is no knowledge line' README.md && grep -q 'a progress line takes no --standing: it is no knowledge line' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, in the bullet of the progress line, lists --standing and --open among its refusals with the line a progress line takes no --standing: it is no knowledge line; README.md says a progress line takes no --standing and no --open, with the line"
 created = 2026-11-24 22:18:08+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, under the /goal of Phase 1 the developer set on 2026-11-24, which has the coordinator write the Tasks before a Feature starts; the developer was not asked and reviews them at the close: (1) The option is refused, not the mark kept: keeping it would add a field to the progress table of the file and to show; the refusal is the reading the item lists first and the one --about and --governs already take. (2) The line names the option given, a progress line takes no --standing: it is no knowledge line (or --open), in the words of the refusal of --about and --governs; that refusal keeps its words and comes first when both are given."
+noted = 2026-11-24 22:19:32+00:00

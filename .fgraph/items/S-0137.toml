@@ -13,6 +13,11 @@ depends_on = [
     "S-0136",
 ]
 
+[verified]
+answer = "yes"
+text = "at bb1ec50, on a scratch record with an item in each bucket: fgraph status --all heads the buckets \"backlog (1)\", \"in-progress (1)\", \"completed (1)\", \"removed (1)\"; fgraph status --format json names them backlog, in-progress, completed, removed; fgraph show, fgraph brief and fgraph graph print bucket completed, in-progress, removed, backlog; grep finds Backlog, InProgress, Completed or Removed in none of the outputs"
+on = 2026-11-24 16:14:01+00:00
+
 [criterion]
 given = "a record with an item in each bucket"
 when = "fgraph status is run as text and as JSON, and fgraph show, fgraph graph and fgraph brief of an item"

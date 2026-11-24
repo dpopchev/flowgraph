@@ -14,6 +14,11 @@ depends_on = [
     "S-0103",
 ]
 
+[verified]
+answer = "yes"
+text = "at 3e4a609, on a scratch record with a superseded decision S-0001#1, a standing decision S-0001#2 that supersedes it and an open finding S-0001#3: fgraph knowledge lists all three; fgraph knowledge --live lists \"finding  S-0001#3  is the queue one file too  (open)\" and \"decision  S-0001#2  keep one store  (standing)\" alone"
+on = 2026-11-24 12:53:31+00:00
+
 [criterion]
 given = "a record with a standing line, an open line and a superseded line"
 when = "the live lines of fgraph knowledge are asked for"

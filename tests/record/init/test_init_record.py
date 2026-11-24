@@ -12,6 +12,7 @@ from flowgraph.development.commit import Said, WorkTree
 from flowgraph.development.git import GitError
 from flowgraph.record.config import Settings
 from flowgraph.record.init import init_record
+from flowgraph.record.location import FindNamed, no_name
 from flowgraph.record.store import Store
 
 pytestmark = pytest.mark.command
@@ -82,16 +83,27 @@ def work_tree(effects: Effects, refuses: Refusal) -> WorkTree:
     )
 
 
-def init(effects: Effects, *, inside_git: bool, refuses: Refusal = None) -> Said:
-    """Init the record of CWD, inside a git work tree or outside any, as git refuses as asked."""
+def init(
+    effects: Effects,
+    *,
+    inside_git: bool,
+    refuses: Refusal = None,
+    given: Path | None = None,
+    find_named: FindNamed = no_name,
+) -> Said:
+    """Init the record of CWD, inside a git work tree or outside any, as git refuses as asked.
+
+    Only CWD and the directory given exist, so a folder named is made in CWD itself.
+    """
     return init_record(
         CWD,
-        None,
-        lambda _: False,
+        given,
+        lambda path: path in (CWD, given),
         effects.made.append,
         lambda path: effects.undone.append(f"remove {path}"),
         lambda _: store(effects),
         lambda _: work_tree(effects, refuses) if inside_git else None,
+        find_named,
     )
 
 
@@ -163,3 +175,39 @@ def test_passes_the_refusal_of_git_on_as_it_was() -> None:
 
 def test_says_the_record_it_made() -> None:
     assert init(Effects(), inside_git=False).out == "record: /work/.fgraph\n"
+
+
+NAMED = CWD / ".dpopchev"
+
+
+def test_makes_the_folder_the_key_names() -> None:
+    effects = Effects()
+    init(effects, inside_git=False, find_named=lambda _: NAMED)
+    assert effects.made == [NAMED]
+
+
+def test_says_the_folder_the_key_names() -> None:
+    said = init(Effects(), inside_git=False, find_named=lambda _: NAMED)
+    assert said.out == "record: /work/.dpopchev\n"
+
+
+def test_asks_the_key_for_the_directory_it_runs_in() -> None:
+    asked: list[Path] = []
+
+    def find_named(directory: Path) -> None:
+        asked.append(directory)
+
+    init(Effects(), inside_git=False, find_named=find_named)
+    assert asked == [CWD]
+
+
+def never_named(directory: Path) -> Path | None:
+    """A find_named that fails the test when it is asked."""
+    raise AssertionError(f"find_named asked for {directory}")
+
+
+def test_makes_the_record_in_the_directory_given_without_asking_the_key() -> None:
+    effects = Effects()
+    given = CWD / "other"
+    init(effects, inside_git=False, given=given, find_named=never_named)
+    assert effects.made == [given / ".fgraph"]

@@ -1982,26 +1982,29 @@ development too.
 - The start of a Task is neither counted nor limited by `parallel`: a work
   item has one started Task at a time whatever the key. A work item that is
   not in Backlog is left to the start, which refuses it for its own state.
-- `[development] merge` names how a landing merges, one of three words:
-  `merge-commit`, `squash` or `fast-forward`, the reading of the developer's
-  request for merging strategies taken when S-0043 was ordered. Left out it
-  is `merge-commit`, the one merge a landing made before the key, so a record
-  that names none lands as it did. It is a key of the development, so it says
-  nothing with the development off, where it is held as written. A landing
-  through a pull request is no way of merging: it is left out.
+- `[development] merge` names how a landing merges, one of four words:
+  `merge-commit`, `squash`, `fast-forward` or `pull-request`, the reading of
+  the developer's request for merging strategies taken when S-0043 was
+  ordered. Left out it is `merge-commit`, the one merge a landing made before
+  the key, so a record that names none lands as it did. It is a key of the
+  development, so it says nothing with the development off, where it is held
+  as written. `pull-request` leaves the merge to a pull request on the host of
+  the remote (S-0097).
 - What `main` gains by each: by `merge-commit` one merge commit of the
   branch, with two parents; by `squash` one commit of its own alone that
   holds the work of the branch, with one parent, so `main` holds none of the
   commits of the branch; by `fast-forward` no new commit, `main` moved to the
-  tip of the branch. `--message` words the commit a `merge-commit` or a
-  `squash` makes and is needed by both; a `fast-forward` makes none to word
-  and is refused with one. Both refusals exit 2 naming the option and the
-  key, `development.merge`, before any git step.
+  tip of the branch; by `pull-request` nothing from the landing itself.
+  `--message` words the commit a `merge-commit` or a `squash` makes and is
+  needed by both; a `fast-forward` or a `pull-request` makes none to word and
+  is refused with one. Both refusals exit 2 naming the option and the key,
+  `development.merge`, before any git step.
 - The way of merging is a closed set in the model (`Merge`,
   `src/flowgraph/record/layers.py`), and a landing is built from it with its message
-  as one of three values -- `MergeCommit` and `Squash`, each with the
-  message, and `FastForward`, with none (`src/flowgraph/development/way.py`) -- so a
-  fast-forward with a message and a commit without one cannot be built.
+  as one of four values -- `MergeCommit` and `Squash`, each with the
+  message, and `FastForward` and `PullRequest`, with none
+  (`src/flowgraph/development/way.py`) -- so a fast-forward with a message and a
+  commit without one cannot be built.
 - `[development] gate` names one command of the record, a command line run
   at a landing. It is the reading, decided when S-0042 was ordered, of the
   developer's words of 2026-11-21 on starting a work item, "checks if
@@ -2391,6 +2394,28 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   checked, then `main` is moved to the tip of the branch, and the branch is
   removed as a merged one. Either completes the work item at the short sha
   of the commit `main` is then on, with the commit of the record.
+- By `pull-request` the merge held is checked -- the work item completes, the
+  gate passes -- and dropped; the branch is pushed under its own name to the
+  remote `main` tracks (`requested`, `src/flowgraph/development/delivery.py`)
+  and the landing says its three lines, then exits 0 with `main`, the record,
+  the worktree and the branch as they were:
+
+  ```text
+  pushed <branch> to <remote>
+  open its pull request: gh pr create --base main --head <branch>
+  <id> is not completed: run fgraph land <id> again once main holds its pull request merged
+  ```
+
+  fgraph opens no pull request and names `gh pr create` as the command, the
+  smallest reading of the open point of S-0097. Run again while `main` lacks
+  the branch, it pushes again. Run once the branch brings no change to
+  `main` -- the pull request merged and `main` pulled by the developer -- it
+  is taken up as any landing: it completes the work item at the commit
+  `main` is on, commits the record on `main`, removes the worktree and
+  deletes the branch as an unmerged one, since the host may rebase or squash
+  it. fgraph fetches nothing. A `main` that tracks no branch of a remote is
+  refused by git's own words with `-- <branch> is not pushed, <id> is not
+  landed`.
 - The gate of the record, when `[development] gate` names one, is a step of
   every way, run on the merge held once the work item is checked to
   complete: before the commit of a `merge-commit` or a `squash`, and before
@@ -2455,7 +2480,8 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   the same work.
 - A landing is refused, with nothing merged, when the development is off, on
   the trunk (`development.mode = trunk makes no branch to land`),
-  when `--message` is missing for a commit or given to a `fast-forward`,
+  when `--message` is missing for a commit or given to a `fast-forward` or a
+  `pull-request`,
   when the record is outside a git work tree, when the work tree it runs in
   is not on `main`, when `[delivery] push` is `true` and `main` tracks no
   branch of a remote (B-0023), with the line `<id> cannot land: main tracks no
@@ -3063,7 +3089,7 @@ and `fgraph config show`:
 | Board 1 | Records | Closed by |
 |---|---|---|
 | `main`, no branches | cts | `development.mode = trunk`, S-0096: "no branch and no worktree was made" |
-| `pr` | g, sv | S-0097: "its branch is pushed with a pull request opened" |
+| `pr` | g, sv | `development.merge = pull-request`, S-0097: "its branch is pushed with a pull request opened" |
 | `branch max 1d` | all but cts | S-0098: "the line of the work item says its branch is older than 1d" |
 | `approver agent`, `approver developer` | all seven | S-0099: "it exits 2 saying the landing waits for the developer" |
 | `gate`, `lanes 3` | c, cts; c, sv | `development.gate`, `development.parallel`, kept |

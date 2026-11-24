@@ -65,6 +65,7 @@ def _verified_row(item: WorkItemState) -> VerifiedRow | None:
 
 def work_item_row(item: WorkItemState) -> WorkItemRow:
     """The work item as the row a view reads, whole: the row its file is read as."""
+    answer = _verified_row(item)
     return WorkItemRow(
         work_item_id_text(item.id),
         item.title,
@@ -84,6 +85,7 @@ def work_item_row(item: WorkItemState) -> WorkItemRow:
         filed_during=_named_text(item.relations.filed_during),
         superseded_by=superseded_by_of(item),
         amends=_named_text(item.relations.amends),
+        verified="" if answer is None else answer.answer,
     )
 
 

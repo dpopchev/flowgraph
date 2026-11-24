@@ -2,7 +2,7 @@
 
 Run end to end through `run` on a real git repository in a temporary directory, never a faked
 git; the identity of its commits comes from the environment and no git config of the machine is
-read. The red tests are strict xfails until B-0023 lands; the guards pass today and after.
+read. The red tests fail until B-0023 lands; the guards pass today and after.
 """
 
 import subprocess
@@ -45,10 +45,6 @@ IDENTITY = {
 REFUSAL = (
     "fgraph: error: S-0001 cannot land: main tracks no branch of a remote to push to -- "
     "run git push --set-upstream <remote> main, or fgraph config set delivery.push false"
-)
-XFAIL = pytest.mark.xfail(
-    strict=True,
-    reason="B-0023: fgraph land merges before it says main tracks no branch of a remote",
 )
 
 
@@ -151,7 +147,6 @@ class TestALandingWhoseMainTracksNoRemote:
     def refused(self, tmp_path: Path) -> Refused:
         return land_untracked(tmp_path)
 
-    @XFAIL
     def test_land_exits_with_two_and_its_last_line_names_the_missing_upstream(
         self, refused: Refused
     ) -> None:
@@ -167,14 +162,12 @@ class TestALandingWhoseMainTracksNoRemote:
         assert (tmp_path / WORKTREE).is_dir()
 
 
-@XFAIL
 @pytest.mark.parametrize(("development", "argv"), WAYS, ids=WAY_IDS)
 def test_main_is_where_it_was_by_each_way(development: str, argv: list[str], tmp_path: Path) -> None:
     refused = land_untracked(tmp_path, development, argv)
     assert (refused.land.status, git(refused.checkout, "rev-parse", "main")) == (2, refused.before)
 
 
-@XFAIL
 def test_a_remote_main_does_not_track_is_refused_the_same(tmp_path: Path, origin: Path) -> None:
     checkout = started(tmp_path)
     git(checkout, "remote", "add", "origin", str(origin))

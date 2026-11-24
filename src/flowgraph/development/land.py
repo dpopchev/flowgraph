@@ -16,7 +16,8 @@ item is checked to complete: a gate that fails drops the merge, so main is where
 anything of the record is written, and again as the last step of the landing, to carry the write
 that completes the work item. A first push that fails leaves the work item started and merged,
 and `fgraph land` run again takes it up; a last push that fails leaves the landing as it is,
-since history is never undone. `[delivery] tag` at feature-close tags main between the two, after
+since history is never undone. A main that tracks no branch of a remote is refused before the
+merge, with nothing merged. `[delivery] tag` at feature-close tags main between the two, after
 the first push and before anything of the record is written, when the landing completes a
 Feature, and at close a work item that stands alone too: the tag of the landing
 (`flowgraph.development.release`), on the commit of the merge,
@@ -149,7 +150,8 @@ def land_item(
     development is off in the configuration, naming the fgraph config set that turns it on and,
     with the commits off, the one that turns them on first, when the merge
     makes a commit and no message is given or makes none and one is, when the record is outside
-    a git work tree, when the work tree is not on main, when the work item has no branch or
+    a git work tree, when the work tree is not on main, when the push of the delivery is on and main tracks no branch
+    of a remote, when the work item has no branch or
     several or when a fast-forward finds a commit on main that the branch lacks, the refusal of
     the complete when a Task of it is not completed or its decision is missing, GateError when
     the gate exits with another status than 0, and GitError when git refuses a step. Nothing is
@@ -182,6 +184,8 @@ def land_item(
     on = work_tree.current_branch()
     if on != MAIN:
         raise LandError(f"{text} lands on {MAIN}: {work_tree.path} is on {on or 'no branch'}")
+    if config.delivery.push:
+        delivery.check_main_tracked(text, work_tree)
     branch = _branch_to_land(text, work_tree.find_branches(f"wi/{text}-*"))
     landing = Landing(store, now, work_tree)
     completes = partial(_check_completes, item_id, decision, landing)

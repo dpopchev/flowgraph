@@ -10,7 +10,7 @@ import pytest
 
 from flowgraph.development import GitError
 from flowgraph.development.commit import ReleaseSteps, Said, WorkTree
-from flowgraph.development.release import ReleaseError, release_trunk
+from flowgraph.development.release import ReleaseError, UnverifiedError, release_trunk
 from flowgraph.development.scope import NotOnMainError
 from flowgraph.development.version import VersionError
 from flowgraph.record import Config, make_config
@@ -41,10 +41,22 @@ def refuse(*_: object) -> Never:
 
 
 def row(
-    item: str, commit: str = "", completed: datetime = AFTER, state: str = "completed"
+    item: str,
+    commit: str = "",
+    completed: datetime = AFTER,
+    state: str = "completed",
+    verified: str = "yes",
 ) -> WorkItemRow:
-    """A work item of the record as its row: completed by default, after the tag."""
-    return WorkItemRow(item, "a title", state, commit=commit, created=CREATED, completed=completed)
+    """A work item of the record as its row: completed after the tag and verified by default."""
+    return WorkItemRow(
+        item,
+        "a title",
+        state,
+        commit=commit,
+        created=CREATED,
+        completed=completed,
+        verified=verified,
+    )
 
 
 def store(rows: Mapping[str, Sequence[WorkItemRow]]) -> Store:
@@ -289,3 +301,94 @@ def test_a_push_refused_says_the_tag_is_made_and_not_pushed() -> None:
         GitError, match=rf"^git failed: refused -- v0\.2\.0 is tagged at {HEAD}, it is not pushed$"
     ):
         released({"S": [row("S-0001", "c0000a1")]}, tree, None, PUSHED)
+
+
+SINCE = "since v0.1.0"
+
+
+def not_verified(ids: str, since: str = f" {SINCE}") -> str:
+    """The whole line of a release refused for the work items that hold no answer."""
+    return rf"^{ids} not verified{since}: no release -- run fgraph verify on each first$"
+
+
+class TestAStoryCompletedSinceTheLastTagThatHoldsNoAnswer:
+    @pytest.fixture
+    def steps(self) -> list[object]:
+        return []
+
+    @pytest.fixture
+    def refused(self, steps: list[object]) -> UnverifiedError:
+        rows = {"S": [row("S-0001", "c0000a1", verified="")]}
+        with pytest.raises(UnverifiedError) as raised:
+            released(rows, work_tree(steps, ["v0.1.0"]))
+        return raised.value
+
+    def test_it_is_refused_naming_it_and_the_last_tag(self, refused: UnverifiedError) -> None:
+        assert str(refused) == (
+            "S-0001 not verified since v0.1.0: no release -- run fgraph verify on each first"
+        )
+
+    def test_no_tag_is_made(self, refused: UnverifiedError, steps: list[object]) -> None:
+        assert steps == []
+
+
+@pytest.mark.parametrize(
+    ("rows", "ids"),
+    [
+        ({"B": [row("B-0001", "c0000a1", verified="")]}, "B-0001"),
+        ({"U": [row("U-0001", "c0000a1", verified="")]}, "U-0001"),
+    ],
+    ids=["a-bug", "an-upkeep"],
+)
+def test_a_bug_and_an_upkeep_that_hold_no_answer_are_refused(
+    rows: Mapping[str, Sequence[WorkItemRow]], ids: str
+) -> None:
+    with pytest.raises(UnverifiedError, match=not_verified(ids)):
+        released(rows, work_tree([], ["v0.1.0"]))
+
+
+def test_a_spike_alone_is_never_asked() -> None:
+    steps: list[object] = []
+    released({"Q": [row("Q-0001", "c0000a1", verified="")]}, work_tree(steps, ["v0.1.0"]))
+    assert steps == [("tag", "v0.1.1", "release v0.1.1", "main")]
+
+
+def test_a_no_is_an_answer() -> None:
+    steps: list[object] = []
+    released({"S": [row("S-0001", "c0000a1", verified="no")]}, work_tree(steps, ["v0.1.0"]))
+    assert steps == [("tag", "v0.2.0", "release v0.2.0", "main")]
+
+
+def test_every_work_item_that_holds_no_answer_is_named_story_then_upkeep_then_bug() -> None:
+    rows = {
+        "B": [row("B-0001", "c0000a1", verified="")],
+        "U": [row("U-0001", "c0000b2", verified="")],
+        "S": [row("S-0001", "c0000c3", verified="")],
+    }
+    with pytest.raises(UnverifiedError, match=not_verified("S-0001, U-0001, B-0001")):
+        released(rows, work_tree([], ["v0.1.0"]))
+
+
+def test_a_story_the_last_tag_holds_is_not_asked() -> None:
+    steps: list[object] = []
+    rows = {"S": [row("S-0001", "c0000a1", verified="")], "U": [row("U-0001", "c0000b2")]}
+    released(rows, work_tree(steps, ["v0.1.0"], held={"c0000a1"}))
+    assert steps == [("tag", "v0.1.1", "release v0.1.1", "main")]
+
+
+def test_with_no_tag_every_completed_story_is_asked_and_the_line_has_no_since() -> None:
+    rows = {"S": [row("S-0001", "c0000a1", verified="")]}
+    with pytest.raises(UnverifiedError, match=not_verified("S-0001", "")):
+        released(rows, work_tree([]))
+
+
+def test_a_version_asked_for_does_not_pass_the_refusal() -> None:
+    rows = {"S": [row("S-0001", "c0000a1", verified="")]}
+    with pytest.raises(UnverifiedError, match=not_verified("S-0001")):
+        released(rows, work_tree([], ["v0.1.0"]), "v1.0.0")
+
+
+def test_a_verified_story_beside_one_that_holds_no_answer_names_the_second_alone() -> None:
+    rows = {"S": [row("S-0001", "c0000a1"), row("S-0002", "c0000b2", verified="")]}
+    with pytest.raises(UnverifiedError, match=not_verified("S-0002")):
+        released(rows, work_tree([], ["v0.1.0"]))

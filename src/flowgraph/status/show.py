@@ -77,7 +77,9 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
 
     The criterion is listed by the parts its kind states: a Given / When / Then, what is
     observed and expected, or a hypothesis with, once it is answered, its decision under it.
-    A parent, the work items it depends on each with its bucket, the work item it was filed
+    A parent, the criterion of it that it realizes by its place and its text, or the words none
+    of the criteria of the parent when it has none there, the work items it depends on each with
+    its bucket, the work item it was filed
     during, the work items filed during it, the work items it supersedes, the completed one it
     amends, the work items that amend it, a description, an agent, a commit, the answer of its
     closing with its day and the text the run printed, the work item that supersedes a removed
@@ -94,6 +96,10 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
     """
     bucket = next(name for name, states in BUCKETS if detail.state in states)
     under = [f"  parent       {detail.parent}\n"] if detail.parent else []
+    realized = detail.realized or f"none of the criteria of {detail.parent}"
+    realizes = (
+        [] if detail.realizes is None else [f"  realizes     {detail.realizes}  {realized}\n"]
+    )
     waits = ", ".join(f"{each.id} ({each.bucket})" for each in detail.depends_on)
     depends = [f"  depends on   {waits}\n"] if waits else []
     during = [f"  filed during {detail.filed_during}\n"] if detail.filed_during else []
@@ -129,6 +135,7 @@ def show_text(detail: StoryDetail | UpkeepDetail) -> str:
         f"{detail.id}  {detail.title}\n",
         f"  bucket       {bucket}{', blocked' if detail.waiting_on else ''}\n",
         *under,
+        *realizes,
         *depends,
         *during,
         *filed_here,

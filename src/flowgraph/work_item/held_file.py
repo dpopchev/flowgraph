@@ -7,7 +7,7 @@ supersedes it are held by the state that has them.
 from datetime import datetime
 from typing import Annotated, Literal, assert_never
 
-from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
+from pydantic import BaseModel, ConfigDict, Field, PositiveInt, TypeAdapter
 
 from flowgraph.item import (
     AnyCriterionFile,
@@ -33,6 +33,7 @@ class ItemFile(RelationsFile, ProgressTables, BaseModel):
     title: str
     description: str = ""
     parent: str = ""
+    realizes: PositiveInt | None = None
     about: list[str] = []
     complexity: Complexity | None = None
     created: HeldTime
@@ -51,6 +52,7 @@ class StartedItemFile(RelationsFile, ProgressTables, BaseModel):
     title: str
     description: str = ""
     parent: str = ""
+    realizes: PositiveInt | None = None
     about: list[str] = []
     complexity: Complexity | None = None
     created: HeldTime
@@ -71,6 +73,7 @@ class BlockedItemFile(RelationsFile, ProgressTables, BaseModel):
     title: str
     description: str = ""
     parent: str = ""
+    realizes: PositiveInt | None = None
     about: list[str] = []
     complexity: Complexity | None = None
     created: HeldTime
@@ -107,6 +110,7 @@ class CompletedItemFile(RelationsFile, ProgressTables, BaseModel):
     title: str
     description: str = ""
     parent: str = ""
+    realizes: PositiveInt | None = None
     about: list[str] = []
     complexity: Complexity | None = None
     created: HeldTime
@@ -130,6 +134,7 @@ class RemovedItemFile(RelationsFile, ProgressTables, BaseModel):
     title: str
     description: str = ""
     parent: str = ""
+    realizes: PositiveInt | None = None
     about: list[str] = []
     complexity: Complexity | None = None
     created: HeldTime

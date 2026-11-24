@@ -36,7 +36,7 @@ from flowgraph.item.progress import note_progress
 from flowgraph.item.verify import verify_item, verify_item_no
 from flowgraph.knowledge import DECISION, DEVIATION, FINDING
 from flowgraph.knowledge.governed import governs_asked
-from flowgraph.parent import parent_asked
+from flowgraph.parent import NO_CRITERION, parent_asked, realizes_asked
 from flowgraph.parser.checks import check_command
 from flowgraph.parser.item_commands import TOP
 from flowgraph.parser.stated import criterion_added, decision_given
@@ -107,6 +107,7 @@ def _written(
                 amends,
                 about,
                 _complexity_asked(args.complexity),
+                realizes_asked(args.realizes) or NO_CRITERION,
             )
         case "amend":
             amended = None if is_feature_id(args.id) else args.id
@@ -123,6 +124,7 @@ def _written(
                 depends_asked(args.depends_on, amended, store),
                 about_asked(args.about, store),
                 _complexity_asked(args.complexity),
+                realizes_asked(args.realizes),
             )
             return amend_named(args.id, parts, args.criterion, store)
         case "complete" if is_feature_id(args.id):

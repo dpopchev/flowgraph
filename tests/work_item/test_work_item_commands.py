@@ -5,6 +5,7 @@ from datetime import UTC, datetime
 import pytest
 
 from flowgraph.criterion import make_commit, make_scenario
+from flowgraph.parent import CriterionPlace, make_feature_id
 from flowgraph.task import TaskNotFoundError, TaskRow, make_task, make_task_id
 from flowgraph.work_item import (
     WorkItemDetail,
@@ -57,6 +58,26 @@ def test_a_work_item_is_added_under_the_next_id_of_its_kind() -> None:
         now=lambda: CREATED,
     )
     assert saved == [make_work_item(make_work_item_id(CHORE, 3), "a title", SCENARIO, "", CREATED)]
+
+
+def test_a_work_item_added_with_a_place_is_saved_with_it() -> None:
+    saved: list[WorkItemState] = []
+    add_work_item(
+        kind=CHORE,
+        title="a title",
+        criterion=SCENARIO,
+        description="",
+        find_work_item_rows=list,
+        save_work_item=saved.append,
+        now=lambda: CREATED,
+        parent=make_feature_id(1),
+        realizes=CriterionPlace(2),
+    )
+    assert saved == [
+        make_work_item(
+            ONE, "a title", SCENARIO, "", CREATED, make_feature_id(1), realizes=CriterionPlace(2)
+        )
+    ]
 
 
 def test_a_task_written_for_a_work_item_takes_the_next_task_id_of_the_record() -> None:

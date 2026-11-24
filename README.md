@@ -46,6 +46,7 @@ the typed edges of the whole record as JSON.
 |                                 | `--amends` the completed one it changes, `fgraph remove` |
 |                                 | `--superseded-by` the one that replaces it               |
 | the wording of a work item      | `fgraph amend` in Backlog: parent too, a Feature's too   |
+| the wording of a Task           | `fgraph amend T-0001` in Backlog                         |
 | the complexity of a work item   | `--complexity low`, `medium` or `high`, on add and amend |
 | criterion a work item realizes  | `--realizes N` beside `--parent`, on add and amend       |
 | git                             | every write of the record committed, unless turned off   |
@@ -2692,8 +2693,7 @@ fgraph show S-0002
 several in one call when given together; `--description ""` clears the
 description. An amend exits 2 and names why when it names no part, when the
 title or a part of the criterion is blank, when the work item is started or
-completed already, when the id names a Task, or when the record does not hold
-it.
+completed already, or when the record does not hold it.
 
 `--parent` puts a work item in Backlog under a Feature, and with the word
 `none` takes it out of the one it is under, to stand alone; it is given alone
@@ -2797,6 +2797,23 @@ fgraph amend F-0001 --title "Raise the kinds of work a project tracks with fgrap
 
 fgraph amend S-0002 --criterion "a developer adds every kind of work"
 # fgraph: error: S-0002 has no criteria: only a Feature states them
+```
+
+A Task still in Backlog is rewritten with `fgraph amend` too: its title with
+`--title`, its output with `--output`, its check with `--check` and its
+description with `--description`, a blank one clearing it. A part without its
+option stays, and so do its id and its place among the Tasks. The Task of a
+work item in Backlog, started or blocked is taken; a Task that is started,
+blocked or completed is refused naming its state, and so is a part of a work
+item given to a Task. `--check` is refused with the development off, as
+`fgraph add task` refuses it:
+
+```sh
+fgraph amend T-0001 --output "fgraph status lists both kinds under Backlog"
+# amended T-0001 of S-0001
+
+fgraph amend T-0001 --title "List both kinds"
+# fgraph: error: T-0001 is started already
 ```
 
 A work item filed by mistake or superseded is removed from the Backlog with
@@ -3025,7 +3042,8 @@ git log -1 --format=%s --name-only
 
 The other messages follow the write: `chore: add T-0001 of S-0001 in the
 record`, `chore: amend S-0001 in the record` -- a Feature by its id, `chore:
-amend F-0001 in the record` --, `chore: reorder S-0002 before S-0001 in the
+amend F-0001 in the record` --, a Task with its work item, `chore: amend
+T-0001 of S-0001 in the record`, `chore: reorder S-0002 before S-0001 in the
 record` -- a Feature by its id, `chore: reorder F-0001 before S-0001 in the
 record` --, `chore: start T-0001 of S-0001 in the record`,
 `chore: start F-0001 in the record` for a Feature and its first work item

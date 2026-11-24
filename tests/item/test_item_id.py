@@ -4,7 +4,7 @@ import pytest
 
 from flowgraph.bug import make_bug_id
 from flowgraph.item.commands import ItemIdError, parse_item_id, parse_work_item_id_of_any_kind
-from flowgraph.item.id import parse_moved_id, parse_placed_id, parse_shown_id
+from flowgraph.item.id import is_task_id, parse_moved_id, parse_placed_id, parse_shown_id
 from flowgraph.parent import FeatureIdError, make_feature_id
 from flowgraph.story import make_story_id
 from flowgraph.task import make_task_id
@@ -120,3 +120,12 @@ def test_a_text_that_is_no_id_block_takes_is_refused_naming_every_kind() -> None
 def test_an_id_below_one_block_is_given_is_refused_as_one_of_its_kind(text: str, why: str) -> None:
     with pytest.raises(ValueError, match=f"^{why}: 0 is below 1$"):
         parse_moved_id(text)
+
+
+@pytest.mark.parametrize(
+    ("text", "written"),
+    [("T-0001", True), ("T-0000", True), ("S-0001", False), ("F-0001", False)],
+    ids=["task", "task-below-one", "story", "feature"],
+)
+def test_a_text_is_written_as_a_task_id_when_it_is_t_and_a_number(text: str, written: bool) -> None:
+    assert is_task_id(text) is written

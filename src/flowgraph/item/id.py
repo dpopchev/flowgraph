@@ -113,6 +113,14 @@ def parse_shown_id(text: str) -> Placed:
     return parse_placed_id(text)
 
 
+def is_task_id(text: str) -> bool:
+    """True when the text is written as the id of a Task: `T-` and a number.
+
+    A number below 1 is written so too, so `T-0000` goes to the Task, whose parse refuses it.
+    """
+    return re.fullmatch(r"T-\d+", text) is not None
+
+
 def parse_moved_id(text: str) -> ItemId | FeatureId:
     """The id of a Task, of a Feature or of a work item of any kind, as fgraph block reads it.
 

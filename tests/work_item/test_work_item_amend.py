@@ -15,6 +15,7 @@ from flowgraph.task import (
 from flowgraph.work_item import (
     Amendment,
     NoPartError,
+    NoSuchPartError,
     WorkItem,
     amended_work_item,
     append_task,
@@ -118,3 +119,21 @@ def test_a_started_work_item_is_not_amended() -> None:
 def test_a_completed_work_item_is_not_amended() -> None:
     with pytest.raises(CompletedAlreadyError, match=r"^CH-0001 is completed already$"):
         amended_work_item(WHOLE, Amendment(then="a new state"))
+
+
+@pytest.mark.parametrize(
+    ("amendment", "named"),
+    [
+        (Amendment(output="an output"), "output"),
+        (Amendment(check="make test"), "check"),
+        (Amendment(output="an output", check="make test"), "output or check"),
+    ],
+    ids=["output", "check", "both"],
+)
+def test_a_part_of_a_task_given_to_a_work_item_is_refused_naming_it(
+    amendment: Amendment, named: str
+) -> None:
+    with pytest.raises(
+        NoSuchPartError, match=rf"^CH-0001 has no {named}: only a Task states them$"
+    ):
+        amended_work_item(ITEM, amendment)

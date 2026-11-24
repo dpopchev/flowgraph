@@ -38,6 +38,8 @@ class _DevelopmentTable(_Table):
     driver: Driver = Field(default=Driver.DEVELOPER, strict=False)
     # Not strict, so that the word of the file is read as the mode it names.
     mode: Mode = Field(default=Mode.BRANCH, strict=False)
+    # A whole number of days of 1 or more, then d: the age a branch passes before status says so.
+    branch_max: str | None = Field(default=None, pattern=r"^[1-9][0-9]*d$")
 
 
 class _DeliveryTable(_Table):

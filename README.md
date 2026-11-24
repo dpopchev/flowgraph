@@ -1087,6 +1087,7 @@ fgraph config show
 # development.gate = none
 # development.driver = "developer"
 # development.mode = "branch"
+# development.branch_max = none
 # delivery.push = false
 # delivery.tag = "none"
 # archive.board = none
@@ -1142,6 +1143,7 @@ fgraph config show
 # development.gate = "make check"
 # development.driver = "developer"
 # development.mode = "branch"
+# development.branch_max = none
 # delivery.push = false
 # delivery.tag = "none"
 # archive.board = none
@@ -1159,6 +1161,7 @@ so `fgraph config set development.gate true` names the command `true`:
 | `development.gate`     | a command line, one argument of the shell  | `fgraph config set development.gate "make check"` |
 | `development.driver`   | `developer` or `agent`                     | `fgraph config set development.driver agent`      |
 | `development.mode`     | `branch` or `trunk`                        | `fgraph config set development.mode trunk`        |
+| `development.branch_max` | a whole number of days as `1d`           | `fgraph config set development.branch_max 1d`     |
 | `delivery.push`        | `true` or `false`                          | `fgraph config set delivery.push true`            |
 | `delivery.tag`         | `feature-close`, `close` or `none`         | `fgraph config set delivery.tag close`            |
 | `archive.board`        | the path of the `.board/` of board 1       | `fgraph config set archive.board .board`          |
@@ -1259,6 +1262,19 @@ fgraph status
 # InProgress (2)
 # ? S-0001  1/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
 #   S-0002  1/2 T  Add the show command to src/flowgraph/cli.py
+# Completed (0)
+```
+
+With the development on and `development.branch_max` set to an age such as
+`1d`, the line of a started or blocked work item ends with a word once more
+than that many days have passed since it was started. It is a word and no
+refusal: nothing is held back for an old branch.
+
+```sh
+fgraph status
+# Backlog (0)
+# InProgress (1)
+#   S-0001  1/2 T  Raise the Stories fgraph lists  -- its branch is older than 1d
 # Completed (0)
 ```
 

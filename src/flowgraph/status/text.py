@@ -187,7 +187,8 @@ def _status_line(row: StoryRow | UpkeepRow) -> str:
     """One item of a bucket: its id and title, with its commit or the reason it was removed.
 
     A started one is marked `?` before its id when it is ready for review; a blocked one `!`,
-    ending with what it waits on and why, as a blocked Task. Each is listed with
+    ending with what it waits on and why, as a blocked Task. One whose branch is older than its age
+    ends its line with `-- its branch is older than 1d`, before a block. Each is listed with
     its Tasks completed of all but the removed, between its id and its title, then
     the agent it is handed to in brackets, if any, and under it each Task of it being worked on a
     line of its own, in the order written. A completed one holds a commit or not: one it holds
@@ -198,7 +199,12 @@ def _status_line(row: StoryRow | UpkeepRow) -> str:
         completed = sum(task.state == COMPLETED for task in tasks)
         worked = "".join(_task_line(task) for task in row.tasks)
         handed = f"[{row.agent}]  " if row.agent else ""
-        line = f"{row.id}  {completed}/{len(tasks)} T  {handed}{row.title}"
+        older = (
+            f"  -- its branch is older than {row.branch_older_than}"
+            if row.branch_older_than
+            else ""
+        )
+        line = f"{row.id}  {completed}/{len(tasks)} T  {handed}{row.title}{older}"
         if row.waiting_on:
             return f"{_marked(line, (row.waiting_on, row.block_reason))}\n{worked}"
         mark = "? " if ready_for_review(row) else "  "

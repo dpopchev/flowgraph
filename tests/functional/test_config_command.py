@@ -90,6 +90,7 @@ def test_show_lists_every_key_at_its_default_on_a_record_without_a_config_file(
         "development.gate = none\n"
         'development.driver = "developer"\n'
         'development.mode = "branch"\n'
+        "development.branch_max = none\n"
         "delivery.push = false\n"
         'delivery.tag = "none"\n'
         "archive.board = none\n",

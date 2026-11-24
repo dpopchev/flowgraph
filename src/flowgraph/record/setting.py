@@ -1,10 +1,10 @@
 """The configuration through fgraph: every key of it shown, one key of it set.
 
 A key is listed dotted, `development.enabled`, with its value as the file writes it, at its
-default when the file leaves it out. A key that holds no value -- no limit, no gate, no archive --
-is listed as `none`, which is no value of the file, so no text is mistaken for it. A set writes
-one key among the settings of the record and keeps the others; its value arrives as a text and is
-read by what the key takes, never guessed from the text.
+default when the file leaves it out. A key that holds no value -- no limit, no gate, no age, no
+archive -- is listed as `none`, which is no value of the file, so no text is mistaken for it. A
+set writes one key among the settings of the record and keeps the others; its value arrives as a
+text and is read by what the key takes, never guessed from the text.
 """
 
 import json
@@ -19,6 +19,7 @@ from flowgraph.record.archive import ARCHIVE_BOARD, Archive, Archived, Unarchive
 from flowgraph.record.config import (
     DELIVERY_PUSH,
     DELIVERY_TAG,
+    DEVELOPMENT_BRANCH_MAX,
     DEVELOPMENT_DRIVER,
     DEVELOPMENT_ENABLED,
     DEVELOPMENT_GATE,
@@ -34,7 +35,7 @@ from flowgraph.record.config import (
     make_config,
     settings_text,
 )
-from flowgraph.record.layers import Gate, Gated, Limit, Parallel, Ungated, Unlimited
+from flowgraph.record.layers import Gate, Gated, Limit, Parallel, Ungated, Unlimited, age_text
 
 # How a key that holds no value is listed: no value of the file.
 NONE = "none"
@@ -119,6 +120,7 @@ KEYS = (
     Key(DEVELOPMENT_GATE, Takes.TEXT, lambda config: _command(config.development.gate)),
     Key(DEVELOPMENT_DRIVER, Takes.TEXT, lambda config: config.development.driver.value),
     Key(DEVELOPMENT_MODE, Takes.TEXT, lambda config: config.development.mode.value),
+    Key(DEVELOPMENT_BRANCH_MAX, Takes.TEXT, lambda c: age_text(c.development.branch_max)),
     Key(DELIVERY_PUSH, Takes.TRUTH, lambda config: config.delivery.push),
     Key(DELIVERY_TAG, Takes.TEXT, lambda config: config.delivery.tag.value),
     Key(ARCHIVE_BOARD, Takes.TEXT, lambda config: _board(config.archive)),

@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import assert_never
 
 from flowgraph.development import RunGate, run_gate
+from flowgraph.development.branch_age import aged
 from flowgraph.development.commit import OpenGit, open_git
 from flowgraph.development.config_git import record_named
 from flowgraph.development.scope import scope_in, within, worktree_of_item
@@ -133,7 +134,8 @@ def run(
     landing runs the gate of the configuration through run_gate, which a run that lands under a
     gate is given: the default runs none. The complete of a Task that holds a check runs it
     through run_check, which a run that completes such a Task is given: the default runs none
-    and refuses to, as that of the gate does.
+    and refuses to, as that of the gate does. The rows of a started work item say, through `aged`,
+    that their branch is older than `development.branch_max`: said, never refused.
     """
     command_line = build_command_line()
     parser = command_line.parser
@@ -162,6 +164,7 @@ def run(
             )
             try:
                 config = load_config(path)
+                store = aged(store, config.development, now)
                 check_relations(path, store, partial(held_elsewhere, path, open_git, open_store))
                 if args.command == "watch":
                     _watch(args, store, write, wait, width, height, config)

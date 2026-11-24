@@ -70,7 +70,8 @@ def test_a_blocked_work_item_keeps_the_place_of_its_started_time_and_is_listed_o
     }
     assert status_item(store(rows)).splitlines()[1:] == [
         "InProgress (3)",
-        "! S-0002  0/0 T  a blocked story  -- waiting on developer: no key",
+        "! S-0002  0/0 T  a blocked story",
+        "  waiting on developer: no key",
         "  S-0001  0/0 T  a story",
         "  U-0001  0/0 T  an upkeep",
         "Completed (0)",

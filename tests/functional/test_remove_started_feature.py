@@ -94,7 +94,8 @@ class TestABlockedFeatureTakenApartRemovedWithAReason:
             "InProgress (0)\n"
             "Completed (0)\n"
             "Removed (1)\n"
-            "  F-0001  a feature title  -- pivoted\n"
+            "  F-0001  a feature title\n"
+            "  pivoted\n"
         )
 
     def test_show_of_it_lists_its_reason_and_its_two_work_items(

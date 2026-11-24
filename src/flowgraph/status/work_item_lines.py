@@ -21,29 +21,26 @@ def work_item_lines(row: StoryRow | UpkeepRow) -> str:
     """One item of a bucket: its id and title, with its commit or the reason it was removed.
 
     A started one is marked `?` before its id when it is ready for review; a blocked one `!`,
-    ending with what it waits on and why, as a blocked Task. One whose branch is older than its age
-    ends its line with `-- its branch is older than 1d`, before a block. Each is listed with
-    its Tasks completed of all but the removed, between its id and its title, then
+    with what it waits on and why below its line, as a blocked Task. One whose branch is older than
+    its age says `its branch is older than 1d` on a line below its own, before a block. Each is
+    listed with its Tasks completed of all but the removed, between its id and its title, then
     the agent it is handed to in brackets, if any, and under it each Task of it being worked on a
     line of its own, in the order written. A completed one holds a commit or not: one it holds
-    stands before the title, so a line cut to a width keeps it; a reason ends the line. One in
-    Backlog is listed with the count of its Tasks in brackets, `[]` for none, between its id and
-    its title: the developer's frame of 2026-11-23.
+    stands before the title, so a line cut to a width keeps it; a reason is on a line below it.
+    One in Backlog is listed with the count of its Tasks in brackets, `[]` for none, between its id
+    and its title: the developer's frame of 2026-11-23.
     """
     if row.state in IN_PROGRESS:
         done, total = _progress(row)
         worked = "".join(_task_line(task) for task in row.tasks)
         handed = f"[{row.agent}]  " if row.agent else ""
-        older = (
-            f"  -- its branch is older than {row.branch_older_than}"
-            if row.branch_older_than
-            else ""
-        )
-        line = f"{row.id}  {done}/{total} T  {handed}{row.title}{older}"
+        older = f"its branch is older than {row.branch_older_than}" if row.branch_older_than else ""
+        line = f"{row.id}  {done}/{total} T  {handed}{row.title}"
         if row.waiting_on:
-            return f"{blocked_line(line, (row.waiting_on, row.block_reason))}\n{worked}"
+            head = added_below(f"! {line}", older)
+            return f"{added_below(head, block_text(row.waiting_on, row.block_reason))}\n{worked}"
         mark = "? " if ready_for_review(row) else "  "
-        return f"{mark}{line}\n{worked}"
+        return f"{added_below(f'{mark}{line}', older)}\n{worked}"
     if row.commit:
         return f"  {row.id}  {row.commit}  {row.title}\n"
     why = ", ".join(
@@ -52,7 +49,7 @@ def work_item_lines(row: StoryRow | UpkeepRow) -> str:
         if part
     )
     if why:
-        return f"  {row.id}  {row.title}  -- {why}\n"
+        return f"{added_below(f'  {row.id}  {row.title}', why)}\n"
     named = (
         f"{row.id}  {_held(row)}  {row.title}" if row.state == BACKLOG else f"{row.id}  {row.title}"
     )
@@ -80,20 +77,29 @@ def _progress(row: StoryRow | UpkeepRow) -> tuple[int, int]:
 
 
 def waiting_line(line: str, waits_for: Sequence[str], *, next_up: bool = False) -> str:
-    """The line of an item of a bucket: marked `~` and ending with the ids it depends on, if any.
+    """The line of an item of a bucket: marked `~`, with the ids it depends on below it, if any.
 
     The mark and the words differ from a block, `!` and `waiting on`: a block waits on a person.
     The next to start waits for nothing and is marked `>`.
     """
     if waits_for:
-        return f"~ {line}  -- depends on {', '.join(waits_for)}"
+        return added_below(f"~ {line}", f"depends on {', '.join(waits_for)}")
     return f"> {line}" if next_up else f"  {line}"
 
 
+def added_below(line: str, added: str, under: int = 2) -> str:
+    """The line alone, or with what it adds on a line of its own right below it.
+
+    What a line adds is put on a line of its own, beginning under the id of who has it: the
+    developer's decision of 2026-11-23 on F-0017. `under` is the column of that id.
+    """
+    return f"{line}\n{' ' * under}{added}" if added else line
+
+
 def blocked_line(line: str, block: tuple[str, str]) -> str:
-    """The line of an item of a bucket: marked `!` and ending with the block, if any."""
+    """The line of an item of a bucket: marked `!`, with the block on a line below it, if any."""
     waiting_on, _ = block
-    return f"! {line}  -- {block_text(*block)}" if waiting_on else f"  {line}"
+    return added_below(f"! {line}", block_text(*block)) if waiting_on else f"  {line}"
 
 
 def block_text(waiting_on: str, reason: str) -> str:
@@ -104,10 +110,11 @@ def block_text(waiting_on: str, reason: str) -> str:
 def _task_line(task: TaskRow) -> str:
     """A Task being worked, under its work item; nothing for one in Backlog, completed or removed.
 
-    A started Task is marked `=>`, a blocked one `!` and ends with what it waits on and why.
+    A started Task is marked `=>`, a blocked one `!`, with what it waits on and why below it.
     """
     if task.state == STARTED:
         return f"    => {task.id}  {task.title}\n"
     if task.state == BLOCKED:
-        return f"    !  {task.id}  {task.title}  -- {block_text(task.waiting_on, task.reason)}\n"
+        held = f"    !  {task.id}  {task.title}"
+        return f"{added_below(held, block_text(task.waiting_on, task.reason), under=7)}\n"
     return ""

@@ -26,13 +26,14 @@ BARE = WorkItemDetail("S-0001", "a title", "removed", "", [])
 def test_status_lists_a_removed_work_item_as_superseded_by_the_other() -> None:
     assert status_text([removed("")]) == (
         "Backlog (0)\nInProgress (0)\nCompleted (0)\nRemoved (1)\n"
-        "  S-0001  a title  -- superseded by S-0002\n"
+        "  S-0001  a title\n"
+        "  superseded by S-0002\n"
     )
 
 
 def test_status_lists_what_supersedes_it_before_a_reason_given_beside_it() -> None:
     assert status_text([removed("refiled")]).endswith(
-        "  S-0001  a title  -- superseded by S-0002, refiled\n"
+        "  S-0001  a title\n  superseded by S-0002, refiled\n"
     )
 
 

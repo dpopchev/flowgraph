@@ -102,7 +102,8 @@ class TestAFeatureInBacklogWithAStoryUnderItRemovedWithAReason:
             "InProgress (0)\n"
             "Completed (0)\n"
             "Removed (1)\n"
-            "  F-0001  a feature title  -- filed by mistake\n"
+            "  F-0001  a feature title\n"
+            "  filed by mistake\n"
         )
 
     def test_show_of_it_lists_its_reason_and_its_story_removed(
@@ -133,10 +134,12 @@ def test_a_removed_feature_is_listed_after_the_removed_work_items_and_none_of_it
 ) -> None:
     add_under = ["add", "story", "another title", *CRITERION, "--parent", "F-0001"]
     listed = runs(tmp_path, ADD_ALONE, ADD_FEATURE, add_under, REMOVE_STORY, REMOVE, ["status"])
-    assert listed.out.splitlines()[-3:] == [
+    assert listed.out.splitlines()[-5:] == [
         "Removed (2)",
-        "  S-0001  a title  -- superseded",
-        "  F-0001  a feature title  -- filed by mistake",
+        "  S-0001  a title",
+        "  superseded",
+        "  F-0001  a feature title",
+        "  filed by mistake",
     ]
 
 

@@ -9,6 +9,7 @@ from flowgraph.feature import FeatureRow
 from flowgraph.status.buckets import COMPLETED_BUCKET, IN_PROGRESS_BUCKET
 from flowgraph.status.rows import COMPLETED
 from flowgraph.status.work_item_lines import (
+    added_below,
     blocked_line,
     completed_line,
     waiting_line,
@@ -23,19 +24,18 @@ def feature_lines(feature: FeatureRow) -> str:
     """One Feature: its id, its work items completed of all, then its title.
 
     A completed one is listed whole, its id, its commit and its title, with no count of its work
-    items. Under it each started
-    work item of it, written as one of a bucket is with its Tasks being worked, two columns
-    further in. A completed work item of a Feature in progress stays listed under it, after those
-    started, with no descent to its Tasks. A blocked one is marked `!` before its id and ends with
-    what it waits on and why. So is one whose work item is blocked or holds a blocked Task, with
-    what the first such says, as
-    the line of it does: read from the rows at each listing, and kept nowhere. The block of the
-    Feature itself comes first, then that of a work item, then that of a Task. A removed one is
-    listed as a removed work
-    item is, its reason ending the line, without the progress: its work items have no line.
+    items. Under it each started work item of it, written as one of a bucket is with its Tasks
+    being worked, two columns further in. A completed work item of a Feature in progress stays
+    listed under it, after those started, with no descent to its Tasks. A blocked one is marked
+    `!` before its id, with what it waits on and why on a line of its own below it, under its id
+    (S-0135). So is one whose work item is blocked or holds a blocked Task, with what the first
+    such says, as the line of it does: read from the rows at each listing, and kept nowhere. The
+    block of the Feature itself comes first, then that of a work item, then that of a Task. A
+    removed one is listed as a removed work item is, its reason on a line of its own below it,
+    under its id, without the progress: its work items have no line.
     """
     if feature.reason:
-        return f"  {feature.id}  {feature.title}  -- {feature.reason}\n"
+        return f"{added_below(f'  {feature.id}  {feature.title}', feature.reason)}\n"
     progress = (
         "" if feature.bucket == COMPLETED_BUCKET else f"{feature.completed}/{feature.held} W  "
     )

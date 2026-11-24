@@ -183,8 +183,10 @@ def test_a_blocked_work_item_of_a_started_feature_is_listed_under_it() -> None:
     assert status_item(store([held], [started_feature(feature(1), DAY[2])])) == (
         "Backlog (0)\n"
         "InProgress (1)\n"
-        "! F-0001  0/1 W  feature 1  -- waiting on developer: no key\n"
-        "  ! S-0001  0/0 T  title 1  -- waiting on developer: no key\n"
+        "! F-0001  0/1 W  feature 1\n"
+        "  waiting on developer: no key\n"
+        "  ! S-0001  0/0 T  title 1\n"
+        "    waiting on developer: no key\n"
         "Completed (0)\n"
     )
 
@@ -287,7 +289,8 @@ def test_a_started_feature_whose_work_items_are_all_completed_or_removed_stays_i
         "    S-0001  0/0 T  title 1\n"
         "Completed (0)\n"
         "Removed (1)\n"
-        "  S-0002  title 2  -- a reason\n"
+        "  S-0002  title 2\n"
+        "  a reason\n"
     )
 
 
@@ -299,7 +302,8 @@ def test_a_removed_work_item_of_a_feature_keeps_its_line_under_removed() -> None
         "InProgress (0)\n"
         "Completed (0)\n"
         "Removed (1)\n"
-        "  S-0001  title 1  -- a reason\n"
+        "  S-0001  title 1\n"
+        "  a reason\n"
     )
 
 

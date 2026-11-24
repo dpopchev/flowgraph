@@ -78,6 +78,7 @@ class TestAStoryStartedWithATaskOfItStarted:
 
 def test_a_blocked_task_is_listed_with_what_it_waits_on(tmp_path: Path) -> None:
     listed = status_after(tmp_path, *STARTED, BLOCK)
-    assert listed.out.splitlines()[3] == (
-        "    !  T-0001  a task title  -- waiting on the reviewer: a reason"
-    )
+    assert listed.out.splitlines()[3:5] == [
+        "    !  T-0001  a task title",
+        "       waiting on the reviewer: a reason",
+    ]

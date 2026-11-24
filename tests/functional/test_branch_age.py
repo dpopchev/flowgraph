@@ -1,10 +1,10 @@
 """The criterion of S-0098: fgraph status says that the branch of a started work item is old.
 
 A record whose `config.toml` holds `[development] enabled = true` and `branch_max = "1d"`, and a
-Story started two days before: its line in `fgraph status` and `fgraph watch` ends with `-- its
-branch is older than 1d`, alone and under a Feature, and nothing is refused. Run end to end
-through `run` on a real git repository in a temporary directory, never a faked git; the identity
-of its commits comes from the environment and no git config is read.
+Story started two days before: `fgraph status` and `fgraph watch` say `its branch is older than
+1d` on a line of its own below its line, alone and under a Feature, and nothing is refused. Run end
+to end through `run` on a real git repository in a temporary directory, never a faked git; the
+identity of its commits comes from the environment and no git config is read.
 """
 
 import subprocess
@@ -29,7 +29,7 @@ AGED_TRUNK = '[development]\nenabled = true\nmode = "trunk"\nbranch_max = "1d"\n
 NO_AGE = '[development]\nenabled = true\nbranch_max = "soon"\n'
 WORDS = 'development.branch_max is "soon": it takes a whole number of days of 1 or more, as 1d'
 PLAIN = "  S-0001  0/1 T  title 1"
-OLD = PLAIN + "  -- its branch is older than 1d"
+OLD = "  its branch is older than 1d"
 IDENTITY = {
     "GIT_AUTHOR_NAME": "a developer",
     "GIT_AUTHOR_EMAIL": "developer@example.com",
@@ -152,15 +152,13 @@ class TestAStoryLeftInBacklog:
 
 
 class TestAStoryUnderAFeature:
-    def test_its_line_ends_with_the_word_two_columns_in(self, tmp_path: Path) -> None:
+    def test_the_word_below_its_line_is_two_columns_in(self, tmp_path: Path) -> None:
         path = init(tmp_path, AGED)
         add_feature = ["add", "feature", "a feature title", "--criterion", "a criterion"]
         for argv in (add_feature, story(1, "--parent", "F-0001"), task("S-0001")):
             fgraph(argv, path)
         fgraph(["start", "F-0001"], path)
-        assert "    S-0001  0/1 T  title 1  -- its branch is older than 1d" in lines_of(
-            fgraph(["status"], path, TWO_DAYS)
-        )
+        assert "    its branch is older than 1d" in lines_of(fgraph(["status"], path, TWO_DAYS))
 
 
 class TestTheTrunk:

@@ -115,8 +115,9 @@ def test_status_counts_the_next_to_start_the_top_leaves_out_and_does_not_list_it
     tmp_path: Path,
 ) -> None:
     listed = after(tmp_path, WAITING, ["status"])
-    assert listed.out.splitlines()[1:3] == [
-        "~ S-0001  []  title 1  -- depends on S-0002",
+    assert listed.out.splitlines()[1:4] == [
+        "~ S-0001  []  title 1",
+        "  depends on S-0002",
         "  ... 4 more, 1 can start",
     ]
 

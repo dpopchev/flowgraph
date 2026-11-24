@@ -30,7 +30,7 @@ UNBLOCK = ["unblock", "S-0001"]
 STARTED = (ADD_STORY, ADD_TASK, START_STORY)
 START_TASK = ["start", "T-0001"]
 TASK_DONE = (START_TASK, ["complete", "T-0001", "--commit", "abc1234"])
-MARKED = "! S-0001  0/1 T  a title  -- waiting on developer: no key"
+MARKED = "! S-0001  0/1 T  a title\n  waiting on developer: no key"
 
 
 @dataclass(frozen=True)
@@ -119,8 +119,8 @@ class TestAStartedStoryBlocked:
 
     def test_its_started_task_is_listed_right_under_it(self, tmp_path: Path) -> None:
         runs(tmp_path, *STARTED, START_TASK, BLOCK)
-        assert fgraph(["status"], tmp_path, LATER).out.splitlines()[2:4] == [
-            MARKED,
+        assert fgraph(["status"], tmp_path, LATER).out.splitlines()[2:5] == [
+            *MARKED.splitlines(),
             "    => T-0001  a task title",
         ]
 
@@ -189,9 +189,11 @@ def test_a_feature_is_marked_by_its_blocked_story(tmp_path: Path) -> None:
         ["start", "F-0001"],
         BLOCK,
     )
-    assert fgraph(["status"], tmp_path, LATER).out.splitlines()[2:4] == [
-        "! F-0001  0/1 W  a feature title  -- waiting on developer: no key",
-        f"  {MARKED}",
+    assert fgraph(["status"], tmp_path, LATER).out.splitlines()[2:6] == [
+        "! F-0001  0/1 W  a feature title",
+        "  waiting on developer: no key",
+        "  ! S-0001  0/1 T  a title",
+        "    waiting on developer: no key",
     ]
 
 

@@ -450,18 +450,22 @@ of work item. The developer said so on 2026-11-21.
   work item holds its progress and its tasks already. The Tasks are those the record status reads holds: the row of a
   work item is read with its Tasks, each with its state.
 - A blocked work item is listed under InProgress as a started one is, marked
-  `!` before its id and ending with what it waits on and why (S-0138):
-  `! S-0001  0/1 T  <title>  -- waiting on <what>: <reason>`, its agent in
+  `!` before its id, with what it waits on and why on a line of its own below it,
+  under its id (S-0138): `! S-0001  0/1 T  <title>`, then
+  `  waiting on <what>: <reason>`, its agent in
   brackets before its title when it has one and its Tasks being worked under
-  it. Under a Feature the same line stands two columns further in. It is not
+  it. The rule is one for every line, the developer's decision of 2026-11-23 on F-0017
+  (S-0135): what a line adds is put below it, aligned with the id of who has it, as a line of
+  its own, so the line ends with its title, and the JSON does not change. Under a Feature the
+  same two lines stand two columns further in. It is not
   marked `?`, whatever its Tasks, and it takes a place of
   `development.parallel` in the marks `>`, as a started one does.
 - Under a work item of InProgress `fgraph status` lists each Task of it being
   worked, the developer's decision of 2026-11-21, after board 1's watch: the
   started Task as `    => T-0001  <title>`, and a blocked one as
-  `    !  T-0002  <title>  -- waiting on <what>: <reason>`, in the order the
-  file holds them (S-0084: the line names the reason of the block beside what
-  it waits on; with an empty reason the `: <reason>` is left out). A Task in Backlog,
+  `    !  T-0002  <title>`, then `       waiting on <what>: <reason>` under its id, in
+  the order the file holds them (S-0084: the words name the reason of the block beside what
+  it waits on; with an empty reason the `: <reason>` is left out, as before). A Task in Backlog,
   completed or removed is not listed. A Task line belongs to
   its work item: it does not count toward the top of the heading, nor in
   the count beside it.
@@ -494,9 +498,9 @@ of work item. The developer said so on 2026-11-21.
   holds a blocked Task (S-0055), the developer's words of 2026-11-21, "a
   Feature can be blocked, or gets blocked when its child work item is
   blocked": `!` in the first column of its line, before its id, which stays
-  in its column, and `-- waiting on <what>: <reason>` after its title, as the
-  line of a blocked Task ends -- `! F-0001  1/3 W  <title>  -- waiting on
-  <what>: <reason>`. What is waited on, and why, is that of the first blocked
+  in its column, the line ending with its title and `waiting on <what>: <reason>` on a line
+  of its own below it, under its id, as the words of a blocked Task stand --
+  `! F-0001  1/3 W  <title>`, then `  waiting on <what>: <reason>`. What is waited on, and why, is that of the first blocked
   Task of its started work items, in the order they are listed under it and the file of each holds
   its Tasks. The mark is derived at each listing from the rows status reads
   and kept in no file: no state of the Feature or of the work item holds it,
@@ -504,7 +508,7 @@ of work item. The developer said so on 2026-11-21.
   blocked one does not lift it, decided when S-0055 was ordered: the Feature
   is marked as long as such a work item holds a blocked Task. The lines of
   the work item and of its blocked Task under it stay as they are, a Feature
-  without such a Task is listed as before, and the line is cut to the width
+  without such a Task is listed as before, and each of the two lines is cut to the width
   as any other (below). A child work item is blocked when it holds a blocked
   Task, and when it is blocked itself (S-0138, on the developer's word on
   B-0025, which reverses the reading that a block of a work item was shown
@@ -518,8 +522,9 @@ of work item. The developer said so on 2026-11-21.
   not its state; one never started that holds a blocked work item is in
   InProgress, as one holding a started work item is.
 - `fgraph status` lists a `BlockedFeature` under InProgress with the same
-  look (S-0056): `!` before its id and `-- waiting on <what>: <reason>` after
-  its title, `! F-0001  0/1 W  <title>  -- waiting on <what>: <reason>`. Here
+  look (S-0056): `!` before its id, the line ending with its title and
+  `waiting on <what>: <reason>` on a line of its own below it, under its id,
+  `! F-0001  0/1 W  <title>`, then `  waiting on <what>: <reason>`. Here
   what is waited on, and why, is that of the Feature, read from its state and
   kept in its file
   (Persistence). The block of the Feature itself comes before that of a Task
@@ -537,7 +542,7 @@ of work item. The developer said so on 2026-11-21.
   Feature holds its commit there too, right after its id,
   `F-0001  677f9b0  <title>`, with no count of its work items (S-0134,
   Persistence); the reason of a removed
-  one still ends its line. Only status is cut, and a frame of watch
+  one is on a line of its own below it, cut apart from it. Only status is cut, and a frame of watch
   with it. The width is an effect: `run()` takes it as a callable, none when
   the output is no terminal, and `main()` reads it from the terminal.
 - `fgraph watch` follows the record live, the developer's request of
@@ -723,12 +728,13 @@ and `--depends-on none` alone takes them all away.
   when there is one, read back in every state; an id of no kind, or the work
   item itself, makes the file refused when it is read.
 - `fgraph status` marks what waits, the reading of S-0085: the line of a work
-  item in Backlog that depends on one not completed starts with `~` and ends
-  `-- depends on S-0001`, with each id not completed in the order written; the
+  item in Backlog that depends on one not completed starts with `~`, and
+  `depends on S-0001` is on a line of its own below it, under its id, with each id not
+  completed in the order written; the
   mark is gone once each is completed. A Feature in Backlog carries it when its
   first work item, the one its start takes, waits, with the ids that one waits
   for; a work item under a Feature is on no line of the Backlog. The mark is
-  not the `!` of a block, which ends `-- waiting on <who>`: a block waits on a
+  not the `!` of a block, which says `waiting on <who>` below its line: a block waits on a
   person, a dependency on a work item. A line longer than the terminal is cut
   as any other, and `fgraph watch` draws the same line.
 
@@ -774,8 +780,8 @@ state, with its removed time, not to every state.
   when there is one. The other side is derived: `fgraph show` of the work item
   that supersedes lists `supersedes` with the id of each work item that names
   it, in the order of the record, read from the record and stored nowhere.
-- `fgraph status` lists a removed work item as `-- superseded by S-0002`,
-  before the reason given beside it, joined by a comma; `fgraph show` of it
+- `fgraph status` lists a removed work item with `superseded by S-0002` on a line of its
+  own below it, under its id, before the reason given beside it, joined by a comma; `fgraph show` of it
   lists `superseded by` before `reason`.
 
 ## Amends
@@ -2108,9 +2114,9 @@ development too.
 - `[development] branch_max` is an age, a whole number of days of 1 or more
   written with d, as `"1d"` (S-0098). It has no default: left out, nothing is
   said. With the development on, by a branch, `fgraph status` and each frame of
-  `fgraph watch` end the line of a work item in InProgress, started or blocked,
-  alone or under its Feature, with `-- its branch is older than 1d` once more
-  than that many days have passed since its start. The age is read from the
+  `fgraph watch` say, on a line of its own below the line of a work item in InProgress,
+  started or blocked, alone or under its Feature, under its id and before a block,
+  `its branch is older than 1d` once more than that many days have passed since its start. The age is read from the
   started time of the record at each listing and kept in no file. It is said and
   never refused -- no start, no Task and no landing is held -- the reading taken
   when S-0098 was ordered, the note of F-0012 naming the key alone; board 1
@@ -3062,7 +3068,7 @@ the validator; a time with no offset is refused in the one line alone.
 | a removed work item with `started` and completed Tasks | refused | `removed.tasks.0.state Input should be 'backlog'`; `removed.started Extra inputs are not permitted` |
 | a removed Task | refused | `Input tag 'removed' found using 'state' does not match any of the expected tags: 'backlog', 'started', 'blocked', 'completed'` |
 | a blocked work item | refused | `Input tag 'blocked' found using 'state' does not match any of the expected tags: 'backlog', 'started', 'completed', 'removed'` |
-| `depends_on` a removed work item | read | `~ S-0002  [] ... -- depends on S-0001`, `depends on S-0001 (Removed)` |
+| `depends_on` a removed work item | read | `~ S-0002  [] ...`, then `  depends on S-0001` below, `depends on S-0001 (Removed)` |
 | a Feature with `hypothesis`, `outcome`, `depends_on` | refused | `started.hypothesis Extra inputs are not permitted` (the same for each) |
 | a Bug with `input`, `steps`, `technical` | refused | `backlog.input Extra inputs are not permitted` (the same for each) |
 | a `token` | refused | `backlog.token Extra inputs are not permitted` |
@@ -3217,7 +3223,7 @@ and `fgraph config show`:
 |---|---|---|
 | `main`, no branches | cts | `development.mode = trunk`, S-0096: "no branch and no worktree was made" |
 | `pr` | g, sv | `development.merge = pull-request`, S-0097: "its branch is pushed with a pull request opened" |
-| `branch max 1d` | all but cts | `development.branch_max`, S-0098: "the line of the work item says its branch is older than 1d" |
+| `branch max 1d` | all but cts | `development.branch_max`, S-0098: "a line of its own below the work item says its branch is older than 1d" |
 | `approver agent`, `approver developer` | all seven | `development.approver` and `--approved`, S-0099: "it exits 2 saying the landing waits for the developer" |
 | `gate`, `lanes 3` | c, cts; c, sv | `development.gate`, `development.parallel`, kept |
 | `tag epic-close`; `tag root-close`; `tag none` | five; c; st | `delivery.tag`, `feature-close`, `close` or `none`; `close` tags a standalone root, S-0123 |

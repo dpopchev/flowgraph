@@ -111,7 +111,7 @@ def test_watch_lists_the_count_of_tasks_in_brackets(tmp_path: Path) -> None:
 
 def test_a_line_that_waits_keeps_its_mark_and_its_words(tmp_path: Path) -> None:
     listed = after(tmp_path, WAITS, ["status", "--backlog"])
-    assert listed.out.splitlines()[2] == "~ S-0002  []  title 2  -- depends on S-0001"
+    assert listed.out.splitlines()[2:4] == ["~ S-0002  []  title 2", "  depends on S-0001"]
 
 
 def test_a_feature_keeps_its_count_of_work_items_and_gains_no_brackets(tmp_path: Path) -> None:

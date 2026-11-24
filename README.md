@@ -511,12 +511,13 @@ fgraph show S-0002
 fgraph status --backlog
 # Backlog (2)
 # > S-0001  [1 T]  Add the show command
-# ~ S-0002  [1 T]  Raise the Stories fgraph lists under Backlog from 1 to 2  -- depends on S-0001
+# ~ S-0002  [1 T]  Raise the Stories fgraph lists under Backlog from 1 to 2
+#   depends on S-0001
 ```
 
 `fgraph status` marks the line of a work item in Backlog that waits: it starts
-with `~` and ends with `-- depends on` and each id it depends on that is not
-completed. The mark is gone once each is completed; a block, marked `!`, says
+with `~`, and `depends on` and each id it depends on that is not
+completed stand on a line of its own below it, beginning under its id. The mark is gone once each is completed; a block, marked `!`, says
 `waiting on` a person. A Feature in Backlog carries it when its first work item
 waits.
 
@@ -541,7 +542,8 @@ alone of S-0086.
 ```sh
 fgraph status --backlog   # parallel = 3, S-0001 started, S-0002 waits for S-0004
 # Backlog (4)
-# ~ S-0002  []  a second title  -- depends on S-0004
+# ~ S-0002  []  a second title
+#   depends on S-0004
 # > S-0003  []  a third title
 # > S-0004  []  a fourth title
 #   S-0005  []  a fifth title
@@ -1276,15 +1278,16 @@ fgraph status
 ```
 
 With the development on and `development.branch_max` set to an age such as
-`1d`, the line of a started or blocked work item ends with a word once more
-than that many days have passed since it was started. It is a word and no
+`1d`, a line of its own below the line of a started or blocked work item says so
+once more than that many days have passed since it was started. It is a word and no
 refusal: nothing is held back for an old branch.
 
 ```sh
 fgraph status
 # Backlog (0)
 # InProgress (1)
-#   S-0001  1/2 T  Raise the Stories fgraph lists  -- its branch is older than 1d
+#   S-0001  1/2 T  Raise the Stories fgraph lists
+#   its branch is older than 1d
 # Completed (0)
 ```
 
@@ -1740,15 +1743,16 @@ fgraph show S-0001
 #     expected output  changed: src/flowgraph/cli.py gains the show command
 ```
 
-`fgraph status` lists a blocked Task under its work item too, marked `!` and
-ending with what it waits on and the reason of the block:
+`fgraph status` lists a blocked Task under its work item too, marked `!`, with what it waits on and the reason of the block on a line of its own
+below it, beginning under its id:
 
 ```sh
 fgraph status
 # Backlog (0)
 # InProgress (1)
 #   S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
-#     !  T-0001  Add the show command to src/flowgraph/cli.py, listing a Story  -- waiting on the reviewer: the review is not back
+#     !  T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
+#        waiting on the reviewer: the review is not back
 # Completed (0)
 ```
 
@@ -1786,7 +1790,8 @@ fgraph block S-0001 --reason "no key" --waiting-on "developer"
 fgraph status
 # Backlog (0)
 # InProgress (1)
-# ! S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1  -- waiting on developer: no key
+# ! S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
+#   waiting on developer: no key
 # Completed (0)
 
 fgraph show S-0001
@@ -2239,8 +2244,8 @@ nor toward the top of the heading.
 
 A blocked Task marks its Feature: while the started work item of a Feature
 holds a blocked Task, `fgraph status` lists the Feature with `!` before its
-id, in the first column of its line, and ends the line with what that Task
-waits on, as the line of the Task does:
+id, in the first column of its line, and puts what that Task waits on on a line of its
+own below it, beginning under its id, as the line of the Task does:
 
 ```sh
 fgraph block T-0001 --reason "the review is not back" --waiting-on "the reviewer"
@@ -2250,9 +2255,11 @@ fgraph status
 # Backlog (1)
 # > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (1)
-# ! F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5  -- waiting on the reviewer: the review is not back
+# ! F-0001  0/1 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
+#   waiting on the reviewer: the review is not back
 #     S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
-#       !  T-0001  Add the show command to src/flowgraph/cli.py, listing a Story  -- waiting on the reviewer: the review is not back
+#       !  T-0001  Add the show command to src/flowgraph/cli.py, listing a Story
+#          waiting on the reviewer: the review is not back
 # Completed (0)
 ```
 
@@ -2422,7 +2429,7 @@ merge is held: a Feature the record does not hold refuses the landing before
 A started Feature that cannot go on is blocked, with the reason and who or
 what it waits on, as a Task is: `fgraph block` takes the id of a Feature. It
 stays under InProgress. `fgraph status` lists it with `!` before its id and
-what it waits on after its title, the look of a Feature marked by a blocked
+what it waits on on a line of its own below its title, the look of a Feature marked by a blocked
 Task (above), and `fgraph show` lists it as blocked, with its reason and what
 it waits on. Here F-0001 holds S-0001, started, and S-0003 in Backlog:
 
@@ -2434,7 +2441,8 @@ fgraph status
 # Backlog (1)
 # > S-0002  []  Raise the kinds of work item fgraph adds from 1 to 2
 # InProgress (1)
-# ! F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5  -- waiting on the sponsor: the budget is not agreed
+# ! F-0001  0/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
+#   waiting on the sponsor: the budget is not agreed
 #     S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
 # Completed (0)
 
@@ -2980,7 +2988,8 @@ fgraph status
 # InProgress (0)
 # Completed (0)
 # Removed (1)
-#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2  -- superseded by S-0003
+#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+#   superseded by S-0003
 ```
 
 The heading Removed is listed only when a work item or a Feature is removed.
@@ -2991,7 +3000,7 @@ removed work item takes no Task, no amend and no move.
 A work item superseded by another names it, `--superseded-by ID`, in place of
 the reason or beside it, in place of the free text of a reason such as
 `superseded by S-0003`. `fgraph status` lists it under Removed with
-`superseded by` before the reason, when one is given, and `fgraph show` lists
+`superseded by` on a line of its own below it, before the reason, when one is given, and `fgraph show` lists
 it from both sides, the second read from the record:
 
 ```sh
@@ -3001,7 +3010,8 @@ fgraph remove S-0002 --superseded-by S-0003 --reason "refiled as a smaller step"
 fgraph status
 # ...
 # Removed (1)
-#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2  -- superseded by S-0003, refiled as a smaller step
+#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+#   superseded by S-0003, refiled as a smaller step
 
 fgraph show S-0002
 # S-0002  Raise the kinds of work item fgraph adds from 1 to 2
@@ -3038,7 +3048,8 @@ fgraph remove S-0001 --reason "pivoted"
 fgraph status
 # ...
 # Removed (1)
-#   S-0001  Raise the Stories fgraph lists from 0 to 1  -- pivoted
+#   S-0001  Raise the Stories fgraph lists from 0 to 1
+#   pivoted
 
 fgraph show S-0001
 # ...
@@ -3106,7 +3117,7 @@ the same way once no work item of it is started: its started time and its
 block are dropped, a work item of it in Backlog is removed with it for the
 same reason, and a completed one stays as it is, still Completed under it.
 Nothing is deleted. `fgraph status` lists the Feature under Removed with its
-reason, after the removed work items, and its work items on no line of their
+reason on a line of its own below it, after the removed work items, and its work items on no line of their
 own; `fgraph show` of it lists its bucket, its reason and its work items,
 each in its own state. Here F-0001 holds S-0001 and S-0004, both in Backlog:
 
@@ -3119,8 +3130,10 @@ fgraph status
 # InProgress (0)
 # Completed (0)
 # Removed (2)
-#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2  -- superseded by S-0003
-#   F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5  -- dropped from the plan
+#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+#   superseded by S-0003
+#   F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
+#   dropped from the plan
 
 fgraph show F-0001
 # F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
@@ -3135,7 +3148,7 @@ fgraph show F-0001
 ```
 
 The line of a removed Feature holds no progress: its reason stands in its
-place. The Feature and its work items are one write and one commit of the
+place, on a line of its own below it. The Feature and its work items are one write and one commit of the
 record, `chore: remove F-0001 in the record`. A work item of it that was
 removed before stays as it was, with the reason it had, and a completed one
 stays Completed; neither is listed on a line of its own once its Feature is

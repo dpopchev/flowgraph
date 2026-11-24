@@ -106,26 +106,29 @@ def holding(*tasks: TaskRow) -> FeatureRow:
 
 
 def test_a_feature_whose_started_work_item_holds_a_blocked_task_is_marked_as_blocked() -> None:
-    assert status_text([holding(waiting(1, "a reviewer"))]).splitlines()[2] == (
-        "! F-0002  0/1 W  a begun feature  -- waiting on a reviewer: a reason"
-    )
+    assert status_text([holding(waiting(1, "a reviewer"))]).splitlines()[2:4] == [
+        "! F-0002  0/1 W  a begun feature",
+        "  waiting on a reviewer: a reason",
+    ]
 
 
-def test_a_marked_feature_ends_with_what_the_first_blocked_task_of_its_work_item_waits_on() -> None:
+def test_a_marked_feature_waits_on_what_the_first_blocked_task_of_its_work_item_waits_on() -> None:
     marked = holding(TASKS[0], waiting(3, "a reviewer"), waiting(4, "a release"))
-    assert status_text([marked]).splitlines()[2] == (
-        "! F-0002  0/1 W  a begun feature  -- waiting on a reviewer: a reason"
-    )
+    assert status_text([marked]).splitlines()[2:4] == [
+        "! F-0002  0/1 W  a begun feature",
+        "  waiting on a reviewer: a reason",
+    ]
 
 
 def test_a_started_task_beside_the_blocked_one_does_not_lift_the_mark_of_the_feature() -> None:
     marked = holding(waiting(3, "a reviewer"), TASKS[1])
-    assert status_text([marked]).splitlines()[2] == (
-        "! F-0002  0/1 W  a begun feature  -- waiting on a reviewer: a reason"
-    )
+    assert status_text([marked]).splitlines()[2:4] == [
+        "! F-0002  0/1 W  a begun feature",
+        "  waiting on a reviewer: a reason",
+    ]
 
 
-def test_a_blocked_feature_ends_with_what_it_waits_on_and_its_own_reason() -> None:
+def test_a_blocked_feature_gives_what_it_waits_on_and_its_own_reason_below() -> None:
     blocked = FeatureRow(
         "F-0002",
         "a begun feature",
@@ -135,6 +138,7 @@ def test_a_blocked_feature_ends_with_what_it_waits_on_and_its_own_reason() -> No
         waiting_on="a sponsor",
         block_reason="no budget",
     )
-    assert status_text([blocked]).splitlines()[2] == (
-        "! F-0002  0/1 W  a begun feature  -- waiting on a sponsor: no budget"
-    )
+    assert status_text([blocked]).splitlines()[2:4] == [
+        "! F-0002  0/1 W  a begun feature",
+        "  waiting on a sponsor: no budget",
+    ]

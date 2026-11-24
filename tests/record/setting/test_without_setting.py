@@ -32,6 +32,10 @@ def test_the_driver_taken_back_keeps_the_development_enabled() -> None:
     assert without_setting(driven, "development.driver") == {"development": {"enabled": True}}
 
 
+def test_the_archive_board_taken_back_leaves_no_archive_table() -> None:
+    assert without_setting({"archive": {"board": ".board"}}, "archive.board") == {}
+
+
 def test_a_key_the_settings_do_not_hold_is_taken_back_to_the_settings_as_they_were() -> None:
     assert without_setting(GATED, "development.parallel") == GATED
 

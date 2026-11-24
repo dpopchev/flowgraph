@@ -143,18 +143,15 @@ def record(beside: Path) -> Path:
 
 
 class TestThePointerToTheArchive:
-    @XFAIL
     def test_a_set_of_the_key_says_what_it_set(self, beside: Path) -> None:
         fgraph(["init"], beside)
         outcome = fgraph(SET, beside)
         assert outcome == Outcome(0, 'set archive.board = ".board"\n', "")
 
-    @XFAIL
     def test_config_show_lists_the_pointer_set(self, record: Path) -> None:
         shown = fgraph(["config", "show"], record)
         assert 'archive.board = ".board"' in shown.out.splitlines()
 
-    @XFAIL
     def test_config_toml_holds_the_pointer_in_its_table(self, record: Path) -> None:
         held = tomllib.loads((record / ".fgraph" / "config.toml").read_text(encoding="utf-8"))
         assert held == {
@@ -163,7 +160,6 @@ class TestThePointerToTheArchive:
             "archive": {"board": ".board"},
         }
 
-    @XFAIL
     def test_config_show_lists_no_pointer_as_none_at_the_defaults(self, beside: Path) -> None:
         fgraph(["init"], beside)
         shown = fgraph(["config", "show"], beside)

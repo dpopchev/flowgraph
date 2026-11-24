@@ -28,3 +28,8 @@ description = "Change tests/work_item/test_work_item_knowledge.py only (72 lines
 check = "uv run pytest tests/work_item/test_work_item_knowledge.py -q -p no:cacheprovider && make lines"
 expected_output = "changed: tests/work_item/test_work_item_knowledge.py states that read_work_item of a file whose knowledge line holds the kind hunch raises WorkItemFileError naming CH-0001.toml and the Chore, and that the same file with the kind decision or deviation reads back; each test is seen failing with the Literal of the kinds taken out"
 created = 2026-11-24 22:09:31+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, under the /goal of Phase 1 the developer set on 2026-11-24, which has the coordinator write the Tasks before a Feature starts; the developer was not asked and reviews them at the close: (1) The tests state the refusals as they print today: the item's remark that the two-kinds line names two of three (it is four kinds since S-0143) is answered by stating the lines as they are; rewording the refusal is not part of this Upkeep. (2) The refusal of a kind the file does not know is tested at the file read (edge, WorkItemFileError naming the file and the kind of the item), not by its pydantic text, since S-0109 is about to change that text to one line. (3) Two Tasks, one per file: the functional test of the parser group, then the edge test of the file read; the red proof of each is a scratch edit that is restored."
+noted = 2026-11-24 22:10:32+00:00

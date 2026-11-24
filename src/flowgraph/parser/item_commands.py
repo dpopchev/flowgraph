@@ -72,6 +72,11 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         metavar="TEXT",
         help="the message of the commit the landing makes: needed unless it lands by fast-forward",
     )
+    land.add_argument(
+        "--approved",
+        action="store_true",
+        help="the developer approved the landing: needed under development.approver = developer",
+    )
     land.add_argument("--decision", metavar="TEXT", help="what answers the hypothesis, of a Spike")
     land.add_argument(
         "--answer", choices=ANSWERS, help="the yes or no of the hypothesis, of a Spike"

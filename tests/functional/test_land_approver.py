@@ -2,8 +2,7 @@
 
 Run end to end through `run` on a real git repository in a temporary directory whose origin is
 a bare repository beside it, never a faked git; the identity of its commits comes from the
-environment and no git config of the machine is read. The marks xfail the tests the work of
-S-0099 makes pass: strict, so each one must fail today and the mark is then removed with it.
+environment and no git config of the machine is read.
 """
 
 import subprocess
@@ -39,7 +38,6 @@ IDENTITY = {
     "GIT_COMMITTER_NAME": "a developer",
     "GIT_COMMITTER_EMAIL": "developer@example.com",
 }
-XFAIL_HELD = pytest.mark.xfail(strict=True, reason="S-0099: no landing is held for the developer")
 
 
 @dataclass(frozen=True)
@@ -147,15 +145,12 @@ class TestALandingHeldForTheDeveloper:
     def held(self, checkout: Path) -> Outcome:
         return fgraph(LAND, checkout)
 
-    @XFAIL_HELD
     def test_land_exits_with_two(self, held: Outcome) -> None:
         assert (held.status, last_line(held.err)) == (2, HELD)
 
-    @XFAIL_HELD
     def test_land_writes_no_output(self, held: Outcome) -> None:
         assert (last_line(held.err), held.out) == (HELD, "")
 
-    @XFAIL_HELD
     def test_nothing_is_merged_nor_written(
         self, held: Outcome, checkout: Path, before: str
     ) -> None:
@@ -165,15 +160,13 @@ class TestALandingHeldForTheDeveloper:
             git(checkout, "status", "--porcelain"),
         ) == (HELD, before, "")
 
-    @XFAIL_HELD
     def test_the_branch_and_the_story_are_as_they_were(self, held: Outcome, checkout: Path) -> None:
         assert (
-            git(checkout, "branch", "--list", BRANCH),
+            git(checkout, "branch", "--list", "--format=%(refname:short)", BRANCH),
             fgraph(["show", "S-0001"], checkout).out.splitlines()[1],
         ) == (BRANCH, "  bucket       InProgress")
 
 
-@XFAIL_HELD
 class TestALandingTheDeveloperApproved:
     @pytest.fixture
     def checkout(self, tmp_path: Path, origin: Path) -> Path:
@@ -186,7 +179,7 @@ class TestALandingTheDeveloperApproved:
     def test_land_with_approved_lands_it(self, landed: Outcome, checkout: Path) -> None:
         assert (landed.status, landed.out.splitlines()[0]) == (
             0,
-            f"landed S-0001 at {git(checkout, 'rev-parse', '--short', 'main')}",
+            f"landed S-0001 at {git(checkout, 'rev-parse', '--short', 'main~1')}",
         )
 
     def test_main_holds_the_write_that_completes_the_story(
@@ -202,7 +195,6 @@ def test_with_approver_agent_the_landing_needs_no_flag(tmp_path: Path, origin: P
     assert fgraph(LAND, checkout).status == 0
 
 
-@XFAIL_HELD
 def test_with_approver_agent_the_flag_changes_nothing(tmp_path: Path, origin: Path) -> None:
     checkout = ready(tmp_path, origin, 'approver = "agent"\n')
     assert fgraph([*LAND, "--approved"], checkout).status == 0

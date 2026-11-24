@@ -17,6 +17,7 @@ pytestmark = pytest.mark.command
 
 ON = make_config("[development]\nenabled = true\n")
 OFF = make_config("")
+TRUNK = make_config('[development]\nenabled = true\nmode = "trunk"\n')
 UNCOMMITTED = make_config("[git]\ncommit = false\n")
 TOP = Path("/src/project")
 RECORD = TOP / ".fgraph"
@@ -110,6 +111,27 @@ def test_a_start_with_the_development_off_is_committed_as_any_write() -> None:
 
 def test_a_start_with_the_development_off_names_no_branch() -> None:
     said = commit_written(STARTED, store([FILE]), RECORD, lambda _: work_tree([]), OFF)
+    assert said == Said("started S-0001\n")
+
+
+def test_a_start_on_the_trunk_takes_the_commit_alone_and_adds_no_worktree() -> None:
+    steps: list[object] = []
+
+    def commit_files(files: Sequence[Path], message: str) -> str:
+        steps.append((list(files), message))
+        return "3e9ae5c0000"
+
+    commit_written(STARTED, store([FILE]), RECORD, lambda _: tree(commit_files, never), TRUNK)
+    assert steps == [([Path(".fgraph/items/S-0001.toml")], "chore: start S-0001 in the record")]
+
+
+def test_a_start_on_the_trunk_names_no_branch() -> None:
+    said = commit_written(STARTED, store([FILE]), RECORD, lambda _: work_tree([]), TRUNK)
+    assert said == Said("started S-0001\n")
+
+
+def test_a_start_on_the_trunk_outside_a_work_tree_warns_of_nothing() -> None:
+    said = commit_written(STARTED, store([FILE]), RECORD, lambda _: None, TRUNK)
     assert said == Said("started S-0001\n")
 
 

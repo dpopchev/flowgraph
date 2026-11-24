@@ -4,10 +4,10 @@ from collections.abc import Iterable, Sequence
 
 from flowgraph.feature import CriterionRow, FeatureDetail, criteria_rows
 from flowgraph.knowledge import KnowledgeRow, about_text, governs_text, mark_text
-from flowgraph.status.text import BLOCKED, BUCKETS
+from flowgraph.status.buckets import BUCKETS
 from flowgraph.story import StoryDetail, StoryRow
 from flowgraph.upkeep import UpkeepDetail, UpkeepRow
-from flowgraph.work_item import ProgressRow
+from flowgraph.work_item import BLOCKED, ProgressRow
 
 
 def _knowledge_lines(knowledge: Sequence[KnowledgeRow]) -> list[str]:

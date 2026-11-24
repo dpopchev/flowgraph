@@ -4,6 +4,7 @@
 branch it tracks, and main tagged with its version. Each step raises the GitError git gave it,
 with the work item and the commit the landing came to, so a landing refused says how far it came.
 A main that tracks no branch of a remote is refused by `check_main_tracked`, before any merge.
+A landing through a pull request pushes the branch of the work item instead, by `requested`.
 """
 
 from collections.abc import Callable
@@ -65,6 +66,25 @@ def tagged_at_merge(item: str, sha: str, tag: Callable[[], str]) -> str:
         return tag()
     except GitError as error:
         raise GitError(f"{error} -- {_merged(item, sha)}") from error
+
+
+def requested(item: str, branch: str, work_tree: WorkTree) -> str:
+    """Push the branch of a landing through a pull request; the lines that say what comes next.
+
+    The branch goes, under its own name, to the remote main tracks; fgraph opens no pull request
+    and names the command that does. Raises GitError saying the branch is not pushed and the
+    work item is not landed when git refuses the push, as for a main that tracks no remote.
+    """
+    try:
+        remote = work_tree.landing.publish(branch, MAIN)
+    except GitError as error:
+        raise GitError(f"{error} -- {branch} is not pushed, {item} is not landed") from error
+    again = f"run fgraph land {item} again once {MAIN} holds its pull request merged"
+    return (
+        f"pushed {branch} to {remote}\n"
+        f"open its pull request: gh pr create --base {MAIN} --head {branch}\n"
+        f"{item} is not completed: {again}\n"
+    )
 
 
 def _merged(item: str, sha: str) -> str:

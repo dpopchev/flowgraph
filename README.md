@@ -570,7 +570,8 @@ its count and every item of it, not the top 5, the Tasks of each work item with
 their state, the reason and what a block waits on, the ids a work item waits for,
 and the next to start. A Feature holds in `work_items` every work item under it,
 in any state -- Backlog, started, blocked, completed or removed -- where the text
-lists the started ones alone. `text` is the default and prints what `fgraph status` has
+lists the started ones and, under a Feature in progress, the completed ones. `text` is the
+default and prints what `fgraph status` has
 always printed; another word is refused naming both, with exit 2. `--all` changes
 nothing for JSON, which lists every item anyway, and `fgraph watch` stays text.
 The keys are sorted, so two runs on one record print the same bytes; every key is
@@ -791,7 +792,7 @@ enabled = true
 merge = "squash"
 ```
 
-`merge` is one of three words. Each is a way `fgraph land` puts the work of
+`merge` is one of four words. Each is a way `fgraph land` puts the work of
 the branch on `main`:
 
 | `merge`                     | `main` gains                                               | `--message`                 |
@@ -799,6 +800,7 @@ the branch on `main`:
 | `merge-commit`, the default | one merge commit of the branch, with two parents           | needed: it words the commit |
 | `squash`                    | one commit of its own that holds the work, with one parent | needed: it words the commit |
 | `fast-forward`              | no new commit: `main` moves to the tip of the branch       | refused: no commit to word  |
+| `pull-request`              | nothing from fgraph: its pull request merges the branch    | refused: no commit to word  |
 
 Left out, the key is `merge-commit`, the one merge a landing made before the
 key. Whatever the way, the Story is completed at the commit `main` is then
@@ -810,7 +812,7 @@ word exits 2 naming the key, whatever the command:
 
 ```sh
 fgraph status
-# fgraph: error: /src/project/.fgraph/config.toml: development.merge is "rebase": it takes merge-commit, squash or fast-forward
+# fgraph: error: /src/project/.fgraph/config.toml: development.merge is "rebase": it takes merge-commit, squash, fast-forward or pull-request
 ```
 
 The development gates a landing when the record names a command:
@@ -1086,6 +1088,9 @@ fgraph config show
 # development.merge = "merge-commit"
 # development.gate = none
 # development.driver = "developer"
+# development.mode = "branch"
+# development.branch_max = none
+# development.approver = "agent"
 # delivery.push = false
 # delivery.tag = "none"
 # archive.board = none
@@ -1104,6 +1109,25 @@ complexity exits 2 with `S-0002 has no complexity to start with: set it with
 fgraph amend S-0002 --complexity low, medium or high`, and `fgraph status`
 marks no such work item.
 
+`development.mode` is where a work item is developed: `branch`, the default, or
+`trunk`, for a repository whose work tree is the live artifact. On the trunk a
+start is committed on `main` and makes no branch and no worktree, one work item
+is started at a time, and `fgraph land` is refused:
+
+```sh
+fgraph config set development.mode trunk
+# set development.mode = "trunk"
+
+fgraph start S-0001
+# started S-0001
+
+fgraph complete S-0001 --commit 3e9ae5c
+# completed S-0001 at 3e9ae5c
+
+fgraph land S-0001
+# fgraph: error: S-0001 cannot land: development.mode = trunk makes no branch to land -- complete it with fgraph complete S-0001 --commit SHA
+```
+
 `fgraph config set KEY VALUE` writes that one key into the file and keeps the
 others; a record without the file gains it:
 
@@ -1121,6 +1145,9 @@ fgraph config show
 # development.merge = "merge-commit"
 # development.gate = "make check"
 # development.driver = "developer"
+# development.mode = "branch"
+# development.branch_max = none
+# development.approver = "agent"
 # delivery.push = false
 # delivery.tag = "none"
 # archive.board = none
@@ -1129,17 +1156,20 @@ fgraph config show
 VALUE is a text, read by what its key takes and never guessed from the text,
 so `fgraph config set development.gate true` names the command `true`:
 
-| Key                    | VALUE                                      | Set as                                            |
-| ---------------------- | ------------------------------------------ | ------------------------------------------------- |
-| `git.commit`           | `true` or `false`                          | `fgraph config set git.commit false`              |
-| `development.enabled`  | `true` or `false`                          | `fgraph config set development.enabled true`      |
-| `development.parallel` | a whole number of 1 or more                | `fgraph config set development.parallel 2`        |
-| `development.merge`    | `merge-commit`, `squash` or `fast-forward` | `fgraph config set development.merge squash`      |
-| `development.gate`     | a command line, one argument of the shell  | `fgraph config set development.gate "make check"` |
-| `development.driver`   | `developer` or `agent`                     | `fgraph config set development.driver agent`      |
-| `delivery.push`        | `true` or `false`                          | `fgraph config set delivery.push true`            |
-| `delivery.tag`         | `feature-close`, `close` or `none`         | `fgraph config set delivery.tag close`            |
-| `archive.board`        | the path of the `.board/` of board 1       | `fgraph config set archive.board .board`          |
+| Key                    | VALUE                                                      | Set as                                            |
+| ---------------------- | ---------------------------------------------------------- | ------------------------------------------------- |
+| `git.commit`           | `true` or `false`                                          | `fgraph config set git.commit false`              |
+| `development.enabled`  | `true` or `false`                                          | `fgraph config set development.enabled true`      |
+| `development.parallel` | a whole number of 1 or more                                | `fgraph config set development.parallel 2`        |
+| `development.merge`    | `merge-commit`, `squash`, `fast-forward` or `pull-request` | `fgraph config set development.merge squash`      |
+| `development.gate`     | a command line, one argument of the shell                  | `fgraph config set development.gate "make check"` |
+| `development.driver`   | `developer` or `agent`                                     | `fgraph config set development.driver agent`      |
+| `development.mode`     | `branch` or `trunk`                                        | `fgraph config set development.mode trunk`        |
+| `development.branch_max` | a whole number of days as `1d`                           | `fgraph config set development.branch_max 1d`     |
+| `development.approver` | `agent` or `developer`                                     | `fgraph config set development.approver developer` |
+| `delivery.push`        | `true` or `false`                                          | `fgraph config set delivery.push true`            |
+| `delivery.tag`         | `feature-close`, `close` or `none`                         | `fgraph config set delivery.tag close`            |
+| `archive.board`        | the path of the `.board/` of board 1                       | `fgraph config set archive.board .board`          |
 
 The whole file is read back as a configuration before it replaces the one in
 the record. A key the configuration does not have, a value the key does not
@@ -1237,6 +1267,19 @@ fgraph status
 # InProgress (2)
 # ? S-0001  1/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
 #   S-0002  1/2 T  Add the show command to src/flowgraph/cli.py
+# Completed (0)
+```
+
+With the development on and `development.branch_max` set to an age such as
+`1d`, the line of a started or blocked work item ends with a word once more
+than that many days have passed since it was started. It is a word and no
+refusal: nothing is held back for an old branch.
+
+```sh
+fgraph status
+# Backlog (0)
+# InProgress (1)
+#   S-0001  1/2 T  Raise the Stories fgraph lists  -- its branch is older than 1d
 # Completed (0)
 ```
 
@@ -1801,9 +1844,29 @@ fgraph land S-0001
 # run: a Story is added -> fgraph status lists it under Backlog
 ```
 
+With `merge = "pull-request"` the landing is left to a pull request on the
+host of the remote. The first run checks the merge as any way does -- the
+Tasks completed, the gate -- drops it, pushes the branch to the remote `main`
+tracks and names the command that opens its pull request: nothing is merged,
+written or removed. fgraph opens no pull request and fetches nothing. Once
+the pull request is merged and `main` pulled, the same command completes the
+Story at the commit `main` is on and removes the worktree and the branch:
+
+```sh
+fgraph land S-0001
+# pushed wi/S-0001-raise-the-stories-fgraph to origin
+# open its pull request: gh pr create --base main --head wi/S-0001-raise-the-stories-fgraph
+# S-0001 is not completed: run fgraph land S-0001 again once main holds its pull request merged
+
+git pull --ff-only origin main
+fgraph land S-0001
+# landed S-0001 at 3e9ae5c
+# run: a Story is added -> fgraph status lists it under Backlog
+```
+
 The message goes with the commit a landing makes. A landing by `merge-commit`
-or `squash` exits 2 without `--message`, and one by `fast-forward` exits 2
-with it, each naming the key:
+or `squash` exits 2 without `--message`, and one by `fast-forward` or
+`pull-request` exits 2 with it, each naming the key:
 
 ```sh
 fgraph land S-0001
@@ -1819,6 +1882,22 @@ holds a commit the branch lacks, the landing exits 2 with nothing merged:
 ```sh
 fgraph land S-0001
 # fgraph: error: S-0001 cannot land by fast-forward: main holds a commit wi/S-0001-raise-the-stories-fgraph lacks -- rebase wi/S-0001-raise-the-stories-fgraph on main or merge main into it
+```
+
+A record whose `config.toml` names `[development] approver = "developer"` holds
+every landing for the developer: the landing waits, nothing is merged, and the
+command says why. The developer approves it by the same command with
+`--approved`, which is the word of the developer and is kept in no record:
+
+```sh
+fgraph config set development.approver developer
+
+fgraph land S-0001 --message "feat: land the first Story"
+# fgraph: error: S-0001 cannot land: development.approver = developer, the landing waits for the developer -- run fgraph land S-0001 --approved once the developer approves it
+
+fgraph land S-0001 --message "feat: land the first Story" --approved
+# landed S-0001 at 3e9ae5c
+# run: a Story is added -> fgraph status lists it under Backlog
 ```
 
 Every other rule of a landing holds for each way: what it refuses, that
@@ -2075,9 +2154,10 @@ A Feature holds a place of its own in the Backlog: it joins the end when it
 is added, after the work items and the Features `fgraph reorder` placed and
 those added before it, and `fgraph reorder` places it as a work item (below).
 It is counted once, beside the heading and toward the top 5 (below). Its
-work items in Backlog and its completed ones are listed on no line and
-counted beside no heading: they are counted in its progress, and `fgraph show
-F-0001` lists each with its bucket. A removed one keeps its line under
+work items in Backlog are listed on no line of their own. A completed one of a
+Feature in progress stays listed under its line, counted beside no heading; those
+of a completed or a removed Feature stay on no line. They are counted in its
+progress, and `fgraph show F-0001` lists each with its bucket. A removed one keeps its line under
 Removed, unless the Feature itself is removed: that Feature is listed there
 in place of its work items (below).
 
@@ -2172,6 +2252,7 @@ fgraph status
 # InProgress (1)
 #   F-0001  1/2 W  Raise the kinds of work a project tracks with fgraph from 1 to 5
 #     S-0003  0/1 T  Raise the Stories fgraph lists under Completed from 0 to 1
+#     S-0001  1/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
 # Completed (0)
 ```
 

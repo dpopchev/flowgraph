@@ -1,10 +1,12 @@
 id = "S-0130"
-state = "backlog"
+state = "started"
 title = "Cut the lines of the backlog fgraph status and fgraph watch list with no flag from the top 5 to the top one"
 description = "Filed on the word of the developer of 2026-11-23, from the frame drawn that day. Its Tasks are written when it is ordered. Today the top 5 of each bucket are listed, with each line that can start beyond them, and --all lists every bucket whole. Open: the name of the flag, --full-backlog being the example of the developer, and what --all does beside it."
 parent = "F-0017"
 complexity = "medium"
 created = 2026-11-23 12:01:35+00:00
+started = 2026-11-24 09:13:34+00:00
+agent = "sonnet-a35"
 depends_on = [
     "S-0141",
     "U-0025",

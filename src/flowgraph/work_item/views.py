@@ -44,7 +44,9 @@ class WorkItemRow:
     it waits for are those it depends on that are not completed, set by
     the view that lists the Backlog and empty where it is not read from the whole record. It is
     the next to start when it is the first line of the Backlog its start would take, set there too.
-    It realizes the place of the criterion of its Feature it names, None for none.
+    It realizes the place of the criterion of its Feature it names, None for none. The age its
+    branch is older than, as `development.branch_max` writes it, is set by the store that reads
+    the clock and empty where no age is set.
     """
 
     id: str
@@ -69,6 +71,7 @@ class WorkItemRow:
     verified: str = field(default="", kw_only=True)
     waits_for: list[str] = field(default_factory=list[str], kw_only=True)
     next_to_start: bool = field(default=False, kw_only=True)
+    branch_older_than: str = field(default="", kw_only=True)
 
 
 @dataclass

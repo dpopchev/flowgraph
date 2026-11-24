@@ -215,8 +215,10 @@ class TestAStartWhoseCommitGitRefuses:
 
 class TestAStartWhoseWorktreeGitRefuses:
     @pytest.fixture
-    def refused(self, checkout: Path) -> Outcome:
-        git(checkout, "branch", BRANCH)
+    def refused(self, checkout: Path, tmp_path: Path) -> Outcome:
+        taken = tmp_path / "project.worktrees" / "S-0001-raise-the-stories-fgraph"
+        taken.mkdir(parents=True)
+        (taken / "held.txt").write_text("a file a worktree cannot be made over\n", encoding="utf-8")
         return fgraph(["start", "S-0001"], checkout)
 
     def test_start_exits_with_two(self, refused: Outcome) -> None:
@@ -224,7 +226,7 @@ class TestAStartWhoseWorktreeGitRefuses:
 
     def test_start_names_the_git_error_and_that_the_start_stays(self, refused: Outcome) -> None:
         assert re.fullmatch(
-            rf"fgraph: error: git worktree add .* failed: fatal: a branch named '{BRANCH}'"
+            r"fgraph: error: git worktree add .* failed: fatal: '.*S-0001-raise-the-stories-fgraph'"
             r" already exists -- S-0001 is started at [0-9a-f]{7}, its branch is not",
             refused.err.splitlines()[-1],
         )

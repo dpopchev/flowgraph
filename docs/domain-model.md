@@ -796,8 +796,13 @@ text.
 It is refused, exit 2, naming why: for a record whose development is off, naming
 `development.enabled`; for one whose driver is a developer, naming `development.driver`; each
 message says how to set the key with `fgraph config set`. A Feature with no work item in
-Backlog is refused saying it holds none. Hours that are not a whole number of 1 or more are
-refused saying so.
+Backlog is refused saying it holds none. A Feature holding a work item in Backlog with no Task,
+or with no complexity, is refused in the words of the start of the Feature (B-0031), since no
+start would take it and no coordinator could meet the goal: `F-0001 cannot start: S-0002 has no
+Task to start with`, or `F-0001 cannot start: S-0002 has no complexity to start with: set it
+with fgraph amend S-0002 --complexity low, medium or high`. The first such work item in start
+order is named, and a missing Task is named before a missing complexity. Hours that are not a
+whole number of 1 or more are refused saying so.
 
 The wording follows the page of the documentation of Claude Code on `/goal`
 (code.claude.com/docs/en/goal): one measurable end state, a stated check, the constraints that
@@ -1353,7 +1358,10 @@ and its merge tool.
   with the development on and `development.driver` agent, one whose work item
   in Backlog has no complexity, the first in start order named, `F-0001 cannot
   start: S-0002 has no complexity to start with: set it with fgraph amend
-  S-0002 --complexity low, medium or high`; and a start `[development] parallel` refuses (below).
+  S-0002 --complexity low, medium or high`; with the development on, one whose
+  first work item has its branch there already,
+  `F-0001 cannot start: the branch wi/S-0002-<slug> is there already -- delete it or give another --slug`;
+  and a start `[development] parallel` refuses (below).
 - A work item does not start before its Feature: the start of a work item in
   Backlog under a Feature that is not started is refused with exit 2, naming
   the Feature, `S-0001 cannot start: F-0001 is not started, start it first`.
@@ -1643,6 +1651,15 @@ and its merge tool.
   nothing written, one line naming the file and why, `fgraph: error:
   <path> holds no Story: <why>`, `holds no Feature: <why>` or `holds no
   queue: <why>`, never a Python traceback.
+- Each time of a file -- created, started, since, completed, removed, noted,
+  the `on` of verified, the added of a term -- is read with its offset. A
+  file that writes one without, a day alone as `created = 2026-10-11` or a
+  time with no offset, is refused when the record is read (B-0026), by every
+  command, exit 2 and nothing written, in one line naming the file, the key
+  and what is written: `fgraph: error: <path> holds no Story: created =
+  2026-10-11 is a time with no offset: write it with one, as 2026-01-01
+  09:00:00+00:00`. An `amend` no longer rewrites the day as a time with no
+  offset.
 - The queue of the Backlog (Order) is one file beside `items/`, `queue.toml`:
   a `backlog` list of the ids placed, in their order -- the ids of work items
   and of Features, `F-0001` beside `S-0001`. A record without the file holds
@@ -1968,9 +1985,15 @@ agreed on 2026-11-21 that `fgraph` owns the record, its rituals and its rules:
   and the Task being worked that status lists are current before the landing.
   A started work item without such a worktree, a record outside a git work
   tree and a record git ignores are read from the record itself. Run in a
-  work tree on the branch of a work item, status reads the record of that
-  work tree and no other. Every read of the rows goes this way, so the bucket
-  of a Feature does too.
+  work tree on the branch of a work item, status and watch list the record
+  of main, its queue, its Features, its configuration and every row, each
+  started work item read from its own worktree as on main, so every work
+  tree lists the same frame, the marks and the JSON too: the developer's
+  decision of 2026-11-23, S-0141, amending the rule of S-0035. With no work
+  tree on main, outside a git work tree and for a record git ignores they
+  read the record of that work tree; fgraph show, every other read and every
+  write stay with the record of that work tree. Every read of the rows goes
+  this way, so the bucket of a Feature does too.
 - `fgraph show` of a started work item on `main` reads it there too, as
   status does: the work item it shows, with the bucket and the commit of each
   Task, is the one the worktree of its branch `wi/<id>-*` holds, the same
@@ -2025,7 +2048,12 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   `<parent>/<checkout name>.worktrees/<id>-<slug>`. The slug is given with
   `--slug`, else it is the first four words of the title, lower-cased and kept
   to their letters and digits. With the development off the start ends at its
-  commit.
+  commit. A start whose branch `wi/<id>-<slug>` is there already is refused
+  with exit 2 before anything is written, so the work item stays in Backlog,
+  `S-0001 cannot start: the branch wi/S-0001-<slug> is there already -- delete it or give another --slug`;
+  it holds for a Feature by the branch of its first work item. The developer deletes the branch or gives another `--slug`: the
+  start takes over no branch that is there, the developer's decision of
+  2026-11-23 (B-0027).
 - Outside a git work tree a write is made as before, without a commit and
   without a warning; only a start of a work item with the development on
   warns, that no branch was made. A write refused makes no commit and no
@@ -2048,8 +2076,8 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   completing the work item with no commit of the record. A worktree git
   refuses leaves the start written.
 - A git step refused exits 2 naming the command: a commit refused puts every
-  file the write changed back as it was, a worktree refused leaves the start
-  committed.
+  file the write changed back as it was, a worktree refused for another cause
+  than a branch there leaves the start committed.
 - With the development on, `fgraph land` lands a started work item, run in
   the checkout of `main`. It merges the branch `wi/<id>-*` into `main` as a
   merge of its own, held uncommitted; commits it under the message the
@@ -2084,9 +2112,10 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   and the branch of the next work item of a Feature. `main` is pushed to the
   branch it tracks on its remote, and the landing says `pushed main to
   <remote>` once, on a line of its own. A step refused before a push takes
-  no push.
-- A first push git refuses -- a remote it cannot reach, a `main` that tracks
-  no branch of a remote -- leaves the work item started and merged, its
+  no push. The branch `main` tracks is read before the merge, through the step
+  `upstream` of the landing, so a `main` that tracks none merges nothing.
+- A first push git refuses -- a remote it cannot reach -- leaves the work item
+  started and merged, its
   branch and its worktree as they were, no next work item started and no tag
   made; nothing is undone, since history only moves forward. The landing
   exits 2 naming the git command and its error, then `-- main is not pushed
@@ -2135,7 +2164,13 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 - A landing is refused, with nothing merged, when the development is off,
   when `--message` is missing for a commit or given to a `fast-forward`,
   when the record is outside a git work tree, when the work tree it runs in
-  is not on `main`, when no branch `wi/<id>-*` or more than one is there,
+  is not on `main`, when `[delivery] push` is `true` and `main` tracks no
+  branch of a remote (B-0023), with the line `<id> cannot land: main tracks no
+  branch of a remote to push to -- run git push --set-upstream <remote> main,
+  or fgraph config set delivery.push false`, checked before the branch of the
+  work item is looked for (`check_main_tracked`,
+  `src/flowgraph/development/delivery.py`), when no branch `wi/<id>-*` or more
+  than one is there,
   when a `fast-forward` finds a commit on `main` that the branch lacks, when
   git refuses the merge, and -- the merge held dropped again -- when a Task
   of the work item is not completed, when the gate of the record exits with
@@ -2531,12 +2566,12 @@ A line of type or `supersedes` survives only as text: `note --finding
 By a file written by hand. A refusal of the read is of the whole record:
 `status`, `show` of any other item and `knowledge` exit 2 naming the one
 file, `fgraph: error: <file> holds no Story: ...` followed by the lines of
-the validator.
+the validator; a time with no offset is refused in the one line alone.
 
 | Case | Read | Line or what was shown |
 |---|---|---|
 | old times, `2026-10-11 09:00:00+00:00`, in created, started, completed, the `on` of verified, noted; a completed Task whose check fails today | read, exit 0 | `verified yes 2026-10-12`, `finding 2026-10-11`; a later `note` keeps them |
-| `created = 2026-10-11`, a day alone | read alone; `amend` rewrites it `2026-10-11 00:00:00`, no offset | beside a time with an offset, `status` and `knowledge` exit 1: `TypeError: can't compare offset-naive and offset-aware datetimes` |
+| `created = 2026-10-11`, a day alone | as of the probe: read alone; `amend` rewrote it `2026-10-11 00:00:00`, no offset; since B-0026 it is refused at the read | as of the probe, beside a time with an offset, `status` and `knowledge` exit 1: `TypeError: can't compare offset-naive and offset-aware datetimes`; since B-0026 exit 2: `fgraph: error: <file> holds no Story: created = 2026-10-11 is a time with no offset: write it with one, as 2026-01-01 09:00:00+00:00` |
 | the old id, `W-187.toml` | `status` exit 0 and lists nothing | `fgraph: error: 'W-187' is no Story, Upkeep, Bug, Spike or Feature id` |
 | a completed work item with no Task | read | `Tasks (0)`, its commit |
 | a removed work item with `started` and completed Tasks | refused | `removed.tasks.0.state Input should be 'backlog'`; `removed.started Extra inputs are not permitted` |
@@ -2558,7 +2593,7 @@ the validator.
 The Field map, row by row, against the probe. Refuted:
 
 - `created`, a day: no command takes it; a file carries it only as a time
-  with its offset -- a bare day is read but breaks `status` and `knowledge`.
+  with its offset -- a bare day is refused when the record is read (B-0026).
 - `doing`, `done.on`, `blocked` of a Task (`since`), a Finding, a Decision
   and a Deviation (`<day>`), the History lines: said converted, the day a
   time; by the commands every one is the time of the run. Converted by a
@@ -2604,10 +2639,11 @@ The four rows left unknown:
   branch `wi/<id>-*`, wherever that worktree is, so a branch git made, and a
   start written by hand, were taken through to `land`. The branch of board 1
   carries the old id, `wi/W-197-no-review-mark-is`, which matches no fgraph
-  id; it is taken only once renamed, which was not run. `start` does not
-  adopt a branch already there: it fails at `git worktree add` and leaves the
-  item started with no branch, its rerun refused `S-0004 is started
-  already`, and its Tasks then start on main.
+  id; it is taken only once renamed, which was not run. `start` did not
+  adopt a branch already there, as the probe saw: it failed at `git worktree
+  add`, left the item started with no branch, its rerun refused `S-0004 is
+  started already`, and its Tasks then started on main. Since B-0027 the start
+  is refused before it writes and adopts no branch.
 
 ### Gaps
 
@@ -2671,7 +2707,7 @@ Held by some records:
 | done with no sha in its evidence | 58: Tasks 53 (c 38, sm 15), work items 5 (c 4, sm 1) | not filed |
 | a Check in prose, no ` -- ` or ` -> ` | 83, all of c | not filed |
 | the Deviations a checkpoint moved to a ledger | 27 sections in 13 ledgers: c 5 in 4, st 1 in 1, sm 5 in 3, sv 16 in 5 | not filed |
-| the branch of the doing work item, named by its old id | 1, W-197 of sm | part, B-0027: "or leaves a way to make the branch of the started work item"; the rename not filed |
+| the branch of the doing work item, named by its old id | 1, W-197 of sm | B-0027 refuses the start before it writes and takes over no branch; a branch git made beside a start written by hand is read through to land (Probe); the rename not filed |
 | `depends_on` a pruned item | 39: c 14, sm 23, sv 2 | none needed: written before the removal, or by a file (Probe) |
 
 Lost by a decision taken, or of no use once converted. The decisions are
@@ -2719,8 +2755,8 @@ Two results the migration rests on, from the Probe:
   refuses when it fails today, and a work item reaches Completed by `land`
   at its merge commit, not at the old sha. Files with the old times, the
   old checks and the old shas were read with exit 0. A file must write each
-  time with its offset: a day alone ends `status` and `knowledge` in a
-  traceback (B-0026). Whether the 2,694 done Tasks would pass their checks
+  time with its offset: a day alone is refused when the record is read, exit
+  2, in one line naming the file (B-0026). Whether the 2,694 done Tasks would pass their checks
   today was not counted: it means running every old check in its
   repository.
 - States the read refuses, whatever writes them: a removed Task, a blocked

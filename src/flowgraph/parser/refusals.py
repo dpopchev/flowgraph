@@ -14,6 +14,7 @@ from flowgraph.development.driver import NoComplexityError
 from flowgraph.development.parallel import ParallelError
 from flowgraph.development.release import ReleaseError
 from flowgraph.development.scope import NotOnMainError, OutOfScopeError
+from flowgraph.development.start_branch import BranchExistsError
 from flowgraph.development.task_check import CheckError, TaskCheckError
 from flowgraph.development.version import VersionError
 from flowgraph.development.way import LandError
@@ -90,6 +91,7 @@ REFUSED = (
     CheckError,
     TaskCheckError,
     NotOnMainError,
+    BranchExistsError,
     ParallelError,
     OutOfScopeError,
     CommitError,

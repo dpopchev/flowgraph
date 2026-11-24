@@ -16,7 +16,7 @@ from pathlib import Path
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 from flowgraph.criterion import EmptyPartError, said
-from flowgraph.item import write_checked
+from flowgraph.item import HeldTime, NoOffsetError, write_checked
 
 # The directory of every term inside a record, one file per term, named by its name.
 TERMS = "terms"
@@ -115,7 +115,7 @@ class _TermFile(BaseModel):
 
     name: str
     meaning: str
-    added: datetime
+    added: HeldTime
     is_a: list[str] = []
     part_of: list[str] = []
 
@@ -128,13 +128,20 @@ def term_file(record: Path, name: str) -> Path:
 def _read_file(path: Path) -> Term:
     """The term one file holds, built through its constructor.
 
-    Raises TermFileError naming the path when the file holds no term.
+    Raises TermFileError naming the path when the file holds no term; a time with no offset is
+    refused so.
     """
     try:
         held = _TermFile.model_validate(tomllib.loads(path.read_text(encoding="utf-8")))
         made = make_term(held.name, held.meaning, held.added)
         return replace(made, is_a=tuple(held.is_a), part_of=tuple(held.part_of))
-    except (tomllib.TOMLDecodeError, ValidationError, TermError, EmptyPartError) as error:
+    except (
+        tomllib.TOMLDecodeError,
+        ValidationError,
+        TermError,
+        EmptyPartError,
+        NoOffsetError,
+    ) as error:
         raise TermFileError(f"{path} holds no term: {error}") from error
 
 

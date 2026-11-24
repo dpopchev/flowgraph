@@ -64,9 +64,9 @@ def _no_gate(command: str, directory: Path) -> Never:
     raise AssertionError(f"run() was given no run_gate to run {command!r} in {directory}")
 
 
-def _no_check(command: str, directory: Path) -> int:
-    """The check runner of a run given none: it runs nothing and says every check passed."""
-    return 0
+def _no_check(command: str, directory: Path) -> Never:
+    """The check runner of a run given none: a contract, such a run completes no checked Task."""
+    raise AssertionError(f"run() was given no run_check to run {command!r} in {directory}")
 
 
 def _no_dir(path: Path) -> Never:
@@ -153,8 +153,8 @@ def run(
     or closes a cycle, which is checked as the worktrees compose it, before any command runs. A
     landing runs the gate of the configuration through run_gate, which a run that lands under a
     gate is given: the default runs none. The complete of a Task that holds a check runs it
-    through run_check, which a run that must refuse a failing one is given: the default runs
-    none, and every check then passes.
+    through run_check, which a run that completes such a Task is given: the default runs none
+    and refuses to, as that of the gate does.
     """
     command_line = build_command_line()
     parser = command_line.parser

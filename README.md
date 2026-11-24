@@ -774,8 +774,9 @@ gate = "make check"
 `gate` is one command of the record, a command line run at a landing. It is
 the reading, decided when S-0042 was ordered, of the developer's words of
 2026-11-21 on starting a work item, "checks if criteria are met before
-closing": no check per Task run at a complete, and the Given / When / Then of
-the Story is neither run nor confirmed by it. `fgraph land` runs the gate
+closing": the gate is apart from the check of a Task, which the complete of that
+Task runs, and the Given / When / Then of the Story is neither run nor
+confirmed by it. `fgraph land` runs the gate
 through the shell at the top of the work tree of `main`, once the work of the
 branch is merged there and before the landing is committed or the Story
 completed, so the gate checks the tree `main` will have. Its output is

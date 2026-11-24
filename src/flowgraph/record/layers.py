@@ -50,6 +50,17 @@ class Driver(Enum):
     AGENT = "agent"
 
 
+class Mode(Enum):
+    """Where a work item is developed: on its own branch, or on main; each is its file word.
+
+    `branch` makes a branch and a worktree at its start and merges it at its landing; `trunk` makes
+    none: the work item is started, worked and completed on main, one at a time.
+    """
+
+    BRANCH = "branch"
+    TRUNK = "trunk"
+
+
 @dataclass(frozen=True)
 class Gated:
     """The gate of a landing: one command line, run through the shell, never a blank one."""
@@ -73,8 +84,8 @@ Gate = Gated | Ungated
 class Development:
     """The development beside the source code: turned on, or off, and its keys as written.
 
-    The limit, the merge, the gate and the driver are keys of the development: none says anything
-    while it is off.
+    The limit, the merge, the gate, the driver and the mode are keys of the development: none says
+    anything while it is off.
     """
 
     enabled: bool
@@ -82,6 +93,12 @@ class Development:
     merge: Merge
     gate: Gate
     driver: Driver = field(default=Driver.DEVELOPER, kw_only=True)
+    mode: Mode = field(default=Mode.BRANCH, kw_only=True)
+
+
+def branched(development: Development) -> bool:
+    """Whether the start of a work item makes its branch: the development on, the mode branch."""
+    return development.enabled and development.mode is Mode.BRANCH
 
 
 class TagAt(Enum):

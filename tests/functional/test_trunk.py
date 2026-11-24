@@ -42,9 +42,6 @@ LAND_REFUSED = (
     "fgraph: error: S-0001 cannot land: development.mode = trunk makes no branch to land"
     " -- complete it with fgraph complete S-0001 --commit SHA"
 )
-XFAIL_KEY = pytest.mark.xfail(
-    strict=True, reason="S-0096: development.mode is no key of the configuration"
-)
 XFAIL_START = pytest.mark.xfail(strict=True, reason="S-0096: a start on the trunk makes a branch")
 
 
@@ -223,7 +220,6 @@ def test_a_branch_of_the_story_that_is_there_does_not_refuse_the_start(checkout:
     assert fgraph(["start", "S-0001"], checkout) == Outcome(0, "started S-0001\n", "")
 
 
-@XFAIL_KEY
 def test_a_second_story_is_not_started_beside_the_first(checkout: Path) -> None:
     refused = runs(
         checkout, ADD_SECOND_STORY, ADD_SECOND_TASK, ["start", "S-0001"], ["start", "S-0002"]
@@ -234,7 +230,6 @@ def test_a_second_story_is_not_started_beside_the_first(checkout: Path) -> None:
     )
 
 
-@XFAIL_KEY
 def test_config_show_lists_the_mode_after_the_parallel_limit(checkout: Path) -> None:
     lines = fgraph(["config", "show"], checkout).out.splitlines()
     keys = ("development.parallel", "development.mode")
@@ -244,7 +239,6 @@ def test_config_show_lists_the_mode_after_the_parallel_limit(checkout: Path) -> 
     ]
 
 
-@XFAIL_KEY
 def test_config_set_writes_the_mode(tmp_path: Path) -> None:
     path = repository(tmp_path, DEVELOPMENT)
     assert fgraph(["config", "set", "development.mode", "trunk"], path) == Outcome(
@@ -252,7 +246,6 @@ def test_config_set_writes_the_mode(tmp_path: Path) -> None:
     )
 
 
-@XFAIL_KEY
 def test_a_parallel_limit_above_one_beside_the_trunk_is_refused(tmp_path: Path) -> None:
     path = repository(tmp_path, f"{TRUNK}parallel = 2\n")
     refused = fgraph(["status"], path)

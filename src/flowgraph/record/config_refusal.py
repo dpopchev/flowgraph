@@ -8,7 +8,7 @@ from enum import Enum
 
 from pydantic import ValidationError
 
-from flowgraph.record.layers import Driver, Merge, TagAt
+from flowgraph.record.layers import Driver, Merge, Mode, TagAt
 
 # What a count takes, whether its value is no whole number or one below 1.
 _COUNT = "a whole number of 1 or more"
@@ -37,6 +37,7 @@ _TAKES = {
 _WORDS = {
     "development.merge": _one_of(Merge),
     "development.driver": _one_of(Driver),
+    "development.mode": _one_of(Mode),
     "delivery.tag": _one_of(TagAt),
 }
 

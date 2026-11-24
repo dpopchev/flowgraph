@@ -9,12 +9,14 @@ parallel` is the most work items started at once; it has no default, so left out
 them. `[development] merge` is how a landing merges: `merge-commit` unless it names `squash` or
 `fast-forward`. `[development] gate` is the one command line a landing runs before main moves;
 it has no default either, so left out a landing runs none. `[development] driver` names who
-drives the development: `developer` unless it names `agent`. `[delivery] push = true` pushes main
-once a landing is whole; it is false by default. `[delivery] tag` tags main with its version at
-`feature-close`, `close` (a work item alone too) or never, `none`, the default. `[archive] board`
-is the path of the `.board/` of board 1 the record points at, with no default, so left out the
-record points at none. Each layer is a value (`flowgraph.record.layers`); what a file refused
-says is `flowgraph.record.config_refusal`, and the tables of the file are
+drives the development: `developer` unless it names `agent`. `[development] mode` is where a work
+item is developed: `branch` unless it names `trunk`, which makes no branch and holds one started
+work item, so its `parallel` is 1 left out and a number above 1 is refused. `[delivery] push =
+true` pushes main once a landing is whole; it is false by default. `[delivery] tag` tags main with
+its version at `feature-close`, `close` (a work item alone too) or never, `none`, the default.
+`[archive] board` is the path of the `.board/` of board 1 the record points at, with no default,
+so left out the record points at none. Each layer is a value (`flowgraph.record.layers`); what a
+file refused says is `flowgraph.record.config_refusal`, and the tables of the file are
 `flowgraph.record.config_file`.
 """
 
@@ -36,6 +38,7 @@ from flowgraph.record.layers import (
     Development,
     Gated,
     Git,
+    Mode,
     Parallel,
 )
 
@@ -56,6 +59,9 @@ DEVELOPMENT_PARALLEL = "development.parallel"
 
 # The key that names who drives the development, as a refusal names it.
 DEVELOPMENT_DRIVER = "development.driver"
+
+# The key that says where a work item is developed, as a refusal names it.
+DEVELOPMENT_MODE = "development.mode"
 
 # The key that turns the commits of the record off, as a refusal names it.
 GIT_COMMIT = "git.commit"
@@ -101,7 +107,8 @@ def make_config(text: str) -> Config:
     Raises ConfigError naming the first table or key the configuration does not have, or whose
     value is of another type than the key takes, a count below 1, no way of merging, a blank
     gate, a blank archive path or no word of a tag, and when the text is no TOML; naming both
-    keys when it turns the development on with the commits off.
+    keys when it turns the development on with the commits off, or the trunk with a parallel above
+    1; on the trunk the parallel left out is 1, with the development off too.
     """
     try:
         held = ConfigFile.model_validate(tomllib.loads(text))
@@ -116,12 +123,20 @@ def make_config(text: str) -> Config:
         )
     most = held.development.parallel
     command = held.development.gate
+    mode = held.development.mode
+    if mode is Mode.TRUNK and most not in (None, 1):
+        raise ConfigError(
+            f"{DEVELOPMENT_PARALLEL} is {most} while {DEVELOPMENT_MODE} is trunk:"
+            " the trunk holds one started work item at a time"
+        )
+    limit = UNLIMITED if most is None else Parallel(most)
     development = Development(
         enabled=held.development.enabled,
-        parallel=UNLIMITED if most is None else Parallel(most),
+        parallel=Parallel(1) if mode is Mode.TRUNK else limit,
         merge=held.development.merge,
         gate=UNGATED if command is None else Gated(command),
         driver=held.development.driver,
+        mode=mode,
     )
     delivery = Delivery(push=held.delivery.push, tag=held.delivery.tag)
     git = Git(commit=held.git.commit)

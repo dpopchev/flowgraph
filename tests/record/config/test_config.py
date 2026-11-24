@@ -6,7 +6,16 @@ import pytest
 
 from flowgraph.record.archive import UNARCHIVED, Archive, Archived
 from flowgraph.record.config import ConfigError, make_config, read_config
-from flowgraph.record.layers import UNGATED, UNLIMITED, Driver, Gated, Merge, Parallel
+from flowgraph.record.layers import (
+    UNGATED,
+    UNLIMITED,
+    Driver,
+    Gated,
+    Merge,
+    Mode,
+    Parallel,
+    branched,
+)
 
 pytestmark = pytest.mark.edge
 
@@ -18,6 +27,7 @@ TAKES_A_WAY = "it takes merge-commit, squash or fast-forward"
 TAKES_A_COMMAND = "it takes a command line"
 TAKES_A_TAG = "it takes feature-close, close or none"
 TAKES_A_DRIVER = "it takes developer or agent"
+TAKES_A_MODE = "it takes branch or trunk"
 
 
 @pytest.mark.parametrize(
@@ -153,6 +163,58 @@ def test_a_driver_that_is_no_word_of_it_is_refused_naming_the_key(value: str, wr
     with pytest.raises(ConfigError) as error:
         make_config(f"[development]\ndriver = {value}\n")
     assert str(error.value) == f"development.driver is {written}: {TAKES_A_DRIVER}"
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["", "[development]\n", ENABLED],
+    ids=["no-table", "no-key", "development-on"],
+)
+def test_a_work_item_is_developed_on_a_branch_unless_mode_is_set(text: str) -> None:
+    assert make_config(text).development.mode is Mode.BRANCH
+
+
+def test_a_mode_trunk_set_is_the_trunk() -> None:
+    assert make_config(f'{ENABLED}mode = "trunk"\n').development.mode is Mode.TRUNK
+
+
+@pytest.mark.parametrize(
+    "value", ['"main"', '"Trunk"', "true"], ids=["a-word", "a-case", "a-truth"]
+)
+def test_a_mode_that_is_no_word_of_it_is_refused_naming_the_key(value: str) -> None:
+    with pytest.raises(ConfigError) as error:
+        make_config(f"[development]\nmode = {value}\n")
+    assert str(error.value) == f"development.mode is {value}: {TAKES_A_MODE}"
+
+
+@pytest.mark.parametrize("parallel", ["", "parallel = 1\n"], ids=["left-out", "written-1"])
+def test_the_trunk_holds_one_started_work_item_at_a_time(parallel: str) -> None:
+    assert make_config(f'{ENABLED}mode = "trunk"\n{parallel}').development.parallel == Parallel(1)
+
+
+def test_a_parallel_above_one_beside_the_trunk_is_refused_naming_both_keys() -> None:
+    with pytest.raises(ConfigError) as error:
+        make_config(f'{ENABLED}mode = "trunk"\nparallel = 2\n')
+    assert str(error.value) == (
+        "development.parallel is 2 while development.mode is trunk:"
+        " the trunk holds one started work item at a time"
+    )
+
+
+@pytest.mark.parametrize(
+    ("text", "branches"),
+    [
+        ("", False),
+        (ENABLED, True),
+        (f'{ENABLED}mode = "trunk"\n', False),
+        ('[development]\nmode = "trunk"\n', False),
+    ],
+    ids=["off", "on", "on-with-trunk", "off-with-trunk"],
+)
+def test_a_start_makes_a_branch_only_with_the_development_on_and_the_mode_branch(
+    text: str, branches: bool
+) -> None:
+    assert branched(make_config(text).development) is branches
 
 
 @pytest.mark.parametrize(

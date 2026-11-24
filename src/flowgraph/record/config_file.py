@@ -7,7 +7,7 @@ of it.
 from pydantic import BaseModel, ConfigDict, Field
 
 from flowgraph.record.archive import ArchiveTable
-from flowgraph.record.layers import Driver, Merge, TagAt
+from flowgraph.record.layers import Driver, Merge, Mode, TagAt
 
 
 class _Table(BaseModel):
@@ -36,6 +36,8 @@ class _DevelopmentTable(_Table):
     gate: str | None = Field(default=None, pattern=r"\S")
     # Not strict, so that the word of the file is read as the driver it names.
     driver: Driver = Field(default=Driver.DEVELOPER, strict=False)
+    # Not strict, so that the word of the file is read as the mode it names.
+    mode: Mode = Field(default=Mode.BRANCH, strict=False)
 
 
 class _DeliveryTable(_Table):

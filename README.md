@@ -57,6 +57,7 @@ the typed edges of the whole record as JSON.
 | the closing of a work item      | `fgraph verify --yes` keeps the yes of a completed one   |
 |                                 | `--no` keeps the no and files a Bug that amends it       |
 | the development                 | once enabled: start branches, `fgraph land` lands        |
+| the commits of main in a branch | `fgraph sync` merges `main` into a started branch        |
 | the release of the trunk        | `fgraph release` tags `main` with its next `v*` version  |
 | the links of an item            | `fgraph about` lists every relation, both sides, by id   |
 | the brief of a work item        | `fgraph brief` prints it whole, as text or as JSON       |
@@ -822,6 +823,7 @@ remote once, on a line of its own:
 ```sh
 fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
 # landed S-0001 at 3e9ae5c
+# run: a Story is added -> fgraph status lists it under Backlog
 # pushed main to origin
 ```
 
@@ -863,6 +865,7 @@ next patch, and `v0.1.0` when the repository holds no `v*` tag yet:
 ```sh
 fgraph land S-0002 --message "feat: land the Stories listed under InProgress"
 # landed S-0002 at 85c8d69
+# run: a second Story is added -> fgraph status lists both under Backlog
 
 fgraph verify S-0002 --yes "make check: all checks passed"
 # verified S-0002
@@ -945,6 +948,7 @@ tag. A tag made by a landing bumps no version in a file of the project:
 ```sh
 fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
 # landed S-0001 at 3e9ae5c
+# run: a Story is added -> fgraph status lists it under Backlog
 # pushed main to origin
 # tagged v0.1.0 at 3e9ae5c
 # pushed v0.1.0 to origin
@@ -1160,7 +1164,8 @@ fgraph status
 
 A work item under InProgress is listed with its progress, `0/1 T`: its Tasks
 completed of all it holds. One of three completed reads `1/3 T`, so two are
-still to be completed; a started or a blocked Task is not completed yet.
+still to be completed; a started or a blocked Task is not completed yet. A
+removed Task is not counted at all (`fgraph remove`, below).
 
 Under it comes the Task being worked, marked `=>`: the started Task of the
 work item. A Task in Backlog or completed is not listed, and a Task line does
@@ -1659,6 +1664,31 @@ what it waits on is blank; an unblock when it is not blocked. `fgraph unblock
 S-0001` takes it back to started, with what it held, says `unblocked S-0001`
 and commits `chore: unblock S-0001 in the record`.
 
+When `main` moved since the start -- another work item landed first --
+`fgraph sync`, run in the worktree of the started work item, merges the local
+branch `main` into its branch by one merge commit, never a rebase and with no
+fetch:
+
+```sh
+cd ../project.worktrees/S-0001-raise-the-stories-fgraph
+fgraph sync
+# merged main into wi/S-0001-raise-the-stories-fgraph at <a sha>
+```
+
+The commit is worded `chore: merge main into <branch>`. A branch that holds
+`main` already says `<branch> holds main already at <sha>`, exits 0 and makes
+no commit. A `main` that conflicts with the branch is not merged:
+
+```sh
+fgraph sync
+# fgraph: error: main does not merge into wi/S-0001-...: conflict in <file> -- nothing is merged, the branch is as it was
+```
+
+The merge is then yours, `git merge main` in the worktree. The refusals of
+exit 2 are the development off, outside a git work tree, on `main` or on a
+branch no work item owns, and a tracked file changed and not committed (an
+untracked file is left alone).
+
 In a git repository whose record has the development on, `fgraph land` does
 the landing in one step, run in the checkout of `main` once every Task of the
 Story is completed on its branch. The message of the merge commit is yours:
@@ -1666,7 +1696,14 @@ Story is completed on its branch. The message of the merge commit is yours:
 ```sh
 fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
 # landed S-0001 at 677f9b0
+# run: a Story is added -> fgraph status lists it under Backlog
 ```
+
+The second line names the When and the Then of the criterion of the Story, to
+run on `main` at the commit named above it; `fgraph verify S-0001 --yes` or
+`fgraph verify S-0001 --no` keeps the answer. A Bug prints its expected alone,
+as `run: <expected>`; a Spike lands with its answer and prints no such line; a
+part written over several lines is printed on one.
 
 It merges the branch `wi/S-0001-*` into `main` as one merge commit under
 that message, completes the Story at that commit, commits the record as
@@ -1689,6 +1726,7 @@ message, and the Story is completed at the tip:
 ```sh
 fgraph land S-0001
 # landed S-0001 at 2c41d07
+# run: a Story is added -> fgraph status lists it under Backlog
 ```
 
 The message goes with the commit a landing makes. A landing by `merge-commit`
@@ -2058,6 +2096,7 @@ made by hand, branches the next one the same way:
 ```sh
 fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
 # landed S-0001 at 3e9ae5c
+# run: a Story is added -> fgraph status lists it under Backlog
 # started S-0003
 # branch wi/S-0003-raise-the-stories-fgraph in /src/project.worktrees/S-0003-raise-the-stories-fgraph
 ```
@@ -2128,6 +2167,7 @@ Feature the same way, at the commit the landing leaves main on:
 ```sh
 fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
 # landed S-0001 at 3e9ae5c
+# run: a Story is added -> fgraph status lists it under Backlog
 # completed F-0001 at 3e9ae5c
 ```
 
@@ -2224,7 +2264,8 @@ fgraph complete S-0001 --commit 677f9b0
 # not started: S-0003 cannot start: F-0001 is blocked, waiting on the sponsor: unblock it first
 ```
 
-`fgraph land S-0001` says the same after `landed S-0001 at 3e9ae5c`. The
+`fgraph land S-0001` says the same after `landed S-0001 at 3e9ae5c` and its
+`run:` line. The
 completion of its last work item completes a blocked Feature as it completes
 a started one (above): the block holds back a start, never a completion. The
 alternative, that every write under a blocked Feature is refused, the Tasks
@@ -2561,7 +2602,7 @@ fgraph show S-0002
 several in one call when given together; `--description ""` clears the
 description. An amend exits 2 and names why when it names no part, when the
 title or a part of the criterion is blank, when the work item is started or
-completed already, when the id is a Task's, or when the record does not hold
+completed already, when the id names a Task, or when the record does not hold
 it.
 
 `--parent` puts a work item in Backlog under a Feature, and with the word
@@ -2686,9 +2727,8 @@ fgraph status
 
 The heading Removed is listed only when a work item or a Feature is removed.
 A remove exits 2 and names why when the reason is blank, when the work item
-is started, completed or removed already, when the id is a Task's, or when
-the record does not hold it. A removed work item takes no Task, no amend and
-no move.
+is started, completed or removed already, or when the record does not hold
+it. A removed work item takes no Task, no amend and no move.
 
 A work item superseded by another names it, `--superseded-by ID`, in place of
 the reason or beside it, in place of the free text of a reason such as
@@ -2723,6 +2763,40 @@ A remove with neither `--reason` nor `--superseded-by` is refused, naming both,
 as is an id that is no work item of the record, the work item itself and a
 removed work item, with exit 2 and nothing written. A Feature takes `--reason`
 alone, and is refused `--superseded-by`.
+
+A Task of a started work item -- in Backlog, started or blocked -- is removed
+the same way, with its reason, in the worktree of its work item once the
+development is on. It is kept in the file of its work item as removed, counts
+in no progress, and is no Task left to complete before its work item lands.
+Of S-0001 holding T-0001 started and T-0002 and T-0003 in Backlog:
+
+```sh
+fgraph remove T-0002 --reason "not needed"
+# removed T-0002 of S-0001
+
+fgraph remove T-0001 --reason "folded into T-0003"
+# removed T-0001 of S-0001
+
+fgraph status
+# ...
+#   S-0001  0/1 T  Raise the Stories fgraph lists under Backlog from 0 to 1
+# ...
+
+fgraph show S-0001
+# ...
+#   T-0002  <its title>
+#     bucket           Removed
+#     reason           not needed
+# ...
+
+fgraph remove T-0002 --reason "not needed"
+# fgraph: error: T-0002 is removed already
+```
+
+The remove of a Task is refused with exit 2 and nothing written when its work
+item is in Backlog, blocked, completed or removed, when the Task is completed
+or removed already, when the reason is blank, and when `--superseded-by` is
+given: a Task takes `--reason` alone.
 
 A Feature still in Backlog is removed the same way, `fgraph remove` with its
 id and the reason, and its work items are removed with it, each for the same
@@ -2823,7 +2897,8 @@ amend F-0001 in the record` --, `chore: reorder S-0002 before S-0001 in the
 record` -- a Feature by its id, `chore: reorder F-0001 before S-0001 in the
 record` --, `chore: start T-0001 of S-0001 in the record`,
 `chore: start F-0001 in the record` for a Feature and its first work item
-together, `chore: remove S-0001 in the record`, `chore: remove F-0001 in the
+together, `chore: remove S-0001 in the record`, `chore: remove T-0001 of
+S-0001 in the record` for a Task, `chore: remove F-0001 in the
 record` for a Feature and its work items together, `chore: block S-0001 in
 the record` and `chore: unblock S-0001 in the record` for a work item,
 `chore: block T-0001 of S-0001 in the record`, `chore: unblock T-0001 of

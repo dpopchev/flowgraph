@@ -134,7 +134,7 @@ class TestTheLastStoryOfAStartedFeatureLanded:
         merge = git(checkout, "rev-parse", "--short", "HEAD~1")
         assert (landed.status, landed.out) == (
             0,
-            f"landed S-0001 at {merge}\ncompleted F-0001 at {merge}\n",
+            f"landed S-0001 at {merge}\nrun: an action -> another\ncompleted F-0001 at {merge}\n",
         )
 
     def test_the_complete_is_one_commit_of_the_record_with_the_files_of_both(

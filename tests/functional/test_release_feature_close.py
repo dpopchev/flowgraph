@@ -146,7 +146,8 @@ class TestTheLastStoryOfAFeatureLandedWithDeliveryTagFeatureClose:
     ) -> None:
         merge = git(checkout, "rev-parse", "--short", "main~1")
         assert landed.out == (
-            f"landed S-0001 at {merge}\ncompleted F-0001 at {merge}\ntagged v0.1.0 at {merge}\n"
+            f"landed S-0001 at {merge}\nrun: an action -> another\n"
+            f"completed F-0001 at {merge}\ntagged v0.1.0 at {merge}\n"
         )
 
     def test_main_holds_the_next_v_tag_on_the_commit_before_its_head(

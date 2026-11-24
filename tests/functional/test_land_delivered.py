@@ -162,7 +162,7 @@ class TestAStoryThatStandsAloneLanded:
         sha = git(checkout, "rev-parse", "--short", "main~1")
         assert (landed.status, landed.out) == (
             0,
-            f"landed S-0001 at {sha}\npushed main to origin\n"
+            f"landed S-0001 at {sha}\nrun: an action -> another\npushed main to origin\n"
             f"tagged v0.1.0 at {sha}\npushed v0.1.0 to origin\n",
         )
 

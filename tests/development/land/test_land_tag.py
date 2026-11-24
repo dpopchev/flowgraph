@@ -58,7 +58,7 @@ FEATURE = started_feature(
 MESSAGE = "feat: land the last Story"
 MERGE = "3e9ae5c"
 HEAD = "4c2e1d0"
-LANDED = f"landed S-0001 at {MERGE}\ncompleted F-0001 at {MERGE}\n"
+LANDED = f"landed S-0001 at {MERGE}\nrun: b -> c\ncompleted F-0001 at {MERGE}\n"
 TAG_MADE = ("tag", "v0.1.0", "release v0.1.0", "main")
 
 
@@ -227,7 +227,7 @@ def test_a_work_item_standing_alone_landed_under_close_makes_the_tag() -> None:
 
 def test_a_work_item_standing_alone_landed_under_close_says_the_tag() -> None:
     assert land(work_tree([]), CLOSE, STANDALONE) == Said(
-        f"landed S-0001 at {MERGE}\ntagged v0.1.0 at {HEAD}\n"
+        f"landed S-0001 at {MERGE}\nrun: b -> c\ntagged v0.1.0 at {HEAD}\n"
     )
 
 

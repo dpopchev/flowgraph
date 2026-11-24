@@ -184,7 +184,8 @@ def test_the_same_repository_with_push_off_lands(tmp_path: Path) -> None:
     checkout = started(tmp_path, delivery="[delivery]\npush = false\n")
     landed = fgraph(LAND, checkout)
     sha = git(checkout, "rev-parse", "--short", "main~1")
-    assert (landed.status, landed.out) == (0, f"landed S-0001 at {sha}\n")
+    out = f"landed S-0001 at {sha}\nrun: an action -> another\n"
+    assert (landed.status, landed.out) == (0, out)
 
 
 def test_the_land_run_again_once_main_tracks_origin_lands_and_pushes(
@@ -196,4 +197,5 @@ def test_the_land_run_again_once_main_tracks_origin_lands_and_pushes(
     git(checkout, "push", "--quiet", "--set-upstream", "origin", "main")
     again = fgraph(LAND, checkout)
     sha = git(checkout, "rev-parse", "--short", "main~1")
-    assert (again.status, again.out) == (0, f"landed S-0001 at {sha}\npushed main to origin\n")
+    out = f"landed S-0001 at {sha}\nrun: an action -> another\npushed main to origin\n"
+    assert (again.status, again.out) == (0, out)

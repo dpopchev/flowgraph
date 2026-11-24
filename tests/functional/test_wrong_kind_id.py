@@ -76,7 +76,7 @@ def test_a_work_item_command_given_a_feature_id_exits_with_two_and_names_every_k
         (["complete", "X-1"], "Story, Upkeep, Bug, Spike, Task or Feature"),
         (["amend", "X-1", "--title", "a title"], "Story, Upkeep, Bug, Spike or Feature"),
         (["amend", "X-1", "--criterion", "a criterion"], "Story, Upkeep, Bug, Spike or Feature"),
-        (["remove", "X-1", "--reason", "a reason"], "Story, Upkeep, Bug, Spike or Feature"),
+        (["remove", "X-1", "--reason", "a reason"], "Story, Upkeep, Bug, Spike, Task or Feature"),
     ],
     ids=["start", "complete", "amend", "amend-criteria", "remove"],
 )

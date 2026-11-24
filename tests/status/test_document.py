@@ -134,6 +134,25 @@ def test_a_task_that_is_not_blocked_holds_no_reason_and_waits_on_nothing() -> No
     assert (held["reason"], held["waiting_on"]) == (None, None)
 
 
+def test_a_started_work_item_counts_no_removed_task_in_its_progress() -> None:
+    tasks = [task("T-0001", "removed", reason="not needed"), task("T-0002", "completed")]
+    assert only(story("S-0001", "started", tasks=tasks))["progress"] == {
+        "completed": 1,
+        "total": 1,
+    }
+
+
+def test_a_removed_task_holds_its_state_and_its_reason() -> None:
+    tasks = [task("T-0001", "removed", reason="not needed")]
+    held = only(story("S-0001", "started", tasks=tasks))["tasks"][0]
+    assert (held["id"], held["state"], held["reason"], held["waiting_on"]) == (
+        "T-0001",
+        "removed",
+        "not needed",
+        None,
+    )
+
+
 def test_a_completed_task_holds_its_commit() -> None:
     tasks = [task("T-0001", "completed", commit="abc1234")]
     assert only(story("S-0001", "started", tasks=tasks))["tasks"][0]["commit"] == "abc1234"

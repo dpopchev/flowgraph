@@ -1,10 +1,19 @@
 """A Task: one deliverable of a work item, and the Tasks of one work item among themselves."""
 
+from flowgraph.task.id import (
+    TaskId,
+    TaskIdError,
+    make_task_id,
+    next_task_id,
+    parse_task_id,
+    task_id_text,
+)
 from flowgraph.task.list import (
     all_completed,
     at_most_one_started,
     blocked_among,
     completed_among,
+    removed_among,
     started_among,
     task_of,
     unblocked_among,
@@ -19,24 +28,20 @@ from flowgraph.task.model import (
     NotBlockedError,
     NotStartedError,
     OpenTaskError,
+    RemovedTask,
     StartedAlreadyError,
     StartedTask,
     Task,
-    TaskId,
-    TaskIdError,
     TaskInProgressError,
     TaskNotFoundError,
+    TaskRemovedError,
     TaskRow,
     TaskState,
     make_task,
-    make_task_id,
-    next_task_id,
-    parse_task_id,
     row_of,
-    task_id_text,
     task_state_name,
 )
-from flowgraph.task.moves import blocked, completed, started, unblocked
+from flowgraph.task.moves import blocked, completed, removed, started, unblocked
 
 __all__ = [
     "BlockedError",
@@ -48,6 +53,7 @@ __all__ = [
     "NotBlockedError",
     "NotStartedError",
     "OpenTaskError",
+    "RemovedTask",
     "StartedAlreadyError",
     "StartedTask",
     "Task",
@@ -55,6 +61,7 @@ __all__ = [
     "TaskIdError",
     "TaskInProgressError",
     "TaskNotFoundError",
+    "TaskRemovedError",
     "TaskRow",
     "TaskState",
     "all_completed",
@@ -67,6 +74,8 @@ __all__ = [
     "make_task_id",
     "next_task_id",
     "parse_task_id",
+    "removed",
+    "removed_among",
     "row_of",
     "started",
     "started_among",

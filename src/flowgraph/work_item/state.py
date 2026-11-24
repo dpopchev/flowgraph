@@ -3,7 +3,7 @@
 from typing import assert_never
 
 from flowgraph.criterion import evidence_text
-from flowgraph.task import BlockedTask, CompletedTask, StartedTask, Task, TaskState
+from flowgraph.task import BlockedTask, CompletedTask, RemovedTask, StartedTask, Task, TaskState
 from flowgraph.work_item.model import (
     BlockedWorkItem,
     CompletedWorkItem,
@@ -34,7 +34,7 @@ def state_name(item: WorkItemState | TaskState) -> str:
             return BLOCKED
         case CompletedWorkItem() | CompletedTask():
             return "completed"
-        case RemovedWorkItem():
+        case RemovedWorkItem() | RemovedTask():
             return "removed"
         case _ as unreachable:
             assert_never(unreachable)
@@ -47,7 +47,7 @@ def commit_sha(item: WorkItemState | TaskState) -> str:
             return evidence_text(item.commit)
         case WorkItem() | StartedWorkItem() | BlockedWorkItem() | RemovedWorkItem():
             return ""
-        case Task() | StartedTask() | BlockedTask():
+        case Task() | StartedTask() | BlockedTask() | RemovedTask():
             return ""
         case _ as unreachable:
             assert_never(unreachable)

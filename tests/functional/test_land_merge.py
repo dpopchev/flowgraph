@@ -178,7 +178,7 @@ class TestAStoryLandedBySquash:
 
     def test_land_names_the_story_and_that_commit(self, landed: Landed, ready: Path) -> None:
         commit = git(ready, "rev-parse", "--short", "HEAD~1")
-        assert landed.outcome.out == f"landed S-0001 at {commit}\n"
+        assert landed.outcome.out == f"landed S-0001 at {commit}\nrun: an action -> another\n"
 
     def test_status_lists_it_under_completed_with_that_commit(
         self, landed: Landed, ready: Path
@@ -222,7 +222,7 @@ class TestAStoryLandedByFastForward:
         self, landed: Landed, forward: Path
     ) -> None:
         tip = git(forward, "rev-parse", "--short", landed.tip)
-        assert landed.outcome.out == f"landed S-0001 at {tip}\n"
+        assert landed.outcome.out == f"landed S-0001 at {tip}\nrun: an action -> another\n"
 
     def test_status_lists_it_under_completed_with_the_tip_of_the_branch(
         self, landed: Landed, forward: Path

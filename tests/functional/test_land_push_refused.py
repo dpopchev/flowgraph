@@ -185,7 +185,7 @@ class TestTheLandingTakenUpOnceTheOriginIsBack:
     def test_land_exits_with_zero_saying_it_landed_and_pushed(self, again: Refused) -> None:
         assert (again.land.status, again.land.out) == (
             0,
-            f"landed S-0001 at {again.sha}\npushed main to origin\n",
+            f"landed S-0001 at {again.sha}\nrun: an action -> another\npushed main to origin\n",
         )
 
     def test_land_exits_with_zero_and_show_lists_the_story_under_completed(
@@ -216,7 +216,7 @@ def test_a_landing_taken_up_completes_by_each_way(
     again = taken_up(tmp_path, origin, development, argv)
     assert (again.land.status, again.land.out) == (
         0,
-        f"landed S-0001 at {again.sha}\npushed main to origin\n",
+        f"landed S-0001 at {again.sha}\nrun: an action -> another\npushed main to origin\n",
     )
 
 
@@ -230,7 +230,8 @@ class TestAStoryWhoseBranchIsMergedByHand:
         return Refused(checkout, fgraph(LAND, checkout), sha)
 
     def test_land_exits_with_zero_at_the_commit_main_is_on(self, landed: Refused) -> None:
-        assert (landed.land.status, landed.land.out) == (0, f"landed S-0001 at {landed.sha}\n")
+        out = f"landed S-0001 at {landed.sha}\nrun: an action -> another\n"
+        assert (landed.land.status, landed.land.out) == (0, out)
 
     def test_show_lists_the_story_under_completed(self, landed: Refused) -> None:
         assert "bucket       Completed" in fgraph(["show", "S-0001"], landed.checkout).out

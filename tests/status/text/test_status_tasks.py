@@ -24,6 +24,11 @@ def started(number: int, *tasks: TaskRow) -> WorkItemRow:
     )
 
 
+def test_a_removed_task_is_given_no_line_under_its_work_item() -> None:
+    gone = TaskRow("T-0005", "a gone task", "an output", "", "removed", reason="not needed")
+    assert status_text([started(1, gone, LATER)]).splitlines()[3:] == ["Completed (0)"]
+
+
 def test_the_started_task_is_listed_under_its_work_item_marked_as_the_one_worked() -> None:
     assert status_text([started(1, DONE, BEGUN, LATER)]).splitlines()[2:4] == [
         "  S-0001  1/3 T  title 1",

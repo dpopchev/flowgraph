@@ -94,11 +94,11 @@ def completed_work_item(
 ) -> CompletedWorkItem:
     """The work item completed on that time, kept to the second, in that commit or without one.
 
-    A work item that states a hypothesis is completed with the decision that answers it, and
-    its yes or no. Raises NotStartedError when it is in Backlog, OpenTaskError naming the Tasks
-    not completed, DecisionError when a hypothesis has no decision or no answer or another
-    criterion is given a decision, BlockedError when it is blocked and
-    CompletedAlreadyError when it is completed.
+    It holds its Tasks completed and removed. A work item that states a hypothesis is completed
+    with the decision that answers it, and its yes or no. Raises NotStartedError when it is in
+    Backlog, OpenTaskError naming the Tasks neither completed nor removed, DecisionError when a
+    hypothesis has no decision or no answer or another criterion is given a decision,
+    BlockedError when it is blocked and CompletedAlreadyError when it is completed.
     """
     match item:
         case WorkItem():

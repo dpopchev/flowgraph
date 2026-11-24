@@ -173,7 +173,13 @@ def read_work_item_detail(record: Path, item_id: WorkItemId) -> WorkItemDetail:
         complexity=held.complexity or "",
         knowledge=[
             KnowledgeRow(
-                line.kind, line.noted, line.text, line.about, line.governs, line.mark or ""
+                line.kind,
+                line.noted,
+                line.text,
+                line.about,
+                line.governs,
+                line.mark or "",
+                line.supersedes,
             )
             for line in held.knowledge
         ],

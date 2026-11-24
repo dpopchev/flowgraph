@@ -1,7 +1,8 @@
 """A knowledge line: what a work item learned, kept on it in the order it was noted.
 
-A line is never amended or removed. Its kind is a sum type: the finding, the decision and the
-deviation. It may carry one mark, given when it is noted and never changed.
+A line is never amended or removed: a later line supersedes one by naming its ref. Its kind is a
+sum type: the finding, the decision and the deviation. It may carry one mark, given when it is
+noted and never changed.
 """
 
 from collections.abc import Sequence
@@ -77,11 +78,16 @@ class KnowledgeLine:
     about: tuple[str, ...] = ()
     governs: tuple[str, ...] = ()
     mark: Mark = UNMARKED
+    supersedes: tuple[str, ...] = ()
 
 
 @dataclass
 class KnowledgeRow:
-    """One line of knowledge as plain data, as a view reads it: the name of its kind first."""
+    """One line of knowledge as plain data, as a view reads it: the name of its kind first.
+
+    superseded_by holds the refs of the lines that supersede this one, set by the view that reads
+    the record; it is empty as the item holds the line.
+    """
 
     kind: str
     noted: datetime
@@ -89,6 +95,8 @@ class KnowledgeRow:
     about: list[str] = field(default_factory=list[str])
     governs: list[str] = field(default_factory=list[str])
     mark: str = ""
+    supersedes: list[str] = field(default_factory=list[str])
+    superseded_by: list[str] = field(default_factory=list[str])
 
 
 def kind_name(kind: KnowledgeKind) -> str:
@@ -145,16 +153,16 @@ def make_knowledge_line(
     about: tuple[str, ...] = (),
     governs: tuple[str, ...] = (),
     mark: Mark = UNMARKED,
+    supersedes: tuple[str, ...] = (),
 ) -> KnowledgeLine:
     """The line of that kind and text, noted at that time, kept to the second, about those terms.
 
-    It governs the files given and carries the mark given.
+    It governs the files given, carries the mark given and supersedes the lines of the refs given.
 
     Raises EmptyPartError naming the text when it is blank.
     """
-    return KnowledgeLine(
-        kind, said("text", text), noted.replace(microsecond=0), about, governs, mark
-    )
+    noted = noted.replace(microsecond=0)
+    return KnowledgeLine(kind, said("text", text), noted, about, governs, mark, supersedes)
 
 
 def knowledge_row(line: KnowledgeLine) -> KnowledgeRow:
@@ -166,6 +174,7 @@ def knowledge_row(line: KnowledgeLine) -> KnowledgeRow:
         list(line.about),
         list(line.governs),
         mark_name(line.mark),
+        list(line.supersedes),
     )
 
 
@@ -177,3 +186,17 @@ def about_text(about: Sequence[str]) -> str:
 def governs_text(governs: Sequence[str]) -> str:
     """The files a line governs as a view ends the line with them; empty for none."""
     return f"  (governs {', '.join(governs)})" if governs else ""
+
+
+def superseded_text(refs: Sequence[str]) -> str:
+    """The refs of the lines that supersede a line as a view ends it with them; empty for none."""
+    return f"  (superseded by {', '.join(refs)})" if refs else ""
+
+
+def line_ref(item: str, place: int) -> str:
+    """The ref of the line at that place among the lines of the item of that id, as S-0001#2.
+
+    The place is counted from 1 in the order noted. The ref is stable because a line is never
+    amended or removed and is added after the lines the item keeps.
+    """
+    return f"{item}#{place}"

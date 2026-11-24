@@ -83,7 +83,7 @@ class TestAStoryAddedAfterInit:
 
     def test_is_listed_under_backlog_by_status(self, added: Outcome, tmp_path: Path) -> None:
         listed = fgraph(["status"], tmp_path).out
-        assert "S-0001" in listed.split("Backlog")[-1]
+        assert "S-0001" in listed.split("backlog")[-1]
 
 
 class TestInADirectoryThatHoldsARecord:

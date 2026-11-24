@@ -81,7 +81,7 @@ class TestAStartedStoryWhoseTaskIsCompletedCompleted:
         self, completed: tuple[Outcome, Outcome], tmp_path: Path
     ) -> None:
         assert fgraph(["status"], tmp_path).out == (
-            "Backlog (0)\nInProgress (0)\nCompleted (1)\n  S-0001  def5678  a title\n"
+            "backlog (0)\nin-progress (0)\ncompleted (1)\n  S-0001  def5678  a title\n"
         )
 
     def test_show_names_the_bucket_and_commit_of_each(
@@ -89,14 +89,14 @@ class TestAStartedStoryWhoseTaskIsCompletedCompleted:
     ) -> None:
         assert fgraph(["show", "S-0001"], tmp_path).out == (
             "S-0001  a title\n"
-            "  bucket       Completed\n"
+            "  bucket       completed\n"
             "  commit       def5678\n"
             "  given        a state\n"
             "  when         an action\n"
             "  then         another\n"
             "Tasks (1)\n"
             "  T-0001  a task title\n"
-            "    bucket           Completed\n"
+            "    bucket           completed\n"
             "    commit           abc1234\n"
             "    expected output  an output\n"
         )

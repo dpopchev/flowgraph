@@ -102,11 +102,11 @@ class TestAFeatureInBacklogWithTwoStoriesEachWithATaskStarted:
         self, started: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["status"], tmp_path, LATER).out == (
-            "Backlog (0)\n"
-            "InProgress (1)\n"
+            "backlog (0)\n"
+            "in-progress (1)\n"
             "  F-0001  0/2 W  a feature title\n"
             "    S-0001  0/1 T  a title\n"
-            "Completed (0)\n"
+            "completed (0)\n"
         )
 
     def test_show_of_the_feature_names_its_bucket_and_that_of_each_story(
@@ -114,9 +114,9 @@ class TestAFeatureInBacklogWithTwoStoriesEachWithATaskStarted:
     ) -> None:
         shown = fgraph(["show", "F-0001"], tmp_path, LATER).out.splitlines()
         assert [shown[1], *shown[-2:]] == [
-            "  bucket       InProgress",
-            "  S-0001  a title  InProgress",
-            "  S-0002  another title  Backlog",
+            "  bucket       in-progress",
+            "  S-0001  a title  in-progress",
+            "  S-0002  another title  backlog",
         ]
 
     def test_the_file_of_the_feature_holds_its_state_and_its_started_time(
@@ -150,12 +150,12 @@ class TestTheNextStoryOfAStartedFeatureGivenItsTaskOnceTheFirstIsCompletedStarte
         self, started: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["status"], tmp_path, LATER).out == (
-            "Backlog (0)\n"
-            "InProgress (1)\n"
+            "backlog (0)\n"
+            "in-progress (1)\n"
             "  F-0001  1/2 W  a feature title\n"
             "    S-0002  0/1 T  another title\n"
             "    S-0001  1/1 T  a title\n"
-            "Completed (0)\n"
+            "completed (0)\n"
         )
 
 
@@ -165,11 +165,11 @@ def test_a_started_feature_whose_last_story_in_backlog_is_removed_stays_in_progr
     remove = ["remove", "S-0002", "--reason", "not needed"]
     runs(tmp_path, *SECOND_WITHOUT_A_TASK, START_FEATURE, *COMPLETE_FIRST, remove)
     assert fgraph(["status"], tmp_path, LATER).out.splitlines()[:5] == [
-        "Backlog (0)",
-        "InProgress (1)",
+        "backlog (0)",
+        "in-progress (1)",
         "  F-0001  1/1 W  a feature title",
         "    S-0001  1/1 T  a title",
-        "Completed (0)",
+        "completed (0)",
     ]
 
 
@@ -191,11 +191,11 @@ class TestAFeatureWrittenBeforeItHadAStateThatHoldsACompletedStory:
 
     def test_status_lists_it_in_its_derived_bucket(self, record: Path) -> None:
         assert fgraph(["status"], record, LATER).out == (
-            "Backlog (0)\n"
-            "InProgress (1)\n"
+            "backlog (0)\n"
+            "in-progress (1)\n"
             "  F-0001  1/3 W  a feature title\n"
             "    S-0001  1/1 T  a title\n"
-            "Completed (0)\n"
+            "completed (0)\n"
         )
 
     def test_a_story_of_it_is_not_started_before_it(self, record: Path) -> None:
@@ -216,12 +216,12 @@ class TestAFeatureWrittenBeforeItHadAStateThatHoldsACompletedStory:
     ) -> None:
         fgraph(START_FEATURE, record, LATER)
         assert fgraph(["status"], record, LATER).out == (
-            "Backlog (0)\n"
-            "InProgress (1)\n"
+            "backlog (0)\n"
+            "in-progress (1)\n"
             "  F-0001  1/3 W  a feature title\n"
             "    S-0003  0/1 T  a third title\n"
             "    S-0001  1/1 T  a title\n"
-            "Completed (0)\n"
+            "completed (0)\n"
         )
 
 
@@ -237,7 +237,7 @@ def test_the_tasks_and_the_completion_of_a_started_story_take_a_feature_never_st
 def test_a_feature_start_refused_leaves_the_feature_in_backlog(tmp_path: Path) -> None:
     runs(tmp_path, ADD_FEATURE, ADD_STORY, ADD_OTHER, TASK_FOR_OTHER, START_FEATURE)
     assert fgraph(["status"], tmp_path, LATER).out == (
-        "Backlog (1)\n> F-0001  0/2 W  a feature title\nInProgress (0)\nCompleted (0)\n"
+        "backlog (1)\n> F-0001  0/2 W  a feature title\nin-progress (0)\ncompleted (0)\n"
     )
 
 

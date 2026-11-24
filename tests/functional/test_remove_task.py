@@ -88,17 +88,17 @@ def held(tasks: Iterable[dict[str, Any]]) -> list[tuple[str, str, str | None]]:
 
 SHOWN = (
     "S-0001  a title\n"
-    "  bucket       InProgress\n"
+    "  bucket       in-progress\n"
     "  given        a state\n"
     "  when         an action\n"
     "  then         another\n"
     "Tasks (3)\n"
     "  T-0001  task 1\n"
-    "    bucket           Removed\n"
+    "    bucket           removed\n"
     "    reason           folded into T-0003\n"
     "    expected output  an output\n"
     "  T-0002  task 2\n"
-    "    bucket           Removed\n"
+    "    bucket           removed\n"
     "    reason           not needed\n"
     "    expected output  an output\n"
     "  T-0003  task 3\n"
@@ -130,7 +130,7 @@ class TestATaskInBacklogAndTheStartedOneRemoved:
         self, removed: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["status"], tmp_path, LATER).out == (
-            "Backlog (0)\nInProgress (1)\n  S-0001  0/1 T  a title\nCompleted (0)\n"
+            "backlog (0)\nin-progress (1)\n  S-0001  0/1 T  a title\ncompleted (0)\n"
         )
 
     def test_show_lists_each_removed_task_with_its_bucket_and_its_reason(
@@ -180,9 +180,9 @@ class TestTheTaskLeftCompleted:
         runs(tmp_path, STORY_DONE)
         lines = fgraph(["show", "S-0001"], tmp_path, LATER).out.splitlines()
         assert [line for line in lines if line.startswith("    bucket")] == [
-            "    bucket           Removed",
-            "    bucket           Removed",
-            "    bucket           Completed",
+            "    bucket           removed",
+            "    bucket           removed",
+            "    bucket           completed",
         ]
 
 

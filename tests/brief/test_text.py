@@ -19,7 +19,7 @@ DETAIL = WorkItemDetail("S-0002", "a title", "started", "", [], given="a", when=
 BARE = Brief(DETAIL, None, None, None, (), ())
 FEATURE = FeatureBrief(
     "F-0001",
-    "InProgress",
+    "in-progress",
     "a feature",
     "what it holds",
     (KnowledgeRow("decision", NOW, "one gate", ["gate"], ["src/gate.py"]),),
@@ -49,7 +49,7 @@ def test_the_feature_lists_its_id_bucket_title_description_and_knowledge() -> No
     brief = Brief(DETAIL, None, None, FEATURE, (), ())
     assert brief_text(brief).removeprefix(show_text(DETAIL)) == (
         "Feature\n"
-        "  F-0001  InProgress  a feature\n"
+        "  F-0001  in-progress  a feature\n"
         "  description  what it holds\n"
         "  Knowledge (1)\n"
         "    decision  2026-01-01  one gate  (about gate)  (governs src/gate.py)\n"
@@ -58,10 +58,10 @@ def test_the_feature_lists_its_id_bucket_title_description_and_knowledge() -> No
 
 def test_a_feature_with_no_description_and_no_knowledge_lists_its_line_alone() -> None:
     brief = Brief(
-        DETAIL, None, None, FeatureBrief("F-0001", "Backlog", "a feature", "", ()), (), ()
+        DETAIL, None, None, FeatureBrief("F-0001", "backlog", "a feature", "", ()), (), ()
     )
     assert brief_text(brief).removeprefix(show_text(DETAIL)) == (
-        "Feature\n  F-0001  Backlog  a feature\n"
+        "Feature\n  F-0001  backlog  a feature\n"
     )
 
 

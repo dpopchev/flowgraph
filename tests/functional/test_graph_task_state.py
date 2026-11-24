@@ -78,13 +78,13 @@ class TestAStoryHoldingATaskInBacklogABlockedOneAStartedOneAndACompletedOne:
         assert graph.status == 0
 
     def test_the_task_in_backlog_is_in_backlog(self, graph: Outcome) -> None:
-        assert self.state_of(graph, "T-0001") == ("Backlog", "backlog")
+        assert self.state_of(graph, "T-0001") == ("backlog", "backlog")
 
     def test_the_blocked_task_is_in_progress_as_blocked(self, graph: Outcome) -> None:
-        assert self.state_of(graph, "T-0002") == ("InProgress", "blocked")
+        assert self.state_of(graph, "T-0002") == ("in-progress", "blocked")
 
     def test_the_started_task_is_in_progress_as_started(self, graph: Outcome) -> None:
-        assert self.state_of(graph, "T-0003") == ("InProgress", "started")
+        assert self.state_of(graph, "T-0003") == ("in-progress", "started")
 
     def test_the_completed_task_is_completed(self, graph: Outcome) -> None:
-        assert self.state_of(graph, "T-0004") == ("Completed", "completed")
+        assert self.state_of(graph, "T-0004") == ("completed", "completed")

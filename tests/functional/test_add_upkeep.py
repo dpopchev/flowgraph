@@ -73,17 +73,17 @@ class TestAnUpkeepAddedToARecordWithOneStory:
         self, added: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["status", "--backlog"], tmp_path).out == (
-            "Backlog (2)\n"
+            "backlog (2)\n"
             "> S-0001  []  a title\n"
             "  U-0001  []  an upkeep title\n"
-            "InProgress (0)\n"
-            "Completed (0)\n"
+            "in-progress (0)\n"
+            "completed (0)\n"
         )
 
     def test_show_lists_its_bucket_and_criterion(self, added: Outcome, tmp_path: Path) -> None:
         assert fgraph(["show", "U-0001"], tmp_path).out == (
             "U-0001  an upkeep title\n"
-            "  bucket       Backlog\n"
+            "  bucket       backlog\n"
             "  given        a behavior\n"
             "  when         it runs\n"
             "  then         it still holds\n"

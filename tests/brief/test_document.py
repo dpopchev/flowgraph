@@ -31,10 +31,10 @@ STORY = WorkItemDetail(
     parent="F-0001",
     complexity="medium",
     knowledge=[KnowledgeRow("decision", NOW, "read once", ["gate"], ["src/gate.py"])],
-    depends_on=[DependsRow("S-0001", "Completed"), DependsRow("S-0004", "InProgress")],
+    depends_on=[DependsRow("S-0001", "completed"), DependsRow("S-0004", "in-progress")],
 )
 FEATURE = FeatureBrief(
-    "F-0001", "InProgress", "a feature", "", (KnowledgeRow("decision", NOW, "one gate"),)
+    "F-0001", "in-progress", "a feature", "", (KnowledgeRow("decision", NOW, "one gate"),)
 )
 GOVERNING = KnowledgeEntry("S-0001", "decision", NOW, "no state", ["gate"], ["src/gate.py"])
 STARTED = Brief(
@@ -121,7 +121,7 @@ def test_the_kind_is_read_from_the_prefix_of_the_id() -> None:
 
 
 def test_the_bucket_is_the_one_the_state_is_listed_in() -> None:
-    assert parsed(STARTED)["bucket"] == "InProgress"
+    assert parsed(STARTED)["bucket"] == "in-progress"
 
 
 def test_the_branch_and_the_worktree_are_given_as_text() -> None:
@@ -133,8 +133,8 @@ def test_the_branch_and_the_worktree_are_given_as_text() -> None:
 
 def test_each_work_item_it_depends_on_holds_its_id_and_bucket() -> None:
     assert parsed(STARTED)["depends_on"] == [
-        {"bucket": "Completed", "id": "S-0001"},
-        {"bucket": "InProgress", "id": "S-0004"},
+        {"bucket": "completed", "id": "S-0001"},
+        {"bucket": "in-progress", "id": "S-0004"},
     ]
 
 
@@ -191,7 +191,7 @@ def test_a_task_holds_its_parts_and_null_for_the_empty_ones() -> None:
 
 def test_the_feature_holds_its_parts_and_its_knowledge() -> None:
     assert parsed(STARTED)["feature"] == {
-        "bucket": "InProgress",
+        "bucket": "in-progress",
         "description": None,
         "id": "F-0001",
         "knowledge": [

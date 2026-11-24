@@ -69,10 +69,10 @@ def test_start_of_the_dependent_exits_with_two(tmp_path: Path) -> None:
 
 def test_start_of_the_dependent_names_what_it_depends_on_and_its_bucket(tmp_path: Path) -> None:
     refused = runs(tmp_path, *TWO_STORIES, DEPEND, ["start", "S-0002"])
-    expected = "fgraph: error: S-0002 cannot start: it depends on S-0001, in Backlog"
+    expected = "fgraph: error: S-0002 cannot start: it depends on S-0001, in backlog"
     assert refused.err.splitlines()[-1] == expected
 
 
 def test_show_of_the_dependent_lists_that_it_depends_on_the_first(tmp_path: Path) -> None:
     shown = runs(tmp_path, *TWO_STORIES, DEPEND, ["show", "S-0002"]).out
-    assert "  depends on   S-0001 (Backlog)\n" in shown
+    assert "  depends on   S-0001 (backlog)\n" in shown

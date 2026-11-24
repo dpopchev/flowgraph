@@ -105,25 +105,25 @@ def test_each_kind_of_work_item_is_added_depending_on_another(
     add: list[str], item: str, tmp_path: Path
 ) -> None:
     shown = runs(tmp_path, ADD_STORY, [*add, "--depends-on", "S-0001"], ["show", item]).out
-    assert "  depends on   S-0001 (Backlog)\n" in shown
+    assert "  depends on   S-0001 (backlog)\n" in shown
 
 
 def test_a_work_item_is_added_depending_on_several_in_the_order_given(tmp_path: Path) -> None:
     add = [*ADD_STORY, "--depends-on", "S-0002", "--depends-on", "S-0001"]
     shown = runs(tmp_path, ADD_STORY, ADD_STORY, add, ["show", "S-0003"]).out
-    assert "  depends on   S-0002 (Backlog), S-0001 (Backlog)\n" in shown
+    assert "  depends on   S-0002 (backlog), S-0001 (backlog)\n" in shown
 
 
 def test_a_work_item_is_added_depending_on_one_of_another_kind(tmp_path: Path) -> None:
     upkeep = ["add", "upkeep", "a title", *CRITERION]
     shown = runs(tmp_path, upkeep, [*ADD_STORY, "--depends-on", "U-0001"], ["show", "S-0001"]).out
-    assert "  depends on   U-0001 (Backlog)\n" in shown
+    assert "  depends on   U-0001 (backlog)\n" in shown
 
 
 def test_show_lists_the_bucket_each_work_item_it_depends_on_is_in_now(tmp_path: Path) -> None:
     done = [*THREE, *completes("S-0001", "T-0001"), depends("S-0003", "S-0001", "S-0002")]
     shown = runs(tmp_path, *done, ["show", "S-0003"]).out
-    assert "  depends on   S-0001 (Completed), S-0002 (Backlog)\n" in shown
+    assert "  depends on   S-0001 (completed), S-0002 (backlog)\n" in shown
 
 
 def test_an_add_that_depends_on_a_work_item_the_record_holds_not_is_refused(
@@ -153,7 +153,7 @@ def test_the_ids_are_replaced_by_those_given(tmp_path: Path) -> None:
         depends("S-0003", "S-0002"),
         ["show", "S-0003"],
     ).out
-    assert "  depends on   S-0002 (Backlog)\n" in shown
+    assert "  depends on   S-0002 (backlog)\n" in shown
 
 
 @pytest.mark.parametrize(
@@ -213,15 +213,15 @@ def test_the_start_of_a_work_item_names_each_one_it_waits_for_with_its_bucket(
 ) -> None:
     setup = (*THREE, ["start", "S-0002"], depends("S-0003", "S-0001", "S-0002"))
     expected = (
-        "fgraph: error: S-0003 cannot start: it depends on S-0001, in Backlog;"
-        " S-0002, in InProgress"
+        "fgraph: error: S-0003 cannot start: it depends on S-0001, in backlog;"
+        " S-0002, in in-progress"
     )
     assert refused(runs(tmp_path, *setup, ["start", "S-0003"])) == (2, expected)
 
 
 def test_the_start_refused_leaves_the_work_item_in_backlog(tmp_path: Path) -> None:
     setup = (*THREE, depends("S-0002", "S-0001"), ["start", "S-0002"])
-    assert "  bucket       Backlog\n" in runs(tmp_path, *setup, ["show", "S-0002"]).out
+    assert "  bucket       backlog\n" in runs(tmp_path, *setup, ["show", "S-0002"]).out
 
 
 def test_the_start_is_taken_once_what_it_waits_for_is_completed(tmp_path: Path) -> None:
@@ -233,7 +233,7 @@ def test_the_start_of_a_work_item_that_depends_on_a_removed_one_is_refused(
     tmp_path: Path,
 ) -> None:
     setup = (*THREE, depends("S-0002", "S-0001"), ["remove", "S-0001", "--reason", "no longer"])
-    expected = "fgraph: error: S-0002 cannot start: it depends on S-0001, in Removed"
+    expected = "fgraph: error: S-0002 cannot start: it depends on S-0001, in removed"
     assert refused(runs(tmp_path, *setup, ["start", "S-0002"])) == (2, expected)
 
 
@@ -243,7 +243,7 @@ def test_the_start_of_a_feature_is_refused_for_its_first_work_item_and_says_so(
     setup = (ADD_STORY, ADD_FEATURE, ADD_UNDER, task_for("S-0002"), depends("S-0002", "S-0001"))
     expected = (
         "fgraph: error: F-0001 cannot start: its first work item S-0002 cannot start:"
-        " it depends on S-0001, in Backlog"
+        " it depends on S-0001, in backlog"
     )
     assert refused(runs(tmp_path, *setup, ["start", "F-0001"])) == (2, expected)
 
@@ -265,5 +265,5 @@ def test_the_next_work_item_a_completion_starts_is_left_in_backlog_and_says_so(
     )
     done = runs(tmp_path, *setup, ["complete", "S-0002", "--commit", "abc1234"])
     assert done.out.splitlines()[-1] == (
-        "not started: S-0003 cannot start: it depends on S-0001, in Backlog"
+        "not started: S-0003 cannot start: it depends on S-0001, in backlog"
     )

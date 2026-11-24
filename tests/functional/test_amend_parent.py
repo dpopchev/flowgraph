@@ -76,11 +76,11 @@ class TestAStoryStandingAlonePutUnderAFeatureBothInBacklog:
     def test_show_of_the_feature_lists_the_story(self, put_under: Outcome, tmp_path: Path) -> None:
         assert fgraph(SHOW_FEATURE, tmp_path).out == (
             "F-0001  a feature title\n"
-            "  bucket       Backlog\n"
+            "  bucket       backlog\n"
             "Criteria (1)\n"
             "  a criterion\n"
             "Work items (1)\n"
-            "  S-0001  a title  Backlog\n"
+            "  S-0001  a title  backlog\n"
         )
 
     def test_show_of_the_story_names_the_feature_as_its_parent(
@@ -97,7 +97,7 @@ def test_a_story_taken_out_with_none_is_no_longer_listed_by_its_feature(tmp_path
 def test_a_story_taken_out_with_none_names_no_parent(tmp_path: Path) -> None:
     assert runs(tmp_path, ADD_FEATURE, ADD_UNDER, TAKE_OUT, SHOW).out.splitlines()[:3] == [
         "S-0001  a title",
-        "  bucket       Backlog",
+        "  bucket       backlog",
         "  given        a state",
     ]
 
@@ -108,7 +108,7 @@ def test_a_story_is_put_under_a_feature_beside_another_part_and_keeps_its_task(
     amend = [*PUT_UNDER, "--title", "another title"]
     assert runs(tmp_path, ADD_FEATURE, ADD_ALONE, ADD_TASK, amend, SHOW).out == (
         "S-0001  another title\n"
-        "  bucket       Backlog\n"
+        "  bucket       backlog\n"
         "  parent       F-0001\n"
         "  given        a state\n"
         "  when         an action\n"
@@ -141,9 +141,9 @@ def test_a_story_put_under_a_feature_keeps_the_place_the_queue_gave_it(tmp_path:
         ["amend", "S-0003", "--parent", "F-0001"],
     )
     assert fgraph(SHOW_FEATURE, tmp_path).out.splitlines()[-3:] == [
-        "  S-0003  a title  Backlog",
-        "  S-0002  a title  Backlog",
-        "  S-0001  a title  Backlog",
+        "  S-0003  a title  backlog",
+        "  S-0002  a title  backlog",
+        "  S-0001  a title  backlog",
     ]
 
 
@@ -159,7 +159,7 @@ def test_a_story_taken_out_of_a_feature_keeps_the_place_the_queue_gave_it(tmp_pa
         ["amend", "S-0002", "--parent", "none"],
     )
     assert fgraph(["status", "--backlog"], tmp_path).out.splitlines()[:4] == [
-        "Backlog (3)",
+        "backlog (3)",
         "> S-0003  []  a title",
         "  F-0001  0/1 W  a feature title",
         "  S-0002  []  a title",

@@ -152,7 +152,7 @@ def test_a_start_with_no_id_starts_the_line_that_waits_for_nothing(tmp_path: Pat
 def test_the_line_started_with_no_id_is_in_progress(tmp_path: Path) -> None:
     path = checkout_with(tmp_path, None, waits(checked=False))
     fgraph(["start"], path)
-    assert "  bucket       InProgress\n" in fgraph(["show", "S-0002"], path).out
+    assert "  bucket       in-progress\n" in fgraph(["show", "S-0002"], path).out
 
 
 def test_the_start_with_no_id_takes_the_id_status_names_as_next_to_start(tmp_path: Path) -> None:

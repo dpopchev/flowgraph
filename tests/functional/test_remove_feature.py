@@ -98,10 +98,10 @@ class TestAFeatureInBacklogWithAStoryUnderItRemovedWithAReason:
         self, removed: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["status"], tmp_path).out == (
-            "Backlog (0)\n"
-            "InProgress (0)\n"
-            "Completed (0)\n"
-            "Removed (1)\n"
+            "backlog (0)\n"
+            "in-progress (0)\n"
+            "completed (0)\n"
+            "removed (1)\n"
             "  F-0001  a feature title\n"
             "  filed by mistake\n"
         )
@@ -111,19 +111,19 @@ class TestAFeatureInBacklogWithAStoryUnderItRemovedWithAReason:
     ) -> None:
         assert fgraph(["show", "F-0001"], tmp_path).out == (
             "F-0001  a feature title\n"
-            "  bucket       Removed\n"
+            "  bucket       removed\n"
             "  reason       filed by mistake\n"
             "Criteria (1)\n"
             "  a criterion\n"
             "Work items (1)\n"
-            "  S-0001  a title  Removed\n"
+            "  S-0001  a title  removed\n"
         )
 
     def test_its_story_is_removed_for_the_same_reason(
         self, removed: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["show", "S-0001"], tmp_path).out.splitlines()[1:4] == [
-            "  bucket       Removed",
+            "  bucket       removed",
             "  parent       F-0001",
             "  reason       filed by mistake",
         ]
@@ -135,7 +135,7 @@ def test_a_removed_feature_is_listed_after_the_removed_work_items_and_none_of_it
     add_under = ["add", "story", "another title", *CRITERION, "--parent", "F-0001"]
     listed = runs(tmp_path, ADD_ALONE, ADD_FEATURE, add_under, REMOVE_STORY, REMOVE, ["status"])
     assert listed.out.splitlines()[-5:] == [
-        "Removed (2)",
+        "removed (2)",
         "  S-0001  a title",
         "  superseded",
         "  F-0001  a feature title",

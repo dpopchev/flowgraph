@@ -70,11 +70,11 @@ class TestARecordWithAFeatureAndAStoryAddedUnderIt:
         self, listed: Outcome
     ) -> None:
         assert listed.out == (
-            "Backlog (2)\n"
+            "backlog (2)\n"
             "> S-0002  []  a title that stands alone\n"
             "  F-0001  0/1 W  a feature title\n"
-            "InProgress (0)\n"
-            "Completed (0)\n"
+            "in-progress (0)\n"
+            "completed (0)\n"
         )
 
 
@@ -83,7 +83,7 @@ def test_a_feature_with_a_started_story_is_listed_in_progress_with_the_story_und
 ) -> None:
     listed = status_after(tmp_path, ADD_FEATURE, ADD_STORY, ADD_TASK, ["start", "F-0001"])
     assert listed.out.splitlines()[1:4] == [
-        "InProgress (1)",
+        "in-progress (1)",
         "  F-0001  0/1 W  a feature title",
         "    S-0001  0/1 T  a title",
     ]
@@ -94,7 +94,7 @@ def test_a_feature_whose_story_is_completed_is_listed_completed_with_the_commit_
 ) -> None:
     listed = status_after(tmp_path, *UNDER_A_FEATURE)
     assert listed.out.splitlines()[2:] == [
-        "Completed (1)",
+        "completed (1)",
         "  F-0001  def5678  a feature title",
     ]
 
@@ -102,11 +102,11 @@ def test_a_feature_whose_story_is_completed_is_listed_completed_with_the_commit_
 def test_the_features_added_at_one_time_are_listed_by_number(tmp_path: Path) -> None:
     listed = status_after(tmp_path, ADD_FEATURE, ADD_OTHER_FEATURE, ADD_STORY)
     assert listed.out.splitlines()[:3] == [
-        "Backlog (2)",
+        "backlog (2)",
         "> F-0001  0/1 W  a feature title",
         "  F-0002  0/0 W  another feature title",
     ]
 
 
 def test_a_record_with_a_feature_lists_no_heading_for_the_features(tmp_path: Path) -> None:
-    assert status_after(tmp_path, ADD_FEATURE).out.splitlines()[0] == "Backlog (1)"
+    assert status_after(tmp_path, ADD_FEATURE).out.splitlines()[0] == "backlog (1)"

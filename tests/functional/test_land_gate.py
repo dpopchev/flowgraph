@@ -177,7 +177,7 @@ class TestALandOfAStartedStoryUnderAGateThatFails:
         self, refused: Landed, gated: Path
     ) -> None:
         assert fgraph(["status"], gated).out == (
-            f"Backlog (0)\nInProgress (1)\n? S-0001  1/1 T  {TITLE}\nCompleted (0)\n"
+            f"backlog (0)\nin-progress (1)\n? S-0001  1/1 T  {TITLE}\ncompleted (0)\n"
         )
 
 
@@ -208,7 +208,7 @@ def test_a_land_under_a_gate_that_passes_lists_the_story_under_completed(tmp_pat
     fgraph(LAND, checkout)
     merge = git(checkout, "rev-parse", "--short", "HEAD~1")
     assert fgraph(["status"], checkout).out == (
-        f"Backlog (0)\nInProgress (0)\nCompleted (1)\n  S-0001  {merge}  {TITLE}\n"
+        f"backlog (0)\nin-progress (0)\ncompleted (1)\n  S-0001  {merge}  {TITLE}\n"
     )
 
 

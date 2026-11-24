@@ -56,7 +56,7 @@ def test_a_decision_of_a_feature_marked_standing_ends_with_its_mark() -> None:
         ["a criterion"],
         knowledge=[KnowledgeRow("decision", NOW, "a text", mark="standing")],
     )
-    assert feature_text(detail, [], "Backlog").endswith(
+    assert feature_text(detail, [], "backlog").endswith(
         "  decision  2026-01-01  a text  (standing)\n"
     )
 
@@ -89,6 +89,6 @@ def test_a_superseded_line_of_a_feature_ends_with_the_refs_that_supersede_it() -
         ["a criterion"],
         knowledge=[KnowledgeRow("decision", NOW, "a text", superseded_by=["F-0001#2"])],
     )
-    assert feature_text(detail, [], "Backlog").endswith(
+    assert feature_text(detail, [], "backlog").endswith(
         "  decision  2026-01-01  a text  (superseded by F-0001#2)\n"
     )

@@ -80,9 +80,9 @@ class TestSixStoriesCompleted:
 
     def test_status_lists_the_five_completed_last_then_one_more(self, listed: Outcome) -> None:
         assert listed.out == (
-            "Backlog (0)\n"
-            "InProgress (0)\n"
-            "Completed (6)\n"
+            "backlog (0)\n"
+            "in-progress (0)\n"
+            "completed (6)\n"
             "  S-0006  abc1236  title 6\n"
             "  S-0005  abc1235  title 5\n"
             "  S-0004  abc1234  title 4\n"

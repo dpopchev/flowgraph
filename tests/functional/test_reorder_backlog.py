@@ -68,11 +68,11 @@ class TestAStoryPutBeforeAnotherInBacklog:
 
     def test_status_lists_it_above_the_other(self, reordered: Outcome, tmp_path: Path) -> None:
         assert fgraph(["status", "--backlog"], tmp_path).out == (
-            "Backlog (2)\n"
+            "backlog (2)\n"
             "> S-0002  []  another title\n"
             "  S-0001  []  a title\n"
-            "InProgress (0)\n"
-            "Completed (0)\n"
+            "in-progress (0)\n"
+            "completed (0)\n"
         )
 
     def test_a_story_added_afterwards_is_listed_last(

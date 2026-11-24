@@ -60,11 +60,11 @@ def test_a_removed_work_item_is_listed_under_removed_with_its_reason() -> None:
         WorkItemRow("CH-0001", "a title", "removed", reason="filed by mistake", created=CREATED),
     ]
     assert status_text(rows) == (
-        "Backlog (1)\n"
+        "backlog (1)\n"
         "  CH-0002  []  another title\n"
-        "InProgress (0)\n"
-        "Completed (0)\n"
-        "Removed (1)\n"
+        "in-progress (0)\n"
+        "completed (0)\n"
+        "removed (1)\n"
         "  CH-0001  a title\n"
         "  filed by mistake\n"
     )
@@ -73,7 +73,7 @@ def test_a_removed_work_item_is_listed_under_removed_with_its_reason() -> None:
 @pytest.mark.view
 def test_a_record_with_nothing_removed_lists_no_removed_heading() -> None:
     rows = [WorkItemRow("CH-0002", "another title", "backlog", created=CREATED)]
-    assert status_text(rows).splitlines()[-1] == "Completed (0)"
+    assert status_text(rows).splitlines()[-1] == "completed (0)"
 
 
 @pytest.mark.view
@@ -91,6 +91,6 @@ def test_a_removed_work_item_is_shown_with_its_bucket_and_its_reason() -> None:
     )
     assert show_text(detail).splitlines()[:3] == [
         "CH-0001  a title",
-        "  bucket       Removed",
+        "  bucket       removed",
         "  reason       filed by mistake",
     ]

@@ -167,7 +167,7 @@ class TestAStoryThatStandsAloneLanded:
         )
 
     def test_show_lists_it_completed(self, landed: Outcome, checkout: Path) -> None:
-        assert "bucket       Completed" in fgraph(["show", "S-0001"], checkout).out
+        assert "bucket       completed" in fgraph(["show", "S-0001"], checkout).out
 
     def test_main_of_the_origin_is_main_of_the_checkout(
         self, landed: Outcome, checkout: Path, origin: Path
@@ -243,10 +243,10 @@ class TestTheLastStoryOfAFeatureWhoseTagTheOriginRefuses:
         assert (refused.status, refused.err.endswith(ending)) == (2, True)
 
     def test_show_lists_the_story_in_progress(self, refused: Outcome, checkout: Path) -> None:
-        assert "bucket       InProgress" in fgraph(["show", "S-0001"], checkout).out
+        assert "bucket       in-progress" in fgraph(["show", "S-0001"], checkout).out
 
     def test_show_lists_the_feature_in_progress(self, refused: Outcome, checkout: Path) -> None:
-        assert "bucket       InProgress" in fgraph(["show", "F-0001"], checkout).out
+        assert "bucket       in-progress" in fgraph(["show", "F-0001"], checkout).out
 
 
 def test_the_tag_at_the_close_of_a_feature_is_on_the_commit_of_the_landing(
@@ -275,7 +275,7 @@ class TestAStoryWhoseGateFails:
         assert refused.status == 2
 
     def test_show_lists_the_story_in_progress(self, refused: Outcome, checkout: Path) -> None:
-        assert "bucket       InProgress" in fgraph(["show", "S-0001"], checkout).out
+        assert "bucket       in-progress" in fgraph(["show", "S-0001"], checkout).out
 
     def test_no_tag_is_made(self, refused: Outcome, checkout: Path) -> None:
         assert git(checkout, "tag", "--list") == ""

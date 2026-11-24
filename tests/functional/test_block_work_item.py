@@ -89,7 +89,7 @@ class TestAStartedStoryBlocked:
         self, blocked: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["status"], tmp_path, LATER).out == (
-            f"Backlog (0)\nInProgress (1)\n{MARKED}\nCompleted (0)\n"
+            f"backlog (0)\nin-progress (1)\n{MARKED}\ncompleted (0)\n"
         )
 
     def test_show_lists_it_in_inprogress_as_blocked_with_its_reason_and_what_it_waits_on(
@@ -97,7 +97,7 @@ class TestAStartedStoryBlocked:
     ) -> None:
         assert fgraph(["show", "S-0001"], tmp_path, LATER).out == (
             "S-0001  a title\n"
-            "  bucket       InProgress, blocked\n"
+            "  bucket       in-progress, blocked\n"
             "  reason       no key\n"
             "  waiting on   developer\n"
             "  given        a state\n"
@@ -139,7 +139,7 @@ class TestABlockedStoryUnblocked:
     def test_status_lists_it_as_started_again(self, unblocked: Outcome, tmp_path: Path) -> None:
         assert (unblocked.status, fgraph(["status"], tmp_path, LATER).out) == (
             0,
-            "Backlog (0)\nInProgress (1)\n  S-0001  0/1 T  a title\nCompleted (0)\n",
+            "backlog (0)\nin-progress (1)\n  S-0001  0/1 T  a title\ncompleted (0)\n",
         )
 
     def test_the_json_holds_its_state_started_and_no_block(

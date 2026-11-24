@@ -69,7 +69,7 @@ class TestAStartedSpikeCompletedWithItsDecisionAndTheAnswerNo:
 
     def test_status_lists_it_under_completed(self, completed: Outcome, tmp_path: Path) -> None:
         assert fgraph(["status"], tmp_path).out.splitlines()[2:4] == [
-            "Completed (1)",
+            "completed (1)",
             "  Q-0001  def5678  a spike title",
         ]
 

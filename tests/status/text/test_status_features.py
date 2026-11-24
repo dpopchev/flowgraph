@@ -22,20 +22,20 @@ WORKED = WorkItemRow(
 )
 ALONE = WorkItemRow("S-0004", "a title that stands alone", "started", created=CREATED)
 OTHER = WorkItemRow("S-0005", "another that stands alone", "started", created=CREATED)
-BEGUN = FeatureRow("F-0002", "a begun feature", "InProgress", 1, 4, started=[WORKED, UNDER])
+BEGUN = FeatureRow("F-0002", "a begun feature", "in-progress", 1, 4, started=[WORKED, UNDER])
 ROWS = [
     WorkItemRow("S-0001", "a title", "backlog", created=CREATED),
-    FeatureRow("F-0001", "a feature title", "Backlog", completed=0, held=2),
+    FeatureRow("F-0001", "a feature title", "backlog", completed=0, held=2),
     BEGUN,
     ALONE,
-    FeatureRow("F-0003", "a done feature", "Completed", completed=2, held=2),
+    FeatureRow("F-0003", "a done feature", "completed", completed=2, held=2),
     WorkItemRow("S-0006", "a done title", "completed", "abc1234", created=CREATED),
 ]
 
 
 def test_a_feature_is_listed_in_its_bucket_as_one_line_with_its_progress() -> None:
     assert status_text(ROWS).splitlines()[:3] == [
-        "Backlog (2)",
+        "backlog (2)",
         "  S-0001  []  a title",
         "  F-0001  0/2 W  a feature title",
     ]
@@ -43,31 +43,31 @@ def test_a_feature_is_listed_in_its_bucket_as_one_line_with_its_progress() -> No
 
 def test_a_feature_is_listed_among_the_work_items_of_its_bucket_in_the_order_given() -> None:
     assert status_text(ROWS).splitlines()[-3:] == [
-        "Completed (2)",
+        "completed (2)",
         "  F-0003  a done feature",
         "  S-0006  abc1234  a done title",
     ]
 
 
 def test_a_feature_completed_in_a_commit_is_listed_with_it_between_its_id_and_its_title() -> None:
-    landed = FeatureRow("F-0004", "a landed feature", "Completed", 2, 2, commit="def5678")
+    landed = FeatureRow("F-0004", "a landed feature", "completed", 2, 2, commit="def5678")
     assert status_text([landed]).splitlines()[-1] == "  F-0004  def5678  a landed feature"
 
 
 def test_a_completed_feature_with_its_completed_work_items_is_one_line_with_its_commit() -> None:
     done = WorkItemRow("S-0006", "a done title", "completed", "abc1234", created=CREATED)
     landed = FeatureRow(
-        "F-0004", "a landed feature", "Completed", 1, 1, work_items=[done], commit="def5678"
+        "F-0004", "a landed feature", "completed", 1, 1, work_items=[done], commit="def5678"
     )
     assert status_text([landed]).splitlines()[-2:] == [
-        "Completed (1)",
+        "completed (1)",
         "  F-0004  def5678  a landed feature",
     ]
 
 
 def test_the_started_work_items_of_a_feature_are_listed_under_its_line_indented() -> None:
     assert status_text([BEGUN]).splitlines()[1:6] == [
-        "InProgress (1)",
+        "in-progress (1)",
         "  F-0002  1/4 W  a begun feature",
         "    S-0003  1/2 T  a worked title",
         "      => T-0002  a begun task",
@@ -79,14 +79,14 @@ def test_a_work_item_under_its_feature_counts_neither_beside_the_heading_nor_tow
     None
 ):
     assert status_text([BEGUN, ALONE, OTHER], same_top(2)).splitlines()[1:] == [
-        "InProgress (3)",
+        "in-progress (3)",
         "  F-0002  1/4 W  a begun feature",
         "    S-0003  1/2 T  a worked title",
         "      => T-0002  a begun task",
         "    S-0002  0/0 T  a begun title",
         "  S-0004  0/0 T  a title that stands alone",
         "  ... 1 more",
-        "Completed (0)",
+        "completed (0)",
     ]
 
 
@@ -102,7 +102,7 @@ def holding(*tasks: TaskRow) -> FeatureRow:
     worked = WorkItemRow(
         "S-0003", "a worked title", "started", parent="F-0002", created=CREATED, tasks=list(tasks)
     )
-    return FeatureRow("F-0002", "a begun feature", "InProgress", 0, 1, started=[worked])
+    return FeatureRow("F-0002", "a begun feature", "in-progress", 0, 1, started=[worked])
 
 
 def test_a_feature_whose_started_work_item_holds_a_blocked_task_is_marked_as_blocked() -> None:
@@ -132,7 +132,7 @@ def test_a_blocked_feature_gives_what_it_waits_on_and_its_own_reason_below() -> 
     blocked = FeatureRow(
         "F-0002",
         "a begun feature",
-        "InProgress",
+        "in-progress",
         0,
         1,
         waiting_on="a sponsor",

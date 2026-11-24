@@ -59,7 +59,7 @@ def row(item: str, waits_for: list[str] | None = None, *, tasks: int = 1) -> Wor
 
 def feature(item: str, held: int, work_items: list[WorkItemRow] | None = None) -> FeatureRow:
     """A Feature in Backlog holding that many work items."""
-    return FeatureRow(item, "a feature", "Backlog", 0, held, work_items=work_items or [])
+    return FeatureRow(item, "a feature", "backlog", 0, held, work_items=work_items or [])
 
 
 def refusal(first: str) -> str:
@@ -87,7 +87,7 @@ def test_of_two_lines_both_marked_gives_the_first() -> None:
 
 def test_a_work_item_marked_under_a_started_feature_comes_before_a_marked_line() -> None:
     under = replace(row("S-0002"), next_to_start=True)
-    started = replace(feature("F-0001", 2, [under]), bucket="InProgress", is_started=True)
+    started = replace(feature("F-0001", 2, [under]), bucket="in-progress", is_started=True)
     rows = [replace(row("S-0005"), next_to_start=True), started]
     assert top_of(rows) == "S-0002"
 

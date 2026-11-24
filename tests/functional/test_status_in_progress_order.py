@@ -72,18 +72,18 @@ class TestTwoStoriesStartedTheFirstBeforeTheSecond:
         self, listed: Outcome
     ) -> None:
         assert listed.out == (
-            "Backlog (0)\n"
-            "InProgress (2)\n"
+            "backlog (0)\n"
+            "in-progress (2)\n"
             "  S-0002  0/1 T  another title\n"
             "  S-0001  0/1 T  a title\n"
-            "Completed (0)\n"
+            "completed (0)\n"
         )
 
 
 def test_the_first_story_started_after_the_second_is_listed_above_it(tmp_path: Path) -> None:
     listed = status_after(tmp_path, *ADDED, START_SECOND, START_FIRST)
     assert listed.out.splitlines()[1:4] == [
-        "InProgress (2)",
+        "in-progress (2)",
         "  S-0001  0/1 T  a title",
         "  S-0002  0/1 T  another title",
     ]

@@ -36,7 +36,7 @@ NO_COMPLEXITY_LINE = (
     "fgraph: error: F-0001 cannot start: S-0002 has no complexity to start with: "
     "set it with fgraph amend S-0002 --complexity low, medium or high"
 )
-GOAL_START = "/goal Develop F-0001 until fgraph show F-0001 lists S-0001 and S-0002 Completed,"
+GOAL_START = "/goal Develop F-0001 until fgraph show F-0001 lists S-0001 and S-0002 completed,"
 
 
 def story(title: str, complexity: str | None = None) -> list[str]:

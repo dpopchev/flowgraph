@@ -10,10 +10,10 @@ from flowgraph.feature import FeatureRow
 from flowgraph.record.listing import Bucket, WatchShows
 from flowgraph.work_item import WorkItemRow
 
-BACKLOG_BUCKET = "Backlog"
-IN_PROGRESS_BUCKET = "InProgress"
-COMPLETED_BUCKET = "Completed"
-REMOVED_BUCKET = "Removed"
+BACKLOG_BUCKET = "backlog"
+IN_PROGRESS_BUCKET = "in-progress"
+COMPLETED_BUCKET = "completed"
+REMOVED_BUCKET = "removed"
 
 # The buckets of the flow in their order, each with the states of an item shown in it.
 BUCKETS: Sequence[tuple[str, Collection[str]]] = (

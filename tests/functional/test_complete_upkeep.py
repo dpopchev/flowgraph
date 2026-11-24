@@ -83,7 +83,7 @@ class TestAStartedUpkeepWhoseTaskIsCompletedCompleted:
         self, completed: list[Outcome], tmp_path: Path
     ) -> None:
         assert fgraph(["status"], tmp_path).out == (
-            "Backlog (0)\nInProgress (0)\nCompleted (1)\n  U-0001  def5678  an upkeep title\n"
+            "backlog (0)\nin-progress (0)\ncompleted (1)\n  U-0001  def5678  an upkeep title\n"
         )
 
     def test_show_names_the_bucket_and_commit_of_each(
@@ -91,14 +91,14 @@ class TestAStartedUpkeepWhoseTaskIsCompletedCompleted:
     ) -> None:
         assert fgraph(["show", "U-0001"], tmp_path).out == (
             "U-0001  an upkeep title\n"
-            "  bucket       Completed\n"
+            "  bucket       completed\n"
             "  commit       def5678\n"
             "  given        a behavior\n"
             "  when         it runs\n"
             "  then         it still holds\n"
             "Tasks (1)\n"
             "  T-0001  a task title\n"
-            "    bucket           Completed\n"
+            "    bucket           completed\n"
             "    commit           abc1234\n"
             "    expected output  an output\n"
         )
@@ -113,11 +113,11 @@ def test_a_task_id_counts_across_stories_and_upkeeps(tmp_path: Path) -> None:
 
 def test_an_upkeep_in_progress_is_listed_under_in_progress(tmp_path: Path) -> None:
     assert runs(tmp_path, *STARTED, ["status"]).out == (
-        "Backlog (0)\n"
-        "InProgress (1)\n"
+        "backlog (0)\n"
+        "in-progress (1)\n"
         "  U-0001  0/1 T  an upkeep title\n"
         "    => T-0001  a task title\n"
-        "Completed (0)\n"
+        "completed (0)\n"
     )
 
 

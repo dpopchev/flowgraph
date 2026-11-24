@@ -60,7 +60,7 @@ def test_the_lines_of_a_task_follow_its_description_in_the_order_noted() -> None
     text = show_text(detail(progress=noted()))
     assert lines_between(text, "  T-0001  a task title", "  T-0002  another title") == [
         "  T-0001  a task title",
-        "    bucket           InProgress",
+        "    bucket           in-progress",
         "    expected output  an output",
         "    description      how",
         "    progress         2026-01-02  red: 1 failed",

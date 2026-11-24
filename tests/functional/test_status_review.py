@@ -176,7 +176,7 @@ class TestStatusAsJson:
     def test_the_progress_of_the_first_is_read_from_its_worktree(
         self, document: dict[str, Any]
     ) -> None:
-        in_progress = next(b for b in document["buckets"] if b["name"] == "InProgress")
+        in_progress = next(b for b in document["buckets"] if b["name"] == "in-progress")
         first = next(item for item in in_progress["items"] if item["id"] == "S-0001")
         assert first["progress"] == {"completed": 1, "total": 1}
 

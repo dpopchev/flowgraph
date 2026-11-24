@@ -24,7 +24,7 @@ def feature(item: int, work_items: list[WorkItemRow], started: list[WorkItemRow]
     return FeatureRow(
         f"F-{item:04}",
         "a feature",
-        "InProgress",
+        "in-progress",
         0,
         len(work_items),
         work_items=work_items,
@@ -40,7 +40,7 @@ WITH_TWO = feature(1, [FIRST, story(2, marked=True), story(3, marked=True)], [FI
 def progress(rows: list[FeatureRow]) -> list[str]:
     """The lines of the text between the heading of InProgress and that of Completed."""
     lines = status_text(rows).splitlines()
-    return lines[lines.index("InProgress (1)") + 1 : lines.index("Completed (0)")]
+    return lines[lines.index("in-progress (1)") + 1 : lines.index("completed (0)")]
 
 
 def test_each_marked_work_item_is_listed_under_its_feature_after_the_started_ones() -> None:
@@ -61,7 +61,7 @@ def test_the_feature_holding_a_marked_work_item_is_listed_after_the_top_that_lea
 ):
     plain = [feature(number, [story(number + 10)], []) for number in (2, 3)]
     lines = status_text([*plain, WITH_TWO], same_top(1)).splitlines()
-    assert lines[lines.index("InProgress (3)") + 1 :][:5] == [
+    assert lines[lines.index("in-progress (3)") + 1 :][:5] == [
         "  F-0002  0/1 W  a feature",
         "  F-0001  0/3 W  a feature",
         "    S-0001  0/0 T  a title",

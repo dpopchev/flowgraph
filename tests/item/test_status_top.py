@@ -45,7 +45,7 @@ def store() -> Store:
 
 def test_the_top_of_completed_is_the_last_completed() -> None:
     assert status_item(store(), same_top(2)).splitlines()[2:] == [
-        "Completed (3)",
+        "completed (3)",
         "  S-0003  abc1234  title 3",
         "  S-0002  abc1234  title 2",
         "  ... 1 more",

@@ -95,12 +95,12 @@ def test_a_feature_in_backlog_is_listed_after_what_was_added_before_it_and_not_i
     None
 ):
     assert status_item(store(IN_BACKLOG, [feature(1, DAY[2])])) == (
-        "Backlog (3)\n"
+        "backlog (3)\n"
         "> S-0001  []  title 1\n"
         "  F-0001  0/1 W  feature 1\n"
         "  S-0003  []  title 3\n"
-        "InProgress (0)\n"
-        "Completed (0)\n"
+        "in-progress (0)\n"
+        "completed (0)\n"
     )
 
 
@@ -138,11 +138,11 @@ def test_a_work_item_under_a_feature_the_record_does_not_hold_is_listed_in_its_b
         story(3, "completed", "F-0009", completed=DAY[3]),
     ]
     assert status_item(store(rows, [])) == (
-        "Backlog (1)\n"
+        "backlog (1)\n"
         "> S-0001  []  title 1\n"
-        "InProgress (1)\n"
+        "in-progress (1)\n"
         "  S-0002  0/0 T  title 2\n"
-        "Completed (1)\n"
+        "completed (1)\n"
         "  S-0003  abc1234  title 3\n"
     )
 
@@ -153,19 +153,19 @@ def test_a_feature_placed_in_the_queue_that_left_the_backlog_is_listed_once_unde
     rows = [story(1, "backlog"), story(2, "started", "F-0001", started=DAY[2])]
     placed = make_queue([make_feature_id(1), make_story_id(1)])
     assert status_item(store(rows, [feature(1)], placed)) == (
-        "Backlog (1)\n"
+        "backlog (1)\n"
         "> S-0001  []  title 1\n"
-        "InProgress (1)\n"
+        "in-progress (1)\n"
         "  F-0001  0/1 W  feature 1\n"
         "    S-0002  0/0 T  title 2\n"
-        "Completed (0)\n"
+        "completed (0)\n"
     )
 
 
 def test_a_started_feature_is_listed_under_in_progress_though_no_work_item_of_it_is_begun() -> None:
     rows = [story(1, "backlog", "F-0001")]
     assert status_item(store(rows, [started_feature(feature(1), DAY[2])])) == (
-        "Backlog (0)\nInProgress (1)\n  F-0001  0/1 W  feature 1\nCompleted (0)\n"
+        "backlog (0)\nin-progress (1)\n  F-0001  0/1 W  feature 1\ncompleted (0)\n"
     )
 
 
@@ -181,13 +181,13 @@ def test_a_blocked_work_item_of_a_started_feature_is_listed_under_it() -> None:
         waiting_on="developer",
     )
     assert status_item(store([held], [started_feature(feature(1), DAY[2])])) == (
-        "Backlog (0)\n"
-        "InProgress (1)\n"
+        "backlog (0)\n"
+        "in-progress (1)\n"
         "! F-0001  0/1 W  feature 1\n"
         "  waiting on developer: no key\n"
         "  ! S-0001  0/0 T  title 1\n"
         "    waiting on developer: no key\n"
-        "Completed (0)\n"
+        "completed (0)\n"
     )
 
 
@@ -215,15 +215,15 @@ def test_a_feature_in_progress_is_placed_by_its_last_started_work_item_listed_un
         story(6, "started", started=DAY[5]),
     ]
     assert status_item(store(rows, [feature(1)])) == (
-        "Backlog (0)\n"
-        "InProgress (3)\n"
+        "backlog (0)\n"
+        "in-progress (3)\n"
         "  S-0006  0/0 T  title 6\n"
         "  F-0001  1/4 W  feature 1\n"
         "    S-0003  0/0 T  title 3\n"
         "    S-0002  0/0 T  title 2\n"
         "    S-0005  0/0 T  title 5\n"
         "  S-0001  0/0 T  title 1\n"
-        "Completed (0)\n"
+        "completed (0)\n"
     )
 
 
@@ -254,7 +254,7 @@ def test_a_completed_feature_is_placed_by_its_last_completed_work_item_and_lists
         story(4, "completed", completed=DAY[5]),
     ]
     assert status_item(store(rows, [feature(1)])).splitlines()[2:] == [
-        "Completed (3)",
+        "completed (3)",
         "  S-0004  abc1234  title 4",
         "  F-0001  feature 1",
         "  S-0001  abc1234  title 1",
@@ -271,7 +271,7 @@ def test_a_feature_completed_by_its_own_state_is_placed_by_its_completed_time_wi
     ]
     landed = completed_feature(started_feature(feature(1), DAY[1]), DAY[4], make_commit("def5678"))
     assert status_item(store(rows, [landed])).splitlines()[2:] == [
-        "Completed (3)",
+        "completed (3)",
         "  S-0003  abc1234  title 3",
         "  F-0001  def5678  feature 1",
         "  S-0001  abc1234  title 1",
@@ -283,12 +283,12 @@ def test_a_started_feature_whose_work_items_are_all_completed_or_removed_stays_i
 ):
     rows = [story(1, "completed", "F-0001", completed=DAY[3]), story(2, "removed", "F-0001")]
     assert status_item(store(rows, [started_feature(feature(1), DAY[2])])) == (
-        "Backlog (0)\n"
-        "InProgress (1)\n"
+        "backlog (0)\n"
+        "in-progress (1)\n"
         "  F-0001  1/1 W  feature 1\n"
         "    S-0001  0/0 T  title 1\n"
-        "Completed (0)\n"
-        "Removed (1)\n"
+        "completed (0)\n"
+        "removed (1)\n"
         "  S-0002  title 2\n"
         "  a reason\n"
     )
@@ -297,11 +297,11 @@ def test_a_started_feature_whose_work_items_are_all_completed_or_removed_stays_i
 def test_a_removed_work_item_of_a_feature_keeps_its_line_under_removed() -> None:
     rows = [story(1, "removed", "F-0001"), story(2, "backlog", "F-0001")]
     assert status_item(store(rows, [feature(1)])) == (
-        "Backlog (1)\n"
+        "backlog (1)\n"
         "> F-0001  0/1 W  feature 1\n"
-        "InProgress (0)\n"
-        "Completed (0)\n"
-        "Removed (1)\n"
+        "in-progress (0)\n"
+        "completed (0)\n"
+        "removed (1)\n"
         "  S-0001  title 1\n"
         "  a reason\n"
     )

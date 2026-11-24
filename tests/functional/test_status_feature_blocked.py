@@ -67,13 +67,13 @@ def test_status_marks_a_started_feature_whose_started_story_holds_a_blocked_task
     tmp_path: Path,
 ) -> None:
     assert status_after(tmp_path, *BLOCKED).out == (
-        "Backlog (0)\n"
-        "InProgress (1)\n"
+        "backlog (0)\n"
+        "in-progress (1)\n"
         f"{MARKED}\n"
         "    S-0001  0/2 T  a title\n"
         "      !  T-0001  a task title\n"
         "         waiting on the reviewer: the review is not back\n"
-        "Completed (0)\n"
+        "completed (0)\n"
     )
 
 

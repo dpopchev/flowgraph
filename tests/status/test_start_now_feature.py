@@ -36,7 +36,7 @@ def story(
 
 
 def feature(
-    item: int, work_items: list[WorkItemRow], *, started: bool = True, bucket: str = "InProgress"
+    item: int, work_items: list[WorkItemRow], *, started: bool = True, bucket: str = "in-progress"
 ) -> FeatureRow:
     """A Feature in that bucket holding those work items, started or not."""
     return FeatureRow(
@@ -118,7 +118,7 @@ def test_a_feature_never_started_that_is_listed_in_progress_gives_no_place() -> 
 
 
 def test_a_feature_in_backlog_takes_one_place_through_its_first_work_item() -> None:
-    backlog = FeatureRow("F-0002", "a feature", "Backlog", 0, 3, work_items=[story(7), story(8)])
+    backlog = FeatureRow("F-0002", "a feature", "backlog", 0, 3, work_items=[story(7), story(8)])
     assert start_now_ids(with_start_now([backlog], Within(3), 0)) == ["F-0002"]
 
 

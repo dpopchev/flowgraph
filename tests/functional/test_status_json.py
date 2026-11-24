@@ -116,10 +116,10 @@ class TestARecordWithAnItemInEveryBucket:
 
     def test_status_prints_the_count_of_each_bucket(self, document: dict[str, Any]) -> None:
         assert [(each["name"], each["count"]) for each in document["buckets"]] == [
-            ("Backlog", 2),
-            ("InProgress", 2),
-            ("Completed", 1),
-            ("Removed", 1),
+            ("backlog", 2),
+            ("in-progress", 2),
+            ("completed", 1),
+            ("removed", 1),
         ]
 
     def test_status_prints_the_blocked_task_with_its_reason_and_what_it_waits_on(
@@ -151,7 +151,7 @@ class TestARecordWithAnItemInEveryBucket:
         assert document["next_to_start"] == "S-0003"
 
     def test_status_prints_the_reason_of_a_removed_story(self, document: dict[str, Any]) -> None:
-        assert bucket(document, "Removed")["items"][0]["reason"] == "not wanted"
+        assert bucket(document, "removed")["items"][0]["reason"] == "not wanted"
 
     def test_status_prints_the_same_bytes_twice(self, printed: Outcome, recorded: Path) -> None:
         assert fgraph(["status", "--format", "json"], recorded).out == printed.out

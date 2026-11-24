@@ -70,7 +70,7 @@ class TestACompletedStoryVerifiedNo:
         assert "B-0001" in verified.out
 
     def test_show_of_the_bug_lists_it_in_backlog(self, verified: Outcome, tmp_path: Path) -> None:
-        assert "  bucket       Backlog\n" in fgraph(["show", "B-0001"], tmp_path).out
+        assert "  bucket       backlog\n" in fgraph(["show", "B-0001"], tmp_path).out
 
     def test_show_of_the_bug_lists_the_story_it_amends(
         self, verified: Outcome, tmp_path: Path
@@ -83,7 +83,7 @@ class TestACompletedStoryVerifiedNo:
         assert f"  observed     {TEXT}\n" in fgraph(["show", "B-0001"], tmp_path).out
 
     def test_show_of_the_story_lists_it_completed(self, verified: Outcome, tmp_path: Path) -> None:
-        assert "  bucket       Completed\n" in fgraph(["show", "S-0001"], tmp_path).out
+        assert "  bucket       completed\n" in fgraph(["show", "S-0001"], tmp_path).out
 
     def test_show_of_the_story_lists_it_as_verified_no_with_the_text_and_the_day(
         self, verified: Outcome, tmp_path: Path

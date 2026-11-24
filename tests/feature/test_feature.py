@@ -103,13 +103,13 @@ def test_a_feature_without_a_criterion_is_refused() -> None:
 @pytest.mark.parametrize(
     ("states", "bucket"),
     [
-        ([], "Backlog"),
-        (["backlog", "backlog"], "Backlog"),
-        (["backlog", "removed"], "Backlog"),
-        (["started", "backlog"], "InProgress"),
-        (["completed", "backlog"], "InProgress"),
-        (["completed", "removed"], "Completed"),
-        (["completed"], "Completed"),
+        ([], "backlog"),
+        (["backlog", "backlog"], "backlog"),
+        (["backlog", "removed"], "backlog"),
+        (["started", "backlog"], "in-progress"),
+        (["completed", "backlog"], "in-progress"),
+        (["completed", "removed"], "completed"),
+        (["completed"], "completed"),
     ],
     ids=["none", "backlog", "one-removed", "one-started", "one-completed", "all-done", "done"],
 )

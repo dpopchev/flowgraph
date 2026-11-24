@@ -46,4 +46,4 @@ def test_a_marked_line_inside_the_top_is_listed_and_one_beyond_it_is_counted() -
 
 def test_the_count_of_the_heading_stays_that_of_every_line() -> None:
     rows = [line(1), line(2), line(3, marked=True), line(4, marked=True)]
-    assert status_text(rows, same_top(1)).splitlines()[0] == "Backlog (4)"
+    assert status_text(rows, same_top(1)).splitlines()[0] == "backlog (4)"

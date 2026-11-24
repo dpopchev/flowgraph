@@ -198,7 +198,7 @@ class TestTheStartALandingMakesWhileTheFirstStoryHoldsAnAgent:
     ) -> None:
         shown = fgraph(["show", "S-0002"], repository).out.splitlines()
         assert [line for line in shown if line.startswith(("  bucket", "  agent"))] == [
-            "  bucket       InProgress"
+            "  bucket       in-progress"
         ]
 
     def test_the_completed_story_keeps_its_agent(self, landed: Outcome, repository: Path) -> None:

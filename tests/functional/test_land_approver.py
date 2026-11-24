@@ -164,7 +164,7 @@ class TestALandingHeldForTheDeveloper:
         assert (
             git(checkout, "branch", "--list", "--format=%(refname:short)", BRANCH),
             fgraph(["show", "S-0001"], checkout).out.splitlines()[1],
-        ) == (BRANCH, "  bucket       InProgress")
+        ) == (BRANCH, "  bucket       in-progress")
 
 
 class TestALandingTheDeveloperApproved:

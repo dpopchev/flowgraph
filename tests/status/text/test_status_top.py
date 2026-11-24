@@ -13,7 +13,7 @@ pytestmark = pytest.mark.view
 
 CREATED = datetime(2026, 1, 1, tzinfo=UTC)
 THREE = [WorkItemRow(f"S-000{n}", f"title {n}", "backlog", created=CREATED) for n in (1, 2, 3)]
-FEATURE = FeatureRow("F-0001", "a feature title", "Backlog", 0, 0)
+FEATURE = FeatureRow("F-0001", "a feature title", "backlog", 0, 0)
 COMPLETED = [
     WorkItemRow(f"S-000{n}", f"title {n}", "completed", created=CREATED, commit="abc1234")
     for n in (1, 2, 3)
@@ -23,12 +23,12 @@ BACKLOG_ONLY = Tops(backlog=1, in_progress=None, completed=None, removed=None)
 
 def test_a_heading_lists_its_top_then_how_many_more() -> None:
     assert status_text(THREE, same_top(2)) == (
-        "Backlog (3)\n"
+        "backlog (3)\n"
         "  S-0001  []  title 1\n"
         "  S-0002  []  title 2\n"
         "  ... 1 more, 0 can start\n"
-        "InProgress (0)\n"
-        "Completed (0)\n"
+        "in-progress (0)\n"
+        "completed (0)\n"
     )
 
 
@@ -37,13 +37,13 @@ def test_a_heading_with_as_many_items_as_the_top_lists_no_more_line() -> None:
         "  S-0001  []  title 1",
         "  S-0002  []  title 2",
         "  S-0003  []  title 3",
-        "InProgress (0)",
+        "in-progress (0)",
     ]
 
 
 def test_a_feature_counts_once_toward_the_top_of_its_heading() -> None:
     assert status_text([THREE[0], FEATURE, *THREE[1:]], same_top(2)).splitlines()[:4] == [
-        "Backlog (4)",
+        "backlog (4)",
         "  S-0001  []  title 1",
         "  F-0001  0/0 W  a feature title",
         "  ... 2 more, 0 can start",
@@ -75,5 +75,5 @@ def test_a_backlog_of_two_under_a_top_of_two_has_no_more_line() -> None:
     assert status_text(THREE[:2], same_top(2)).splitlines()[1:4] == [
         "  S-0001  []  title 1",
         "  S-0002  []  title 2",
-        "InProgress (0)",
+        "in-progress (0)",
     ]

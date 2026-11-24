@@ -71,5 +71,5 @@ def test_a_format_that_is_none_is_refused() -> None:
 
 
 def test_a_frame_with_the_backlog_named_alone_lists_its_heading_and_no_other() -> None:
-    frame = watch_item(store(), WHOLE, NextOnly(), {"Backlog"})
-    assert [line for line in frame.splitlines() if line.endswith(")")] == ["Backlog (7)"]
+    frame = watch_item(store(), WHOLE, NextOnly(), {"backlog"})
+    assert [line for line in frame.splitlines() if line.endswith(")")] == ["backlog (7)"]

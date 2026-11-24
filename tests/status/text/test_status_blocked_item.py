@@ -36,7 +36,7 @@ def blocked(*tasks: TaskRow, agent: str = "", parent: str = "") -> WorkItemRow:
 
 def test_a_blocked_work_item_is_listed_under_inprogress_marked_with_what_it_waits_on() -> None:
     assert status_text([blocked(BEGUN)]).splitlines()[1:4] == [
-        "InProgress (1)",
+        "in-progress (1)",
         *MARKED.splitlines(),
     ]
 
@@ -66,13 +66,13 @@ def test_a_blocked_work_item_with_every_task_completed_is_marked_blocked_and_not
 
 def test_a_blocked_work_item_under_a_feature_is_listed_two_columns_further_in() -> None:
     under = blocked(BEGUN, parent="F-0001")
-    feature = FeatureRow("F-0001", "a feature title", "InProgress", 0, 1, started=[under])
+    feature = FeatureRow("F-0001", "a feature title", "in-progress", 0, 1, started=[under])
     assert status_text([feature]).splitlines()[4:6] == [f"  {line}" for line in MARKED.splitlines()]
 
 
 def test_a_feature_is_marked_by_its_blocked_work_item() -> None:
     under = blocked(BEGUN, parent="F-0001")
-    feature = FeatureRow("F-0001", "a feature title", "InProgress", 0, 1, started=[under])
+    feature = FeatureRow("F-0001", "a feature title", "in-progress", 0, 1, started=[under])
     assert status_text([feature]).splitlines()[2:4] == [
         "! F-0001  0/1 W  a feature title",
         "  waiting on developer: no key",
@@ -84,7 +84,7 @@ def test_the_block_of_a_feature_comes_before_that_of_its_blocked_work_item() -> 
     feature = FeatureRow(
         "F-0001",
         "a feature title",
-        "InProgress",
+        "in-progress",
         0,
         1,
         started=[under],
@@ -100,7 +100,7 @@ def test_the_block_of_a_feature_comes_before_that_of_its_blocked_work_item() -> 
 
 def test_the_block_of_a_work_item_comes_before_that_of_a_task_of_it() -> None:
     under = blocked(HELD, parent="F-0001")
-    feature = FeatureRow("F-0001", "a feature title", "InProgress", 0, 1, started=[under])
+    feature = FeatureRow("F-0001", "a feature title", "in-progress", 0, 1, started=[under])
     assert status_text([feature]).splitlines()[2:4] == [
         "! F-0001  0/1 W  a feature title",
         "  waiting on developer: no key",

@@ -51,7 +51,7 @@ DONE = (*SECOND_AWAITED, *STANDING_ALONE, COMPLETE_SECOND)
 ONE_DONE = SECOND_AWAITED
 ADDED = (ADD_FEATURE, ADD_STORY)
 COMPLETED_LINES = [
-    "Completed (2)",
+    "completed (2)",
     "  F-0001  5678def  a feature title",
     "  S-0003  abc1233  title 3",
 ]
@@ -93,7 +93,7 @@ def runs(cwd: Path, *argvs: Sequence[str]) -> None:
 def completed_lines(text: str) -> list[str]:
     """The lines of status from `Completed (N)` on."""
     lines = text.splitlines()
-    return lines[lines.index(next(line for line in lines if line.startswith("Completed ("))) :]
+    return lines[lines.index(next(line for line in lines if line.startswith("completed ("))) :]
 
 
 class TestAFeatureAndAStoryCompletedAreListedWithNoCount:

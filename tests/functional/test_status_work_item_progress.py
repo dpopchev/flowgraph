@@ -74,7 +74,7 @@ class TestAStoryStartedWithOneOfItsThreeTasksCompleted:
 
     def test_status_lists_the_story_with_its_tasks_completed_of_all(self, listed: Outcome) -> None:
         assert listed.out == (
-            "Backlog (0)\nInProgress (1)\n  S-0001  1/3 T  a title\nCompleted (0)\n"
+            "backlog (0)\nin-progress (1)\n  S-0001  1/3 T  a title\ncompleted (0)\n"
         )
 
 

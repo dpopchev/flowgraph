@@ -67,6 +67,6 @@ def test_a_work_item_marked_under_a_started_feature_reads_its_brackets_two_colum
         "S-0003", "a title", "backlog", created=CREATED, tasks=tasks(1), next_to_start=True
     )
     feature = FeatureRow(
-        "F-0001", "a feature", "InProgress", 0, 1, work_items=[row], is_started=True
+        "F-0001", "a feature", "in-progress", 0, 1, work_items=[row], is_started=True
     )
     assert "  > S-0003  [1 T]  a title" in status_text([feature]).splitlines()

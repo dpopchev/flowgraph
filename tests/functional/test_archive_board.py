@@ -194,7 +194,7 @@ class TestWhatStaysAsItWas:
     def test_status_of_a_record_with_no_item_lists_three_empty_buckets(self, beside: Path) -> None:
         fgraph(["init"], beside)
         shown = fgraph(["status", "--all"], beside)
-        assert shown.out == "Backlog (0)\nInProgress (0)\nCompleted (0)\n"
+        assert shown.out == "backlog (0)\nin-progress (0)\ncompleted (0)\n"
 
     def test_a_story_added_is_the_one_item_of_the_record(self, beside: Path) -> None:
         fgraph(["init"], beside)

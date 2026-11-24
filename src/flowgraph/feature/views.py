@@ -140,10 +140,10 @@ def bucket_of(states: Collection[str]) -> str:
     while another is not; Backlog otherwise, as with no work item.
     """
     if states and all(state in DONE for state in states):
-        return "Completed"
+        return "completed"
     if any(state in BEGUN for state in states):
-        return "InProgress"
-    return "Backlog"
+        return "in-progress"
+    return "backlog"
 
 
 def feature_bucket(feature: FeatureState, states: Collection[str]) -> str:
@@ -159,11 +159,11 @@ def feature_bucket(feature: FeatureState, states: Collection[str]) -> str:
         case Feature():
             return bucket_of(states)
         case StartedFeature() | BlockedFeature():
-            return "InProgress"
+            return "in-progress"
         case CompletedFeature():
-            return "Completed"
+            return "completed"
         case RemovedFeature():
-            return "Removed"
+            return "removed"
         case _ as unreachable:
             assert_never(unreachable)
 

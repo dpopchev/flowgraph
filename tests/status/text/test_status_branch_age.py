@@ -69,7 +69,7 @@ def test_an_older_branch_of_a_blocked_work_item_precedes_its_block() -> None:
 
 
 def test_an_older_branch_under_a_feature_is_two_columns_further_in() -> None:
-    feature = FeatureRow("F-0001", "a feature", "InProgress", 0, 1, started=[row()])
+    feature = FeatureRow("F-0001", "a feature", "in-progress", 0, 1, started=[row()])
     assert status_text([feature]).splitlines()[3:5] == [
         "    S-0001  1/2 T  a title",
         f"  {OLD}",

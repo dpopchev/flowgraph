@@ -41,7 +41,7 @@ def row(
 
 def feature(item: str, held: int, work_items: list[WorkItemRow] | None = None) -> FeatureRow:
     """A Feature in Backlog holding that many work items, its first waiting for nothing."""
-    return FeatureRow(item, "a feature", "Backlog", 0, held, work_items=work_items or [])
+    return FeatureRow(item, "a feature", "backlog", 0, held, work_items=work_items or [])
 
 
 def development(

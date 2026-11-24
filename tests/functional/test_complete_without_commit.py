@@ -87,7 +87,7 @@ def test_complete_of_the_story_without_a_commit_exits_with_zero(tmp_path: Path) 
 def test_status_lists_the_story_under_completed(tmp_path: Path) -> None:
     completed(tmp_path)
     assert fgraph(["status"], tmp_path).out == (
-        "Backlog (0)\nInProgress (0)\nCompleted (1)\n  S-0001  a title\n"
+        "backlog (0)\nin-progress (0)\ncompleted (1)\n  S-0001  a title\n"
     )
 
 
@@ -105,13 +105,13 @@ def test_show_lists_no_commit_of_the_story_nor_of_its_task(tmp_path: Path) -> No
     completed(tmp_path)
     assert fgraph(["show", "S-0001"], tmp_path).out == (
         "S-0001  a title\n"
-        "  bucket       Completed\n"
+        "  bucket       completed\n"
         "  given        a state\n"
         "  when         an action\n"
         "  then         another\n"
         "Tasks (1)\n"
         "  T-0001  a task title\n"
-        "    bucket           Completed\n"
+        "    bucket           completed\n"
         "    expected output  an output\n"
     )
 
@@ -121,7 +121,7 @@ def test_a_story_completed_without_a_commit_keeps_the_commit_given_for_its_task(
 ) -> None:
     runs(tmp_path, *STARTED, TASK_DONE_IN_A_COMMIT, STORY_DONE)
     assert fgraph(["show", "S-0001"], tmp_path).out.splitlines()[-3:] == [
-        "    bucket           Completed",
+        "    bucket           completed",
         "    commit           abc1234",
         "    expected output  an output",
     ]
@@ -156,9 +156,9 @@ def test_a_complete_without_a_commit_with_the_development_on_exits_with_two_nami
 def test_a_complete_refused_for_its_commit_leaves_the_task_started(developed: Path) -> None:
     runs(developed, TASK_DONE)
     assert fgraph(["status"], developed).out == (
-        "Backlog (0)\n"
-        "InProgress (1)\n"
+        "backlog (0)\n"
+        "in-progress (1)\n"
         "  S-0001  0/1 T  a title\n"
         "    => T-0001  a task title\n"
-        "Completed (0)\n"
+        "completed (0)\n"
     )

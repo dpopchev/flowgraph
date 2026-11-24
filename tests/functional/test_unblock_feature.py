@@ -82,11 +82,11 @@ class TestABlockedFeatureUnblockedWhileItsStoryIsStarted:
         self, unblocked: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["status"], tmp_path, LATER).out == (
-            "Backlog (0)\n"
-            "InProgress (1)\n"
+            "backlog (0)\n"
+            "in-progress (1)\n"
             "  F-0001  0/1 W  a feature title\n"
             "    S-0001  0/1 T  a title\n"
-            "Completed (0)\n"
+            "completed (0)\n"
         )
 
     def test_show_lists_it_in_inprogress_with_no_block(
@@ -94,7 +94,7 @@ class TestABlockedFeatureUnblockedWhileItsStoryIsStarted:
     ) -> None:
         assert fgraph(["show", "F-0001"], tmp_path, LATER).out.splitlines()[:3] == [
             "F-0001  a feature title",
-            "  bucket       InProgress",
+            "  bucket       in-progress",
             "Criteria (1)",
         ]
 
@@ -116,12 +116,12 @@ class TestABlockedFeatureUnblockedWhileNoStoryOfItIsStarted:
         self, unblocked: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["status"], tmp_path, LATER).out == (
-            "Backlog (0)\n"
-            "InProgress (1)\n"
+            "backlog (0)\n"
+            "in-progress (1)\n"
             "  F-0001  1/2 W  a feature title\n"
             "    S-0002  0/1 T  another title\n"
             "    S-0001  1/1 T  a title\n"
-            "Completed (0)\n"
+            "completed (0)\n"
         )
 
 
@@ -138,11 +138,11 @@ class TestABlockedFeatureUnblockedWhileItsNextStoryHasNoTask:
 
     def test_the_unblock_stands(self, unblocked: Outcome, tmp_path: Path) -> None:
         assert fgraph(["status"], tmp_path, LATER).out == (
-            "Backlog (0)\n"
-            "InProgress (1)\n"
+            "backlog (0)\n"
+            "in-progress (1)\n"
             "  F-0001  1/2 W  a feature title\n"
             "    S-0001  1/1 T  a title\n"
-            "Completed (0)\n"
+            "completed (0)\n"
         )
 
 

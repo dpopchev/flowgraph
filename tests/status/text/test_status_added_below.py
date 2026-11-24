@@ -80,13 +80,13 @@ def test_a_blocked_task_waits_on_a_line_below_it_under_its_id() -> None:
 
 def test_the_words_of_a_blocked_work_item_under_a_feature_begin_four_columns_in() -> None:
     under = blocked(BEGUN, parent="F-0001")
-    feature = FeatureRow("F-0001", "a feature title", "InProgress", 0, 1, started=[under])
+    feature = FeatureRow("F-0001", "a feature title", "in-progress", 0, 1, started=[under])
     assert status_text([feature]).splitlines()[5] == "    waiting on a reviewer: a reason"
 
 
 def test_the_words_of_a_blocked_task_under_a_feature_begin_nine_columns_in() -> None:
     under = blocked(HELD, parent="F-0001")
-    feature = FeatureRow("F-0001", "a feature title", "InProgress", 0, 1, started=[under])
+    feature = FeatureRow("F-0001", "a feature title", "in-progress", 0, 1, started=[under])
     assert status_text([feature]).splitlines()[7] == "         waiting on a reviewer: a reason"
 
 
@@ -107,10 +107,10 @@ def test_the_two_lines_are_cut_to_the_width_apart() -> None:
 
 def test_a_removed_feature_gives_its_reason_on_a_line_below_it() -> None:
     feature = FeatureRow(
-        "F-0001", "a feature title", "Removed", 0, 0, reason="dropped from the plan"
+        "F-0001", "a feature title", "removed", 0, 0, reason="dropped from the plan"
     )
     assert status_text([feature]).splitlines()[3:6] == [
-        "Removed (1)",
+        "removed (1)",
         "  F-0001  a feature title",
         "  dropped from the plan",
     ]

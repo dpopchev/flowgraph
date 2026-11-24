@@ -73,7 +73,7 @@ def test_review_ids_of_a_feature_lists_the_ready_rows_among_those_it_lists() -> 
     feature = FeatureRow(
         "F-0001",
         "a feature",
-        "InProgress",
+        "in-progress",
         0,
         2,
         started=[item(1, "started", task("backlog")), ready],

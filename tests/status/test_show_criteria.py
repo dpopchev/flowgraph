@@ -21,7 +21,7 @@ def row(item: str, state: str, realizes: int | None = None) -> WorkItemRow:
 
 def criteria_lines(rows: list[WorkItemRow]) -> list[str]:
     """The lines of the text of F-0001 from its Criteria heading up to its Work items heading."""
-    shown = feature_text(DETAIL, rows, "InProgress").splitlines()
+    shown = feature_text(DETAIL, rows, "in-progress").splitlines()
     first = next(index for index, line in enumerate(shown) if line.startswith("Criteria ("))
     last = next(index for index, line in enumerate(shown) if line.startswith("Work items ("))
     return shown[first:last]

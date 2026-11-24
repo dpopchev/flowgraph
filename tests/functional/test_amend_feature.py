@@ -88,7 +88,7 @@ class TestAFeatureInBacklogAmendedWithANewTitle:
     ) -> None:
         assert fgraph(SHOW, tmp_path).out == (
             "F-0001  another title\n"
-            "  bucket       Backlog\n"
+            "  bucket       backlog\n"
             "Criteria (1)\n"
             "  a criterion\n"
             "Work items (0)\n"
@@ -101,12 +101,12 @@ def test_the_criteria_given_replace_the_ones_it_had_and_its_story_stays_under_it
     amend = [*AMEND, "--criterion", "a new one", "--criterion", "a second", "--description", ""]
     assert runs(tmp_path, ADD_DESCRIBED, ADD_UNDER, amend, SHOW).out == (
         "F-0001  a feature title\n"
-        "  bucket       Backlog\n"
+        "  bucket       backlog\n"
         "Criteria (2)\n"
         "  a new one\n"
         "  a second\n"
         "Work items (1)\n"
-        "  S-0001  a title  Backlog\n"
+        "  S-0001  a title  backlog\n"
     )
 
 
@@ -116,7 +116,7 @@ def test_a_feature_amended_keeps_the_place_the_queue_gave_it(tmp_path: Path) -> 
         tmp_path, ADD_ALONE, ADD_FEATURE, reorder, AMEND_TITLE, ["status", "--backlog"]
     ).out
     assert listed.splitlines()[:3] == [
-        "Backlog (2)",
+        "backlog (2)",
         "  F-0001  0/0 W  another title",
         "> S-0001  []  a title",
     ]

@@ -31,8 +31,8 @@ def started(number: int, *tasks: TaskRow, agent: str = "") -> WorkItemRow:
 def progress(text: str) -> list[str]:
     """The lines of the text between the heading of InProgress and that of Completed."""
     lines = text.splitlines()
-    first = next(at for at, line in enumerate(lines) if line.startswith("InProgress"))
-    return lines[first + 1 : lines.index("Completed (0)")]
+    first = next(at for at, line in enumerate(lines) if line.startswith("in-progress"))
+    return lines[first + 1 : lines.index("completed (0)")]
 
 
 def test_a_started_work_item_with_every_task_completed_is_marked_with_a_question_mark() -> None:
@@ -53,7 +53,7 @@ def test_a_marked_work_item_is_marked_under_its_feature_two_columns_further_in()
     feature = FeatureRow(
         "F-0001",
         "a feature",
-        "InProgress",
+        "in-progress",
         0,
         1,
         started=[started(1, DONE)],

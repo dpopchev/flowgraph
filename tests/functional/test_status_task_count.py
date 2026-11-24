@@ -86,7 +86,7 @@ MOVED = [
 def test_status_backlog_lists_the_count_of_tasks_in_brackets(tmp_path: Path) -> None:
     listed = after(tmp_path, HELD, ["status", "--backlog"])
     assert listed.out.splitlines()[:3] == [
-        "Backlog (2)",
+        "backlog (2)",
         "> S-0001  [3 T]  title 1",
         "  S-0002  []  title 2",
     ]
@@ -103,7 +103,7 @@ def test_a_plain_status_lists_the_count_of_tasks_in_brackets(tmp_path: Path) -> 
 def test_watch_lists_the_count_of_tasks_in_brackets(tmp_path: Path) -> None:
     listed = after(tmp_path, HELD, ["watch", "--backlog", "--count", "1"])
     assert listed.out.splitlines()[:3] == [
-        "Backlog (2)",
+        "backlog (2)",
         "> S-0001  [3 T]  title 1",
         "  S-0002  []  title 2",
     ]

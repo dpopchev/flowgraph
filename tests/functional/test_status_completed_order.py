@@ -80,9 +80,9 @@ class TestTwoStoriesCompletedTheSecondBeforeTheFirst:
 
     def test_status_lists_the_first_above_the_second_under_completed(self, listed: Outcome) -> None:
         assert listed.out == (
-            "Backlog (0)\n"
-            "InProgress (0)\n"
-            "Completed (2)\n"
+            "backlog (0)\n"
+            "in-progress (0)\n"
+            "completed (2)\n"
             "  S-0001  abc1234  a title\n"
             "  S-0002  def5678  another title\n"
         )
@@ -91,7 +91,7 @@ class TestTwoStoriesCompletedTheSecondBeforeTheFirst:
 def test_the_second_story_completed_after_the_first_is_listed_above_it(tmp_path: Path) -> None:
     listed = status_after(tmp_path, *ADDED, *COMPLETE_FIRST, *COMPLETE_SECOND)
     assert listed.out.splitlines()[2:] == [
-        "Completed (2)",
+        "completed (2)",
         "  S-0002  def5678  another title",
         "  S-0001  abc1234  a title",
     ]

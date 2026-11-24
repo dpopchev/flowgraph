@@ -14,7 +14,7 @@ DONE = datetime(2026, 1, 5, tzinfo=UTC)
 
 def spike(answer: str) -> WorkItemDetail:
     return WorkItemDetail(
-        "Q-0001", "a title", "Completed", "", [], decision="too big", answer=answer
+        "Q-0001", "a title", "completed", "", [], decision="too big", answer=answer
     )
 
 

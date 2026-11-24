@@ -7,12 +7,10 @@ here and never written a second time; src/flowgraph/status/next.py holds it.
 from collections.abc import Sequence
 
 from flowgraph.record.store import Store
+from flowgraph.status.buckets import BACKLOG_BUCKET
 from flowgraph.status.next import Line, StartLimit, start_now_ids
 from flowgraph.status.text import BUCKETS, is_listed_in
 from flowgraph.status.view import status_rows
-
-# The name of the bucket a start takes its top from.
-_BACKLOG = "Backlog"
 
 # The message when no line is listed in the Backlog.
 EMPTY = "nothing to start: the Backlog is empty"
@@ -30,8 +28,8 @@ class NothingToStartError(Exception):
 
 def _in_backlog(row: Line) -> bool:
     """True when status lists the row in the Backlog."""
-    states = next(states for name, states in BUCKETS if name == _BACKLOG)
-    return is_listed_in(row, _BACKLOG, states)
+    states = next(states for name, states in BUCKETS if name == BACKLOG_BUCKET)
+    return is_listed_in(row, BACKLOG_BUCKET, states)
 
 
 def top_of(rows: Sequence[Line]) -> str:

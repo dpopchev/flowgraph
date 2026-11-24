@@ -59,7 +59,7 @@ THERE = (
     "fgraph: error: {} cannot start: the branch {} is there already"
     " -- delete it or give another --slug"
 )
-BACKLOG_LINE = "  bucket       Backlog"
+BACKLOG_LINE = "  bucket       backlog"
 
 
 @dataclass(frozen=True)

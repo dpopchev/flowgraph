@@ -106,7 +106,7 @@ class TestAStartedStoryAmendedWithItsDeviation:
     def test_show_lists_the_new_then_in_progress(self, amended: Outcome, tmp_path: Path) -> None:
         lines = fgraph(["show", "S-0001"], tmp_path).out.splitlines()
         assert [line for line in lines if line.startswith(("  bucket", "  then"))] == [
-            "  bucket       InProgress",
+            "  bucket       in-progress",
             "  then         a new state",
         ]
 
@@ -194,7 +194,7 @@ class TestAStartedFeatureAmendedWithItsDeviation:
         self, amended: Outcome, tmp_path: Path
     ) -> None:
         shown = fgraph(["show", "F-0001"], tmp_path).out.splitlines()
-        assert shown[:2] == ["F-0001  another title", "  bucket       InProgress"]
+        assert shown[:2] == ["F-0001  another title", "  bucket       in-progress"]
 
     def test_show_ends_with_the_deviation(self, amended: Outcome, tmp_path: Path) -> None:
         assert fgraph(["show", "F-0001"], tmp_path).out.endswith(KNOWLEDGE)

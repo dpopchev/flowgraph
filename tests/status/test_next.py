@@ -20,7 +20,7 @@ def row(item: str, waits_for: list[str] | None = None) -> WorkItemRow:
 
 def feature(item: str, held: int, waits_for: list[str] | None = None) -> FeatureRow:
     """A Feature in Backlog holding that many work items, its first waiting for those ids."""
-    return FeatureRow(item, "a feature", "Backlog", 0, held, waits_for=waits_for or [])
+    return FeatureRow(item, "a feature", "backlog", 0, held, waits_for=waits_for or [])
 
 
 def named(lines: list[WorkItemRow | FeatureRow]) -> list[str]:

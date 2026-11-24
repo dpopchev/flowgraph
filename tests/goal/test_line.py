@@ -12,7 +12,7 @@ pytestmark = pytest.mark.view
 
 FEATURE = parse_feature_id("F-0001")
 WHOLE = (
-    "/goal Develop F-0001 until fgraph show F-0001 lists S-0001, S-0002 and S-0003 Completed, "
+    "/goal Develop F-0001 until fgraph show F-0001 lists S-0001, S-0002 and S-0003 completed, "
     "or stop after 8 hours. This session is the coordinator: it hands each whole work item to "
     "one subagent, at most 3 at once as development.parallel says. The goal is met as well when "
     "this session prints [HALT] <id>: <the decision needed> on a change to a criterion, a Task "
@@ -36,15 +36,15 @@ def test_the_line_of_three_work_items_with_parallel_3_and_8_hours_is_the_whole_l
 
 
 def test_one_id_is_named_alone() -> None:
-    assert "lists S-0001 Completed," in line("S-0001")
+    assert "lists S-0001 completed," in line("S-0001")
 
 
 def test_two_ids_are_joined_with_and() -> None:
-    assert "lists S-0001 and S-0002 Completed," in line("S-0001", "S-0002")
+    assert "lists S-0001 and S-0002 completed," in line("S-0001", "S-0002")
 
 
 def test_three_ids_are_joined_with_a_comma_and_and() -> None:
-    assert "lists S-0001, S-0002 and S-0003 Completed," in line("S-0001", "S-0002", "S-0003")
+    assert "lists S-0001, S-0002 and S-0003 completed," in line("S-0001", "S-0002", "S-0003")
 
 
 def test_parallel_says_at_most_that_many_at_once_as_development_parallel_says() -> None:

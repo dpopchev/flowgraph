@@ -24,7 +24,7 @@ def test_the_next_to_start_is_marked() -> None:
 
 
 def test_a_feature_that_is_the_next_to_start_is_marked() -> None:
-    feature = FeatureRow("F-0001", "a feature", "Backlog", 0, 2, next_to_start=True)
+    feature = FeatureRow("F-0001", "a feature", "backlog", 0, 2, next_to_start=True)
     assert status_text([feature]).splitlines()[1] == "> F-0001  0/2 W  a feature"
 
 

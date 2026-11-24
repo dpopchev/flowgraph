@@ -28,7 +28,7 @@ def detail(realizes: int | None, realized: str) -> WorkItemDetail:
 def test_show_lists_the_criterion_right_after_the_parent() -> None:
     shown = show_text(detail(2, "a second criterion"))
     assert shown.splitlines()[1:4] == [
-        "  bucket       Backlog",
+        "  bucket       backlog",
         "  parent       F-0001",
         "  realizes     2  a second criterion",
     ]

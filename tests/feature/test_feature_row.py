@@ -26,7 +26,7 @@ COMPLETED = completed_feature(STARTED, CREATED, NO_COMMIT)
 
 def test_the_row_of_a_feature_names_its_id_its_title_and_its_derived_bucket() -> None:
     assert feature_row(FEATURE, ["started", "backlog"]) == FeatureRow(
-        "F-0001", "a title", "InProgress", completed=0, held=2
+        "F-0001", "a title", "in-progress", completed=0, held=2
     )
 
 
@@ -39,11 +39,11 @@ def test_the_row_of_a_feature_holds_no_removed_work_item() -> None:
 
 
 def test_the_row_of_a_feature_without_a_work_item_is_in_backlog() -> None:
-    assert feature_row(FEATURE, []).bucket == "Backlog"
+    assert feature_row(FEATURE, []).bucket == "backlog"
 
 
 def test_the_row_of_a_feature_never_started_over_a_blocked_work_item_is_in_progress() -> None:
-    assert feature_row(FEATURE, ["blocked", "backlog"]).bucket == "InProgress"
+    assert feature_row(FEATURE, ["blocked", "backlog"]).bucket == "in-progress"
 
 
 @pytest.mark.parametrize(
@@ -60,11 +60,11 @@ def test_the_row_of_a_feature_never_started_over_a_blocked_work_item_is_in_progr
 def test_the_row_of_a_started_feature_is_in_progress_whatever_its_work_items(
     states: list[str],
 ) -> None:
-    assert feature_row(STARTED, states).bucket == "InProgress"
+    assert feature_row(STARTED, states).bucket == "in-progress"
 
 
 def test_the_row_of_a_completed_feature_is_in_completed_by_its_own_state() -> None:
-    assert feature_row(COMPLETED, ["completed", "backlog"]).bucket == "Completed"
+    assert feature_row(COMPLETED, ["completed", "backlog"]).bucket == "completed"
 
 
 def test_the_row_of_a_feature_completed_in_a_commit_holds_its_sha() -> None:

@@ -79,7 +79,7 @@ class TestAStoryInBacklogAmendedWithAnotherThen:
     ) -> None:
         assert fgraph(SHOW, tmp_path).out == (
             "S-0001  a title\n"
-            "  bucket       Backlog\n"
+            "  bucket       backlog\n"
             "  description  why\n"
             "  given        a state\n"
             "  when         an action\n"
@@ -112,7 +112,7 @@ def test_several_parts_are_rewritten_by_one_amend(tmp_path: Path) -> None:
     amend = [*AMEND, "--title", "another title", "--given", "a new state"]
     assert runs(tmp_path, ADD_STORY, amend, SHOW).out.splitlines()[:4] == [
         "S-0001  another title",
-        "  bucket       Backlog",
+        "  bucket       backlog",
         "  description  why",
         "  given        a new state",
     ]

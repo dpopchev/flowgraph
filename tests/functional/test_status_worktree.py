@@ -123,7 +123,7 @@ class TestAStoryWithOneOfItsTwoTasksCompletedInItsWorktree:
         self, listed: Outcome
     ) -> None:
         assert listed.out == (
-            f"Backlog (0)\nInProgress (1)\n  S-0001  1/2 T  {TITLE}\nCompleted (0)\n"
+            f"backlog (0)\nin-progress (1)\n  S-0001  1/2 T  {TITLE}\ncompleted (0)\n"
         )
 
 

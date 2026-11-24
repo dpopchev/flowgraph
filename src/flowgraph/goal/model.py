@@ -82,7 +82,7 @@ def goal_line(feature: FeatureId, items: Sequence[WorkItemId], limit: Limit, hou
     named = feature_id_text(feature)
     ids = _joined([work_item_id_text(each) for each in items])
     return (
-        f"/goal Develop {named} until fgraph show {named} lists {ids} Completed, "
+        f"/goal Develop {named} until fgraph show {named} lists {ids} completed, "
         f"or stop after {hours} hours. This session is the coordinator: it hands each whole "
         f"work item to one subagent, {_at_once(limit)}. The goal is met as well when this "
         "session prints [HALT] <id>: <the decision needed> on a change to a criterion, a Task "

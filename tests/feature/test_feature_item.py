@@ -93,15 +93,15 @@ def test_a_feature_added_is_saved_under_the_next_free_id() -> None:
 def test_a_feature_is_shown_with_its_criteria_and_its_work_items_by_bucket() -> None:
     assert show_feature_item("F-0001", store()) == (
         "F-0001  a feature title\n"
-        "  bucket       InProgress\n"
+        "  bucket       in-progress\n"
         "  description  why\n"
         "Criteria (2)\n"
         "  a criterion\n"
         "  another\n"
         "Work items (3)\n"
-        "  S-0001  a story  InProgress\n"
-        "  S-0003  a later story  Backlog\n"
-        "  U-0001  an upkeep  Backlog\n"
+        "  S-0001  a story  in-progress\n"
+        "  S-0003  a later story  backlog\n"
+        "  U-0001  an upkeep  backlog\n"
     )
 
 
@@ -109,9 +109,9 @@ def test_a_feature_is_shown_with_its_criteria_and_its_work_items_by_bucket() -> 
 def test_the_work_items_in_backlog_of_a_feature_are_shown_in_the_order_the_queue_gives() -> None:
     placed = make_queue([make_upkeep_id(1), make_story_id(2), make_story_id(3)])
     assert show_feature_item("F-0001", store(queue=placed)).splitlines()[-3:] == [
-        "  S-0001  a story  InProgress",
-        "  U-0001  an upkeep  Backlog",
-        "  S-0003  a later story  Backlog",
+        "  S-0001  a story  in-progress",
+        "  U-0001  an upkeep  backlog",
+        "  S-0003  a later story  backlog",
     ]
 
 
@@ -119,20 +119,20 @@ def test_the_work_items_in_backlog_of_a_feature_are_shown_in_the_order_the_queue
 def test_a_started_feature_is_shown_in_progress_though_no_work_item_of_it_is_begun() -> None:
     started = started_feature(FEATURE, CREATED)
     shown = show_feature_item("F-0001", store(feature=started, rows={UPKEEP: ROWS[UPKEEP]}))
-    assert shown.splitlines()[1] == "  bucket       InProgress"
+    assert shown.splitlines()[1] == "  bucket       in-progress"
 
 
 @pytest.mark.view
 def test_a_completed_feature_is_shown_completed_with_its_commit_under_its_bucket() -> None:
     shown = show_feature_item("F-0001", store(feature=LANDED))
-    assert shown.splitlines()[1:3] == ["  bucket       Completed", "  commit       abc1234"]
+    assert shown.splitlines()[1:3] == ["  bucket       completed", "  commit       abc1234"]
 
 
 @pytest.mark.view
 def test_a_feature_completed_without_a_commit_is_shown_without_one() -> None:
     unproven = completed_feature(started_feature(FEATURE, CREATED), CREATED, NO_COMMIT)
     shown = show_feature_item("F-0001", store(feature=unproven))
-    assert shown.splitlines()[1:3] == ["  bucket       Completed", "  description  why"]
+    assert shown.splitlines()[1:3] == ["  bucket       completed", "  description  why"]
 
 
 @pytest.mark.view

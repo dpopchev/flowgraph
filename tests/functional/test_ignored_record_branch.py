@@ -185,7 +185,7 @@ class TestAStoryLandedOnARecordGitIgnores:
     ) -> None:
         sha = git(checkout, "rev-parse", "--short", "HEAD")
         assert fgraph(["status"], checkout).out.splitlines()[-2:] == [
-            "Completed (1)",
+            "completed (1)",
             f"  S-0001  {sha}  Raise the Stories fgraph lists from 0 to 1",
         ]
 

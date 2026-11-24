@@ -16,7 +16,7 @@ from flowgraph.knowledge import KnowledgeRow
 from flowgraph.parent import FeatureIdError
 from flowgraph.record import ITEMS
 from flowgraph.relation import RelationError
-from flowgraph.task import TaskInProgressError
+from flowgraph.task import TaskIdError, TaskInProgressError, TaskNotFoundError
 from flowgraph.work_item.agent import AgentError
 from flowgraph.work_item.held_file import (
     HELD_ITEM,
@@ -44,6 +44,7 @@ from flowgraph.work_item.model import (
     WorkItemState,
 )
 from flowgraph.work_item.primitives import item_held, item_primitives
+from flowgraph.work_item.progress import ProgressRow
 from flowgraph.work_item.views import DependsRow, VerifiedRow, WorkItemDetail, WorkItemRow
 
 
@@ -116,8 +117,8 @@ def read_work_item(record: Path, item_id: WorkItemId, kinds: Sequence[Kind] = ()
     The ids it depends on are read as those of its own kind or of the kinds given. Raises
     WorkItemNotFoundError when the record holds no such item and WorkItemFileError when its file
     does not hold one, as when it holds more than one started Task, the criterion of another
-    kind, a commit that is no sha, an agent that is none, an id it depends on that is of no kind
-    or a blank title or reason.
+    kind, a commit that is no sha, an agent that is none, an id it depends on that is of no kind,
+    a progress line that names no Task of it or a blank title or reason.
     """
     path = _held_path(record, item_id)
     held = _read_file(path, item_id.kind)
@@ -133,6 +134,8 @@ def read_work_item(record: Path, item_id: WorkItemId, kinds: Sequence[Kind] = ()
         WorkItemIdError,
         RelationError,
         EmptyPartError,
+        TaskIdError,
+        TaskNotFoundError,
     ) as error:
         raise WorkItemFileError(f"{path} holds no {item_id.kind.noun}: {error}") from error
 
@@ -168,6 +171,7 @@ def read_work_item_detail(record: Path, item_id: WorkItemId) -> WorkItemDetail:
         superseded_by=superseded_held(held),
         amends=held.amends,
         verified=None if answer is None else VerifiedRow(answer.answer, answer.text, answer.on),
+        progress=[ProgressRow(line.noted, line.text, line.task) for line in held.progress],
         **held.criterion.model_dump(),
     )
 

@@ -15,6 +15,11 @@ depends_on = [
     "S-0120",
 ]
 
+[verified]
+answer = "yes"
+text = "at 05babc2 on main, the merge of wi/S-0096-raise-the-modes-of, in a throwaway repository with the development on and fgraph config set development.mode trunk: fgraph start S-0001 exit 0 printed started S-0001 alone, no branch line; T-0001 started, a commit made on main, fgraph complete T-0001 and fgraph complete S-0001 at that commit exit 0; git lists the one branch main and one work tree; fgraph status lists S-0001 under Completed at that commit; fgraph land of a second started Story exit 2 printed fgraph: error: S-0002 cannot land: development.mode = trunk makes no branch to land -- complete it with fgraph complete S-0002 --commit SHA. make check on the tree of the landing, the branch with main merged at bf6fe2f: 4516 passed, all checks passed. The landing started S-0097, the next work item of F-0012. Handed whole to one subagent on sonnet. The coordinator merged main into the branch and kept, in __all__ of src/flowgraph/record/__init__.py, Mode of S-0096 beside NamedMissing of S-0128. Its deviations: tests/functional/test_trunk.py written before the start of T-0508; in T-0510 the Task of the Feature test of that file given a check, beside the removal of the marks; branched of src/flowgraph/record/layers.py written with no red run of its own; src/flowgraph/record/config_file.py imports ArchiveTable too, the table of S-0120. fgraph config show lists ten keys, development.mode after the driver; src/flowgraph/record/config.py holds 207 lines, src/flowgraph/development/commit.py 247."
+on = 2026-11-24 07:53:15+00:00
+
 [criterion]
 given = "a record with the development on and development.mode set to trunk"
 when = "a work item is started, its Tasks completed with their commits on main, and it is completed"

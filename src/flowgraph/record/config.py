@@ -12,12 +12,13 @@ before main moves; it has no default either, so left out a landing runs none. `[
 driver` names who drives the development: `developer` unless it names `agent`. `[development]
 mode` is where a work item is developed: `branch` unless it names `trunk`, which makes no branch
 and holds one started work item, so its `parallel` is 1 left out and a number above 1 is
-refused. `[delivery] push = true` pushes main once a landing is whole; it is false by default.
-`[delivery] tag` tags main with its version at `feature-close`, `close` (a work item alone too)
-or never, `none`, the default. `[archive] board` is the path of the `.board/` of board 1 the
-record points at, with no default, so left out the record points at none. Each layer is a value
-(`flowgraph.record.layers`); what a file refused says is `flowgraph.record.config_refusal`, and
-the tables of the file are `flowgraph.record.config_file`.
+refused. `[development] branch_max` is an age in whole days, `1d`, with no default: left out no
+age is said. `[delivery] push = true` pushes main once a landing is whole; it is false by
+default. `[delivery] tag` tags main with its version at `feature-close`, `close` (a work item
+alone too) or never, `none`, the default. `[archive] board` is the path of the `.board/` of
+board 1 the record points at, with no default, so left out the record points at none. Each layer
+is a value (`flowgraph.record.layers`); what a file refused says is
+`flowgraph.record.config_refusal`, and the tables of the file are `flowgraph.record.config_file`.
 """
 
 import tomllib
@@ -32,12 +33,14 @@ from flowgraph.record.archive import Archive, make_archive
 from flowgraph.record.config_file import ConfigFile
 from flowgraph.record.config_refusal import refusal
 from flowgraph.record.layers import (
+    NO_MAX,
     UNGATED,
     UNLIMITED,
     Delivery,
     Development,
     Gated,
     Git,
+    MaxDays,
     Mode,
     Parallel,
 )
@@ -62,6 +65,9 @@ DEVELOPMENT_DRIVER = "development.driver"
 
 # The key that says where a work item is developed, as a refusal names it.
 DEVELOPMENT_MODE = "development.mode"
+
+# The key that sets the age a branch passes before status says so, as a refusal names it.
+DEVELOPMENT_BRANCH_MAX = "development.branch_max"
 
 # The key that turns the commits of the record off, as a refusal names it.
 GIT_COMMIT = "git.commit"
@@ -106,9 +112,9 @@ def make_config(text: str) -> Config:
 
     Raises ConfigError naming the first table or key the configuration does not have, or whose
     value is of another type than the key takes, a count below 1, no way of merging, a blank
-    gate, a blank archive path or no word of a tag, and when the text is no TOML; naming both
-    keys when it turns the development on with the commits off, or the trunk with a parallel above
-    1; on the trunk the parallel left out is 1, with the development off too.
+    gate, a blank archive path, no word of a tag or no age in days, and when the text is no TOML;
+    naming both keys when it turns the development on with the commits off, or the trunk with a
+    parallel above 1; on the trunk the parallel left out is 1, with the development off too.
     """
     try:
         held = ConfigFile.model_validate(tomllib.loads(text))
@@ -130,6 +136,7 @@ def make_config(text: str) -> Config:
             " the trunk holds one started work item at a time"
         )
     limit = UNLIMITED if most is None else Parallel(most)
+    age = held.development.branch_max
     development = Development(
         enabled=held.development.enabled,
         parallel=Parallel(1) if mode is Mode.TRUNK else limit,
@@ -137,6 +144,7 @@ def make_config(text: str) -> Config:
         gate=UNGATED if command is None else Gated(command),
         driver=held.development.driver,
         mode=mode,
+        branch_max=NO_MAX if age is None else MaxDays(int(age.removesuffix("d"))),
     )
     delivery = Delivery(push=held.delivery.push, tag=held.delivery.tag)
     git = Git(commit=held.git.commit)

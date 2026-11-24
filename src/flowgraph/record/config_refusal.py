@@ -45,7 +45,10 @@ _WORDS = {
 _PATH = "a path"
 
 # What a key takes whatever the type of its error, by the dotted key; it wins over _TAKES.
-_TAKES_BY_KEY = {"archive.board": _PATH}
+_TAKES_BY_KEY = {
+    "archive.board": _PATH,
+    "development.branch_max": "a whole number of days of 1 or more, as 1d",
+}
 
 
 def refusal(error: ValidationError) -> str:

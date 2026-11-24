@@ -2022,6 +2022,23 @@ development too.
   complexity is refused with exit 2, nothing written: `S-0002 has no complexity
   to start with: set it with fgraph amend S-0002 --complexity low, medium or
   high`. Which model a complexity maps to stays outside fgraph.
+- `[development] branch_max` is an age, a whole number of days of 1 or more
+  written with d, as `"1d"` (S-0098). It has no default: left out, nothing is
+  said. With the development on, by a branch, `fgraph status` and each frame of
+  `fgraph watch` end the line of a work item in InProgress, started or blocked,
+  alone or under its Feature, with `-- its branch is older than 1d` once more
+  than that many days have passed since its start. The age is read from the
+  started time of the record at each listing and kept in no file. It is said and
+  never refused -- no start, no Task and no landing is held -- the reading taken
+  when S-0098 was ordered, the note of F-0012 naming the key alone; board 1
+  warned on the oldest commit of the branch that main lacks, read from git,
+  which is not taken. It says nothing with the development off, on the trunk and
+  for a work item in any other bucket, and the JSON document of status does not
+  list it. A value that is no age is refused with the line
+  `development.branch_max is "soon": it takes a whole number of days of 1 or
+  more, as 1d`. The model is `MaxDays`, `NoMax` and `BranchMax` of
+  `src/flowgraph/record/layers.py`, the marking `aged` of
+  `src/flowgraph/development/branch_age.py`.
 - `fgraph land` runs the gate through the shell at the top of the work tree
   of `main`, once the work of the branch is merged there, the merge held
   uncommitted, and before the landing is committed or the work item
@@ -3090,7 +3107,7 @@ and `fgraph config show`:
 |---|---|---|
 | `main`, no branches | cts | `development.mode = trunk`, S-0096: "no branch and no worktree was made" |
 | `pr` | g, sv | `development.merge = pull-request`, S-0097: "its branch is pushed with a pull request opened" |
-| `branch max 1d` | all but cts | S-0098: "the line of the work item says its branch is older than 1d" |
+| `branch max 1d` | all but cts | `development.branch_max`, S-0098: "the line of the work item says its branch is older than 1d" |
 | `approver agent`, `approver developer` | all seven | S-0099: "it exits 2 saying the landing waits for the developer" |
 | `gate`, `lanes 3` | c, cts; c, sv | `development.gate`, `development.parallel`, kept |
 | `tag epic-close`; `tag root-close`; `tag none` | five; c; st | `delivery.tag`, `feature-close`, `close` or `none`; `close` tags a standalone root, S-0123 |

@@ -7,13 +7,17 @@ import pytest
 from flowgraph.record.archive import UNARCHIVED, Archive, Archived
 from flowgraph.record.config import ConfigError, make_config, read_config
 from flowgraph.record.layers import (
+    NO_MAX,
     UNGATED,
     UNLIMITED,
+    BranchMax,
     Driver,
     Gated,
+    MaxDays,
     Merge,
     Mode,
     Parallel,
+    age_text,
     branched,
 )
 
@@ -28,6 +32,7 @@ TAKES_A_COMMAND = "it takes a command line"
 TAKES_A_TAG = "it takes feature-close, close or none"
 TAKES_A_DRIVER = "it takes developer or agent"
 TAKES_A_MODE = "it takes branch or trunk"
+TAKES_AN_AGE = "it takes a whole number of days of 1 or more, as 1d"
 
 
 @pytest.mark.parametrize(
@@ -186,6 +191,46 @@ def test_a_mode_that_is_no_word_of_it_is_refused_naming_the_key(value: str) -> N
     with pytest.raises(ConfigError) as error:
         make_config(f"[development]\nmode = {value}\n")
     assert str(error.value) == f"development.mode is {value}: {TAKES_A_MODE}"
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["", "[development]\n", ENABLED],
+    ids=["no-table", "no-key", "development-on"],
+)
+def test_a_branch_has_no_age_unless_branch_max_is_set(text: str) -> None:
+    assert make_config(text).development.branch_max == NO_MAX
+
+
+@pytest.mark.parametrize(
+    ("text", "max_days"),
+    [('branch_max = "1d"', MaxDays(1)), ('branch_max = "30d"', MaxDays(30))],
+    ids=["one-day", "thirty-days"],
+)
+def test_a_branch_max_of_days_is_that_many_days(text: str, max_days: MaxDays) -> None:
+    assert make_config(f"{ENABLED}{text}\n").development.branch_max == max_days
+
+
+def test_a_branch_max_is_held_as_written_with_the_development_off() -> None:
+    assert make_config('[development]\nbranch_max = "2d"\n').development.branch_max == MaxDays(2)
+
+
+@pytest.mark.parametrize(
+    "value",
+    ['"0d"', '"1"', '"d"', '"1h"', '"1 d"', '"-1d"', "1"],
+    ids=["zero-days", "no-unit", "no-number", "hours", "a-blank", "negative", "a-number"],
+)
+def test_a_branch_max_that_is_no_age_is_refused_naming_the_key(value: str) -> None:
+    with pytest.raises(ConfigError) as error:
+        make_config(f"[development]\nbranch_max = {value}\n")
+    assert str(error.value) == f"development.branch_max is {value}: {TAKES_AN_AGE}"
+
+
+@pytest.mark.parametrize(
+    ("branch_max", "text"), [(MaxDays(2), "2d"), (NO_MAX, None)], ids=["days", "none"]
+)
+def test_an_age_is_written_as_the_file_writes_it(branch_max: BranchMax, text: str | None) -> None:
+    assert age_text(branch_max) == text
 
 
 @pytest.mark.parametrize("parallel", ["", "parallel = 1\n"], ids=["left-out", "written-1"])

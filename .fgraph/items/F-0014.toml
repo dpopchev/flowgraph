@@ -1,8 +1,9 @@
 id = "F-0014"
-state = "backlog"
+state = "started"
 title = "Cut the knowledge lines a session start reads from every line of the record to the live ones alone"
 description = "From the note of the ~/.claude session of 2026-11-22 on the gaps of the planning skill (output: knowledge lifecycle), filed and ordered on the word of the developer of that day: update the backlog and prioritize. The hook of the skill composes the list with fgraph status under 10,000 characters."
 created = 2026-11-22 21:03:56+00:00
+started = 2026-11-24 06:22:01+00:00
 criteria = [
     "a developer marks a line of knowledge as standing or as open",
     "a developer supersedes a line of knowledge by a later one",

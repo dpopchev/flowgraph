@@ -151,7 +151,8 @@ def item_held(held: HeldItemFile, kind: Kind, kinds: Sequence[Kind] = ()) -> Wor
     """The work item of that kind a validated file holds, built through its constructors.
 
     An item and its Tasks past Backlog are built by the moves that took them there, so a file
-    holds no state those moves could not reach. Raises TaskInProgressError when it holds more
+    holds no state those moves could not reach; a removed one is removed from Backlog, then
+    holds each Task as its own moves built it. Raises TaskInProgressError when it holds more
     than one started Task, CriterionError when it holds the criterion of another kind or a
     decision before it is completed, DecisionError when its completion lacks its decision,
     WorkItemIdError when it depends on an id of none of the kinds, RelationError when on itself,
@@ -189,7 +190,8 @@ def item_held(held: HeldItemFile, kind: Kind, kinds: Sequence[Kind] = ()) -> Wor
             superseded_by = (
                 id_held(held.superseded_by, (kind, *kinds)) if held.superseded_by else None
             )
-            return removed_work_item(item, held.reason, held.removed, superseded_by)
+            gone = removed_work_item(item, held.reason, held.removed, superseded_by)
+            return replace(gone, tasks=tuple(task_held(task) for task in held.tasks))
         case StartedItemFile() | BlockedItemFile() | CompletedItemFile():
             tasks = at_most_one_started(tuple(task_held(task) for task in held.tasks))
             begun = replace(started_work_item(item, held.started), tasks=tasks)

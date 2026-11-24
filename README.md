@@ -2746,8 +2746,8 @@ fgraph status
 
 The heading Removed is listed only when a work item or a Feature is removed.
 A remove exits 2 and names why when the reason is blank, when the work item
-is started, completed or removed already, or when the record does not hold
-it. A removed work item takes no Task, no amend and no move.
+is completed or removed already, or when the record does not hold it. A
+removed work item takes no Task, no amend and no move.
 
 A work item superseded by another names it, `--superseded-by ID`, in place of
 the reason or beside it, in place of the free text of a reason such as
@@ -2782,6 +2782,48 @@ A remove with neither `--reason` nor `--superseded-by` is refused, naming both,
 as is an id that is no work item of the record, the work item itself and a
 removed work item, with exit 2 and nothing written. A Feature takes `--reason`
 alone, and is refused `--superseded-by`.
+
+A started or blocked work item is removed the same way, on main, where it was
+started. With the development on it is read whole from the worktree of its
+branch and saved removed on main alone, in one commit: its completed Tasks
+are kept with their commits and its other Tasks are removed with it, for its
+reason. It counts no more under `development.parallel`, so the next start is
+taken. Of S-0001 holding T-0001 completed, T-0002 started and T-0003 in
+Backlog, its branch holding the commits of its work:
+
+```sh
+fgraph remove S-0001 --reason "pivoted"
+# removed S-0001
+# left branch wi/S-0001-<slug> in <path>: main does not hold every commit of it
+
+fgraph status
+# ...
+# Removed (1)
+#   S-0001  Raise the Stories fgraph lists from 0 to 1  -- pivoted
+
+fgraph show S-0001
+# ...
+#   T-0001  <its title>
+#     bucket           Completed
+#     commit           <sha>
+#   ...
+#   T-0002  <its title>
+#     bucket           Removed
+#     reason           pivoted
+#   ...
+#   T-0003  <its title>
+#     bucket           Removed
+#     reason           pivoted
+#   ...
+```
+
+The branch and its worktree are left while they hold work main does not, for
+the developer to remove by hand once it is not wanted, with `git worktree
+remove <path>` and `git branch -D wi/S-0001-<slug>`. A work item removed right
+after its clean start, whose branch main holds whole, loses both: the remove
+says `removed branch wi/S-0001-<slug> in <path>` after `removed S-0001`. Run in
+the worktree of the work item, the remove is refused naming main, `S-0001 is
+removed on main, in <path>: <worktree> is on wi/S-0001-<slug>`.
 
 A Task of a started work item -- in Backlog, started or blocked -- is removed
 the same way, with its reason, in the worktree of its work item once the

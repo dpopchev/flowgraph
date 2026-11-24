@@ -137,9 +137,10 @@ class CompletedWorkItem:
 
 @dataclass(frozen=True)
 class RemovedWorkItem:
-    """A work item in Removed: dropped out of Backlog for a reason, its Tasks kept as written.
+    """A work item in Removed: dropped out of Backlog or of InProgress for a reason.
 
-    It names the work item that supersedes it when there is one; its reason may then be empty.
+    Its Tasks in Backlog are kept as written, its completed ones kept, the others removed with
+    it. It names the work item that supersedes it when there is one; its reason may then be empty.
     """
 
     id: WorkItemId
@@ -149,7 +150,7 @@ class RemovedWorkItem:
     created: datetime
     removed: datetime
     reason: str
-    tasks: tuple[Task, ...]
+    tasks: tuple[Task | CompletedTask | RemovedTask, ...]
     parent: Parent = STANDALONE
     realizes: Realizes = field(default=NO_CRITERION, kw_only=True)
     complexity: Complexity | None = None

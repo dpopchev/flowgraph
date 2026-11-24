@@ -15,6 +15,7 @@ from flowgraph.task import (
     completed,
     make_task,
     make_task_id,
+    removed,
     started,
 )
 from flowgraph.work_item import (
@@ -186,9 +187,10 @@ def test_a_task_of_a_blocked_work_item_is_not_completed() -> None:
 
 
 @pytest.mark.model
-def test_a_blocked_work_item_is_not_removed() -> None:
-    with pytest.raises(BlockedError, match=r"^CH-0001 is blocked$"):
-        removed_work_item(BLOCKED, "not wanted", LATER)
+def test_a_blocked_work_item_is_removed_with_its_open_tasks() -> None:
+    assert removed_work_item(BLOCKED, "not wanted", LATER).tasks == tuple(
+        removed(task, "not wanted", LATER) for task in BLOCKED.tasks
+    )
 
 
 @pytest.mark.model

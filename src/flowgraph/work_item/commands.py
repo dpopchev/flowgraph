@@ -86,13 +86,13 @@ def remove_work_item(
     now: Now,
     superseded_by: WorkItemId | None = None,
 ) -> None:
-    """Remove the work item in Backlog of that id now, for the reason, and save it whole.
+    """Remove the work item in Backlog or InProgress of that id now, for the reason; save it whole.
 
-    It names the work item that supersedes it when one is given. Raises WorkItemNotFoundError
-    when the record holds no such item, EmptyPartError when the reason is blank with none named,
-    StartedAlreadyError when the item is started, CompletedAlreadyError when it is completed,
-    RemovedAlreadyError when it is removed and RelationError when it names itself; nothing is
-    saved.
+    It names the work item that supersedes it when one is given. A started or a blocked one
+    keeps its completed Tasks, and its other Tasks are removed with it. Raises
+    WorkItemNotFoundError when the record holds no such item, EmptyPartError when the reason is
+    blank with none named, CompletedAlreadyError when it is completed, RemovedAlreadyError when
+    it is removed and RelationError when it names itself; nothing is saved.
     """
     save_work_item(removed_work_item(load_work_item(item_id), reason, now(), superseded_by))
 

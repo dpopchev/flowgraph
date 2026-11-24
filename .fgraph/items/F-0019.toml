@@ -1,8 +1,9 @@
 id = "F-0019"
-state = "backlog"
+state = "started"
 title = "Cut the writes two sessions make on main at one time that lose an item or leave the record torn from two seen to none"
 description = "Phase 1, Agent Execution Interface, Scope Gates and Governed Briefs: one of the five Features put on top of the Backlog on the plan the developer agreed on 2026-11-24 with the word file. From the draft of the developer, Atomic Agent Handoff and Lease Protocol, reviewed that day against the code and narrowed to what no item builds. Built already and not filed: the claim, fgraph start --agent, which with no id takes the first line of the Backlog that can start (S-0113, S-0121); the hand, fgraph hand (S-0126); the hand back on a block, fgraph block of a work item (S-0138), and on the last Task completed, the line ready for review (S-0114). Seen that day in a throwaway repository with the development on: two writes of main made at one time lose an item or tear the record, the two Bugs under it. The Tasks of its work items are written before it starts."
 created = 2026-11-24 19:50:34+00:00
+started = 2026-11-24 21:26:20+00:00
 criteria = [
     "a developer and an agent that add at one time each get an id of their own, or one is refused in one line, and no item is lost",
     "two agents that start one work item at one time: one holds it, the other is refused in one line naming who holds it, and main is left clean",

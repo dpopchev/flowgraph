@@ -1,11 +1,13 @@
 id = "B-0035"
-state = "backlog"
+state = "started"
 title = "Cut the pairs of fgraph add run at one time that are given one id, one work item lost, from every one to none"
 description = "New on the plan agreed on 2026-11-24, found by the agent that day while reviewing the draft of F-0019. Counted once; the source holds no lock on the record (grep of src/flowgraph for lock, flock, O_EXCL). Its Tasks are written before its Feature starts."
 parent = "F-0019"
 realizes = 1
 complexity = "high"
 created = 2026-11-24 19:50:59+00:00
+started = 2026-11-24 21:26:20+00:00
+agent = "opus-b35"
 
 [criterion]
 observed = "in a throwaway repository with the development on, with fgraph of 2d612af on 2026-11-24, one trial: two fgraph add story run at one time both printed added S-0006 and exited 0; main holds two commits chore: add S-0006 in the record, and fgraph status lists one S-0006, with the title of one of the two, the other Story listed nowhere and nothing said"

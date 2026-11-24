@@ -110,8 +110,9 @@ def checkout(tmp_path: Path) -> Path:
 class TestAStoryWithOneOfItsTwoTasksCompletedInItsWorktree:
     @pytest.fixture
     def listed(self, checkout: Path, tmp_path: Path) -> Outcome:
-        for argv in (["start", "T-0001"], ["complete", "T-0001", "--commit", "abc1234"]):
-            fgraph(argv, tmp_path / WORKTREE)
+        fgraph(["start", "T-0001"], tmp_path / WORKTREE)
+        sha = git(tmp_path / WORKTREE, "rev-parse", "--short", "HEAD")
+        fgraph(["complete", "T-0001", "--commit", sha], tmp_path / WORKTREE)
         return fgraph(["status"], checkout)
 
     def test_status_on_main_exits_with_zero(self, listed: Outcome) -> None:

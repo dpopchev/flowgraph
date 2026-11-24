@@ -1,11 +1,10 @@
 """What the file of a Feature holds in each of its states, told apart by its state line."""
 
-from datetime import datetime
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
 
-from flowgraph.item import KnowledgeFile
+from flowgraph.item import HeldTime, KnowledgeFile
 
 
 class FeatureFile(BaseModel):
@@ -18,7 +17,7 @@ class FeatureFile(BaseModel):
     title: str
     description: str = ""
     about: list[str] = []
-    created: datetime
+    created: HeldTime
     criteria: list[str]
     knowledge: list[KnowledgeFile] = []
 
@@ -33,8 +32,8 @@ class StartedFeatureFile(BaseModel):
     title: str
     description: str = ""
     about: list[str] = []
-    created: datetime
-    started: datetime
+    created: HeldTime
+    started: HeldTime
     criteria: list[str]
     knowledge: list[KnowledgeFile] = []
 
@@ -49,9 +48,9 @@ class BlockedFeatureFile(BaseModel):
     title: str
     description: str = ""
     about: list[str] = []
-    created: datetime
-    started: datetime
-    since: datetime
+    created: HeldTime
+    started: HeldTime
+    since: HeldTime
     reason: str
     waiting_on: str
     criteria: list[str]
@@ -68,9 +67,9 @@ class CompletedFeatureFile(BaseModel):
     title: str
     description: str = ""
     about: list[str] = []
-    created: datetime
-    started: datetime
-    completed: datetime
+    created: HeldTime
+    started: HeldTime
+    completed: HeldTime
     commit: str = ""
     criteria: list[str]
     knowledge: list[KnowledgeFile] = []
@@ -86,8 +85,8 @@ class RemovedFeatureFile(BaseModel):
     title: str
     description: str = ""
     about: list[str] = []
-    created: datetime
-    removed: datetime
+    created: HeldTime
+    removed: HeldTime
     reason: str
     criteria: list[str]
     knowledge: list[KnowledgeFile] = []

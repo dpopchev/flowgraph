@@ -587,11 +587,13 @@ A record whose file was edited by hand or merged to name what is not there is
 refused when it is read, by every command, with exit 2 and nothing written: a
 parent, a dependency, a filed during, a superseded by, an amends or a term
 that the record does not hold, and a cycle of dependencies or of one kind
-between terms.
+between terms. So is a file whose time holds no offset, a day alone as
+`created = 2026-10-11`.
 
 ```sh
 fgraph status
 # fgraph: error: /src/project/.fgraph/items/S-0002.toml: depends on names S-0099, which is not in the record
+# fgraph: error: /src/project/.fgraph/items/S-0002.toml holds no Story: created = 2026-10-11 is a time with no offset: write it with one, as 2026-01-01 09:00:00+00:00
 ```
 
 A work item can name the one it was found during: `--filed-during ID` of
@@ -817,6 +819,16 @@ remote once, on a line of its own:
 fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
 # landed S-0001 at 3e9ae5c
 # pushed main to origin
+```
+
+With `push` `true`, a `main` that tracks no branch of a remote is refused
+before the merge, exit 2, with nothing merged, the Story started and its
+branch and worktree as they were. Give `main` an upstream, `git push
+--set-upstream origin main`, or turn the push off:
+
+```sh
+fgraph land S-0001 --message "feat: land the Stories listed under Backlog"
+# fgraph: error: S-0001 cannot land: main tracks no branch of a remote to push to -- run git push --set-upstream <remote> main, or fgraph config set delivery.push false
 ```
 
 A push git refuses -- a remote it cannot reach -- before the write that
@@ -1164,6 +1176,16 @@ before and, with the development on, fgraph warns that no branch was made. A
 git step refused exits 2 and names the git command: a commit refused puts the
 file back as it was, a worktree refused leaves the start committed.
 
+A start whose branch is there already is refused before it writes: nothing is
+written and the Story stays in Backlog. Delete the branch or give another
+`--slug`; the start takes over no branch that is there.
+
+```sh
+git branch wi/S-0001-branch-on-start
+fgraph start S-0001 --slug branch-on-start
+# fgraph: error: S-0001 cannot start: the branch wi/S-0001-branch-on-start is there already -- delete it or give another --slug
+```
+
 The rules of a branch that follow are those of a record with the development
 on: with it off fgraph makes no branch `wi/<id>-<slug>` and no worktree, so
 every write is taken on `main`. A start given `--slug` then exits 2 naming the
@@ -1297,7 +1319,8 @@ fgraph start T-0002
 
 Complete each Task with the commit that holds its work, then the Story with
 the commit on `main` that holds it. `--commit` is a sha of 7 to 40 hex digits;
-`fgraph` does not look it up in git yet:
+with the development on `fgraph` looks it up in git, and with it off it is kept
+as given:
 
 ```sh
 fgraph complete T-0001 --commit 3e9ae5c
@@ -1316,8 +1339,8 @@ fgraph status
 `fgraph show` names the commit of the Story and of each completed Task. A
 complete exits 2 and names why when the item is still in Backlog, when a
 Story has Tasks not completed, when the item is completed already, when the
-commit is no sha, or when the record does not hold it. A completed Story takes
-no new Task.
+commit is no sha, or, with the development on, when the repository does not hold
+the commit. A completed Story takes no new Task.
 
 The commit is the evidence of the development: the work beside the record
 that the item is completed with. So `fgraph complete` needs `--commit` with
@@ -1327,6 +1350,9 @@ the option and the key:
 ```sh
 fgraph complete T-0001
 # fgraph: error: T-0001 is completed with --commit: the development is on, development.enabled = true
+
+fgraph complete T-0001 --commit c6e0f15
+# fgraph: error: T-0001 cannot complete: the repository holds no commit c6e0f15
 ```
 
 With the development off there is no such work to name, and `fgraph complete`
@@ -1359,8 +1385,8 @@ fgraph show S-0001
 #     expected output  changed: src/flowgraph/cli.py gains the show command
 ```
 
-A `--commit` given with the development off is still kept as the evidence,
-and status and show list it. The file of an item completed without a commit
+A `--commit` given with the development off is still kept as the evidence, not
+looked up, and status and show list it. The file of an item completed without a commit
 holds no `commit` key.
 
 A work item keeps what the work learned as lines of knowledge. `fgraph note`
@@ -1591,7 +1617,8 @@ that message, completes the Story at that commit, commits the record as
 `chore: complete S-0001 in the record`, and removes the worktree and the
 branch. A land exits 2 and names why, with nothing merged, when the
 development is off, when a Task of the Story is not completed, when the
-checkout it runs in is not on `main`, when the Story has no branch or
+checkout it runs in is not on `main`, when `delivery.push` is `true` and
+`main` tracks no branch of a remote, when the Story has no branch or
 several, when the record is outside a git work tree, when git refuses the
 merge, or when the gate of the record fails.
 
@@ -2164,6 +2191,9 @@ branch made:
 - with `development.driver` set to `agent`, when a work item of it in Backlog
   has no complexity, the first in start order named:
   `F-0001 cannot start: S-0002 has no complexity to start with: set it with fgraph amend S-0002 --complexity low, medium or high`;
+- with the development on, when the branch of its first work item is there
+  already:
+  `F-0001 cannot start: the branch wi/S-0002-<slug> is there already -- delete it or give another --slug`;
 - when `[development] parallel` refuses one more started work item:
   `F-0001 cannot start: development.parallel = 1, started already: S-0002`.
 

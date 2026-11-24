@@ -8,6 +8,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from flowgraph.development.commit import OpenGit, Said, commit_written
+from flowgraph.development.git import GitError
 from flowgraph.item.commands import Written
 from flowgraph.record.config import Settings, make_config
 from flowgraph.record.location import NAMES, IsDir
@@ -18,6 +19,9 @@ INITIAL: Settings = {"git": {"commit": True}, "development": {"enabled": False}}
 
 # Make the directory of the record; what it returns is ignored.
 MakeDir = Callable[[Path], object]
+
+# Remove the directory of the record, which holds nothing by then; what it returns is ignored.
+RemoveDir = Callable[[Path], object]
 
 
 class RecordHeldError(ValueError):
@@ -48,16 +52,23 @@ def init_record(
     given: Path | None,
     is_dir: IsDir,
     make_dir: MakeDir,
+    remove_dir: RemoveDir,
     open_store: OpenStore,
     open_git: OpenGit,
 ) -> Said:
     """Make the record of the directory and say its path; commit it inside a git work tree.
 
-    Raises the refusals of place_record, and GitError when git refuses the commit.
+    Raises the refusals of place_record, and GitError when git refuses the commit: the file
+    written is taken back and the directory made is removed, so nothing of the record is left.
     """
     record = place_record(directory, given, is_dir)
     make_dir(record)
     store = open_store(record)
     store.save_settings(INITIAL)
     written = Written(f"record: {record}\n", "chore: make the record")
-    return commit_written(written, store, record, open_git, make_config(""))
+    try:
+        return commit_written(written, store, record, open_git, make_config(""))
+    except GitError:
+        store.restore_files()
+        remove_dir(record)
+        raise

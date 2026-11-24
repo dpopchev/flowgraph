@@ -1,13 +1,15 @@
 """What fgraph init writes into the record it makes, and the commit it leaves there."""
 
 from collections.abc import Sequence
+from contextlib import suppress
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Never
+from typing import Literal, Never
 
 import pytest
 
 from flowgraph.development.commit import Said, WorkTree
+from flowgraph.development.git import GitError
 from flowgraph.record.config import Settings
 from flowgraph.record.init import init_record
 from flowgraph.record.store import Store
@@ -16,6 +18,9 @@ pytestmark = pytest.mark.command
 
 CWD = Path("/work")
 RECORD = CWD / ".fgraph"
+
+# What git refuses in the work tree of a test: its commit, or its check of the ignored paths.
+Refusal = Literal["commit", "ignore"] | None
 
 
 def never_read(*_: object) -> Never:
@@ -32,6 +37,7 @@ class Effects:
     committed: list[tuple[Sequence[Path], str]] = field(
         default_factory=list[tuple[Sequence[Path], str]]
     )
+    undone: list[str] = field(default_factory=list[str])
 
 
 def store(effects: Effects) -> Store:
@@ -45,17 +51,24 @@ def store(effects: Effects) -> Store:
         load_queue=never_read,
         save_queue=never_read,
         find_changed_files=lambda: [RECORD / "config.toml"],
-        restore_files=lambda: None,
+        restore_files=lambda: effects.undone.append("restore"),
         save_settings=effects.saved.append,
     )
 
 
-def work_tree(effects: Effects) -> WorkTree:
-    """A git work tree at CWD that records its commits into the effects."""
+def work_tree(effects: Effects, refuses: Refusal) -> WorkTree:
+    """A git work tree at CWD that records its commits into the effects, and refuses as asked."""
 
     def commit_files(files: Sequence[Path], message: str) -> str:
+        if refuses == "commit":
+            raise GitError("git commit failed: refused by the hook")
         effects.committed.append((files, message))
         return "abc1234"
+
+    def ignores(_: Path) -> bool:
+        if refuses == "ignore":
+            raise GitError("git check-ignore failed: no index")
+        return False
 
     return WorkTree(
         path=CWD,
@@ -65,18 +78,20 @@ def work_tree(effects: Effects) -> WorkTree:
         find_branches=lambda _: [],
         find_worktree=lambda _: None,
         find_worktrees=lambda: [],
+        ignores=ignores,
     )
 
 
-def init(effects: Effects, *, inside_git: bool) -> Said:
-    """Init the record of CWD, inside a git work tree or outside any."""
+def init(effects: Effects, *, inside_git: bool, refuses: Refusal = None) -> Said:
+    """Init the record of CWD, inside a git work tree or outside any, as git refuses as asked."""
     return init_record(
         CWD,
         None,
         lambda _: False,
         effects.made.append,
+        lambda path: effects.undone.append(f"remove {path}"),
         lambda _: store(effects),
-        lambda _: work_tree(effects) if inside_git else None,
+        lambda _: work_tree(effects, refuses) if inside_git else None,
     )
 
 
@@ -96,6 +111,9 @@ class TestInitOutsideAGitWorkTree:
     def test_commits_nothing(self, effects: Effects) -> None:
         assert effects.committed == []
 
+    def test_removes_nothing(self, effects: Effects) -> None:
+        assert effects.undone == []
+
 
 class TestInitInsideAGitWorkTree:
     @pytest.fixture
@@ -109,6 +127,38 @@ class TestInitInsideAGitWorkTree:
 
     def test_commits_it_as_a_write_of_the_record(self, effects: Effects) -> None:
         assert [message for _, message in effects.committed] == ["chore: make the record"]
+
+    def test_removes_nothing(self, effects: Effects) -> None:
+        assert effects.undone == []
+
+
+class TestInitWhoseCommitGitRefuses:
+    @pytest.fixture
+    def effects(self) -> Effects:
+        done = Effects()
+        with suppress(GitError):
+            init(done, inside_git=True, refuses="commit")
+        return done
+
+    def test_removes_the_directory_last(self, effects: Effects) -> None:
+        assert effects.undone[-1:] == ["remove /work/.fgraph"]
+
+
+class TestInitWhoseIgnoreGitRefuses:
+    @pytest.fixture
+    def effects(self) -> Effects:
+        done = Effects()
+        with suppress(GitError):
+            init(done, inside_git=True, refuses="ignore")
+        return done
+
+    def test_restores_the_file_then_removes_the_directory(self, effects: Effects) -> None:
+        assert effects.undone == ["restore", "remove /work/.fgraph"]
+
+
+def test_passes_the_refusal_of_git_on_as_it_was() -> None:
+    with pytest.raises(GitError, match=r"^git commit failed: refused by the hook$"):
+        init(Effects(), inside_git=True, refuses="commit")
 
 
 def test_says_the_record_it_made() -> None:

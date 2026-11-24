@@ -10,6 +10,11 @@ agent = "haiku-a5"
 commit = "ff752bc"
 filed_during = "S-0090"
 
+[verified]
+answer = "yes"
+text = "at ff752bc on main, the merge of wi/B-0023-cut-the-landings-fgraph, in a throwaway repository with the development on, delivery.push true and a main that tracks no branch of a remote, S-0001 started with its one Task completed: fgraph land S-0001 --message exit 2 printed fgraph: error: S-0001 cannot land: main tracks no branch of a remote to push to -- run git push --set-upstream <remote> main, or fgraph config set delivery.push false; main at 97dd60e before and after, nothing merged; the branch wi/S-0001-one and its worktree still there; fgraph show S-0001 lists bucket InProgress. make check on the tree of the landing, the branch with main merged at 2f72a58: 3544 passed, all checks passed. Handed whole to one subagent on haiku: T-0469 was completed at e28aa06 with lines over the 100 columns of the lint, wrapped after it in the commit 7825838, in three files its Tasks name; the docstring of tests/functional/test_land_push_untracked.py was reworded to pass the check of T-0469."
+on = 2026-11-24 04:05:45+00:00
+
 [criterion]
 observed = "with delivery.push true and a main that tracks no branch of a remote, fgraph land merges, completes and cleans up, then exits 2 with main tracks no branch of a remote to push to -- <id> is landed at <sha>, main is not pushed"
 expected = "the landing is refused before main moves, with nothing merged, naming the missing upstream, as the other misconfigurations of a landing are"

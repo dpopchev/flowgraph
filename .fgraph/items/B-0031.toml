@@ -50,10 +50,12 @@ commit = "1ec17b523716cd71a6b9331783000cdd9bf14e53"
 
 [[tasks]]
 id = "T-0454"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph goal refuses a Feature that holds a work item in Backlog not planned"
 description = "Change README.md and docs/domain-model.md only; find the passages by grep, never by line number. In docs/domain-model.md, under the heading ## Goal, the paragraph starting It is refused, exit 2, naming why: add after the sentence on a Feature with no work item in Backlog that a Feature holding a work item in Backlog with no Task, or with no complexity, is refused in the words of the start of the Feature (B-0031), since no start would take it and no coordinator could meet the goal; give the two lines exactly as src/flowgraph/feature/start.py and src/flowgraph/development/driver.py word them. In README.md, the paragraph starting `fgraph goal F-0001` prints one `/goal` line: in its sentence It is refused, exit 2, for ..., add the Feature that holds a work item in Backlog with no Task or no complexity, refused in the words of the start of the Feature, with the Task line as its example. Each file must hold the words refused in the words of the start of the Feature, which the check reads across a line break. Keep each edit inside its paragraph. Do not touch the example block of fgraph goal, the table at the top of README.md, the lists of refusals of the start of a Feature (they are right as they stand), the passages on development.driver, Order or Persistence. No source or test changes."
 check = "tr -s ' \\n' ' ' < README.md | grep -q \"refused in the words of the start of the Feature\" && tr -s ' \\n' ' ' < docs/domain-model.md | grep -q \"refused in the words of the start of the Feature\""
 expected_output = "changed: docs/domain-model.md, section Goal: the paragraph of its refusals says a Feature that holds a work item in Backlog with no Task, or with no complexity, is refused in the words of the start of the Feature, exit 2 and nothing printed, the first such work item in start order named and a missing Task before a missing complexity, with the two lines F-0001 cannot start: S-0002 has no Task to start with and F-0001 cannot start: S-0002 has no complexity to start with: set it with fgraph amend S-0002 --complexity low, medium or high. README.md: the paragraph starting `fgraph goal F-0001` prints one `/goal` line lists the same refusal among those of exit 2"
 created = 2026-11-23 20:10:32+00:00
 started = 2026-11-24 03:41:14+00:00
+completed = 2026-11-24 03:41:48+00:00
+commit = "ce9e12d1d9790dbf0f0a9e6588c23aec22868bf2"

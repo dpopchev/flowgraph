@@ -42,10 +42,6 @@ IDENTITY = {
     "GIT_COMMITTER_NAME": "a developer",
     "GIT_COMMITTER_EMAIL": "developer@example.com",
 }
-RED = pytest.mark.xfail(
-    strict=True,
-    reason="B-0032: the block and the unblock of a Task on main answer from the copy of main",
-)
 
 
 @dataclass(frozen=True)
@@ -123,14 +119,14 @@ def worktree(checkout: Path, tmp_path: Path) -> Path:
 @pytest.mark.parametrize(
     ("setup", "command"),
     [
-        pytest.param((START_TASK, BLOCK), UNBLOCK, marks=RED, id="unblock-of-one-blocked-there"),
-        pytest.param((START_TASK, BLOCK), BLOCK, marks=RED, id="block-of-one-blocked-there"),
-        pytest.param((START_TASK,), BLOCK, marks=RED, id="block-of-one-started-there"),
-        pytest.param((START_TASK,), UNBLOCK, marks=RED, id="unblock-of-one-started-there"),
-        pytest.param((), BLOCK, marks=RED, id="block-of-one-in-backlog"),
-        pytest.param((), UNBLOCK, marks=RED, id="unblock-of-one-in-backlog"),
-        pytest.param((ADD_TASK,), BLOCK_ADDED, marks=RED, id="block-of-one-added-there"),
-        pytest.param((ADD_TASK,), UNBLOCK_ADDED, marks=RED, id="unblock-of-one-added-there"),
+        pytest.param((START_TASK, BLOCK), UNBLOCK, id="unblock-of-one-blocked-there"),
+        pytest.param((START_TASK, BLOCK), BLOCK, id="block-of-one-blocked-there"),
+        pytest.param((START_TASK,), BLOCK, id="block-of-one-started-there"),
+        pytest.param((START_TASK,), UNBLOCK, id="unblock-of-one-started-there"),
+        pytest.param((), BLOCK, id="block-of-one-in-backlog"),
+        pytest.param((), UNBLOCK, id="unblock-of-one-in-backlog"),
+        pytest.param((ADD_TASK,), BLOCK_ADDED, id="block-of-one-added-there"),
+        pytest.param((ADD_TASK,), UNBLOCK_ADDED, id="unblock-of-one-added-there"),
     ],
 )
 def test_a_block_or_an_unblock_of_a_task_on_main_is_refused_naming_the_worktree_and_writes_nothing(

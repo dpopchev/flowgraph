@@ -43,7 +43,7 @@ from flowgraph.parent import NO_CRITERION, parent_asked, realizes_asked
 from flowgraph.parser.checks import check_command
 from flowgraph.parser.item_commands import TOP
 from flowgraph.parser.start import start_named
-from flowgraph.parser.stated import criterion_added, decision_given
+from flowgraph.parser.stated import criterion_added, decision_given, deviation_given
 from flowgraph.parser.views import view_said
 from flowgraph.record import Config, Now
 from flowgraph.record.setting import set_setting, show_config, unset_setting
@@ -133,7 +133,7 @@ def _written(
                 args.output,
                 args.check,
             )
-            return amend_named(args.id, parts, args.criterion, store)
+            return amend_named(args.id, parts, args.criterion, store, deviation_given(args, now))
         case "complete" if is_feature_id(args.id):
             return complete_feature_item(args.id, args.commit, store, now)
         case "complete":

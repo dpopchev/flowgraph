@@ -18,7 +18,6 @@ from flowgraph.cli import open_files, open_git, read_config, run
 
 pytestmark = pytest.mark.functional
 
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0145: fgraph amend refuses every started item")
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 TITLE = "Raise the Stories fgraph lists from 0 to 1"
@@ -141,7 +140,6 @@ def worktree(checkout: Path, tmp_path: Path) -> Path:
     return tmp_path / WORKTREE
 
 
-@XFAIL
 class TestAStartedStoryAmendedInItsWorktree:
     @pytest.fixture
     def commits(self, worktree: Path) -> str:
@@ -173,7 +171,6 @@ class TestAStartedStoryAmendedInTheCheckoutOfMain:
     def refused(self, checkout: Path) -> Outcome:
         return fgraph(AMEND_STORY, checkout)
 
-    @XFAIL
     def test_amend_names_the_worktree_of_the_story(self, refused: Outcome, worktree: Path) -> None:
         where = f"its Tasks are written in its worktree, {worktree}"
         assert refusal(refused) == (2, [f"fgraph: error: S-0001 is started: {where}"])
@@ -189,7 +186,6 @@ def test_an_amend_without_a_deviation_of_a_story_on_main_is_refused(checkout: Pa
     assert refusal(fgraph(AMEND_THEN, checkout)) == (2, [f"fgraph: error: {NEEDED}"])
 
 
-@XFAIL
 def test_the_story_amended_in_its_worktree_is_listed_on_main_with_its_deviation(
     checkout: Path, worktree: Path
 ) -> None:
@@ -198,7 +194,6 @@ def test_the_story_amended_in_its_worktree_is_listed_on_main_with_its_deviation(
     assert ("  then         a new state\n" in shown, D in shown) == (True, True)
 
 
-@XFAIL
 def test_the_amend_of_a_feature_on_main_is_one_commit_with_its_file_alone(tmp_path: Path) -> None:
     path = started(tmp_path, ADD_FEATURE, ADD_UNDER, ADD_TASK, ["start", "F-0001"])
     outcome = fgraph(AMEND_FEATURE, path)
@@ -208,7 +203,6 @@ def test_the_amend_of_a_feature_on_main_is_one_commit_with_its_file_alone(tmp_pa
     )
 
 
-@XFAIL
 def test_the_amend_of_a_feature_on_the_branch_of_its_work_item_is_refused(tmp_path: Path) -> None:
     started(tmp_path, ADD_FEATURE, ADD_UNDER, ADD_TASK, ["start", "F-0001"])
     refused = fgraph(AMEND_FEATURE, tmp_path / WORKTREE)

@@ -16,7 +16,6 @@ from flowgraph.cli import open_files, run
 
 pytestmark = pytest.mark.functional
 
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0145: fgraph amend refuses every started item")
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "a title", *CRITERION, "--description", "why"]
@@ -96,7 +95,6 @@ def refused(status_line: str) -> tuple[int, list[str]]:
     return 2, [f"fgraph: error: {status_line}"]
 
 
-@XFAIL
 class TestAStartedStoryAmendedWithItsDeviation:
     @pytest.fixture
     def amended(self, tmp_path: Path) -> Outcome:
@@ -116,7 +114,6 @@ class TestAStartedStoryAmendedWithItsDeviation:
         assert fgraph(["show", "S-0001"], tmp_path).out.endswith(KNOWLEDGE)
 
 
-@XFAIL
 @pytest.mark.parametrize(
     ("option", "text", "line"),
     [
@@ -134,7 +131,6 @@ def test_each_part_of_a_started_story_is_rewritten_with_its_deviation(
     assert line in runs(tmp_path, *STORY_STARTED, amend, ["show", "S-0001"]).out.splitlines()
 
 
-@XFAIL
 def test_a_blocked_story_is_amended_with_its_deviation(tmp_path: Path) -> None:
     outcome = runs(tmp_path, *STORY_BLOCKED, [*AMEND_THEN, "--deviation", D])
     assert (outcome.status, outcome.out) == (0, "amended S-0001\n")
@@ -147,7 +143,6 @@ def test_an_amend_without_a_deviation_of_a_story_is_refused(
     assert refusal(runs(tmp_path, *setup, AMEND_THEN)) == refused(NEEDED.format("S-0001"))
 
 
-@XFAIL
 @pytest.mark.parametrize(
     "option",
     [["--complexity", "high"], ["--parent", "none"], ["--depends-on", "S-0002"]],
@@ -161,38 +156,32 @@ def test_a_started_story_keeps_its_complexity_its_parent_and_its_terms_with_a_de
     assert refusal(outcome) == refused(BACKLOG_ALONE.format("S-0001"))
 
 
-@XFAIL
 def test_a_deviation_alone_amends_no_part_of_a_started_story(tmp_path: Path) -> None:
     outcome = runs(tmp_path, *STORY_STARTED, [*AMEND_STORY, "--deviation", D])
     assert refusal(outcome) == refused("amend rewrites no part of S-0001: name one")
 
 
-@XFAIL
 def test_a_blank_deviation_of_a_started_story_is_refused(tmp_path: Path) -> None:
     outcome = runs(tmp_path, *STORY_STARTED, [*AMEND_THEN, "--deviation", " "])
     assert refusal(outcome) == refused("text is empty")
 
 
-@XFAIL
 def test_a_story_in_backlog_takes_no_deviation(tmp_path: Path) -> None:
     outcome = runs(tmp_path, ADD_STORY, ADD_TASK, [*AMEND_THEN, "--deviation", D])
     assert refusal(outcome) == refused(IN_BACKLOG.format("S-0001"))
 
 
-@XFAIL
 def test_a_completed_story_is_refused_with_a_deviation(tmp_path: Path) -> None:
     outcome = runs(tmp_path, *STORY_STARTED, *COMPLETE, [*AMEND_THEN, "--deviation", D])
     assert refusal(outcome) == refused("S-0001 is completed already")
 
 
-@XFAIL
 def test_a_task_takes_no_deviation(tmp_path: Path) -> None:
     amend = ["amend", "T-0001", "--title", "x", "--deviation", D]
     outcome = runs(tmp_path, ADD_STORY, ADD_TASK, amend)
     assert refusal(outcome) == refused(TASK_ONLY)
 
 
-@XFAIL
 class TestAStartedFeatureAmendedWithItsDeviation:
     @pytest.fixture
     def amended(self, tmp_path: Path) -> Outcome:
@@ -211,14 +200,12 @@ class TestAStartedFeatureAmendedWithItsDeviation:
         assert fgraph(["show", "F-0001"], tmp_path).out.endswith(KNOWLEDGE)
 
 
-@XFAIL
 def test_the_criteria_given_replace_those_of_a_started_feature(tmp_path: Path) -> None:
     amend = [*AMEND_FEATURE, "--criterion", "a new one", "--deviation", D]
     shown = runs(tmp_path, *FEATURE_STARTED, amend, ["show", "F-0001"]).out
     assert "Criteria (1)\n  a new one\n" in shown
 
 
-@XFAIL
 def test_a_blocked_feature_is_amended_with_its_deviation(tmp_path: Path) -> None:
     outcome = runs(tmp_path, *FEATURE_BLOCKED, [*AMEND_TITLE, "--deviation", D])
     assert (outcome.status, outcome.out) == (0, "amended F-0001\n")
@@ -231,13 +218,11 @@ def test_an_amend_without_a_deviation_of_a_feature_is_refused(
     assert refusal(runs(tmp_path, *setup, AMEND_TITLE)) == refused(NEEDED.format("F-0001"))
 
 
-@XFAIL
 def test_a_feature_in_backlog_takes_no_deviation(tmp_path: Path) -> None:
     outcome = runs(tmp_path, ADD_FEATURE, [*AMEND_TITLE, "--deviation", D])
     assert refusal(outcome) == refused(IN_BACKLOG.format("F-0001"))
 
 
-@XFAIL
 def test_a_completed_feature_is_refused_with_a_deviation(tmp_path: Path) -> None:
     outcome = runs(tmp_path, *FEATURE_STARTED, *COMPLETE, [*AMEND_TITLE, "--deviation", D])
     assert refusal(outcome) == refused("F-0001 is completed already")

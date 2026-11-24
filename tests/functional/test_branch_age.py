@@ -36,9 +36,6 @@ IDENTITY = {
     "GIT_COMMITTER_NAME": "a developer",
     "GIT_COMMITTER_EMAIL": "developer@example.com",
 }
-XFAIL_SAID = pytest.mark.xfail(
-    strict=True, reason="S-0098: status says nothing of the age of a branch"
-)
 
 
 def story(number: int, *parent: str) -> list[str]:
@@ -130,11 +127,9 @@ class TestTwoDaysAfterTheStart:
     def checkout(self, tmp_path: Path) -> Path:
         return started_under(tmp_path, AGED)
 
-    @XFAIL_SAID
     def test_status_says_the_branch_is_older_than_the_age(self, checkout: Path) -> None:
         assert OLD in lines_of(fgraph(["status"], checkout, TWO_DAYS))
 
-    @XFAIL_SAID
     def test_watch_says_the_branch_is_older_than_the_age(self, checkout: Path) -> None:
         assert OLD in lines_of(fgraph(["watch", "--count", "1"], checkout, TWO_DAYS))
 
@@ -157,7 +152,6 @@ class TestAStoryLeftInBacklog:
 
 
 class TestAStoryUnderAFeature:
-    @XFAIL_SAID
     def test_its_line_ends_with_the_word_two_columns_in(self, tmp_path: Path) -> None:
         path = init(tmp_path, AGED)
         add_feature = ["add", "feature", "a feature title", "--criterion", "a criterion"]

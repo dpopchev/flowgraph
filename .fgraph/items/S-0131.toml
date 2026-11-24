@@ -1,5 +1,5 @@
 id = "S-0131"
-state = "started"
+state = "blocked"
 title = "Raise the work items of the backlog fgraph status lists with their count of Tasks in brackets from none to every one"
 description = "Filed on the word of the developer of 2026-11-23, from the frame drawn that day. Its Tasks are written when it is ordered. Today a work item of the backlog is listed with its id and its title alone."
 parent = "F-0017"
@@ -7,6 +7,9 @@ complexity = "medium"
 created = 2026-11-23 12:01:38+00:00
 started = 2026-11-24 10:29:02+00:00
 agent = "sonnet-a42"
+since = 2026-11-24 12:43:53+00:00
+reason = "T-0586 cannot pass as written: with the source change, tests in files its brief does not name fail on a Backlog line without brackets: tests/functional/test_branch_age.py (1), tests/functional/test_remove_started_work_item.py (1), tests/functional/test_watch_worktree.py (10), tests/status/text/test_status_branch_age.py (1); named files whose count differs: tests/status/text/test_status_top.py has 6 failures (brief says 3). Also work_item_lines.py was 98 lines before my change, 113 after (brief says about 92). Decision needed: add these four files to T-0586 scope, or file a new Task."
+waiting_on = "developer"
 depends_on = [
     "S-0130",
 ]

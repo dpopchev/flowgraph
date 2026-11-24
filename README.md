@@ -1218,13 +1218,13 @@ fgraph config set development.parallel 2
 # fgraph: error: the configuration is not set here: the branch wi/S-0001-raise-the-stories-fgraph writes S-0001 alone
 ```
 
-A key is taken back to its default by setting that default, `fgraph config
-set development.merge merge-commit`: there is no unset. `parallel` and `gate`
-have no default to set, so once set they take another value by a set, and are
-taken back to none only by removing their line from the file. A set writes
-the file whole from its keys, so a comment written in it is not kept. A
-`config.toml` fgraph refuses is refused by `fgraph config` too, as by every
-command, and is mended in the file.
+A key is taken back to its default by `fgraph config unset KEY`, which leaves
+it out of the file, or by setting that default, `fgraph config set
+development.merge merge-commit`, which writes it there. `parallel` and `gate`
+have no default to set: an unset alone takes them back to none. A set or an
+unset writes the file whole from its keys, so a comment written in it is not
+kept. A `config.toml` fgraph refuses is refused by `fgraph config` too, as by
+every command, and is mended in the file.
 
 Start a Story once it has a Task, then start its Tasks one by one. `fgraph
 start` takes a Story id or a Task id, or none, and then the first `fgraph status`

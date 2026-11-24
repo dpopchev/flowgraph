@@ -2361,6 +2361,30 @@ held to `main`, and there is no landing:
 | complete a Feature | `main`: with its last work item, by its landing or its complete, or by `fgraph complete F-0001` once each work item of it is completed or removed |
 | start the next work item of a Feature | `main`: with the completion of the one before, by its landing or its complete; `fgraph` commits both and makes the branch of the next one |
 
+A write is made alone (B-0035): every command that writes takes the lock of
+its record before it reads and holds it through its commit, so two `fgraph`
+run at one time never read the same ids or write the same file. Before it, on
+2026-11-24, two `fgraph add story` run at one time both printed `added
+S-0006` and one Story was lost. The lock is `flock` on the directory of the
+record itself, so no file is added and git sees nothing. It is that of one
+copy of the record, so the worktree of a work item has its own and an agent
+there never waits for `main`. A write that finds it taken tries for ten
+seconds, then exits 2 with the line below, nothing written, and is run again:
+
+```sh
+# fgraph: error: /src/project/.fgraph is being written by another fgraph: run the command again
+```
+
+The views take none: `status`, `watch`, `show`, `about`, `brief`,
+`knowledge`, `terms`, `graph` and `goal`, the `READS` of
+`src/flowgraph/parser/locked.py`, and `config show`; every other command,
+and one added later until it is listed there, takes it. A landing holds it
+through its gate, so another write of `main` waits or is refused meanwhile,
+and a gate or a check of a Task that itself writes the record it is run for
+is refused the same way. Linux and macOS alone. The lock is `lock_files` of
+`src/flowgraph/record/lock.py`, an effect `run()` takes as the callable
+`lock_record`, none by default.
+
 The remove of a Task is one commit of the branch of its work item, written in
 its worktree; on `main` it is refused, `S-0001 is started: its Tasks are
 written in its worktree, <path>` (S-0147). A Task added in the worktree after

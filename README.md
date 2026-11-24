@@ -3269,6 +3269,19 @@ turned off. A commit git refuses exits 2 and names the git command, and every
 file the write changed is put back as it was. The commits of the development
 and their messages stay yours.
 
+Two `fgraph` run at one time on one record write one after the other: every
+write takes the lock of its record before it reads and holds it through its
+commit, so no two are given one id and no item is lost. The second waits up
+to ten seconds, then says the line below, writes nothing and is run again.
+`fgraph status` and the other views never wait:
+
+```sh
+fgraph add story "Raise the Stories fgraph lists under Backlog from 0 to 1" \
+  --given "a record with no items" --when "a Story is added" \
+  --then "fgraph status lists it under Backlog"
+# fgraph: error: /src/project/.fgraph is being written by another fgraph: run the command again
+```
+
 A record git ignores is written without a commit. When a rule of `.gitignore`
 names the record, every write is made with no commit and no warning. With the
 development on, a start still makes the branch of the Story, at the commit

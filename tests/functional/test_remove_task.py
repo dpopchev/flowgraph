@@ -112,13 +112,11 @@ HELD = [
 ]
 
 
-@XFAIL
 def test_the_remove_of_a_task_in_backlog_names_it_and_its_story(tmp_path: Path) -> None:
     outcome = runs(tmp_path, *RECORD, DROP_WAITING)
     assert (outcome.status, outcome.out) == (0, "removed T-0002 of S-0001\n")
 
 
-@XFAIL
 def test_the_remove_of_the_started_task_names_it_and_its_story(tmp_path: Path) -> None:
     outcome = runs(tmp_path, *RECORD, DROP_WAITING, DROP_STARTED)
     assert (outcome.status, outcome.out) == (0, "removed T-0001 of S-0001\n")
@@ -143,7 +141,6 @@ class TestATaskInBacklogAndTheStartedOneRemoved:
     ) -> None:
         assert fgraph(["show", "S-0001"], tmp_path, LATER).out == SHOWN
 
-    @XFAIL
     def test_brief_lists_the_text_show_lists(self, removed: Outcome, tmp_path: Path) -> None:
         brief = fgraph(["brief", "S-0001"], tmp_path, LATER).out
         shown = fgraph(["show", "S-0001"], tmp_path, LATER).out
@@ -159,7 +156,6 @@ class TestATaskInBacklogAndTheStartedOneRemoved:
             HELD,
         )
 
-    @XFAIL
     def test_brief_as_json_lists_each_task_with_its_state_and_reason(
         self, removed: Outcome, tmp_path: Path
     ) -> None:
@@ -179,12 +175,10 @@ class TestTheTaskLeftCompleted:
         lines = fgraph(["status"], tmp_path, LATER).out.splitlines()
         assert "? S-0001  1/1 T  a title" in lines
 
-    @XFAIL
     def test_the_story_completes(self, done: Outcome, tmp_path: Path) -> None:
         outcome = runs(tmp_path, STORY_DONE)
         assert (outcome.status, outcome.out) == (0, "completed S-0001\n")
 
-    @XFAIL
     def test_show_lists_the_tasks_of_the_completed_story_removed_removed_and_completed(
         self, done: Outcome, tmp_path: Path
     ) -> None:
@@ -209,13 +203,11 @@ class TestEveryTaskRemoved:
         lines = fgraph(["status"], tmp_path, LATER).out.splitlines()
         assert "  S-0001  0/0 T  a title" in lines
 
-    @XFAIL
     def test_the_story_completes(self, emptied: Outcome, tmp_path: Path) -> None:
         outcome = runs(tmp_path, STORY_DONE)
         assert (outcome.status, outcome.out) == (0, "completed S-0001\n")
 
 
-@XFAIL
 def test_a_blocked_task_is_removed_as_a_started_one(tmp_path: Path) -> None:
     block = ["block", "T-0001", "--reason", "no key", "--waiting-on", "developer"]
     outcome = runs(tmp_path, *RECORD, block, ["remove", "T-0001", "--reason", "a reason"])
@@ -223,8 +215,8 @@ def test_a_blocked_task_is_removed_as_a_started_one(tmp_path: Path) -> None:
 
 
 def refused(argvs: Sequence[Sequence[str]], error: str, id_: str) -> Any:
-    """A parameter of the refusals: the commands run, the error the last prints, marked red."""
-    return pytest.param(argvs, error, marks=XFAIL, id=id_)
+    """A parameter of the refusals: the commands run and the error the last prints."""
+    return pytest.param(argvs, error, id=id_)
 
 
 def dropped(task_id: str) -> list[str]:

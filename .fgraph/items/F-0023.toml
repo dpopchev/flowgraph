@@ -8,3 +8,8 @@ criteria = [
     "an agent reads in a refusal the command that gets past it",
     "an agent is refused an option or a name fgraph does not keep",
 ]
+
+[[knowledge]]
+kind = "decision"
+text = "The developer decided on 2026-11-24 to split F-0018 (F-0018, its decision of that day): F-0023 holds the refusals, listed right after F-0018."
+noted = 2026-11-24 21:20:17+00:00

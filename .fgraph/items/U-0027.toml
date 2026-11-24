@@ -1,11 +1,13 @@
 id = "U-0027"
-state = "started"
+state = "completed"
 title = "Cut the lines of src/flowgraph/cli.py from about 244 to 225 or fewer, the callables of a run given none taken into a module of their own"
 description = "Found on 2026-11-23 by summing the lines the filed plans add to src/flowgraph/cli.py: 217 today, S-0141 about 18, B-0022 about 9, S-0128 about 6, S-0098 about 3, S-0130 one, and the watch Stories of the frame more, so past 250. Filed on the word of the developer of that day to plan as many items as one goal takes. It waits for the three work items whose Tasks name those callables where they are today; S-0128, S-0098 and S-0130 wait for it. A move with no change of behavior."
 complexity = "low"
 created = 2026-11-23 21:07:44+00:00
 started = 2026-11-24 06:21:47+00:00
+completed = 2026-11-24 06:44:12+00:00
 agent = "haiku-a21"
+commit = "49c99e3"
 depends_on = [
     "S-0141",
     "B-0022",

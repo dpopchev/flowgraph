@@ -13,6 +13,11 @@ depends_on = [
     "S-0130",
 ]
 
+[verified]
+answer = "yes"
+text = "at a077adf, on a scratch record whose Backlog holds a Story with three Tasks and a Story with none, fgraph status --backlog prints \"> S-0001  [3 T]  title 1\" and \"  S-0002  []  title 2\""
+on = 2026-11-24 13:16:18+00:00
+
 [criterion]
 given = "a record whose backlog holds a Story with three Tasks and a Story with none"
 when = "fgraph status is run"

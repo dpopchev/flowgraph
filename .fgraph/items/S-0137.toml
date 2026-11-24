@@ -1,10 +1,11 @@
 id = "S-0137"
-state = "backlog"
+state = "started"
 title = "Cut the buckets fgraph prints in another case than kebab case, in its text and its JSON, from four to none"
 description = "Filed on the word of the developer of 2026-11-23, from the frame drawn that day. Its Tasks are written when it is ordered. The reading the developer confirmed: fgraph itself prints the names in kebab case. Seen that day: a bucket is never stored -- an item file holds its state, backlog, started, blocked, completed or removed -- so nothing kept changes; 90 test files, 251 lines, name a bucket as it is printed today, and about 110 lines of src, docs and README; the JSON changes with it, the name of a bucket of fgraph status and the bucket of fgraph graph and fgraph brief, so a client that reads it adopts the new names."
 parent = "F-0017"
 complexity = "medium"
 created = 2026-11-23 12:01:54+00:00
+started = 2026-11-24 15:22:20+00:00
 depends_on = [
     "S-0136",
 ]

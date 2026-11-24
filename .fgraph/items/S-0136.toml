@@ -1,12 +1,14 @@
 id = "S-0136"
-state = "started"
+state = "completed"
 title = "Raise the buckets whose lines fgraph status lists, and whose place in fgraph watch, the configuration sets from none to all four"
 description = "Filed on the word of the developer of 2026-11-23, from the frame drawn that day. Its Tasks are written when it is ordered. The words: there should be configs about the backlog, in-progress, completed and removed in .fgraph/config.toml, and which are shown by fgraph watch should be a config. Open: the names of the tables and of the keys, and what the flag of a command does over a key."
 parent = "F-0017"
 complexity = "medium"
 created = 2026-11-23 12:01:52+00:00
 started = 2026-11-24 14:44:09+00:00
+completed = 2026-11-24 15:22:19+00:00
 agent = "sonnet-a46"
+commit = "87a4cc2"
 depends_on = [
     "S-0099",
     "S-0135",

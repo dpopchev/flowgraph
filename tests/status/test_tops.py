@@ -2,13 +2,15 @@
 
 import pytest
 
+from flowgraph.record.config import make_config
+from flowgraph.record.listing import ALL_LINES, Lines, StatusLists
 from flowgraph.status.buckets import (
     BACKLOG_BUCKET,
     COMPLETED_BUCKET,
     IN_PROGRESS_BUCKET,
     REMOVED_BUCKET,
 )
-from flowgraph.status.tops import WHOLE, Tops, same_top, top_of, tops_asked
+from flowgraph.status.tops import WHOLE, Tops, same_top, top_of, tops_asked, tops_of
 
 pytestmark = pytest.mark.view
 
@@ -21,19 +23,29 @@ def test_the_same_top_of_none_is_the_whole() -> None:
     assert same_top(None) == WHOLE
 
 
-def test_no_flag_asks_one_backlog_line_the_whole_in_progress_and_five_of_the_rest() -> None:
-    assert tops_asked(every=False, backlog=False) == Tops(
-        backlog=1, in_progress=None, completed=5, removed=5
-    )
+CONFIGURED = Tops(2, 4, 3, 5)
 
 
-def test_the_flag_of_the_backlog_asks_it_whole_and_the_others_short() -> None:
-    assert tops_asked(every=False, backlog=True) == Tops(None, None, 5, 5)
+def test_the_lines_the_configuration_sets_are_the_tops() -> None:
+    lists = StatusLists(Lines(2), ALL_LINES, Lines(3), Lines(5))
+    assert tops_of(lists) == Tops(2, None, 3, 5)
+
+
+def test_the_defaults_of_the_configuration_are_one_all_five_and_five() -> None:
+    assert tops_of(make_config("").status) == Tops(1, None, 5, 5)
+
+
+def test_no_flag_asks_the_tops_the_configuration_sets() -> None:
+    assert tops_asked(CONFIGURED, every=False, backlog=False) == CONFIGURED
+
+
+def test_the_flag_of_the_backlog_asks_it_whole_and_the_others_as_configured() -> None:
+    assert tops_asked(CONFIGURED, every=False, backlog=True) == Tops(None, 4, 3, 5)
 
 
 @pytest.mark.parametrize("backlog", [False, True])
 def test_every_asks_the_whole_whatever_the_flag_of_the_backlog(backlog: bool) -> None:
-    assert tops_asked(every=True, backlog=backlog) == WHOLE
+    assert tops_asked(CONFIGURED, every=True, backlog=backlog) == WHOLE
 
 
 @pytest.mark.parametrize(

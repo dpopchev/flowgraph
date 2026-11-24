@@ -12,7 +12,7 @@ from flowgraph.status.document import StatusFormatError
 from flowgraph.status.next import NextOnly
 from flowgraph.status.text import cut_lines
 from flowgraph.status.tops import WHOLE, same_top
-from flowgraph.status.view import status_output
+from flowgraph.status.view import status_output, watch_item
 from flowgraph.story import STORY
 from flowgraph.work_item import WorkItemRow
 
@@ -68,3 +68,8 @@ def test_the_json_is_not_cut_to_the_width() -> None:
 def test_a_format_that_is_none_is_refused() -> None:
     with pytest.raises(StatusFormatError):
         status_output(store(), WHOLE, "xml", None, NextOnly())
+
+
+def test_a_frame_with_the_backlog_named_alone_lists_its_heading_and_no_other() -> None:
+    frame = watch_item(store(), WHOLE, NextOnly(), {"Backlog"})
+    assert [line for line in frame.splitlines() if line.endswith(")")] == ["Backlog (7)"]

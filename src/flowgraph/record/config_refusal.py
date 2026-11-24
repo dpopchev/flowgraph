@@ -9,6 +9,7 @@ from enum import Enum
 from pydantic import ValidationError
 
 from flowgraph.record.layers import Approver, Driver, Merge, Mode, TagAt
+from flowgraph.record.listing import TAKES
 
 # What a count takes, whether its value is no whole number or one below 1.
 _COUNT = "a whole number of 1 or more"
@@ -49,6 +50,7 @@ _PATH = "a path"
 _TAKES_BY_KEY = {
     "archive.board": _PATH,
     "development.branch_max": "a whole number of days of 1 or more, as 1d",
+    **TAKES,
 }
 
 

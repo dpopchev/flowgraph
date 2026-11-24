@@ -1101,6 +1101,11 @@ fgraph config show
 # delivery.push = false
 # delivery.tag = "none"
 # archive.board = none
+# status.backlog = 1
+# status.in-progress = "all"
+# status.completed = 5
+# status.removed = 5
+# watch.buckets = "backlog, in-progress, completed, removed"
 ```
 
 `none` is how a key that holds no value is listed: `parallel` without a
@@ -1115,6 +1120,16 @@ item to start: `fgraph start S-0002` of one in Backlog that holds a Task and no
 complexity exits 2 with `S-0002 has no complexity to start with: set it with
 fgraph amend S-0002 --complexity low, medium or high`, and `fgraph status`
 marks no such work item.
+
+The four keys of `[status]` say how many lines `fgraph status` and `fgraph watch`
+list under each bucket, the first ones, `all` for every one; left out they are 1,
+`all`, 5 and 5, the frame of F-0017. A flag wins over a key for that run: `--all`
+lists every line of every bucket and `--backlog` the whole Backlog.
+`fgraph status --format json` lists every item whatever they say.
+`watch.buckets` names the buckets a frame of `fgraph watch` shows, `backlog`,
+`in-progress`, `completed` and `removed`, in the order of the flow whatever the
+order written; left out it names the four, and `fgraph status` lists every
+bucket whatever it says.
 
 `development.mode` is where a work item is developed: `branch`, the default, or
 `trunk`, for a repository whose work tree is the live artifact. On the trunk a
@@ -1158,6 +1173,11 @@ fgraph config show
 # delivery.push = false
 # delivery.tag = "none"
 # archive.board = none
+# status.backlog = 1
+# status.in-progress = "all"
+# status.completed = 5
+# status.removed = 5
+# watch.buckets = "backlog, in-progress, completed, removed"
 ```
 
 VALUE is a text, read by what its key takes and never guessed from the text,
@@ -1177,6 +1197,11 @@ so `fgraph config set development.gate true` names the command `true`:
 | `delivery.push`        | `true` or `false`                                          | `fgraph config set delivery.push true`            |
 | `delivery.tag`         | `feature-close`, `close` or `none`                         | `fgraph config set delivery.tag close`            |
 | `archive.board`        | the path of the `.board/` of board 1                       | `fgraph config set archive.board .board`          |
+| `status.backlog`       | a whole number of 1 or more, or `all`                      | `fgraph config set status.backlog 3`              |
+| `status.in-progress`   | a whole number of 1 or more, or `all`                      | `fgraph config set status.in-progress all`        |
+| `status.completed`     | a whole number of 1 or more, or `all`                      | `fgraph config set status.completed 10`           |
+| `status.removed`       | a whole number of 1 or more, or `all`                      | `fgraph config set status.removed 5`              |
+| `watch.buckets`        | the buckets to show, separated by commas                   | `fgraph config set watch.buckets "backlog, in-progress"` |
 
 The whole file is read back as a configuration before it replaces the one in
 the record. A key the configuration does not have, a value the key does not
@@ -2734,9 +2759,10 @@ fgraph status
 ```
 
 `fgraph status` lists the headings in the order above, and then how many more
-the heading holds: every item of InProgress, the top 5 of Completed and Removed,
-and the first line of the Backlog alone, with `... N more, M can start`, M the
-lines of those more that can start. A Feature counts as one item, as a work
+the heading holds: unless the configuration says otherwise (`status.backlog`,
+`status.in-progress`, `status.completed` and `status.removed`), every item of
+InProgress, the top 5 of Completed and Removed, and the first line of the Backlog
+alone, with `... N more, M can start`, M the lines of those more that can start. A Feature counts as one item, as a work
 item does. The count beside the heading stays that of all its items:
 
 ```sh
@@ -2802,6 +2828,8 @@ fgraph watch --all      # every item in each frame, as fgraph status --all
 fgraph watch --backlog   # the whole Backlog in each frame
 fgraph watch --count 3  # three frames, then exit 0
 ```
+
+A frame shows the buckets `watch.buckets` names.
 
 So a Story started while `fgraph watch` runs is listed under InProgress in
 its next frame, and on main the frames read a started Story where its Tasks

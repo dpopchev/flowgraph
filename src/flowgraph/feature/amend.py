@@ -1,5 +1,8 @@
 """The amendment of a Feature, beside that of a work item: `fgraph amend` takes both.
 
+It takes a Task in Backlog too, by its id, through `amend_task_item`, which refuses a part no
+Task has and a Task that is started, blocked, completed or removed.
+
 A Feature is to its work items what a work item is to its Tasks: the wording of one in Backlog
 is rewritten, part by part. It is not a move: the state of the Feature stays, and so do its id,
 its created time, its work items and its place in the queue. It runs on the store of a record,
@@ -21,8 +24,9 @@ from flowgraph.feature import (
     make_feature,
 )
 from flowgraph.feature.item import is_feature_id
+from flowgraph.item.amend import amend_task_item
 from flowgraph.item.commands import MESSAGE, Written, amend_item
-from flowgraph.item.id import parse_amended_id
+from flowgraph.item.id import is_task_id, parse_amended_id
 from flowgraph.parent import feature_id_text, parse_feature_id
 from flowgraph.record.store import Store
 from flowgraph.task import BlockedError, CompletedAlreadyError, StartedAlreadyError
@@ -102,14 +106,17 @@ def _of_feature(named: str, parts: Amendment, criteria: Sequence[str] | None) ->
 def amend_named(
     item: str, parts: Amendment, criteria: Sequence[str] | None, store: Store
 ) -> Written:
-    """Rewrite the parts named of the Feature or the work item in Backlog of that id.
+    """Rewrite the parts named of the Feature, the work item or the Task in Backlog of that id.
 
     Returns what the write says. The criteria are those of a Feature, given in place of the
-    ones it had; the other parts of its amendment are its title and its description. Raises
+    ones it had; the other parts of its amendment are its title and its description. A Task
+    takes its title, output, check and description alone: the refusals of `amend_task_item`. Raises
     NoSuchPartError when a part of a work item is given to a Feature or criteria to a work
     item, FeatureNotFoundError when the record holds no such Feature, or the refusal of its
     amend; for any other id the refusal of `amend_item`. Nothing is saved.
     """
+    if is_task_id(item):
+        return amend_task_item(item, parts, criteria, store)
     if not is_feature_id(item):
         if criteria is not None:
             named = work_item_id_text(parse_amended_id(item))

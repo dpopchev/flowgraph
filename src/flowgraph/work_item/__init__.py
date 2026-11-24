@@ -86,6 +86,7 @@ from flowgraph.work_item.state import BLOCKED, IN_PROGRESS, STARTED, commit_sha,
 from flowgraph.work_item.task_commands import (
     LoadHolder,
     add_task,
+    amend_task,
     block_task,
     complete_task,
     holder_of,
@@ -94,6 +95,7 @@ from flowgraph.work_item.task_commands import (
     unblock_task,
 )
 from flowgraph.work_item.tasks import (
+    amended_task,
     blocked_task,
     completed_task,
     removed_task,
@@ -153,7 +155,9 @@ __all__ = [
     "WorkItemState",
     "add_task",
     "add_work_item",
+    "amend_task",
     "amend_work_item",
+    "amended_task",
     "amended_work_item",
     "append_task",
     "block_of",

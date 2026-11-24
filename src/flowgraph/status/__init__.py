@@ -1,6 +1,14 @@
 """The status of a record: its items by bucket, the text fgraph writes, the terminal, the watch."""
 
+from flowgraph.status.buckets import APART, BUCKETS
 from flowgraph.status.document import StatusFormatError
+from flowgraph.status.rows import (
+    BACKLOG,
+    COMPLETED,
+    backlog_as_added,
+    rows_by_id,
+    rows_under,
+)
 from flowgraph.status.show import feature_text, show_text
 from flowgraph.status.terminal import (
     Height,
@@ -9,18 +17,9 @@ from flowgraph.status.terminal import (
     terminal_height,
     terminal_width,
 )
-from flowgraph.status.text import APART, BUCKETS, cut_lines, status_text
+from flowgraph.status.text import cut_lines, status_text
 from flowgraph.status.under import in_show_order
-from flowgraph.status.view import (
-    BACKLOG,
-    COMPLETED,
-    backlog_as_added,
-    find_backlog,
-    rows_by_id,
-    rows_under,
-    status_item,
-    status_output,
-)
+from flowgraph.status.view import find_backlog, status_item, status_output
 from flowgraph.status.watch import CLEAR, Pace, PaceError, Wait, framed, make_pace, watch
 from flowgraph.work_item import STARTED
 

@@ -18,6 +18,7 @@ from flowgraph.knowledge.model import (
     KnowledgeRow,
     about_text,
     kind_name,
+    mark_text,
 )
 from flowgraph.parent import parse_feature_id
 from flowgraph.record.store import KINDS, Store
@@ -45,6 +46,7 @@ class KnowledgeEntry:
     text: str
     about: list[str] = field(default_factory=list[str])
     governs: list[str] = field(default_factory=list[str])
+    mark: str = ""
 
 
 def chosen_kind(kind: str | None) -> str | None:
@@ -68,7 +70,8 @@ def sought(text: str | None) -> str | None:
 def entries_of(item: str, rows: Iterable[KnowledgeRow]) -> list[KnowledgeEntry]:
     """The lines of the item of that id as entries, in the order they were noted."""
     return [
-        KnowledgeEntry(item, row.kind, row.noted, row.text, row.about, row.governs) for row in rows
+        KnowledgeEntry(item, row.kind, row.noted, row.text, row.about, row.governs, row.mark)
+        for row in rows
     ]
 
 
@@ -119,7 +122,7 @@ def knowledge_text(
         return f"no {kind or 'knowledge'} lines{about_it}{held} in the record\n"
     return "".join(
         f"{entry.noted.date().isoformat()}  {entry.kind}  {entry.item}  {entry.text}"
-        f"{about_text(entry.about)}\n"
+        f"{mark_text(entry.mark)}{about_text(entry.about)}\n"
         for entry in entries
     )
 

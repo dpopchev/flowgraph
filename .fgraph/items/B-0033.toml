@@ -1,0 +1,10 @@
+id = "B-0033"
+state = "backlog"
+title = "Cut the progress lines fgraph note takes with a mark it does not keep, --standing or --open, from every one to none"
+description = "Found by the subagent of S-0102 on 2026-11-24, reading _written of src/flowgraph/parser/command.py, where the branch of a progress line never reads the mark, and run again by the coordinator that day on the code of main; filed at the end of the Backlog and not burned. Open: whether the option is refused or the mark kept. Its Tasks and its complexity are written when it is ordered."
+created = 2026-11-24 07:07:12+00:00
+filed_during = "S-0102"
+
+[criterion]
+observed = "on a throwaway record at d0cfaa7 on main, with S-0001 started, fgraph note S-0001 --progress half way --standing exits 0, prints noted S-0001 and keeps the progress line with no mark; --open the same: the mark is dropped and nothing says so"
+expected = "a progress line given --standing or --open is refused, exit 2, naming the option, as --about and --governs are refused for it, or the mark is kept and listed"

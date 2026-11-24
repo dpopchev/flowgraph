@@ -15,7 +15,7 @@ from flowgraph.brief.model import Brief, FeatureBrief
 from flowgraph.knowledge.list import KnowledgeEntry
 from flowgraph.knowledge.model import KnowledgeRow
 from flowgraph.record.store import KINDS
-from flowgraph.status.text import BUCKETS
+from flowgraph.status.buckets import BUCKETS
 from flowgraph.task.model import TaskRow
 from flowgraph.work_item.views import WorkItemDetail
 

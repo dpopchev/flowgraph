@@ -6,7 +6,21 @@ import pytest
 
 from flowgraph.record.archive import UNARCHIVED, Archive, Archived
 from flowgraph.record.config import ConfigError, make_config, read_config
-from flowgraph.record.layers import UNGATED, UNLIMITED, Driver, Gated, Merge, Parallel
+from flowgraph.record.layers import (
+    NO_MAX,
+    UNGATED,
+    UNLIMITED,
+    Approver,
+    BranchMax,
+    Driver,
+    Gated,
+    MaxDays,
+    Merge,
+    Mode,
+    Parallel,
+    age_text,
+    branched,
+)
 
 pytestmark = pytest.mark.edge
 
@@ -14,10 +28,12 @@ FILE = "config.toml"
 ENABLED = "[development]\nenabled = true\n"
 UNCOMMITTED = "[git]\ncommit = false\n"
 TAKES_A_COUNT = "it takes a whole number of 1 or more"
-TAKES_A_WAY = "it takes merge-commit, squash or fast-forward"
+TAKES_A_WAY = "it takes merge-commit, squash, fast-forward or pull-request"
 TAKES_A_COMMAND = "it takes a command line"
 TAKES_A_TAG = "it takes feature-close, close or none"
 TAKES_A_DRIVER = "it takes developer or agent"
+TAKES_A_MODE = "it takes branch or trunk"
+TAKES_AN_AGE = "it takes a whole number of days of 1 or more, as 1d"
 
 
 @pytest.mark.parametrize(
@@ -83,6 +99,7 @@ def test_a_landing_merges_by_a_merge_commit_unless_merge_is_set(text: str) -> No
         ("merge-commit", Merge.MERGE_COMMIT),
         ("squash", Merge.SQUASH),
         ("fast-forward", Merge.FAST_FORWARD),
+        ("pull-request", Merge.PULL_REQUEST),
     ],
 )
 def test_merge_set_is_how_a_landing_merges(word: str, merge: Merge) -> None:
@@ -153,6 +170,124 @@ def test_a_driver_that_is_no_word_of_it_is_refused_naming_the_key(value: str, wr
     with pytest.raises(ConfigError) as error:
         make_config(f"[development]\ndriver = {value}\n")
     assert str(error.value) == f"development.driver is {written}: {TAKES_A_DRIVER}"
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["", "[development]\n", ENABLED],
+    ids=["no-table", "no-key", "development-on"],
+)
+def test_a_work_item_is_developed_on_a_branch_unless_mode_is_set(text: str) -> None:
+    assert make_config(text).development.mode is Mode.BRANCH
+
+
+def test_a_mode_trunk_set_is_the_trunk() -> None:
+    assert make_config(f'{ENABLED}mode = "trunk"\n').development.mode is Mode.TRUNK
+
+
+@pytest.mark.parametrize(
+    "value", ['"main"', '"Trunk"', "true"], ids=["a-word", "a-case", "a-truth"]
+)
+def test_a_mode_that_is_no_word_of_it_is_refused_naming_the_key(value: str) -> None:
+    with pytest.raises(ConfigError) as error:
+        make_config(f"[development]\nmode = {value}\n")
+    assert str(error.value) == f"development.mode is {value}: {TAKES_A_MODE}"
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["", "[development]\n", ENABLED],
+    ids=["no-table", "no-key", "development-on"],
+)
+def test_a_branch_has_no_age_unless_branch_max_is_set(text: str) -> None:
+    assert make_config(text).development.branch_max == NO_MAX
+
+
+@pytest.mark.parametrize(
+    ("text", "max_days"),
+    [('branch_max = "1d"', MaxDays(1)), ('branch_max = "30d"', MaxDays(30))],
+    ids=["one-day", "thirty-days"],
+)
+def test_a_branch_max_of_days_is_that_many_days(text: str, max_days: MaxDays) -> None:
+    assert make_config(f"{ENABLED}{text}\n").development.branch_max == max_days
+
+
+def test_a_branch_max_is_held_as_written_with_the_development_off() -> None:
+    assert make_config('[development]\nbranch_max = "2d"\n').development.branch_max == MaxDays(2)
+
+
+@pytest.mark.parametrize(
+    "value",
+    ['"0d"', '"1"', '"d"', '"1h"', '"1 d"', '"-1d"', "1"],
+    ids=["zero-days", "no-unit", "no-number", "hours", "a-blank", "negative", "a-number"],
+)
+def test_a_branch_max_that_is_no_age_is_refused_naming_the_key(value: str) -> None:
+    with pytest.raises(ConfigError) as error:
+        make_config(f"[development]\nbranch_max = {value}\n")
+    assert str(error.value) == f"development.branch_max is {value}: {TAKES_AN_AGE}"
+
+
+@pytest.mark.parametrize(
+    ("branch_max", "text"), [(MaxDays(2), "2d"), (NO_MAX, None)], ids=["days", "none"]
+)
+def test_an_age_is_written_as_the_file_writes_it(branch_max: BranchMax, text: str | None) -> None:
+    assert age_text(branch_max) == text
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["", "[development]\n", ENABLED],
+    ids=["no-table", "no-key", "development-on"],
+)
+def test_an_approver_is_the_agent_unless_written(text: str) -> None:
+    assert make_config(text).development.approver is Approver.AGENT
+
+
+def test_an_approver_of_developer_is_read() -> None:
+    config = make_config(f'{ENABLED}approver = "developer"\n')
+    assert config.development.approver is Approver.DEVELOPER
+
+
+def test_an_approver_is_held_as_written_with_the_development_off() -> None:
+    config = make_config('[development]\napprover = "developer"\n')
+    assert config.development.approver is Approver.DEVELOPER
+
+
+@pytest.mark.parametrize("value", ['"team"', "true", "1"], ids=["a-word", "a-truth", "a-number"])
+def test_an_approver_that_is_no_word_of_it_is_refused_naming_the_key(value: str) -> None:
+    with pytest.raises(ConfigError) as error:
+        make_config(f"[development]\napprover = {value}\n")
+    assert str(error.value) == f"development.approver is {value}: it takes agent or developer"
+
+
+@pytest.mark.parametrize("parallel", ["", "parallel = 1\n"], ids=["left-out", "written-1"])
+def test_the_trunk_holds_one_started_work_item_at_a_time(parallel: str) -> None:
+    assert make_config(f'{ENABLED}mode = "trunk"\n{parallel}').development.parallel == Parallel(1)
+
+
+def test_a_parallel_above_one_beside_the_trunk_is_refused_naming_both_keys() -> None:
+    with pytest.raises(ConfigError) as error:
+        make_config(f'{ENABLED}mode = "trunk"\nparallel = 2\n')
+    assert str(error.value) == (
+        "development.parallel is 2 while development.mode is trunk:"
+        " the trunk holds one started work item at a time"
+    )
+
+
+@pytest.mark.parametrize(
+    ("text", "branches"),
+    [
+        ("", False),
+        (ENABLED, True),
+        (f'{ENABLED}mode = "trunk"\n', False),
+        ('[development]\nmode = "trunk"\n', False),
+    ],
+    ids=["off", "on", "on-with-trunk", "off-with-trunk"],
+)
+def test_a_start_makes_a_branch_only_with_the_development_on_and_the_mode_branch(
+    text: str, branches: bool
+) -> None:
+    assert branched(make_config(text).development) is branches
 
 
 @pytest.mark.parametrize(

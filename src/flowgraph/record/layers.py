@@ -7,6 +7,7 @@ the push of main and the tag at the close of a Feature.
 
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import assert_never
 
 
 @dataclass(frozen=True)
@@ -41,6 +42,7 @@ class Merge(Enum):
     MERGE_COMMIT = "merge-commit"
     SQUASH = "squash"
     FAST_FORWARD = "fast-forward"
+    PULL_REQUEST = "pull-request"
 
 
 class Driver(Enum):
@@ -48,6 +50,24 @@ class Driver(Enum):
 
     DEVELOPER = "developer"
     AGENT = "agent"
+
+
+class Approver(Enum):
+    """Who approves a landing: the agent, by default, or the developer; each is its file word."""
+
+    AGENT = "agent"
+    DEVELOPER = "developer"
+
+
+class Mode(Enum):
+    """Where a work item is developed: on its own branch, or on main; each is its file word.
+
+    `branch` makes a branch and a worktree at its start and merges it at its landing; `trunk` makes
+    none: the work item is started, worked and completed on main, one at a time.
+    """
+
+    BRANCH = "branch"
+    TRUNK = "trunk"
 
 
 @dataclass(frozen=True)
@@ -70,11 +90,41 @@ Gate = Gated | Ungated
 
 
 @dataclass(frozen=True)
+class MaxDays:
+    """The most days the branch of a work item lives before status says so: 1 or more."""
+
+    days: int
+
+
+@dataclass(frozen=True)
+class NoMax:
+    """No age of a branch to say: a value of the age, not a missing one."""
+
+
+# The one value of no age.
+NO_MAX = NoMax()
+
+# How old a branch may be before status says so: that many days, or no age.
+BranchMax = MaxDays | NoMax
+
+
+def age_text(branch_max: BranchMax) -> str | None:
+    """The age as the file writes it, `1d`; None for no age."""
+    match branch_max:
+        case MaxDays(days):
+            return f"{days}d"
+        case NoMax():
+            return None
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+@dataclass(frozen=True)
 class Development:
     """The development beside the source code: turned on, or off, and its keys as written.
 
-    The limit, the merge, the gate and the driver are keys of the development: none says anything
-    while it is off.
+    The limit, the merge, the gate, the driver, the mode, the age of a branch and the approver are
+    keys of the development: none says anything while it is off.
     """
 
     enabled: bool
@@ -82,6 +132,14 @@ class Development:
     merge: Merge
     gate: Gate
     driver: Driver = field(default=Driver.DEVELOPER, kw_only=True)
+    mode: Mode = field(default=Mode.BRANCH, kw_only=True)
+    branch_max: BranchMax = field(default=NO_MAX, kw_only=True)
+    approver: Approver = field(default=Approver.AGENT, kw_only=True)
+
+
+def branched(development: Development) -> bool:
+    """Whether the start of a work item makes its branch: the development on, the mode branch."""
+    return development.enabled and development.mode is Mode.BRANCH
 
 
 class TagAt(Enum):

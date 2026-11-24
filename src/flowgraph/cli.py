@@ -14,7 +14,9 @@ from pathlib import Path
 from typing import assert_never
 
 from flowgraph.development import RunGate, run_gate
+from flowgraph.development.branch_age import aged
 from flowgraph.development.commit import OpenGit, open_git
+from flowgraph.development.config_git import record_named
 from flowgraph.development.scope import scope_in, within, worktree_of_item
 from flowgraph.development.worktrees import across_worktrees, held_elsewhere, record_of_main
 from flowgraph.item.commands import status_item
@@ -24,15 +26,19 @@ from flowgraph.parser.ids import ids_read
 from flowgraph.parser.not_given import no_check, no_config, no_dir, no_gate, no_removal, no_wait
 from flowgraph.record import (
     Config,
+    FindNamed,
     Found,
     Given,
     GivenMissing,
     IsDir,
     LoadConfig,
+    NamedMissing,
     NotFound,
     Now,
     locate,
+    no_name,
     read_config,
+    why_missing,
 )
 from flowgraph.record.init import MakeDir, RemoveDir, init_record
 from flowgraph.record.store import OpenStore, Store, open_files
@@ -41,7 +47,7 @@ from flowgraph.status.next import start_limit
 from flowgraph.status.terminal import Height, Width, no_terminal, terminal_height, terminal_width
 from flowgraph.status.watch import Wait, framed, make_pace, watch
 
-__all__ = ["Store", "open_files", "open_git", "read_config", "run", "run_gate"]
+__all__ = ["Store", "open_files", "open_git", "read_config", "record_named", "run", "run_gate"]
 
 # Write text to a stream; what it returns is ignored, so a stream's write and a list's append fit.
 Write = Callable[[str], object]
@@ -105,8 +111,11 @@ def run(
     run_check: RunGate = no_check,
     make_dir: MakeDir = no_dir,
     remove_dir: RemoveDir = no_removal,
+    find_named: FindNamed = no_name,
 ) -> int:
     """Read the arguments, locate the record in cwd, run the command and return the exit status.
+
+    The record is the --dir given, else the folder find_named names, else `.fgraph/` or `fgraph/`.
 
     The help option needs no record, after a command as alone: it prints the help of the command
     the arguments name; so does init, which makes the record through make_dir, removes it again
@@ -125,7 +134,8 @@ def run(
     landing runs the gate of the configuration through run_gate, which a run that lands under a
     gate is given: the default runs none. The complete of a Task that holds a check runs it
     through run_check, which a run that completes such a Task is given: the default runs none
-    and refuses to, as that of the gate does.
+    and refuses to, as that of the gate does. The rows of a started work item say, through `aged`,
+    that their branch is older than `development.branch_max`: said, never refused.
     """
     command_line = build_command_line()
     parser = command_line.parser
@@ -136,13 +146,15 @@ def run(
     args = ids_read(parser.parse_args(argv))
     if args.command == "init":
         try:
-            made = init_record(cwd, args.dir, is_dir, make_dir, remove_dir, open_store, open_git)
+            made = init_record(
+                cwd, args.dir, is_dir, make_dir, remove_dir, open_store, open_git, find_named
+            )
         except REFUSED as error:
             write_error(f"{parser.format_usage()}fgraph: error: {error}\n")
             return 2
         write(made.out)
         return 0
-    match locate(cwd, args.dir, is_dir):
+    match locate(cwd, args.dir, is_dir, find_named):
         case Found(located) | Given(located):
             path = _read_record(args.command, located, open_git)
             store = within(
@@ -152,6 +164,7 @@ def run(
             )
             try:
                 config = load_config(path)
+                store = aged(store, config.development, now)
                 check_relations(path, store, partial(held_elsewhere, path, open_git, open_store))
                 if args.command == "watch":
                     _watch(args, store, write, wait, width, height, config)
@@ -170,13 +183,8 @@ def run(
             if said.warning:
                 write_error(said.warning)
             return 0
-        case NotFound(searched, tried):
-            names = " or ".join(f"{name}/" for name in tried)
-            write_error(f"{parser.format_usage()}fgraph: error: no {names} in {searched}")
-            write_error(" -- run fgraph init, or pass --dir PATH\n")
-            return 2
-        case GivenMissing(path):
-            write_error(f"{parser.format_usage()}fgraph: error: --dir {path} is no directory\n")
+        case NotFound() | GivenMissing() | NamedMissing() as missing:
+            write_error(f"{parser.format_usage()}fgraph: error: {why_missing(missing)}\n")
             return 2
         case _ as unreachable:
             assert_never(unreachable)
@@ -205,6 +213,7 @@ def main() -> None:
             run_check=run_gate,
             make_dir=Path.mkdir,
             remove_dir=Path.rmdir,
+            find_named=record_named,
         )
     )
 

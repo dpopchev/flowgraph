@@ -157,6 +157,7 @@ class TestAStartedFeatureBlockedWhileItHoldsAStoryInBacklog:
             "InProgress (1)\n"
             "! F-0001  1/2 W  a feature title  "
             "-- waiting on the sponsor: the budget is not agreed\n"
+            "    S-0001  1/1 T  a title\n"
             "Completed (0)\n"
         )
 

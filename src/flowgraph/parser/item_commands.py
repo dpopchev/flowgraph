@@ -3,8 +3,10 @@
 import argparse
 
 from flowgraph.graph import JSON
+from flowgraph.parser.amend import amend_command
 from flowgraph.parser.base import Commands, new_command
 from flowgraph.parser.brief import brief_command
+from flowgraph.parser.knowledge import knowledge_command, note_command
 from flowgraph.parser.start import start_command
 from flowgraph.status import document
 from flowgraph.term import KINDS
@@ -17,47 +19,11 @@ EVERY = 5
 
 # The answers to a hypothesis a Spike is completed with.
 ANSWERS = ("yes", "no")
-# The summary of note, the help of its ID and of its --progress, each too long for its call.
-NOTE = "keep a finding, a decision, a deviation or a progress line on a work item, in any state"
-NOTE_ID = "the id of the work item or of the Feature, of a Task too with --progress"
-NOTE_PROGRESS = "where the work stands; no knowledge line"
 
 
 def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     """The parser of each command that reads or moves an item of the record, under its name."""
-    amend = new_command(commands, "amend", "rewrite parts of a work item or a Feature in Backlog")
-    amend.add_argument("id", metavar="ID", help="the id of the work item or of the Feature")
-    amend.add_argument("--title", metavar="TEXT", help="what is true once it is completed")
-    amend.add_argument("--description", metavar="TEXT", help="free text; a blank one clears it")
-    amend.add_argument("--complexity", metavar="WORD", help="low, medium or high, in Backlog alone")
-    amend.add_argument(
-        "--criterion",
-        action="append",
-        metavar="TEXT",
-        help="what the user experiences, of a Feature; once per criterion, in place of its own",
-    )
-    amend.add_argument("--given", metavar="STATE", help="the initial state")
-    amend.add_argument("--when", metavar="ACTION", help="the action")
-    amend.add_argument("--then", metavar="STATE", help="the expected state")
-    amend.add_argument("--observed", metavar="TEXT", help="what happens, of a Bug")
-    amend.add_argument("--expected", metavar="TEXT", help="what we wish to see, of a Bug")
-    amend.add_argument("--hypothesis", metavar="TEXT", help="the question, of a Spike")
-    amend.add_argument(
-        "--parent", metavar="ID", help="the Feature to put it under, or none to stand alone"
-    )
-    amend.add_argument("--realizes", metavar="N", help="the criterion it realizes: N or none")
-    amend.add_argument(
-        "--depends-on",
-        action="append",
-        metavar="ID",
-        help="a work item it waits for, once per id, in place of its own; none takes them away",
-    )
-    amend.add_argument(
-        "--about",
-        action="append",
-        metavar="TERM",
-        help="a term it is about, once per term, in place of its own; none takes them away",
-    )
+    amend = amend_command(commands)
     show = new_command(commands, "show", "show a work item with its Tasks, a Feature or a term")
     show.add_argument(
         "id",
@@ -104,7 +70,12 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     land.add_argument(
         "--message",
         metavar="TEXT",
-        help="the message of the commit the landing makes: needed unless it lands by fast-forward",
+        help="the message of the commit the landing makes: needed by merge-commit and by squash",
+    )
+    land.add_argument(
+        "--approved",
+        action="store_true",
+        help="the developer approved the landing: needed under development.approver = developer",
     )
     land.add_argument("--decision", metavar="TEXT", help="what answers the hypothesis, of a Spike")
     land.add_argument(
@@ -120,19 +91,7 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         metavar="ID",
         help="the work item that supersedes it, in place of the reason or beside it",
     )
-    note = new_command(commands, "note", NOTE)
-    note.add_argument("id", metavar="ID", help=NOTE_ID)
-    note.add_argument("--about", action="append", metavar="TERM", help="a term the line is about")
-    note.add_argument(
-        "--governs", action="append", metavar="PATH", help="a file the line governs; once per file"
-    )
-    kinds = note.add_mutually_exclusive_group(required=True)
-    kinds.add_argument("--finding", metavar="TEXT", help="what the work learned")
-    kinds.add_argument("--decision", metavar="TEXT", help="what was decided")
-    kinds.add_argument(
-        "--deviation", metavar="TEXT", help="a change to what a started item was agreed to do"
-    )
-    kinds.add_argument("--progress", metavar="TEXT", help=NOTE_PROGRESS)
+    note = note_command(commands)
     verify = new_command(
         commands, "verify", "keep the answer of the closing of a completed Story, Bug or Upkeep"
     )
@@ -154,20 +113,7 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         metavar="VERSION",
         help="the version to tag, as v1.0.0, instead of the next one the completed work names",
     )
-    knowledge = new_command(
-        commands,
-        "knowledge",
-        "list the knowledge lines of every work item and Feature, newest first",
-    )
-    knowledge.add_argument(
-        "--kind",
-        metavar="KIND",
-        help="list the lines of one kind alone: finding, decision or deviation",
-    )
-    knowledge.add_argument("--about", metavar="TERM", help="list the lines about one term alone")
-    knowledge.add_argument(
-        "--search", metavar="TEXT", help="list the lines whose text holds this text, in any case"
-    )
+    knowledge = knowledge_command(commands)
     terms = new_command(commands, "terms", "list the terms of the record with their meanings")
     graph = new_command(commands, "graph", "print the nodes and typed edges of the record")
     graph.add_argument(

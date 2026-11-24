@@ -10,6 +10,11 @@ agent = "haiku-a41"
 commit = "059f780"
 filed_during = "S-0115"
 
+[verified]
+answer = "yes"
+text = "at 1476b31: the keys docs/domain-model.md names in \"The keys built are the ones fgraph config show lists\" are the twelve fgraph config show prints, in its order, with no count; README.md and docs/domain-model.md each say \"A key is taken back to its default by fgraph config unset KEY\"; grep finds \"there is no unset\", \"no unset is built\", \"five keys\" and \"five defaults\" in neither"
+on = 2026-11-24 10:47:09+00:00
+
 [criterion]
 observed = "docs/domain-model.md says no unset is built, beside A key is taken back to its default, and README.md says there is no unset, while fgraph config unset exists and takes a key back; docs/domain-model.md says only these five keys are built and that a record without the file lists the five defaults, while fgraph config show lists seven"
 expected = "the two documents say what fgraph config does: unset takes a key back, and the keys listed are those it shows"

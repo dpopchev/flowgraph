@@ -4,7 +4,7 @@ title = "Raise the links fgraph about prints as JSON from none to every one: of 
 description = "New on the plan agreed on 2026-11-24. Seen on 2026-11-24 at 2d612af on main. fgraph about S-0002 --format json exits 2 with unrecognized arguments: --format json. The contract is that of the JSON of fgraph brief. Its Tasks are written before its Feature starts."
 parent = "F-0018"
 realizes = 3
-complexity = "low"
+complexity = "medium"
 created = 2026-11-24 19:51:35+00:00
 
 [criterion]

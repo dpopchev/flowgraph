@@ -84,3 +84,14 @@ mark = "open"
 kind = "decision"
 text = "The developer decided on 2026-11-24: the probe of T-0540 is run and T-0540, T-0542 and T-0543 are amended right before F-0020 starts, after F-0019 lands and changes src/flowgraph/parser/refusals.py and README.md again, not before."
 noted = 2026-11-24 21:11:46+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer decided on 2026-11-24: the gate of T-0541 reads src/a.py:12 and src/a.py::test_x as naming src/a.py, as the brief does; T-0541 is amended so, and T-0543 says it when it is read again before F-0020 starts. The two rules stay two functions until the Upkeep filed that day makes them one."
+noted = 2026-11-24 21:12:00+00:00
+governs = [
+    "src/flowgraph/brief/model.py",
+]
+supersedes = [
+    "S-0142#1",
+]

@@ -10,6 +10,11 @@ agent = "haiku-a9"
 commit = "dbe5491"
 filed_during = "S-0082"
 
+[verified]
+answer = "yes"
+text = "at dbe5491 on main, the merge of wi/B-0022-cut-the-empty-fgraph, in a throwaway repository of one commit whose pre-commit hook exits 1: fgraph init exit 2 printed fgraph: error: git commit --quiet --only --message chore: make the record -- .fgraph/config.toml failed: refused by the hook, and left no entry beside .git and an empty git status; with the hook removed a second fgraph init exit 0 printed record: <path>/.fgraph, the head chore: make the record holding .fgraph/config.toml alone. make check on the branch with main merged at 4d9b968: 3606 passed, all checks passed; with main merged again at 053f841, the tree of the landing, which adds B-0027: the 83 tests of the start of a branch and of init passed, ruff, pyright and make lines clean, src/flowgraph/cli.py at 242 lines. Handed whole to one subagent on haiku, no deviation. Seen by it and left: on a refused commit the files are restored twice, by commit_written and by init_record, which changes nothing."
+on = 2026-11-24 04:24:20+00:00
+
 [criterion]
 observed = "in a git work tree where the commit of the record is refused, as with no git identity, fgraph init takes config.toml back and leaves the empty .fgraph/ it made, so a second fgraph init exits 2 with holds a record already"
 expected = "an fgraph init that fails leaves no .fgraph/ behind, and a second one makes the record"

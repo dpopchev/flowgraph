@@ -61,6 +61,7 @@ def removed_work_item(
                 item.relations,
                 _superseded_by_kept(item.id, superseded_by),
                 item.about,
+                realizes=item.realizes,
                 progress=item.progress,
             )
         case StartedWorkItem():

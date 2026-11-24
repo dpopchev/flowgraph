@@ -12,6 +12,7 @@ from flowgraph import work_item
 from flowgraph.criterion import Criterion
 from flowgraph.development import Slug
 from flowgraph.feature.move import check_move
+from flowgraph.feature.realizes import check_realized
 from flowgraph.item.id import (
     ItemId,
     ItemIdError,
@@ -21,7 +22,7 @@ from flowgraph.item.id import (
     parse_placed_id,
     parse_work_item_id_of_any_kind,
 )
-from flowgraph.parent import STANDALONE, FeatureId, Parent
+from flowgraph.parent import NO_CRITERION, STANDALONE, FeatureId, Parent, Realizes
 from flowgraph.record import Now
 from flowgraph.record.queue import placed_text, reorder
 from flowgraph.record.store import Store
@@ -115,15 +116,18 @@ def add_item(
     amends: WorkItemId | None = None,
     about: tuple[str, ...] = (),
     complexity: Complexity | None = None,
+    realizes: Realizes = NO_CRITERION,
 ) -> Written:
     """Add a work item of that kind with its criterion; what the write says.
 
     It stands alone unless a Feature is given as its parent, depends on the work items given,
-    is filed during the one given, amends the one given, is about the terms given and carries the
-    complexity given, none by default. Raises
-    EmptyPartError when the title is blank and CriterionError when the criterion is not of the
-    form the kind takes; nothing is saved.
+    is filed during the one given, amends the one given, is about the terms given, carries the
+    complexity given and realizes the criterion of its Feature given, none by default. Raises
+    EmptyPartError when the title is blank, CriterionError when the criterion is not of the
+    form the kind takes and RealizesError when the criterion realized is not one of its Feature;
+    nothing is saved.
     """
+    check_realized(store.features.load_feature, parent, realizes)
     added = work_item.add_work_item(
         kind=kind,
         title=title,
@@ -138,6 +142,7 @@ def add_item(
         amends=amends,
         about=about,
         complexity=complexity,
+        realizes=realizes,
     )
     text = work_item_id_text(added)
     return Written(f"added {text}\n", MESSAGE.format(f"add {text}"))
@@ -157,6 +162,7 @@ def amend_item(item: str, parts: work_item.Amendment, store: Store) -> Written:
         load_work_item=store.load_work_item,
         save_work_item=store.save_work_item,
         check_move=partial(check_move, store.features.load_feature),
+        check_realizes=partial(check_realized, store.features.load_feature),
     )
     text = work_item_id_text(item_id)
     return Written(f"amended {text}\n", MESSAGE.format(f"amend {text}"))

@@ -45,6 +45,7 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     amend.add_argument(
         "--parent", metavar="ID", help="the Feature to put it under, or none to stand alone"
     )
+    amend.add_argument("--realizes", metavar="N", help="the criterion it realizes: N or none")
     amend.add_argument(
         "--depends-on",
         action="append",

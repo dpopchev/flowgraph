@@ -17,6 +17,7 @@ from flowgraph.work_item import (
     make_work_item_id,
     read_work_item,
     read_work_item_detail,
+    removed_task,
     started_task,
     started_work_item,
     write_work_item,
@@ -34,6 +35,7 @@ BARE = append_task(make_work_item(ID, "a title", SCENARIO, "", CREATED), TASK)
 HALF = started_task(started_work_item(BARE, ON), make_task_id(3), ON)
 STUCK = blocked_task(HALF, make_task_id(3), "a reason", "someone", ON)
 WHOLE = completed_task(HALF, make_task_id(3), ON, make_commit("abc1234"))
+GONE = removed_task(HALF, make_task_id(3), "a reason", ON)
 OLD = """id = "CH-0001"
 state = "backlog"
 title = "a title"
@@ -54,7 +56,9 @@ created = 2026-01-01T12:30:15Z
 
 
 @pytest.mark.parametrize(
-    "item", [BARE, HALF, STUCK, WHOLE], ids=["backlog", "started", "blocked", "done"]
+    "item",
+    [BARE, HALF, STUCK, WHOLE, GONE],
+    ids=["backlog", "started", "blocked", "done", "removed"],
 )
 def test_a_task_with_its_check_reads_back_whole_in_any_state(
     tmp_path: Path, item: WorkItemState

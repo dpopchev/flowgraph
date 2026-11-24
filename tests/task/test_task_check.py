@@ -12,6 +12,7 @@ from flowgraph.task import (
     completed,
     make_task,
     make_task_id,
+    removed,
     row_of,
     started,
     unblocked,
@@ -30,6 +31,7 @@ MOVED: list[TaskState] = [
     STUCK,
     unblocked(STUCK),
     completed(BEGUN, ON, make_commit("abc1234")),
+    removed(BEGUN, "a reason", ON),
 ]
 
 
@@ -37,7 +39,9 @@ def test_a_task_made_with_no_check_holds_none() -> None:
     assert make_task(make_task_id(1), "a task", "an output", "", CREATED).check is None
 
 
-@pytest.mark.parametrize("task", MOVED, ids=["backlog", "started", "blocked", "unblocked", "done"])
+@pytest.mark.parametrize(
+    "task", MOVED, ids=["backlog", "started", "blocked", "unblocked", "done", "removed"]
+)
 def test_every_move_of_a_task_carries_its_check(task: TaskState) -> None:
     assert task.check == "make test"
 

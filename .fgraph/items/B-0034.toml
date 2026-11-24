@@ -1,0 +1,10 @@
+id = "B-0034"
+state = "backlog"
+title = "Cut the passages of README.md and docs/domain-model.md that say development.merge takes three words from two to none"
+description = "Found by the subagent of S-0097 on 2026-11-24, in passages no Task of S-0097 names, and found again by grep by the coordinator on main that day; filed at the end of the Backlog and not burned. Its Tasks and its complexity are written when it is ordered."
+created = 2026-11-24 08:44:23+00:00
+filed_during = "S-0097"
+
+[criterion]
+observed = "at c611e9d on main, grep three words finds README.md line 1065, a merge that is none of its three words, and docs/domain-model.md line 2116, the same words; development.merge takes four since S-0097, merge-commit, squash, fast-forward and pull-request; the bullet of docs/domain-model.md on a landing taken up by each way of merging names three too"
+expected = "each passage names the four words, or names no count"

@@ -1,9 +1,11 @@
 id = "U-0026"
-state = "backlog"
+state = "started"
 title = "Cut the lines of the two largest modules of src/flowgraph/status, view.py and text.py, from 247 and 226 to 130 and 100 or fewer, the buckets, the lines of an item, the rows and the placed Features each taken into a module of their own"
 description = "Found on 2026-11-23 while the Tasks of F-0017 were planned: its Stories, S-0122 and S-0105 each add to src/flowgraph/status/view.py or text.py, which have no room. Filed on the word of the developer of that day to plan as many items as one goal takes; the first Story of F-0017 waits for it. It waits itself for S-0121 and S-0098, whose Tasks name the two modules as they are today. A move with no change of behavior."
 complexity = "low"
 created = 2026-11-23 21:02:39+00:00
+started = 2026-11-24 08:44:40+00:00
+agent = "haiku-a34"
 depends_on = [
     "S-0121",
     "S-0098",

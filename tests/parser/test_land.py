@@ -22,7 +22,7 @@ def test_the_help_of_land_says_when_the_message_is_needed() -> None:
     helped = " ".join(COMMAND_LINE.commands["land",].format_help().split())
     assert (
         "--message TEXT the message of the commit the landing makes:"
-        " needed unless it lands by fast-forward"
+        " needed by merge-commit and by squash"
     ) in helped
 
 

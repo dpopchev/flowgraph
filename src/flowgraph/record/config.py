@@ -6,22 +6,21 @@ false`. The development -- the branch and the worktree of a start, the scoping o
 landing -- is off unless `[development] enabled = true`. The layers build on each other: the
 branch of a work item carries its record, so the development needs the commits. `[development]
 parallel` is the most work items started at once; it has no default, so left out nothing limits
-them. `[development] merge` is how a landing merges: `merge-commit` unless it names `squash` or
-`fast-forward`. `[development] gate` is the one command line a landing runs before main moves;
-it has no default either, so left out a landing runs none. `[development] driver` names who
-drives the development: `developer` unless it names `agent`. `[development] mode` is where a work
-item is developed: `branch` unless it names `trunk`, which makes no branch and holds one started
-work item, so its `parallel` is 1 left out and a number above 1 is refused. `[development]
-branch_max` is an age in whole days, `1d`, with no default: left out no age is said.
-`[development] approver` names who approves a landing: `agent` unless it names `developer`, whose
-landing waits for the developer (`fgraph land --approved`).
-`[delivery] push = true` pushes main once a landing is whole; it is false by default.
-`[delivery] tag` tags main with its version at `feature-close`, `close` (a work item alone too)
-or never, `none`, the default.
-`[archive] board` is the path of the `.board/` of board 1 the record points at, with no default,
-so left out the record points at none. Each layer is a value (`flowgraph.record.layers`); what a
-file refused says is `flowgraph.record.config_refusal`, and the tables of the file are
-`flowgraph.record.config_file`.
+them. `[development] merge` is how a landing merges: `merge-commit` unless it names `squash`,
+`fast-forward` or `pull-request`. `[development] gate` is the one command line a landing runs
+before main moves; it has no default either, so left out a landing runs none. `[development]
+driver` names who drives the development: `developer` unless it names `agent`. `[development]
+mode` is where a work item is developed: `branch` unless it names `trunk`, which makes no branch
+and holds one started work item, so its `parallel` is 1 left out and a number above 1 is
+refused. `[development] branch_max` is an age in whole days, `1d`, with no default: left out no
+age is said. `[development] approver` names who approves a landing: `agent` unless it names
+`developer`, whose landing waits for the developer (`fgraph land --approved`).
+`[delivery] push = true` pushes main once a landing is whole; it is false by
+default. `[delivery] tag` tags main with its version at `feature-close`, `close` (a work item
+alone too) or never, `none`, the default. `[archive] board` is the path of the `.board/` of
+board 1 the record points at, with no default, so left out the record points at none. Each layer
+is a value (`flowgraph.record.layers`); what a file refused says is
+`flowgraph.record.config_refusal`, and the tables of the file are `flowgraph.record.config_file`.
 """
 
 import tomllib

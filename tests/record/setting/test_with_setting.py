@@ -111,7 +111,8 @@ def test_a_key_the_configuration_does_not_have_is_refused_naming_it(key: str) ->
         (
             "development.merge",
             "rebase",
-            'development.merge is "rebase": it takes merge-commit, squash or fast-forward',
+            'development.merge is "rebase":'
+            " it takes merge-commit, squash, fast-forward or pull-request",
         ),
         ("development.gate", "", 'development.gate is "": it takes a command line'),
         ("development.gate", "  ", 'development.gate is "  ": it takes a command line'),

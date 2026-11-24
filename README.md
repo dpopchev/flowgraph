@@ -57,6 +57,7 @@ the typed edges of the whole record as JSON.
 | the closing of a work item      | `fgraph verify --yes` keeps the yes of a completed one   |
 |                                 | `--no` keeps the no and files a Bug that amends it       |
 | the development                 | once enabled: start branches, `fgraph land` lands        |
+| the commits of main in a branch | `fgraph sync` merges `main` into a started branch        |
 | the release of the trunk        | `fgraph release` tags `main` with its next `v*` version  |
 | the links of an item            | `fgraph about` lists every relation, both sides, by id   |
 | the brief of a work item        | `fgraph brief` prints it whole, as text or as JSON       |
@@ -1661,6 +1662,31 @@ item is in Backlog, blocked already, completed or removed, or the reason or
 what it waits on is blank; an unblock when it is not blocked. `fgraph unblock
 S-0001` takes it back to started, with what it held, says `unblocked S-0001`
 and commits `chore: unblock S-0001 in the record`.
+
+When `main` moved since the start -- another work item landed first --
+`fgraph sync`, run in the worktree of the started work item, merges the local
+branch `main` into its branch by one merge commit, never a rebase and with no
+fetch:
+
+```sh
+cd ../project.worktrees/S-0001-raise-the-stories-fgraph
+fgraph sync
+# merged main into wi/S-0001-raise-the-stories-fgraph at <a sha>
+```
+
+The commit is worded `chore: merge main into <branch>`. A branch that holds
+`main` already says `<branch> holds main already at <sha>`, exits 0 and makes
+no commit. A `main` that conflicts with the branch is not merged:
+
+```sh
+fgraph sync
+# fgraph: error: main does not merge into wi/S-0001-...: conflict in <file> -- nothing is merged, the branch is as it was
+```
+
+The merge is then yours, `git merge main` in the worktree. The refusals of
+exit 2 are the development off, outside a git work tree, on `main` or on a
+branch no work item owns, and a tracked file changed and not committed (an
+untracked file is left alone).
 
 In a git repository whose record has the development on, `fgraph land` does
 the landing in one step, run in the checkout of `main` once every Task of the

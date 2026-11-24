@@ -2197,6 +2197,25 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 - A git step refused exits 2 naming the command: a commit refused puts every
   file the write changed back as it was, a worktree refused for another cause
   than a branch there leaves the start committed.
+- `fgraph sync` (S-0150) takes the place of `board sync-main` of board 1. Run
+  in the worktree of a started work item, with the development on, it merges
+  `main` into its branch. `main` is `refs/heads/main` as the repository holds
+  it: nothing is fetched. The merge is `git merge --no-ff`, so one merge commit,
+  `chore: merge main into <branch>`, even where a fast-forward would do; a
+  branch that holds `main` already says so and makes none. A conflict is
+  aborted with `git merge --abort` after its files are read, and since a
+  changed tracked file is refused first, the abort leaves the work tree as it
+  was: `main does not merge into <branch>: conflict in <files>`. The record
+  merges as any file: `main` alone writes the queue, the Features, the terms,
+  the configuration and the other work items, and the branch alone writes the
+  file of its work item (the scope of a branch), so no file of `.fgraph/` is
+  changed on both sides unless one was edited by hand or the work item was
+  completed on `main` by hand while its branch lived -- then it is a conflict
+  as any other, named and aborted, and fgraph derives nothing. The steps are in
+  `src/flowgraph/development/sync_git.py`, called by name and not bound by
+  `open_git`; the work item is the one the branch names, its state is not read;
+  in a record git ignores the worktree holds no `.fgraph/`, so the command
+  finds no record there and the merge is git's.
 - With the development on, `fgraph land` lands a started work item, run in
   the checkout of `main`. It merges the branch `wi/<id>-*` into `main` as a
   merge of its own, held uncommitted; commits it under the message the

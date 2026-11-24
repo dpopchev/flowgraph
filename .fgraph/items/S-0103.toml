@@ -70,3 +70,8 @@ description = "Change README.md and docs/domain-model.md only; find each passage
 check = "grep -q -- '--supersedes' README.md && grep -q 'superseded by S-0001#2' README.md && grep -q 'superseded by S-0001#2' docs/domain-model.md && ! grep -q 'its form not stated' docs/domain-model.md && ! grep -q 'decision  S-0001  keep one store' README.md"
 expected_output = "changed: docs/domain-model.md says, under Attributes, that a line is named by its ref, the id of its item, # and its place among the lines of that item, and that a later line supersedes an earlier one by naming it; under Persistence, that the later line alone holds the key supersedes, which file a supersede writes and where, the refusal line, that fgraph knowledge lists each line under its ref and fgraph show ends a superseded line with (superseded by S-0001#2); the Field map and the Gaps of From board 1 give the ref and supersedes their home. README.md shows a note with --supersedes, the show of the superseded line, and the refs in every example of fgraph knowledge"
 created = 2026-11-23 20:53:29+00:00
+
+[[knowledge]]
+kind = "deviation"
+text = "The developer agreed on 2026-11-24: T-0533 also corrects the expected lines of two files its brief does not name, tests/functional/test_knowledge_search.py of S-0146 and tests/functional/test_note_mark.py of S-0102, both landed after the Tasks were written: the bare id of a line of fgraph knowledge becomes its ref, as S-0001#1, read from the run. Expected lines only, in those two files only."
+noted = 2026-11-24 10:18:15+00:00

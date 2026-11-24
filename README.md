@@ -2453,7 +2453,7 @@ fgraph show S-0002
 several in one call when given together; `--description ""` clears the
 description. An amend exits 2 and names why when it names no part, when the
 title or a part of the criterion is blank, when the work item is started or
-completed already, when the id is a Task's, or when the record does not hold
+completed already, when the id names a Task, or when the record does not hold
 it.
 
 `--parent` puts a work item in Backlog under a Feature, and with the word

@@ -1,5 +1,13 @@
 """A Task: one deliverable of a work item, and the Tasks of one work item among themselves."""
 
+from flowgraph.task.id import (
+    TaskId,
+    TaskIdError,
+    make_task_id,
+    next_task_id,
+    parse_task_id,
+    task_id_text,
+)
 from flowgraph.task.list import (
     all_completed,
     at_most_one_started,
@@ -22,18 +30,12 @@ from flowgraph.task.model import (
     StartedAlreadyError,
     StartedTask,
     Task,
-    TaskId,
-    TaskIdError,
     TaskInProgressError,
     TaskNotFoundError,
     TaskRow,
     TaskState,
     make_task,
-    make_task_id,
-    next_task_id,
-    parse_task_id,
     row_of,
-    task_id_text,
     task_state_name,
 )
 from flowgraph.task.moves import blocked, completed, started, unblocked

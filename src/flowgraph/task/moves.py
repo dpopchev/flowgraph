@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import assert_never
 
 from flowgraph.criterion import Evidence, said
+from flowgraph.task.id import task_id_text
 from flowgraph.task.model import (
     BlockedError,
     BlockedTask,
@@ -15,7 +16,6 @@ from flowgraph.task.model import (
     StartedTask,
     Task,
     TaskState,
-    task_id_text,
 )
 
 

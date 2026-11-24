@@ -4,15 +4,14 @@ from collections.abc import Iterable
 from datetime import datetime
 
 from flowgraph.criterion import Evidence
+from flowgraph.task.id import TaskId, task_id_text
 from flowgraph.task.model import (
     CompletedTask,
     OpenTaskError,
     StartedTask,
-    TaskId,
     TaskInProgressError,
     TaskNotFoundError,
     TaskState,
-    task_id_text,
 )
 from flowgraph.task.moves import blocked, completed, started, unblocked
 

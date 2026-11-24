@@ -11,3 +11,8 @@ criteria = [
     "an agent reads in a refusal the command that gets past it",
     "an agent is refused an option or a name fgraph does not keep",
 ]
+
+[[knowledge]]
+kind = "decision"
+text = "The developer gave the go on 2026-11-24, with the word file, to the plan shown that day: Phase 1, Agent Execution Interface, Scope Gates and Governed Briefs, is five Features on top of the Backlog in the order F-0019, F-0020, F-0018, F-0021, F-0022, the model holding no level above a Feature; 14 items of the Backlog are put under them with their ids and their Tasks, none removed. For F-0018: the JSON is --format json, never --json; a write keeps its one line and a refusal its one line on stderr with exit 2, neither as JSON, the smaller of two readings. The complexities of the work items of the five are the estimates of the agent the plan showed."
+noted = 2026-11-24 19:55:46+00:00

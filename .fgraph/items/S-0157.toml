@@ -1,0 +1,16 @@
+id = "S-0157"
+state = "backlog"
+title = "Raise the tools of fgraph an agent session lists and calls over stdio from none to one, the status of the record"
+description = "New on the plan agreed on 2026-11-24: the thin end to end of F-0022, built as the decision of Q-0002 says. Its Tasks are written before its Feature starts."
+parent = "F-0022"
+realizes = 1
+complexity = "medium"
+created = 2026-11-24 19:51:49+00:00
+depends_on = [
+    "Q-0002",
+]
+
+[criterion]
+given = "a record of fgraph and an agent session set to run fgraph mcp as a stdio server"
+when = "the session lists the tools of the server and calls the one of the status"
+then = "it lists that tool and is given the document fgraph status --format json prints, and the server ends when its input closes"

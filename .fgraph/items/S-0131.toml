@@ -42,13 +42,15 @@ commit = "077dfdd"
 
 [[tasks]]
 id = "T-0587"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a work item of the Backlog is listed with its count of Tasks in brackets"
 description = "Change README.md and docs/domain-model.md only; find each passage by grep, never by line number. docs/domain-model.md: (1) the bullet starting `fgraph status` lists a work item under InProgress with its progress -- its sentence The lines of Backlog, Completed and Removed carry no progress becomes: a work item in Backlog is listed with the count of its Tasks in brackets between its id and its title, `S-0001  [3 T]  <title>`, and `S-0001  []  <title>` when it holds none, the developer's frame of 2026-11-23 (S-0131) -- a count, not a progress, since no Task of it is started; the lines of Completed and Removed carry neither; the line of a Feature keeps `N/M W`. The sentence may be split over lines, so the check greps its first words on one line: rewrite it so the old words are gone. (2) Every literal line of a work item in Backlog in a bullet (grep -n \"~ S-\\|> S-\" docs/domain-model.md, and the bullets on what a work item waits for and on the next to start): add the brackets. (3) Say once, in the bullet on the JSON document or beside it, that the JSON does not change: a work item holds its progress and its tasks already. README.md: (1) where the Backlog of fgraph status is first shown (the first example block with `# Backlog (1)`), add one sentence: a work item in Backlog is listed with the count of its Tasks in brackets, `[]` while it holds none. (2) Every example line of a work item under a `# Backlog (N)` heading of fgraph status or fgraph watch, 14 blocks (grep -n \"^# Backlog ([1-9]\" README.md), and each `# ~ S-` and `# > S-` line: add `[]` or `[N T]`, N read from the commands the README shows above the block; a line under `# InProgress`, `# Completed` or `# Removed` and a line of a Feature stay. Do not touch the blocks of fgraph show. Keep each edit inside its paragraph, bullet or block. Plain ASCII. No source or test change."
 check = "grep -q \"\\[3 T\\]\" docs/domain-model.md && grep -q \"\\[\\]  \" README.md && ! grep -q \"The lines of Backlog, Completed and Removed carry no\" docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md says a work item in Backlog is listed as `S-0001  [3 T]  <title>`, and `S-0001  []  <title>` with no Task, the developer's frame of 2026-11-23 (S-0131), and no longer that the lines of the Backlog carry no progress; README.md says the same once and every example line of a work item in Backlog under fgraph status or fgraph watch carries its brackets"
 created = 2026-11-23 21:03:55+00:00
 started = 2026-11-24 13:06:25+00:00
+completed = 2026-11-24 13:07:35+00:00
+commit = "87d9616"
 
 [[knowledge]]
 kind = "deviation"

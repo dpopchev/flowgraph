@@ -32,7 +32,7 @@ def view_said(
     """
     match args.command:
         case "knowledge":
-            return Said(show_knowledge(args.kind, args.about, store))
+            return Said(show_knowledge(args.kind, args.about, store, args.search))
         case "terms":
             return Said(terms_text(store))
         case "graph":

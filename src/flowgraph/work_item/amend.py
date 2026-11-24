@@ -20,7 +20,7 @@ from flowgraph.criterion import (
     make_scenario,
     said,
 )
-from flowgraph.parent import Parent
+from flowgraph.parent import NO_CRITERION, Parent, Realizes, realizes_under
 from flowgraph.relation import with_depends_on
 from flowgraph.task import BlockedError, CompletedAlreadyError, StartedAlreadyError
 from flowgraph.work_item.complexity import Complexity
@@ -44,6 +44,8 @@ class Amendment:
     Its parent is the Feature to put it under, or standing alone. The work items it depends on
     replace those it had; none given takes them all away. The terms it is about replace those it
     had too, none given as well. The complexity given replaces the one it had; none given keeps it.
+    The criterion it realizes given replaces the one it had, NO_CRITERION takes it away and none
+    given keeps it, unless the parent changes, which drops it.
     """
 
     title: str | None = None
@@ -58,11 +60,16 @@ class Amendment:
     depends_on: tuple[WorkItemId, ...] | None = None
     about: tuple[str, ...] | None = None
     complexity: Complexity | None = None
+    realizes: Realizes | None = None
 
 
 # Check the move of the work item of that id from the parent it had to the one an amend names;
 # raises the refusal of the Feature that does not take it.
 CheckMove = Callable[[WorkItemId, Parent, Parent], None]
+
+# Check that the Feature has the criterion named; raises RealizesError naming the Feature and
+# the count of its criteria.
+CheckRealizes = Callable[[Parent, Realizes], None]
 
 
 # The parts of an amendment that belong to each form of criterion a work item in Backlog states.
@@ -126,9 +133,10 @@ def amended_work_item(item: WorkItemState, amendment: Amendment) -> WorkItem:
 
     Raises NoPartError when it names none, NoSuchPartError when it names a part the criterion of
     the item does not have, EmptyPartError when its title or a part of its criterion is blank,
-    RelationError when it makes the item depend on itself,
-    StartedAlreadyError when the item is started, BlockedError when it is blocked,
-    CompletedAlreadyError when it is completed and RemovedAlreadyError when it is removed.
+    RelationError when it makes the item depend on itself, RealizesError when it names a
+    criterion for an item standing alone, StartedAlreadyError when the item is started,
+    BlockedError when it is blocked, CompletedAlreadyError when it is completed and
+    RemovedAlreadyError when it is removed.
     """
     named = work_item_id_text(item.id)
     match item:
@@ -139,6 +147,8 @@ def amended_work_item(item: WorkItemState, amendment: Amendment) -> WorkItem:
             title = said("title", _kept(amendment.title, item.title))
             description = _kept(amendment.description, item.description)
             parent = _kept(amendment.parent, item.parent)
+            held = item.realizes if parent == item.parent else NO_CRITERION
+            realizes = realizes_under(_kept(amendment.realizes, held), parent)
             about = _kept(amendment.about, item.about)
             complexity = _kept(amendment.complexity, item.complexity)
             relations = item.relations
@@ -150,6 +160,7 @@ def amended_work_item(item: WorkItemState, amendment: Amendment) -> WorkItem:
                 criterion=criterion,
                 description=description,
                 parent=parent,
+                realizes=realizes,
                 relations=relations,
                 about=about,
                 complexity=complexity,

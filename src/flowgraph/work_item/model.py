@@ -18,9 +18,9 @@ from flowgraph.criterion import (
     said,
 )
 from flowgraph.knowledge import KnowledgeLine
-from flowgraph.parent import STANDALONE, Parent
+from flowgraph.parent import NO_CRITERION, STANDALONE, Parent, Realizes, realizes_under
 from flowgraph.relation import Relations, make_relations
-from flowgraph.task import CompletedTask, Task, TaskState
+from flowgraph.task import CompletedTask, Task, TaskState, task_of
 from flowgraph.work_item.agent import Agent
 from flowgraph.work_item.complexity import Complexity
 from flowgraph.work_item.errors import (
@@ -36,6 +36,7 @@ from flowgraph.work_item.errors import (
     WorkItemNotFoundError as WorkItemNotFoundError,
 )
 from flowgraph.work_item.id import WorkItemId
+from flowgraph.work_item.progress import ProgressLine
 from flowgraph.work_item.verification import Verification
 from flowgraph.work_item.views import WorkItemRow
 
@@ -54,10 +55,12 @@ class WorkItem:
     created: datetime
     tasks: tuple[Task, ...]
     parent: Parent = STANDALONE
+    realizes: Realizes = field(default=NO_CRITERION, kw_only=True)
     complexity: Complexity | None = None
     knowledge: tuple[KnowledgeLine, ...] = ()
     relations: Relations[WorkItemId] = NO_RELATIONS
     about: tuple[str, ...] = ()
+    progress: tuple[ProgressLine, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -73,10 +76,12 @@ class StartedWorkItem:
     agent: Agent | None = field(default=None, kw_only=True)
     tasks: tuple[TaskState, ...]
     parent: Parent = STANDALONE
+    realizes: Realizes = field(default=NO_CRITERION, kw_only=True)
     complexity: Complexity | None = None
     knowledge: tuple[KnowledgeLine, ...] = ()
     relations: Relations[WorkItemId] = NO_RELATIONS
     about: tuple[str, ...] = ()
+    progress: tuple[ProgressLine, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -95,10 +100,12 @@ class BlockedWorkItem:
     agent: Agent | None = field(default=None, kw_only=True)
     tasks: tuple[TaskState, ...]
     parent: Parent = STANDALONE
+    realizes: Realizes = field(default=NO_CRITERION, kw_only=True)
     complexity: Complexity | None = None
     knowledge: tuple[KnowledgeLine, ...] = ()
     relations: Relations[WorkItemId] = NO_RELATIONS
     about: tuple[str, ...] = ()
+    progress: tuple[ProgressLine, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -119,11 +126,13 @@ class CompletedWorkItem:
     commit: Evidence
     tasks: tuple[CompletedTask, ...]
     parent: Parent = STANDALONE
+    realizes: Realizes = field(default=NO_CRITERION, kw_only=True)
     complexity: Complexity | None = None
     knowledge: tuple[KnowledgeLine, ...] = ()
     relations: Relations[WorkItemId] = NO_RELATIONS
     about: tuple[str, ...] = ()
     verified: Verification | None = None
+    progress: tuple[ProgressLine, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -142,11 +151,13 @@ class RemovedWorkItem:
     reason: str
     tasks: tuple[Task, ...]
     parent: Parent = STANDALONE
+    realizes: Realizes = field(default=NO_CRITERION, kw_only=True)
     complexity: Complexity | None = None
     knowledge: tuple[KnowledgeLine, ...] = ()
     relations: Relations[WorkItemId] = NO_RELATIONS
     superseded_by: WorkItemId | None = None
     about: tuple[str, ...] = ()
+    progress: tuple[ProgressLine, ...] = ()
 
 
 # A work item that still takes Tasks: in Backlog, started or blocked.
@@ -180,14 +191,17 @@ def make_work_item(
     amends: WorkItemId | None = None,
     about: tuple[str, ...] = (),
     complexity: Complexity | None = None,
+    realizes: Realizes = NO_CRITERION,
 ) -> WorkItem:
     """A work item in Backlog, its created time kept to the second; it stands alone unless a
     Feature is named as its parent, depends on the work items given, is filed during the one given
     and amends the one given, none by default. It is about the terms given, in order, none by
-    default, and carries the complexity given, none by default.
+    default, carries the complexity given, none by default, and realizes the criterion of its
+    Feature given, none by default.
 
     Raises EmptyPartError when the title is blank, CriterionError when the criterion is not of
-    the form the kind of the item takes and RelationError when it names itself.
+    the form the kind of the item takes, RelationError when it names itself and RealizesError
+    when it names a criterion and stands alone.
     """
     kind = item_id.kind
     if not isinstance(criterion, kind.takes):
@@ -208,6 +222,7 @@ def make_work_item(
         (),
         relations,
         about,
+        realizes=realizes_under(realizes, parent),
     )
 
 
@@ -219,3 +234,14 @@ def append_task[W: OpenWorkItem](item: W, task: Task) -> W:
 def noted_work_item[W: WorkItemState](item: W, line: KnowledgeLine) -> W:
     """The work item, in whatever state, with the line after the lines it already keeps."""
     return replace(item, knowledge=(*item.knowledge, line))
+
+
+def progressed_work_item[W: WorkItemState](item: W, line: ProgressLine) -> W:
+    """The work item, in whatever state, with the progress line after those it already keeps.
+
+    A line records, it moves nothing. Raises TaskNotFoundError when the line names a Task the
+    work item does not hold.
+    """
+    if line.task is not None:
+        task_of(item.tasks, line.task)
+    return replace(item, progress=(*item.progress, line))

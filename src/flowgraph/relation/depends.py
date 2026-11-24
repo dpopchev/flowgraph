@@ -8,6 +8,7 @@ each work item a view lists, and refuses the start of a work item that still wai
 from collections.abc import Sequence
 from dataclasses import replace
 
+from flowgraph.feature.realizes import realized_text
 from flowgraph.item.id import ItemIdError, parse_item_id, parse_work_item_id_of_any_kind
 from flowgraph.parent import NONE
 from flowgraph.record.store import Store
@@ -146,10 +147,11 @@ def amends_asked(text: str | None, store: Store) -> WorkItemId | None:
 def bucketed(detail: WorkItemDetail, store: Store) -> WorkItemDetail:
     """The detail of a work item with the bucket each work item it depends on is listed in and
     the ids of the work items filed during it, of those it supersedes and of those that amend it,
-    read from the record."""
+    and the text of the criterion of its Feature it realizes, read from the record."""
     record = record_standing(store)
     return replace(
         detail,
+        realized=realized_text(store.features.load_feature, detail.parent, detail.realizes),
         depends_on=[DependsRow(row.id, record[row.id].bucket) for row in detail.depends_on],
         filed_here=filed_during_it(detail.id, record),
         supersedes=superseding(detail.id, record),

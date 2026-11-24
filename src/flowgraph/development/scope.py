@@ -36,6 +36,9 @@ from flowgraph.work_item import (
 # The name of the branch of a work item: `wi/`, its id, `-` and its slug.
 OWNED = re.compile(r"wi/([A-Z]+-\d+)-.+")
 
+# The refusal of a Task's write off its worktree: the id of the work item, then the path of it.
+WRITTEN_IN_WORKTREE = "{} is started: its Tasks are written in its worktree, {}"
+
 
 @dataclass(frozen=True)
 class Scope:
@@ -124,9 +127,7 @@ def within(store: Store, find_scope: FindScope, find_worktree: FindItemWorktree)
         if scope is None and _is_started(item) and _is_started(store.load_work_item(item.id)):
             worktree = find_worktree(item.id)
             if worktree is not None:
-                raise OutOfScopeError(
-                    f"{named} is started: its Tasks are written in its worktree, {worktree}"
-                )
+                raise OutOfScopeError(WRITTEN_IN_WORKTREE.format(named, worktree))
         store.save_work_item(item)
 
     def save_queue(queue: Queue) -> None:

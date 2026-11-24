@@ -64,7 +64,7 @@ def git(cwd: Path, *args: str) -> str:
 
 
 def land(checkout: Path, add: Sequence[str]) -> None:
-    """Add the work item with one Task, start it, do the Task on its branch and land it."""
+    """Add one work item and a Task, start, work and land it, then keep the yes of its closing."""
     item = fgraph(add, checkout).out.split()[1]
     add_task = ["add", "task", "a task title", "--parent", item, "--output", "an output"]
     task = fgraph([*add_task, "--check", "make test"], checkout).out.split()[1]
@@ -76,6 +76,7 @@ def land(checkout: Path, add: Sequence[str]) -> None:
     git(worktree, "commit", "--quiet", "--message", f"feat: do the work of {item}")
     fgraph(["complete", task, "--commit", git(worktree, "rev-parse", "HEAD")], worktree)
     fgraph(["land", item, "--message", f"feat: land {item}"], checkout)
+    fgraph(["verify", item, "--yes", "it holds"], checkout)
 
 
 @pytest.fixture(autouse=True)

@@ -3,6 +3,7 @@
 from flowgraph.work_item.amend import (
     Amendment,
     CheckMove,
+    CheckRealizes,
     NoPartError,
     NoSuchPartError,
     amended_work_item,
@@ -65,12 +66,19 @@ from flowgraph.work_item.model import (
     append_task,
     make_work_item,
     noted_work_item,
+    progressed_work_item,
 )
 from flowgraph.work_item.moves import (
     completed_work_item,
     started_work_item,
     still_open,
     verified_work_item,
+)
+from flowgraph.work_item.progress import (
+    ProgressLine,
+    ProgressRow,
+    make_progress_line,
+    progress_row,
 )
 from flowgraph.work_item.projection import work_item_detail, work_item_row
 from flowgraph.work_item.removal import removed_work_item
@@ -107,6 +115,7 @@ __all__ = [
     "Amendment",
     "BlockedWorkItem",
     "CheckMove",
+    "CheckRealizes",
     "CompletedWorkItem",
     "Complexity",
     "ComplexityError",
@@ -122,6 +131,8 @@ __all__ = [
     "NoSuchPartError",
     "NotVerifiableError",
     "OpenWorkItem",
+    "ProgressLine",
+    "ProgressRow",
     "RemovedAlreadyError",
     "RemovedWorkItem",
     "SaveWorkItem",
@@ -155,6 +166,7 @@ __all__ = [
     "holder_of",
     "make_complexity",
     "make_kind",
+    "make_progress_line",
     "make_verification",
     "make_work_item",
     "make_work_item_id",
@@ -162,6 +174,8 @@ __all__ = [
     "note_work_item",
     "noted_work_item",
     "parse_work_item_id",
+    "progress_row",
+    "progressed_work_item",
     "read_task_ids",
     "read_work_item",
     "read_work_item_detail",

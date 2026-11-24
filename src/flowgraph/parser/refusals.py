@@ -9,6 +9,7 @@ from flowgraph.criterion import (
     EmptyPartError,
 )
 from flowgraph.development import GateError, GitError, SlugError
+from flowgraph.development.approval import ApprovalError
 from flowgraph.development.commit_held import CommitNotHeldError
 from flowgraph.development.driver import NoComplexityError
 from flowgraph.development.parallel import ParallelError
@@ -93,6 +94,7 @@ REFUSED = (
     AgentError,
     GitError,
     LandError,
+    ApprovalError,
     GateError,
     ReleaseError,
     SyncError,

@@ -2039,6 +2039,22 @@ development too.
   more, as 1d`. The model is `MaxDays`, `NoMax` and `BranchMax` of
   `src/flowgraph/record/layers.py`, the marking `aged` of
   `src/flowgraph/development/branch_age.py`.
+- `[development] approver` names who approves a landing: `agent` by default, or
+  `developer` (the enum `Approver` of `src/flowgraph/record/layers.py`). Under
+  agent a landing is taken as before. Under developer, with the development on,
+  `fgraph land` of a work item exits 2 before any git step, nothing merged and
+  nothing written, with the line `S-0001 cannot land: development.approver =
+  developer, the landing waits for the developer -- run fgraph land S-0001
+  --approved once the developer approves it`. `--approved` is how fgraph is told:
+  the flag is the word of the developer, given by whoever runs the command on
+  that word, and nothing of it is kept in the record -- the reading taken when
+  S-0099 was ordered, the note of F-0012 naming the key alone. Every run of
+  `fgraph land` is held, the first run of a landing through a pull request among
+  them (S-0097); `fgraph complete` is no landing and is not held. The key says
+  nothing with the development off and on the trunk, where a landing is refused
+  in its own words; the flag given under agent changes nothing. The model is
+  `Approver` of `src/flowgraph/record/layers.py`, the hold `check_approved` of
+  `src/flowgraph/development/approval.py`.
 - `fgraph land` runs the gate through the shell at the top of the work tree
   of `main`, once the work of the branch is merged there, the merge held
   uncommitted, and before the landing is committed or the work item
@@ -2496,7 +2512,8 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   its own refuses such a checkout, and committed with one parent it holds
   the same work.
 - A landing is refused, with nothing merged, when the development is off, on
-  the trunk (`development.mode = trunk makes no branch to land`),
+  the trunk (`development.mode = trunk makes no branch to land`), when the
+  approver is the developer and `--approved` is not given (before any git step),
   when `--message` is missing for a commit or given to a `fast-forward` or a
   `pull-request`,
   when the record is outside a git work tree, when the work tree it runs in
@@ -3108,7 +3125,7 @@ and `fgraph config show`:
 | `main`, no branches | cts | `development.mode = trunk`, S-0096: "no branch and no worktree was made" |
 | `pr` | g, sv | `development.merge = pull-request`, S-0097: "its branch is pushed with a pull request opened" |
 | `branch max 1d` | all but cts | `development.branch_max`, S-0098: "the line of the work item says its branch is older than 1d" |
-| `approver agent`, `approver developer` | all seven | S-0099: "it exits 2 saying the landing waits for the developer" |
+| `approver agent`, `approver developer` | all seven | `development.approver` and `--approved`, S-0099: "it exits 2 saying the landing waits for the developer" |
 | `gate`, `lanes 3` | c, cts; c, sv | `development.gate`, `development.parallel`, kept |
 | `tag epic-close`; `tag root-close`; `tag none` | five; c; st | `delivery.tag`, `feature-close`, `close` or `none`; `close` tags a standalone root, S-0123 |
 | `ci pipeline`, `branch ids remote` | g, sv; sv | not filed; external sync is later (F-0007) |

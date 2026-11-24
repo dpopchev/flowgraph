@@ -91,6 +91,7 @@ def test_show_lists_every_key_at_its_default_on_a_record_without_a_config_file(
         'development.driver = "developer"\n'
         'development.mode = "branch"\n'
         "development.branch_max = none\n"
+        'development.approver = "agent"\n'
         "delivery.push = false\n"
         'delivery.tag = "none"\n'
         "archive.board = none\n",

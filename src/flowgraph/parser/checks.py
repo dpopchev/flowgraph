@@ -8,6 +8,7 @@ import argparse
 from pathlib import Path
 
 from flowgraph.development import RunGate, check_slug_branched
+from flowgraph.development.approval import check_approved
 from flowgraph.development.commit import OpenGit
 from flowgraph.development.commit_held import check_commit_held
 from flowgraph.development.driver import check_complexity
@@ -42,6 +43,8 @@ def check_command(
     A block or an unblock of a Task is checked in the worktree of its work item before the copy
     of main is read (B-0032). A remove of a started or a blocked work item is made on main alone.
     An amend of a Task that gives a check is refused with the development off (S-0144).
+    A land is held for the developer under development.approver = developer before any git step
+    (S-0099), ahead of the other refusals of a landing.
     """
     if args.command == "complete":
         check_complete_on_main(args.id, record, open_git)
@@ -66,3 +69,5 @@ def check_command(
         check_task_in_worktree(args.id, store, record, open_git)
     if args.command == "remove":
         check_remove_on_main(args.id, store, record, open_git)
+    if args.command == "land":
+        check_approved(args.id, args.approved, config)

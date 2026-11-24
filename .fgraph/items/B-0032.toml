@@ -13,6 +13,11 @@ depends_on = [
 ]
 filed_during = "S-0138"
 
+[verified]
+answer = "yes"
+text = "at 6b02396 on main, the merge of wi/B-0032-cut-the-blocks-and, in a throwaway repository with the development on, S-0001 started in its worktree and T-0001 started there: on main fgraph block T-0001 --reason no key --waiting-on developer exit 2 printed fgraph: error: S-0001 is started: its Tasks are written in its worktree, <path>/repo.worktrees/S-0001-one; with the Task blocked in the worktree, fgraph unblock T-0001 on main exit 2 printed the same line; the head of main the same commit before and after, git status empty; in the worktree the block and the unblock printed blocked T-0001 of S-0001 and unblocked T-0001 of S-0001. make check on the tree of the landing, the branch with main merged at dd27ece: 3704 passed, all checks passed. Handed whole to one subagent on haiku, no deviation in files or scope. The coordinator merged main into the branch and kept, in the docstring of check_command of src/flowgraph/parser/checks.py, the sentence of B-0032 beside those of B-0029 and B-0027. Said by the subagent: the sentence it added to docs/domain-model.md holds a clause on what main answered before B-0032, which T-0462 did not ask."
+on = 2026-11-24 04:39:33+00:00
+
 [criterion]
 observed = "in a scratch git repository with the development on, a started Story S-0001 whose Task T-0001 is started and blocked in the worktree of the Story: on main fgraph status lists T-0001 blocked, read from the worktree, while fgraph unblock T-0001 exits 2 with T-0001 is not blocked and fgraph block T-0001 exits 2 with T-0001 is in Backlog: start it first, each answered from the file main holds"
 expected = "on main the block and the unblock of a Task of a started work item that has a worktree exit 2 naming the worktree, as the save of such a work item does: S-0001 is started: its Tasks are written in its worktree, and the path"

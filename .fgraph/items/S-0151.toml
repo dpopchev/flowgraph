@@ -29,13 +29,15 @@ commit = "1ce43fc36e7cffb992628436cf2669ddc35f5d97"
 
 [[tasks]]
 id = "T-0575"
-state = "started"
+state = "completed"
 title = "Word the line of the criterion to run, run_line of src/flowgraph/criterion/run.py"
 description = "New module src/flowgraph/criterion/run.py (about 35 lines), since src/flowgraph/criterion/model.py is at 231 lines: a one-line docstring -- the line a landing prints of the criterion to run on main at its commit; RUN = \"run: \", a comment above it; run_line(criterion: Criterion) -> str, an exhaustive match closed by assert_never over the four forms of flowgraph.criterion.model: Scenario gives f\"run: {when} -> {then}\\n\", Defect gives f\"run: {expected}\\n\", Hypothesis and Answer give \"\". A private function puts a part on one line, \" \".join(text.split()). The Given and the observed are not printed. It imports from flowgraph.criterion.model alone and does no I/O. src/flowgraph/criterion/__init__.py (63 lines, 65 after): import run_line from flowgraph.criterion.run and list it in __all__, in the order the file keeps. Red first: run_line as a typed stub that raises NotImplementedError, the tests seen failing for it, then the body. New directory and file tests/criterion/test_run_line.py (about 45 lines; the test directories hold no __init__.py), model as its pytestmark, inputs built by the smart constructors: make_scenario(\"a state\", \"an action\", \"another\") gives \"run: an action -> another\\n\"; make_defect(\"it fails\", \"it works\") gives \"run: it works\\n\"; make_hypothesis(\"a question\") gives \"\"; Answer(\"a question\", \"a decision\", \"yes\") gives \"\"; a when of \"an action\\n  over two lines\" gives \"run: an action over two lines -> another\\n\"; a then with a tab and a trailing newline is one line too; the line of a Scenario ends with exactly one newline (count of \"\\n\" is 1), parametrized with the Defect. Out of bounds: src/flowgraph/criterion/model.py, src/flowgraph/development/, tests/functional/ (the xfail marks stay: nothing prints the line yet), the docs."
 check = "uv run pytest tests/criterion/test_run_line.py -q && make lines"
 expected_output = "created: src/flowgraph/criterion/run.py holds run_line(criterion), which answers run: <when> -> <then> and a newline for a Given / When / Then, run: <expected> and a newline for what a Bug observes and expects, and nothing for a hypothesis, answered or not, every part on one line with each run of blanks one space; flowgraph.criterion exports it; tests/criterion/test_run_line.py proves each form"
 created = 2026-11-23 21:01:35+00:00
 started = 2026-11-24 05:01:07+00:00
+completed = 2026-11-24 05:02:55+00:00
+commit = "1379f4f4e19aabae24ce4a89c6440fc9fec94d51"
 
 [[tasks]]
 id = "T-0576"

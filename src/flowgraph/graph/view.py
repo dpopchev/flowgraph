@@ -20,7 +20,7 @@ from flowgraph.parent import parse_feature_id
 from flowgraph.record.store import Store
 from flowgraph.relation.depends import record_standing
 from flowgraph.status import rows_by_id, rows_under
-from flowgraph.status.text import BUCKETS
+from flowgraph.status.buckets import BUCKETS
 from flowgraph.task import TaskRow
 
 # The one format of the graph, and the default.

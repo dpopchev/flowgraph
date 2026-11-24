@@ -15,15 +15,13 @@ from typing import assert_never
 from flowgraph.feature import FeatureRow
 from flowgraph.record import Parallel, Unlimited
 from flowgraph.record.layers import Development, Driver
+from flowgraph.status.buckets import BACKLOG_BUCKET
 from flowgraph.work_item import WorkItemRow
 
 type Line = WorkItemRow | FeatureRow
 
 # The state of a row in Backlog, as the record writes it.
 BACKLOG = "backlog"
-
-# The bucket of a Feature listed in Backlog.
-BACKLOG_BUCKET = "Backlog"
 
 
 @dataclass(frozen=True)

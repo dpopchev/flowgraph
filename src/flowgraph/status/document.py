@@ -25,9 +25,9 @@ from typing import Any, assert_never
 
 from flowgraph.feature import FeatureRow
 from flowgraph.record.store import KINDS
+from flowgraph.status.buckets import BUCKETS, is_listed_in
 from flowgraph.status.next import start_now_ids
 from flowgraph.status.review import counted, review_ids
-from flowgraph.status.text import BUCKETS, is_listed_in
 from flowgraph.task import TaskRow
 from flowgraph.work_item import WorkItemRow
 

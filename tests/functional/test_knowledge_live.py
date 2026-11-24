@@ -1,7 +1,6 @@
-"""The criterion of S-0104: fgraph knowledge --live lists the live lines alone, the ones no later line supersedes.
+"""The criterion of S-0104: fgraph knowledge --live lists the live lines alone.
 
-Run end to end on a record in a temporary directory, through run() of the package. Each red test
-is an xfail until S-0104 lands; each guard passes before and after.
+Run end to end on a record in a temporary directory, through run() of the package.
 """
 
 from dataclasses import dataclass
@@ -13,8 +12,6 @@ import pytest
 from flowgraph.cli import open_files, run
 
 pytestmark = pytest.mark.functional
-
-RED = pytest.mark.xfail(strict=True, reason="S-0104: fgraph knowledge lists no live lines alone")
 
 OPEN_LINE = "2026-01-04  finding  S-0001#3  is the queue one file too  (open)\n"
 STANDING_LINE = "2026-01-03  decision  S-0001#2  keep one file per item  (standing)\n"
@@ -113,31 +110,26 @@ class TestALiveListOfARecordWithAStandingOpenAndSupersededLine:
         record(tmp_path, RECORD)
         return fgraph(["knowledge", "--live"], tmp_path)
 
-    @RED
     def test_live_exits_with_zero(self, live: Outcome) -> None:
         assert live.status == 0
 
-    @RED
     def test_live_lists_the_standing_and_the_open_line_alone(self, live: Outcome) -> None:
         assert live.out == OPEN_LINE + STANDING_LINE
 
 
 class TestALineWithNoMarkIsLiveUntilALaterLineSupersedesIt:
-    @RED
     def test_live_lists_the_bare_line(self, tmp_path: Path) -> None:
         record(tmp_path, RECORD[:2])
         assert fgraph(["knowledge", "--live"], tmp_path).out == BARE_LINE
 
 
 class TestALiveListNarrowedToFindings:
-    @RED
     def test_live_of_the_finding_kind_lists_the_open_finding_alone(self, tmp_path: Path) -> None:
         record(tmp_path, RECORD)
         assert fgraph(["knowledge", "--live", "--kind", "finding"], tmp_path).out == OPEN_LINE
 
 
 class TestALineOfAnotherItemSupersedingALiveLine:
-    @RED
     def test_live_lists_the_decision_that_supersedes_the_open_finding(
         self, tmp_path: Path
     ) -> None:
@@ -148,7 +140,6 @@ class TestALineOfAnotherItemSupersedingALiveLine:
 
 
 class TestASupersededLineStaysSupersededWhenItsSupersederIsSuperseded:
-    @RED
     def test_live_holds_neither_the_bare_nor_the_standing_line(self, tmp_path: Path) -> None:
         record(tmp_path, [*RECORD, SECOND_SUPERSEDE])
         live = fgraph(["knowledge", "--live"], tmp_path)
@@ -160,7 +151,6 @@ class TestASupersededLineStaysSupersededWhenItsSupersederIsSuperseded:
 
 
 class TestTheDecisionOfACompletedSpikeIsAlwaysLive:
-    @RED
     def test_live_of_the_decision_kind_lists_the_spike_and_the_standing_line(
         self, tmp_path: Path
     ) -> None:
@@ -170,13 +160,11 @@ class TestTheDecisionOfACompletedSpikeIsAlwaysLive:
 
 
 class TestARecordWithNoLiveLineSaysSo:
-    @RED
     def test_live_of_a_record_of_the_story_alone_says_none(self, tmp_path: Path) -> None:
         record(tmp_path, [STORY])
         live = fgraph(["knowledge", "--live"], tmp_path)
         assert (live.status, live.out) == (0, "no live knowledge lines in the record\n")
 
-    @RED
     def test_live_of_a_kind_with_no_live_line_says_so(self, tmp_path: Path) -> None:
         record(tmp_path, RECORD)
         live = fgraph(["knowledge", "--live", "--kind", "deviation"], tmp_path)

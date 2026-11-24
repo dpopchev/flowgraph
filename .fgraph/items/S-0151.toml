@@ -12,6 +12,11 @@ depends_on = [
     "B-0023",
 ]
 
+[verified]
+answer = "yes"
+text = "at b082e7e on main, the merge of wi/S-0151-raise-the-landings-fgraph, in a throwaway repository with the development on and a started Story, a state / an action / another, whose Tasks are completed or removed: fgraph land S-0001 --message exit 0 printed landed S-0001 at 89c07eb and, right after it, run: an action -> another; on the record of flowgraph the landing of S-0150 printed its run line the same way. make check on main at b082e7e: 4053 passed, all checks passed. Handed whole to one subagent on haiku. It stopped twice and was handed back twice: the guard of T-0574, a Story completed on main by fgraph complete at the head of its branch, is refused as written, S-0001 has Tasks to complete first, and holds once the branch is merged into main by git merge --ff-only between the two completes, which the test does on the word of the coordinator, the Task unchanged; its commit of T-0576 was refused once by the permission layer of its session and went through when it tried again itself, after the coordinator said that tests/functional/test_land_push_untracked.py, landed with B-0023 after the Task was written, is a pin the list of T-0576 missed, corrected under its own clause."
+on = 2026-11-24 05:47:00+00:00
+
 [criterion]
 given = "a repository with the development on and a started Story whose Tasks are completed"
 when = "fgraph land of the Story is run"

@@ -80,3 +80,8 @@ description = "A move with no change of behavior: no new test, the suite is its 
 check = "test \"$(wc -l < src/flowgraph/parser/item_commands.py)\" -le 217 && grep -q \"^def amend_command\" src/flowgraph/parser/amend.py && make check"
 expected_output = "created: src/flowgraph/parser/amend.py holds amend_command(commands), the parser of fgraph amend with the options and the help texts it has today; changed: item_commands of src/flowgraph/parser/item_commands.py calls it and the module holds 217 lines or fewer; fgraph amend --help and fgraph --help print what they printed before, and no test file changes"
 created = 2026-11-24 06:21:09+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer ruled on 2026-11-24, on the halt of the burn at S-0144: replace the bound with 217 and continue the burn. T-0544, whose check asked src/flowgraph/parser/item_commands.py for 215 lines or fewer, is removed and a Task of the same title, output and description is added with 217 in its place, worked first; nothing else of S-0144 changes. The two other options shown that day, widening the Task and leaving S-0144 and S-0145 out, were not taken."
+noted = 2026-11-24 06:21:12+00:00

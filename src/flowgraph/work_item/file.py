@@ -13,7 +13,7 @@ from pydantic import ValidationError
 from flowgraph.criterion import CommitError, CriterionError, DecisionError, EmptyPartError
 from flowgraph.item import NoOffsetError, task_row, write_checked
 from flowgraph.knowledge import KnowledgeRow
-from flowgraph.parent import FeatureIdError
+from flowgraph.parent import FeatureIdError, RealizesError
 from flowgraph.record import ITEMS
 from flowgraph.relation import RelationError
 from flowgraph.task import TaskIdError, TaskInProgressError, TaskNotFoundError
@@ -99,6 +99,7 @@ def read_work_item_rows(record: Path, kind: Kind) -> list[WorkItemRow]:
             commit_held(held),
             reason_held(held),
             held.parent,
+            realizes=held.realizes,
             complexity=held.complexity or "",
             created=held.created,
             started=started_held(held),
@@ -137,6 +138,7 @@ def read_work_item(record: Path, item_id: WorkItemId, kinds: Sequence[Kind] = ()
         CriterionError,
         DecisionError,
         FeatureIdError,
+        RealizesError,
         CommitError,
         WorkItemIdError,
         RelationError,
@@ -167,6 +169,7 @@ def read_work_item_detail(record: Path, item_id: WorkItemId) -> WorkItemDetail:
         reason=block_reason or reason_held(held),
         waiting_on=waiting_on,
         parent=held.parent,
+        realizes=held.realizes,
         complexity=held.complexity or "",
         knowledge=[
             KnowledgeRow(line.kind, line.noted, line.text, line.about, line.governs)

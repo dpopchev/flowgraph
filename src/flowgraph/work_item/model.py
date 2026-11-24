@@ -18,7 +18,7 @@ from flowgraph.criterion import (
     said,
 )
 from flowgraph.knowledge import KnowledgeLine
-from flowgraph.parent import STANDALONE, Parent
+from flowgraph.parent import NO_CRITERION, STANDALONE, Parent, Realizes, realizes_under
 from flowgraph.relation import Relations, make_relations
 from flowgraph.task import CompletedTask, Task, TaskState, task_of
 from flowgraph.work_item.agent import Agent
@@ -55,6 +55,7 @@ class WorkItem:
     created: datetime
     tasks: tuple[Task, ...]
     parent: Parent = STANDALONE
+    realizes: Realizes = field(default=NO_CRITERION, kw_only=True)
     complexity: Complexity | None = None
     knowledge: tuple[KnowledgeLine, ...] = ()
     relations: Relations[WorkItemId] = NO_RELATIONS
@@ -75,6 +76,7 @@ class StartedWorkItem:
     agent: Agent | None = field(default=None, kw_only=True)
     tasks: tuple[TaskState, ...]
     parent: Parent = STANDALONE
+    realizes: Realizes = field(default=NO_CRITERION, kw_only=True)
     complexity: Complexity | None = None
     knowledge: tuple[KnowledgeLine, ...] = ()
     relations: Relations[WorkItemId] = NO_RELATIONS
@@ -98,6 +100,7 @@ class BlockedWorkItem:
     agent: Agent | None = field(default=None, kw_only=True)
     tasks: tuple[TaskState, ...]
     parent: Parent = STANDALONE
+    realizes: Realizes = field(default=NO_CRITERION, kw_only=True)
     complexity: Complexity | None = None
     knowledge: tuple[KnowledgeLine, ...] = ()
     relations: Relations[WorkItemId] = NO_RELATIONS
@@ -123,6 +126,7 @@ class CompletedWorkItem:
     commit: Evidence
     tasks: tuple[CompletedTask, ...]
     parent: Parent = STANDALONE
+    realizes: Realizes = field(default=NO_CRITERION, kw_only=True)
     complexity: Complexity | None = None
     knowledge: tuple[KnowledgeLine, ...] = ()
     relations: Relations[WorkItemId] = NO_RELATIONS
@@ -147,6 +151,7 @@ class RemovedWorkItem:
     reason: str
     tasks: tuple[Task, ...]
     parent: Parent = STANDALONE
+    realizes: Realizes = field(default=NO_CRITERION, kw_only=True)
     complexity: Complexity | None = None
     knowledge: tuple[KnowledgeLine, ...] = ()
     relations: Relations[WorkItemId] = NO_RELATIONS
@@ -186,14 +191,17 @@ def make_work_item(
     amends: WorkItemId | None = None,
     about: tuple[str, ...] = (),
     complexity: Complexity | None = None,
+    realizes: Realizes = NO_CRITERION,
 ) -> WorkItem:
     """A work item in Backlog, its created time kept to the second; it stands alone unless a
     Feature is named as its parent, depends on the work items given, is filed during the one given
     and amends the one given, none by default. It is about the terms given, in order, none by
-    default, and carries the complexity given, none by default.
+    default, carries the complexity given, none by default, and realizes the criterion of its
+    Feature given, none by default.
 
     Raises EmptyPartError when the title is blank, CriterionError when the criterion is not of
-    the form the kind of the item takes and RelationError when it names itself.
+    the form the kind of the item takes, RelationError when it names itself and RealizesError
+    when it names a criterion and stands alone.
     """
     kind = item_id.kind
     if not isinstance(criterion, kind.takes):
@@ -214,6 +222,7 @@ def make_work_item(
         (),
         relations,
         about,
+        realizes=realizes_under(realizes, parent),
     )
 
 

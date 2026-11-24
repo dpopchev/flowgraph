@@ -47,6 +47,7 @@ the typed edges of the whole record as JSON.
 |                                 | `--superseded-by` the one that replaces it               |
 | the wording of a work item      | `fgraph amend` in Backlog: parent too, a Feature's too   |
 | the complexity of a work item   | `--complexity low`, `medium` or `high`, on add and amend |
+| criterion a work item realizes  | `--realizes N` beside `--parent`, on add and amend       |
 | git                             | every write of the record committed, unless turned off   |
 | the layers of a record          | `.fgraph/config.toml`: commits on, development off       |
 | the configuration               | every key shown and set by `fgraph config`               |
@@ -1879,6 +1880,48 @@ wording of a Feature in Backlog is rewritten with
 once no work item of it is started, is removed with `fgraph remove`, its work
 items in Backlog with it (below). A Feature is kept as `items/F-0001.toml`.
 
+A work item under a Feature may name the one criterion of it that its own
+criterion is, by its place in the list counted from 1. The link is optional
+(the decision kept on F-0013: a Feature may hold work items whose criterion is
+none of its criteria), and two work items may name one criterion. `fgraph add`
+takes `--realizes N` beside `--parent`, and `fgraph amend` takes it for a work
+item in Backlog, `none` taking it away:
+
+```sh
+fgraph add story "Raise the kinds of work item fgraph adds from 1 to 2" \
+  --given "a record with a Story" --when "an Upkeep is added" \
+  --then "fgraph status lists both kinds under Backlog" --parent F-0001 --realizes 2
+# added S-0002
+
+fgraph show S-0002
+# S-0002  Raise the kinds of work item fgraph adds from 1 to 2
+#   bucket       Backlog
+#   parent       F-0001
+#   realizes     2  a developer adds every kind of work
+#   given        a record with a Story
+#   when         an Upkeep is added
+#   then         fgraph status lists both kinds under Backlog
+# Tasks (0)
+
+fgraph amend S-0002 --realizes 1
+# amended S-0002
+
+fgraph amend S-0002 --realizes none
+# amended S-0002
+
+fgraph add story "Hold" --given a --when b --then c --parent F-0001 --realizes 3
+# fgraph: error: F-0001 has no criterion 3: its criteria count from 1 to 2
+```
+
+An add or an amend exits 2 and writes nothing for a work item that stands
+alone, for a number the Feature does not have, for `0`, for a word that is
+neither a number nor `none`, and for a Feature id: a Feature is amended by its
+title, its description and its criteria. A work item started already is not
+amended. `fgraph amend F-0001 --criterion` rewrites the list and leaves the
+number a work item names as written: it then names the criterion now at that
+place, and `fgraph show` says `none of the criteria of F-0001` for a number
+past the end.
+
 `fgraph status` lists a Feature inside its bucket, as one line in place of
 its work items: its id, its progress and its title. Here a Story that stands
 alone, S-0002, was added after the Feature, and the Story under the Feature
@@ -2547,7 +2590,9 @@ amend never writes. Put under a Feature it is on no line of the Backlog and
 starts where that entry orders it among the work items of the Feature; taken
 out it is the line of the Backlog that entry places. One never placed follows
 the placed ones as it was added. A `--parent` that names the Feature it is
-under already moves it nowhere, and the amend is taken.
+under already moves it nowhere, and the amend is taken. An amend to another
+parent or to none drops the criterion named, unless `--realizes` is given with
+it.
 
 The Feature it is put under takes it as it takes a work item added under it:
 in Backlog, started or blocked. The one it is taken out of is in Backlog, as

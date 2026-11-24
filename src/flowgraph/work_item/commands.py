@@ -8,10 +8,10 @@ from collections.abc import Iterable
 
 from flowgraph.criterion import Criterion
 from flowgraph.knowledge import KnowledgeKind, make_knowledge_line
-from flowgraph.parent import STANDALONE, Parent
+from flowgraph.parent import NO_CRITERION, STANDALONE, Parent, Realizes
 from flowgraph.record import Now
 from flowgraph.work_item.agent import Agent
-from flowgraph.work_item.amend import Amendment, CheckMove, amended_work_item
+from flowgraph.work_item.amend import Amendment, CheckMove, CheckRealizes, amended_work_item
 from flowgraph.work_item.complexity import Complexity
 from flowgraph.work_item.handed import handed_work_item
 from flowgraph.work_item.id import (
@@ -46,14 +46,16 @@ def add_work_item(
     amends: WorkItemId | None = None,
     about: tuple[str, ...] = (),
     complexity: Complexity | None = None,
+    realizes: Realizes = NO_CRITERION,
 ) -> WorkItemId:
     """Add a work item of that kind to Backlog under its next free id and return that id.
 
     It stands alone unless a Feature is named as its parent, depends on the work items given,
-    is filed during the one given, amends the one given, is about the terms given and carries the
-    complexity given, none by default. The rows
-    found are those of the kind. Raises EmptyPartError when the title is blank and CriterionError
-    when the criterion is not of the form the kind takes; nothing is saved.
+    is filed during the one given, amends the one given, is about the terms given, carries the
+    complexity given and realizes the criterion given, none by default. The rows
+    found are those of the kind. Raises EmptyPartError when the title is blank, CriterionError
+    when the criterion is not of the form the kind takes and RealizesError when it names a
+    criterion and stands alone; nothing is saved.
     """
     taken = [parse_work_item_id(kind, row.id) for row in find_work_item_rows()]
     item_id = next_work_item_id(kind, taken)
@@ -69,6 +71,7 @@ def add_work_item(
         amends,
         about,
         complexity,
+        realizes=realizes,
     )
     save_work_item(item)
     return item.id
@@ -101,11 +104,13 @@ def amend_work_item(
     load_work_item: LoadWorkItem,
     save_work_item: SaveWorkItem,
     check_move: CheckMove,
+    check_realizes: CheckRealizes,
 ) -> None:
     """Rewrite the parts the amendment names of the work item of that id and save it whole.
 
     A parent named that is not the one it has is a move, checked through check_move before the
-    save. Raises WorkItemNotFoundError when the record holds no such item, NoPartError when the
+    save; a criterion named is checked through check_realizes after it. Raises
+    WorkItemNotFoundError when the record holds no such item, NoPartError when the
     amendment names no part, EmptyPartError when the title or a part of the criterion is blank,
     StartedAlreadyError when the item is started, CompletedAlreadyError when it is completed
     and the refusal of the check; nothing is saved.
@@ -114,6 +119,8 @@ def amend_work_item(
     amended = amended_work_item(was, amendment)
     if amended.parent != was.parent:
         check_move(item_id, was.parent, amended.parent)
+    if amendment.realizes is not None:
+        check_realizes(amended.parent, amended.realizes)
     save_work_item(amended)
 
 

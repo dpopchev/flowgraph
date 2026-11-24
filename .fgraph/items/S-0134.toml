@@ -49,3 +49,8 @@ description = "Change README.md and docs/domain-model.md only; find each passage
 check = "! grep -q \"2/2 W  677f9b0\" docs/domain-model.md && ! grep -Eq \"^#   F-[0-9]{4}  [0-9]+/[0-9]+ W  [0-9a-f]{7}  \" README.md && grep -q \"no count of its work items\" README.md && grep -q \"no count of its work items\" docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md and README.md say a Feature under Completed is listed as `F-0001  677f9b0  <title>`, its id, its commit and its title with no `N/M W`, the developer's frame of 2026-11-23 (S-0134); no passage or example shows `W` on a line of a Feature under Completed"
 created = 2026-11-23 21:05:06+00:00
+
+[[knowledge]]
+kind = "deviation"
+text = "The developer agreed on 2026-11-24: T-0595 also corrects one expected line its brief does not name, in tests/status/text/test_status_completed_under.py::test_a_completed_feature_lists_its_work_items_on_no_line, landed with S-0133 after the Tasks were written: \"  F-0003  2/2 W  a done feature\" loses 2/2 W and its two spaces, the thirteenth pin by the rule of the twelve. Nothing else of that file changes."
+noted = 2026-11-24 10:17:41+00:00

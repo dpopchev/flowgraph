@@ -16,7 +16,7 @@ from typing import Never, assert_never
 from flowgraph.development import RunGate, run_gate
 from flowgraph.development.commit import OpenGit, open_git
 from flowgraph.development.scope import scope_in, within, worktree_of_item
-from flowgraph.development.worktrees import across_worktrees, held_elsewhere
+from flowgraph.development.worktrees import across_worktrees, held_elsewhere, record_of_main
 from flowgraph.item.commands import status_item
 from flowgraph.parser import REFUSED, TOP, build_command_line, help_asked
 from flowgraph.parser.command import command_said
@@ -46,6 +46,9 @@ __all__ = ["Store", "open_files", "open_git", "read_config", "run", "run_gate"]
 # Write text to a stream; what it returns is ignored, so a stream's write and a list's append fit.
 Write = Callable[[str], object]
 
+# The commands that list the record of main when run in the worktree of a work item (S-0141).
+LISTS_MAIN = ("status", "watch")
+
 
 def _no_wait(seconds: float) -> None:
     """The wait of a run given none: the next frame of watch follows at once."""
@@ -69,6 +72,17 @@ def _no_check(command: str, directory: Path) -> int:
 def _no_dir(path: Path) -> Never:
     """The make_dir of a run given none: a contract, such a run makes no record."""
     raise AssertionError(f"run() was given no make_dir to make {path}")
+
+
+def _read_record(command: str | None, located: Path, open_git: OpenGit) -> Path:
+    """The record a command reads: that of main for a LISTS_MAIN command in a work item's worktree.
+
+    The rule is keyed on the work tree that keeps the record, as scope_in is, not on the directory
+    fgraph runs in. Every other command, and a record with no record of main, reads the located one.
+    """
+    if command not in LISTS_MAIN:
+        return located
+    return record_of_main(located, open_git) or located
 
 
 def _watch(
@@ -120,7 +134,9 @@ def run(
     The help option needs no record, after a command as alone: it prints the help of the command
     the arguments name; so does init, which makes the record through make_dir and fails with 2
     where one is held. Every other call fails with 2 when there is no record. A write finds the
-    git work tree of the record through open_git and is committed there. The lines of status are
+    git work tree of the record through open_git and is committed there. Run in the worktree of
+    a work item, status and watch read the record of main, as a run on main does; every other
+    command reads the record it is run on. The lines of status are
     cut to the width of the terminal; without one, as by default, they are whole. Watch writes
     its frames as it goes, each cut to the height of the terminal too, and waits between two by
     wait, which by default returns at once; it
@@ -149,7 +165,8 @@ def run(
         write(made.out)
         return 0
     match locate(cwd, args.dir, is_dir):
-        case Found(path) | Given(path):
+        case Found(located) | Given(located):
+            path = _read_record(args.command, located, open_git)
             store = within(
                 across_worktrees(open_store(path), path, open_git, open_store),
                 partial(scope_in, path, open_git),

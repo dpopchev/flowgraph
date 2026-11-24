@@ -1,12 +1,14 @@
 id = "S-0099"
-state = "started"
+state = "completed"
 title = "Raise the landings fgraph holds for the approver the configuration names from none to every one under development.approver"
 description = "Open: the note names the key alone; how fgraph is told an approval. Its Tasks are written when it is ordered."
 parent = "F-0012"
 complexity = "low"
 created = 2026-11-22 21:03:48+00:00
 started = 2026-11-24 08:13:33+00:00
+completed = 2026-11-24 09:08:44+00:00
 agent = "haiku-a33"
+commit = "4a0a43d"
 depends_on = [
     "S-0096",
     "S-0098",

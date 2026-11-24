@@ -11,7 +11,7 @@ from collections.abc import Callable, Sequence
 from datetime import UTC, datetime
 from functools import partial
 from pathlib import Path
-from typing import Never, assert_never
+from typing import assert_never
 
 from flowgraph.development import RunGate, run_gate
 from flowgraph.development.commit import OpenGit, open_git
@@ -21,6 +21,7 @@ from flowgraph.item.commands import status_item
 from flowgraph.parser import REFUSED, TOP, build_command_line, help_asked
 from flowgraph.parser.command import command_said
 from flowgraph.parser.ids import ids_read
+from flowgraph.parser.not_given import no_check, no_config, no_dir, no_gate, no_removal, no_wait
 from flowgraph.record import (
     Config,
     Found,
@@ -31,7 +32,6 @@ from flowgraph.record import (
     NotFound,
     Now,
     locate,
-    make_config,
     read_config,
 )
 from flowgraph.record.init import MakeDir, RemoveDir, init_record
@@ -48,35 +48,6 @@ Write = Callable[[str], object]
 
 # The commands that list the record of main when run in the worktree of a work item (S-0141).
 LISTS_MAIN = ("status", "watch")
-
-
-def _no_wait(seconds: float) -> None:
-    """The wait of a run given none: the next frame of watch follows at once."""
-
-
-def _no_config(record: Path) -> Config:
-    """The configuration of a run given none to read: the defaults, whatever the record holds."""
-    return make_config("")
-
-
-def _no_gate(command: str, directory: Path) -> Never:
-    """The gate of a run given none to run it: a contract, such a run lands under no gate."""
-    raise AssertionError(f"run() was given no run_gate to run {command!r} in {directory}")
-
-
-def _no_check(command: str, directory: Path) -> Never:
-    """The check runner of a run given none: a contract, such a run completes no checked Task."""
-    raise AssertionError(f"run() was given no run_check to run {command!r} in {directory}")
-
-
-def _no_dir(path: Path) -> Never:
-    """The make_dir of a run given none: a contract, such a run makes no record."""
-    raise AssertionError(f"run() was given no make_dir to make {path}")
-
-
-def _no_removal(path: Path) -> Never:
-    """The remove_dir of a run given none: a contract, such a run removes no record."""
-    raise AssertionError(f"run() was given no remove_dir to remove {path}")
 
 
 def _read_record(command: str | None, located: Path, open_git: OpenGit) -> Path:
@@ -128,12 +99,12 @@ def run(
     now: Now,
     width: Width = no_terminal,
     height: Height = no_terminal,
-    wait: Wait = _no_wait,
-    load_config: LoadConfig = _no_config,
-    run_gate: RunGate = _no_gate,
-    run_check: RunGate = _no_check,
-    make_dir: MakeDir = _no_dir,
-    remove_dir: RemoveDir = _no_removal,
+    wait: Wait = no_wait,
+    load_config: LoadConfig = no_config,
+    run_gate: RunGate = no_gate,
+    run_check: RunGate = no_check,
+    make_dir: MakeDir = no_dir,
+    remove_dir: RemoveDir = no_removal,
 ) -> int:
     """Read the arguments, locate the record in cwd, run the command and return the exit status.
 

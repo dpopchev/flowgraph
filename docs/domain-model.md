@@ -359,6 +359,17 @@ of work item. The developer said so on 2026-11-21.
   those more; a Backlog where nothing can start marks none. It is a view of
   `fgraph status` and `fgraph watch`: no `next` command exists. The view holds
   it as data on the row, beside what the row waits for.
+- `fgraph start` given no id starts the first of them (S-0121, the decision of
+  the developer of 2026-11-23: the first line of the Backlog that can start, the
+  one status marks). The id is read from the rows of status before the checks
+  of a start run, so every refusal of a start names it, the one that holds a
+  start to main among them. The rule is written once, in
+  `src/flowgraph/status/next.py`, and `src/flowgraph/status/top.py` reads it. The
+  same cases as the README paragraph hold, the development off and on. The two
+  refusals, exit 2 and nothing written: `nothing to start: the Backlog is empty`
+  and `nothing to start: no line of the Backlog can start now, fgraph status
+  marks none -- fgraph start {first} says why its first line cannot`. A start
+  that names its id is unchanged.
 - A reorder names two items in Backlog; one that is not there, or the same
   one twice, is refused. A Feature in progress, completed or removed is not
   in Backlog, and is refused as a started work item is:
@@ -1110,6 +1121,9 @@ A command reads an id in any case, its dash and its leading zeros left out:
 read. `fgraph` writes and prints the canonical form, and reads the files of the
 record in it alone. A number of 0 is no id, so `f-0` is refused as before, and a
 text that is no such spelling is left as typed.
+
+`E-nnn`, `W-nnn` and `T-nnn` of board 1 are no ids of fgraph, see From board 1,
+Archive.
 
 | Kind | Id |
 |---|---|
@@ -2041,6 +2055,9 @@ development too.
   and `development.gate`. So `fgraph config set development.gate true` names
   the command `true`. A text that names no value of its key stays a text,
   which the configuration refuses.
+- `archive.board` holds the path of the `.board/` of board 1 the record points
+  at, a text read as it is; it is `none` when left out, and a blank is refused
+  with `archive.board is "": it takes a path`.
 - The whole file is read back through the constructor of the configuration
   before it replaces the one in the record (`write_settings`,
   `src/flowgraph/record/config.py`). A key the configuration does not have, a value
@@ -2457,6 +2474,34 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 | done | `CompletedX` |
 | pruned | `RemovedX` |
 
+### Archive
+
+The developer decided on 2026-11-23, on S-0120, after Q-0001 answered no: a
+repository that adopts fgraph keeps its `.board/` whole as an archive. It
+starts a record beside it with `fgraph init`, points at it with `fgraph config
+set archive.board .board`, and files the open work by hand with `fgraph add`.
+fgraph converts no item, and the closed ones stay where they are.
+
+The pointer is `[archive] board` of `config.toml`, a path as written, taken
+from the directory that holds the record. It has no default and `fgraph init`
+writes none. With it set, `fgraph show` of the letter E, W or T in either
+case, a dash and a number of 1 or more exits 2 with one line, the id as board
+1 writes it, at least three digits. For W-123 in a project under
+`/src/project`:
+
+```text
+fgraph: error: W-123 is in the archive of board 1 at /src/project/.board -- show it with: uv run ~/.claude/skills/board/scripts/board.py --root /src/project show W-123
+```
+
+fgraph reads the shape of the text alone: it opens no file of the archive,
+does not ask whether the path is there, and writes there never -- its commits
+name the files of the record alone. A T id is read as `T-0456` by the rule of
+Ids and named back as `T-456`, and `fgraph show` takes no Task, so under a
+pointer a T id asked of `show` is named as the old one even when the record
+holds a Task of that number. `w123` and `e7`, with no dash, stay names of
+terms. With no pointer every such text is refused as before, and `show` alone
+answers: every other command refuses an old id as it did.
+
 ### Records measured
 
 The seven board 1 records, read on 2026-11-23 by the board script alone:
@@ -2558,7 +2603,7 @@ Every item:
 
 | Field | Seen on | In fgraph | Verdict |
 |---|---|---|---|
-| id `E-nnn`, `W-nnn`, `T-nnn` | every item | a new id by kind, `F-`, `S-`, `U-`, `B-`, `Q-`, `T-` and four digits (Ids); the old id has no place (S-0106) | converted: a new id; the old one lost |
+| id `E-nnn`, `W-nnn`, `T-nnn` | every item | a new id by kind, `F-`, `S-`, `U-`, `B-`, `Q-`, `T-` and four digits (Ids); the old id stays in the archive, named by `fgraph show` (S-0120, Archive) | converted: a new id; the old one lost |
 | title | every item | the title | kept |
 | `created`, a day | raw W-187, T-492 | `created`, a time | converted: the day becomes a time |
 | the external token, `W-008 (AB#3128)`, and `remote:` -- `token`, `synced`, `pushed`, `text`, `parent` | raw W-008 (s), W-125 (s) | none; no item of the Backlog names it | lost |
@@ -2888,7 +2933,7 @@ Held by every record that holds items:
 
 | Gap | Items that hold it | Closed by |
 |---|---|---|
-| the old id | 4,358, every item | S-0106: "fgraph show of the item lists W-0123 as its reference" |
+| the old id | 4,358, every item | S-0120, the Archive passage: `fgraph show` of the old id names the archive |
 | the days of an item: `created`, `done.on`, `pruned.on`, `since`, the History and knowledge lines; no command takes one (Probe) | 4,358 hold `created` | part, S-0107: "every item under its kind and its bucket"; no word of a date |
 | Epic `## Hypothesis` | 108, every Epic: c 48, cts 20, g 1, st 3, sm 20, sv 16 | not filed |
 | Epic `## Outcome` | 108, every Epic | not filed |

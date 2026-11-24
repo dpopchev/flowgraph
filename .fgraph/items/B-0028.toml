@@ -44,3 +44,8 @@ kind = "finding"
 text = "Found on 2026-11-25 while its Tasks were drafted under the /goal of Phase 1: the drafted Tasks (kept by the coordinator, not filed) refuse at the read an amends of a work item in Backlog or removed alone, narrower than its expected, the read refuses what the write refuses, which is every work item not completed. The reason given: a started or blocked work item may be completed in a copy of the record that another copy lags, and the full rule would then refuse every command in the lagging copy. Whether B-0028 is built narrow or whole is a change to its scope and is the developer's: its Tasks are filed on that word, before F-0023 starts."
 noted = 2026-11-24 22:20:03+00:00
 mark = "open"
+
+[[knowledge]]
+kind = "decision"
+text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, under the /goal of Phase 1 the developer set on 2026-11-24, which has the coordinator write the Tasks before a Feature starts; the developer was not asked and reviews them at the close: (1) The read refuses an amends of every work item that is not completed -- in Backlog, started, blocked or removed -- the reading the item files: the read refuses what the write refuses. (2) The words follow the other refusals of the read, <file of the amending item>: amends names S-0002, which is not completed, not those of the write (a work item cannot amend S-0002: it is not completed). (3) No unit test of check_relations is added, as it has none today; the functional file states the rule and the guard."
+noted = 2026-11-24 23:04:45+00:00

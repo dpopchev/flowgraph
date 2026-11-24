@@ -1,9 +1,11 @@
 id = "B-0031"
-state = "backlog"
+state = "started"
 title = "Cut the work items a /goal line of fgraph goal names that no start takes, for no Task or no complexity, from every one to none"
 description = "Found by the planner of S-0129 on 2026-11-23, reading src/flowgraph/goal/read.py, and run again by the coordinator that day; filed at the end of the Backlog on the word of the developer. fgraph goal was built by S-0117 before the planned rule of S-0127 and of S-0129. The fix suggested: refuse, in the words the start of a Feature has, F-0001 cannot start: S-0002 has no Task to start with and its line for the complexity, through first_unplanned and first_without_complexity of src/flowgraph/feature/start.py. Open: whether the goal is refused or worded over the planned work items alone. Its Tasks are written when it is ordered."
 complexity = "low"
 created = 2026-11-23 14:02:21+00:00
+started = 2026-11-24 03:33:43+00:00
+agent = "haiku-a2"
 filed_during = "S-0129"
 
 [criterion]

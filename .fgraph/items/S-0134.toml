@@ -6,7 +6,7 @@ parent = "F-0017"
 complexity = "low"
 created = 2026-11-23 12:01:46+00:00
 started = 2026-11-24 09:49:44+00:00
-agent = "haiku-a37"
+agent = "haiku-a38"
 depends_on = [
     "S-0133",
 ]

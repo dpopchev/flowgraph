@@ -15,6 +15,11 @@ depends_on = [
     "U-0025",
 ]
 
+[verified]
+answer = "yes"
+text = "at 4a0a43d on main, the merge of wi/S-0099-raise-the-landings-fgraph, in a throwaway repository with the development on and fgraph config set development.approver developer, S-0001 started with its one Task completed: fgraph land S-0001 --message exit 2 printed fgraph: error: S-0001 cannot land: development.approver = developer, the landing waits for the developer -- run fgraph land S-0001 --approved once the developer approves it; main the same commit, git status empty, S-0001 InProgress; the same command with --approved exit 0 printed landed S-0001 at the merge and its run line, S-0001 Completed. The landing completed F-0012 with it. make check on the tree of the landing, the branch with main merged at 205d135: 4633 passed, all checks passed. Handed whole to one subagent on haiku, which stopped three times on its test file and went on each time on the word of the coordinator, no Task changed: its copy of the helper ready makes its last commit for a non-empty argument alone; the test that a held landing writes no output asserts a pair with the message, a fact that held before the work paired with one that is red as the developer asked on S-0140, after the coordinator first had it left unmarked, wrongly; the branch is listed with --format=%(refname:short) and the landed line compared with main~1, what git and the landing print. The coordinator merged main, which held S-0097, and kept both sides in README.md, docs/domain-model.md and the docstring of src/flowgraph/record/config.py. Other deviations: the test file written before the start of T-0522; a line over 100 columns in 9ef8ba2 wrapped in 7e03d7c. fgraph config show lists twelve keys; src/flowgraph/record/config.py holds 221 lines."
+on = 2026-11-24 09:09:33+00:00
+
 [criterion]
 given = "development.approver set to developer and a started work item whose Tasks are completed"
 when = "fgraph land of the work item is run without the approval of the developer"

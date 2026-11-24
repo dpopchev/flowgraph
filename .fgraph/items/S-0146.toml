@@ -9,6 +9,11 @@ completed = 2026-11-24 04:42:45+00:00
 agent = "haiku-a11"
 commit = "ac843c7"
 
+[verified]
+answer = "yes"
+text = "at ac843c7 on main, the merge of wi/S-0146-raise-the-knowledge-lines, on a throwaway record of a started Feature and a Story under it holding a finding the Store is plain files, a decision keep one store, a deviation the STORE moved to a module of its own, and on the Feature a decision a gate runs on main: fgraph knowledge --search STORE exit 0 listed the three lines of the Story, newest first, as fgraph knowledge lists them; --search Gate listed the decision of the Feature alone; --search store --kind decision listed keep one store alone; --search zzz exit 0 printed no knowledge lines holding 'zzz' in the record; a blank text exit 2 printed fgraph: error: search is empty; on the record of flowgraph --search COORDINATOR listed 16 lines, the 16 a grep of fgraph knowledge blind to the case finds. make check on main at ac843c7: 3733 passed, all checks passed. Handed whole to one subagent on haiku: it amended the commit of T-0461's sibling T-0561 once, before the Task was completed, to move the ids to the end of its subject, against the history that only moves forward; in T-0563 it reworded the sentence of the docstring of tests/functional/test_knowledge_search.py that named the xfail marks, beside removing them."
+on = 2026-11-24 04:50:19+00:00
+
 [criterion]
 given = "a record whose work items and Features hold findings, decisions and deviations"
 when = "fgraph knowledge is run with a text to search for"

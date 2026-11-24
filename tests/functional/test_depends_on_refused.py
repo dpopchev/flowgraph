@@ -196,7 +196,11 @@ def test_a_dependency_back_on_the_work_item_through_others_is_refused_as_a_cycle
 
 def test_a_work_item_started_is_amended_no_more(tmp_path: Path) -> None:
     outcome = runs(tmp_path, *THREE, ["start", "S-0002"], depends("S-0002", "S-0001"))
-    assert refused(outcome) == (2, "fgraph: error: S-0002 is started already")
+    assert refused(outcome) == (
+        2,
+        "fgraph: error: S-0002 is started: its complexity, its parent and what it depends on are"
+        " amended in Backlog alone",
+    )
 
 
 def test_a_feature_has_no_ids_to_depend_on(tmp_path: Path) -> None:

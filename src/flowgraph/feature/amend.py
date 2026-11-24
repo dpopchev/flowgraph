@@ -3,10 +3,10 @@
 It takes a Task in Backlog too, by its id, through `amend_task_item`, which refuses a part no
 Task has and a Task that is started, blocked, completed or removed.
 
-A Feature is to its work items what a work item is to its Tasks: the wording of one in Backlog
-is rewritten, part by part. It is not a move: the state of the Feature stays, and so do its id,
-its created time, its work items and its place in the queue. It runs on the store of a record,
-as the commands of a work item do (`flowgraph.item.commands`).
+A Feature is to its work items what a work item is to its Tasks: its wording is rewritten, part
+by part, in Backlog as it is and once started with its deviation. It is not a move: the state of
+the Feature stays, and so do its id, its created time, its work items and its place in the queue.
+It runs on the store of a record, as the commands of a work item do (`flowgraph.item.commands`).
 """
 
 from collections.abc import Sequence
@@ -22,15 +22,24 @@ from flowgraph.feature import (
     RemovedFeature,
     StartedFeature,
     make_feature,
+    noted_feature,
 )
 from flowgraph.feature.item import is_feature_id
 from flowgraph.item.amend import amend_task_item
 from flowgraph.item.commands import MESSAGE, Written, amend_item
 from flowgraph.item.id import is_task_id, parse_amended_id
+from flowgraph.knowledge import KnowledgeLine
 from flowgraph.parent import feature_id_text, parse_feature_id
 from flowgraph.record.store import Store
-from flowgraph.task import BlockedError, CompletedAlreadyError, StartedAlreadyError
-from flowgraph.work_item import Amendment, NoPartError, NoSuchPartError, work_item_id_text
+from flowgraph.task import CompletedAlreadyError
+from flowgraph.work_item import (
+    Amendment,
+    DeviationError,
+    NoPartError,
+    NoSuchPartError,
+    check_deviation,
+    work_item_id_text,
+)
 
 
 @dataclass(frozen=True)
@@ -47,34 +56,55 @@ class FeatureAmendment:
     about: tuple[str, ...] | None = None
 
 
-def amended_feature(feature: FeatureState, amendment: FeatureAmendment) -> Feature:
-    """The Feature in Backlog with the parts the amendment names rewritten, the rest as it was.
+def _rewritten[F: Feature | StartedFeature | BlockedFeature](
+    feature: F, amendment: FeatureAmendment
+) -> F:
+    """The Feature with the parts the amendment names rewritten, each through make_feature.
 
-    Each part goes through the constructor of a Feature. Raises NoPartError when it names none,
-    EmptyPartError when its title or a criterion is blank, NoCriterionError when it gives no
-    criterion in place of the ones it had, StartedAlreadyError when the Feature is started,
-    BlockedError when it is blocked, CompletedAlreadyError when it is completed and
-    RemovedAlreadyError when it is removed.
+    Raises NoPartError when it names none, EmptyPartError when its title or a criterion is blank
+    and NoCriterionError when it gives no criterion in place of the ones it had.
+    """
+    if amendment == FeatureAmendment():
+        raise NoPartError(f"amend rewrites no part of {feature_id_text(feature.id)}: name one")
+    title, described, criteria = amendment.title, amendment.description, amendment.criteria
+    checked = make_feature(
+        feature.id,
+        feature.title if title is None else title,
+        feature.criteria if criteria is None else criteria,
+        feature.description if described is None else described,
+        feature.created,
+    )
+    about = feature.about if amendment.about is None else amendment.about
+    return replace(
+        feature,
+        title=checked.title,
+        description=checked.description,
+        criteria=checked.criteria,
+        about=about,
+    )
+
+
+def amended_feature(
+    feature: FeatureState, amendment: FeatureAmendment, deviation: KnowledgeLine | None = None
+) -> Feature | StartedFeature | BlockedFeature:
+    """The Feature with the parts the amendment names rewritten, the rest as it was.
+
+    One in Backlog is amended without a deviation; a started or blocked one with it, kept on it
+    after the lines it had, in the state it had. Each part goes through the constructor of a
+    Feature. Raises NoPartError when it names none, EmptyPartError when its title or a criterion
+    is blank, NoCriterionError when it gives no criterion in place of the ones it had,
+    DeviationError when a started Feature has none or one in Backlog has one,
+    CompletedAlreadyError when it is completed and RemovedAlreadyError when it is removed.
     """
     named = feature_id_text(feature.id)
     match feature:
         case Feature():
-            if amendment == FeatureAmendment():
-                raise NoPartError(f"amend rewrites no part of {named}: name one")
-            title, described, criteria = amendment.title, amendment.description, amendment.criteria
-            amended = make_feature(
-                feature.id,
-                feature.title if title is None else title,
-                feature.criteria if criteria is None else criteria,
-                feature.description if described is None else described,
-                feature.created,
-            )
-            about = feature.about if amendment.about is None else amendment.about
-            return replace(amended, knowledge=feature.knowledge, about=about)
-        case StartedFeature():
-            raise StartedAlreadyError(f"{named} is started already")
-        case BlockedFeature():
-            raise BlockedError(f"{named} is blocked")
+            check_deviation(named, False, deviation)
+            return _rewritten(feature, amendment)
+        case StartedFeature() | BlockedFeature():
+            check_deviation(named, True, deviation)
+            amended = _rewritten(feature, amendment)
+            return amended if deviation is None else noted_feature(amended, deviation)
         case CompletedFeature():
             raise CompletedAlreadyError(f"{named} is completed already")
         case RemovedFeature():
@@ -104,26 +134,35 @@ def _of_feature(named: str, parts: Amendment, criteria: Sequence[str] | None) ->
 
 
 def amend_named(
-    item: str, parts: Amendment, criteria: Sequence[str] | None, store: Store
+    item: str,
+    parts: Amendment,
+    criteria: Sequence[str] | None,
+    store: Store,
+    deviation: KnowledgeLine | None = None,
 ) -> Written:
     """Rewrite the parts named of the Feature, the work item or the Task in Backlog of that id.
 
     Returns what the write says. The criteria are those of a Feature, given in place of the
-    ones it had; the other parts of its amendment are its title and its description. A Task
-    takes its title, output, check and description alone: the refusals of `amend_task_item`. Raises
-    NoSuchPartError when a part of a work item is given to a Feature or criteria to a work
-    item, FeatureNotFoundError when the record holds no such Feature, or the refusal of its
-    amend; for any other id the refusal of `amend_item`. Nothing is saved.
+    ones it had; the other parts of its amendment are its title and its description. A started
+    Feature or work item is amended with its deviation, kept on it in the same save. A Task
+    takes its title, output, check and description alone: the refusals of `amend_task_item`, and
+    no deviation. Raises NoSuchPartError when a part of a work item is given to a Feature or
+    criteria to a work item, DeviationError when a deviation is given for a Task,
+    FeatureNotFoundError when the record holds no such Feature, or the refusal of its amend; for
+    any other id the refusal of `amend_item`. Nothing is saved.
     """
     if is_task_id(item):
+        if deviation is not None:
+            raise DeviationError(f"{item} takes no --deviation: a Task keeps no knowledge line")
         return amend_task_item(item, parts, criteria, store)
     if not is_feature_id(item):
         if criteria is not None:
             named = work_item_id_text(parse_amended_id(item))
             raise NoSuchPartError(f"{named} has no criteria: only a Feature states them")
-        return amend_item(item, parts, store)
+        return amend_item(item, parts, store, deviation)
     feature_id = parse_feature_id(item)
     named = feature_id_text(feature_id)
     amendment = _of_feature(named, parts, criteria)
-    store.features.save_feature(amended_feature(store.features.load_feature(feature_id), amendment))
+    was = store.features.load_feature(feature_id)
+    store.features.save_feature(amended_feature(was, amendment, deviation))
     return Written(f"amended {named}\n", MESSAGE.format(f"amend {named}"))

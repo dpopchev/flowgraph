@@ -326,13 +326,22 @@ make install    # in the checkout of flowgraph
 fgraph init     # in any repository, makes its .fgraph/
 ```
 
-`fgraph` looks for the record in the directory it runs in: `.fgraph/` first,
-then `fgraph/`. When neither is there, it exits 2 and says to run `fgraph init`
-or to pass the path:
+`fgraph` looks for the record in this order: `--dir PATH`, taken without a
+search; then the folder the key `fgraph.record` of the git configuration of the
+clone names, a path relative to the root of the repository, read whatever
+directory of the work tree `fgraph` runs in; then `.fgraph/`, then `fgraph/`,
+in the directory it runs in. When none is there, it exits 2 and says to run
+`fgraph init` or to pass the path. The developer sets the key and `fgraph` only
+reads it: it lives in `.git/config`, which git does not track, so each clone
+names its own. A key that names a folder that is no directory exits 2 and falls
+back to nothing:
 
 ```sh
 fgraph                      # uses ./.fgraph/, else ./fgraph/
 fgraph --dir path/to/record # uses the directory given, without a search
+git config fgraph.record .dpopchev  # said once per clone
+fgraph status               # reads <root>/.dpopchev, from any directory of the clone
+# fgraph: error: git config fgraph.record names /path/to/project/.dpopchev, which is no directory -- run fgraph init, or name another with git config fgraph.record PATH
 ```
 
 A command reads an id in any case, with its dash and its leading zeros left
@@ -368,8 +377,10 @@ fgraph start --help
 `fgraph add --help` lists the kinds it adds, and each kind prints its own:
 `fgraph add story --help`.
 
-`fgraph init` makes the record of a directory: `.fgraph/` in the directory it
-runs in, or in the one `--dir` names, and it prints the record it made. It
+`fgraph init` makes the record of a directory: with the key `fgraph.record` set
+and no `--dir`, the folder the key names, refused when that folder is there;
+else `.fgraph/` in the directory it runs in, or in the one `--dir` names, which
+still names the directory `.fgraph/` is made in. It prints the record it made. It
 writes a `.fgraph/config.toml` at the defaults, commits on and development off,
 and in a git work tree it commits that file as `chore: make the record`. A
 directory that holds `.fgraph/` or `fgraph/` is refused, exit 2, naming it, and
@@ -3062,6 +3073,19 @@ Tasks of the Story are added, started and completed in the checkout of
 `main`. `fgraph land S-0001 --message "..."` merges the branch there,
 completes the Story at the merge commit with no commit of the record, and
 removes the worktree and the branch. The start is held to `main` as any other.
+
+A record of another name that is no part of the repository is named by the key
+and ignored by a line in `.git/info/exclude`, written before `fgraph init`,
+since a folder no rule names is committed by init and by every write as any
+record. It then behaves as the record git ignores above, and a worktree reads
+the folder under its own top, where an ignored one is not:
+
+```sh
+echo ".dpopchev/" >> .git/info/exclude
+git config fgraph.record .dpopchev
+fgraph init
+# record: /path/to/project/.dpopchev
+```
 
 ## Develop
 

@@ -1152,14 +1152,36 @@ since history is not rewritten, and map to the new ids by the number.
 The record is plain TOML files tracked by git: git is its history, its backup
 and its merge tool.
 
-- `fgraph init` makes the record of a directory: `.fgraph/` in the directory it
-  runs in, or in the one `--dir` names. Inside it writes `config.toml` alone,
+- `fgraph init` makes the record of a directory: with the key `git config
+  fgraph.record` set and no `--dir`, the folder the key names, refused when that
+  folder is there or when its parent is no directory; else `.fgraph/` in the
+  directory it runs in, or in the one `--dir` names. A named folder is
+  committed or not by the rule of any record. Inside it writes `config.toml` alone,
   at the defaults (`[git] commit = true`, `[development] enabled = false`),
   since git commits no empty directory; `items/` comes with the first write. In
   a git work tree it commits that file as one write of the record, `chore: make
   the record`, unless git ignores the record. A directory that holds `.fgraph/`
   or `fgraph/` is refused, exit 2, naming it, and nothing is written; init is
   the one command that runs with no record located.
+- S-0128, the decision of the developer of 2026-11-23 (a key of the git
+  configuration of the clone, no variable of the environment and no file at the
+  root): the record is located in this order: `--dir`, then the folder the key
+  `git config fgraph.record` names, relative to the root of the repository, then
+  `.fgraph/`, then `fgraph/` in the directory it runs in. The developer writes
+  the key; fgraph never does. No key, an empty value and a directory outside a
+  git work tree read nothing, so a record outside git is located as before. A
+  key that names no directory exits 2 with `fgraph: error: git config
+  fgraph.record names <path>, which is no directory -- run fgraph init, or name
+  another with git config fgraph.record PATH`. Worktrees share the
+  configuration of their clone and each reads the folder under its own top, so a
+  tracked record is the directory at the same path inside each worktree, as the
+  bullets on the Task ids and on status already say, while a folder git ignores
+  is in the checkout of main alone and the same command in the worktree of a
+  work item exits 2 naming the key and the path there. fgraph asks git whether a
+  rule names the folder, as for `.fgraph/`, so a record meant to stay untracked
+  is named in `.git/info/exclude` or a `.gitignore` and takes the rules of the
+  bullets starting A record git ignores and With the development on, the start
+  of a work item on an ignored record, both left as written.
 - One directory, `items/`, holds every item: one file per work item with its
   Tasks inside it, named by its id, `items/S-0001.toml`. The prefix of the id
   is the one place that says the kind, so there is no directory per kind.

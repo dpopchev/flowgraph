@@ -1436,9 +1436,16 @@ fgraph show F-0001
 `fgraph knowledge` lists the lines of every work item and every Feature of the
 record, the last noted first, each with its date, its kind, the id of its item
 and its text. `--kind` narrows the list to `finding`, `decision` or `deviation`;
-another word exits 2 naming the three. The decision of a completed Spike is
-listed among the decisions at the time the Spike was completed, and stays kept
-on the Spike. A record with no line prints one line saying so:
+another word exits 2 naming the three. `fgraph knowledge --search TEXT` narrows
+the list to the lines whose text holds the text, whatever the case of either,
+as a part of a word too. `--kind`, `--about` and `--search` narrow the same
+list, a line being listed when it meets each one given. Only the text of the
+line is searched, as it is listed (the decision of a Spike with its answer),
+not the title or the id of its item, its kind or the terms it is about. With
+no such line it prints one line and exits 0; a blank text exits 2. The decision
+of a completed Spike is listed among the decisions at the time the Spike was
+completed, and stays kept on the Spike. A record with no line prints one line
+saying so:
 
 ```sh
 fgraph knowledge
@@ -1455,6 +1462,12 @@ fgraph knowledge --kind decision
 
 fgraph knowledge --kind finding
 # 2026-11-22  finding  S-0001  the file holds the lines in the order noted
+
+fgraph knowledge --search STORE
+# 2026-11-22  decision  S-0001  keep one store
+
+fgraph knowledge --search budget --kind finding
+# no finding lines holding 'budget' in the record
 ```
 
 A line is never amended or removed. The id of a Task, an id the record does

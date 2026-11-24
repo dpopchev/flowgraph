@@ -2,12 +2,14 @@
 
 A view: it reads the record as plain data and changes nothing. The decision of a completed Spike
 is listed among the decisions at the time the Spike was completed; it stays kept on the Spike.
+A search keeps the lines whose text holds the text searched for, whatever the case of either.
 """
 
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 from datetime import datetime
 
+from flowgraph.criterion import said
 from flowgraph.feature import feature_detail
 from flowgraph.knowledge.model import (
     DECISION,
@@ -55,6 +57,14 @@ def chosen_kind(kind: str | None) -> str | None:
     return kind
 
 
+def sought(text: str | None) -> str | None:
+    """The text the list is searched for as it is given; None for no search.
+
+    Raises EmptyPartError naming the search when the text is blank.
+    """
+    return None if text is None else said("search", text)
+
+
 def entries_of(item: str, rows: Iterable[KnowledgeRow]) -> list[KnowledgeEntry]:
     """The lines of the item of that id as entries, in the order they were noted."""
     return [
@@ -73,6 +83,16 @@ def decision_entries(detail: WorkItemDetail, completed: datetime | None) -> list
     return [KnowledgeEntry(detail.id, kind_name(DECISION), completed, text)]
 
 
+def holding(entries: Iterable[KnowledgeEntry], text: str | None) -> list[KnowledgeEntry]:
+    """The entries whose text holds the text, whatever the case; every entry for None.
+
+    It reads the text of the line as the list writes it, the decision of a Spike with its answer,
+    and nothing else of the entry: not its item, its kind, its terms or its files. It keeps the
+    order given, so it composes before or after any other filter of the entries.
+    """
+    return [entry for entry in entries if text is None or text.casefold() in entry.text.casefold()]
+
+
 def newest_first(
     entries: Iterable[KnowledgeEntry], kind: str | None, about: str | None = None
 ) -> list[KnowledgeEntry]:
@@ -89,11 +109,14 @@ def newest_first(
     return sorted(reversed(kept), key=lambda entry: entry.noted, reverse=True)
 
 
-def knowledge_text(entries: list[KnowledgeEntry], kind: str | None, about: str | None) -> str:
+def knowledge_text(
+    entries: list[KnowledgeEntry], kind: str | None, about: str | None, search: str | None = None
+) -> str:
     """The entries as the lines fgraph knowledge writes, or one line saying there are none."""
     if not entries:
         about_it = "" if about is None else f" about {about}"
-        return f"no {kind or 'knowledge'} lines{about_it} in the record\n"
+        held = "" if search is None else f" holding {search!r}"
+        return f"no {kind or 'knowledge'} lines{about_it}{held} in the record\n"
     return "".join(
         f"{entry.noted.date().isoformat()}  {entry.kind}  {entry.item}  {entry.text}"
         f"{about_text(entry.about)}\n"
@@ -115,13 +138,19 @@ def collected(store: Store) -> list[KnowledgeEntry]:
     return entries
 
 
-def show_knowledge(kind: str | None, about: str | None, store: Store) -> str:
+def show_knowledge(
+    kind: str | None, about: str | None, store: Store, search: str | None = None
+) -> str:
     """The text fgraph knowledge gives: the lines of the record, of that kind when one is named.
 
-    The lines about that term alone when one is named. Raises KindListedError when the kind is
-    none of the three and TermError when the record holds no term of that name. Nothing is
+    The lines about that term alone when one is named, and those whose text holds the search when
+    one is given. Raises KindListedError when the kind is none of the three, TermError when the
+    record holds no term of that name and EmptyPartError when the search is blank. Nothing is
     written.
     """
     narrowed = chosen_kind(kind)
     term = None if about is None else term_asked(about, store)
-    return knowledge_text(newest_first(collected(store), narrowed, term), narrowed, term)
+    text = sought(search)
+    return knowledge_text(
+        newest_first(holding(collected(store), text), narrowed, term), narrowed, term, text
+    )

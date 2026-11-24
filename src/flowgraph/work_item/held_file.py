@@ -13,6 +13,7 @@ from flowgraph.item import (
     AnyCriterionFile,
     CompletedTaskFile,
     HeldTask,
+    HeldTime,
     KnowledgeFile,
     TaskFile,
 )
@@ -33,7 +34,7 @@ class ItemFile(RelationsFile, BaseModel):
     parent: str = ""
     about: list[str] = []
     complexity: Complexity | None = None
-    created: datetime
+    created: HeldTime
     criterion: AnyCriterionFile
     tasks: list[TaskFile] = []
     knowledge: list[KnowledgeFile] = []
@@ -51,8 +52,8 @@ class StartedItemFile(RelationsFile, BaseModel):
     parent: str = ""
     about: list[str] = []
     complexity: Complexity | None = None
-    created: datetime
-    started: datetime
+    created: HeldTime
+    started: HeldTime
     agent: str = ""
     criterion: AnyCriterionFile
     tasks: list[HeldTask] = []
@@ -71,9 +72,9 @@ class BlockedItemFile(RelationsFile, BaseModel):
     parent: str = ""
     about: list[str] = []
     complexity: Complexity | None = None
-    created: datetime
-    started: datetime
-    since: datetime
+    created: HeldTime
+    started: HeldTime
+    since: HeldTime
     reason: str
     waiting_on: str
     agent: str = ""
@@ -89,7 +90,7 @@ class VerifiedFile(BaseModel):
 
     answer: Verdict
     text: str
-    on: datetime
+    on: HeldTime
 
 
 class CompletedItemFile(RelationsFile, BaseModel):
@@ -107,9 +108,9 @@ class CompletedItemFile(RelationsFile, BaseModel):
     parent: str = ""
     about: list[str] = []
     complexity: Complexity | None = None
-    created: datetime
-    started: datetime
-    completed: datetime
+    created: HeldTime
+    started: HeldTime
+    completed: HeldTime
     agent: str = ""
     commit: str = ""
     verified: VerifiedFile | None = None
@@ -130,8 +131,8 @@ class RemovedItemFile(RelationsFile, BaseModel):
     parent: str = ""
     about: list[str] = []
     complexity: Complexity | None = None
-    created: datetime
-    removed: datetime
+    created: HeldTime
+    removed: HeldTime
     reason: str = ""
     superseded_by: str = ""
     criterion: AnyCriterionFile

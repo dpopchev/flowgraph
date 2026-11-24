@@ -4,7 +4,6 @@ Its Task tables are in flowgraph.item.task_file.
 """
 
 from collections.abc import Callable, Mapping
-from datetime import datetime
 from pathlib import Path
 from typing import Literal, assert_never
 
@@ -22,6 +21,7 @@ from flowgraph.criterion import (
     make_hypothesis,
     make_scenario,
 )
+from flowgraph.item.held_time import HeldTime
 from flowgraph.knowledge import (
     DECISION,
     DEVIATION,
@@ -83,7 +83,7 @@ class KnowledgeFile(BaseModel):
 
     kind: Literal["finding", "decision", "deviation"]
     text: str
-    noted: datetime
+    noted: HeldTime
     about: list[str] = []
     governs: list[str] = []
 

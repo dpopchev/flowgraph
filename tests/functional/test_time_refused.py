@@ -18,7 +18,6 @@ pytestmark = pytest.mark.functional
 
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 DAY = date(2026, 10, 11)
-XFAIL = pytest.mark.xfail(strict=True, reason="B-0026: a time of a file with no offset is read")
 
 # The commands that write the record, each of which must exit 0.
 RECORD = [
@@ -97,7 +96,6 @@ def record(tmp_path: Path) -> Path:
     return tmp_path
 
 
-@XFAIL
 @pytest.mark.parametrize(("name", "keys", "noun", "key"), CASES)
 def test_status_refuses_a_day_alone_naming_the_file(
     record: Path, name: str, keys: tuple[str | int, ...], noun: str, key: str
@@ -108,7 +106,6 @@ def test_status_refuses_a_day_alone_naming_the_file(
     assert (refused.status, refused.err.splitlines()[-1:]) == (2, [line(path, noun, key)])
 
 
-@XFAIL
 @pytest.mark.parametrize(
     "argv", [["knowledge"], ["show", "S-0002"], ["amend", "S-0001", "--title", "another title"]]
 )
@@ -119,7 +116,6 @@ def test_every_command_refuses_a_day_alone_in_a_story(record: Path, argv: list[s
     assert (refused.status, refused.err.splitlines()[-1:]) == expected
 
 
-@XFAIL
 def test_an_amend_refused_leaves_the_file_as_it_was_written(record: Path) -> None:
     rewritten(story_file(record), DAY, "created")
     before = story_file(record).read_text("utf-8")
@@ -127,7 +123,6 @@ def test_an_amend_refused_leaves_the_file_as_it_was_written(record: Path) -> Non
     assert story_file(record).read_text("utf-8") == before
 
 
-@XFAIL
 def test_status_refuses_a_time_with_no_offset_naming_what_is_written(record: Path) -> None:
     rewritten(story_file(record), datetime(2026, 10, 11, 9), "created")
     refused = fgraph(["status"], record)

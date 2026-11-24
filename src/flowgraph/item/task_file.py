@@ -1,12 +1,12 @@
 """The Task tables of a work item file: one per Task, told apart by its state line."""
 
-from datetime import datetime
 from typing import Annotated, Literal, assert_never
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from flowgraph.criterion import evidence_written
 from flowgraph.item.file import evidence_primitives
+from flowgraph.item.held_time import HeldTime
 from flowgraph.task import (
     BlockedTask,
     CompletedTask,
@@ -35,7 +35,7 @@ class TaskFile(BaseModel):
     description: str = ""
     check: str | None = None
     expected_output: str
-    created: datetime
+    created: HeldTime
 
 
 class StartedTaskFile(BaseModel):
@@ -49,8 +49,8 @@ class StartedTaskFile(BaseModel):
     description: str = ""
     check: str | None = None
     expected_output: str
-    created: datetime
-    started: datetime
+    created: HeldTime
+    started: HeldTime
 
 
 class BlockedTaskFile(BaseModel):
@@ -64,9 +64,9 @@ class BlockedTaskFile(BaseModel):
     description: str = ""
     check: str | None = None
     expected_output: str
-    created: datetime
-    started: datetime
-    since: datetime
+    created: HeldTime
+    started: HeldTime
+    since: HeldTime
     reason: str
     waiting_on: str
 
@@ -82,9 +82,9 @@ class CompletedTaskFile(BaseModel):
     description: str = ""
     check: str | None = None
     expected_output: str
-    created: datetime
-    started: datetime
-    completed: datetime
+    created: HeldTime
+    started: HeldTime
+    completed: HeldTime
     commit: str = ""
 
 

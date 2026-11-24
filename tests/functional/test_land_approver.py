@@ -1,4 +1,4 @@
-"""The criterion of S-0099: with `development.approver = "developer"` `fgraph land` waits for the developer.
+"""The criterion of S-0099: under `development.approver = "developer"` `fgraph land` waits.
 
 Run end to end through `run` on a real git repository in a temporary directory whose origin is
 a bare repository beside it, never a faked git; the identity of its commits comes from the

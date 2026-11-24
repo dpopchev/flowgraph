@@ -5,6 +5,7 @@ command, which the command line writes as a usage error.
 """
 
 import argparse
+from functools import partial
 from pathlib import Path
 
 from flowgraph.development import RunGate
@@ -36,11 +37,12 @@ from flowgraph.item.hand import hand_item
 from flowgraph.item.moves import start_item
 from flowgraph.item.progress import note_progress
 from flowgraph.item.verify import verify_item, verify_item_no
-from flowgraph.knowledge import DECISION, DEVIATION, FINDING
+from flowgraph.knowledge import DECISION, DEVIATION, FINDING, make_mark
 from flowgraph.knowledge.governed import governs_asked
 from flowgraph.parent import NO_CRITERION, parent_asked, realizes_asked
 from flowgraph.parser.checks import check_command
 from flowgraph.parser.item_commands import TOP
+from flowgraph.parser.start import start_named
 from flowgraph.parser.stated import criterion_added, decision_given
 from flowgraph.parser.views import view_said
 from flowgraph.record import Config, Now
@@ -50,6 +52,7 @@ from flowgraph.relation.depends import amends_asked, depends_asked, filed_during
 from flowgraph.status import status_output
 from flowgraph.status.next import start_limit
 from flowgraph.status.terminal import Width
+from flowgraph.status.top import top_to_start
 from flowgraph.term.about import about_asked
 from flowgraph.term.item import add_term_item, relate_term_item
 from flowgraph.work_item import (
@@ -162,7 +165,7 @@ def _written(
             )
             about = about_asked(args.about, store) or ()
             governs = governs_asked(args.governs, cwd, open_git)
-            return note_named(args.id, kind, text, store, now, about, governs)
+            return note_named(args.id, kind, text, store, now, about, governs, make_mark(args.mark))
         case "verify" if args.no is not None:
             return verify_item_no(args.id, args.no, store, now)
         case "verify":
@@ -189,7 +192,8 @@ def command_said(
 
     The directory fgraph runs in, cwd, is where the path of fgraph about a file is taken from.
 
-    The checks of the command run first, in check_command, before its write is made.
+    The checks of the command run first, in check_command, before its write is made. A start
+    given no id takes the first fgraph status marks, read before those checks.
 
     A write is committed once it is made. The lines of status are cut to the width, when there
     is one. The configuration says whether a start branches, how many work items are started at
@@ -199,6 +203,7 @@ def command_said(
     off is left uncommitted. A release tags main, and pushes the tag when the configuration
     says so. Raises the refusal of the command, a git step refused among them.
     """
+    args = start_named(args, partial(top_to_start, store, start_limit(config.development)))
     check_command(args, store, record, open_git, config, cwd, run_check)
     written = _written(args, store, now, config, cwd, open_git)
     if written is not None:
@@ -228,4 +233,4 @@ def command_said(
                 status_output(store, None if args.all else TOP, args.format, width(), limit)
             )
         case _:
-            return view_said(args, store, cwd, open_git, record, config.development)
+            return view_said(args, store, cwd, open_git, record, config)

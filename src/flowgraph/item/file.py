@@ -29,6 +29,8 @@ from flowgraph.knowledge import (
     KnowledgeLine,
     kind_name,
     make_knowledge_line,
+    make_mark,
+    mark_name,
 )
 
 
@@ -84,29 +86,32 @@ class KnowledgeFile(BaseModel):
     kind: Literal["finding", "decision", "deviation"]
     text: str
     noted: HeldTime
+    mark: Literal["standing", "open"] | None = None
     about: list[str] = []
     governs: list[str] = []
 
 
 def knowledge_primitives(line: KnowledgeLine) -> dict[str, object]:
-    """The knowledge line as the primitives its table holds, its terms and files when it has any."""
+    """The knowledge line as the primitives its table holds: its mark, terms and files if any."""
+    mark = {"mark": mark_name(line.mark)} if mark_name(line.mark) else {}
     about = {"about": list(line.about)} if line.about else {}
     governs = {"governs": list(line.governs)} if line.governs else {}
     head = {"kind": kind_name(line.kind), "text": line.text, "noted": line.noted}
-    return {**head, **about, **governs}
+    return {**head, **mark, **about, **governs}
 
 
 def knowledge_held(held: KnowledgeFile) -> KnowledgeLine:
     """The knowledge line a validated table holds, built through its constructor."""
     about = tuple(held.about)
     governs = tuple(held.governs)
+    mark = make_mark(held.mark)
     match held.kind:
         case "finding":
-            return make_knowledge_line(FINDING, held.text, held.noted, about, governs)
+            return make_knowledge_line(FINDING, held.text, held.noted, about, governs, mark)
         case "decision":
-            return make_knowledge_line(DECISION, held.text, held.noted, about, governs)
+            return make_knowledge_line(DECISION, held.text, held.noted, about, governs, mark)
         case "deviation":
-            return make_knowledge_line(DEVIATION, held.text, held.noted, about, governs)
+            return make_knowledge_line(DEVIATION, held.text, held.noted, about, governs, mark)
         case _ as unreachable:
             assert_never(unreachable)
 

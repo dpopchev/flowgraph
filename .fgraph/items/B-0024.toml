@@ -1,10 +1,19 @@
 id = "B-0024"
-state = "backlog"
+state = "completed"
 title = "Cut the passages of docs/domain-model.md that say fgraph verify keeps a yes alone from three to none"
 description = "Found during T-0366 of S-0094 on 2026-11-23, under the burn of the goal; filed at the end of the queue and not burned. T-0366 named the section Amends alone, so the lane left the other passages as they were: a miss of the brief the coordinator wrote. Steps: grep docs/domain-model.md for yes so far, (yes) and without --yes. Its Tasks are written when it is ordered."
 complexity = "low"
 created = 2026-11-22 23:27:25+00:00
+started = 2026-11-24 06:58:36+00:00
+completed = 2026-11-24 07:11:10+00:00
+agent = "haiku-a26"
+commit = "bc4a6bb"
 filed_during = "S-0094"
+
+[verified]
+answer = "yes"
+text = "at bc4a6bb on main, the merge of wi/B-0024-cut-the-passages-of: docs/domain-model.md says, under Attributes, the answer, yes or no, the text the run; under Persistence, its answer (yes or no), its text and its on time, and that a verify is refused for a call with neither or both of --yes and --no, with one sentence added on --no TEXT filing a Bug in the same write; grep finds yes so far nowhere; the check of T-0477 exits 0 on the file of main; fgraph verify --help prints (--yes TEXT | --no TEXT), as the passages now say. The one file changed is docs/domain-model.md, 10 lines added and 7 removed; make check on the branch before the merge of main, run by its subagent: 4299 passed, all checks passed. Handed whole to one subagent on haiku, which made its three edits before the start of T-0477 and started the Task before its commit."
+on = 2026-11-24 07:11:34+00:00
 
 [criterion]
 observed = "after S-0094, docs/domain-model.md says under Attributes the answer, yes so far, and under Persistence that the verified table holds its answer (yes) and that a verify is refused for a call without --yes"
@@ -12,9 +21,12 @@ expected = "each passage says the answer is yes or no, and that neither or both 
 
 [[tasks]]
 id = "T-0477"
-state = "backlog"
+state = "completed"
 title = "Update docs/domain-model.md to say fgraph verify keeps a yes or a no, in its three passages that say a yes alone"
 description = "Change docs/domain-model.md only; find each passage by grep, never by line number, and keep each edit inside its sentence, rewrapping its paragraph alone. What is true today: uv run fgraph verify --help shows (--yes TEXT | --no TEXT), one of the two required; the answer is the type Verdict, yes or no (src/flowgraph/work_item/verification.py). (1) grep \"yes so far\": under ## Attributes, the sentence It is its own fact, a `Verification` of the completed work item and never a knowledge line: the answer, yes so far, the text the run of its criterion printed and the time. becomes the same sentence with the answer, yes or no, the text the run of its criterion printed and the time. (2) grep \"\\[verified\\]. table inside\": under ## Persistence, in the bullet starting The answer of a closing is one `[verified]` table, the words with its `answer` (`yes`), its `text` and its `on` time become with its `answer` (`yes` or `no`), its `text` and its `on` time. (3) In the same bullet, grep \"call without\": the sentence ending a blank text, a second answer and a call without `--yes`. becomes ending a blank text, a second answer and a call with neither or both of `--yes` and `--no`. Before that sentence It is refused, and after the one ending on `main` as a note of a completed item is., add one sentence: With `--no TEXT` it writes the answer no and files a Bug in the same write, as Amends states. The sentence on `fgraph verify ID --yes TEXT`, its commit chore: verify S-0001 in the record and its line verified S-0001 stays: it is true of a yes. Do not touch: the section ## Amends (its bullet A no files the Bug is right), the two rows of the conversion tables that name `fgraph verify --yes` and `verify --yes` (they say what an old verified line converts to, which is a yes), the sentence on the Verdict under the Spike, README.md (it says yes or no already). No source or test changes."
 check = "tr -s ' \\n' ' ' < docs/domain-model.md | grep -q \"the answer, yes or no, the text the run\" && tr -s ' \\n' ' ' < docs/domain-model.md | grep -q \"its .answer. (.yes. or .no.), its\" && tr -s ' \\n' ' ' < docs/domain-model.md | grep -q \"a call with neither or both of .--yes. and .--no.\" && ! grep -q \"yes so far\" docs/domain-model.md && ! tr -s ' \\n' ' ' < docs/domain-model.md | grep -q \"call without\" && ! tr -s ' \\n' ' ' < docs/domain-model.md | grep -q \"(.yes.), its\""
 expected_output = "changed: docs/domain-model.md: under Attributes the Verification is the answer, yes or no, the text the run of its criterion printed and the time; under Persistence the [verified] table holds its answer (yes or no), and a verify is refused for a call with neither or both of --yes and --no, with one sentence saying --no TEXT writes the answer no and files a Bug as Amends states. The words yes so far, (yes) alone and a call without --yes are gone"
 created = 2026-11-23 20:45:26+00:00
+started = 2026-11-24 06:59:56+00:00
+completed = 2026-11-24 07:00:55+00:00
+commit = "b4bf552fd442620ddadf76b96c892ec7548e4ed4"

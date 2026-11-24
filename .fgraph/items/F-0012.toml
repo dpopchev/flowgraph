@@ -1,8 +1,9 @@
 id = "F-0012"
-state = "backlog"
+state = "started"
 title = "Raise the ways of working the configuration of a record chooses from one, a branch merged in the checkout, to three, with two limits"
 description = "From the note of the ~/.claude session of 2026-11-22 on the gaps of the planning skill (output: development modes and constraints, as keys of the configuration), filed and ordered on the word of the developer of that day: update the backlog and prioritize. The keys of the note: development.mode = branch or trunk; development.merge also pull-request; development.branch_max, an age such as 1d; development.approver = agent or developer. delivery.push and delivery.tag are under the Feature of the delivery. The trunk mode is what ~/.claude needs, whose work tree is the live artifact."
 created = 2026-11-22 21:03:39+00:00
+started = 2026-11-24 07:13:44+00:00
 criteria = [
     "a developer works on the trunk, with no branch and no worktree, in a repository whose work tree is the live artifact",
     "a developer lands a work item through a pull request",

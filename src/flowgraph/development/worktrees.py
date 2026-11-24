@@ -4,7 +4,7 @@ A Task id is unique across the record, and a started work item is written in a w
 own. So the next Task id is one above the highest in the record of every worktree: main and a
 worktree hand out no id twice. And the row of a started work item, as its detail, is the one its
 worktree holds, since its Tasks move there. It covers the worktrees of one repository, not two
-clones.
+clones. A started work item removed on main is loaded whole from its worktree too (S-0148).
 
 A term is written on main alone, so the worktree of a started work item reads the terms of the
 record of main: its own copy of them is the one its branch was made with.
@@ -28,6 +28,7 @@ from flowgraph.work_item import (
     WorkItemId,
     WorkItemNotFoundError,
     WorkItemRow,
+    WorkItemState,
     parse_work_item_id,
 )
 
@@ -80,6 +81,11 @@ def across_worktrees(store: Store, record: Path, open_git: OpenGit, open_store: 
     itself for a work item without such a worktree, outside a git work tree, for a record git
     ignores, for a worktree that holds no file of it, and in a work tree on the branch of a work
     item, which reads its own record. Git is asked only when a row or the detail read is started.
+
+    Its load_written loads a work item whole as that worktree holds it, under the same rule; it
+    is not conditioned on the state, since its caller asks it only for a work item started or
+    blocked. Its load_work_item itself stays the copy of the record, which the landing and the
+    save of scope.py read.
     """
 
     def find_task_ids() -> list[str]:
@@ -126,6 +132,16 @@ def across_worktrees(store: Store, record: Path, open_git: OpenGit, open_store: 
         except WorkItemNotFoundError:
             return detail
 
+    def load_written(item_id: WorkItemId) -> WorkItemState:
+        inside = inside_work_tree()
+        worktree = None if inside is None else worktree_of_item(record, open_git, item_id)
+        if inside is None or worktree is None:
+            return store.load_work_item(item_id)
+        try:
+            return open_store(worktree / inside).load_work_item(item_id)
+        except WorkItemNotFoundError:
+            return store.load_work_item(item_id)
+
     def main_store() -> Store | None:
         """The store of the record of main, for a work tree on the branch of a work item."""
         home = record_of_main(record, open_git)
@@ -146,4 +162,5 @@ def across_worktrees(store: Store, record: Path, open_git: OpenGit, open_store: 
         find_task_ids=find_task_ids,
         find_work_item_rows=find_work_item_rows,
         find_work_item_detail=find_work_item_detail,
+        load_written=load_written,
     )

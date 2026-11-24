@@ -22,7 +22,7 @@ from flowgraph.item import (
     task_held,
     task_primitives,
 )
-from flowgraph.parent import parent_text, parent_written
+from flowgraph.parent import parent_text, parent_written, realizes_number, realizes_written
 from flowgraph.task import at_most_one_started
 from flowgraph.work_item.agent import agent_written
 from flowgraph.work_item.block import blocked_work_item
@@ -98,11 +98,14 @@ def _moves_primitives(item: WorkItemState) -> dict[str, object]:
 def item_primitives(item: WorkItemState) -> dict[str, object]:
     """The work item as the primitives its file holds.
 
-    A description, a parent, a commit and tasks are held only when there is one: a work item
-    that stands alone is written without a parent, one completed without a commit without one.
+    A description, a parent, a criterion realized, a commit and tasks are held only when there is
+    one: a work item that stands alone is written without a parent, one completed without a
+    commit without one.
     """
     described = {"description": item.description} if item.description else {}
     under = {"parent": parent_text(item.parent)} if parent_text(item.parent) else {}
+    number = realizes_number(item.realizes)
+    naming = {} if number is None else {"realizes": number}
     tasks = {"tasks": [task_primitives(task) for task in item.tasks]} if item.tasks else {}
     lines = [knowledge_primitives(line) for line in item.knowledge]
     knowledge = {"knowledge": lines} if lines else {}
@@ -114,6 +117,7 @@ def item_primitives(item: WorkItemState) -> dict[str, object]:
         "title": item.title,
         **described,
         **under,
+        **naming,
         **about,
         **rated,
         "created": item.created,
@@ -163,6 +167,7 @@ def item_held(held: HeldItemFile, kind: Kind, kinds: Sequence[Kind] = ()) -> Wor
         parent,
         about=about,
         complexity=held.complexity,
+        realizes=realizes_written(held.realizes),
     )
     for task in held.tasks:
         item = append_task(item, backlog_task(task))

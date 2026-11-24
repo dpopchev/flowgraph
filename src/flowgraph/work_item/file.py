@@ -13,7 +13,7 @@ from pydantic import ValidationError
 from flowgraph.criterion import CommitError, CriterionError, DecisionError, EmptyPartError
 from flowgraph.item import NoOffsetError, task_row, write_checked
 from flowgraph.knowledge import KnowledgeRow
-from flowgraph.parent import FeatureIdError
+from flowgraph.parent import FeatureIdError, RealizesError
 from flowgraph.record import ITEMS
 from flowgraph.relation import RelationError
 from flowgraph.task import TaskInProgressError
@@ -129,6 +129,7 @@ def read_work_item(record: Path, item_id: WorkItemId, kinds: Sequence[Kind] = ()
         CriterionError,
         DecisionError,
         FeatureIdError,
+        RealizesError,
         CommitError,
         WorkItemIdError,
         RelationError,

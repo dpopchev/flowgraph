@@ -74,6 +74,7 @@ def started_work_item(item: WorkItemState, on: datetime) -> StartedWorkItem:
                 item.knowledge,
                 item.relations,
                 item.about,
+                realizes=item.realizes,
             )
         case StartedWorkItem():
             raise StartedAlreadyError(f"{work_item_id_text(item.id)} is started already")
@@ -119,6 +120,7 @@ def completed_work_item(
                 item.relations,
                 agent=item.agent,
                 about=item.about,
+                realizes=item.realizes,
             )
         case BlockedWorkItem():
             raise BlockedError(f"{work_item_id_text(item.id)} is blocked: unblock it first")

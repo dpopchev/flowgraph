@@ -193,6 +193,10 @@ needs. The same five exist for `Story`, `Bug`, `Spike`, `Upkeep` and `Task`;
 | `CompletedStory` | Completed | completed on, evidence, the agent it had or none |
 | `RemovedStory` | Removed | removed on, reason, superseded by or none |
 
+The five of a Task are `Task`, `StartedTask`, `BlockedTask`, `CompletedTask`
+and `RemovedTask`; the last adds removed on and reason, with no superseded by
+and no started time or block (S-0147).
+
 `CompletedSpike` also adds the decision, which answers its hypothesis, and the
 answer, yes or no, which a Spike completed before it was taken lacks.
 
@@ -247,6 +251,10 @@ Removed: apart, reached by remove
 | remove | `X`, `StartedX`, `BlockedX` | `RemovedX` |
 
 Completed and Removed are terminal, and no move goes backwards.
+
+A Task moves by `remove` inside a started work item alone, from `Task`,
+`StartedTask` or `BlockedTask` to `RemovedTask`; a removed Task takes no move
+(S-0147, Persistence).
 
 A Feature moves by `start`, `Feature` to `StartedFeature`, and its start
 starts its first work item with it; and by the completion of its last work
@@ -372,7 +380,9 @@ of work item. The developer said so on 2026-11-21.
   developer's decision of 2026-11-21: `<completed>/<all> T`, its Tasks
   completed of all it holds, between its id and its title, written as board
   1's watch writes it -- `S-0001  1/3 T  <title>`. A started or a blocked
-  Task is not completed. The lines of Backlog, Completed and Removed carry no
+  Task is not completed; a removed Task is not counted, so one Task left
+  beside two removed reads `S-0001  0/1 T  <title>` (S-0147). The lines of
+  Backlog, Completed and Removed carry no
   progress. The Tasks are those the record status reads holds: the row of a
   work item is read with its Tasks, each with its state.
 - A blocked work item is listed under InProgress as a started one is, marked
@@ -387,7 +397,8 @@ of work item. The developer said so on 2026-11-21.
   started Task as `    => T-0001  <title>`, and a blocked one as
   `    !  T-0002  <title>  -- waiting on <what>: <reason>`, in the order the
   file holds them (S-0084: the line names the reason of the block beside what
-  it waits on; with an empty reason the `: <reason>` is left out). A Task in Backlog or completed is not listed. A Task line belongs to
+  it waits on; with an empty reason the `: <reason>` is left out). A Task in Backlog,
+  completed or removed is not listed. A Task line belongs to
   its work item: it does not count toward the top 5 of the heading, nor in
   the count beside it.
 - `fgraph status` marks `?` a started work item that holds a Task with every Task
@@ -397,7 +408,9 @@ of work item. The developer said so on 2026-11-21.
   It is read from the rows as status reads them, from the worktree of the work item with
   the development on, derived at each listing and kept in no file, so no field of a row
   holds it. A work item with no Task is not marked, nor is one whose Task is in Backlog,
-  started or blocked, nor a completed one; the line of a Feature carries no mark. A marked
+  started or blocked, nor a completed one; the line of a Feature carries no mark. A removed
+  Task counts neither way: a work item whose Tasks left are each completed is marked, and
+  one whose every Task is removed is not (S-0147). A marked
   line the top leaves out is listed after it, apart from the count of those more.
 - Under a Feature of InProgress `fgraph status` lists each started work item
   of it, the developer's words of 2026-11-21 -- a Feature is to its work
@@ -935,7 +948,8 @@ that holds nothing is `null`, never an empty text; a list that holds nothing is 
   `state`, as the record writes it (`backlog`, `started`, `blocked`, `completed`,
   `removed`); `commit`, the one it was completed in; `reason`, the one it was removed
   for; `superseded_by`, the id that supersedes it; `progress`, an object `completed` and
-  `total`, its Tasks completed of all; `tasks`, in the order written; `waits_for`, the
+  `total`, its Tasks completed of all, a removed Task counted in neither (S-0147);
+  `tasks`, in the order written, a removed one among them; `waits_for`, the
   ids it depends on that are not completed, in the order written.
 - A work item holds its `block` too, the reading of S-0138: an object `reason` and
   `waiting_on` while it is blocked, else `null`, in a bucket and under a Feature alike, as
@@ -943,8 +957,9 @@ that holds nothing is `null`, never an empty text; a list that holds nothing is 
   the one it was removed for.
 - A work item holds its `complexity` too, the reading of S-0112: `low`, `medium` or
   `high`, else `null`; a Task and a Feature hold none.
-- Task: `id`; `title`; `state` (`backlog`, `started`, `blocked`, `completed`); `commit`;
-  `reason` and `waiting_on`, those of a block, `null` unless it is blocked.
+- Task: `id`; `title`; `state` (`backlog`, `started`, `blocked`, `completed`, `removed`);
+  `commit`; `reason` and `waiting_on`, those of a block, `null` unless it is blocked; a
+  removed Task holds the `reason` it was removed for and `waiting_on` `null` (S-0147).
 - Feature (kind `feature`): `id`; `kind`; `title`; `commit`; `reason`, the one it was
   removed for; `progress`, an object `completed` and `total`, its work items completed of
   those it holds; `waits_for`, what its first work item in Backlog waits for; `block`, an
@@ -1203,8 +1218,9 @@ and its merge tool.
   Feature, as before.
 - A completed item is kept as `state = "completed"` with its `started` and
   `completed` times and its `commit` sha. A started Story's file may hold
-  completed Tasks; a completed Story's file holds only completed Tasks, since
-  a Story completes once every Task of it has.
+  completed and removed Tasks; a completed Story's file holds only completed
+  and removed Tasks, since a Story completes once each Task of it is completed
+  or removed, one whose every Task is removed too (S-0147).
 - An item completed without a commit (Evidence) is kept the same way but for
   the `commit` key, which its file or its `[[tasks]]` table does not hold: a
   file without the key holds no commit, a value of the evidence in the model,
@@ -1217,8 +1233,25 @@ and its merge tool.
   `fgraph remove` removes a work item in Backlog; a removed one takes no Task,
   no amend and no move, and leaves the queue as a started one does. A
   Feature in Backlog is removed too, its work items with it (below).
-  Removing a Task, and removing a started work item, which has a branch and
-  a worktree once the development is on, are not built.
+  Removing a started work item, which has a branch and a worktree once the
+  development is on, is not built; the remove of a Task is (below).
+- A removed Task is kept in the file of its started work item as a
+  `[[tasks]]` table with `state = "removed"`, its `removed` time and its
+  `reason` after its `created` time, and no `started` time and no block
+  (S-0147). `fgraph remove T-0001 --reason <why>` removes a Task in Backlog,
+  started or blocked of a started work item, and says `removed T-0001 of
+  S-0001`. It refuses, with exit 2 and nothing written, a Task of a work item
+  in Backlog, `T-0001 cannot be removed: S-0001 is in Backlog`; of a blocked
+  one, `T-0001 cannot be removed: S-0001 is blocked, waiting on <what>:
+  unblock it first`; of a completed one, `T-0001 cannot be removed: S-0001
+  is completed already`; of a removed one, `S-0001 is removed already`; a
+  completed Task, `T-0001 is completed already`; a removed Task, `T-0001 is
+  removed already`; a blank reason, `reason is empty`; and `--superseded-by`,
+  `T-0001 is a Task: it is removed with --reason alone`. A removed Task
+  refuses its start, its block and its complete as `T-0001 is removed
+  already`, and its unblock as `T-0001 is not blocked`. `fgraph show` and
+  `fgraph brief` list it under its title with `    bucket           Removed`
+  and `    reason           <why>`; the heading `Tasks (N)` still counts it.
 - An Upkeep is kept as `items/U-0001.toml`, in the shape of a Story file:
   the same fields in each state, `started`, `completed` and `commit` once it
   has moved, and its Tasks as `[[tasks]]` tables, read back through the
@@ -1917,13 +1950,19 @@ held to `main`, and there is no landing:
 | start a work item | `main`: `fgraph` commits it and makes its branch |
 | start a Feature | `main`: `fgraph` commits it with its first work item and makes the branch of that one |
 | add a Task to a started work item | its branch |
-| start, block, unblock and complete its Tasks | its branch |
+| start, block, unblock, complete and remove its Tasks | its branch |
 | hand a started work item to an agent | its branch: `fgraph hand` in its worktree, or from `main` with `--dir` on the record of that worktree |
 | block and unblock a started work item | its branch: `fgraph block` and `fgraph unblock` in its worktree, or from `main` with `--dir` on the record of that worktree |
 | land the work item | `main`: `fgraph land` merges its branch and completes it |
 | complete the work item | `main`, after a merge made by hand |
 | complete a Feature | `main`: with its last work item, by its landing or its complete, or by `fgraph complete F-0001` once each work item of it is completed or removed |
 | start the next work item of a Feature | `main`: with the completion of the one before, by its landing or its complete; `fgraph` commits both and makes the branch of the next one |
+
+The remove of a Task is one commit of the branch of its work item, written in
+its worktree; on `main` it is refused, `S-0001 is started: its Tasks are
+written in its worktree, <path>` (S-0147). A Task added in the worktree after
+the start is not in the copy of `main`, so its remove there is answered `no
+Task T-0002 in the record`, as B-0032 records for block and unblock.
 
 The branch a work item owns may change and append within its scope, through
 `fgraph`: the developer's rule of 2026-11-21. `fgraph` holds the side of the
@@ -2023,7 +2062,7 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   | hand | `chore: hand S-0001 to opus-b2 in the record` |
   | block | `chore: block S-0001 in the record` for a work item, `chore: block T-0001 of S-0001 in the record`, `chore: block F-0001 in the record` for a Feature |
   | unblock | `chore: unblock S-0001 in the record` for a work item, `chore: unblock T-0001 of S-0001 in the record`, `chore: unblock F-0001 in the record` for a Feature, `chore: unblock F-0001 and start S-0002 in the record` for a Feature and the next work item its unblock starts |
-  | remove | `chore: remove S-0001 in the record`, `chore: remove F-0001 in the record` for a Feature and its work items |
+  | remove | `chore: remove S-0001 in the record`, `chore: remove T-0001 of S-0001 in the record` for a Task, `chore: remove F-0001 in the record` for a Feature and its work items |
   | complete | `chore: complete S-0001 in the record`, `chore: complete T-0001 of S-0001 in the record`, `chore: complete S-0002 and F-0001 in the record` for a work item and the Feature it completes, `chore: complete S-0001 and start S-0002 in the record` for a work item and the next one of its Feature, `chore: complete F-0001 in the record` for a Feature left with every work item completed or removed |
   | set a key of the configuration | `chore: set development.enabled in the record` |
   | unset a key of the configuration | `chore: unset development.gate in the record` |
@@ -2409,7 +2448,7 @@ The payload of each state:
 | `done.evidence` of an Epic | E-018, a ledger, the ACs, a tag | the commit of its last work item (Evidence) | converted: that commit; the text lost |
 | `pruned.on`, `pruned.reason` of a work item in todo | W-044, W-045 | `removed`, `reason` (`fgraph remove`) | kept |
 | `pruned` of a work item from doing | W-143 (c), its History `doing` then `pruned` | none: the remove of a started work item is not built (Persistence) | lost |
-| `pruned` of a Task | T-492, T-311 (c) | none: a Task has no removed state, and a completed work item holds completed Tasks alone (`src/flowgraph/task/model.py`, `work_item/model.py`) | lost |
+| `pruned` of a Task | T-492, T-311 (c) | a `RemovedTask`: `removed` and `reason`, kept inside a started or completed work item (S-0147, `src/flowgraph/task/model.py`); its successor still lost (below) | kept |
 | the done Tasks of a pruned work item | W-143 (c), T-314 and T-315 | none: a removed work item holds Tasks in Backlog alone | lost |
 | `pruned.on`, `pruned.reason` of an Epic | E-007 | a `RemovedFeature`: removed on, reason | kept |
 
@@ -2676,8 +2715,8 @@ Held by some records:
 
 | Gap | Items that hold it | Closed by |
 |---|---|---|
-| a pruned Task, a state the read refuses | 186: c 68, cts 8, st 1, sm 77, sv 32 | part, B-0025: "each move a table lists is one fgraph makes, or the table marks it as not built" |
-| a work item that holds a pruned Task | 123: c 51, cts 7, st 1, sm 40, sv 24; of them done 74, pruned 48, doing 1 (W-197) | part, B-0025 |
+| a pruned Task, a state the read refuses | 186: c 68, cts 8, st 1, sm 77, sv 32 | part, S-0147: "each Task is kept as removed with its reason"; in a started or completed work item alone |
+| a work item that holds a pruned Task | 123: c 51, cts 7, st 1, sm 40, sv 24; of them done 74, pruned 48, doing 1 (W-197) | part, S-0147: a removed work item holds Tasks in Backlog alone |
 | a work item pruned after `doing` | 6: c 2, cts 1, sv 3, each holding a pruned Task | part, B-0025 |
 | the done Tasks of a pruned work item | 3 work items: c 1, sv 2 | not filed |
 | a blocked work item | 0 today; 67 `blocked` History lines on work items | part, B-0025 |

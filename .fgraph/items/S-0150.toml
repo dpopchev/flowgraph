@@ -12,6 +12,11 @@ depends_on = [
     "U-0025",
 ]
 
+[verified]
+answer = "yes"
+text = "at b9e71c2 on main, the merge of wi/S-0150-raise-the-branches-of, in a throwaway repository with the development on, S-0001 started in its worktree and a main that moved since: fgraph sync in the worktree exit 0 printed merged main into wi/S-0001-one at its head, a commit chore: merge main into wi/S-0001-one of two parents, the file of main there; run again, exit 0 printed wi/S-0001-one holds main already; with sh.txt changed on main and on the branch, exit 2 printed fgraph: error: main does not merge into wi/S-0001-one: conflict in sh.txt -- nothing is merged, the branch is as it was, the head of the branch unchanged and git status empty; on the record of flowgraph fgraph sync in the worktree of S-0101 printed merged main into wi/S-0101-raise-the-criteria-fgraph at 740355c. make check on the branch with main merged at 9f09219: 4001 passed, all checks passed; with main merged again at 6aa1c21, the tree of the landing, which adds S-0147 and S-0151: the 697 tests either side brought and those of the parser passed, ruff, pyright and make lines clean. Handed whole to one subagent on sonnet. Its deviations: merge_branch aborts a merge in conflict without first asking git for MERGE_HEAD; the strict xfail of T-0570 is one mark of the module, not one per test. src/flowgraph/parser/command.py holds 227 lines on main."
+on = 2026-11-24 05:47:48+00:00
+
 [criterion]
 given = "a repository with the development on, a started work item in its worktree and a main that moved since its start"
 when = "the command is run in the worktree of the work item, with a main it merges cleanly and with one it conflicts with"

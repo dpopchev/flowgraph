@@ -168,7 +168,8 @@ class TestAStoryLandedOnARecordGitIgnores:
         assert landed.status == 0
 
     def test_land_names_the_merge_commit(self, landed: Outcome, checkout: Path) -> None:
-        assert landed.out == f"landed S-0001 at {git(checkout, 'rev-parse', '--short', 'HEAD')}\n"
+        head = git(checkout, "rev-parse", "--short", "HEAD")
+        assert landed.out == f"landed S-0001 at {head}\nrun: an action -> another\n"
 
     def test_the_merge_commit_is_the_last_of_main_under_the_message(
         self, landed: Outcome, checkout: Path

@@ -30,6 +30,7 @@ from flowgraph.criterion.model import (
     said,
     settled,
 )
+from flowgraph.criterion.run import run_line
 
 __all__ = [
     "NO_COMMIT",
@@ -58,6 +59,7 @@ __all__ = [
     "make_defect",
     "make_hypothesis",
     "make_scenario",
+    "run_line",
     "said",
     "settled",
 ]

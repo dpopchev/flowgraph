@@ -1499,7 +1499,7 @@ and its merge tool.
   S-0002 in the record`. With the development on the branch of the next work
   item is checked out in its worktree at that commit of the record, and named
   on a third line, `branch wi/S-0002-<slug> in <path>`. `fgraph land` says
-  `landed S-0001 at 677f9b0`, `started S-0002` and that line: it commits the
+  `landed S-0001 at 677f9b0`, its run line, `started S-0002` and that line: it commits the
   record, removes the worktree and the branch it landed, and makes the branch
   of the next one last, so a worktree git refuses leaves the landing whole
   and says `S-0002 is started, its branch is not`.
@@ -1530,7 +1530,7 @@ and its merge tool.
   `chore: complete S-0002 and F-0001 in the record`. `fgraph land` completes
   the Feature the same way, in the commit of the record its complete makes,
   at the commit the landing leaves `main` on: `landed S-0002 at 677f9b0`,
-  then `completed F-0001 at 677f9b0`.
+  its run line, then `completed F-0001 at 677f9b0`.
 - Only a completion completes a Feature. A completion that leaves a work item
   of it in Backlog or started leaves the Feature started -- it starts the
   next one in Backlog (above) -- and so does the
@@ -2202,8 +2202,12 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   merge of its own, held uncommitted; commits it under the message the
   developer gives with `--message`; completes the work item at the short sha
   of that commit, with the commit of the record, `chore: complete <id> in the
-  record`; then removes the worktree of the branch and the branch. These are
-  the steps of a landing by `merge-commit`. The landing of the last work item
+  record`; then removes the worktree of the branch and the branch. It says
+  `landed <id> at <sha>`, then `run: <when> -> <then>` for a Story or an Upkeep,
+  `run: <expected>` for a Bug and nothing for a Spike, worded by `run_line` of
+  `src/flowgraph/criterion/run.py` and printed before every other line of the
+  landing; it takes the place of the `run:` line of `board land` of board 1
+  (S-0151). These are the steps of a landing by `merge-commit`. The landing of the last work item
   of a started Feature completes the Feature in that commit of the record,
   by any way of merging (above). The landing of any other starts the next
   work item of the Feature in that commit, and checks its branch out at it,

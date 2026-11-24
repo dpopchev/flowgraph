@@ -19,7 +19,6 @@ pytestmark = pytest.mark.functional
 
 START = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
-XFAIL_LINES = pytest.mark.xfail(strict=True, reason="S-0136: status lists by its own tops")
 XFAIL_WATCH = pytest.mark.xfail(strict=True, reason="S-0136: a frame lists every bucket")
 KEYS = '[status]\nbacklog = 2\ncompleted = 3\n\n[watch]\nbuckets = "backlog, in-progress"\n'
 STATUS_KEYS = "[status]\nbacklog = 2\ncompleted = 3\n"
@@ -46,6 +45,14 @@ BUILT = [
     ["start", "S-0008"],
 ]
 TWO_STARTED = [
+    ["add", "story", "title 1", *CRITERION],
+    ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"],
+    ["start", "S-0001"],
+    ["add", "story", "title 2", *CRITERION],
+    ["add", "task", "a task title", "--parent", "S-0002", "--output", "an output"],
+    ["start", "S-0002"],
+]
+ONE_READY = [
     ["add", "story", "title 1", *CRITERION],
     ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"],
     ["start", "S-0001"],
@@ -180,7 +187,6 @@ class TestFlagWinsOverKey:
 
 
 class TestStatusLists:
-    @XFAIL_LINES
     def test_the_backlog_lists_two_lines_then_its_more_line(self, tmp_path: Path) -> None:
         listed = after(tmp_path, BUILT, KEYS, ["status"])
         assert from_heading(listed.out, "Backlog (3)", "InProgress (1)") == [
@@ -190,7 +196,6 @@ class TestStatusLists:
             "  ... 1 more, 0 can start",
         ]
 
-    @XFAIL_LINES
     def test_completed_lists_three_lines_then_its_more_line(self, tmp_path: Path) -> None:
         listed = after(tmp_path, BUILT, KEYS, ["status"])
         assert from_heading(listed.out, "Completed (4)") == [
@@ -212,12 +217,10 @@ class TestStatusLists:
             "  S-0007  []  title 7",
         ]
 
-    @XFAIL_LINES
     def test_backlog_leaves_completed_at_its_three_lines(self, tmp_path: Path) -> None:
         listed = after(tmp_path, BUILT, KEYS, ["status", "--backlog"])
         assert from_heading(listed.out, "Completed (4)")[-1] == "  ... 1 more"
 
-    @XFAIL_LINES
     def test_a_backlog_set_to_all_lists_its_three_lines(self, tmp_path: Path) -> None:
         listed = after(tmp_path, BUILT, '[status]\nbacklog = "all"\n', ["status"])
         assert from_heading(listed.out, "Backlog (3)", "InProgress (1)") == [
@@ -227,14 +230,12 @@ class TestStatusLists:
             "  S-0007  []  title 7",
         ]
 
-    @XFAIL_LINES
     def test_an_in_progress_set_to_one_lists_one_line_then_its_more_line(
         self, tmp_path: Path
     ) -> None:
         listed = after(tmp_path, TWO_STARTED, "[status]\nin-progress = 1\n", ["status"])
         assert from_heading(listed.out, "InProgress (2)", "Completed (0)")[-1] == "  ... 1 more"
 
-    @XFAIL_LINES
     def test_watch_under_the_status_table_alone_lists_the_backlog_as_status_does(
         self, tmp_path: Path
     ) -> None:
@@ -242,6 +243,19 @@ class TestStatusLists:
         assert from_heading(framed.out, "Backlog (3)", "InProgress (1)")[-1] == (
             "  ... 1 more, 0 can start"
         )
+
+
+class TestReadyForReview:
+    def test_a_top_of_in_progress_lists_a_line_ready_for_review_after_it(
+        self, tmp_path: Path
+    ) -> None:
+        listed = after(tmp_path, ONE_READY, "[status]\nin-progress = 1\n", ["status"])
+        assert from_heading(listed.out, "InProgress (2)", "Completed (0)") == [
+            "InProgress (2)",
+            "  S-0002  0/1 T  title 2",
+            "    => T-0002  a task title",
+            "? S-0001  1/1 T  title 1",
+        ]
 
 
 class TestWatchShows:

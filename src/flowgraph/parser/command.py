@@ -49,7 +49,7 @@ from flowgraph.record import Config, Now
 from flowgraph.record.setting import set_setting, show_config, unset_setting
 from flowgraph.record.store import Store
 from flowgraph.relation.depends import amends_asked, depends_asked, filed_during_asked
-from flowgraph.status import status_output, tops_asked
+from flowgraph.status import status_output, tops_asked, tops_of
 from flowgraph.status.next import start_limit
 from flowgraph.status.terminal import Width
 from flowgraph.status.top import top_to_start
@@ -231,7 +231,7 @@ def command_said(
             return sync_branch(record, open_git, config)
         case "status":
             limit = start_limit(config.development)
-            tops = tops_asked(every=args.all, backlog=args.backlog)
+            tops = tops_asked(tops_of(config.status), every=args.all, backlog=args.backlog)
             return Said(status_output(store, tops, args.format, width(), limit))
         case _:
             return view_said(args, store, cwd, open_git, record, config)

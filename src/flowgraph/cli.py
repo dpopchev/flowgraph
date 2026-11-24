@@ -45,7 +45,7 @@ from flowgraph.record.store import OpenStore, Store, open_files
 from flowgraph.relation.read import check_relations
 from flowgraph.status.next import start_limit
 from flowgraph.status.terminal import Height, Width, no_terminal, terminal_height, terminal_width
-from flowgraph.status.tops import tops_asked
+from flowgraph.status.tops import tops_asked, tops_of
 from flowgraph.status.watch import Wait, framed, make_pace, watch
 
 __all__ = ["Store", "open_files", "open_git", "read_config", "record_named", "run", "run_gate"]
@@ -85,7 +85,7 @@ def _watch(
     for are no positive number; no frame is written then.
     """
     pace = make_pace(args.seconds, args.count)
-    tops = tops_asked(every=args.all, backlog=args.backlog)
+    tops = tops_asked(tops_of(config.status), every=args.all, backlog=args.backlog)
     limit = start_limit(config.development)
 
     def read_frame() -> str:

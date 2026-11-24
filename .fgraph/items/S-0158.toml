@@ -1,0 +1,19 @@
+id = "S-0158"
+state = "backlog"
+title = "Raise the reads of fgraph an agent calls as tools from one, the status, to five: the brief, an item, the knowledge lines and the links too"
+description = "New on the plan agreed on 2026-11-24. It waits for the three reads as JSON of F-0018. Its Tasks are written before its Feature starts."
+parent = "F-0022"
+realizes = 2
+complexity = "low"
+created = 2026-11-24 19:51:55+00:00
+depends_on = [
+    "S-0157",
+    "S-0154",
+    "S-0155",
+    "S-0156",
+]
+
+[criterion]
+given = "the server of fgraph mcp on a record with a started Story about a term, which holds a Task and a knowledge line"
+when = "the session calls the tools of the brief, of show, of knowledge and of about"
+then = "each is given the JSON document its command prints with --format json, and an id the record does not hold is given back as an error that holds the one line of the refusal"

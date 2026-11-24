@@ -1,0 +1,15 @@
+id = "B-0036"
+state = "backlog"
+title = "Cut the starts of one work item by two agents at one time that leave main torn from one seen in three to none"
+description = "New on the plan agreed on 2026-11-24, found by the agent that day while reviewing the draft of F-0019. It waits for B-0035, whose fix may hold both. Its Tasks are written before its Feature starts."
+parent = "F-0019"
+realizes = 2
+complexity = "medium"
+created = 2026-11-24 19:51:10+00:00
+depends_on = [
+    "B-0035",
+]
+
+[criterion]
+observed = "in a throwaway repository with the development on, with fgraph of 2d612af on 2026-11-24, three trials of fgraph start of one Story with --agent a and with --agent b run at one time: in two the second exited 2 with S-0004 is started already; in one, a exited 2 with the line fgraph: error: git commit --quiet --only --message chore: start S-0003 in the record -- .fgraph/items/S-0003.toml failed: and b exited 0 with started S-0003; after it git status lists .fgraph/items/S-0003.toml as modified and fgraph status lists S-0003 held by a, the agent whose start was refused"
+expected = "of two starts of one work item run at one time one starts it and the other exits 2 in one line of fgraph naming the work item and the agent that holds it; main is left clean and fgraph status lists the agent whose start was taken"

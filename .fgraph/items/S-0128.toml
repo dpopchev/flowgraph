@@ -14,6 +14,11 @@ depends_on = [
     "U-0027",
 ]
 
+[verified]
+answer = "yes"
+text = "at 957784c on main, the merge of wi/S-0128-raise-the-folders-fgraph, in a throwaway repository of one commit with .dpopchev/ in .git/info/exclude and git config fgraph.record .dpopchev: fgraph init printed record: <repo>/.dpopchev and made no .fgraph/; fgraph add story printed added S-0001; fgraph status run in the subfolder sub/ with no --dir exit 0 listed Backlog (1) and > S-0001; the repository still holds one commit and git status is empty; with the key set to nope, fgraph status exit 2 printed fgraph: error: git config fgraph.record names <repo>/nope, which is no directory -- run fgraph init, or name another with git config fgraph.record PATH; on the record of flowgraph, which names none, fgraph status finds .fgraph/ as before. make check on the branch with main merged at dd9ed6d: 4394 passed, all checks passed; main gained the docs of B-0024 alone before the landing. Handed whole to one subagent on sonnet. It stopped at T-0485, whose NamedMissing breaks pyright at the assert_never of src/flowgraph/cli.py, a file the Task puts out of bounds, until T-0487 rewrites that match: on the word of the coordinator the Tasks were worked as written, pyright holding that one error at the commits of T-0485 and T-0486 and none from T-0487 on, the rule of the coordinator for a clean pyright before each commit relaxed for those two. Its other deviation: the helper of the init tests takes given and find_named, not the two keyword parameters T-0486 words. src/flowgraph/cli.py holds 219 lines."
+on = 2026-11-24 07:17:22+00:00
+
 [criterion]
 given = "a repository whose record lives in a folder of another name, as .dpopchev, relative to the root of the repository and not tracked by git"
 when = "fgraph status is run in the repository with no --dir"

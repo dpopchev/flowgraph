@@ -13,6 +13,11 @@ depends_on = [
     "S-0100",
 ]
 
+[verified]
+answer = "yes"
+text = "at 69a2cb1 on main, the merge of wi/S-0101-raise-the-criteria-fgraph, on a throwaway record with a started Feature of two criteria, a completed Story that realizes the first and a second Story that names none: fgraph show F-0001 exit 0 printed Criteria (2), met 1 of 2, then 1 met a first criterion S-0001 and 2 not met a second criterion, then its work items. The landing completed F-0013 with it, completed F-0013 at 69a2cb1. make check on the tree of the landing, the branch with main merged by fgraph sync at 740355c: 4125 passed, all checks passed. Handed whole to one subagent on haiku, no deviation. src/flowgraph/status/show.py holds 194 lines against the about 168 of the brief, the module having grown since it was written."
+on = 2026-11-24 05:54:27+00:00
+
 [criterion]
 given = "a Feature with two criteria and a completed Story that realizes the first"
 when = "fgraph show F-0001 is run"

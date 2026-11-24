@@ -28,8 +28,7 @@ def work_item_lines(row: StoryRow | UpkeepRow) -> str:
     stands before the title, so a line cut to a width keeps it; a reason ends the line.
     """
     if row.state in IN_PROGRESS:
-        tasks = counted(row)
-        completed = sum(task.state == COMPLETED for task in tasks)
+        done, total = _progress(row)
         worked = "".join(_task_line(task) for task in row.tasks)
         handed = f"[{row.agent}]  " if row.agent else ""
         older = (
@@ -37,7 +36,7 @@ def work_item_lines(row: StoryRow | UpkeepRow) -> str:
             if row.branch_older_than
             else ""
         )
-        line = f"{row.id}  {completed}/{len(tasks)} T  {handed}{row.title}{older}"
+        line = f"{row.id}  {done}/{total} T  {handed}{row.title}{older}"
         if row.waiting_on:
             return f"{blocked_line(line, (row.waiting_on, row.block_reason))}\n{worked}"
         mark = "? " if ready_for_review(row) else "  "
@@ -52,6 +51,21 @@ def work_item_lines(row: StoryRow | UpkeepRow) -> str:
     if why:
         return f"  {row.id}  {row.title}  -- {why}\n"
     return f"{waiting_line(f'{row.id}  {row.title}', row.waits_for, next_up=row.next_to_start)}\n"
+
+
+def completed_line(row: StoryRow | UpkeepRow) -> str:
+    """The line of a completed work item under its Feature in progress: its id, Tasks and title.
+
+    It holds no commit, agent or Task line: a completed work item is read, not descended into.
+    """
+    done, total = _progress(row)
+    return f"  {row.id}  {done}/{total} T  {row.title}\n"
+
+
+def _progress(row: StoryRow | UpkeepRow) -> tuple[int, int]:
+    """The Tasks completed of those that count in the progress of the row, and how many count."""
+    tasks = counted(row)
+    return sum(task.state == COMPLETED for task in tasks), len(tasks)
 
 
 def waiting_line(line: str, waits_for: Sequence[str], *, next_up: bool = False) -> str:

@@ -468,7 +468,10 @@ of work item. The developer said so on 2026-11-21.
   columns further in -- `    S-0001  1/3 T  <title>`, then
   `      => T-0001  <title>` -- the last started first. Those lines belong to
   the Feature: they count neither toward the top of the heading nor in the
-  count beside it.
+  count beside it. A completed work item of a Feature in progress stays listed under it,
+  after the started ones and those that can start, in the order `fgraph show` lists them,
+  as `    S-0001  2/2 T  <title>`: its id, its Tasks completed of all and its title, with no
+  commit and no Task below it.
 - `fgraph status` marks a Feature blocked while a started work item of it
   holds a blocked Task (S-0055), the developer's words of 2026-11-21, "a
   Feature can be blocked, or gets blocked when its child work item is
@@ -1059,7 +1062,8 @@ that holds nothing is `null`, never an empty text; a list that holds nothing is 
   work item under it as a work item above, in any state -- Backlog, started, blocked,
   completed or removed -- in the order `fgraph show` of the Feature lists them (the reading
   of T-0370: the hook that parses the document cannot ask again). The text lists the
-  started ones alone; the document lists all of them, and `progress` counts them as before.
+  started ones and, under a Feature in progress, the completed ones; the document lists all
+  of them, and `progress` counts them as before. The JSON does not change with the text (S-0133).
 
 A work item holds its `agent` on every item of a bucket and in the `work_items` of a
 Feature, the reading of S-0113: the name it is handed to, else `null`.
@@ -1830,8 +1834,9 @@ and its merge tool.
   line is its id, its progress and its title, `F-0001  1/3 W  <title>`, in
   its bucket (above), placed there as Order says. It is one
   item of that bucket: counted once beside the heading and once toward the
-  top of it. Its work items in Backlog and its completed ones are listed on no
-  line of their own and counted beside no heading; they are counted in its
+  top of it. Its work items in Backlog are listed on no line of their own; the completed ones
+  of a Feature in progress are listed under its line and counted beside no heading, and
+  those of a completed or a removed Feature stay on no line. They are counted in its
   progress, and `fgraph show` of the Feature lists them with their buckets,
   those in Backlog in the order they start in (Order). A started one is
   listed under the line of its Feature (Order), and a removed one keeps its

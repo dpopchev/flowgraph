@@ -93,6 +93,7 @@ class TestTheFirstStoryOfAStartedFeatureCompletedWhileTheSecondIsInBacklog:
             "InProgress (1)\n"
             "  F-0001  1/2 W  a feature title\n"
             "    S-0002  0/1 T  another title\n"
+            "    S-0001  1/1 T  a title\n"
             "Completed (0)\n"
         )
 
@@ -127,5 +128,9 @@ class TestTheFirstStoryOfAStartedFeatureCompletedWhileTheSecondHasNoTask:
         self, completed: Outcome, tmp_path: Path
     ) -> None:
         assert fgraph(["status"], tmp_path, LATER).out == (
-            "Backlog (0)\nInProgress (1)\n  F-0001  1/2 W  a feature title\nCompleted (0)\n"
+            "Backlog (0)\n"
+            "InProgress (1)\n"
+            "  F-0001  1/2 W  a feature title\n"
+            "    S-0001  1/1 T  a title\n"
+            "Completed (0)\n"
         )

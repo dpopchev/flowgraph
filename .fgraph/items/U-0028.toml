@@ -1,0 +1,11 @@
+id = "U-0028"
+state = "backlog"
+title = "Cut the names and docstrings of src/flowgraph/status and its tests that still speak of a line marked as able to start from several to none"
+description = "Found at the review of the hand-back of S-0152 on 2026-11-24 by the coordinator, by grep on main at 0e049f5; filed at the end of the Backlog and not burned. T-0635 named the comment of one line of next.py and the docstrings of top.py; the agent left the rest as outside its brief. Counted: NONE_MARKED on 5 lines of src/flowgraph/status/top.py and tests/status/test_top.py; the word marked on lines 55, 80, 82, 170, 176, 181, 182, 202 and 213 of src/flowgraph/status/next.py, for the flag next_to_start of a row; lines 1 and 5 of tests/functional/test_status_start_now.py, the second naming the equals sign as a mark. Its Tasks and its complexity are written when it is ordered."
+created = 2026-11-24 19:33:41+00:00
+filed_during = "S-0152"
+
+[criterion]
+given = "main, where fgraph status marks no line of the Backlog as able to start since S-0152, and NONE_MARKED of src/flowgraph/status/top.py, eight docstring or code lines of src/flowgraph/status/next.py and the module docstring of tests/functional/test_status_start_now.py still say marked"
+when = "make check runs"
+then = "it still passes with those names and docstrings saying can start, and every command of fgraph prints what it printed"

@@ -38,13 +38,15 @@ commit = "ef897990b7260357b660cd9e3d514f52baec8b36"
 
 [[tasks]]
 id = "T-0563"
-state = "started"
+state = "completed"
 title = "Take fgraph knowledge --search TEXT and list the lines whose text holds it"
 description = "Change src/flowgraph/parser/item_commands.py (241 lines, at most 244 after: the house limit is 250 and make lines is in the check), src/flowgraph/parser/views.py (49 lines, 49 after) and tests/functional/test_knowledge_search.py (remove XFAIL and its marks, nothing else). In item_commands.py, right after the --about argument of the knowledge command, add knowledge.add_argument(\"--search\", metavar=\"TEXT\", help=\"list the lines whose text holds this text, in any case\"), on one line when it fits in 100 columns, else as ruff format wraps it. The summary of the command and its --kind and --about arguments stay as written. In views.py the case knowledge of view_said becomes Said(show_knowledge(args.kind, args.about, store, args.search)); nothing else changes there. The text is passed as typed: src/flowgraph/parser/ids.py reads as ids the arguments named in ID_ARGUMENTS alone, and search is not one of them, so --search s1 looks for the text s1 and not for S-0001; do not add it there. Red first: remove the marks of tests/functional/test_knowledge_search.py, see each test fail with exit 2 and no line, then add the argument and the call. No unit test is added: the parser has none per option (tests/parser/test_help.py lists the commands, which do not change) and the functional file is the test of the wiring, as it is for --kind and --about. Run make check before the commit (ruff, pyright, the 250 lines of make lines, the suite). Out of bounds: src/flowgraph/knowledge/list.py (Task 2 holds the whole behavior), src/flowgraph/parser/command.py (the views are dispatched from its last case, which stays), src/flowgraph/parser/refusals.py, src/flowgraph/cli.py, tests/functional/test_knowledge_command.py, the docs."
 check = "uv run pytest tests/functional/test_knowledge_search.py tests/functional/test_knowledge_command.py tests/functional/test_command_help.py tests/parser -q && ! grep -q xfail tests/functional/test_knowledge_search.py && make lines"
 expected_output = "changed: fgraph knowledge --search TEXT exits 0 and lists, newest first and written as every line is, the knowledge lines whose text holds the text whatever the case; with --kind and --about it lists the lines that meet all of them; with no such line it prints one line, as no knowledge lines holding 'zzz' in the record, and exits 0; a blank text exits 2 with search is empty; fgraph knowledge --help lists --search; fgraph knowledge without it prints what it printed before. No xfail mark is left in tests/functional/test_knowledge_search.py"
 created = 2026-11-23 21:00:10+00:00
 started = 2026-11-24 04:24:37+00:00
+completed = 2026-11-24 04:25:48+00:00
+commit = "c56e2ef53e0b82dd9b3a604cc1eb7d1e5127e9b2"
 
 [[tasks]]
 id = "T-0564"

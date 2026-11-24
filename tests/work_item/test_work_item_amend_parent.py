@@ -130,6 +130,7 @@ def test_a_work_item_put_under_a_feature_is_saved_whole() -> None:
         load_work_item=lambda _: ALONE,
         save_work_item=saved.append,
         check_move=lambda *_: None,
+        check_realizes=never,
     )
     assert saved == [UNDER]
 
@@ -143,6 +144,7 @@ def test_a_move_is_checked_from_the_parent_it_had_to_the_one_named() -> None:
         load_work_item=lambda _: UNDER,
         save_work_item=lambda _: None,
         check_move=lambda *move: asked.append(move),
+        check_realizes=never,
     )
     assert asked == [(ONE, ABOVE, OTHER)]
 
@@ -161,6 +163,7 @@ def test_an_amend_that_leaves_the_parent_as_it_was_checks_no_feature(amendment: 
         load_work_item=lambda _: UNDER,
         save_work_item=saved.append,
         check_move=never,
+        check_realizes=never,
     )
     assert saved == [amended_work_item(UNDER, amendment)]
 
@@ -179,6 +182,7 @@ def test_a_move_refused_saves_nothing() -> None:
             load_work_item=lambda _: ALONE,
             save_work_item=saved.append,
             check_move=refuse,
+            check_realizes=never,
         )
     assert saved == []
 

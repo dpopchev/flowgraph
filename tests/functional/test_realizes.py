@@ -34,9 +34,6 @@ LINKED = [*UNDER, "--realizes", "2"]
 ALONE = ["add", "story", "a title", *CRITERION]
 TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
 LINE = "  realizes     2  a second criterion"
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="S-0100: a work item names no criterion of its Feature"
-)
 ALONE_LINE = (
     "fgraph: error: --realizes names a criterion of the Feature a work item is under: "
     "this one stands alone"
@@ -119,23 +116,19 @@ class TestAStoryAddedUnderAFeatureRealizingTheSecondCriterion:
     def added(self, tmp_path: Path) -> Outcome:
         return runs(tmp_path, FEATURE, LINKED)
 
-    @XFAIL
     def test_add_exits_with_zero_and_names_the_story(self, added: Outcome) -> None:
         assert (added.status, added.out) == (0, "added S-0001\n")
 
-    @XFAIL
     def test_show_lists_it_right_after_the_parent_line(
         self, added: Outcome, tmp_path: Path
     ) -> None:
         shown = fgraph(["show", "S-0001"], tmp_path).out.splitlines()
         assert shown[1:4] == ["  bucket       Backlog", "  parent       F-0001", LINE]
 
-    @XFAIL
     def test_its_file_holds_realizes_2(self, added: Outcome, tmp_path: Path) -> None:
         assert held(tmp_path)["realizes"] == 2
 
 
-@XFAIL
 @pytest.mark.parametrize("kind", KINDS)
 def test_an_add_of_each_other_kind_realizes_the_first_criterion(kind: str, tmp_path: Path) -> None:
     item, add = KINDS[kind]
@@ -146,12 +139,10 @@ def test_an_add_of_each_other_kind_realizes_the_first_criterion(kind: str, tmp_p
     )
 
 
-@XFAIL
 def test_two_stories_may_realize_one_criterion(tmp_path: Path) -> None:
     assert runs(tmp_path, FEATURE, LINKED, LINKED).status == 0
 
 
-@XFAIL
 def test_an_amend_gives_a_story_the_criterion(tmp_path: Path) -> None:
     assert result(tmp_path, FEATURE, UNDER, ["amend", "S-0001", "--realizes", "1"]) == (
         0,
@@ -159,7 +150,6 @@ def test_an_amend_gives_a_story_the_criterion(tmp_path: Path) -> None:
     )
 
 
-@XFAIL
 def test_an_amend_replaces_the_criterion_it_had(tmp_path: Path) -> None:
     assert result(tmp_path, FEATURE, LINKED, ["amend", "S-0001", "--realizes", "1"]) == (
         0,
@@ -167,37 +157,31 @@ def test_an_amend_replaces_the_criterion_it_had(tmp_path: Path) -> None:
     )
 
 
-@XFAIL
 def test_an_amend_with_none_takes_the_criterion_away(tmp_path: Path) -> None:
     assert result(tmp_path, FEATURE, LINKED, ["amend", "S-0001", "--realizes", "none"]) == (0, [])
 
 
-@XFAIL
 def test_an_add_with_none_names_no_criterion(tmp_path: Path) -> None:
     assert result(tmp_path, FEATURE, [*UNDER, "--realizes", "none"]) == (0, [])
 
 
-@XFAIL
 def test_a_start_carries_the_criterion(tmp_path: Path) -> None:
     runs(tmp_path, FEATURE, LINKED, TASK, ["start", "F-0001"])
     assert realizes_lines(tmp_path) == [LINE]
 
 
-@XFAIL
 def test_an_amend_to_another_parent_drops_the_criterion(tmp_path: Path) -> None:
     assert result(
         tmp_path, FEATURE, OTHER_FEATURE, LINKED, ["amend", "S-0001", "--parent", "F-0002"]
     ) == (0, [])
 
 
-@XFAIL
 def test_an_amend_to_no_parent_drops_the_criterion(tmp_path: Path) -> None:
     assert result(
         tmp_path, FEATURE, OTHER_FEATURE, LINKED, ["amend", "S-0001", "--parent", "none"]
     ) == (0, [])
 
 
-@XFAIL
 def test_an_amend_to_another_parent_keeps_the_criterion_given_with_it(tmp_path: Path) -> None:
     amend = ["amend", "S-0001", "--parent", "F-0002", "--realizes", "1"]
     assert result(tmp_path, FEATURE, OTHER_FEATURE, LINKED, amend) == (
@@ -206,28 +190,23 @@ def test_an_amend_to_another_parent_keeps_the_criterion_given_with_it(tmp_path: 
     )
 
 
-@XFAIL
 def test_an_amend_to_no_parent_with_a_criterion_is_refused(tmp_path: Path) -> None:
     amend = ["amend", "S-0001", "--parent", "none", "--realizes", "1"]
     assert refusal(tmp_path, FEATURE, OTHER_FEATURE, LINKED, amend) == (2, [ALONE_LINE])
 
 
-@XFAIL
 def test_an_add_standing_alone_with_a_criterion_is_refused(tmp_path: Path) -> None:
     assert refusal(tmp_path, [*ALONE, "--realizes", "1"]) == (2, [ALONE_LINE])
 
 
-@XFAIL
 def test_an_amend_of_a_story_standing_alone_with_a_criterion_is_refused(tmp_path: Path) -> None:
     assert refusal(tmp_path, ALONE, ["amend", "S-0001", "--realizes", "1"]) == (2, [ALONE_LINE])
 
 
-@XFAIL
 def test_an_add_of_a_criterion_the_feature_does_not_have_is_refused(tmp_path: Path) -> None:
     assert refusal(tmp_path, FEATURE, [*UNDER, "--realizes", "3"]) == (2, [NONE_SUCH])
 
 
-@XFAIL
 def test_an_amend_of_a_criterion_the_feature_does_not_have_is_refused(tmp_path: Path) -> None:
     assert refusal(tmp_path, FEATURE, UNDER, ["amend", "S-0001", "--realizes", "3"]) == (
         2,
@@ -235,28 +214,23 @@ def test_an_amend_of_a_criterion_the_feature_does_not_have_is_refused(tmp_path: 
     )
 
 
-@XFAIL
 def test_a_criterion_below_one_is_refused(tmp_path: Path) -> None:
     assert refusal(tmp_path, FEATURE, [*UNDER, "--realizes", "0"]) == (2, [BELOW])
 
 
-@XFAIL
 def test_a_word_that_is_no_number_is_refused(tmp_path: Path) -> None:
     assert refusal(tmp_path, FEATURE, [*UNDER, "--realizes", "two"]) == (2, [NO_NUMBER])
 
 
-@XFAIL
 def test_a_started_story_is_not_amended(tmp_path: Path) -> None:
     amend = ["amend", "S-0001", "--realizes", "1"]
     assert refusal(tmp_path, FEATURE, UNDER, TASK, ["start", "F-0001"], amend) == (2, [STARTED])
 
 
-@XFAIL
 def test_a_feature_is_not_amended_with_a_criterion_it_realizes(tmp_path: Path) -> None:
     assert refusal(tmp_path, FEATURE, ["amend", "F-0001", "--realizes", "1"]) == (2, [NO_REALIZES])
 
 
-@XFAIL
 def test_an_amend_of_the_criteria_of_the_feature_leaves_the_number_as_written(
     tmp_path: Path,
 ) -> None:
@@ -265,7 +239,6 @@ def test_an_amend_of_the_criteria_of_the_feature_leaves_the_number_as_written(
     assert realizes_lines(tmp_path) == ["  realizes     2  another second"]
 
 
-@XFAIL
 def test_a_number_past_the_criteria_left_by_an_amend_names_none_of_them(tmp_path: Path) -> None:
     amend = ["amend", "F-0001", "--criterion", "only one"]
     runs(tmp_path, FEATURE, LINKED, amend)

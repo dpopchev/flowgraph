@@ -18,7 +18,7 @@ from flowgraph.feature import (
 )
 from flowgraph.feature.amend import FeatureAmendment, amend_named, amended_feature
 from flowgraph.item.commands import Written
-from flowgraph.parent import STANDALONE, FeatureId, make_feature_id
+from flowgraph.parent import STANDALONE, CriterionPlace, FeatureId, make_feature_id
 from flowgraph.record.store import FeatureStore, Store
 from flowgraph.task import BlockedError, CompletedAlreadyError, StartedAlreadyError
 from flowgraph.work_item import Amendment, NoPartError, NoSuchPartError
@@ -156,9 +156,20 @@ def test_a_feature_amended_is_saved_whole_with_the_criteria_given_in_place_of_it
         (Amendment(expected="what we wish"), "expected"),
         (Amendment(hypothesis="a question"), "hypothesis"),
         (Amendment(parent=STANDALONE), "parent"),
+        (Amendment(realizes=CriterionPlace(1)), "realizes"),
         (Amendment(title="another title", given="a state", then="another"), "given, then"),
     ],
-    ids=["given", "when", "then", "observed", "expected", "hypothesis", "parent", "beside-a-title"],
+    ids=[
+        "given",
+        "when",
+        "then",
+        "observed",
+        "expected",
+        "hypothesis",
+        "parent",
+        "realizes",
+        "beside-a-title",
+    ],
 )
 def test_a_part_of_a_work_item_given_to_a_feature_is_refused_naming_it(
     parts: Amendment, named: str

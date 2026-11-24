@@ -3,6 +3,7 @@
 from flowgraph.work_item.amend import (
     Amendment,
     CheckMove,
+    CheckRealizes,
     NoPartError,
     NoSuchPartError,
     amended_work_item,
@@ -107,6 +108,7 @@ __all__ = [
     "Amendment",
     "BlockedWorkItem",
     "CheckMove",
+    "CheckRealizes",
     "CompletedWorkItem",
     "Complexity",
     "ComplexityError",

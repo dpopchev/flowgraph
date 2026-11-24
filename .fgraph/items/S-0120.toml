@@ -9,6 +9,11 @@ completed = 2026-11-24 06:54:36+00:00
 agent = "sonnet-a24"
 commit = "ab10a91"
 
+[verified]
+answer = "yes"
+text = "at ab10a91 on main, the merge of wi/S-0120-raise-the-old-boards, in a throwaway repository holding a .board/ built by hand, a board.toml and two items, committed: fgraph init made .fgraph/ beside it and fgraph config set archive.board .board printed set archive.board = .board; fgraph show W-123 exit 2 printed fgraph: error: W-123 is in the archive of board 1 at <repo>/.board -- show it with: uv run ~/.claude/skills/board/scripts/board.py --root <repo> show W-123; fgraph show S-0001 exit 2 printed no Story S-0001 in the record; fgraph status --all lists three empty buckets, the record holding what the developer adds to it alone; the files of .board/ are the same bytes before and after and one commit, add the board, touches them. The old board scripts were not run. make check on the tree of the landing, the branch with main merged at 2c971c7: 4257 passed, all checks passed. Handed whole to one subagent on sonnet, no deviation. Seen by it: under a pointer fgraph show T-1 names T-001 of board 1 even when the record holds a Task T-0001, as the decision of 2026-11-23 has it and a test states. src/flowgraph/record/config.py holds 238 lines."
+on = 2026-11-24 06:57:59+00:00
+
 [criterion]
 given = "a repository with a .board/ of board 1 that holds open and closed items"
 when = "the developer starts a record of fgraph in it"

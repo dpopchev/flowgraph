@@ -1,10 +1,12 @@
 id = "S-0133"
-state = "backlog"
+state = "started"
 title = "Raise the completed work items of a Feature in progress fgraph status lists under it from none to every one"
 description = "Filed on the word of the developer of 2026-11-23, from the frame drawn that day. Its Tasks are written when it is ordered. Today the text lists the started work items of a Feature in progress alone; the JSON lists every one."
 parent = "F-0017"
 complexity = "low"
 created = 2026-11-23 12:01:43+00:00
+started = 2026-11-24 09:14:11+00:00
+agent = "haiku-a36"
 
 [criterion]
 given = "a record with a started Feature of two work items, the first completed and the second started"

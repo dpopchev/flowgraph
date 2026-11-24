@@ -203,6 +203,7 @@ class TestAStoryOfAStartedFeatureLandedWhileTheNextIsInBacklog:
             "InProgress (1)\n"
             "  F-0001  1/2 W  a feature title\n"
             "    S-0002  0/1 T  another title\n"
+            "    S-0001  1/1 T  Raise the Stories fgraph lists\n"
             "Completed (0)\n"
         )
 

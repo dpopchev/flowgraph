@@ -6,7 +6,14 @@ A block of the Feature, of a work item or of a Task comes first, as the line of 
 from collections.abc import Iterable
 
 from flowgraph.feature import FeatureRow
-from flowgraph.status.work_item_lines import blocked_line, waiting_line, work_item_lines
+from flowgraph.status.buckets import IN_PROGRESS_BUCKET
+from flowgraph.status.rows import COMPLETED
+from flowgraph.status.work_item_lines import (
+    blocked_line,
+    completed_line,
+    waiting_line,
+    work_item_lines,
+)
 from flowgraph.story import StoryRow
 from flowgraph.upkeep import UpkeepRow
 from flowgraph.work_item import BLOCKED
@@ -18,8 +25,10 @@ def feature_lines(feature: FeatureRow) -> str:
     A completed one is listed with its commit before its title, as a completed work item is,
     after the progress every line of a Feature holds right after its id. Under it each started
     work item of it, written as one of a bucket is with its Tasks being worked, two columns
-    further in. A blocked one is marked `!` before its id and ends with what it waits on and why. So
-    is one whose work item is blocked or holds a blocked Task, with what the first such says, as
+    further in. A completed work item of a Feature in progress stays listed under it, after those
+    started, with no descent to its Tasks. A blocked one is marked `!` before its id and ends with
+    what it waits on and why. So is one whose work item is blocked or holds a blocked Task, with
+    what the first such says, as
     the line of it does: read from the rows at each listing, and kept nowhere. The block of the
     Feature itself comes first, then that of a work item, then that of a Task. A removed one is
     listed as a removed work
@@ -33,7 +42,13 @@ def feature_lines(feature: FeatureRow) -> str:
     started = (
         line for row in (*feature.started, *marked) for line in work_item_lines(row).splitlines()
     )
-    under = "".join(f"  {line}\n" for line in started)
+    done = (
+        line
+        for row in feature.work_items
+        if feature.bucket == IN_PROGRESS_BUCKET and row.state == COMPLETED
+        for line in completed_line(row).splitlines()
+    )
+    under = "".join(f"  {line}\n" for line in (*started, *done))
     line = f"{feature.id}  {progress}  {commit}{feature.title}"
     own = (feature.waiting_on, feature.block_reason)
     block = own if feature.waiting_on else _waited_on(feature.started)

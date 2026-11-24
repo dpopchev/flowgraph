@@ -47,9 +47,6 @@ LISTED_UNDER = [
     "      => T-0002  a task title",
     "    S-0001  1/1 T  title 1",
 ]
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="S-0133: a completed work item of a Feature in progress is on no line"
-)
 
 
 @dataclass(frozen=True)
@@ -97,19 +94,16 @@ class TestAFeatureInProgressWithItsFirstWorkItemCompleted:
     def listed(self, tmp_path: Path) -> list[str]:
         return status_after(tmp_path, ONE_DONE, ["status"]).out.splitlines()
 
-    @XFAIL
     def test_the_completed_work_item_is_listed_after_the_started_one(
         self, listed: list[str]
     ) -> None:
         assert in_progress(listed) == LISTED_UNDER
 
-    @XFAIL
     def test_the_completed_work_item_is_the_last_line_under_the_feature(
         self, listed: list[str]
     ) -> None:
-        assert listed[-1] == "    S-0001  1/1 T  title 1"
+        assert listed[-2] == "    S-0001  1/1 T  title 1"
 
-    @XFAIL
     def test_watch_lists_under_the_feature_the_same_lines_as_status(
         self, tmp_path: Path, listed: list[str]
     ) -> None:

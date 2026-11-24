@@ -1,9 +1,11 @@
 id = "B-0029"
-state = "backlog"
+state = "started"
 title = "Cut the completions fgraph takes with a commit the repository does not hold, with the development on, from every one to none"
 description = "Found by the subagent of T-0373 of Q-0001 on 2026-11-23, on a scratch record (docs/domain-model.md, Probe, once Q-0001 lands); filed at the end of the queue and not burned. Its Tasks are written when it is ordered. Open: fgraph release reads a commit git does not know by its completed time, so an unknown commit may be meant to be taken; and a conversion keeps the old shas, which the repository holds."
 complexity = "low"
 created = 2026-11-23 06:04:38+00:00
+started = 2026-11-24 03:49:08+00:00
+agent = "haiku-a6"
 depends_on = [
     "U-0025",
 ]

@@ -1,5 +1,6 @@
 """The /goal line of a Feature, read from the record: the shell of the goal."""
 
+from flowgraph.feature.start import check_planned
 from flowgraph.goal.model import (
     check_driven_by_agent,
     check_scope,
@@ -19,7 +20,9 @@ def goal_output(feature: str, hours: str, store: Store, development: Development
     The work items are taken in the order the Feature starts them. Raises GoalDriverError when
     the development is off or driven by a developer, GoalHoursError for hours that are no whole
     number of 1 or more, FeatureIdError or FeatureNotFoundError for a Feature that is none, and
-    EmptyGoalError when it holds no work item in Backlog; nothing is written.
+    EmptyGoalError when it holds no work item in Backlog; it raises NoTaskError or
+    NoComplexityError, in the words of the start of the Feature, when a work item of it in
+    Backlog holds no Task or no complexity, the first in start order named; nothing is written.
     """
     check_driven_by_agent(development)
     bound = make_hours(hours)
@@ -29,4 +32,5 @@ def goal_output(feature: str, hours: str, store: Store, development: Development
     start_order = queued(store.load_queue(), in_backlog)
     items = sorted(in_backlog, key=start_order.index)
     check_scope(feature_id, items)
+    check_planned(feature_id, store, complexity=True)
     return goal_line(feature_id, items, development.parallel, bound) + "\n"

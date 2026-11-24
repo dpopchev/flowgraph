@@ -26,10 +26,13 @@ IDENTITY = {
 }
 RECORD = [
     ["add", "feature", "the first feature", "--criterion", "a criterion"],
-    ["add", "story", "the first story", *CRITERION, "--parent", "F-0001"],
-    ["add", "story", "the second story", *CRITERION, "--parent", "F-0001"],
-    ["add", "story", "the third story", *CRITERION, "--parent", "F-0001"],
+    ["add", "story", "the first story", *CRITERION, "--parent", "F-0001", "--complexity", "low"],
+    ["add", "story", "the second story", *CRITERION, "--parent", "F-0001", "--complexity", "low"],
+    ["add", "story", "the third story", *CRITERION, "--parent", "F-0001", "--complexity", "low"],
     ["add", "feature", "the second feature", "--criterion", "a criterion"],
+    ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"],
+    ["add", "task", "a task title", "--parent", "S-0002", "--output", "an output"],
+    ["add", "task", "a task title", "--parent", "S-0003", "--output", "an output"],
 ]
 ENABLED = ["config", "set", "development.enabled", "true"]
 PARALLEL = ["config", "set", "development.parallel", "3"]
@@ -95,7 +98,7 @@ def environment(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Path]:
 
 
 def checkout(base: Path, name: str, *settings: list[str]) -> Path:
-    """A repository on main whose record holds F-0001 with three Stories and an empty F-0002."""
+    """A repository on main: F-0001 with three planned Stories, an empty F-0002."""
     path = base / name
     path.mkdir()
     git(path, "init", "--quiet", "--initial-branch", "main")

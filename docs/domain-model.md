@@ -796,8 +796,13 @@ text.
 It is refused, exit 2, naming why: for a record whose development is off, naming
 `development.enabled`; for one whose driver is a developer, naming `development.driver`; each
 message says how to set the key with `fgraph config set`. A Feature with no work item in
-Backlog is refused saying it holds none. Hours that are not a whole number of 1 or more are
-refused saying so.
+Backlog is refused saying it holds none. A Feature holding a work item in Backlog with no Task,
+or with no complexity, is refused in the words of the start of the Feature (B-0031), since no
+start would take it and no coordinator could meet the goal: `F-0001 cannot start: S-0002 has no
+Task to start with`, or `F-0001 cannot start: S-0002 has no complexity to start with: set it
+with fgraph amend S-0002 --complexity low, medium or high`. The first such work item in start
+order is named, and a missing Task is named before a missing complexity. Hours that are not a
+whole number of 1 or more are refused saying so.
 
 The wording follows the page of the documentation of Claude Code on `/goal`
 (code.claude.com/docs/en/goal): one measurable end state, a stated check, the constraints that
@@ -1965,9 +1970,15 @@ agreed on 2026-11-21 that `fgraph` owns the record, its rituals and its rules:
   and the Task being worked that status lists are current before the landing.
   A started work item without such a worktree, a record outside a git work
   tree and a record git ignores are read from the record itself. Run in a
-  work tree on the branch of a work item, status reads the record of that
-  work tree and no other. Every read of the rows goes this way, so the bucket
-  of a Feature does too.
+  work tree on the branch of a work item, status and watch list the record
+  of main, its queue, its Features, its configuration and every row, each
+  started work item read from its own worktree as on main, so every work
+  tree lists the same frame, the marks and the JSON too: the developer's
+  decision of 2026-11-23, S-0141, amending the rule of S-0035. With no work
+  tree on main, outside a git work tree and for a record git ignores they
+  read the record of that work tree; fgraph show, every other read and every
+  write stay with the record of that work tree. Every read of the rows goes
+  this way, so the bucket of a Feature does too.
 - `fgraph show` of a started work item on `main` reads it there too, as
   status does: the work item it shows, with the bucket and the commit of each
   Task, is the one the worktree of its branch `wi/<id>-*` holds, the same

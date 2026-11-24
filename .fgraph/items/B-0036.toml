@@ -1,5 +1,5 @@
 id = "B-0036"
-state = "started"
+state = "completed"
 title = "Cut the starts of one work item by two agents at one time that leave main torn from one seen in three to none"
 description = "New on the plan agreed on 2026-11-24, found by the agent that day while reviewing the draft of F-0019. It waits for B-0035, whose fix may hold both. Its Tasks are written before its Feature starts."
 parent = "F-0019"
@@ -7,7 +7,9 @@ realizes = 2
 complexity = "medium"
 created = 2026-11-24 19:51:10+00:00
 started = 2026-11-24 22:21:55+00:00
+completed = 2026-11-24 22:51:55+00:00
 agent = "sonnet-b36"
+commit = "ff1cc89d"
 depends_on = [
     "B-0035",
 ]

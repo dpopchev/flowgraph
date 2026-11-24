@@ -28,3 +28,8 @@ description = "Change README.md (3367 lines on 2026-11-24) and docs/domain-model
 check = "! grep -q 'its description and its criteria' README.md docs/domain-model.md && grep -q 'its description, its criteria and its terms' README.md && grep -q 'its description, its criteria and its terms' docs/domain-model.md"
 expected_output = "changed: README.md and docs/domain-model.md word every refusal and sentence that lists the parts of the amend of a Feature with its terms as the fourth, the refusal being F-0001 has no then: a Feature is amended by its title, its description, its criteria and its terms"
 created = 2026-11-24 22:08:25+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, under the /goal of Phase 1 the developer set on 2026-11-24, which has the coordinator write the Tasks before a Feature starts; the developer was not asked and reviews them at the close: (1) The fourth part is named `its terms` (the flag is --about TERM, FeatureAmendment.about), in the series `its title, its description, its criteria and its terms`. (2) Only the refusal of a part a Feature does not take is reworded; the refusal of an amend with no part (amend rewrites no part of F-0001: name one) names no part and stays. (3) The criterion's When (`run with no part to amend`) is tested with a part a Feature does not take (--then, --parent, --output), which is where the three-part sentence is printed. (4) Docstring of _of_feature is corrected in the same Task, since its text (every part but title and description) is stale with the terms."
+noted = 2026-11-24 22:09:55+00:00

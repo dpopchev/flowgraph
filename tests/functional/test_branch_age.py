@@ -36,9 +36,6 @@ IDENTITY = {
     "GIT_COMMITTER_NAME": "a developer",
     "GIT_COMMITTER_EMAIL": "developer@example.com",
 }
-XFAIL_KEY = pytest.mark.xfail(
-    strict=True, reason="S-0098: development.branch_max is no key of the configuration"
-)
 XFAIL_SAID = pytest.mark.xfail(
     strict=True, reason="S-0098: status says nothing of the age of a branch"
 )
@@ -141,7 +138,6 @@ class TestTwoDaysAfterTheStart:
     def test_watch_says_the_branch_is_older_than_the_age(self, checkout: Path) -> None:
         assert OLD in lines_of(fgraph(["watch", "--count", "1"], checkout, TWO_DAYS))
 
-    @XFAIL_KEY
     def test_starting_a_task_in_the_worktree_is_not_refused(self, checkout: Path) -> None:
         listed = git(checkout, "worktree", "list", "--porcelain").splitlines()
         worktree = Path(next(line[9:] for line in listed[1:] if line.startswith("worktree ")))
@@ -149,17 +145,15 @@ class TestTwoDaysAfterTheStart:
 
 
 class TestOneDayAfterTheStart:
-    @XFAIL_KEY
     def test_status_says_nothing_at_the_age_exactly(self, tmp_path: Path) -> None:
         assert PLAIN in lines_of(fgraph(["status"], started_under(tmp_path, AGED), ONE_DAY))
 
 
 class TestAStoryLeftInBacklog:
-    @XFAIL_KEY
     def test_its_line_says_nothing_of_an_age(self, tmp_path: Path) -> None:
         path = started_under(tmp_path, AGED)
         fgraph(story(2), path)
-        assert "> S-0002  title 2" in lines_of(fgraph(["status"], path, TWO_DAYS))
+        assert "  S-0002  title 2" in lines_of(fgraph(["status"], path, TWO_DAYS))
 
 
 class TestAStoryUnderAFeature:
@@ -176,7 +170,6 @@ class TestAStoryUnderAFeature:
 
 
 class TestTheTrunk:
-    @XFAIL_KEY
     def test_status_says_nothing_of_an_age(self, tmp_path: Path) -> None:
         assert PLAIN in lines_of(fgraph(["status"], started_under(tmp_path, AGED_TRUNK), TWO_DAYS))
 
@@ -189,24 +182,20 @@ class TestWithoutTheKey:
 
 
 class TestTheKey:
-    @XFAIL_KEY
     def test_config_show_lists_the_age(self, tmp_path: Path) -> None:
         path = init(tmp_path, AGED)
         assert 'development.branch_max = "1d"' in lines_of(fgraph(["config", "show"], path))
 
-    @XFAIL_KEY
     def test_config_show_lists_none_by_default(self, tmp_path: Path) -> None:
         path = init(tmp_path, DEVELOPMENT_ON)
         assert "development.branch_max = none" in lines_of(fgraph(["config", "show"], path))
 
-    @XFAIL_KEY
     def test_config_set_writes_the_age(self, tmp_path: Path) -> None:
         path = init(tmp_path, DEVELOPMENT_ON)
         assert fgraph(["config", "set", "development.branch_max", "2d"], path) == Outcome(
             0, 'set development.branch_max = "2d"\n', ""
         )
 
-    @XFAIL_KEY
     def test_a_value_that_is_no_age_is_refused(self, tmp_path: Path) -> None:
         path = init(tmp_path, NO_AGE)
         outcome = fgraph(["status"], path)

@@ -101,7 +101,7 @@ def test_a_bug_is_shown_with_what_is_observed_and_expected(tmp_path: Path) -> No
 
 def test_a_bug_joins_the_backlog_after_the_work_items_added_before_it(tmp_path: Path) -> None:
     runs(tmp_path, ADD_STORY, ADD_BUG)
-    assert fgraph(["status"], tmp_path).out.splitlines()[:3] == [
+    assert fgraph(["status", "--backlog"], tmp_path).out.splitlines()[:3] == [
         "Backlog (2)",
         "> S-0001  a title",
         "  B-0001  a bug title",

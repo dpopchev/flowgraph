@@ -1,7 +1,7 @@
 """The criterion of the next to start: `fgraph status` marks the first item that can start.
 
 A Backlog whose first item waits and whose second waits for nothing: the line of the second is
-marked `>`. When the top of the heading leaves it out it is listed after the top, marked as well.
+marked `>`. When the top of the heading leaves it out it is counted in the more-line.
 Run end to end on a record in a temporary directory, through the file adapters of the package.
 """
 
@@ -33,7 +33,7 @@ ALL_WAIT = (
     ["start", "S-0001"],
     ["amend", "S-0002", "--depends-on", "S-0001"],
 )
-STATUS = ["status"]
+STATUS = ["status", "--backlog"]
 
 
 @dataclass(frozen=True)
@@ -83,9 +83,11 @@ def test_status_names_the_second_item_as_the_next_to_start(tmp_path: Path) -> No
     assert marked(out) == ["> S-0002  a second title"]
 
 
-def test_status_names_the_next_to_start_when_the_top_leaves_it_out(tmp_path: Path) -> None:
-    out = runs(tmp_path, *SEVEN, STATUS).out
-    assert marked(out) == ["> S-0007  title 7"]
+def test_status_counts_the_next_to_start_in_the_more_line_when_the_top_leaves_it_out(
+    tmp_path: Path,
+) -> None:
+    out = runs(tmp_path, *SEVEN, ["status"]).out
+    assert out.splitlines()[2] == "  ... 6 more, 1 can start"
 
 
 def test_status_names_none_when_no_item_of_the_backlog_can_start(tmp_path: Path) -> None:

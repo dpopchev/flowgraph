@@ -1,15 +1,12 @@
 id = "F-0018"
 state = "backlog"
-title = "Raise the answers of fgraph an agent acts on with no second read, a read as JSON and a refusal as one line that names the way out, from some to every one"
-description = "Phase 1, Agent Execution Interface, Scope Gates and Governed Briefs: one of the five Features put on top of the Backlog on the plan the developer agreed on 2026-11-24 with the word file. From the draft of the developer, Uniform --json Projections and Actionable Exit-2 Refusals, reviewed that day against the code. New: fgraph show, fgraph knowledge and fgraph about as JSON; fgraph status, fgraph brief and fgraph graph print it already. Taken in from the Backlog with their ids: S-0109, B-0028, S-0079, B-0033, S-0124, U-0013, U-0015, U-0014, U-0017 and U-0011, the last from the Feature of the knowledge in the draft, since it proves refusals of fgraph note. Not taken in: U-0016, named by the range of the draft and completed. The Tasks of its work items are written before it starts."
+title = "Raise the reads of fgraph an agent takes as one JSON document from three -- the status, the brief and the graph -- to six: an item, the knowledge lines and the links of an item too"
+description = "Phase 1, Agent Execution Interface, Scope Gates and Governed Briefs: one of the five Features put on top of the Backlog on the plan the developer agreed on 2026-11-24 with the word file. From the draft of the developer, Uniform --json Projections and Actionable Exit-2 Refusals, reviewed that day against the code. New: fgraph show, fgraph knowledge and fgraph about as JSON; fgraph status, fgraph brief and fgraph graph print it already. Narrowed on 2026-11-24 to its three reads: the refusals of the draft, with the ten work items taken in from the Backlog, are F-0023. The Tasks of its work items are written before it starts."
 created = 2026-11-24 19:50:29+00:00
 criteria = [
     "an agent reads a work item, a Feature or a term as one JSON document",
     "an agent reads the knowledge lines of the record as one JSON document",
     "an agent reads the links of an item, a term or a file as one JSON document",
-    "an agent reads the refusal of a file of the record as one line in the words of fgraph",
-    "an agent reads in a refusal the command that gets past it",
-    "an agent is refused an option or a name fgraph does not keep",
 ]
 
 [[knowledge]]

@@ -8,7 +8,8 @@ part of the development: a record whose configuration leaves the development off
 
 `[development] merge` of the configuration says how it merges (`flowgraph.development.way`).
 Each way holds the merge uncommitted first, to complete the work item as the branch has it
-before main moves.
+before main moves. Through a pull request the merge held is dropped once checked and the branch
+is pushed, with nothing written; run again once main holds the branch, the landing completes.
 
 `[development] gate` names one command a landing runs while that merge is held, once the work
 item is checked to complete: a gate that fails drops the merge, so main is where it was.
@@ -174,7 +175,10 @@ def land_item(
     record is written, the tag pushed under the push of the delivery: a tag or its push refused
     leaves the work item started and merged, as the first push does, and says so; a push of
     main refused makes no tag. After the line of the landing it says the run line of the
-    criterion, the When and the Then or the expected of a Bug, and nothing for a Spike.
+    criterion, the When and the Then or the expected of a Bug, and nothing for a Spike. Through a
+    pull request, while main lacks the branch, the merge held is checked and dropped, the branch
+    is pushed to the remote main tracks and the pull request to open is named, with nothing
+    merged, written or removed. Run once main holds the branch, it lands as one taken up.
     """
     item_id = parse_work_item_id_of_any_kind(item)
     text = work_item_id_text(item_id)
@@ -201,6 +205,8 @@ def land_item(
     completes = partial(_check_completes, item_id, decision, landing)
     passes = partial(check_gate, text, config.development.gate, work_tree.path, run_gate)
     sha = merged_by(way, text, branch, work_tree, partial(_check_lands, completes, passes))
+    if sha is None:
+        return Said(delivery.requested(text, branch, work_tree))
     run = run_line(store.load_work_item(item_id).criterion)
     at_merge = delivery.pushed_at_merge(text, sha, work_tree) if config.delivery.push else ""
     at_merge += _tag_at_merge(item_id, sha, decision, landing, config)

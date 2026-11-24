@@ -70,7 +70,7 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     land.add_argument(
         "--message",
         metavar="TEXT",
-        help="the message of the commit the landing makes: needed unless it lands by fast-forward",
+        help="the message of the commit the landing makes: needed by merge-commit and by squash",
     )
     land.add_argument("--decision", metavar="TEXT", help="what answers the hypothesis, of a Spike")
     land.add_argument(

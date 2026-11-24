@@ -44,7 +44,6 @@ REQUESTED = (
     "S-0001 is not completed: run fgraph land S-0001 again once main holds its pull request"
     " merged\n"
 )
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0097: pull-request is no way of merging")
 
 
 @dataclass(frozen=True)
@@ -143,7 +142,6 @@ def branch_listed(checkout: Path) -> str:
     return git(checkout, "branch", "--list", "--format=%(refname:short)", BRANCH)
 
 
-@XFAIL
 class TestALandingThroughAPullRequest:
     @pytest.fixture
     def before(self, checkout: Path, origin: Path) -> tuple[str, str]:
@@ -206,7 +204,6 @@ class Landed:
     at: str
 
 
-@XFAIL
 class TestALandingRunAgainOnceThePullRequestIsMerged:
     @pytest.fixture
     def landed(self, checkout: Path, origin: Path, tmp_path: Path) -> Landed:
@@ -252,7 +249,6 @@ class TestALandingRunAgainOnceThePullRequestIsMerged:
         assert git(checkout, "log", "--merges", "--format=%s", "main") == "Merge pull request"
 
 
-@XFAIL
 def test_a_land_through_a_pull_request_with_a_message_exits_with_two_naming_the_key(
     checkout: Path,
 ) -> None:
@@ -264,7 +260,6 @@ def test_a_land_through_a_pull_request_with_a_message_exits_with_two_naming_the_
     )
 
 
-@XFAIL
 def test_config_show_lists_the_merge_through_a_pull_request(checkout: Path) -> None:
     assert 'development.merge = "pull-request"' in fgraph(["config", "show"], checkout).out.split(
         "\n"

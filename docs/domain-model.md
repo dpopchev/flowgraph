@@ -101,7 +101,9 @@ One example per kind:
 Notes:
 
 - A Feature is broken down into Stories, as a rule of thumb one Story per
-  criterion.
+  criterion. A work item may name the criterion it realizes (S-0100), by its
+  place in the list; the link is optional, so a Feature may hold work items
+  whose criterion is none of its criteria.
 - An Upkeep names the behavior that must still hold, never a test: the Upkeep
   may itself move or rename a test while the behavior holds.
 - A Task's title names the action, the artifact and its target state; its
@@ -116,14 +118,24 @@ every type.
 | Type | Attributes |
 |---|---|
 | `Feature` | id, outcome title, description, experience criteria, created |
-| `Story` | id, outcome title, description, parent, complexity, Given / When / Then, created |
-| `Bug` | id, outcome title, description, parent, complexity, observed, expected, created |
-| `Upkeep` | id, outcome title, description, parent, complexity, Given / When / Then, created |
-| `Spike` | id, outcome title, description, parent, complexity, hypothesis, created |
+| `Story` | id, outcome title, description, parent, realizes, complexity, Given / When / Then, created |
+| `Bug` | id, outcome title, description, parent, realizes, complexity, observed, expected, created |
+| `Upkeep` | id, outcome title, description, parent, realizes, complexity, Given / When / Then, created |
+| `Spike` | id, outcome title, description, parent, realizes, complexity, hypothesis, created |
 | `Task` | id, output title, description, parent, expected output, check, created |
 
 `parent` is a Feature or standing alone for the four work items, and exactly
 one work item for a Task.
+
+`realizes` is the criterion of its Feature a Story, a Bug, an Upkeep or a Spike
+under a Feature may name, by its place in the list counted from 1, the reading
+of F-0013. Naming none is a value of it, as standing alone is one of `parent`,
+never a missing field. It is set by `fgraph add --realizes N` and by `fgraph
+amend --realizes N` or `none`, the latter in Backlog alone, and every move
+carries it: the start, the block, the unblock, the completion and the removal
+keep the criterion the item named. A work item that stands alone names none, so
+a place given to one is refused. It is built by `make_criterion_place`, which
+refuses a place below 1.
 
 The `check` of a Task is the command that checks it, one text, optional. With
 the development on (`development.enabled`) it is needed: `fgraph add task`
@@ -518,6 +530,18 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
 - A parent that is the one the work item has moves it nowhere: no Feature is
   read and the amend is taken, as one that rewrites a part to the text it
   has.
+- The criterion it realizes is a part too, the reading of S-0100: `--realizes
+  N` gives it in place of the one it had, and `--realizes none` takes it away,
+  in Backlog alone, alone or beside the other parts. It is refused, exit 2,
+  nothing written: for a work item that stands alone, `--realizes names a
+  criterion of the Feature a work item is under: this one stands alone`; for a
+  number the Feature does not have, `F-0001 has no criterion 3: its criteria
+  count from 1 to 2`; for `0`, `a criterion is counted from 1: 0 is below 1`;
+  for a text that is neither, `--realizes 'two' is neither the number of a
+  criterion nor none`; and for a Feature id, `F-0001 has no realizes`, as for
+  any part of a work item. An amend to another parent, or to none, drops the
+  criterion it had unless `--realizes` is given with it, which is checked
+  against the Feature it is put under.
 - A Feature in Backlog is amended too, the reading of S-0057: `amend` of its
   id rewrites its title, its description and its criteria, one alone or
   several together, and a part it does not name stays as it was. `--criterion`
@@ -525,7 +549,10 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
   replace the ones the Feature had, whole: none is added to them and none is
   rewritten alone. Each part goes through the constructor an `add` uses, so a
   blank title or a blank criterion is refused and a blank description clears
-  it.
+  it. The criteria given replace the list and no work item is written: a work
+  item keeps the number it names and so names the criterion now at that
+  place, and a number past the end names none of the criteria, which `fgraph
+  show` of the work item says.
 - It is no move of the Feature: its state stays, and so do its id, its
   created time, its work items and its place in the queue, which the amend
   never writes. It is one write of the file of the Feature, committed as
@@ -676,6 +703,10 @@ names it stores, the other side derived from the record:
 | `filed during` | the work item, as `filed_during` | `filed here` in the show of the other | none |
 | `superseded by` | the removed work item, as `superseded_by` | `supersedes` in the show of the other | none |
 | `amends` | the work item, as `amends` | `amended by` in the show of the other | none |
+
+The criterion a work item realizes is kept on the work item beside its `parent`, as
+`realizes`: it is not one of the typed relations read by `fgraph about`, `fgraph graph` or
+the check of the read, and a number past the criteria of the Feature is no refusal of a read.
 
 Every relation is checked twice: at the write, by the command that makes it, and again at the
 read, by every command, on the record as the worktrees compose it, so a work item that a
@@ -1590,6 +1621,10 @@ and its merge tool.
   when the work item is added and names a Feature the record holds; an amend
   gives it again, a Feature or `none`, while the work item and the Features
   it moves between are in Backlog (Amendment).
+- A work item under a Feature that names a criterion of it holds `realizes =
+  2`, a whole number from 1, right after `parent` and only when it names one;
+  a file without the key reads as none. A file holding `0`, or the key with no
+  `parent`, is refused naming the file. Every move carries it.
 - `fgraph status` lists a Feature inside its bucket, as one line in place of
   its work items, the developer's words of 2026-11-21: a Feature is an
   umbrella, part of the Backlog, that just holds a couple of work items. The
@@ -2813,8 +2848,6 @@ its relations". The decision of what to build is the developer's.
 
 ## Open questions
 
-- Must a Story under a Feature name the Feature criterion it realizes? The
-  reading: no, one Story per criterion stays a rule of thumb.
 - Can a Task start before its work item is started? The reading: no.
 - Can a started work item whose Tasks were all removed still be completed, or
   must it be removed?

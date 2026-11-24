@@ -10,6 +10,11 @@ completed = 2026-11-24 09:48:49+00:00
 agent = "haiku-a36"
 commit = "ab25678"
 
+[verified]
+answer = "yes"
+text = "at ab25678 on main, the merge of wi/S-0133-raise-the-completed-work, on a throwaway record with a started Feature of two work items, the first completed and the second started with its Task being worked: fgraph status exit 0 lists under InProgress F-0001 1/2 W, then S-0002 0/1 T with => T-0002 below it, then S-0001 1/1 T with no Task below it; on the record of flowgraph it lists S-0133 3/3 T under F-0017 and S-0102 5/5 T under F-0014. make check on the tree of the landing, the branch holding every code commit of main, run by its subagent to the end: 4648 passed, all checks passed; ruff and make lines clean at the landing. Handed whole to one subagent on haiku. Every test file it corrected is named by T-0592, an inserted line each. Its deviations: completed_line counts the Tasks through counted(), which leaves out a removed Task as the line of a started work item does since S-0147, where T-0592 words len(row.tasks); the clause no line names T-0001 of T-0591 is no test of its own, since it holds before the work; clause 3 of T-0593 names a passage on status_rows listing a Feature that neither README.md nor docs/domain-model.md holds, so nothing was edited for it."
+on = 2026-11-24 09:49:32+00:00
+
 [criterion]
 given = "a record with a started Feature of two work items, the first completed and the second started"
 when = "fgraph status is run"

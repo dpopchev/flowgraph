@@ -29,13 +29,15 @@ commit = "e7590b5e3754abcb882609049914c514004961a2"
 
 [[tasks]]
 id = "T-0464"
-state = "started"
+state = "completed"
 title = "Complete the Tasks of four functional tests of the development at a commit their repository holds"
 description = "Test files only; no source change and no new test. These are the 5 tests of the suite that complete with the development on, on a real git, at a sha that git does not know: they fail once the third Task refuses such a commit, so they are corrected first and stay green before and after. tests/functional/test_commit_writes.py (232 lines, about 240 after): the last Step of STEPS completes T-0001 at 3e9ae5c; write the word HEAD there and add one helper that runs a Step where it runs, replacing the word HEAD of its argv by git(where, \"rev-parse\", \"HEAD\") read just before the run; test_a_write_leaves_its_commit_holding_only_its_file and test_a_story_completed_on_main_leaves_its_commit both loop through that helper; the ids of the parameters, the subjects, stay as they are. tests/functional/test_ignored_record.py (147 lines, about 155 after): WRITES completes T-0001 at 3e9ae5c and S-0001 at 677f9b0; write HEAD in both and run each write through the same kind of helper, the sha read in the checkout, in test_every_write_on_a_record_git_ignores_exits_with_zero and test_every_write_on_a_record_git_ignores_leaves_no_commit. tests/functional/test_status_worktree.py (132 lines) and tests/functional/test_show_worktree.py (129 lines): the fixtures listed and shown complete T-0001 in the worktree at abc1234; give them git(tmp_path / WORKTREE, \"rev-parse\", \"--short\", \"HEAD\") read after the start of the Task; in test_show_worktree.py the expected line `    commit           abc1234` becomes that sha, read in the test as git(tmp_path / WORKTREE, \"rev-parse\", \"--short\", \"HEAD~1\"), the complete having made one commit of the record since. Leave alone: every functional file whose made-up sha runs with the development off or with open_git=lambda _: None (they are not asked of git), tests/functional/test_complete_feature_branch.py and tests/functional/test_start_next_branch.py (their completes with abc1234 are refused for main before the commit is asked), and tests/functional/test_complete_commit_held.py of the first Task."
 check = "uv run pytest tests/functional/test_commit_writes.py tests/functional/test_ignored_record.py tests/functional/test_status_worktree.py tests/functional/test_show_worktree.py -q && ! grep -qE '3e9ae5c|677f9b0|abc1234' tests/functional/test_commit_writes.py tests/functional/test_ignored_record.py tests/functional/test_status_worktree.py tests/functional/test_show_worktree.py"
 expected_output = "changed: tests/functional/test_commit_writes.py, tests/functional/test_ignored_record.py, tests/functional/test_status_worktree.py and tests/functional/test_show_worktree.py give fgraph complete the commit their git repository is on in place of a made-up sha; each test states what it stated and passes as before; none of 3e9ae5c, 677f9b0 and abc1234 is left in the four files"
 created = 2026-11-23 20:11:15+00:00
 started = 2026-11-24 03:52:05+00:00
+completed = 2026-11-24 03:53:35+00:00
+commit = "b0353e7951d5af76c29e60251fc99de829b43669"
 
 [[tasks]]
 id = "T-0465"

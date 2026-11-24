@@ -15,7 +15,6 @@ from flowgraph.cli import open_files, read_config, run
 
 pytestmark = pytest.mark.functional
 
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0144: fgraph amend takes no Task")
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "a title", *CRITERION]
@@ -102,13 +101,11 @@ def changed(cwd: Path, argvs: Sequence[Sequence[str]], amend: Sequence[str]) -> 
     return [new for old, new in zip(before, after, strict=True) if old != new]
 
 
-@XFAIL
 def test_amend_names_the_task_and_its_work_item(tmp_path: Path) -> None:
     outcome = runs(tmp_path, *STARTED, AMEND_SECOND)
     assert (outcome.status, outcome.out) == (0, "amended T-0002 of S-0001\n")
 
 
-@XFAIL
 @pytest.mark.parametrize(
     ("option", "text", "line"),
     [
@@ -122,7 +119,6 @@ def test_each_part_is_rewritten_alone(option: str, text: str, line: str, tmp_pat
     assert changed(tmp_path, STARTED, ["amend", "T-0002", option, text]) == [line]
 
 
-@XFAIL
 def test_several_parts_are_rewritten_by_one_amend(tmp_path: Path) -> None:
     amend = ["amend", "T-0002", "--title", "a new title", "--output", "a new output"]
     assert changed(tmp_path, STARTED, amend) == [
@@ -131,13 +127,11 @@ def test_several_parts_are_rewritten_by_one_amend(tmp_path: Path) -> None:
     ]
 
 
-@XFAIL
 def test_a_blank_description_clears_it(tmp_path: Path) -> None:
     shown = runs(tmp_path, *STARTED, ["amend", "T-0002", "--description", ""], SHOW).out
     assert shown.count("description") == 1
 
 
-@XFAIL
 @pytest.mark.parametrize(
     ("argvs", "state"),
     [
@@ -155,7 +149,6 @@ def test_a_task_that_is_not_in_backlog_is_refused_naming_its_state(
     assert refusal(runs(tmp_path, *argvs, AMEND_FIRST)) == (2, [f"fgraph: error: {state}"])
 
 
-@XFAIL
 @pytest.mark.parametrize(
     "argvs", [BACKLOG, ITEM_BLOCKED], ids=["of-a-work-item-in-backlog", "of-a-blocked-work-item"]
 )
@@ -165,7 +158,6 @@ def test_a_task_in_backlog_of_a_work_item_in_backlog_or_blocked_is_amended(
     assert runs(tmp_path, *argvs, AMEND_SECOND).status == 0
 
 
-@XFAIL
 @pytest.mark.parametrize(
     ("amend", "error"),
     [
@@ -219,22 +211,18 @@ class TestTheCheckOfATask:
         development_on(tmp_path)
         return runs(tmp_path, *WITH_CHECKS, ["amend", "T-0001", "--check", "make lint"], SHOW)
 
-    @XFAIL
     def test_show_lists_the_check_amended(self, amended: Outcome) -> None:
         assert "    check            make lint\n" in amended.out
 
-    @XFAIL
     def test_an_amend_of_the_title_keeps_the_check_line(self, tmp_path: Path) -> None:
         development_on(tmp_path)
         assert changed(tmp_path, WITH_CHECKS, AMEND_FIRST) == ["  T-0001  a new title"]
 
-    @XFAIL
     def test_a_blank_check_is_refused(self, tmp_path: Path) -> None:
         development_on(tmp_path)
         outcome = runs(tmp_path, *WITH_CHECKS, ["amend", "T-0001", "--check", ""])
         assert refusal(outcome) == (2, ["fgraph: error: check is empty"])
 
-    @XFAIL
     def test_a_check_with_the_development_off_is_refused(self, tmp_path: Path) -> None:
         outcome = runs(tmp_path, *BACKLOG, ["amend", "T-0002", "--check", "make lint"])
         assert refusal(outcome) == (

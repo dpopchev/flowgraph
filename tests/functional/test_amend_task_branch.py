@@ -17,7 +17,6 @@ from flowgraph.cli import open_files, open_git, read_config, run
 
 pytestmark = pytest.mark.functional
 
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0144: fgraph amend takes no Task")
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", "Raise the Stories fgraph lists from 0 to 1", *CRITERION]
@@ -120,7 +119,6 @@ def worktree(checkout: Path, tmp_path: Path) -> Path:
     return tmp_path / WORKTREE
 
 
-@XFAIL
 def test_the_amend_in_the_worktree_is_one_commit_of_its_branch_holding_its_file_alone(
     worktree: Path,
 ) -> None:
@@ -143,7 +141,6 @@ class TestTheAmendOfATaskOfAStartedWorkItemOnMain:
     def refused(self, checkout: Path) -> Outcome:
         return fgraph(AMEND_SECOND, checkout)
 
-    @XFAIL
     def test_it_is_refused_naming_the_worktree(self, refused: Outcome, worktree: Path) -> None:
         assert (refused.status, refused.err.splitlines()[-1:]) == (
             2,
@@ -153,7 +150,6 @@ class TestTheAmendOfATaskOfAStartedWorkItemOnMain:
             ],
         )
 
-    @XFAIL
     def test_nothing_is_written_on_main(
         self, refused: Outcome, checkout: Path, worktree: Path
     ) -> None:
@@ -171,7 +167,6 @@ class TestTheAmendOfATaskOfAStartedWorkItemOnMain:
         )
 
 
-@XFAIL
 def test_the_amend_on_main_of_a_task_of_a_work_item_in_backlog_is_written(checkout: Path) -> None:
     outcome = fgraph(AMEND_THIRD, checkout)
     assert (outcome.status, outcome.out, git(checkout, "log", "-1", "--format=%s")) == (
@@ -181,7 +176,6 @@ def test_the_amend_on_main_of_a_task_of_a_work_item_in_backlog_is_written(checko
     )
 
 
-@XFAIL
 def test_the_amend_in_the_worktree_of_a_task_of_another_work_item_is_refused(
     worktree: Path,
 ) -> None:

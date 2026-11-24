@@ -6,11 +6,21 @@ from flowgraph.parser.base import Commands, new_command
 
 
 def amend_command(commands: Commands) -> argparse.ArgumentParser:
-    """The parser of amend, which rewrites parts of a work item or a Feature in Backlog."""
-    amend = new_command(commands, "amend", "rewrite parts of a work item or a Feature in Backlog")
-    amend.add_argument("id", metavar="ID", help="the id of the work item or of the Feature")
+    """The parser of amend, which rewrites parts of a work item, a Feature or a Task in Backlog."""
+    amend = new_command(
+        commands, "amend", "rewrite parts of a work item, a Feature or a Task in Backlog"
+    )
+    amend.add_argument(
+        "id", metavar="ID", help="the id of the work item, of the Feature or of the Task"
+    )
     amend.add_argument("--title", metavar="TEXT", help="what is true once it is completed")
     amend.add_argument("--description", metavar="TEXT", help="free text; a blank one clears it")
+    amend.add_argument("--output", metavar="TEXT", help="the expected output, of a Task")
+    amend.add_argument(
+        "--check",
+        metavar="COMMAND",
+        help="the command that checks it, of a Task; refused with the development off",
+    )
     amend.add_argument("--complexity", metavar="WORD", help="low, medium or high, in Backlog alone")
     amend.add_argument(
         "--criterion",

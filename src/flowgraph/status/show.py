@@ -3,7 +3,7 @@
 from collections.abc import Iterable, Sequence
 
 from flowgraph.feature import CriterionRow, FeatureDetail, criteria_rows
-from flowgraph.knowledge import KnowledgeRow, about_text, governs_text
+from flowgraph.knowledge import KnowledgeRow, about_text, governs_text, mark_text
 from flowgraph.status.text import BLOCKED, BUCKETS
 from flowgraph.story import StoryDetail, StoryRow
 from flowgraph.upkeep import UpkeepDetail, UpkeepRow
@@ -13,6 +13,8 @@ from flowgraph.work_item import ProgressRow
 def _knowledge_lines(knowledge: Sequence[KnowledgeRow]) -> list[str]:
     """The knowledge lines under their heading, each with its kind, its date and its text.
 
+    A line lists its mark, when it has one, before its terms.
+
     There is no heading without a line.
     """
     if not knowledge:
@@ -20,7 +22,7 @@ def _knowledge_lines(knowledge: Sequence[KnowledgeRow]) -> list[str]:
     return [
         f"Knowledge ({len(knowledge)})\n",
         *(
-            f"  {line.kind}  {line.noted.date().isoformat()}  {line.text}"
+            f"  {line.kind}  {line.noted.date().isoformat()}  {line.text}{mark_text(line.mark)}"
             f"{about_text(line.about)}{governs_text(line.governs)}\n"
             for line in knowledge
         ),

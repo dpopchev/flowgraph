@@ -1347,9 +1347,9 @@ and its merge tool.
   in Backlog has no complexity, the first in start order named, `F-0001 cannot
   start: S-0002 has no complexity to start with: set it with fgraph amend
   S-0002 --complexity low, medium or high`; with the development on, one whose
-  first work item has its branch there already, `F-0001 cannot start: the
-  branch wi/S-0002-<slug> is there already -- delete it or give another
-  --slug`; and a start `[development] parallel` refuses (below).
+  first work item has its branch there already,
+  `F-0001 cannot start: the branch wi/S-0002-<slug> is there already -- delete it or give another --slug`;
+  and a start `[development] parallel` refuses (below).
 - A work item does not start before its Feature: the start of a work item in
   Backlog under a Feature that is not started is refused with exit 2, naming
   the Feature, `S-0001 cannot start: F-0001 is not started, start it first`.
@@ -2023,9 +2023,8 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
   to their letters and digits. With the development off the start ends at its
   commit. A start whose branch `wi/<id>-<slug>` is there already is refused
   with exit 2 before anything is written, so the work item stays in Backlog,
-  `S-0001 cannot start: the branch wi/S-0001-<slug> is there already -- delete
-  it or give another --slug`; it holds for a Feature by the branch of its first
-  work item. The developer deletes the branch or gives another `--slug`: the
+  `S-0001 cannot start: the branch wi/S-0001-<slug> is there already -- delete it or give another --slug`;
+  it holds for a Feature by the branch of its first work item. The developer deletes the branch or gives another `--slug`: the
   start takes over no branch that is there, the developer's decision of
   2026-11-23 (B-0027).
 - Outside a git work tree a write is made as before, without a commit and

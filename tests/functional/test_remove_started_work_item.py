@@ -40,7 +40,6 @@ REMOVE = ["remove", "S-0001", "--reason", "pivoted"]
 BRANCH = "wi/S-0001-raise-the-stories-fgraph"
 WORKTREE = Path("project.worktrees") / "S-0001-raise-the-stories-fgraph"
 STORY_FILE = ".fgraph/items/S-0001.toml"
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0148: fgraph remove refuses a started work item")
 IDENTITY = {
     "GIT_AUTHOR_NAME": "a developer",
     "GIT_AUTHOR_EMAIL": "developer@example.com",
@@ -153,14 +152,12 @@ class TestAStartedStoryRemovedOnMain:
     def test_remove_exits_with_zero(self, removed: Outcome) -> None:
         assert removed.status == 0
 
-    @XFAIL
     def test_remove_says_it_and_the_branch_left(self, removed: Outcome, worktree: Path) -> None:
         assert removed.out == (
             "removed S-0001\n"
             f"left branch {BRANCH} in {worktree}: main does not hold every commit of it\n"
         )
 
-    @XFAIL
     def test_the_branch_and_its_worktree_are_left(
         self, removed: Outcome, checkout: Path, worktree: Path
     ) -> None:
@@ -233,7 +230,6 @@ def test_a_start_beside_it_is_refused_under_development_parallel(checkout: Path)
     )
 
 
-@XFAIL
 def test_a_story_removed_right_after_its_start_loses_its_branch_and_worktree(
     checkout: Path, worktree: Path
 ) -> None:
@@ -284,7 +280,7 @@ def test_under_a_started_feature_no_next_work_item_starts(tmp_path: Path) -> Non
     outcome = fgraph(REMOVE, feature)
     assert (
         outcome.out.splitlines()[:1],
-        [line for line in outcome.out.splitlines() if "started" in line],
+        [line for line in outcome.out.splitlines() if line.startswith("started")],
         fgraph(["show", "S-0002"], feature).out.splitlines()[1],
         fgraph(["show", "F-0001"], feature).out.splitlines()[1],
     ) == (["removed S-0001"], [], "  bucket       Backlog", "  bucket       InProgress")

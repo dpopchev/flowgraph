@@ -12,6 +12,11 @@ depends_on = [
     "U-0025",
 ]
 
+[verified]
+answer = "yes"
+text = "at ec6078c on main, the merge of wi/S-0121-raise-the-work-items, on a throwaway record whose Backlog lists S-0001, which depends on S-0002, then S-0002, each with a Task: fgraph status marks ~ S-0001 and > S-0002; fgraph start with no id exit 0 printed started S-0002, and fgraph show S-0002 lists bucket InProgress; run again, exit 2 printed fgraph: error: nothing to start: no line of the Backlog can start now, fgraph status marks none -- fgraph start S-0001 says why its first line cannot. make check on the branch with main merged at c46d225: 4234 passed, all checks passed; with main merged again at 07ff748, the tree of the landing, which adds S-0120: the 430 tests either side brought and those of the parser passed, ruff, pyright and make lines clean. Handed whole to one subagent on haiku. Its deviations: in T-0482 it reworded the sentence of the docstring of tests/functional/test_start_no_id.py that named the xfail marks, beside removing them; three parser tests of an id given pass before the change, as guards. src/flowgraph/parser/command.py holds 234 lines."
+on = 2026-11-24 06:58:17+00:00
+
 [criterion]
 given = "a record whose Backlog holds a first item that waits for another and a second that waits for nothing"
 when = "fgraph start is run with no id"

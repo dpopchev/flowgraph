@@ -47,9 +47,6 @@ REMOVE_FEATURE = ["remove", "F-0001", "--reason", "filed by mistake"]
 SUPERSEDE = ["remove", "S-0001", "--superseded-by", "S-0002", "--reason", "folded in"]
 DEPEND = ["amend", "S-0002", "--depends-on", "S-0001"]
 STATUS = ["status", "--all"]
-XFAIL_FEATURE = pytest.mark.xfail(
-    strict=True, reason="S-0135: what a line adds ends the line, after two dashes"
-)
 
 
 @dataclass(frozen=True)
@@ -154,7 +151,6 @@ def test_watch_lists_a_blocked_feature_with_its_words_on_a_line_below_it(tmp_pat
     ]
 
 
-@XFAIL_FEATURE
 def test_a_removed_feature_gives_its_reason_on_a_line_below_it(tmp_path: Path) -> None:
     out = runs(tmp_path, ADD_FEATURE, REMOVE_FEATURE, STATUS).out
     assert below(out, "F-0001") == ["  F-0001  a feature title", "  filed by mistake"]

@@ -103,3 +103,14 @@ def test_the_two_lines_are_cut_to_the_width_apart() -> None:
         "~ S-0002  []  a t...",
         "  depends on S-00...",
     ]
+
+
+def test_a_removed_feature_gives_its_reason_on_a_line_below_it() -> None:
+    feature = FeatureRow(
+        "F-0001", "a feature title", "Removed", 0, 0, reason="dropped from the plan"
+    )
+    assert status_text([feature]).splitlines()[3:6] == [
+        "Removed (1)",
+        "  F-0001  a feature title",
+        "  dropped from the plan",
+    ]

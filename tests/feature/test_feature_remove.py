@@ -265,9 +265,10 @@ def test_the_detail_of_a_removed_feature_names_its_reason_and_waits_on_nothing()
 @pytest.mark.view
 def test_a_removed_feature_is_listed_under_removed_with_its_reason_and_no_progress() -> None:
     row = FeatureRow("F-0001", "a title", "Removed", completed=0, held=0, reason=REASON)
-    assert status_text([row]).splitlines()[-2:] == [
+    assert status_text([row]).splitlines()[-3:] == [
         "Removed (1)",
-        "  F-0001  a title  -- filed by mistake",
+        "  F-0001  a title",
+        "  filed by mistake",
     ]
 
 

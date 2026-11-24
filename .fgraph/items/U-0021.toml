@@ -53,3 +53,11 @@ noted = 2026-11-24 23:01:11+00:00
 governs = [
     "tests/work_item/test_work_item_task_check.py",
 ]
+
+[[knowledge]]
+kind = "finding"
+text = "red proof of U-0021: with each behavior taken out in turn, a test of this file failed by name -- check_task_checked refuses no check with the development on, its if and raise deleted: test_no_check_with_the_development_on_is_refused_naming_the_flag; check_task_checked refuses a check with it off, its call of _refuse_check_off deleted: test_a_check_with_the_development_off_is_refused_naming_the_key; check_task_amended refuses a check with it off, its call deleted: test_an_amend_giving_a_check_with_the_development_off_is_refused_with_the_whole_line; _refuse_check_off lets no check pass, check is not None and deleted from its if: test_an_amend_that_names_no_check_or_names_one_with_the_development_on_is_taken[none-off] and test_a_task_added_the_way_the_development_asks_is_taken[None-False]; it lets a check pass with the development on, and not development_on deleted: test_an_amend_that_names_no_check_or_names_one_with_the_development_on_is_taken[given-on] and test_a_task_added_the_way_the_development_asks_is_taken[make test-True]; the refusal names the key and the file, turn_on = 'turn it on': test_a_check_with_the_development_off_is_refused_naming_the_key and test_an_amend_giving_a_check_with_the_development_off_is_refused_with_the_whole_line"
+noted = 2026-11-24 23:01:26+00:00
+governs = [
+    "tests/development/task_check/test_task_check.py",
+]

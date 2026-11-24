@@ -21,10 +21,8 @@ NOW = datetime(2026, 1, 1, tzinfo=UTC)
 TITLE = "Raise the Stories fgraph lists from 0 to 1"
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_STORY = ["add", "story", TITLE, *CRITERION]
-ADD_TASK = [
-    *("add", "task", "a task title", "--parent", "S-0001"),
-    *("--output", "an output", "--check", "make test"),
-]
+CHECKED = ("--output", "an output", "--check", "make test")
+ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", *CHECKED]
 ADD_SECOND_STORY = ["add", "story", "Raise the Tasks fgraph lists from 0 to 1", *CRITERION]
 ADD_SECOND_TASK = [
     *("add", "task", "another task title", "--parent", "S-0002"),
@@ -42,7 +40,6 @@ LAND_REFUSED = (
     "fgraph: error: S-0001 cannot land: development.mode = trunk makes no branch to land"
     " -- complete it with fgraph complete S-0001 --commit SHA"
 )
-XFAIL_START = pytest.mark.xfail(strict=True, reason="S-0096: a start on the trunk makes a branch")
 
 
 @dataclass(frozen=True)
@@ -132,7 +129,6 @@ def checkout(tmp_path: Path) -> Path:
     return path
 
 
-@XFAIL_START
 class TestAStoryStartedOnTheTrunk:
     @pytest.fixture
     def started(self, checkout: Path) -> Outcome:
@@ -151,7 +147,6 @@ class TestAStoryStartedOnTheTrunk:
         ) == (0, 1)
 
 
-@XFAIL_START
 class TestAStoryWorkedAndCompletedOnTheTrunk:
     @pytest.fixture
     def done(self, checkout: Path) -> tuple[Outcome, str]:
@@ -187,14 +182,12 @@ class TestAStoryWorkedAndCompletedOnTheTrunk:
         ) == (0, "main", 1)
 
 
-@XFAIL_START
 def test_land_exits_with_two_naming_the_key(checkout: Path) -> None:
     worked(checkout)
     refused = fgraph(["land", "S-0001", "--message", "feat: land"], checkout)
     assert (refused.status, last_error(refused)) == (2, LAND_REFUSED)
 
 
-@XFAIL_START
 def test_land_moves_nothing_on_main(checkout: Path) -> None:
     worked(checkout)
     before = git(checkout, "rev-parse", "main")
@@ -202,19 +195,17 @@ def test_land_moves_nothing_on_main(checkout: Path) -> None:
     assert (last_error(refused), git(checkout, "rev-parse", "main")) == (LAND_REFUSED, before)
 
 
-@XFAIL_START
 def test_a_feature_started_on_the_trunk_names_its_first_story(checkout: Path) -> None:
     started = runs(
         checkout,
         ["add", "feature", "a feature title", "--criterion", "a criterion"],
         ["add", "story", "another title", *CRITERION, "--parent", "F-0001"],
-        ["add", "task", "a task title", "--parent", "S-0002", "--output", "an output"],
+        [*("add", "task", "a task title", "--parent", "S-0002"), *CHECKED],
         ["start", "F-0001"],
     )
     assert started == Outcome(0, "started F-0001 with S-0002\n", "")
 
 
-@XFAIL_START
 def test_a_branch_of_the_story_that_is_there_does_not_refuse_the_start(checkout: Path) -> None:
     git(checkout, "branch", "wi/S-0001-raise-the-stories-fgraph")
     assert fgraph(["start", "S-0001"], checkout) == Outcome(0, "started S-0001\n", "")

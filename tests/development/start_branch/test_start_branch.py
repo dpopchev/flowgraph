@@ -46,6 +46,7 @@ pytestmark = pytest.mark.command
 CREATED = datetime(2026, 1, 1, tzinfo=UTC)
 ON = make_config("[development]\nenabled = true\n")
 OFF = make_config("")
+TRUNK = make_config('[development]\nenabled = true\nmode = "trunk"\n')
 TOP = Path("/src/project")
 RECORD = TOP / ".fgraph"
 
@@ -172,6 +173,10 @@ def test_a_text_that_is_no_story_passes_with_git_and_the_store_never(item: str) 
 
 def test_the_development_off_passes_with_git_and_the_store_never() -> None:
     assert check_branch_free("S-0002", None, storing(None), RECORD, never, OFF) is None
+
+
+def test_the_trunk_passes_while_the_branch_is_there_with_git_and_the_store_never() -> None:
+    assert check_branch_free("S-0002", None, storing(None), RECORD, never, TRUNK) is None
 
 
 def test_a_record_outside_a_work_tree_passes_with_the_store_never() -> None:

@@ -38,6 +38,7 @@ pytestmark = pytest.mark.command
 
 ON = make_config("[development]\nenabled = true\n")
 OFF = make_config("")
+TRUNK = make_config('[development]\nenabled = true\nmode = "trunk"\n')
 SQUASH = make_config('[development]\nenabled = true\nmerge = "squash"\n')
 FAST_FORWARD = make_config('[development]\nenabled = true\nmerge = "fast-forward"\n')
 GATE = 'gate = "make check"\n'
@@ -194,6 +195,22 @@ def test_a_landing_with_the_development_off_takes_no_git_step() -> None:
     steps: list[object] = []
     with pytest.raises(LandError):
         land(READY, work_tree(steps), config=OFF)
+    assert steps == []
+
+
+def test_a_landing_on_the_trunk_is_refused_naming_the_key() -> None:
+    with pytest.raises(LandError) as error:
+        land(READY, work_tree([]), config=TRUNK)
+    assert str(error.value) == (
+        "S-0001 cannot land: development.mode = trunk makes no branch to land"
+        " -- complete it with fgraph complete S-0001 --commit SHA"
+    )
+
+
+def test_a_landing_on_the_trunk_takes_no_git_step() -> None:
+    steps: list[object] = []
+    with pytest.raises(LandError):
+        land(READY, work_tree(steps), config=TRUNK)
     assert steps == []
 
 

@@ -95,3 +95,11 @@ governs = [
 supersedes = [
     "S-0142#1",
 ]
+
+[[knowledge]]
+kind = "finding"
+text = "Settled on 2026-11-25, after F-0019 landed, by the probe T-0540 describes, run in a scratch copy of main: it fails in 24 files of tests/functional -- the 17 T-0540 named, test_complete_commit_held.py, and six of the ten suspects: test_land_approver.py, test_land_pull_request.py, test_land_push_untracked.py, test_land_run_line.py, test_release_verified.py and test_trunk.py; the other four pass, three completing at a commit of the record alone and test_status_no_start_mark.py with the development off. With the edits T-0540 now lists, tests/functional passed whole under the probe, 1945 passed. T-0540, T-0542 and T-0543 are amended by the decision of 2026-11-24: T-0540 names 23 files and its grep reads an output or out; T-0542 and T-0543 hold the line counts of 2026-11-25; T-0543 says a line number or a test name after a colon is cut and its check greps src/a.py:12. T-0539 and T-0541 hold as they are."
+noted = 2026-11-24 22:54:32+00:00
+supersedes = [
+    "S-0142#2",
+]

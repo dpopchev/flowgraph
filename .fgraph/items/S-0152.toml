@@ -1,9 +1,11 @@
 id = "S-0152"
-state = "backlog"
+state = "started"
 title = "Cut the lines of the Backlog fgraph status and fgraph watch mark = as able to start from every one that can to none"
 description = "The word of the developer of 2026-11-24, reading the Backlog of that day: the mark = is dropped where [N T] says it. Asked with four drawn frames, the developer chose the one with no = in the Backlog at all: [N T] alone tells a planned line, [] one that is not. Rulings of the coordinator, said to the developer with the plan: the mark is dropped for every line of the Backlog, a Feature in Backlog and a work item in Backlog under a started Feature too; a line keeps its two columns, so nothing moves; the more-line keeps its count, ... N more, M can start; can_start and next_to_start of the JSON are not touched; fgraph start with no id still takes the first line that can start, and its help and its refusal say so without naming a mark. Not in this Story: S-0122 and S-0105 in the Backlog, whose Tasks were written while the mark was there."
 complexity = "medium"
 created = 2026-11-24 17:17:48+00:00
+started = 2026-11-24 17:18:51+00:00
+agent = "sonnet-s152"
 amends = "S-0139"
 
 [criterion]

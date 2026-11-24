@@ -37,6 +37,7 @@ COMMANDS = [
     ("complete",),
     ("land",),
     ("release",),
+    ("sync",),
     ("note",),
     ("verify",),
     ("knowledge",),

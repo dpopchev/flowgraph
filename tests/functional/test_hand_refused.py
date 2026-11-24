@@ -61,6 +61,7 @@ def fgraph(argv: Sequence[str], cwd: Path) -> Outcome:
             now=lambda: NOW,
             open_git=lambda _: None,
             load_config=read_config,
+            run_check=lambda command, directory: 0,
         )
     except SystemExit as refused:  # argparse refuses an option it does not know, before the run
         status = int(str(refused.code))

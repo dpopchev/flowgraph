@@ -103,7 +103,8 @@ Notes:
 - A Feature is broken down into Stories, as a rule of thumb one Story per
   criterion. A work item may name the criterion it realizes (S-0100), by its
   place in the list; the link is optional, so a Feature may hold work items
-  whose criterion is none of its criteria.
+  whose criterion is none of its criteria. `fgraph show` of the Feature lists
+  which criteria are met (S-0101).
 - An Upkeep names the behavior that must still hold, never a test: the Upkeep
   may itself move or rename a test while the behavior holds.
 - A Task's title names the action, the artifact and its target state; its
@@ -1724,6 +1725,22 @@ and its merge tool.
   2`, a whole number from 1, right after `parent` and only when it names one;
   a file without the key reads as none. A file holding `0`, or the key with no
   `parent`, is refused naming the file. Every move carries it.
+- Nothing more is kept for a criterion met: `fgraph show` of a Feature derives
+  it at each read from the rows of the work items under the Feature, as the
+  bucket of a Feature never started is. It numbers the criteria as
+  `Criteria (2), met 1 of 2`, and a line reads `  1  met      <text>  S-0001`,
+  with the ids of the work items that realize it, or `  2  not met  <text>`
+  alone when none does. A criterion is met when a work item that realizes it
+  is completed; one is enough when several realize it. A removed work item is
+  not counted, as the progress of a Feature does not hold it; a completed work
+  item verified no still counts, since it stays completed. A work item whose
+  number the Feature does not have is on no criterion. `fgraph show` has no
+  JSON, and the text and the JSON of `fgraph status` do not change.
+- The completion of a Feature does not read its criteria: a Feature is
+  completed by its last work item, or by `fgraph complete`, whether or not each
+  criterion is met, without a word. This is the smallest reading of the
+  Finding kept open on F-0013 (refused, warned or silent); the decision is the
+  developer's.
 - `fgraph status` lists a Feature inside its bucket, as one line in place of
   its work items, the developer's words of 2026-11-21: a Feature is an
   umbrella, part of the Backlog, that just holds a couple of work items. The
@@ -1896,9 +1913,9 @@ development too.
   at a landing. It is the reading, decided when S-0042 was ordered, of the
   developer's words of 2026-11-21 on starting a work item, "checks if
   criteria are met before closing": one gate of the record, on top of the
-  rule that every Task is completed. It is no check per Task run at a
-  complete, and the Given / When / Then of the work item is neither run nor
-  confirmed. It has no default: left out, a landing runs no gate. It is a
+  rule that every Task is completed. It is apart from the check of a
+  Task, which the complete of that Task runs (S-0089), and the Given / When /
+  Then of the work item is neither run nor confirmed. It has no default: left out, a landing runs no gate. It is a
   key of the development, so it gates nothing with the development off,
   where it is held as written.
 - `development.driver` names who drives the development, `developer` by default
@@ -1962,7 +1979,9 @@ development too.
   callable, `RunGate`, `run_check`, and `main()` binds `run_gate` to it; the
   decision from its status is the core's (`check_task_passes`,
   `src/flowgraph/development/task_check.py`). The default of `run()` runs no
-  check: every one passes.
+  check: a run that completes a Task that holds one is given its runner, and
+  the default raises, a contract as that of the gate (U-0023), so no run
+  passes a check it did not run.
 - `[git] commit` turns the commits of the record off. It is on by default,
   the reading of S-0040, off until set shown and not taken: inside a git work
   tree that does not ignore the record `fgraph` commits every write of it, as
@@ -2230,6 +2249,25 @@ The git steps `fgraph` takes, decided by the developer on 2026-11-21:
 - A git step refused exits 2 naming the command: a commit refused puts every
   file the write changed back as it was, a worktree refused for another cause
   than a branch there leaves the start committed.
+- `fgraph sync` (S-0150) takes the place of `board sync-main` of board 1. Run
+  in the worktree of a started work item, with the development on, it merges
+  `main` into its branch. `main` is `refs/heads/main` as the repository holds
+  it: nothing is fetched. The merge is `git merge --no-ff`, so one merge commit,
+  `chore: merge main into <branch>`, even where a fast-forward would do; a
+  branch that holds `main` already says so and makes none. A conflict is
+  aborted with `git merge --abort` after its files are read, and since a
+  changed tracked file is refused first, the abort leaves the work tree as it
+  was: `main does not merge into <branch>: conflict in <files>`. The record
+  merges as any file: `main` alone writes the queue, the Features, the terms,
+  the configuration and the other work items, and the branch alone writes the
+  file of its work item (the scope of a branch), so no file of `.fgraph/` is
+  changed on both sides unless one was edited by hand or the work item was
+  completed on `main` by hand while its branch lived -- then it is a conflict
+  as any other, named and aborted, and fgraph derives nothing. The steps are in
+  `src/flowgraph/development/sync_git.py`, called by name and not bound by
+  `open_git`; the work item is the one the branch names, its state is not read;
+  in a record git ignores the worktree holds no `.fgraph/`, so the command
+  finds no record there and the merge is git's.
 - With the development on, `fgraph land` lands a started work item, run in
   the checkout of `main`. It merges the branch `wi/<id>-*` into `main` as a
   merge of its own, held uncommitted; commits it under the message the

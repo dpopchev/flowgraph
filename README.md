@@ -57,6 +57,7 @@ the typed edges of the whole record as JSON.
 | the closing of a work item      | `fgraph verify --yes` keeps the yes of a completed one   |
 |                                 | `--no` keeps the no and files a Bug that amends it       |
 | the development                 | once enabled: start branches, `fgraph land` lands        |
+| the commits of main in a branch | `fgraph sync` merges `main` into a started branch        |
 | the release of the trunk        | `fgraph release` tags `main` with its next `v*` version  |
 | the links of an item            | `fgraph about` lists every relation, both sides, by id   |
 | the brief of a work item        | `fgraph brief` prints it whole, as text or as JSON       |
@@ -773,8 +774,9 @@ gate = "make check"
 `gate` is one command of the record, a command line run at a landing. It is
 the reading, decided when S-0042 was ordered, of the developer's words of
 2026-11-21 on starting a work item, "checks if criteria are met before
-closing": no check per Task run at a complete, and the Given / When / Then of
-the Story is neither run nor confirmed by it. `fgraph land` runs the gate
+closing": the gate is apart from the check of a Task, which the complete of that
+Task runs, and the Given / When / Then of the Story is neither run nor
+confirmed by it. `fgraph land` runs the gate
 through the shell at the top of the work tree of `main`, once the work of the
 branch is merged there and before the landing is committed or the Story
 completed, so the gate checks the tree `main` will have. Its output is
@@ -1662,6 +1664,31 @@ what it waits on is blank; an unblock when it is not blocked. `fgraph unblock
 S-0001` takes it back to started, with what it held, says `unblocked S-0001`
 and commits `chore: unblock S-0001 in the record`.
 
+When `main` moved since the start -- another work item landed first --
+`fgraph sync`, run in the worktree of the started work item, merges the local
+branch `main` into its branch by one merge commit, never a rebase and with no
+fetch:
+
+```sh
+cd ../project.worktrees/S-0001-raise-the-stories-fgraph
+fgraph sync
+# merged main into wi/S-0001-raise-the-stories-fgraph at <a sha>
+```
+
+The commit is worded `chore: merge main into <branch>`. A branch that holds
+`main` already says `<branch> holds main already at <sha>`, exits 0 and makes
+no commit. A `main` that conflicts with the branch is not merged:
+
+```sh
+fgraph sync
+# fgraph: error: main does not merge into wi/S-0001-...: conflict in <file> -- nothing is merged, the branch is as it was
+```
+
+The merge is then yours, `git merge main` in the worktree. The refusals of
+exit 2 are the development off, outside a git work tree, on `main` or on a
+branch no work item owns, and a tracked file changed and not committed (an
+untracked file is left alone).
+
 In a git repository whose record has the development on, `fgraph land` does
 the landing in one step, run in the checkout of `main` once every Task of the
 Story is completed on its branch. The message of the merge commit is yours:
@@ -1933,6 +1960,25 @@ amended. `fgraph amend F-0001 --criterion` rewrites the list and leaves the
 number a work item names as written: it then names the criterion now at that
 place, and `fgraph show` says `none of the criteria of F-0001` for a number
 past the end.
+
+Once a work item under a Feature names a criterion of it, `fgraph show` of the
+Feature numbers its criteria and lists them as met k of n, each with the work
+items that realize it. A criterion is met when one of them is completed; a
+removed one is not listed. A Feature none of whose work items names a criterion
+is listed as before, `Criteria (2)` and its criteria alone, since the link is
+optional. With S-0001, completed, realizing the first criterion:
+
+```sh
+fgraph show F-0001
+# F-0001  Raise the kinds of work a project tracks with fgraph from 1 to 5
+#   bucket       InProgress
+# Criteria (2), met 1 of 2
+#   1  met      a developer sees every work item of the project by bucket  S-0001
+#   2  not met  a developer adds every kind of work  S-0002
+# Work items (2)
+#   S-0001  Raise the Stories fgraph lists under Backlog from 0 to 1  Completed
+#   S-0002  Raise the kinds of work item fgraph adds from 1 to 2  Backlog
+```
 
 `fgraph status` lists a Feature inside its bucket, as one line in place of
 its work items: its id, its progress and its title. Here a Story that stands

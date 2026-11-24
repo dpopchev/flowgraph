@@ -39,9 +39,11 @@ from flowgraph.feature.model import (
 from flowgraph.feature.move import check_move
 from flowgraph.feature.views import (
     DONE,
+    CriterionRow,
     FeatureDetail,
     FeatureRow,
     bucket_of,
+    criteria_rows,
     feature_bucket,
     feature_detail,
     feature_row,
@@ -51,6 +53,7 @@ __all__ = [
     "DONE",
     "BlockedFeature",
     "CompletedFeature",
+    "CriterionRow",
     "Feature",
     "FeatureDetail",
     "FeatureFileError",
@@ -70,6 +73,7 @@ __all__ = [
     "bucket_of",
     "check_move",
     "completed_feature",
+    "criteria_rows",
     "feature_bucket",
     "feature_detail",
     "feature_file",

@@ -45,3 +45,8 @@ def no_dir(path: Path) -> Never:
 def no_removal(path: Path) -> Never:
     """The remove_dir of a run given none: a contract, such a run removes no record."""
     raise AssertionError(f"run() was given no remove_dir to remove {path}")
+
+
+def no_serve() -> Never:
+    """The serve of a run given none: a contract, such a run serves no tools."""
+    raise AssertionError("run() was given no serve to serve the tools of fgraph")

@@ -19,7 +19,8 @@ from flowgraph.development.branch_age import aged
 from flowgraph.development.commit import OpenGit, open_git
 from flowgraph.development.config_git import record_named
 from flowgraph.development.scope import scope_in, within, worktree_of_item
-from flowgraph.development.worktrees import across_worktrees, held_elsewhere, record_of_main
+from flowgraph.development.worktrees import across_worktrees, held_elsewhere, read_record
+from flowgraph.mcp.stdio import Serve, serve_stdio
 from flowgraph.parser import REFUSED, build_command_line, help_asked
 from flowgraph.parser.command import command_said
 from flowgraph.parser.ids import ids_read
@@ -31,6 +32,7 @@ from flowgraph.parser.not_given import (
     no_gate,
     no_lock,
     no_removal,
+    no_serve,
     no_wait,
 )
 from flowgraph.record import (
@@ -64,20 +66,6 @@ __all__ = ["Store", "open_files", "open_git", "read_config", "record_named", "ru
 
 # Write text to a stream; what it returns is ignored, so a stream's write and a list's append fit.
 Write = Callable[[str], object]
-
-# The commands that list the record of main when run in the worktree of a work item (S-0141).
-LISTS_MAIN = ("status", "watch")
-
-
-def _read_record(command: str | None, located: Path, open_git: OpenGit) -> Path:
-    """The record a command reads: that of main for a LISTS_MAIN command in a work item's worktree.
-
-    The rule is keyed on the work tree that keeps the record, as scope_in is, not on the directory
-    fgraph runs in. Every other command, and a record with no record of main, reads the located one.
-    """
-    if command not in LISTS_MAIN:
-        return located
-    return record_of_main(located, open_git) or located
 
 
 def _watch(
@@ -127,6 +115,7 @@ def run(
     remove_dir: RemoveDir = no_removal,
     find_named: FindNamed = no_name,
     lock_record: LockRecord = no_lock,
+    serve: Serve = no_serve,
 ) -> int:
     """Read the arguments, locate the record in cwd, run the command and return the exit status.
 
@@ -152,7 +141,8 @@ def run(
     and refuses to, as that of the gate does. The rows of a started work item say, through `aged`,
     that their branch is older than `development.branch_max`: said, never refused. A write takes
     the lock of its record through lock_record before it reads, the default takes none, and a
-    write not given it within the wait fails with 2.
+    write not given it within the wait fails with 2. mcp serves the commands as tools through
+    serve, which needs no record; the default serves none.
     """
     command_line = build_command_line()
     parser = command_line.parser
@@ -171,9 +161,11 @@ def run(
             return 2
         write(made.out)
         return 0
+    if args.command == "mcp":
+        return serve()
     match locate(cwd, args.dir, is_dir, find_named):
         case Found(located) | Given(located):
-            path = _read_record(args.command, located, open_git)
+            path = read_record(args.command, located, open_git)
             store = within(
                 across_worktrees(open_store(path), path, open_git, open_store),
                 partial(scope_in, path, open_git),
@@ -212,28 +204,33 @@ def run(
 def main() -> None:
     """Run the command in the working directory of the process, on its arguments and streams.
 
-    Each write to stdout is flushed, so a frame of watch reaches a pipe as it is written.
+    Each write to stdout is flushed, so a frame of watch reaches a pipe as it is written. A call of
+    a tool of fgraph mcp is a run on these same effects, given its own two streams.
     """
+    fgraph = partial(
+        run,
+        is_dir=Path.is_dir,
+        open_store=open_files,
+        open_git=open_git,
+        now=lambda: datetime.now(UTC),
+        wait=time.sleep,
+        load_config=read_config,
+        run_gate=run_gate,
+        run_check=run_gate,
+        make_dir=Path.mkdir,
+        remove_dir=Path.rmdir,
+        find_named=record_named,
+        lock_record=partial(lock_files, wait=time.sleep),
+    )
     sys.exit(
-        run(
+        fgraph(
             sys.argv[1:],
             Path.cwd(),
-            Path.is_dir,
-            partial(print, end="", flush=True),
-            sys.stderr.write,
-            open_store=open_files,
-            open_git=open_git,
-            now=lambda: datetime.now(UTC),
+            write=partial(print, end="", flush=True),
+            write_error=sys.stderr.write,
             width=terminal_width,
             height=terminal_height,
-            wait=time.sleep,
-            load_config=read_config,
-            run_gate=run_gate,
-            run_check=run_gate,
-            make_dir=Path.mkdir,
-            remove_dir=Path.rmdir,
-            find_named=record_named,
-            lock_record=partial(lock_files, wait=time.sleep),
+            serve=partial(serve_stdio, fgraph),
         )
     )
 

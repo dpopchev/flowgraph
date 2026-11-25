@@ -67,6 +67,7 @@ the typed edges of the whole record as JSON.
 | the commit of a Task            | `fgraph commit` commits the files its brief names        |
 | the /goal line of a Feature     | `fgraph goal` prints it, for a developer to paste        |
 | the export of the record        | `fgraph graph` prints its nodes and edges as JSON        |
+| the tools of an agent session   | `fgraph mcp` serves them over stdio, no shell            |
 | the ontology                    | started: terms, related by is-a and part-of              |
 | flowgraph tracking its own work | its Stories are in `.fgraph/` since 0.4.0                |
 
@@ -396,6 +397,18 @@ Another tool asks the document what the record does not list in one view. With
 ```sh
 fgraph graph | jq -r '.edges[] | select(.kind == "about" and .to == "gate") | .from'
 # S-0001
+```
+
+An agent session reads the record with no shell through `fgraph mcp`, a stdio
+server of the Model Context Protocol: the session starts it, lists its tools
+and calls them; each call is a run of fgraph in the directory it names,
+the checkout of main or the worktree of a work item, and is given what the command
+prints; a refusal comes back as its one line. The server writes nothing itself
+and ends when the session closes its input.
+
+```sh
+claude mcp add fgraph -- fgraph mcp
+# the session lists the tool status of fgraph, as mcp__fgraph__status
 ```
 
 ## Use
@@ -3493,6 +3506,7 @@ Each subpackage of `src/flowgraph/` holds one aggregate or one command group;
 | `graph/`       | the nodes and edges of a record as one document    |
 | `item/`        | an item's file, ids and commands by id             |
 | `knowledge/`   | the findings, decisions and deviations, listed     |
+| `mcp/`         | the tools of fgraph served over stdio              |
 | `parent/`      | the Feature a work item is under, or none          |
 | `parser/`      | the arguments of the command line and its refusals |
 | `record/`      | the location, configuration and store of a record  |

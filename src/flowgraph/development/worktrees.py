@@ -10,7 +10,7 @@ A term is written on main alone, so the worktree of a started work item reads th
 record of main: its own copy of them is the one its branch was made with.
 
 Run in the worktree of a work item, fgraph status and fgraph watch list the record of main, which
-record_of_main names (S-0141).
+record_of_main names (S-0141). read_record says which record a command reads.
 """
 
 from dataclasses import replace
@@ -66,6 +66,21 @@ def record_of_main(record: Path, open_git: OpenGit) -> Path | None:
     if home is None:
         return None
     return home / record.resolve().relative_to(work_tree.path.resolve())
+
+
+# The commands that list the record of main when run in the worktree of a work item (S-0141).
+LISTS_MAIN = ("status", "watch")
+
+
+def read_record(command: str | None, located: Path, open_git: OpenGit) -> Path:
+    """The record a command reads: that of main for a LISTS_MAIN command in a work item's worktree.
+
+    The rule is keyed on the work tree that keeps the record, as scope_in is, not on the directory
+    fgraph runs in. Every other command, and a record with no record of main, reads the located one.
+    """
+    if command not in LISTS_MAIN:
+        return located
+    return record_of_main(located, open_git) or located
 
 
 def across_worktrees(store: Store, record: Path, open_git: OpenGit, open_store: OpenStore) -> Store:

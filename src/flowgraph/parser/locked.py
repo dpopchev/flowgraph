@@ -6,8 +6,9 @@ locked until it is listed.
 
 import argparse
 
-# The commands that write nothing, so they never take the lock; config show is one too.
-READS = ("status", "watch", "show", "about", "brief", "knowledge", "terms", "graph", "goal")
+# The commands that write nothing, so they never take the lock; config show is one too. mcp writes
+# nothing itself: each call of a tool is a run of its own that takes the lock when it writes.
+READS = ("status", "watch", "show", "about", "brief", "knowledge", "terms", "graph", "goal", "mcp")
 
 
 def takes_lock(args: argparse.Namespace) -> bool:

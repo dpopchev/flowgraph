@@ -11,6 +11,11 @@ completed = 2026-11-25 01:38:41+00:00
 agent = "sonnet-s156"
 commit = "de63cd27"
 
+[verified]
+answer = "yes"
+text = "at de63cd27 on main, the merge of wi/S-0156-raise-the-links-fgraph, with fgraph of main after the three landings of F-0018 in a throwaway repository with a Story about a term and a knowledge line governing src/gate.py: fgraph about --format json of S-0001 printed one JSON document of 14 keys, a key for every relation, of the term gate one of 10 keys and of src/gate.py one with governed_by, kind, path and touched_by, each the same bytes on two runs; fgraph about S-0001 --format xml exited 2 with fgraph: error: --format 'xml' is not text or json, the two formats of about. Before the landing, in the worktree, make check said 5270 passed and 14 failed, the same 14 of the temporary directory, which passed with it outside any repository"
+on = 2026-11-25 01:41:41+00:00
+
 [criterion]
 given = "a record in a git repository with a completed Story about a term, whose commit changed a file a knowledge line governs"
 when = "fgraph about is run with --format json on the Story, on the term and on the file"

@@ -14,3 +14,9 @@ depends_on = [
 given = "a started work item in its worktree and a main that took a write of the record since its branch was cut"
 when = "fgraph sync is run in the worktree, then fgraph land on main"
 then = "both merge with no conflict in a file of the record"
+
+[[knowledge]]
+kind = "finding"
+text = "Open, decided when Q-0003 is answered: whether this Story stands for the pairs Q-0003 names, becomes Bugs, or is removed with F-0027; a merge driver is built only for a conflict that was reproduced."
+noted = 2026-11-25 08:07:06+00:00
+mark = "open"

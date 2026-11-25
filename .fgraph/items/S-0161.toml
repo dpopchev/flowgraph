@@ -80,3 +80,8 @@ task = "T-0726"
 text = "red: E   NotImplementedError (src/flowgraph/development/commit_task.py:33), 10 tests of tests/development/commit_task"
 noted = 2026-11-25 06:55:09+00:00
 task = "T-0727"
+
+[[progress]]
+text = "red: 12 failed, 98 passed (functional/test_commit_task.py, test_command_help[commit], tests/parser/test_help.py: no commit command)"
+noted = 2026-11-25 06:57:39+00:00
+task = "T-0728"

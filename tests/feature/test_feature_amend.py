@@ -34,7 +34,7 @@ RETITLED = replace(FEATURE, title="another title")
 NEEDED = (
     r"^F-0001 is started: amend it with --deviation TEXT, what changes in what it was agreed to do$"
 )
-ONLY_A_FEATURE = "a Feature is amended by its title, its description and its criteria"
+ONLY_A_FEATURE = "a Feature is amended by its title, its description, its criteria and its terms"
 
 
 def never(*_: object) -> Never:

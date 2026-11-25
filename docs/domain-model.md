@@ -659,8 +659,9 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
   criterion it had unless `--realizes` is given with it, which is checked
   against the Feature it is put under.
 - A Feature in Backlog is amended too, the reading of S-0057: `amend` of its
-  id rewrites its title, its description and its criteria, one alone or
-  several together, and a part it does not name stays as it was. `--criterion`
+  id rewrites its title, its description, its criteria and its terms (`--about`),
+  one alone or several together, and a part it does not name stays as it was.
+  `--criterion`
   is given once per criterion, as an `add` takes it, and the ones given
   replace the ones the Feature had, whole: none is added to them and none is
   rewritten alone. Each part goes through the constructor an `add` uses, so a
@@ -683,7 +684,7 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
   does not hold. The parts of a work item are not those of a Feature:
   `--given`, `--when`, `--then`, `--observed`, `--expected`, `--hypothesis`
   and `--parent` given to one are refused naming them, `F-0001 has no given,
-  then: a Feature is amended by its title, its description and its criteria`,
+  then: a Feature is amended by its title, its description, its criteria and its terms`,
   and `--criterion` given to a work item is refused the other way round,
   `S-0001 has no criteria: only a Feature states them`. Nothing is written
   then, the other parts named beside it neither.
@@ -740,8 +741,8 @@ and `--depends-on none` alone takes them all away.
   that would close a cycle, `S-0001 cannot depend on S-0003: it would close a
   cycle`, whether S-0003 depends on S-0001 directly or through others. `none`
   given with an id is refused, `none stands alone: it takes every dependency
-  away`. A Feature is amended by its title, its description and its criteria,
-  so `--depends-on` given to one is refused as a part it has not.
+  away`. A Feature is amended by its title, its description, its criteria and its
+  terms, so `--depends-on` given to one is refused as a part it has not.
 - `fgraph show` lists `depends on` with each id and the bucket it is in now,
   `S-0001 (backlog)`, after the parent, and lists none for a work item that
   depends on none. The file holds the ids as `depends_on = ["S-0001"]`, only

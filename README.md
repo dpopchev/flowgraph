@@ -2661,7 +2661,7 @@ branch made:
   `F-0001 cannot start: development.parallel = 1, started already: S-0002`.
 
 A work item does not start before its Feature. `fgraph start` of a work item
-in Backlog under a Feature exits 2 naming the Feature while the Feature is
+in Backlog under a Feature exits 2 naming the Feature and the command that starts it while the Feature is
 not started. Once it is, the work items of the Feature start side by side:
 `fgraph start` of a second Story, S-0002, under the started F-0001 succeeds
 and names its branch, and with `[development] parallel = 2` the start of a
@@ -2669,7 +2669,7 @@ third, S-0003, is refused naming the key and the started work items:
 
 ```sh
 fgraph start S-0001
-# fgraph: error: S-0001 cannot start: F-0001 is not started, start it first
+# fgraph: error: S-0001 cannot start: F-0001 is not started: fgraph start F-0001 starts it
 
 fgraph start S-0002
 # started S-0002

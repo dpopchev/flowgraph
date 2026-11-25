@@ -1794,7 +1794,7 @@ and its merge tool.
   and a start `[development] parallel` refuses (below).
 - A work item does not start before its Feature: the start of a work item in
   Backlog under a Feature that is not started is refused with exit 2, naming
-  the Feature, `S-0001 cannot start: F-0001 is not started, start it first`.
+  the Feature and the command that starts it, `S-0001 cannot start: F-0001 is not started: fgraph start F-0001 starts it`.
   The alternative, that the start of a child starts its Feature, was shown
   with the plan and not taken.
 - The work items of a started Feature start side by side: the start of a

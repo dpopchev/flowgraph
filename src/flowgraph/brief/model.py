@@ -35,8 +35,9 @@ class Brief:
     """A work item whole with what a coordinator hands an agent beside it.
 
     The branch and the worktree git holds for it, none when it has none; its Feature, none for a
-    work item that stands alone; the lines of the record that govern a path its Tasks name, newest
-    first; and the terms it or its Feature is about, each once.
+    work item that stands alone; the live lines of the record that govern a path its Tasks name,
+    those no later line supersedes, newest first; and the terms it or its Feature is about, each
+    once.
     """
 
     detail: WorkItemDetail

@@ -9,7 +9,7 @@ from flowgraph.brief.text import brief_text
 from flowgraph.development.commit import OpenGit, kept_in
 from flowgraph.feature import feature_bucket, feature_detail
 from flowgraph.item.id import parse_work_item_id_of_any_kind
-from flowgraph.knowledge.list import collected, newest_first
+from flowgraph.knowledge.list import collected, live_entries, newest_first
 from flowgraph.parent import parse_feature_id
 from flowgraph.record.store import Store
 from flowgraph.relation.depends import bucketed
@@ -72,7 +72,7 @@ def brief_of(item: str, store: Store, record: Path, open_git: OpenGit) -> Brief:
         branch,
         worktree,
         feature,
-        tuple(governing(newest_first(collected(store), None), detail.tasks)),
+        tuple(governing(newest_first(live_entries(collected(store)), None), detail.tasks)),
         tuple(TermLine(name, store.terms.load_term(name).meaning) for name in names),
     )
 

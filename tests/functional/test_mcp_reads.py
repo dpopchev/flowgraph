@@ -18,8 +18,6 @@ import pytest
 
 pytestmark = pytest.mark.functional
 
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0158: fgraph mcp serves the status alone")
-
 SCRIPT: Sequence[Sequence[str]] = (
     ("add", "term", "gate", "--means", "a check before a landing"),
     (
@@ -180,7 +178,6 @@ def listed(session: Outcome, name: str) -> dict[str, Any]:
     return next((tool for tool in tools if tool.get("name") == name), {})
 
 
-@XFAIL
 def test_the_five_reads_are_listed_as_tools(session: Outcome) -> None:
     names = [tool.get("name") for tool in result(session, 1).get("tools", [])]
     reads = {"status", "brief", "show", "knowledge", "about"}
@@ -193,13 +190,11 @@ def test_the_five_reads_are_listed_as_tools(session: Outcome) -> None:
     ]
 
 
-@XFAIL
 @pytest.mark.parametrize("name", list(REQUIRED))
 def test_the_tool_requires_its_arguments(session: Outcome, name: str) -> None:
     assert listed(session, name).get("inputSchema", {}).get("required") == REQUIRED[name]
 
 
-@XFAIL
 @pytest.mark.parametrize("name", list(READS))
 def test_the_call_gives_what_the_command_prints(
     session: Outcome, record: Record, name: str
@@ -208,19 +203,16 @@ def test_the_call_gives_what_the_command_prints(
     assert result(session, IDS[name]).get("content") == [{"type": "text", "text": text}]
 
 
-@XFAIL
 @pytest.mark.parametrize("name", list(READS))
 def test_the_call_is_one_text_and_no_error(session: Outcome, name: str) -> None:
     called = result(session, IDS[name])
     assert (called.get("isError", False), len(called.get("content", []))) == (False, 1)
 
 
-@XFAIL
 def test_a_missing_id_is_a_tool_error(session: Outcome) -> None:
     assert result(session, 6).get("isError") is True
 
 
-@XFAIL
 def test_a_missing_id_gives_the_one_line_of_the_refusal(session: Outcome, record: Record) -> None:
     refusal = record.cli(*SHOW_MISSING).err.splitlines()[-1]
     assert result(session, 6).get("content") == [{"type": "text", "text": refusal}]

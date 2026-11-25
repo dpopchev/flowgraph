@@ -59,3 +59,8 @@ created = 2026-11-25 05:03:20+00:00
 kind = "decision"
 text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, under the /goal of Phase 1 the developer set on 2026-11-24, which has the coordinator write the Tasks before a Feature starts; the developer was not asked and reviews them at the close: (1) The words: S-0001 cannot start: F-0001 is not started: fgraph start F-0001 starts it -- the old head kept, the command named as the criterion says it; the command is given with no --dir or other option. (2) Only the refusal of a Feature in Backlog changes; a blocked Feature (unblock it first) and a completed or removed one keep their words, though the blocked one could name fgraph unblock F-0001 by the same reading."
 noted = 2026-11-24 22:19:17+00:00
+
+[[knowledge]]
+kind = "deviation"
+text = "On the developer's word of 2026-11-25, both, to the unblocking proposed that day: the checks of its two open Tasks grep is not started, start it first, the refusal S-0079 rewords, in place of start it first, words the refusals of an item in Backlog hold in src, tests, README.md and docs/domain-model.md, files the Tasks do not name. T-0687 is amended. T-0686, started, takes no amend (T-0686 is started already), so it is removed and filed again as T-0718 with its brief word for word and the narrowed check; its work stays in the worktree, not committed, for T-0718."
+noted = 2026-11-25 05:03:42+00:00

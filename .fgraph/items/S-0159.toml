@@ -1,5 +1,5 @@
 id = "S-0159"
-state = "started"
+state = "completed"
 title = "Raise the moves an agent makes as tools from none to those of its work item and its Tasks: start, hand, block, unblock, note, and the start, the block and the complete of a Task"
 description = "New on the plan agreed on 2026-11-24. It waits for the two Bugs of F-0019: a server makes two writes of main at one time likelier. Its Tasks are written before its Feature starts."
 parent = "F-0022"
@@ -7,7 +7,9 @@ realizes = 3
 complexity = "high"
 created = 2026-11-24 19:52:02+00:00
 started = 2026-11-25 09:22:27+00:00
+completed = 2026-11-25 09:57:09+00:00
 agent = "opus-s159"
+commit = "734fc596"
 depends_on = [
     "S-0157",
     "B-0035",

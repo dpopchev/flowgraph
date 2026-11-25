@@ -1,11 +1,13 @@
 id = "S-0155"
-state = "backlog"
+state = "started"
 title = "Raise the knowledge lines fgraph knowledge prints as JSON from none to every one it lists"
 description = "New on the plan agreed on 2026-11-24. Seen on 2026-11-24 at 2d612af on main. fgraph knowledge --format json exits 2 with unrecognized arguments: --format json. The contract is that of the JSON of fgraph brief. Its Tasks are written before its Feature starts."
 parent = "F-0018"
 realizes = 2
 complexity = "low"
 created = 2026-11-24 19:51:29+00:00
+started = 2026-11-25 00:27:11+00:00
+agent = "haiku-s155"
 
 [criterion]
 given = "a record with a finding, a decision and a deviation, one about a term and one governing a file"

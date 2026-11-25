@@ -14,6 +14,7 @@ from functools import partial
 from pathlib import Path
 from typing import Any, Protocol
 
+from flowgraph.mcp.moves import MOVE_TOOLS
 from flowgraph.mcp.protocol import RunCommand, replied
 from flowgraph.mcp.reads import READ_TOOLS
 from flowgraph.mcp.tools import Command, Ran, Tool
@@ -24,7 +25,7 @@ Write = Callable[[str], object]
 # Serve the tools of fgraph until the input closes; the exit status.
 Serve = Callable[[], int]
 
-SERVED = READ_TOOLS
+SERVED = (*READ_TOOLS, *MOVE_TOOLS)
 NOT_A_DIRECTORY = (
     "fgraph: error: {directory} is not a directory: a call runs fgraph in the directory it names"
 )

@@ -31,13 +31,15 @@ commit = "cd2504d318f1197e516e5d84e94cb86e52aa2edb"
 
 [[tasks]]
 id = "T-0724"
-state = "started"
+state = "completed"
 title = "List under Terms of fgraph brief the terms its governing lines are about, in brief_of of src/flowgraph/brief/read.py"
 description = "Three files. S-0163 waits for S-0162, which makes the lines under Governed by the live ones: read brief_of as S-0162 left it. src/flowgraph/brief/read.py (about 101 lines, about 104 after): in brief_of, name the governing lines once, before the Brief is built -- governed = tuple(governing(...)) with the argument S-0162 left -- and names becomes dict.fromkeys([*detail.about, *feature_about, *(name for entry in governed for name in entry.about)]); Brief is given governed, and the terms as before, each read by store.terms.load_term(name).meaning. A line is noted about a term the record holds (fgraph note --about refuses another), so each name loads. src/flowgraph/brief/model.py (64 lines): the docstring of TermLine becomes A term the work item, its Feature or a line that governs it is about, with its meaning.; in the docstring of Brief, and the terms it or its Feature is about, each once becomes and the terms it, its Feature or one of those lines is about, each once. src/flowgraph/brief/text.py, src/flowgraph/brief/document.py and the help of src/flowgraph/parser/brief.py are not changed: they print the terms they are given. tests/functional/test_brief_terms.py: remove XFAIL and its marks. Red first: remove the marks, see the two tests fail on their value, then the code. No unit test is added: brief_of is the shell and the functional file states it. Existing tests: none changes -- in tests/functional/test_brief.py the one governing line is about no term; if one fails, stop and say which. Out of bounds: src/flowgraph/knowledge/, src/flowgraph/term/, every other file of src/ and of tests/, the docs."
 check = "uv run pytest tests/brief tests/functional/test_brief.py tests/functional/test_brief_live.py tests/functional/test_brief_terms.py -q -p no:cacheprovider && ! grep -q xfail tests/functional/test_brief_terms.py && make lines && uv run pyright"
 expected_output = "changed: brief_of of src/flowgraph/brief/read.py lists under Terms the terms of the work item, then those of its Feature, then those the lines under Governed by are about, in the order of those lines, each once with its meaning, as text and as JSON; the docstrings of TermLine and Brief of src/flowgraph/brief/model.py say so. No xfail mark is left in tests/functional/test_brief_terms.py"
 created = 2026-11-25 06:45:47+00:00
 started = 2026-11-25 07:11:20+00:00
+completed = 2026-11-25 07:13:29+00:00
+commit = "dc8548e0d3bb04ec0eaf5429165e887e79a4a1a4"
 
 [[tasks]]
 id = "T-0725"

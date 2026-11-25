@@ -10,6 +10,11 @@ completed = 2026-11-25 03:27:05+00:00
 agent = "haiku-u11"
 commit = "c351868b"
 
+[verified]
+answer = "yes"
+text = "at c351868b on main, the merge of wi/U-0011-raise-the-refusals-of: make check run on main at af2804a2, after every landing of the night, said 5534 passed, ruff, the line limit and pyright clean, the two test files of U-0011 among them; on main fgraph note S-0001 with no kind printed fgraph note: error: one of the arguments --finding --decision --deviation --progress is required, and with --finding and --decision printed argument --decision: not allowed with argument --finding. The agent saw each new test fail first with the behavior taken out by a scratch edit it restored: the five of the kinds with the group of the parser made optional, and the one of the unknown kind with the kind of a knowledge line read as any text"
+on = 2026-11-25 03:43:02+00:00
+
 [criterion]
 given = "main, where fgraph note refuses none or two of --finding, --decision and --deviation, and the read of a file refuses a knowledge line of a kind it does not know"
 when = "make check runs"

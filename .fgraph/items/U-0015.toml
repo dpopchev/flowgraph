@@ -6,6 +6,7 @@ parent = "F-0023"
 complexity = "low"
 created = 2026-11-22 17:09:16+00:00
 started = 2026-11-25 02:29:05+00:00
+agent = "haiku-u15"
 
 [criterion]
 given = "a Feature in Backlog, which fgraph amend takes --about for since S-0072"

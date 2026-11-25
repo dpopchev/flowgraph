@@ -27,13 +27,15 @@ commit = "34df09389a57afbc669aecd76934aca04f747276"
 
 [[tasks]]
 id = "T-0666"
-state = "started"
+state = "completed"
 title = "Update docs/domain-model.md to say the refusal of fgraph show for a text that is no id names the term too"
 description = "Change docs/domain-model.md only (3343 lines on 2026-11-24); find the passage by grep -n 'fgraph show` takes the id of a work item of any kind' docs/domain-model.md, never by line number; plain ASCII; no source or test change. In that bullet the sentence that begins A text that is neither is refused naming every kind and the Feature, followed by the quoted line 'T-0001' is no Story, Upkeep, Bug, Spike or Feature id, becomes: A text that is neither an id nor the name of a term is refused naming every kind, the Feature and the term, followed by the quoted line with ` nor the name of a term` at its end (the line of src/flowgraph/feature/item.py, _shown_id); keep the rest of the bullet (a text written F- and a number below 1 is refused as a Feature id) and reflow only inside the bullet. Leave alone the bullet of the reorder (grep -n 'neither a work item id nor a Feature id' docs/domain-model.md: reorder does not name the term), the table row of add story --filed-during, and the paragraph About (about has its own line, no term in the record and no file). README.md states no such line (grep -n 'Spike or Feature id' README.md finds nothing) and stays. Out of bounds: README.md, every file of src/ and tests/."
 check = "grep -q \"Spike or Feature id nor the name of a term\" docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, in the bullet that says fgraph show takes the id of a work item of any kind or of a Feature, words the refusal 'T-0001' is no Story, Upkeep, Bug, Spike or Feature id nor the name of a term"
 created = 2026-11-24 22:08:04+00:00
 started = 2026-11-25 02:30:58+00:00
+completed = 2026-11-25 02:32:02+00:00
+commit = "c459a7e238e7014a4cd6beb253adb3949cc125c4"
 
 [[knowledge]]
 kind = "decision"

@@ -38,3 +38,8 @@ description = "FIRST PASS, written on 2026-11-25 before Phase 2 was completed: t
 check = "uv run pytest tests/task/test_task_table.py tests/task/test_task_block.py tests/task/test_task_unblock.py tests/task/test_task_remove.py -q -p no:cacheprovider && grep -q '^TABLE' tests/task/test_task_table.py && grep -q 'product(' tests/task/test_task_table.py"
 expected_output = "created: tests/task/test_task_table.py holds TABLE over the five states of a Task and the moves start, block, unblock, complete and remove, the test that its keys are the whole product, and a parametrized test of each next state and of each refusal, raised as one of REFUSED with exactly its line. No source changes and every command prints what it printed before"
 created = 2026-11-25 09:44:36+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25: put Tasks on the work items of Phase 3; those will be reviewed before the phase starts. The Tasks of U-0040 (its 3 Tasks: T-0767, T-0768, T-0769) are that first pass, drafted that day by a read-only subagent against the code of main at 2dc58f08 and filed by the coordinator, who checked their shape -- the opening sentence, the check, that the files they name are on the disk or said to be new -- and read their titles, outputs, checks and open points, not every description. They are reviewed before Phase 3 starts, the review noted here as a decision naming each Task kept, amended or removed; until that line is here, U-0040 is not started."
+noted = 2026-11-25 09:46:38+00:00

@@ -1,0 +1,16 @@
+id = "S-0182"
+state = "backlog"
+title = "Raise the pages that set an agent session on fgraph from none to one, docs/agents.md"
+description = "Phase 4, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0037). The Agent/MCP and Knowledge setup guide of the first pass. It waits for the last Story of F-0022. Its first-pass Tasks are drafted the same day and reviewed before the phase starts."
+parent = "F-0037"
+realizes = 2
+complexity = "medium"
+created = 2026-11-25 09:55:20+00:00
+depends_on = [
+    "S-0160",
+]
+
+[criterion]
+given = "a repository with a record and Claude Code"
+when = "its operator follows docs/agents.md"
+then = "the session lists the tools of fgraph mcp, reads the brief of a work item and keeps a knowledge line that governs a file; a functional test runs its commands"

@@ -40,12 +40,13 @@ commit = "ff7199aca97c507fd0e5d321cf019a784e242863"
 
 [[tasks]]
 id = "T-0676"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say fgraph knowledge ends a line with the files it governs"
 description = "Change README.md (3367 lines on 2026-11-24, more once F-0019, F-0020, S-0155 and S-0156 land) and docs/domain-model.md (3343 lines on 2026-11-24) only; find each passage by grep, never by line number; plain ASCII; no source or test change. Keep the words ends with the files it governs on one line in each file: the check greps them. docs/domain-model.md, Persistence, the bullet that starts - `fgraph knowledge` is a view of the whole record: its line '  then its mark when it has one, the' (grep -n 'then its mark when it has one, the' docs/domain-model.md) becomes, rewrapped to the width of the bullet, then its mark when it has one, its terms as `(about gate)` and the files it governs as `(governs src/gate.py)`: each line ends with the files it governs, as `fgraph show` ends it (S-0081); the -- the rest of the bullet, and the passage S-0155 wrote there on --format json, as they are. README.md, two edits in the passage on --governs that starts A line of knowledge names the files it governs (grep -n 'A line of knowledge names the files it governs' README.md): (1) right after its sentence that ends then the items whose commits touched it. add one sentence: `fgraph knowledge` and `fgraph show` list such a line as any other, and each line ends with the files it governs, as `(governs src/gate.py)`. (2) in the sh block that follows, the one starting fgraph note S-0001 --decision \"the gate holds no state\" --governs src/gate.py, add after its last line a blank line, then fgraph knowledge --search \"holds no state\" and the comment line # 2026-11-22  decision  S-0001#1  the gate holds no state  (governs src/gate.py). Keep each edit inside its bullet, paragraph or block; leave the table at the top, the examples of fgraph knowledge, the paragraph S-0155 added on --format json and the passages of fgraph about and fgraph brief as they are."
 check = "grep -q 'ends with the files it governs' README.md && grep -q 'ends with the files it governs' docs/domain-model.md && grep -q 'the gate holds no state  (governs src/gate.py)' README.md"
 expected_output = "changed: docs/domain-model.md, in the bullet of fgraph knowledge, says each line ends with its mark, its terms and the files it governs, as fgraph show ends it; README.md says it in the paragraph on --governs and shows a line of fgraph knowledge ending   (governs src/gate.py)"
 created = 2026-11-24 22:11:17+00:00
+started = 2026-11-25 07:54:40+00:00
 
 [[knowledge]]
 kind = "decision"

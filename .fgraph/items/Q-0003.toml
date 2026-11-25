@@ -25,3 +25,12 @@ description = "Probes alone: no file under src/ or tests/ and no README.md chang
 check = "grep -q '^### Merges of the record' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, ## Writes at one time in two worktrees, holds its second part, ### Merges of the record: a table of each pair tried -- the write in the worktree, the write on main, what fgraph sync said, what fgraph land said, the files in conflict -- and the lines fgraph printed for a conflict, word for word"
 created = 2026-11-25 08:04:54+00:00
+
+[[tasks]]
+id = "T-0741"
+state = "backlog"
+title = "Write the answer of Q-0003 in docs/domain-model.md: whether two writes at one time collide or leave records that do not merge, and what F-0026 and F-0027 then hold"
+description = "Change docs/domain-model.md only; no probe is run by this Task: it reads the two parts the first two Tasks wrote. The answer is yes when one pair of the first part gave one id twice or lost a Task, or one pair of the second part conflicted in a file of the record; else no. Say which, in one sentence, then: (1) Ids -- each failing pair as a Bug to file under F-0026, with what is observed and what is expected in the words of the record, or none seen in N rounds; (2) Merges -- the same under F-0027, naming the files in conflict; (3) the Stories filed under F-0026 and F-0027 on 2026-11-25 (uv run fgraph show f26, f27): for each, whether it stands as written, is reworded to the pair seen, or is proposed for removal with its Feature, the decision being the developer's; (4) what was not probed. The decision of the Spike is given at its landing by the coordinator, fgraph land Q-0003 --decision ... --answer ..., from this part; this Task writes the part, not the landing. Out of bounds: every file but docs/domain-model.md."
+check = "grep -q '^### Answer of Q-0003' docs/domain-model.md"
+expected_output = "changed: docs/domain-model.md, ## Writes at one time in two worktrees, ends with its part ### Answer of Q-0003: yes or no to the hypothesis in one sentence; for the ids, each failing pair as the observed and the expected of a Bug to file under F-0026, or that none was seen; for the merges, the same under F-0027; and for the Story each Feature holds, whether it stands, is reworded to what was seen or is proposed for removal"
+created = 2026-11-25 08:05:18+00:00

@@ -84,7 +84,7 @@ def check_files_named(
     if changed is None:
         return
     unnamed = files_not_named(
-        _outside_record(changed, record, work_tree.path),
+        outside_record(changed, record, work_tree.path),
         (task.title, task.expected_output, task.description),
     )
     if unnamed:
@@ -93,7 +93,7 @@ def check_files_named(
         )
 
 
-def _outside_record(changed: list[str], record: Path, top: Path) -> list[str]:
+def outside_record(changed: list[str], record: Path, top: Path) -> list[str]:
     """The files that are not under the directory of the record, which is inside the top."""
     prefix = f"{record.resolve().relative_to(top.resolve()).as_posix()}/"
     return [file for file in changed if not file.startswith(prefix)]

@@ -14,3 +14,9 @@ depends_on = [
 given = "two started work items, each in its worktree"
 when = "fgraph add task is run in both at one time"
 then = "each Task gets an id of its own, or one is refused in one line, and no Task is lost"
+
+[[knowledge]]
+kind = "finding"
+text = "Open, decided when Q-0003 is answered: whether this Story stands, becomes the Bugs Q-0003 names, is cut to a guard test, or is removed with F-0026."
+noted = 2026-11-25 08:06:23+00:00
+mark = "open"

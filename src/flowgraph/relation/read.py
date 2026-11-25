@@ -4,7 +4,8 @@ A relation is checked at the write by the command that makes it; a file edited b
 can still name an id or a term that is not in the record, or close a cycle of what depends on what
 or of one kind between terms. This reads every edge of the record as plain data, those of
 `flowgraph.graph` and the terms its knowledge lines are about, and refuses the first that is
-broken, naming the file that holds it. It reads and writes nothing else.
+broken, naming the file that holds it. A relation that names a work item the write would refuse
+is broken too: an amends of a work item that is not completed. It reads and writes nothing else.
 """
 
 from collections.abc import Callable, Mapping
@@ -16,6 +17,7 @@ from flowgraph.item.id import parse_work_item_id_of_any_kind
 from flowgraph.knowledge.list import collected
 from flowgraph.parent import parse_feature_id
 from flowgraph.record.store import Store
+from flowgraph.status.buckets import COMPLETED_BUCKET
 from flowgraph.term import term_file
 from flowgraph.work_item import work_item_path
 
@@ -87,11 +89,19 @@ def _file_of(record: Path, id_: str, kinds: Mapping[str, str]) -> Path:
             return work_item_path(record, parse_work_item_id_of_any_kind(id_))
 
 
-def _names(edge: Edge, kinds: Mapping[str, str], elsewhere: Elsewhere) -> str | None:
-    """What is wrong with the end of the edge: the end it names; None when it is as it must be."""
+def _names(
+    edge: Edge, kinds: Mapping[str, str], buckets: Mapping[str, str | None], elsewhere: Elsewhere
+) -> str | None:
+    """What is wrong with the end of the edge: the end it names; None when it is as it must be.
+
+    An amends must name a work item that is completed, as the write does; the others are as they
+    were.
+    """
     kind, _, end = edge
     ends = ENDS[kind]
     if kinds.get(end) in ends:
+        if kind == "amends" and buckets.get(end) != COMPLETED_BUCKET:
+            return f"amends names {end}, which is not completed"
         return None
     if end not in kinds:
         if ends is WORK_ITEMS and end in elsewhere():
@@ -101,19 +111,22 @@ def _names(edge: Edge, kinds: Mapping[str, str], elsewhere: Elsewhere) -> str | 
 
 
 def check_relations(record: Path, store: Store, elsewhere: Elsewhere) -> None:
-    """Check every relation of the record: what each names is in it, and no cycle is closed.
+    """Check every relation of the record: what each names is in it and, for an amends, completed,
+    and no cycle is closed.
 
     The work items of the other worktrees, read through elsewhere, are in the record too: a work
     item one holds is not a missing id. Raises RelationReadError with one line, the file that
     holds the relation first, for the first relation in the order of its kind and its ends that
-    names an id or a term the record does not hold, then for the first cycle; nothing is written.
+    names an id or a term the record does not hold, or an amends of a work item not completed,
+    then for the first cycle; nothing is written.
     """
     nodes, edges = nodes_and_edges(store)
     kinds = {str(node["id"]): str(node["kind"]) for node in nodes}
+    buckets = {str(node["id"]): node["bucket"] for node in nodes}
     lines = [("about", entry.item, term) for entry in collected(store) for term in entry.about]
     named = sorted({edge for edge in [*edges, *lines] if edge[0] in ENDS})
     for edge in named:
-        refused = _names(edge, kinds, elsewhere)
+        refused = _names(edge, kinds, buckets, elsewhere)
         if refused is not None:
             raise RelationReadError(f"{_file_of(record, edge[1], kinds)}: {refused}")
     for kind in ACYCLIC:

@@ -2,8 +2,7 @@
 
 A Bug file edited by hand to amend a work item in Backlog, started, blocked or removed is refused by
 the read of each command: exit 2 with one line naming the file, and a write then changes no file.
-The red tests are marked xfail until the read refuses it. Run end to end on a record in a temporary
-directory, through the file adapters of the package.
+Run end to end on a record in a temporary directory, through the file adapters of the package.
 """
 
 from collections.abc import Sequence
@@ -31,7 +30,6 @@ ADD_BUG = [
     "S-0001",
 ]
 LINE = "fgraph: error: {path}: amends names {named}, which is not completed"
-XFAIL = pytest.mark.xfail(strict=True, reason="B-0028: the read takes an amends the write refuses")
 
 
 @dataclass(frozen=True)
@@ -113,7 +111,6 @@ def record(tmp_path: Path) -> Path:
     return tmp_path
 
 
-@XFAIL
 @pytest.mark.parametrize(
     "named",
     ["S-0002", "S-0003", "S-0004", "S-0005"],
@@ -127,7 +124,6 @@ def test_status_of_a_bug_amending_a_work_item_not_completed_exits_with_two_namin
     assert refused(outcome) == (2, [LINE.format(path=path, named=named)])
 
 
-@XFAIL
 @pytest.mark.parametrize(
     "argv",
     [["show", "B-0001"], ["show", "S-0002"]],
@@ -141,7 +137,6 @@ def test_show_of_a_bug_amending_a_work_item_not_completed_exits_with_two_naming_
     assert refused(outcome) == (2, [LINE.format(path=path, named="S-0002")])
 
 
-@XFAIL
 def test_a_write_of_a_record_amending_a_work_item_not_completed_leaves_every_file_as_it_was(
     record: Path,
 ) -> None:

@@ -407,8 +407,10 @@ prints; a refusal comes back as its one line. The server writes nothing itself
 and ends when the session closes its input; the five reads of fgraph mcp are
 status, brief, show, knowledge and about, each given the JSON its command prints
 with `--format json`. Beside them, the moves of fgraph mcp
-are start, hand, block, unblock, note and complete, each called in the directory its
-command is run in, main for the start of a work item, its worktree for its Tasks.
+are start, hand, block, unblock, note, commit (directory, id, message) and complete, each called in
+the directory its command is run in, main for the start of a work item, its worktree for its Tasks.
+The commit runs `fgraph commit` in the worktree the call names and answers with its line, which ends
+with the sha the tool complete takes.
 The id of the tool start is optional:
 with no id the tool start takes the first line of the Backlog that can start, as `fgraph start --agent NAME` does, and answers with the line that names it; the status tool holds `next_to_start`, the line it would take.
 A coordinator lands a work item and answers its closing with the tools land and verify, run

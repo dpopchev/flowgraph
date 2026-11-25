@@ -2,9 +2,9 @@
 
 Each is the command of the same name run in the directory the call names, on main or in the
 worktree of the work item, and is written where fgraph writes it (S-0159, docs/domain-model.md,
-Persistence, Who writes what). A text is given as --option=value, since argparse reads a text that
-starts with a dash as an option otherwise (probed on 2026-11-25: fgraph note S-0001 --finding --x
-exits 2, --finding=--x is noted).
+Persistence, Who writes what; commit is S-0164). A text is given as --option=value, since argparse
+reads a text that starts with a dash as an option otherwise (probed on 2026-11-25: fgraph note
+S-0001 --finding --x exits 2, --finding=--x is noted).
 """
 
 from typing import Literal
@@ -58,6 +58,17 @@ class NoteArguments(ItemArguments):
     text: str = Field(description="the text of the note")
 
 
+class CommitArguments(ItemArguments):
+    """The arguments of commit: the subject of the commit of the work of a Task."""
+
+    message: str = Field(
+        description=(
+            "the subject of the commit, its type word included, as fix: name the gate; "
+            "the ids of the work item and of the Task are put at its end"
+        )
+    )
+
+
 class CompleteArguments(ItemArguments):
     """The arguments of complete: the commit that holds the work."""
 
@@ -88,6 +99,10 @@ def _unblock(given: ItemArguments) -> list[str]:
 
 def _note(given: NoteArguments) -> list[str]:
     return ["note", given.id, f"--{given.kind}={given.text}"]
+
+
+def _commit(given: CommitArguments) -> list[str]:
+    return ["commit", given.id, f"--message={given.message}"]
 
 
 def _complete(given: CompleteArguments) -> list[str]:
@@ -121,6 +136,15 @@ MOVE_TOOLS = (
         "Note a finding, a decision, a deviation or the progress of an item" + ANSWERS,
         NoteArguments,
         _note,
+    ),
+    Tool(
+        "commit",
+        "Commit the work of a started Task, the files changed in its work tree that its brief "
+        "names, as fgraph commit does"
+        + ANSWERS
+        + ", which ends with the sha the tool complete takes",
+        CommitArguments,
+        _commit,
     ),
     Tool(
         "complete",

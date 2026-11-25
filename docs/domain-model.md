@@ -1300,8 +1300,12 @@ tools are `READ_TOOLS` of `src/flowgraph/mcp/reads.py`.
 S-0159 adds the moves of fgraph mcp: `start` (`directory`, `id` optional, and `agent` when a work item is
 handed), `hand` (`directory`, `id`, `agent`), `block` (`directory`, `id`, `reason`,
 `waiting_on`), `unblock` (`directory`, `id`), `note` (`directory`, `id`, `kind` -- finding,
-decision, deviation or progress -- and `text`) and `complete` (`directory`, `id`, `commit`), each
-the command of its name, a text given as `--option=value` so one that starts with a dash is kept.
+decision, deviation or progress -- and `text`), commit (directory, id, message) and `complete`
+(`directory`, `id`, `commit`), each the command of its name, a text given as `--option=value` so one
+that starts with a dash is kept. `commit` runs `fgraph commit` in the directory the call names, the
+worktree of the work item, and answers with its line, `committed T-0001 of S-0001 at <sha>`, the sha
+the tool `complete` takes, so a Task is committed and completed with no shell (S-0164);
+`src/flowgraph/mcp/moves.py` holds it.
 The id of the tool start is optional:
 with no id the tool start takes the first line of the Backlog that can start, as `fgraph start --agent NAME` does (S-0113, S-0121), and answers with the line that names it, so an agent claims its work with no shell (S-0165); `next_to_start` of the status tool is the line it would take.
 Each is written where that command run in the directory of the call writes it (Who writes what):

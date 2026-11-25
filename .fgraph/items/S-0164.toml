@@ -20,32 +20,56 @@ then = "its text is the line fgraph commit prints there, and a refusal is return
 
 [[tasks]]
 id = "T-0730"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_mcp_commit.py, failing on the criterion of S-0164"
 description = "Written on 2026-11-25 before S-0159 landed, from its Tasks and its decision (uv run fgraph show s159): read src/flowgraph/mcp/moves.py, tests/mcp/moves/test_move_tools.py and tests/functional/test_mcp_moves.py as they landed first; if MOVE_TOOLS, ItemArguments, StartArguments, command_of of src/flowgraph/mcp/tools.py or the Session of that test are not there under these names, stop and say so. It waits for S-0161 too: fgraph commit is the command the tool runs; read its refusals in src/flowgraph/development/commit_task.py and, if the line of a file the brief does not name is not the one below, stop and say so. One new file, no source change: tests/functional/test_mcp_commit.py (about 170 lines), functional as its pytestmark, one assert per test. Copy from tests/functional/test_mcp_moves.py: IDENTITY, ENVIRONMENT, git, cli(project, *argv), Outcome, the shape of its module fixture repository (a git repository on main whose first commit holds .fgraph/config.toml with [development] enabled = true), class Session with call(name, **arguments) and close(), text(reply), head(where) and PATIENCE. The record, each through cli and asserted exit 0 in the fixture: [add, story, Raise the commits of fgraph from 0 to 1, --given, a state, --when, an action, --then, another]; [add, task, a task title, --parent, S-0001, --output, changed: work.txt, --check, test -f work.txt]. WORKTREE = the parent of the project / project.worktrees / S-0001-raise-the-commits-of. A module fixture commits(project) runs, in order, and keeps each reply by its step: initialize (id 0, 2025-11-25) and notifications/initialized; call(start, directory=project, id=S-0001, agent=sonnet-a1); call(start, directory=WORKTREE, id=T-0001); write work.txt and other.txt in WORKTREE with no git command (nothing written when WORKTREE is not a directory, so the fixture runs to its end under red); before = head(WORKTREE); refused = call(commit, directory=WORKTREE, id=T-0001, message=feat: the work of T-0001); after = head(WORKTREE); remove other.txt; committed = call(commit, the same arguments); at = head(WORKTREE); listed = the tools of a tools/list; ended = close(). XFAIL = pytest.mark.xfail(strict=True, reason='S-0164: fgraph mcp serves no commit'). Red tests, each under XFAIL: the content of the result of refused == [{type: text, text: fgraph: error: T-0001 cannot commit: its brief does not name other.txt -- nothing is committed; take each back or have the brief name it}] (through .get, so a reply with no result fails on its value); isError of that result is True; text(committed) == committed T-0001 of S-0001 at <at> and a newline; git log -1 --format=%s in WORKTREE == feat: the work of T-0001 (S-0001, T-0001); git show --name-only --format= HEAD there, splitlines == [work.txt]; git status --porcelain there == the empty text; commit is among the names of listed; sorted of the required of the inputSchema of the tool commit == [directory, id, message] ([] when it is not listed). Guards, no mark, passing today and after: after == before; the jsonrpc of every line the session read == 2.0, as the test of that file states it; the status of ended == 0. See each marked test fail under --runxfail on its value, not on the arrangement. The complete of the Task at the commit is stated by tests/functional/test_mcp_moves.py and not here. Existing tests: none changes; if one fails, stop and say which. Out of bounds: every file under src/, every other test file, the docs."
 check = "uv run pytest tests/functional/test_mcp_commit.py -q -p no:cacheprovider && grep -q xfail tests/functional/test_mcp_commit.py"
 expected_output = "created: tests/functional/test_mcp_commit.py states that one fgraph mcp, run as a process on a git repository with the development on and a started Story whose started Task names work.txt, answers the tool commit, called in the worktree with the id T-0001 and the message feat: the work of T-0001, with the line committed T-0001 of S-0001 at the sha of HEAD there; that HEAD holds work.txt alone under the subject feat: the work of T-0001 (S-0001, T-0001) and the work tree is left clean; that the commit called while a file the brief does not name is changed is given isError true and the one line of fgraph commit; that the tool commit is listed with an input schema that requires directory, id and message; and, as guards, that HEAD is where it was after the refusal and that every line of the stdout of the server is a reply. Each red test carries a strict xfail naming S-0164"
 created = 2026-11-25 06:48:20+00:00
+started = 2026-11-25 10:16:35+00:00
+completed = 2026-11-25 10:18:45+00:00
+commit = "77c679f4949b28d0456b526ad9bd6d188743c38d"
 
 [[tasks]]
 id = "T-0731"
-state = "backlog"
+state = "completed"
 title = "Add the tool commit to MOVE_TOOLS of src/flowgraph/mcp/moves.py: the directory, the id of the Task and the message"
 description = "Written on 2026-11-25 before S-0159 landed, from its Tasks and its decision (uv run fgraph show s159): read src/flowgraph/mcp/moves.py, tests/mcp/moves/test_move_tools.py and tests/functional/test_mcp_moves.py as they landed first; if MOVE_TOOLS, ItemArguments, StartArguments, command_of of src/flowgraph/mcp/tools.py or the Session of that test are not there under these names, stop and say so. Three files, a fourth if it compares the whole list. src/flowgraph/mcp/moves.py (about 110 lines as S-0159 leaves it, about 122 after): add class CommitArguments(ItemArguments) with message: str = Field(description='the subject of the commit, its type word included, as fix: name the gate; the ids of the work item and of the Task are put at its end'); the Tool commit, description: Commit the work of a started Task, the files changed in its work tree that its brief names, as fgraph commit does; it answers with the line the command prints, which ends with the sha the tool complete takes; argv [commit, ID, --message=TEXT]; MOVE_TOOLS lists it right before complete. The module docstring names the commit among the moves. S-0165 changes StartArguments of the same module on its own branch: keep this edit inside its own passage. SERVED of src/flowgraph/mcp/stdio.py is (*READ_TOOLS, *MOVE_TOOLS) and so serves it with no change. Red first: change the tests, see them fail, then the tool. tests/mcp/moves/test_move_tools.py: the test of the names of MOVE_TOOLS states [start, hand, block, unblock, note, commit, complete]; new, one assert each, through command_of with the directory /src/project: commit {id: T-0001, message: fix: a change} gives [commit, T-0001, --message=fix: a change]; with no message it is refused matching ^the arguments of commit are refused: message: Field required$; a message that starts with a dash, --x, is given as --message=--x. tests/functional/test_mcp_commit.py: remove XFAIL and its marks. tests/functional/test_mcp_moves.py: only if its test of the tools listed compares the whole list of names, that list gains commit before complete; if it asks that each is listed, it stays. Any other test that fails: stop and say which. Out of bounds: src/flowgraph/mcp/tools.py, reads.py, protocol.py, stdio.py, src/flowgraph/cli.py, src/flowgraph/parser/, src/flowgraph/development/, the docs."
 check = "uv run pytest tests/mcp tests/functional/test_mcp_commit.py tests/functional/test_mcp_moves.py tests/functional/test_mcp_status.py -q -p no:cacheprovider && ! grep -q xfail tests/functional/test_mcp_commit.py && grep -q CommitArguments src/flowgraph/mcp/moves.py && make lines && uv run pyright"
 expected_output = "changed: MOVE_TOOLS of src/flowgraph/mcp/moves.py holds commit, right before complete, with the arguments directory, id and message, building the argv [commit, ID, --message=TEXT]; tests/mcp/moves/test_move_tools.py states it. No xfail mark is left in tests/functional/test_mcp_commit.py"
 created = 2026-11-25 06:48:26+00:00
+started = 2026-11-25 10:19:07+00:00
+completed = 2026-11-25 10:23:06+00:00
+commit = "da67576d4d324e6e0e82ccb3b0b106a036d00472"
 
 [[tasks]]
 id = "T-0732"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph mcp serves the commit of a Task as a tool"
 description = "Change README.md and docs/domain-model.md only; find each passage by grep, never by line number; plain ASCII; no source or test change. Keep the words commit (directory, id, message) on one line in each file: the check greps them. In each file grep -n 'the moves of fgraph mcp' finds the paragraph S-0159 wrote (if it finds nothing, stop and say so). docs/domain-model.md: in the list of the moves of that paragraph, right before complete, add commit (directory, id, message), and after the list one sentence: commit runs `fgraph commit` in the directory the call names, the worktree of the work item, and answers with its line, `committed T-0001 of S-0001 at <sha>`, the sha the tool complete takes, so a Task is committed and completed with no shell (S-0164); `src/flowgraph/mcp/moves.py` holds it. README.md: the same list gains commit (directory, id, message) before complete, with one sentence saying the same in short. S-0165 changes the entry of start in the same paragraph on its own branch: keep this edit to the entry of commit and its sentence. If grep -n 'S-0164' of the two files finds another line when this Task runs, make it true and say so."
 check = "grep -q 'commit (directory, id, message)' README.md && grep -q 'commit (directory, id, message)' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, Tools over stdio, and README.md, in the paragraph on the moves of fgraph mcp, list commit (directory, id, message) among the moves and say it runs fgraph commit in the worktree the call names and answers with the line that holds the sha the tool complete takes"
 created = 2026-11-25 06:48:32+00:00
+started = 2026-11-25 10:23:26+00:00
+completed = 2026-11-25 10:24:54+00:00
+commit = "96df8165a719a76ac6ee2df65a1dfd4c9190511c"
 
 [[knowledge]]
 kind = "decision"
 text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, on the word of the developer of that day, write the tasks as well and make it ready; the developer reviews them at the close: (1) The tool is commit, one of MOVE_TOOLS beside the moves of S-0159, with directory, id and message; it runs fgraph commit ID --message=TEXT in the directory the call names, as every tool runs its command, so a refusal is the tool error with its one line. (2) It is listed right before complete, the order an agent calls them in. (3) The functional test states the commit and its refusal on one Task; the complete at the sha is stated by the test of S-0159. (4) Its Tasks name modules S-0159 has not written yet: they are read again before F-0025 starts."
 noted = 2026-11-25 06:48:38+00:00
+
+[[progress]]
+text = "red: 8 failed, 3 passed (under --runxfail: the commit is not served, Unknown tool: commit, so every value test fails on its value; the three guards pass)"
+noted = 2026-11-25 10:17:31+00:00
+task = "T-0730"
+
+[[progress]]
+text = "red: 12 failed, 18 passed (the commit tool is not in MOVE_TOOLS: the names test and the three commit argv tests fail on the missing tool, the eight functional value tests fail on Unknown tool: commit, the guards pass)"
+noted = 2026-11-25 10:19:57+00:00
+task = "T-0731"
+
+[[progress]]
+text = "red: the docs check fails, 2 of 2 files hold no commit (directory, id, message) (grep -q exits 1 on README.md and on docs/domain-model.md)"
+noted = 2026-11-25 10:23:51+00:00
+task = "T-0732"

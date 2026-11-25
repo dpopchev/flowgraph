@@ -15,6 +15,11 @@ depends_on = [
     "S-0159",
 ]
 
+[verified]
+answer = "yes"
+text = "run on main at 86952acb, which holds the landing e06847d8, on 2026-11-25: in the same throwaway repository, the Task T-0001 of S-0001 started in the worktree through the tool start, two sessions of Claude Code 2.1.332 in print mode on haiku called the tool commit with the directory of the worktree, the id T-0001 and a message. With work.txt and other.txt changed, it came back is_error true with the one text fgraph: error: T-0001 cannot commit: its brief does not name other.txt -- nothing is committed; take each back or have the brief name it, the two files left uncommitted and HEAD where it was. With work.txt alone, it answered committed T-0001 of S-0001 at f6b4237f..., the line fgraph commit prints, and the session gave that sha to the tool complete, which answered completed T-0001 of S-0001 at it; the branch holds feat: the work of the Task (S-0001, T-0001) and the complete after it, main no commit of the Task. Worked whole by one subagent on haiku, its branch read by the coordinator: 5 files, each named by a Task; make check on the branch at 21c4d36a: 5766 passed, all checks passed. The branch met conflicts with S-0160 and S-0165 in README.md and docs/domain-model.md: the coordinator merged main by hand (1e06a8c8), every sentence kept, no marker left; on the merged tree 180 tests of fgraph mcp, make lines, pyright and ruff pass."
+on = 2026-11-25 10:45:56+00:00
+
 [criterion]
 given = "fgraph mcp and a started Task with changed files its brief names"
 when = "the tool commit is called with the directory, the id of the Task and the message"

@@ -71,3 +71,8 @@ task = "T-0677"
 text = "red: 11 failed, 1 passed (NotImplementedError of the typed stub touched_path)"
 noted = 2026-11-25 07:31:26+00:00
 task = "T-0678"
+
+[[progress]]
+text = "red: is_touched stub: 6 failed (NotImplementedError); functional file before wiring under --runxfail: 5 failed, 12 passed"
+noted = 2026-11-25 07:34:24+00:00
+task = "T-0679"

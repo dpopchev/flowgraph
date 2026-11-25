@@ -15,6 +15,15 @@ given = "a started work item in its worktree and a main that took a write of the
 when = "fgraph sync is run in the worktree, then fgraph land on main"
 then = "both merge with no conflict in a file of the record"
 
+[[tasks]]
+id = "T-0745"
+state = "backlog"
+title = "Add tests/functional/test_record_merges.py, failing on the criterion of S-0167"
+description = "FIRST PASS, written on 2026-11-25 before U-0018 and Q-0003 were completed and before the rework of its Feature: the coordinator reviews this Task once both are completed, before the work item starts (S-0167, its decision of 2026-11-25). If no later line of S-0167 says its Tasks were reviewed, stop and say so. Read first the part Merges of the record of docs/domain-model.md, which Q-0003 wrote: its table is the list of the cases. If it lists no pair as a conflict, stop and say so -- the Story is then removed, the developer's decision. One new file, no source change: tests/functional/test_record_merges.py (about 200 lines), functional as its pytestmark, one assert per test, on a real git repository in a temporary directory with the development on, never a faked git, the identity of its commits from the environment. Copy the repository, IDENTITY, Outcome, fgraph and git of tests/functional/test_sync.py. One class per conflicting pair, its fixture making the write of the worktree and the write of main as the table states them; XFAIL = pytest.mark.xfail(strict=True, reason='S-0167: the two copies of the record conflict'). Red tests under XFAIL, per pair: the status of fgraph sync in the worktree == 0; the word conflict is not in its error output; the status of fgraph land on main, the Tasks completed, == 0. Guards, no mark: the same three for two pairs the table lists as clean. Existing tests: none changes; if one fails, stop and say which. Out of bounds: every file under src/, every other test file, the docs."
+check = "uv run pytest tests/functional/test_record_merges.py -q -p no:cacheprovider && grep -q xfail tests/functional/test_record_merges.py"
+expected_output = "created: tests/functional/test_record_merges.py states, for each pair of writes the part Merges of the record of docs/domain-model.md lists as a conflict, that fgraph sync in the worktree exits 0 with no conflict named and that fgraph land on main then exits 0; and, as guards, two pairs that part lists as merging cleanly. Each red test carries a strict xfail naming S-0167"
+created = 2026-11-25 08:17:27+00:00
+
 [[knowledge]]
 kind = "finding"
 text = "Open, decided when Q-0003 is answered: whether this Story stands for the pairs Q-0003 names, becomes Bugs, or is removed with F-0027; a merge driver is built only for a conflict that was reproduced."

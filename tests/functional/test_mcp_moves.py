@@ -21,7 +21,6 @@ import pytest
 pytestmark = pytest.mark.functional
 
 PATIENCE = 60
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0159: fgraph mcp serves no move")
 IDENTITY = {
     "GIT_AUTHOR_NAME": "a developer",
     "GIT_AUTHOR_EMAIL": "developer@example.com",
@@ -249,32 +248,26 @@ def subjects(cwd: Path, environ: dict[str, str]) -> list[str]:
     return git(cwd, environ, "log", "--format=%s").splitlines()
 
 
-@XFAIL
 def test_the_start_answers_started_s_0001(moves: dict[str, Any]) -> None:
     assert text(moves["started"]).partition("\n")[0] == "started S-0001"
 
 
-@XFAIL
 def test_the_start_of_the_task_answers_its_line(moves: dict[str, Any]) -> None:
     assert text(moves["task"]) == "started T-0001 of S-0001\n"
 
 
-@XFAIL
 def test_the_note_answers_noted_s_0001(moves: dict[str, Any]) -> None:
     assert text(moves["noted"]) == "noted S-0001\n"
 
 
-@XFAIL
 def test_the_complete_answers_its_line_at_the_commit(moves: dict[str, Any]) -> None:
     assert text(moves["completed"]) == f"completed T-0001 of S-0001 at {moves['work']}\n"
 
 
-@XFAIL
 def test_the_start_is_committed_on_main(moves: dict[str, Any], project: Project) -> None:
     assert "chore: start S-0001 in the record" in subjects(project.path, project.environ)
 
 
-@XFAIL
 def test_the_moves_of_the_tasks_are_committed_on_the_branch(
     moves: dict[str, Any], project: Project
 ) -> None:
@@ -288,22 +281,18 @@ def test_the_moves_of_the_tasks_are_committed_on_the_branch(
     ]
 
 
-@XFAIL
 def test_the_refused_complete_is_a_tool_error(moves: dict[str, Any]) -> None:
     assert moves["refused"].get("result", {}).get("isError") is True
 
 
-@XFAIL
 def test_the_refused_complete_holds_its_one_line(moves: dict[str, Any]) -> None:
     assert moves["refused"].get("result", {}).get("content") == [{"type": "text", "text": REFUSAL}]
 
 
-@XFAIL
 def test_the_refused_complete_commits_nothing(moves: dict[str, Any]) -> None:
     assert moves["after"] == moves["more"]
 
 
-@XFAIL
 def test_the_refused_complete_leaves_the_worktree_clean(
     moves: dict[str, Any], project: Project
 ) -> None:
@@ -314,12 +303,10 @@ def test_every_line_of_stdout_is_a_reply(moves: dict[str, Any]) -> None:
     assert [parsed(line).get("jsonrpc") for line in moves["lines"]] == ["2.0"] * moves["requests"]
 
 
-@XFAIL
 def test_the_output_of_the_check_reaches_the_stderr_of_the_server(moves: dict[str, Any]) -> None:
     assert "checked" in moves["ended"].err
 
 
-@XFAIL
 def test_the_moves_are_listed(moves: dict[str, Any]) -> None:
     assert sorted(set(moves["listed"]) & set(MOVES)) == MOVES
 

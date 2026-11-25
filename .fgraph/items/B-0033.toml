@@ -16,13 +16,15 @@ expected = "a progress line given --standing or --open is refused, exit 2, namin
 
 [[tasks]]
 id = "T-0688"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_note_progress_mark.py, failing on the criterion of B-0033"
 description = "One new file, no source change: tests/functional/test_note_progress_mark.py (about 80 lines), functional as its pytestmark, one assert per test, through run() of src/flowgraph/cli.py with open_store=open_files, open_git=lambda _: None and no git. Seen on 2026-11-24 in a throwaway record with fgraph of main (692df24): fgraph note S-0002 --progress 'half way' --standing exits 0 and prints noted S-0002, --open the same, and fgraph show S-0002 lists both under Progress (2) with no mark; fgraph note T-0001 --progress y --open prints noted T-0001 of S-0002, exit 0; while --about gate and --governs a.py with --progress exit 2 with a progress line takes no --about and no --governs: it is no knowledge line. Copy from tests/functional/test_note_progress.py: NOW, ADD_STORY, ADD_TASK, RECORD, Outcome, fgraph(argv, cwd), runs(cwd, *argvs) and the fixture record (S-0001 started, its T-0001 started). XFAIL = pytest.mark.xfail(strict=True, reason='B-0033: a progress line drops the mark it is given'). Red tests, each under XFAIL: (1) parametrized (item, option) with ids standing, open, task: (S-0001, --standing), (S-0001, --open), (T-0001, --standing): (status, err.splitlines()[-1:]) of fgraph note <item> --progress 'a text' <option> == (2, [f'fgraph: error: a progress line takes no {option}: it is no knowledge line']); (2) the text of .fgraph/items/S-0001.toml before and after fgraph note S-0001 --progress 'a text' --standing is the same. Guard, no mark, passing today and after: (3) runs of [note, S-0001, --finding, x, --standing] and [show, S-0001]: its output holds the line '  finding  2026-01-01  x  (standing)'. See each marked test fail under --runxfail on the property in its name, none on the arrangement. Existing tests: none changes; if one fails, stop and say which. Out of bounds: every file under src/, every other test file, the docs."
 check = "uv run pytest tests/functional/test_note_progress_mark.py -q -p no:cacheprovider && grep -q xfail tests/functional/test_note_progress_mark.py"
 expected_output = "created: tests/functional/test_note_progress_mark.py states that fgraph note S-0001 --progress TEXT --standing, the same with --open, and fgraph note T-0001 --progress TEXT --standing, exit 2 with the last error line fgraph: error: a progress line takes no --standing: it is no knowledge line (no --open for --open) and leave the file of S-0001 as it was; and, as a guard, that a finding with --standing is kept with its mark. Each red test carries a strict xfail naming B-0033"
 created = 2026-11-24 22:17:40+00:00
 started = 2026-11-25 01:46:39+00:00
+completed = 2026-11-25 01:47:50+00:00
+commit = "86dc893b"
 
 [[tasks]]
 id = "T-0689"

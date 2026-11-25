@@ -52,9 +52,6 @@ ELSEWHERE = [
     "--about",
     "lease",
 ]
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="S-0163: the brief lists no term a governing line is about"
-)
 GATE_LINE = f"  gate  {MEANING}"
 
 
@@ -99,7 +96,6 @@ def brief_of(cwd: Path, item: str) -> Outcome:
     return fgraph(["brief", item], cwd)
 
 
-@XFAIL
 def test_the_brief_lists_the_term_a_governing_line_is_about(tmp_path: Path) -> None:
     """A term a line under Governed by is about is listed under Terms with its meaning."""
     runs(tmp_path, GATE, LEASE, STORY, TASK, OTHER, GOVERNING, ELSEWHERE)
@@ -107,7 +103,6 @@ def test_the_brief_lists_the_term_a_governing_line_is_about(tmp_path: Path) -> N
     assert out.endswith(f"Terms (1)\n{GATE_LINE}\n")
 
 
-@XFAIL
 def test_the_brief_as_json_holds_the_term(tmp_path: Path) -> None:
     """The JSON brief lists the term a governing line is about, with its meaning."""
     runs(tmp_path, GATE, LEASE, STORY, TASK, OTHER, GOVERNING, ELSEWHERE)

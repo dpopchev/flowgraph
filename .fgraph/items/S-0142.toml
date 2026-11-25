@@ -19,6 +19,11 @@ depends_on = [
     "S-0139",
 ]
 
+[verified]
+answer = "yes"
+text = "at ce35506d on main, the merge of wi/S-0142-cut-the-tasks-fgraph, with fgraph of 83bf9cc6 in a throwaway repository with the development on, S-0001 started in its worktree and its T-0001, whose output says changed: src/named.py, started: fgraph complete T-0001 --commit 6df5038, a commit of src/named.py and other.txt, exited 2 with fgraph: error: T-0001 cannot complete: the commit 6df5038 changed what its brief does not name: other.txt, the branch left on that commit, the work tree clean and T-0001 still started; fgraph complete T-0001 --commit c8109f0, a commit of src/named.py alone, printed completed T-0001 of S-0001 at c8109f0 and exited 0. Before the landing, in the worktree: the tests of the gate, of the parser and five functional files said 277 passed, and the agent's make check said 5157 passed"
+on = 2026-11-25 00:05:15+00:00
+
 [criterion]
 given = "a repository with the development on and a started work item whose started Task names in its output and its description the files it changes"
 when = "fgraph complete of the Task is run at a commit that changed a file the Task does not name, and at one that changed files it names alone"

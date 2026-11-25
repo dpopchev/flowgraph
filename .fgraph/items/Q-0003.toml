@@ -1,0 +1,8 @@
+id = "Q-0003"
+state = "backlog"
+title = "Settle whether two writes of fgraph made at one time in two worktrees of one repository collide on an id or leave records that do not merge"
+description = "Phase 2, Concurrent Worktree and Merge Ergonomics: filed on the word of the developer of 2026-11-25, add the spike first to be next of U-0018, before the Features of the phase, whose rework its answer feeds: the ids across worktrees and the merge of the record. To probe in a throwaway repository with the development on: two fgraph add task run at one time in the worktrees of two started work items; an add on main while a worktree adds a Task; and which pairs of writes -- a Task move in a worktree beside an add, a reorder, a note or a landing on main -- leave copies of the record that conflict at fgraph sync or at fgraph land. Known on 2026-11-25: the next Task id is one above the highest in the record of every worktree (docs/domain-model.md, Persistence); T-0718 and T-0719 were added that day in two worktrees one after the other and got ids of their own; six landings and the syncs of that day met no conflict in the record, and no knowledge line holds the word conflict; a work item completed on main by hand while its branch lives is the one conflict the domain model names. Its Tasks are written when it is ordered."
+created = 2026-11-25 07:45:33+00:00
+
+[criterion]
+hypothesis = "Do two writes of fgraph made at one time in two worktrees of one repository give two items one id, or leave copies of the record that conflict at fgraph sync or at the landing?"

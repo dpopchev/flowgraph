@@ -1,0 +1,14 @@
+id = "F-0029"
+state = "backlog"
+title = "Rebase, Re-Verify & Atomic Worktree Land"
+description = "Phase 2, Concurrent Worktree and Merge Ergonomics: filed as drafted on the word of the developer of 2026-11-25, add the items as drafted and they will be reworked, from the WBS draft of that day, which numbers it F-0026, an id the record gave another Feature. Target modules: development/land.py, development/branch_age.py, development/gate.py, criterion/run.py. Scope and deliverables: Harden land to replay upstream .fgraph/ changes onto the worktree branch, re-execute criterion/run.py against the rebased tree, fast-forward/merge cleanly, and prune stale worktrees. Its work items and their Tasks are written when it is reworked."
+created = 2026-11-25 07:50:21+00:00
+criteria = [
+    "Landing a worktree whose rebase invalidates a verification criterion aborts cleanly without partial branch cleanup",
+]
+
+[[knowledge]]
+kind = "finding"
+text = "Seen by the coordinator on 2026-11-25 while reviewing the draft, for its rework: a landing holds the merge, runs development.gate on it and drops it when the gate fails, then removes the worktree and the branch; the history is forward-only, so fgraph sync merges main into the branch where the draft says rebase; criterion/run.py prints the line of the criterion to run and fgraph verify runs nothing, so no criterion can be re-executed yet. Seen that day: with development.gate = none, S-0161 landed on a branch that did not hold the landing of S-0162, and the merged tree was checked only by a make check run by hand on main. B-0034, the docs of development.merge, and U-0024, a test that lands a Spike, are of this ground."
+noted = 2026-11-25 07:51:11+00:00
+mark = "open"

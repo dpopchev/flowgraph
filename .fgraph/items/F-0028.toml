@@ -6,3 +6,9 @@ created = 2026-11-25 07:49:03+00:00
 criteria = [
     "Starting or scoping a worktree whose declared files overlap an active sibling worktree triggers an explicit refusal",
 ]
+
+[[knowledge]]
+kind = "finding"
+text = "Seen by the coordinator on 2026-11-25 while reviewing the draft, for its rework: a second start of one work item is refused naming who holds it (B-0036); the files of two started work items are not compared. Every pair worked at one time that day -- U-0013 with S-0079, S-0161 with S-0162, S-0081 with S-0080 -- names README.md and docs/domain-model.md in its Tasks, and each landed pair merged cleanly by passage: a refusal on any shared file would have refused each of them. Open for the rework: a line said at the start in place of a refusal, or source files alone. U-0029, one rule for whether a text names a path, is what such a check would read."
+noted = 2026-11-25 07:49:56+00:00
+mark = "open"

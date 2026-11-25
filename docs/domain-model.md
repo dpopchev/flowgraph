@@ -1300,8 +1300,12 @@ tools are `READ_TOOLS` of `src/flowgraph/mcp/reads.py`.
 S-0159 adds the moves of fgraph mcp: `start` (`directory`, `id`, and `agent` when a work item is
 handed), `hand` (`directory`, `id`, `agent`), `block` (`directory`, `id`, `reason`,
 `waiting_on`), `unblock` (`directory`, `id`), `note` (`directory`, `id`, `kind` -- finding,
-decision, deviation or progress -- and `text`) and `complete` (`directory`, `id`, `commit`), each
-the command of its name, a text given as `--option=value` so one that starts with a dash is kept.
+decision, deviation or progress -- and `text`), commit (directory, id, message) and `complete`
+(`directory`, `id`, `commit`), each the command of its name, a text given as `--option=value` so one
+that starts with a dash is kept. `commit` runs `fgraph commit` in the directory the call names, the
+worktree of the work item, and answers with its line, `committed T-0001 of S-0001 at <sha>`, the sha
+the tool `complete` takes, so a Task is committed and completed with no shell (S-0164);
+`src/flowgraph/mcp/moves.py` holds it.
 Each is written where that command run in the directory of the call writes it (Who writes what):
 the start of a work item on main, the moves of its Tasks, its notes and its hand in its worktree,
 one server serving both. A refusal is a tool error holding its one line, nothing written, as

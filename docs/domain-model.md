@@ -1071,7 +1071,10 @@ criterion. It is added and then it stands.
   found as for the work items that depend on one another: the second term reaches
   the first through relations of the same kind.
 - `fgraph relate` is a write of a term, so it is on `main` alone as `fgraph add
-  term` is, and refused on the branch of a work item the same way.
+  term` is, and refused on the branch of a work item the same way, with its own
+  word: `gate is not related here: the branch wi/S-0001-a-slug writes S-0001 alone`,
+  the refusal of `add term` being `... is not added here: ...`. A term the record
+  holds is refused as related, a new one as added.
 - A work item, a Feature and a line of knowledge name the terms they are about,
   each by its name. The item or the line stores them, as `about`, a list of names
   in the order given, each once, in its file: at the top of the file of the item

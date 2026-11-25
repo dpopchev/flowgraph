@@ -1,0 +1,16 @@
+id = "S-0179"
+state = "backlog"
+title = "Raise the runs fgraph makes from its built wheel installed in an environment of its own from none to a smoke run of the command line and of fgraph mcp"
+description = "Phase 4, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0036). It waits for the last Story of F-0022, so the smoke run meets every tool. Open: the install needs pydantic and tomli-w from the index or the cache of uv, so the target is of make check or run before a release; and whether pipx is run beside uv tool install. Its first-pass Tasks are drafted the same day and reviewed before the phase starts."
+parent = "F-0036"
+realizes = 1
+complexity = "medium"
+created = 2026-11-25 09:53:04+00:00
+depends_on = [
+    "S-0160",
+]
+
+[criterion]
+given = "the wheel make wheel builds into build/dist/"
+when = "a make target installs it alone into a new environment and runs fgraph init, add story, status and one exchange with fgraph mcp there"
+then = "each exits 0 and prints what it prints from the source, fgraph mcp listing its tools and answering the status, and the target fails when one does not"

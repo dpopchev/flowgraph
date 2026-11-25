@@ -11,6 +11,11 @@ completed = 2026-11-25 07:12:09+00:00
 agent = "sonnet-s161"
 commit = "64b7b205"
 
+[verified]
+answer = "yes"
+text = "run on main at b40393a5 on 2026-11-25 in a throwaway git repository with the development on, in the worktree of a started Story whose started Task names src/named.py and tests/test_named.py, both changed: fgraph commit T-0001 --message 'feat: name the files' exits 0 with committed T-0001 of S-0001 at 8d405ec293acdebe42c26f7368da597ff0807ca1, the sha of HEAD; its subject is feat: name the files (S-0001, T-0001); it holds src/named.py and tests/test_named.py alone; the work tree is clean. With other.txt changed after it, the commit exits 2 with T-0001 cannot commit: its brief does not name other.txt -- nothing is committed; take each back or have the brief name it"
+on = 2026-11-25 07:13:00+00:00
+
 [criterion]
 given = "a started Task with changed files in its worktree that its brief names"
 when = "fgraph commit T-0001 --message TEXT is run there"

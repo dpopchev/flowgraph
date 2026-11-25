@@ -724,12 +724,13 @@ the start of that work item is, and say so.
 A record whose file was edited by hand or merged to name what is not there is
 refused when it is read, by every command, with exit 2 and nothing written: a
 parent, a dependency, a filed during, a superseded by, an amends or a term
-that the record does not hold, and a cycle of dependencies or of one kind
-between terms. So is a file whose time holds no offset, a day alone as
+that the record does not hold, an amends of a work item that is not completed, and a cycle
+of dependencies or of one kind between terms. So is a file whose time holds no offset, a day alone as
 `created = 2026-10-11`.
 
 ```sh
 fgraph status
+# fgraph: error: /src/project/.fgraph/items/B-0001.toml: amends names S-0001, which is not completed
 # fgraph: error: /src/project/.fgraph/items/S-0002.toml: depends on names S-0099, which is not in the record
 # fgraph: error: /src/project/.fgraph/items/S-0002.toml holds no Story: created = 2026-10-11 is a time with no offset: write it with one, as 2026-01-01 09:00:00+00:00
 ```

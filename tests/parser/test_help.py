@@ -116,6 +116,7 @@ def test_every_command_kind_under_add_and_action_under_config_has_its_help() -> 
             ("init",),
             ("knowledge",),
             ("land",),
+            ("mcp",),
             ("note",),
             ("relate",),
             ("release",),

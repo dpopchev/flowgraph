@@ -18,7 +18,6 @@ import pytest
 pytestmark = pytest.mark.functional
 
 PROBE = "server-discover-probe-1"
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0157: fgraph has no command mcp")
 ADD_STORY = [
     *("add", "story", "Raise the tools of fgraph from 0 to 1"),
     *("--given", "a state", "--when", "an action", "--then", "another"),
@@ -146,32 +145,26 @@ def test_the_status_of_the_record_holds_buckets(record: Record) -> None:
     assert "buckets" in json.loads(record.cli("status", "--format", "json").out)
 
 
-@XFAIL
 def test_server_discover_is_answered_not_found(session: Outcome) -> None:
     assert replies(session).get(PROBE, {}).get("error", {}).get("code") == -32601
 
 
-@XFAIL
 def test_initialize_answers_the_version_asked(session: Outcome) -> None:
     assert result(session, 0).get("protocolVersion") == "2025-11-25"
 
 
-@XFAIL
 def test_initialize_names_the_server_fgraph(session: Outcome) -> None:
     assert result(session, 0).get("serverInfo", {}).get("name") == "fgraph"
 
 
-@XFAIL
 def test_initialize_gives_the_capability_tools(session: Outcome) -> None:
     assert "tools" in result(session, 0).get("capabilities", {})
 
 
-@XFAIL
 def test_the_notification_is_given_no_reply(session: Outcome) -> None:
     assert sorted(replies(session), key=str) == [0, 1, 2, PROBE]
 
 
-@XFAIL
 def test_the_tool_status_is_listed(session: Outcome) -> None:
     listed = [
         tool["name"] for tool in result(session, 1).get("tools", []) if tool["name"] == "status"
@@ -179,28 +172,23 @@ def test_the_tool_status_is_listed(session: Outcome) -> None:
     assert listed == ["status"]
 
 
-@XFAIL
 def test_the_tool_status_requires_directory(session: Outcome) -> None:
     assert status_tool(session)["inputSchema"]["required"] == ["directory"]
 
 
-@XFAIL
 def test_the_call_gives_what_status_prints(session: Outcome, record: Record) -> None:
     text = record.cli("status", "--format", "json").out
     assert result(session, 2).get("content") == [{"type": "text", "text": text}]
 
 
-@XFAIL
 def test_the_call_is_one_text_and_no_error(session: Outcome) -> None:
     called = result(session, 2)
     assert (called.get("isError", False), len(called.get("content", []))) == (False, 1)
 
 
-@XFAIL
 def test_stdout_holds_the_four_replies_alone(session: Outcome) -> None:
     assert [parsed(line).get("jsonrpc") for line in session.out.splitlines()] == ["2.0"] * 4
 
 
-@XFAIL
 def test_the_server_ends_with_zero_when_its_input_closes(session: Outcome) -> None:
     assert session.status == 0

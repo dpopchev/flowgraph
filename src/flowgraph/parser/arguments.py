@@ -85,6 +85,9 @@ def build_command_line() -> CommandLine:
     sync = new_command(
         commands, "sync", "merge main into the branch of a started work item, run in its worktree"
     )
+    mcp = new_command(
+        commands, "mcp", "serve the commands of fgraph as tools over stdio, to an agent session"
+    )
     return CommandLine(
         parser,
         {
@@ -99,6 +102,7 @@ def build_command_line() -> CommandLine:
             **{("config", name): action for name, action in actions.items()},
             ("goal",): goal,
             ("sync",): sync,
+            ("mcp",): mcp,
         },
     )
 

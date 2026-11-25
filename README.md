@@ -2271,10 +2271,10 @@ fgraph add story "Hold" --given a --when b --then c --parent F-0001 --realizes 3
 An add or an amend exits 2 and writes nothing for a work item that stands
 alone, for a number the Feature does not have, for `0`, for a word that is
 neither a number nor `none`, and for a Feature id: a Feature is amended by its
-title, its description and its criteria. A work item started already is not
-amended. `fgraph amend F-0001 --criterion` rewrites the list and leaves the
-number a work item names as written: it then names the criterion now at that
-place, and `fgraph show` says `none of the criteria of F-0001` for a number
+title, its description, its criteria and its terms. A work item started already
+is not amended. `fgraph amend F-0001 --criterion` rewrites the list and leaves
+the number a work item names as written: it then names the criterion now at
+that place, and `fgraph show` says `none of the criteria of F-0001` for a number
 past the end.
 
 Once a work item under a Feature names a criterion of it, `fgraph show` of the
@@ -3079,7 +3079,7 @@ states criteria.
 
 ```sh
 fgraph amend F-0001 --then "fgraph status lists it under Backlog"
-# fgraph: error: F-0001 has no then: a Feature is amended by its title, its description and its criteria
+# fgraph: error: F-0001 has no then: a Feature is amended by its title, its description, its criteria and its terms
 
 fgraph amend F-0001 --title "Raise the kinds of work a project tracks with fgraph from 1 to 4"
 # fgraph: error: F-0001 is started: amend it with --deviation TEXT, what changes in what it was agreed to do

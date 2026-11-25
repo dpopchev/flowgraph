@@ -1313,6 +1313,18 @@ stderr, so the check of a Task and the gate of a landing, run by `run_gate`, wri
 and read nothing. The tools are `MOVE_TOOLS` of `src/flowgraph/mcp/moves.py` and the streams
 `protocol_streams` of `src/flowgraph/mcp/stdio.py`.
 
+S-0160 adds the closing of a work item as two tools, `land` (`directory`, `id`, `message`) and
+`verify` (`directory`, `id`, `answer` -- yes or no -- and `text`), the commands `fgraph land` and
+`fgraph verify` run on main, so the work item is completed at the commit of its landing and its
+answer kept as those commands leave them; they are called on main. The rule is that
+no tool of fgraph mcp takes the approval of a landing,
+nor the decision and the answer of a Spike: under `development.approver = developer` the tool
+`land` is a tool error holding `fgraph: error: S-0001 cannot land: development.approver =
+developer, the landing waits for the developer -- run fgraph land S-0001 --approved once the
+developer approves it`, and the developer lands it on the command line. The gate of the landing
+writes on the stderr of the server. The tools are `CLOSING_TOOLS` of
+`src/flowgraph/mcp/closing.py`.
+
 ### Wire
 
 The probe is a server of about 120 lines on the standard library and pydantic: it reads one

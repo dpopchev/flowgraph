@@ -1,11 +1,13 @@
 id = "S-0156"
-state = "backlog"
+state = "started"
 title = "Raise the links fgraph about prints as JSON from none to every one: of an item, of a term and of a file"
 description = "New on the plan agreed on 2026-11-24. Seen on 2026-11-24 at 2d612af on main. fgraph about S-0002 --format json exits 2 with unrecognized arguments: --format json. The contract is that of the JSON of fgraph brief. Its Tasks are written before its Feature starts."
 parent = "F-0018"
 realizes = 3
 complexity = "medium"
 created = 2026-11-24 19:51:35+00:00
+started = 2026-11-25 00:27:32+00:00
+agent = "sonnet-s156"
 
 [criterion]
 given = "a record in a git repository with a completed Story about a term, whose commit changed a file a knowledge line governs"

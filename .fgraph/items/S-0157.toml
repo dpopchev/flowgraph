@@ -93,3 +93,8 @@ noted = 2026-11-24 23:50:39+00:00
 text = "red: 11 failed, 2 passed under --runxfail (fgraph mcp exits 2, invalid choice, stdout empty)"
 noted = 2026-11-25 08:51:02+00:00
 task = "T-0701"
+
+[[progress]]
+text = "red: the check fails before the move (grep -q ^def read_record exits 1; tests of S-0141 57 passed, a step keeps them green)"
+noted = 2026-11-25 08:53:21+00:00
+task = "T-0702"

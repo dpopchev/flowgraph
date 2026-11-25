@@ -9,3 +9,8 @@ criteria = [
     "a developer reads the rule of a start, a complete and a remove in one place where the three aggregates agree, the rules that differ kept apart",
     "a developer adds a field to a Feature with one change, every move carrying it",
 ]
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25, first: add also Phase 3, to be completed after Phase 2, its goal Consolidate Overlapping Domain Layers and Ontology Invariants; review the pending work items after Phase 2 and draft the Features and their work items from a first pass of four Features. And on the draft the coordinator showed that day: I like the phase 3 draft, file them just after the Phase 2 related items. Filed that day, right after F-0029 and above S-0122: F-0030 with U-0032, U-0033 and U-0034, F-0031 with U-0035, U-0036 and U-0037, F-0032 with Q-0004, U-0038 and U-0039, F-0033 with U-0040, B-0039, S-0171 and S-0172; and five items of the Backlog moved under them as the draft listed them: U-0012 under F-0030, U-0019 and U-0022 under F-0032, B-0025 and B-0037 under F-0033. The ids F-0027 to F-0030 of the first pass are not those of the record, which gave F-0027 to F-0029 to Phase 2. Left standing alone, not of Phase 3: S-0122, S-0105, U-0020, U-0024, B-0034, U-0028, U-0029, U-0030 and U-0031. No Task is written yet: each Feature gets them before it starts. Four points the coordinator asked with the draft were not answered one by one and are kept as open findings on F-0031, F-0032 and F-0033."
+noted = 2026-11-25 09:03:54+00:00

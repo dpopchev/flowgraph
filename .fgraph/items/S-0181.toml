@@ -29,3 +29,12 @@ description = "FIRST PASS, written on 2026-11-25 before Phases 2 and 3 were comp
 check = "uv run pytest tests/functional/test_quickstart.py tests/functional/test_page_commands.py -q -p no:cacheprovider && ! grep -q xfail tests/functional/test_quickstart.py && test \"$(wc -l < docs/quickstart.md)\" -le 80"
 expected_output = "created: docs/quickstart.md, at most 80 lines, takes an empty directory with git and fgraph installed to the term greeting, a decision that governs hello.sh and S-0001 completed with its closing answered yes, in 17 commands in sh blocks, each followed by the lines it prints; no xfail mark is left in tests/functional/test_quickstart.py"
 created = 2026-11-25 10:51:47+00:00
+
+[[tasks]]
+id = "T-0834"
+state = "backlog"
+title = "Update README.md to link docs/quickstart.md under its opening, in a list Read next that the guide and the cut of U-0042 extend"
+description = "FIRST PASS, written on 2026-11-25 before Phases 2 and 3 were completed: the coordinator reviews this Task before its Feature starts (S-0181, its decision of 2026-11-25). If no later line of S-0181 says its Tasks were reviewed, stop and say so. Change README.md only; plain ASCII; no source or test change; find the place by grep, never by line number: grep -n 'its terms and how they relate' README.md finds the last line of the opening paragraph (line 5 on 2026-11-25), right before ## Status; if it finds nothing, stop and say so. Add after it a blank line, the line Read next:, a blank line and one list item, wrapped as the prose of README.md is (about 80 columns): - [docs/quickstart.md](docs/quickstart.md): from an empty directory to a work item completed and verified, in 17 commands that a test runs. A relative link: README.md has no other link today and the Makefile builds and checks no docs (no docs target in Makefile or mk/*.mk on 2026-11-25). docs/domain-model.md does not describe the pages of docs/, so it does not change. Change no other line of README.md: U-0042 proves no line of it is lost. Out of bounds: docs/, src/, tests/."
+check = "grep -qF '[docs/quickstart.md](docs/quickstart.md)' README.md && grep -q '^Read next:' README.md"
+expected_output = "changed: README.md, right after its opening paragraph and before ## Status, holds Read next: and one item, [docs/quickstart.md](docs/quickstart.md), saying it takes an empty directory to a work item completed and verified in 17 commands"
+created = 2026-11-25 10:51:59+00:00

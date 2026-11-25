@@ -50,3 +50,8 @@ created = 2026-11-25 06:48:32+00:00
 kind = "decision"
 text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, on the word of the developer of that day, write the tasks as well and make it ready; the developer reviews them at the close: (1) The tool is commit, one of MOVE_TOOLS beside the moves of S-0159, with directory, id and message; it runs fgraph commit ID --message=TEXT in the directory the call names, as every tool runs its command, so a refusal is the tool error with its one line. (2) It is listed right before complete, the order an agent calls them in. (3) The functional test states the commit and its refusal on one Task; the complete at the sha is stated by the test of S-0159. (4) Its Tasks name modules S-0159 has not written yet: they are read again before F-0025 starts."
 noted = 2026-11-25 06:48:38+00:00
+
+[[progress]]
+text = "red: 8 failed, 3 passed (under --runxfail: the commit is not served, Unknown tool: commit, so every value test fails on its value; the three guards pass)"
+noted = 2026-11-25 10:17:31+00:00
+task = "T-0730"

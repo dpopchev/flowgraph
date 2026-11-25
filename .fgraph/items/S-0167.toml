@@ -56,3 +56,8 @@ kind = "finding"
 text = "Open, decided when Q-0003 is answered: whether this Story stands for the pairs Q-0003 names, becomes Bugs, or is removed with F-0027; a merge driver is built only for a conflict that was reproduced."
 noted = 2026-11-25 08:07:06+00:00
 mark = "open"
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25: add first-pass Tasks to each work item of F-0026 to F-0029, and review them once U-0018 and Q-0003 are completed. The Tasks of S-0167 (its four Tasks) are that first pass, written by the coordinator before either was completed: they assume Q-0003 names pairs that conflict, merge by a second pass of fgraph and not by a git merge driver, and guess the two rules of merged_file. The coordinator reviews them once U-0018 and Q-0003 are completed and before S-0167 starts, and notes the review here as a decision naming each Task kept, amended or removed; until that line is here, S-0167 is not started."
+noted = 2026-11-25 08:18:34+00:00

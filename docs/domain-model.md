@@ -1493,7 +1493,18 @@ and its merge tool.
   not listed by `--live --kind finding`. The decision of a completed Spike has no ref
   and is always live. A list with no live line prints `no live knowledge lines in the
   record`, with the kind and the term when they are given, and exits 0; the list has
-  one format, text. This is the list a session start reads; fgraph cuts it to no
+  two formats: text, the default, and json (S-0155). `--format json` prints the lines
+  the text lists for the same `--kind`, `--about`, `--search` and `--live`, in its order,
+  as one JSON document `{lines: [...]}`, each line with `about`, `governs`, `item`,
+  `kind`, `mark`, `noted` (the full ISO time), `ref`, `supersedes` and `text`; `null` for
+  a mark it has none of and for the ref of the decision of a Spike, `[]` for an empty
+  list, and `{lines: []}` where the text prints its one line of none; keys sorted, an
+  indent of two, a newline, the same bytes on two runs. Any other format is refused,
+  exit 2, before the record is read, naming both:
+  `--format 'xml' is not text or json, the two formats of knowledge`. Both formats read
+  one list, `listed_knowledge` of `src/flowgraph/knowledge/list.py`; the document is
+  `knowledge_json` of `src/flowgraph/knowledge/document.py`. This is the list a session
+  start reads; fgraph cuts it to no
   length: the hook that reads it composes it with `fgraph status` (F-0014).
 - A blocked Task is kept as `state = "blocked"` with its `started` time, its
   `since` time, its `reason` and its `waiting_on`. Only a started work item's

@@ -1720,6 +1720,18 @@ fgraph knowledge --search budget --kind finding
 # no finding lines holding 'budget' in the record
 ```
 
+`fgraph knowledge --format json` prints the same lines as one JSON document another tool reads, each with its ref, its kind, its time, its item, its text, its mark, its terms, the files it governs and the refs it supersedes, keys sorted and null for nothing, the same bytes on two runs; the filters narrow it as they narrow the text; text stays the default; another word is refused naming both, exit 2:
+
+```sh
+fgraph knowledge --kind decision --format json
+# {
+#   "lines": [
+#     {
+#       "about": [], ...
+fgraph knowledge --format xml
+# fgraph: error: --format 'xml' is not text or json, the two formats of knowledge
+```
+
 A line is never amended or removed. The id of a Task with a kind of knowledge,
 an id the record does not hold, a blank text and a note with none or more than one of the four exit 2 and write nothing. With the development on, a
 started work item is noted in its worktree, as its Tasks are written, and every

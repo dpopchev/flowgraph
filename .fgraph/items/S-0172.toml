@@ -47,3 +47,8 @@ description = "FIRST PASS, written on 2026-11-25 before Phase 2 was completed: t
 check = "grep -q 'Superseded since its start' README.md && grep -q 'Superseded since its start' docs/domain-model.md && grep -q 'superseded_since' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, in the list of the sections of the brief, and README.md, in the passage of fgraph brief, say a started work item is told under Superseded since its start each line governing a path its Tasks name that a line noted after its start supersedes, with the refs of both and the day, to the second, and src/flowgraph/brief/model.py"
 created = 2026-11-25 10:01:07+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25: put Tasks on the work items of Phase 3; those will be reviewed before the phase starts. The Tasks of S-0172 (its 4 Tasks: T-0776, T-0777, T-0778, T-0779) are that first pass, drafted that day by a read-only subagent against the code of main at 2dc58f08 and filed by the coordinator, who checked their shape -- the opening sentence, the check, that the files they name are on the disk or said to be new -- and read their titles, outputs, checks and open points, not every description. They are reviewed before Phase 3 starts, the review noted here as a decision naming each Task kept, amended or removed; until that line is here, S-0172 is not started."
+noted = 2026-11-25 10:02:24+00:00

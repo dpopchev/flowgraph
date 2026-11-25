@@ -41,3 +41,8 @@ description = "FIRST PASS, written on 2026-11-25 before Phases 2 and 3 were comp
 check = "grep -q 'make smoke' README.md && grep -q 'installs the built wheel alone' README.md && grep -q 'run alone by `make smoke`' README.md"
 expected_output = "changed: README.md, in the block of ## Develop, lists make smoke, and a paragraph after the block says it installs the built wheel alone into a venv of its own under local/state/smoke/, runs fgraph init, add story, status and one exchange of fgraph mcp there, compares status and the exchange with the source, fails on the first step that fails, and is of neither make check nor make deliverables; the row of the wheel in the table of ## Status names make smoke"
 created = 2026-11-25 10:08:47+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25, on the draft of Phase 4 that offered its first-pass Tasks: great, file them. The Tasks of S-0179 (its 3 Tasks: T-0780, T-0781, T-0784) are that first pass, drafted that day by a read-only subagent against the code of main at 0ecab493, before Phases 2 and 3 were completed, and filed by the coordinator, who checked their shape -- the opening sentence, the check, the ids they name -- and read their titles, outputs, checks and open points, not every description. They are reviewed before Phase 4 starts, the review noted here as a decision naming each Task kept, amended or removed; until that line is here, S-0179 is not started."
+noted = 2026-11-25 10:12:41+00:00

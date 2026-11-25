@@ -1,0 +1,8 @@
+id = "F-0029"
+state = "backlog"
+title = "Rebase, Re-Verify & Atomic Worktree Land"
+description = "Phase 2, Concurrent Worktree and Merge Ergonomics: filed as drafted on the word of the developer of 2026-11-25, add the items as drafted and they will be reworked, from the WBS draft of that day, which numbers it F-0026, an id the record gave another Feature. Target modules: development/land.py, development/branch_age.py, development/gate.py, criterion/run.py. Scope and deliverables: Harden land to replay upstream .fgraph/ changes onto the worktree branch, re-execute criterion/run.py against the rebased tree, fast-forward/merge cleanly, and prune stale worktrees. Its work items and their Tasks are written when it is reworked."
+created = 2026-11-25 07:50:21+00:00
+criteria = [
+    "Landing a worktree whose rebase invalidates a verification criterion aborts cleanly without partial branch cleanup",
+]

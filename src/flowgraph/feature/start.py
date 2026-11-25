@@ -201,7 +201,7 @@ def check_start_under_feature(item: str, store: Store) -> None:
     match store.features.load_feature(feature_id):
         case Feature():
             raise FeatureNotStartedError(
-                f"{named} cannot start: {feature} is not started, start it first"
+                f"{named} cannot start: {feature} is not started: fgraph start {feature} starts it"
             )
         case StartedFeature():
             return

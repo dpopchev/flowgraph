@@ -34,9 +34,6 @@ ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an
 RECORD = (ADD_FEATURE, ADD_STORY, ADD_TASK)
 START_STORY = ["start", "S-0001"]
 START_FEATURE = ["start", "F-0001"]
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="S-0079: the refusal names the Feature, not the command that starts it"
-)
 
 
 @dataclass(frozen=True)
@@ -75,7 +72,6 @@ def runs(cwd: Path, *argvs: Sequence[str]) -> Outcome:
     return outcomes[-1]
 
 
-@XFAIL
 def test_the_start_of_a_story_under_a_feature_not_started_names_the_command_that_starts_it(
     tmp_path: Path,
 ) -> None:

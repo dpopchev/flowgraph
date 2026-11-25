@@ -34,3 +34,8 @@ description = "Change docs/domain-model.md only; no probe is run by this Task: i
 check = "grep -q '^### Answer of Q-0003' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, ## Writes at one time in two worktrees, ends with its part ### Answer of Q-0003: yes or no to the hypothesis in one sentence; for the ids, each failing pair as the observed and the expected of a Bug to file under F-0026, or that none was seen; for the merges, the same under F-0027; and for the Story each Feature holds, whether it stands, is reworded to what was seen or is proposed for removal"
 created = 2026-11-25 08:05:18+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, on the word of the developer of that day, file u18 and q3 and then work items for each feature; the developer reviews them at the close: (1) The Spike keeps its evidence in docs/domain-model.md, a new section Writes at one time in two worktrees right before Evidence, in three parts -- Ids given at one time, Merges of the record, Answer of Q-0003 -- as Q-0002 keeps its own; each Task's check greps its heading. (2) Its probes live under local/scratch/q3/, untracked, in throwaway repositories whose identity comes from the environment; no Task changes src/, tests/ or README.md. (3) The decision is given at the landing, fgraph land Q-0003 --decision ... --answer ..., by the coordinator. (4) Its answer says what F-0026 and F-0027 hold: Bugs for what was seen, or the case for removing them, the developer's decision."
+noted = 2026-11-25 08:05:41+00:00

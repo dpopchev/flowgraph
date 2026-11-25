@@ -1,0 +1,16 @@
+id = "S-0175"
+state = "backlog"
+title = "Raise the edges of the record the index holds as rows of a subject, a kind and an object from none to every one fgraph graph exports"
+description = "Phase 4, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0034). The triple store of the first pass. Open: whether the supersedes and the governs of the knowledge lines, which fgraph graph lists apart from its edges, are rows too. Its first-pass Tasks are drafted the same day and reviewed before the phase starts."
+parent = "F-0034"
+realizes = 3
+complexity = "medium"
+created = 2026-11-25 09:48:25+00:00
+depends_on = [
+    "S-0173",
+]
+
+[criterion]
+given = "a record whose items hold the relations parent, depends on, filed during, amends and about, terms related by is a and part of, and a knowledge line that supersedes another and governs a file"
+when = "the index is built and fgraph graph is run"
+then = "the index holds one row per edge fgraph graph prints, and fgraph graph prints the bytes it printed"

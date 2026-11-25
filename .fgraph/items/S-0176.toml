@@ -1,0 +1,16 @@
+id = "S-0176"
+state = "backlog"
+title = "Raise the items fgraph lists a work item as waiting for from those it names to every one reached through depends on"
+description = "Phase 4, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0035). The transitive blocker chains of the first pass. Open: the command and the option that ask it, fgraph about or a command of its own. Its first-pass Tasks are drafted the same day and reviewed before the phase starts."
+parent = "F-0035"
+realizes = 1
+complexity = "medium"
+created = 2026-11-25 09:50:26+00:00
+depends_on = [
+    "S-0175",
+]
+
+[criterion]
+given = "a record where S-0003 depends on S-0002, which depends on S-0001, none of them completed"
+when = "a user asks fgraph what S-0003 waits for"
+then = "it lists S-0002 and S-0001, each with the item that leads to it, and as JSON the same"

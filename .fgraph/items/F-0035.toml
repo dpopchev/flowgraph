@@ -1,0 +1,11 @@
+id = "F-0035"
+state = "backlog"
+title = "Raise the questions fgraph answers across several edges of the record from none to three"
+description = "Phase 4, Disposable Local Read-Index (Graph Queries) and Distribution, the last phase, to be completed after Phase 3 (F-0030 to F-0033): filed on the word of the developer of 2026-11-25, great, file them, on the draft the coordinator showed that day from a first pass of the developer of four Features, reviewed against the repository. The first pass numbers it F-0032, an id the record gave a Feature of Phase 3, and names it Indexed Query Backends and Recursive Graph Traversal; its target modules: status/next.py, status/document.py, brief/read.py, relation/read.py, graph/view.py; its scope: rewire the CQRS projections and expose recursive CTE graph queries over SQLite for transitive blocker chains, knowledge supersession impact analysis and path-to-invariant resolution; its exit gate: status, next and multi-hop impact queries execute in under 15 ms on a synthetic repository of 1,500+ TOML records. Measured by the coordinator on main on 2026-11-25: the import of flowgraph.cli alone takes 0.4 to 0.65 s (0.38 to 0.42 s by Q-0002, docs/domain-model.md, Tools over stdio), so no command of fgraph answers in 15 ms from a shell: the bound can hold only inside a running process, as fgraph mcp is; fgraph holds no command next -- status/next.py is the module of what can start, and fgraph start with no id takes the first line. The rewiring of the reads onto the index is the Feature before this one; this one is the three questions and their bound. Its first-pass Tasks are drafted the same day and reviewed before the phase starts."
+created = 2026-11-25 09:40:29+00:00
+criteria = [
+    "a user asks what a work item waits for and reads every item it waits for through several depends on edges",
+    "a user asks what a superseded knowledge line touched and reads the files it governed and the started work items whose Tasks name them",
+    "a user asks which rules hold for a file and reads the live lines that govern it with the terms they reach through is a and part of",
+    "a developer reads a measured bound for those three questions, asked in one process on a record of 1,500 files",
+]

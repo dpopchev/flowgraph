@@ -1,0 +1,17 @@
+id = "S-0177"
+state = "backlog"
+title = "Raise what fgraph tells of a superseded knowledge line from that it is superseded to what it touched: the files it governed and the started work items on them"
+description = "Phase 4, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0035). The knowledge supersession impact analysis of the first pass. It stands on S-0172 of Phase 3, which tells a started work item of a superseded line. Open: the command that asks it. Its first-pass Tasks are drafted the same day and reviewed before the phase starts."
+parent = "F-0035"
+realizes = 2
+complexity = "medium"
+created = 2026-11-25 09:51:07+00:00
+depends_on = [
+    "S-0175",
+    "S-0172",
+]
+
+[criterion]
+given = "a record where a line that governs two files is superseded by a later line, and a started work item whose Task names one of the two"
+when = "a user asks fgraph what the superseded line touched"
+then = "it lists the two files, the line that supersedes it and the started work item, and as JSON the same"

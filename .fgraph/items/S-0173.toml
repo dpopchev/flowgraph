@@ -1,0 +1,16 @@
+id = "S-0173"
+state = "backlog"
+title = "Raise the reads of fgraph answered from an index it rebuilds by itself from none to one, the status"
+description = "Phase 4, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0034). The thin end to end of its Feature, built as the decision of its Spike says. Its first-pass Tasks are drafted the same day and reviewed before the phase starts."
+parent = "F-0034"
+realizes = 1
+complexity = "medium"
+created = 2026-11-25 09:45:16+00:00
+depends_on = [
+    "Q-0005",
+]
+
+[criterion]
+given = "a record in a git repository whose folder .fgraph/.cache/ was deleted"
+when = "fgraph status is run twice, and once more after one item file is changed"
+then = "each run prints the bytes fgraph status prints with no index; the first builds the index, the second parses no item file, the third parses the changed one alone; and git status lists nothing of .fgraph/.cache/"

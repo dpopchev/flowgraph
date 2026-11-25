@@ -1,5 +1,5 @@
 id = "S-0158"
-state = "started"
+state = "completed"
 title = "Raise the reads of fgraph an agent calls as tools from one, the status, to five: the brief, an item, the knowledge lines and the links too"
 description = "New on the plan agreed on 2026-11-24. It waits for the three reads as JSON of F-0018. Its Tasks are written before its Feature starts."
 parent = "F-0022"
@@ -7,12 +7,20 @@ realizes = 2
 complexity = "low"
 created = 2026-11-24 19:51:55+00:00
 started = 2026-11-25 09:22:01+00:00
+completed = 2026-11-25 09:49:32+00:00
+agent = "haiku-s158"
+commit = "142e43ed"
 depends_on = [
     "S-0157",
     "S-0154",
     "S-0155",
     "S-0156",
 ]
+
+[verified]
+answer = "yes"
+text = "run on main at 0ecab493, which holds the landing 142e43ed, on 2026-11-25: in a throwaway record under local/scratch/s158, outside git, holding a started Story about the term gate with a Task and a finding, a session of Claude Code 2.1.332 in print mode on haiku, given fgraph mcp of main by --mcp-config with --strict-mcp-config, listed the tools about, brief, knowledge, show and status and called brief, show and about of S-0001 and knowledge: the text of each result, read from the stream of the session, is byte for byte what the command prints there with --format json (1069, 1306, 589 and 289 bytes), none an error; show of S-0009 came back is_error true with the one text fgraph: error: no Story S-0009 in the record, the last error line of the command. Worked whole by one subagent on haiku, its branch read by the coordinator: 7 files, each named by a Task; make check on the branch at cd192683: 5717 passed, all checks passed; not run again on the merge, which added commits of the record alone."
+on = 2026-11-25 09:50:46+00:00
 
 [criterion]
 given = "the server of fgraph mcp on a record with a started Story about a term, which holds a Task and a knowledge line"
@@ -21,32 +29,56 @@ then = "each is given the JSON document its command prints with --format json, a
 
 [[tasks]]
 id = "T-0708"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_mcp_reads.py, failing on the criterion of S-0158"
 description = "Read the decision of Q-0002 first (uv run fgraph show q2); if it answers no or names another design than this one -- a server written by hand on the standard library and pydantic, one server for main and every worktree, each call a run of fgraph in process in the directory it names -- stop and say so. This Story stands on the JSON of S-0154 (fgraph show ID --format json: work_item_json, feature_json of src/flowgraph/status/show_document.py and term_json of src/flowgraph/term/document.py), of S-0155 (fgraph knowledge --format json: knowledge_json of src/flowgraph/knowledge/document.py) and of S-0156 (fgraph about ID --format json: about_json of src/flowgraph/about/document.py), as those Stories leave them; if fgraph show S-0001 --format json, fgraph knowledge --format json or fgraph about S-0001 --format json exits 2 on main, stop and say so. One new file, no source change: tests/functional/test_mcp_reads.py (about 140 lines), functional as its pytestmark, one assert per test, shaped as tests/functional/test_mcp_status.py of S-0157 (copy ENVIRONMENT, Outcome, cli, parsed, replies and result, and its way of running the server: subprocess.run of [sys.executable, -m, flowgraph.cli, mcp] with the messages as input, stdin then closed). Module fixture record(tmp_path_factory): an empty .fgraph/ in tmp_path_factory.mktemp('project'), no git, the development off, then SCRIPT run in order as processes through cli, each asserted exit 0 in the fixture: [add, term, gate, --means, a check before a landing]; [add, story, the story title, --given, a state, --when, an action, --then, another, --about, gate]; [add, task, a task title, --parent, S-0001, --output, changed: src/gate.py]; [note, S-0001, --finding, a thing learned, --about, gate]; [start, S-0001] -- probed on 2026-11-25 with fgraph of 0ae0a98f: every one exits 0 in a record outside git, and brief, about and knowledge of it print as text. MESSAGES: initialize with id 0 and protocolVersion 2025-11-25, notifications/initialized, tools/list with id 1, then tools/call with the ids 2 to 6: brief {directory, id: S-0001}, show {directory, id: S-0001}, knowledge {directory}, about {directory, id: S-0001}, show {directory, id: S-0009}, then status {directory} with the id 7. READS = {brief: [brief, S-0001, --format, json], show: [show, S-0001, --format, json], knowledge: [knowledge, --format, json], about: [about, S-0001, --format, json]} with the ids 2 to 5. XFAIL = pytest.mark.xfail(strict=True, reason='S-0158: fgraph mcp serves the status alone'). Red tests, each under XFAIL: sorted(name for name in the tool names of result(session, 1) if name in {about, brief, knowledge, show, status}) == [about, brief, knowledge, show, status]; parametrized on brief, show and about: the required of its inputSchema == [directory, id]; that of knowledge == [directory]; parametrized on the four of READS, by its id: result(session, id_).get(content) == [{type: text, text: cli(record, *READS[name]).out}] -- the same bytes the command prints; parametrized likewise: (result(session, id_).get(isError, False), len(result(session, id_).get(content, []))) == (False, 1); the refusal: result(session, 6).get(isError) is True; result(session, 6).get(content) == [{type: text, text: cli(record, show, S-0009, --format, json).err.splitlines()[-1]}] -- compared with what fgraph itself prints, so the words F-0023 may give the refusal change nothing here. Guards, no mark, passing once S-0154 to S-0156 landed and after: each command of READS run as a process exits 0 (parametrized); cli(record, show, S-0009, --format, json).status == 2; the status tool still answers (the content of a tools/call of status with id 7 holds one text). See each marked test fail under --runxfail on its property (today a call of brief is the error Unknown tool: brief, so its result is {}), none on the arrangement. Out of bounds: every file under src/, every other test file, the docs."
 check = "uv run pytest tests/functional/test_mcp_reads.py -q -p no:cacheprovider && grep -q xfail tests/functional/test_mcp_reads.py"
 expected_output = "created: tests/functional/test_mcp_reads.py states that fgraph mcp, run as a process on a record with a started Story about a term that holds a Task and a knowledge line, lists the tools brief, show, knowledge and about beside status, each requiring directory and, but knowledge, id; that a call of each is given one text that is what fgraph brief S-0001, show S-0001, knowledge and about S-0001 print with --format json in that directory, with no isError; and that show of S-0009, which the record does not hold, is given isError true and one text, the last error line fgraph show S-0009 --format json prints. Each red test carries a strict xfail naming S-0158"
 created = 2026-11-24 23:47:19+00:00
+started = 2026-11-25 09:24:10+00:00
+completed = 2026-11-25 09:26:25+00:00
+commit = "481b5a42e78e6e6dbd89f64eacca47c25f48954c"
 
 [[tasks]]
 id = "T-0709"
-state = "backlog"
+state = "completed"
 title = "Add the tools brief, show, knowledge and about to src/flowgraph/mcp/reads.py, each printing its command with --format json"
 description = "Read the decision of Q-0002 first (uv run fgraph show q2); if it answers no or names another design than this one -- a server written by hand on the standard library and pydantic, one server for main and every worktree, each call a run of fgraph in process in the directory it names -- stop and say so. src/flowgraph/mcp/reads.py (about 20 lines on 2026-11-25 as S-0157 leaves it, about 85 after): add three argument models, each a subclass of ToolArguments of src/flowgraph/mcp/tools.py with one field id: str and a Field description: BriefArguments ('the id of the work item, in any state, as S-0001'), ShowArguments ('the id of a work item or of a Feature, as S-0001 or F-0001, or the name of a term'), AboutArguments ('the id of a work item or of a Feature, the name of a term, or the path of a file from the directory'); and four tools after STATUS: BRIEF = Tool(brief, 'Print the brief of a work item, as fgraph brief ID --format json prints it', BriefArguments, [brief, id, --format, json]); SHOW = Tool(show, 'Print a work item, a Feature or a term, as fgraph show ID --format json prints it', ShowArguments, [show, id, --format, json]); KNOWLEDGE = Tool(knowledge, 'List the knowledge lines of the record, as fgraph knowledge --format json prints them', ToolArguments, [knowledge, --format, json]); ABOUT = Tool(about, 'List the links of a work item, a Feature, a term or a file, as fgraph about ID --format json prints them', AboutArguments, [about, id, --format, json]); each argv a private function or a lambda, as the module writes _status; READ_TOOLS = (STATUS, BRIEF, SHOW, KNOWLEDGE, ABOUT). knowledge takes none of --kind, --about, --search and --live: the criterion names the knowledge lines whole. Nothing else changes: SERVED of src/flowgraph/mcp/stdio.py is READ_TOOLS, so the server lists and calls them with no wiring. Red first: the models and the four tools with argv stubs raising NotImplementedError, the tests seen failing for their own reason, then the bodies. New tests/mcp/reads/test_read_tools.py (about 55 lines), view as its pytestmark, one assert each: parametrized on brief, show and about, command_of of flowgraph.mcp.tools on {directory: /src/project, id: S-0001} gives Command(Path(/src/project), [<name>, S-0001, --format, json]); knowledge on {directory: /src/project} gives [knowledge, --format, json]; knowledge given an id is refused: ToolArgumentsError matching ^the arguments of knowledge are refused: id: Extra inputs are not permitted$; brief given no id is refused matching ^the arguments of brief are refused: id: Field required$; show of the term gate gives [show, gate, --format, json]. tests/mcp/reads/test_status_tool.py (about 20 lines, made by S-0157): its test READ_TOOLS == (STATUS,) becomes [tool.name for tool in READ_TOOLS] == [status, brief, show, knowledge, about]. Then remove XFAIL and its marks from tests/functional/test_mcp_reads.py, each red test seen failing under --runxfail before the change and passing after. Existing tests: tests/functional/test_mcp_status.py passes as it is (it filters the tool list on status); if another fails, stop and say which. Out of bounds: src/flowgraph/mcp/tools.py, protocol.py, stdio.py, src/flowgraph/cli.py, src/flowgraph/parser/, the docs."
 check = "uv run pytest tests/functional/test_mcp_reads.py tests/functional/test_mcp_status.py tests/mcp -q -p no:cacheprovider && ! grep -q xfail tests/functional/test_mcp_reads.py && make lines && uv run pyright"
 expected_output = "changed: READ_TOOLS of src/flowgraph/mcp/reads.py holds status, brief, show, knowledge and about, in that order: brief, show and about take directory and id and build [brief|show|about, ID, --format, json], knowledge takes directory alone and builds [knowledge, --format, json]; fgraph mcp lists and calls the five; changed: tests/mcp/reads/test_status_tool.py; created: tests/mcp/reads/test_read_tools.py. No xfail mark is left in tests/functional/test_mcp_reads.py"
 created = 2026-11-24 23:47:34+00:00
+started = 2026-11-25 09:27:06+00:00
+completed = 2026-11-25 09:31:25+00:00
+commit = "0386a326f76d3e42bbed5e7dad911b1250753bd8"
 
 [[tasks]]
 id = "T-0710"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say fgraph mcp serves five reads as tools, each the JSON its command prints"
 description = "Read the decision of Q-0002 first (uv run fgraph show q2); if it answers no or names another design than this one -- a server written by hand on the standard library and pydantic, one server for main and every worktree, each call a run of fgraph in process in the directory it names -- stop and say so. Change README.md and docs/domain-model.md only (line counts move with every Story before this one: find each passage by grep, never by line number); plain ASCII; no source or test change. Keep the words the five reads of fgraph mcp on one line in each file: the check greps them. docs/domain-model.md, ## Tools over stdio (grep -n '^## Tools over stdio' docs/domain-model.md), right after the paragraph S-0157 wrote that holds each call is a run of fgraph in the directory it names: one paragraph -- the five reads of fgraph mcp (S-0158) are status (directory), brief (directory, id), show (directory, id: a work item, a Feature or a term), knowledge (directory) and about (directory, id: a work item, a Feature, a term or a file), each the command of its name with --format json, so a call is given the same bytes as the command prints there, the documents of Brief, Show as JSON, Status as JSON and of fgraph knowledge and fgraph about named in those sections; they write nothing and take no lock; knowledge takes no filter, an agent reading the lines it needs from the document; an id the record does not hold, as S-0009, is given back as a tool error holding the one line fgraph prints, fgraph: error: no Story S-0009 in the record; the tools are READ_TOOLS of src/flowgraph/mcp/reads.py. README.md: in the paragraph on fgraph mcp S-0157 added (grep -n 'claude mcp add fgraph -- fgraph mcp' README.md finds the block under it), one sentence: the five reads of fgraph mcp are status, brief, show, knowledge and about, each given the JSON its command prints with --format json; and in its sh block the comment line of the tool status becomes # the session lists the tools of fgraph, as mcp__fgraph__status and mcp__fgraph__brief. Keep each edit inside its paragraph or block."
 check = "grep -q 'the five reads of fgraph mcp' README.md && grep -q 'the five reads of fgraph mcp' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, Tools over stdio, says the five reads of fgraph mcp -- status, brief, show, knowledge and about -- with their arguments and the command each runs with --format json, and that an id the record does not hold is a tool error holding the one line of the refusal; README.md says it in the paragraph on fgraph mcp, with the names of the five tools"
 created = 2026-11-24 23:47:55+00:00
+started = 2026-11-25 09:31:40+00:00
+completed = 2026-11-25 09:33:05+00:00
+commit = "b78899907f980516eebbfda07f9acabfb476a057"
 
 [[knowledge]]
 kind = "decision"
 text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, under the /goal of Phase 1 the developer set on 2026-11-24, which has the coordinator write the Tasks before a Feature starts; the developer was not asked and reviews them at the close: (1) The five reads are status, brief, show, knowledge and about, one tool per command, each running its command with --format json and returning its stdout as one text. (2) Inputs: brief, show and about take directory and id (show: a work item, a Feature or a term name; about: also a file path); knowledge takes directory alone, no --kind, --about, --search or --live, the criterion naming the lines whole; brief takes no --not-named (S-0153). (3) The refusal of an id the record does not hold is the tool error of S-0157 (isError, the last stderr line); the functional test compares it with the last error line of the command itself, so F-0023 rewording refusals changes nothing. (4) Three Tasks, not four: the tools are data in reads.py and SERVED is READ_TOOLS already, so no wiring Task; the unit tests and the removal of the xfail marks are one Task."
 noted = 2026-11-24 23:50:57+00:00
+
+[[progress]]
+text = "red: 15 failed, 6 passed (the reads brief, show, knowledge and about are not listed nor answered: each call gives an empty result, so no content; the status and the guards pass)"
+noted = 2026-11-25 09:25:20+00:00
+task = "T-0708"
+
+[[progress]]
+text = "red: 6 failed, 3 passed in tests/mcp/reads (the argv of brief, show, knowledge and about raise NotImplementedError, and READ_TOOLS is still status alone; the three refusals of the argument models pass, the models being part of this red step)"
+noted = 2026-11-25 09:28:16+00:00
+task = "T-0709"
+
+[[progress]]
+text = "red: the check finds the five reads of fgraph mcp in neither README.md nor docs/domain-model.md (0 of 2 greps pass)"
+noted = 2026-11-25 09:31:55+00:00
+task = "T-0710"

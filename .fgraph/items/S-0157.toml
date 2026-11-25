@@ -14,6 +14,11 @@ depends_on = [
     "Q-0002",
 ]
 
+[verified]
+answer = "yes"
+text = "run on main at 2dc58f08, which holds the landing f295e77a, on 2026-11-25: in a throwaway record of one Story under local/scratch/s157, outside git, a session of Claude Code 2.1.332 in print mode on haiku, given fgraph mcp of main by --mcp-config with --strict-mcp-config, named the one tool of the server, mcp__fgraph__status, called it with the directory of the record and printed what it was given: the 886 bytes fgraph status --format json prints there, whole (exit 0, is_error false, 3 turns). Driven by hand with initialize and tools/list on a pipe, fgraph mcp answered 2025-11-25 and the tool status and exited 0 when its input closed. Worked whole by one subagent on sonnet, its branch read by the coordinator: 24 files, each named by a Task; make check on the branch at 2260c8da: 5689 passed, all checks passed; not run again on the merge, which added commits of the record alone. Not covered here: on the record of flowgraph itself the result is too big for Claude Code to give its model inline (S-0170)."
+on = 2026-11-25 09:24:26+00:00
+
 [criterion]
 given = "a record of fgraph and an agent session set to run fgraph mcp as a stdio server"
 when = "the session lists the tools of the server and calls the one of the status"

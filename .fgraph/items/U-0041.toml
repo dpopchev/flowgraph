@@ -1,0 +1,18 @@
+id = "U-0041"
+state = "backlog"
+title = "Raise the questions across several edges that hold a measured bound from none to three"
+description = "Phase 4, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0035). The bound is measured in one process: the import of flowgraph.cli alone takes 0.4 to 0.65 s, so no command answers in 15 ms from a shell. Open: whether the target is of make check or run by hand, a timing in the suite failing on a loaded machine. Its first-pass Tasks are drafted the same day and reviewed before the phase starts."
+parent = "F-0035"
+realizes = 4
+complexity = "low"
+created = 2026-11-25 09:52:32+00:00
+depends_on = [
+    "S-0176",
+    "S-0177",
+    "S-0178",
+]
+
+[criterion]
+given = "main with the three questions built, and a synthetic record of 1,500 item files made by a script of the suite"
+when = "a make target asks each question a hundred times in one process, the index built"
+then = "it prints the median time of each and fails when one is above the bound the developer set, the first pass naming 15 ms"

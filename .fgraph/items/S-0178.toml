@@ -1,0 +1,16 @@
+id = "S-0178"
+state = "backlog"
+title = "Raise what fgraph answers for a file from the lines that govern it to those lines with every term they reach through is a and part of"
+description = "Phase 4, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0035). The path-to-invariant resolution of the first pass, as the coordinator reads it: asked with the draft and not answered, kept as an open finding on its Feature. fgraph about of a file lists the lines that govern it today, and fgraph show of a term what it reaches. Its first-pass Tasks are drafted the same day and reviewed before the phase starts."
+parent = "F-0035"
+realizes = 3
+complexity = "medium"
+created = 2026-11-25 09:51:50+00:00
+depends_on = [
+    "S-0175",
+]
+
+[criterion]
+given = "a record where a live line that governs src/gate.py is about the term gate, which is part of the term lane"
+when = "a user asks fgraph which rules hold for src/gate.py"
+then = "it lists the live line and the terms gate and lane, each with the relation that reaches it, and as JSON the same"

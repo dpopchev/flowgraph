@@ -404,15 +404,29 @@ server of the Model Context Protocol: the session starts it, lists its tools
 and calls them; each call is a run of fgraph in the directory it names,
 the checkout of main or the worktree of a work item, and is given what the command
 prints; a refusal comes back as its one line. The server writes nothing itself
+<<<<<<< HEAD
 and ends when the session closes its input. Beside status, the moves of fgraph mcp
 are start, hand, block, unblock, note and complete, each called in the directory its
 command is run in, main for the start of a work item, its worktree for its Tasks.
+||||||| 2dc58f08
+and ends when the session closes its input.
+=======
+and ends when the session closes its input; the five reads of fgraph mcp are
+status, brief, show, knowledge and about, each given the JSON its command prints
+with `--format json`.
+>>>>>>> main
 
 ```sh
 claude mcp add fgraph -- fgraph mcp
+<<<<<<< HEAD
 # the session lists the tool status of fgraph, as mcp__fgraph__status
 # a complete whose check fails is given back as a tool error:
 # fgraph: error: T-0002 cannot complete: its check "exit 3" exited with status 3
+||||||| 2dc58f08
+# the session lists the tool status of fgraph, as mcp__fgraph__status
+=======
+# the session lists the tools of fgraph, as mcp__fgraph__status and mcp__fgraph__brief
+>>>>>>> main
 ```
 
 ## Use

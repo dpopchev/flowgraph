@@ -1287,6 +1287,7 @@ what `fgraph status --format json` prints there. The modules are `src/flowgraph/
 tool as data), `reads.py` (the reads), `protocol.py` (the reply to a line) and
 `src/flowgraph/mcp/stdio.py` (the shell).
 
+<<<<<<< HEAD
 S-0159 adds the moves of fgraph mcp: `start` (`directory`, `id`, and `agent` when a work item is
 handed), `hand` (`directory`, `id`, `agent`), `block` (`directory`, `id`, `reason`,
 `waiting_on`), `unblock` (`directory`, `id`), `note` (`directory`, `id`, `kind` -- finding,
@@ -1300,6 +1301,18 @@ serves, the server keeps fd 0 and fd 1 for the protocol and points them at /dev/
 stderr, so the check of a Task and the gate of a landing, run by `run_gate`, write on its stderr
 and read nothing. The tools are `MOVE_TOOLS` of `src/flowgraph/mcp/moves.py` and the streams
 `protocol_streams` of `src/flowgraph/mcp/stdio.py`.
+||||||| 2dc58f08
+=======
+Its reads are the five reads of fgraph mcp (S-0158): status (directory), brief
+(directory, id), show (directory, id: a work item, a Feature or a term), knowledge (directory) and
+about (directory, id: a work item, a Feature, a term or a file), each the command of its name with
+`--format json`, so a call is given the same bytes as the command prints there, the documents of
+Brief, Show as JSON, Status as JSON and of fgraph knowledge and fgraph about named in those
+sections. They write nothing and take no lock; knowledge takes no filter, an agent reading the
+lines it needs from the document. An id the record does not hold, as S-0009, is given back as a
+tool error holding the one line fgraph prints, `fgraph: error: no Story S-0009 in the record`. The
+tools are `READ_TOOLS` of `src/flowgraph/mcp/reads.py`.
+>>>>>>> main
 
 ### Wire
 

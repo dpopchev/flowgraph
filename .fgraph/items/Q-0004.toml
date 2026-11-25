@@ -44,3 +44,8 @@ description = "FIRST PASS, written on 2026-11-25 before Phase 2 was completed: t
 check = "grep -q '^### Answer of Q-0004' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, Reactions at one boundary, gains ### Answer of Q-0004: yes or no to the hypothesis, from the three parts before it, naming the three things the decision names -- what a move returns (Written of src/flowgraph/item/commands.py grown, or events beside the next state), where the boundary sits (one function called by command_said of src/flowgraph/parser/command.py and by land_item of src/flowgraph/development/land.py, and the module that holds it) and what the exit gate is held to -- the design the two work items take, each row of ### Today with its value and its reaction, and the one sentence the landing gives as --decision"
 created = 2026-11-25 10:44:29+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25: put Tasks on the work items of Phase 3; those will be reviewed before the phase starts. The Tasks of Q-0004 (its 4 Tasks: T-0811, T-0812, T-0813, T-0814) are that first pass, drafted that day by a read-only subagent against the code of main at 2dc58f08 and filed by the coordinator, who checked their shape -- the opening sentence, the check, that the files they name are on the disk or said to be new -- and read their titles, outputs, checks and open points, not every description. They are reviewed before Phase 3 starts, the review noted here as a decision naming each Task kept, amended or removed; until that line is here, Q-0004 is not started."
+noted = 2026-11-25 10:44:56+00:00

@@ -7,6 +7,7 @@ realizes = 3
 complexity = "low"
 created = 2026-11-25 06:33:02+00:00
 started = 2026-11-25 07:08:41+00:00
+agent = "haiku-s163"
 depends_on = [
     "S-0162",
 ]
@@ -18,32 +19,56 @@ then = "Terms lists that term with what it means"
 
 [[tasks]]
 id = "T-0723"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_brief_terms.py, failing on the criterion of S-0163"
 description = "One new file, no source change: tests/functional/test_brief_terms.py (about 100 lines), functional as its pytestmark, one assert per test, run through run() of src/flowgraph/cli.py with open_store=open_files, open_git=lambda _: None and no git, so the development is off and a --governs path is kept as given. Copy NOW, Outcome, fgraph(argv, cwd) and runs(cwd, *argvs) of tests/functional/test_note_progress.py. Seen on 2026-11-25 in a throwaway record with fgraph of main (2cfd9d9f): two decisions about gate and lease govern src/a.py, a file the Task names, and fgraph brief S-0001 prints Governed by and no Terms; terms of --format json is []. MEANING = a check every deliverable passes before it lands; GATE = [add, term, gate, --means, MEANING]; LEASE = [add, term, lease, --means, a hold with an end]; STORY = [add, story, a title, --given, a, --when, b, --then, c]; ABOUT = STORY with --about, gate; TASK = [add, task, a task title, --parent, S-0001, --output, changed: src/gate.py holds the gate]; OTHER = [add, story, another title, --given, a, --when, b, --then, c], S-0002, which holds the lines; GOVERNING = [note, S-0002, --decision, the gate holds no state, --governs, src/gate.py, --about, gate]; ELSEWHERE = [note, S-0002, --finding, the lease ends, --governs, src/lease.py, --about, lease]. XFAIL = pytest.mark.xfail(strict=True, reason='S-0163: the brief lists no term a governing line is about'). Red tests under XFAIL, after runs(tmp_path, GATE, LEASE, STORY, TASK, OTHER, GOVERNING, ELSEWHERE): test_the_brief_lists_the_term_a_governing_line_is_about: the out of [brief, S-0001] ends (str.endswith) with the line Terms (1), then the line of two blanks, gate, two blanks and MEANING, each with its newline; test_the_brief_as_json_holds_the_term: terms of json.loads of the out of [brief, S-0001, --format, json] == [{meaning: MEANING, name: gate}]. Guards, no mark, passing today and after: on the same record, two blanks, lease, two blanks is not in the out of [brief, S-0001]; after runs(tmp_path, GATE, ABOUT, TASK, OTHER, GOVERNING), the out of [brief, S-0001] counts the line of gate with MEANING once (str.count of two blanks, gate, two blanks, MEANING == 1). See each marked test fail under --runxfail on its value. Existing tests: none changes; if one fails, stop and say which. Out of bounds: every file under src/, every other test file, the docs."
 check = "uv run pytest tests/functional/test_brief_terms.py -q -p no:cacheprovider && grep -q xfail tests/functional/test_brief_terms.py"
 expected_output = "created: tests/functional/test_brief_terms.py states that fgraph brief S-0001, of a Story about no term whose Task names src/gate.py, a file a decision about the term gate governs, lists gate with its meaning under Terms, as text and as JSON; and, as guards, that the term of a line that governs another file is not listed and that a term the Story and the line are both about is listed once. Each red test carries a strict xfail naming S-0163"
 created = 2026-11-25 06:45:42+00:00
+started = 2026-11-25 07:10:15+00:00
+completed = 2026-11-25 07:11:07+00:00
+commit = "cd2504d318f1197e516e5d84e94cb86e52aa2edb"
 
 [[tasks]]
 id = "T-0724"
-state = "backlog"
+state = "completed"
 title = "List under Terms of fgraph brief the terms its governing lines are about, in brief_of of src/flowgraph/brief/read.py"
 description = "Three files. S-0163 waits for S-0162, which makes the lines under Governed by the live ones: read brief_of as S-0162 left it. src/flowgraph/brief/read.py (about 101 lines, about 104 after): in brief_of, name the governing lines once, before the Brief is built -- governed = tuple(governing(...)) with the argument S-0162 left -- and names becomes dict.fromkeys([*detail.about, *feature_about, *(name for entry in governed for name in entry.about)]); Brief is given governed, and the terms as before, each read by store.terms.load_term(name).meaning. A line is noted about a term the record holds (fgraph note --about refuses another), so each name loads. src/flowgraph/brief/model.py (64 lines): the docstring of TermLine becomes A term the work item, its Feature or a line that governs it is about, with its meaning.; in the docstring of Brief, and the terms it or its Feature is about, each once becomes and the terms it, its Feature or one of those lines is about, each once. src/flowgraph/brief/text.py, src/flowgraph/brief/document.py and the help of src/flowgraph/parser/brief.py are not changed: they print the terms they are given. tests/functional/test_brief_terms.py: remove XFAIL and its marks. Red first: remove the marks, see the two tests fail on their value, then the code. No unit test is added: brief_of is the shell and the functional file states it. Existing tests: none changes -- in tests/functional/test_brief.py the one governing line is about no term; if one fails, stop and say which. Out of bounds: src/flowgraph/knowledge/, src/flowgraph/term/, every other file of src/ and of tests/, the docs."
 check = "uv run pytest tests/brief tests/functional/test_brief.py tests/functional/test_brief_live.py tests/functional/test_brief_terms.py -q -p no:cacheprovider && ! grep -q xfail tests/functional/test_brief_terms.py && make lines && uv run pyright"
 expected_output = "changed: brief_of of src/flowgraph/brief/read.py lists under Terms the terms of the work item, then those of its Feature, then those the lines under Governed by are about, in the order of those lines, each once with its meaning, as text and as JSON; the docstrings of TermLine and Brief of src/flowgraph/brief/model.py say so. No xfail mark is left in tests/functional/test_brief_terms.py"
 created = 2026-11-25 06:45:47+00:00
+started = 2026-11-25 07:11:20+00:00
+completed = 2026-11-25 07:13:29+00:00
+commit = "dc8548e0d3bb04ec0eaf5429165e887e79a4a1a4"
 
 [[tasks]]
 id = "T-0725"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say Terms of fgraph brief lists the terms its governing lines are about"
 description = "Change README.md and docs/domain-model.md only; find each passage by grep, never by line number; plain ASCII; no source or test change. Keep the words its Feature or a line under on one line in each file: the check greps them. docs/domain-model.md: grep -n 'Terms (n)`: each term' finds the bullet of the brief; it becomes: `Terms (n)`: each term the work item, its Feature or a line under `Governed by` is about, with its meaning, each once, in that order (S-0163). README.md: grep -n 'its Feature is about under' finds the sentence of the paragraph on fgraph brief (if it finds nothing, read the paragraph that holds prints the whole brief of a work item); and the terms it or its Feature is about under `Terms` becomes and the terms it, its Feature or a line under `Governed by` is about under `Terms`. Reflow inside the bullet and the paragraph alone; the example block stays. If grep -n 'S-0163' of the two files finds another line when this Task runs (none on 2026-11-25), make it true and say so."
 check = "grep -q 'its Feature or a line under' README.md && grep -q 'its Feature or a line under' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, in the bullet of Terms (n) of the brief, and README.md, in the paragraph that opens fgraph brief prints the whole brief, say the terms are those the work item, its Feature or a line under Governed by is about"
 created = 2026-11-25 06:45:53+00:00
+started = 2026-11-25 07:13:40+00:00
+completed = 2026-11-25 07:14:24+00:00
+commit = "b044a413431a60e143e94d664a61c7e5fc256120"
 
 [[knowledge]]
 kind = "decision"
 text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, on the word of the developer of that day, write the tasks as well and make it ready; the developer reviews them at the close: (1) The terms that match the paths of a work item, in the words of the draft, are read as the terms its governing lines are about: a term holds no path, a governing line holds both. (2) They are listed after the terms of the work item and of its Feature, in the order of the lines under Governed by, each once. (3) It waits for S-0162, so the lines read are the live ones and the two do not change brief_of at one time. (4) No unit test: the change is in the shell brief_of, stated by the functional file, run with no git."
 noted = 2026-11-25 06:46:00+00:00
+
+[[progress]]
+text = "red: 2 failed, 2 passed, 1 warning in 3.50s"
+noted = 2026-11-25 07:10:54+00:00
+task = "T-0723"
+
+[[progress]]
+text = "red: 2 failed, 2 passed, 1 warning in 1.61s"
+noted = 2026-11-25 07:11:49+00:00
+task = "T-0724"
+
+[[progress]]
+text = "red: grep exits 1 with the phrase absent from both files"
+noted = 2026-11-25 07:14:11+00:00
+task = "T-0725"

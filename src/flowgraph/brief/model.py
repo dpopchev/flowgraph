@@ -13,7 +13,7 @@ from flowgraph.work_item.views import WorkItemDetail
 
 @dataclass(frozen=True)
 class TermLine:
-    """A term the work item or its Feature is about, with its meaning."""
+    """A term the work item, its Feature or a line that governs it is about, with its meaning."""
 
     name: str
     meaning: str
@@ -36,8 +36,8 @@ class Brief:
 
     The branch and the worktree git holds for it, none when it has none; its Feature, none for a
     work item that stands alone; the live lines of the record that govern a path its Tasks name,
-    those no later line supersedes, newest first; and the terms it or its Feature is about, each
-    once.
+    those no later line supersedes, newest first; and the terms it, its Feature or one of those
+    lines is about, each once.
     """
 
     detail: WorkItemDetail

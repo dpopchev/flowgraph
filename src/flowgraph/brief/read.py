@@ -65,14 +65,17 @@ def brief_of(item: str, store: Store, record: Path, open_git: OpenGit) -> Brief:
     item_id = parse_work_item_id_of_any_kind(item)
     detail = bucketed(store.find_work_item_detail(item_id), store)
     feature, feature_about = _feature_of(detail.parent, store) if detail.parent else (None, [])
-    names = dict.fromkeys([*detail.about, *feature_about])
+    governed = tuple(governing(newest_first(live_entries(collected(store)), None), detail.tasks))
+    names = dict.fromkeys(
+        [*detail.about, *feature_about, *(name for entry in governed for name in entry.about)]
+    )
     branch, worktree = _held_by_git(item_id, record, open_git)
     return Brief(
         detail,
         branch,
         worktree,
         feature,
-        tuple(governing(newest_first(live_entries(collected(store)), None), detail.tasks)),
+        governed,
         tuple(TermLine(name, store.terms.load_term(name).meaning) for name in names),
     )
 

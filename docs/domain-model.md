@@ -956,7 +956,8 @@ so the brief of a work item that has none of them is exactly the text of `show`:
   of the work item names, last noted first; a line a later line supersedes is left out (S-0162),
   by `live_entries`, the rule of `fgraph knowledge --live`, where `fgraph about` of a file lists
   every one.
-- `Terms (n)`: each term the work item or its Feature is about, with its meaning, each once.
+- `Terms (n)`: each term the work item, its Feature or a line under `Governed by` is about, with
+  its meaning, each once, in that order (S-0163).
 
 A governed path is named by a Task when it stands as a whole path in the expected output or the
 description of the Task: no letter, digit, slash, dot, underscore or hyphen before it, and no

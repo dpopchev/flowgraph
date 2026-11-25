@@ -2,6 +2,8 @@ id = "B-0025"
 state = "backlog"
 title = "Cut the moves the tables of docs/domain-model.md list that fgraph does not make -- the block of a work item, the remove of a started work item, the remove of a Task -- from three to none"
 description = "Found by the subagent of T-0372 of Q-0001 on 2026-11-23, read again by the coordinator; filed at the end of the queue and not burned. Open: whether the tables are corrected to what is built or the three moves are built -- the conversion of a board 1 record meets all three (Field map of docs/domain-model.md: a blocked work item, a work item pruned from doing, a pruned Task). Its Tasks are written when it is ordered."
+parent = "F-0033"
+realizes = 5
 created = 2026-11-23 05:25:12+00:00
 filed_during = "Q-0001"
 

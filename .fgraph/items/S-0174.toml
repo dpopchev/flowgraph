@@ -46,3 +46,9 @@ created = 2026-11-25 11:01:04+00:00
 kind = "decision"
 text = "The developer said on 2026-11-25, on the draft of Phase 4 that offered its first-pass Tasks: great, file them. The Tasks of S-0174 (its 3 Tasks: T-0856, T-0857, T-0858) are that first pass, drafted that day by a read-only subagent against the code of main at 0ecab493, before Phases 2 and 3 were completed, and filed by the coordinator, who checked their shape -- the opening sentence, the check, the ids they name -- and read their titles, outputs, checks and open points, not every description. They are reviewed before Phase 4 starts, the review noted here as a decision naming each Task kept, amended or removed; until that line is here, S-0174 is not started."
 noted = 2026-11-25 11:01:26+00:00
+
+[[knowledge]]
+kind = "finding"
+text = "Open at the review of its first-pass Tasks, from their draft of 2026-11-25: (1) On this shape S-0174 builds one change: the terms read through the index. The five reads use the readers status uses, so their bytes and their parses of item files already hold once S-0173 lands. The red of its test is the file of the term, which its own Given brings. Folding it in was considered: S-0173 would route the terms too, and S-0174 would become the proof alone, with no red test. (2) The Then says it 'parses no item file whose content did not change'. Drafted as no file of the record at all, items and terms, since only the term files make the test red. Read literally, the Then is green on arrival. (3) Not in the Given and not drafted: fgraph show of a started work item, run on main with the development on, reads its worktree's copy through across_worktrees. That read goes through the index of that worktree's own record. (4) Phase 3: if read_term or _read_file of src/flowgraph/term/model.py move, the grep of the second Task stops it."
+noted = 2026-11-25 11:01:36+00:00
+mark = "open"

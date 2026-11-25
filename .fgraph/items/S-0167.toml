@@ -42,6 +42,15 @@ check = "uv run pytest tests/functional/test_record_merges.py tests/functional/t
 expected_output = "changed: sync_branch of src/flowgraph/development/sync.py and the landing of src/flowgraph/development/land.py, when the merge git made stops on a conflict in files of the record alone, write each such file as merged_file gives it and go on; a conflict in any other file, or one merged_file answers None for, is named and aborted as before. No xfail mark is left in tests/functional/test_record_merges.py"
 created = 2026-11-25 08:18:01+00:00
 
+[[tasks]]
+id = "T-0748"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say fgraph sync and fgraph land merge the two copies of a file of the record by its kind"
+description = "FIRST PASS, written on 2026-11-25 before U-0018 and Q-0003 were completed and before the rework of its Feature: the coordinator reviews this Task once both are completed, before the work item starts (S-0167, its decision of 2026-11-25). If no later line of S-0167 says its Tasks were reviewed, stop and say so. Change README.md and docs/domain-model.md only; find each passage by grep, never by line number; plain ASCII; no source or test change. Keep the words merged by the kind of each file on one line in each file: the check greps them. docs/domain-model.md: grep -n 'main does not merge into' finds the passage on a conflict of fgraph sync; say there, and in the passage on the merge of a landing, what is merged now and what is still named and aborted, as the code of the Tasks before this one does it. README.md: grep -n 'fgraph sync' finds its passage; the same in short. If grep -n 'S-0167' of the two files finds another line when this Task runs, make it true and say so."
+check = "grep -q 'merged by the kind of each file' README.md && grep -q 'merged by the kind of each file' docs/domain-model.md && grep -q 'record/merge.py' docs/domain-model.md"
+expected_output = "changed: docs/domain-model.md, in the passage on fgraph sync and in that on the landing, and README.md, in the passage on fgraph sync, say a conflict in files of the record alone is merged by the kind of each file, queue.toml by its order and an item by its state, naming record/merge.py, and that any other conflict is named and aborted as before"
+created = 2026-11-25 08:18:18+00:00
+
 [[knowledge]]
 kind = "finding"
 text = "Open, decided when Q-0003 is answered: whether this Story stands for the pairs Q-0003 names, becomes Bugs, or is removed with F-0027; a merge driver is built only for a conflict that was reproduced."

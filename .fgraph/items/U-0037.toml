@@ -6,6 +6,9 @@ parent = "F-0031"
 realizes = 3
 complexity = "medium"
 created = 2026-11-25 08:56:09+00:00
+depends_on = [
+    "U-0035",
+]
 
 [criterion]
 given = "main after the fields of a phase hold no None, where the types build a started work item with no Task, a work item with two started Tasks, a verified Spike and a decision kept before the completion, each refused by a move or at the read of its file"

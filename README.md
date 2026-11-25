@@ -401,6 +401,14 @@ out: `fgraph show f15`, `f-15`, `F15` and `f-0015` each show F-0015. What
 fgraph show f15             # shows F-0015, as fgraph show F-0015 does
 ```
 
+A term is never named as such a spelling: `fgraph add term` refuses it, and a term
+added before under such a name keeps its file.
+
+```sh
+fgraph add term f15 --means "a meaning"
+# fgraph: error: 'f15' reads as the id F-0015: a term name is no id
+```
+
 `fgraph --help` prints the menu of the commands, and every command prints its
 own help, its usage and its options, with `--help` or `-h`. Neither needs a
 record:

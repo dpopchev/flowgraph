@@ -4,6 +4,7 @@ title = "Cut the constructors of src/flowgraph/feature_state.py a new field of a
 description = "Found during T-0272 of S-0064 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. The knowledge lines of a Feature had to be added to five constructors of feature_state.py. Its Tasks are written when it is ordered."
 parent = "F-0030"
 realizes = 4
+complexity = "low"
 created = 2026-11-22 11:31:13+00:00
 
 [criterion]

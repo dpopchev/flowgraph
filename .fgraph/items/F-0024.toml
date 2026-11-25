@@ -1,9 +1,11 @@
 id = "F-0024"
-state = "started"
+state = "completed"
 title = "Raise the answers fgraph gives an agent on the files of its started Task from the rules that govern them to three more: their commit, the live rules alone, and the terms those rules are about"
 description = "Phase 1, Agent Execution Interface, Scope Gates and Governed Briefs: added on the word of the developer of 2026-11-25, it is important to include the MCP drafts, after the review of the WBS draft, Agent Execution Interface (JSON, MCP and Scoped Epistemics), whose row Local MCP Server and Path-Scoped Brief Injection asks for a commit tool, a next tool and a brief of the active rules and the terms of its paths. It holds the parts that need no server and so go first: the command the commit tool runs, and the two reads of the brief. Seen that day in a throwaway record with fgraph of main (2cfd9d9f): fgraph has no commit command, so an agent with no shell has no sha to give fgraph complete; Governed by of fgraph brief lists a line a later one supersedes, unmarked; and the brief lists no term a governing line is about. The K-* records and the split of the built-in terms of the draft are not filed. The Tasks of its work items are written before it starts."
 created = 2026-11-25 06:32:23+00:00
 started = 2026-11-25 06:51:38+00:00
+completed = 2026-11-25 07:24:22+00:00
+commit = "bdd2e47b"
 criteria = [
     "an agent commits the work of its started Task through fgraph, the files its brief names in one commit that cites the work item and the Task",
     "an agent reads in its brief the live lines that govern its files alone, none a later line supersedes",

@@ -411,6 +411,10 @@ are start, hand, block, unblock, note, commit (directory, id, message) and compl
 the directory its command is run in, main for the start of a work item, its worktree for its Tasks.
 The commit runs `fgraph commit` in the worktree the call names and answers with its line, which ends
 with the sha the tool complete takes.
+The id of the tool start is optional:
+with no id the tool start takes the first line of the Backlog that can start, as `fgraph start --agent NAME` does, and answers with the line that names it; the status tool holds `next_to_start`, the line it would take.
+A coordinator lands a work item and answers its closing with the tools land and verify, run
+on main, and no tool of fgraph mcp takes the approval of a landing.
 
 ```sh
 claude mcp add fgraph -- fgraph mcp
@@ -2110,7 +2114,8 @@ fgraph land S-0001
 
 A record whose `config.toml` names `[development] approver = "developer"` holds
 every landing for the developer: the landing waits, nothing is merged, and the
-command says why. The developer approves it by the same command with
+command says why. The tool land of fgraph mcp is refused the same, with the same
+line, since no tool takes `--approved`. The developer approves it by the same command with
 `--approved`, which is the word of the developer and is kept in no record:
 
 ```sh

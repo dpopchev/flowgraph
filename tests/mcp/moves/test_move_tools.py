@@ -47,6 +47,18 @@ def test_a_start_with_an_agent_hands_it() -> None:
     ]
 
 
+def test_a_start_with_no_id_runs_start() -> None:
+    assert argv("start") == ["start"]
+
+
+def test_a_start_with_no_id_hands_it_to_the_agent() -> None:
+    assert argv("start", agent="sonnet-a1") == ["start", "--agent=sonnet-a1"]
+
+
+def test_a_start_requires_the_directory_alone() -> None:
+    assert tool("start").arguments.model_json_schema()["required"] == ["directory"]
+
+
 def test_a_hand_names_the_agent() -> None:
     assert argv("hand", id="S-0001", agent="opus-b2") == ["hand", "S-0001", "--agent=opus-b2"]
 

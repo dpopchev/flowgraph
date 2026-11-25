@@ -1,11 +1,15 @@
 id = "S-0165"
-state = "backlog"
+state = "completed"
 title = "Raise the starts an agent makes as a tool with no id from none to one: the first line of the Backlog that can start"
 description = "New on the word of the developer of 2026-11-25. fgraph start --agent NAME with no id takes the first line of the Backlog that can start (S-0113, S-0121); the tool start of S-0159 takes an id (S-0159, its decision). Its Tasks are written before its Feature starts."
 parent = "F-0025"
 realizes = 2
 complexity = "low"
 created = 2026-11-25 06:34:14+00:00
+started = 2026-11-25 10:15:07+00:00
+completed = 2026-11-25 10:41:23+00:00
+agent = "haiku-s165"
+commit = "e0252557"
 depends_on = [
     "S-0159",
 ]
@@ -17,32 +21,56 @@ then = "that work item is started and handed to the agent, the text naming it"
 
 [[tasks]]
 id = "T-0733"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_mcp_claim.py, failing on the criterion of S-0165"
 description = "Written on 2026-11-25 before S-0159 landed, from its Tasks and its decision (uv run fgraph show s159): read src/flowgraph/mcp/moves.py, tests/mcp/moves/test_move_tools.py and tests/functional/test_mcp_moves.py as they landed first; if MOVE_TOOLS, ItemArguments, StartArguments, command_of of src/flowgraph/mcp/tools.py or the Session of that test are not there under these names, stop and say so. One new file, no source change: tests/functional/test_mcp_claim.py (about 140 lines), functional as its pytestmark, one assert per test. Copy from tests/functional/test_mcp_moves.py: IDENTITY, ENVIRONMENT, git, cli(project, *argv), Outcome, the shape of its module fixture repository (a git repository on main whose first commit holds .fgraph/config.toml with [development] enabled = true), class Session with call(name, **arguments) and close(), text(reply), head(where) and PATIENCE. Read tests/functional/test_start_no_id.py for the record a start with no id takes (S-0113, S-0121). The record, each through cli and asserted exit 0 in the fixture: [add, story, Raise the claims of fgraph from 0 to 1, --given, a state, --when, an action, --then, another]; [add, task, a task title, --parent, S-0001, --output, changed: work.txt, --check, true]. A module fixture claims(project) runs, in order, and keeps each reply by its step: initialize (id 0, 2025-11-25) and notifications/initialized; claimed = call(start, directory=project, agent=sonnet-a1), no id given; again = call(start, directory=project, agent=opus-b2); direct = cli(project, start, --agent, opus-b2), the same start by the command line, run after it; shown = json.loads of the out of cli(project, show, S-0001, --format, json); listed = the tools of a tools/list; ended = close(). Today the tool start requires an id: both calls are refused as arguments, nothing is started, and the command line then starts S-0001 itself, so the fixture runs to its end under red. XFAIL = pytest.mark.xfail(strict=True, reason='S-0165: the tool start takes no start without an id'). Red tests, each under XFAIL: text(claimed), its part before the first newline (str.partition), == started S-0001; chore: start S-0001 in the record is in the subjects of git log --format=%s on main before direct ran -- keep them in the fixture right after claimed; the agent of shown == sonnet-a1; the content of the result of again == [{type: text, text: the last line of direct.err}] (the empty text for none, through .get, so a missing reply fails on its value); the required of the inputSchema of the tool start == [directory]. Guards, no mark, passing today and after: the jsonrpc of every line the session read == 2.0; the status of ended == 0. See each marked test fail under --runxfail on its value, not on the arrangement. Existing tests: none changes; if one fails, stop and say which. Out of bounds: every file under src/, every other test file, the docs."
 check = "uv run pytest tests/functional/test_mcp_claim.py -q -p no:cacheprovider && grep -q xfail tests/functional/test_mcp_claim.py"
 expected_output = "created: tests/functional/test_mcp_claim.py states that one fgraph mcp, run as a process on a git repository with the development on and one planned Story in Backlog, answers the tool start called on main with the agent sonnet-a1 and no id with a text whose first line is started S-0001; that the start is committed on main and the Story is handed to sonnet-a1; that a second start with no id, nothing being left that can start, is given the one line fgraph start --agent prints there; and that the input schema of the tool start requires directory alone. Each red test carries a strict xfail naming S-0165"
 created = 2026-11-25 06:48:50+00:00
+started = 2026-11-25 10:16:35+00:00
+completed = 2026-11-25 10:19:01+00:00
+commit = "3c12db18c7480e9edda2903b47622854924524d8"
 
 [[tasks]]
 id = "T-0734"
-state = "backlog"
+state = "completed"
 title = "Take the id of the tool start as optional in StartArguments of src/flowgraph/mcp/moves.py: with none, the start takes the first line of the Backlog that can start"
 description = "Written on 2026-11-25 before S-0159 landed, from its Tasks and its decision (uv run fgraph show s159): read src/flowgraph/mcp/moves.py, tests/mcp/moves/test_move_tools.py and tests/functional/test_mcp_moves.py as they landed first; if MOVE_TOOLS, ItemArguments, StartArguments, command_of of src/flowgraph/mcp/tools.py or the Session of that test are not there under these names, stop and say so. Three files. src/flowgraph/mcp/moves.py: StartArguments no longer takes the id of ItemArguments, which is required: it becomes a subclass of ToolArguments with id: str | None = Field(default=None, description='the id of the work item or of its Task, as S-0001 or T-0001; left out, the first line of the Backlog that can start') and agent as it is; the argv of start is [start], the id when given, --agent=NAME when given. The description of the tool says a start with no id claims the first work item that can start and answers with the line that names it. Every other tool keeps ItemArguments. S-0164 adds the tool commit to the same module on its own branch: keep this edit inside StartArguments and the tool start. Red first: change the tests, see them fail, then the model. tests/mcp/moves/test_move_tools.py: new, one assert each, through command_of with the directory /src/project: start {} gives [start]; start {agent: sonnet-a1} gives [start, --agent=sonnet-a1]; the required of the inputSchema of start == [directory]; the cases of start with an id that S-0159 wrote stay and pass as they are. tests/functional/test_mcp_claim.py: remove XFAIL and its marks. fgraph start with no id is refused in its own words when nothing can start, and under development.driver = agent when the first line holds no complexity (docs/domain-model.md): the tool only relays the line. Any other test that fails: stop and say which. Out of bounds: src/flowgraph/mcp/tools.py, reads.py, protocol.py, stdio.py, src/flowgraph/cli.py, src/flowgraph/parser/, src/flowgraph/status/, the docs."
 check = "uv run pytest tests/mcp tests/functional/test_mcp_claim.py tests/functional/test_mcp_moves.py -q -p no:cacheprovider && ! grep -q xfail tests/functional/test_mcp_claim.py && make lines && uv run pyright"
 expected_output = "changed: the tool start of src/flowgraph/mcp/moves.py takes its id as optional and builds the argv [start], then the id when given, then --agent=NAME when given, so a call with no id runs fgraph start --agent NAME, which takes the first line of the Backlog that can start; its input schema requires directory alone; tests/mcp/moves/test_move_tools.py states it. No xfail mark is left in tests/functional/test_mcp_claim.py"
 created = 2026-11-25 06:49:00+00:00
+started = 2026-11-25 10:19:20+00:00
+completed = 2026-11-25 10:22:45+00:00
+commit = "ec327a990e3272b96a1dfdecfa3b17f4ed616a45"
 
 [[tasks]]
 id = "T-0735"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say the tool start of fgraph mcp with no id takes the first line of the Backlog that can start"
 description = "Change README.md and docs/domain-model.md only; find each passage by grep, never by line number; plain ASCII; no source or test change. Keep the words with no id the tool start takes the first line of the Backlog that can start on one line in each file: the check greps them. In each file grep -n 'the moves of fgraph mcp' finds the paragraph S-0159 wrote (if it finds nothing, stop and say so). docs/domain-model.md: in the list of the moves, the entry of start says its id is optional, and after the list one sentence: with no id the tool start takes the first line of the Backlog that can start, as `fgraph start --agent NAME` does (S-0113, S-0121), and answers with the line that names it, so an agent claims its work with no shell (S-0165); `next_to_start` of the status tool is the line it would take. README.md: the same, in short. S-0164 adds the entry of commit to the same paragraph on its own branch: keep this edit to the entry of start and its sentence. If grep -n 'S-0165' of the two files finds another line when this Task runs, make it true and say so."
 check = "grep -q 'with no id the tool start takes the first line of the Backlog that can start' README.md && grep -q 'with no id the tool start takes the first line of the Backlog that can start' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, Tools over stdio, and README.md, in the paragraph on the moves of fgraph mcp, say the id of the tool start is optional and that with no id the tool start takes the first line of the Backlog that can start, as fgraph start --agent does, and that the status tool holds next_to_start, the line it would take"
 created = 2026-11-25 06:49:07+00:00
+started = 2026-11-25 10:23:06+00:00
+completed = 2026-11-25 10:24:43+00:00
+commit = "f1c9bf2607d5c32491448fccaa1b80a4b9f04be6"
 
 [[knowledge]]
 kind = "decision"
 text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, on the word of the developer of that day, write the tasks as well and make it ready; the developer reviews them at the close: (1) No tool of its own: the tool start of S-0159 takes its id as optional, and a call with no id runs fgraph start --agent NAME, the claim S-0113 and S-0121 built, atomic by B-0036. (2) No next tool: fgraph status --format json holds next_to_start and can_start, which the status tool of S-0157 returns. (3) A refusal of the start -- nothing can start, no complexity under development.driver = agent, the limit of development.parallel -- is relayed as its one line; the functional test compares it with the line of the command itself. (4) Its Tasks name modules S-0159 has not written yet: they are read again before F-0025 starts."
 noted = 2026-11-25 06:49:15+00:00
+
+[[progress]]
+text = "red: 5 failed, 2 passed (the tool start refused with no id, id Field required; the claim not on main; the second start handed opus-b2; the schema requires directory and id)"
+noted = 2026-11-25 10:17:49+00:00
+task = "T-0733"
+
+[[progress]]
+text = "red: 3 failed, 16 passed (start with no id refused: id Field required; the schema of start requires directory and id)"
+noted = 2026-11-25 10:19:53+00:00
+task = "T-0734"
+
+[[progress]]
+text = "red: check failing (the sentence with no id the tool start takes the first line of the Backlog that can start is in neither README.md nor docs/domain-model.md)"
+noted = 2026-11-25 10:23:34+00:00
+task = "T-0735"

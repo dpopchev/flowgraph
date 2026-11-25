@@ -1297,7 +1297,7 @@ lines it needs from the document. An id the record does not hold, as S-0009, is 
 tool error holding the one line fgraph prints, `fgraph: error: no Story S-0009 in the record`. The
 tools are `READ_TOOLS` of `src/flowgraph/mcp/reads.py`.
 
-S-0159 adds the moves of fgraph mcp: `start` (`directory`, `id`, and `agent` when a work item is
+S-0159 adds the moves of fgraph mcp: `start` (`directory`, `id` optional, and `agent` when a work item is
 handed), `hand` (`directory`, `id`, `agent`), `block` (`directory`, `id`, `reason`,
 `waiting_on`), `unblock` (`directory`, `id`), `note` (`directory`, `id`, `kind` -- finding,
 decision, deviation or progress -- and `text`), commit (directory, id, message) and `complete`
@@ -1306,6 +1306,8 @@ that starts with a dash is kept. `commit` runs `fgraph commit` in the directory 
 worktree of the work item, and answers with its line, `committed T-0001 of S-0001 at <sha>`, the sha
 the tool `complete` takes, so a Task is committed and completed with no shell (S-0164);
 `src/flowgraph/mcp/moves.py` holds it.
+The id of the tool start is optional:
+with no id the tool start takes the first line of the Backlog that can start, as `fgraph start --agent NAME` does (S-0113, S-0121), and answers with the line that names it, so an agent claims its work with no shell (S-0165); `next_to_start` of the status tool is the line it would take.
 Each is written where that command run in the directory of the call writes it (Who writes what):
 the start of a work item on main, the moves of its Tasks, its notes and its hand in its worktree,
 one server serving both. A refusal is a tool error holding its one line, nothing written, as
@@ -1314,6 +1316,18 @@ serves, the server keeps fd 0 and fd 1 for the protocol and points them at /dev/
 stderr, so the check of a Task and the gate of a landing, run by `run_gate`, write on its stderr
 and read nothing. The tools are `MOVE_TOOLS` of `src/flowgraph/mcp/moves.py` and the streams
 `protocol_streams` of `src/flowgraph/mcp/stdio.py`.
+
+S-0160 adds the closing of a work item as two tools, `land` (`directory`, `id`, `message`) and
+`verify` (`directory`, `id`, `answer` -- yes or no -- and `text`), the commands `fgraph land` and
+`fgraph verify` run on main, so the work item is completed at the commit of its landing and its
+answer kept as those commands leave them; they are called on main. The rule is that
+no tool of fgraph mcp takes the approval of a landing,
+nor the decision and the answer of a Spike: under `development.approver = developer` the tool
+`land` is a tool error holding `fgraph: error: S-0001 cannot land: development.approver =
+developer, the landing waits for the developer -- run fgraph land S-0001 --approved once the
+developer approves it`, and the developer lands it on the command line. The gate of the landing
+writes on the stderr of the server. The tools are `CLOSING_TOOLS` of
+`src/flowgraph/mcp/closing.py`.
 
 ### Wire
 

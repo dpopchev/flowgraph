@@ -17,6 +17,11 @@ depends_on = [
     "S-0156",
 ]
 
+[verified]
+answer = "yes"
+text = "run on main at 0ecab493, which holds the landing 142e43ed, on 2026-11-25: in a throwaway record under local/scratch/s158, outside git, holding a started Story about the term gate with a Task and a finding, a session of Claude Code 2.1.332 in print mode on haiku, given fgraph mcp of main by --mcp-config with --strict-mcp-config, listed the tools about, brief, knowledge, show and status and called brief, show and about of S-0001 and knowledge: the text of each result, read from the stream of the session, is byte for byte what the command prints there with --format json (1069, 1306, 589 and 289 bytes), none an error; show of S-0009 came back is_error true with the one text fgraph: error: no Story S-0009 in the record, the last error line of the command. Worked whole by one subagent on haiku, its branch read by the coordinator: 7 files, each named by a Task; make check on the branch at cd192683: 5717 passed, all checks passed; not run again on the merge, which added commits of the record alone."
+on = 2026-11-25 09:50:46+00:00
+
 [criterion]
 given = "the server of fgraph mcp on a record with a started Story about a term, which holds a Task and a knowledge line"
 when = "the session calls the tools of the brief, of show, of knowledge and of about"

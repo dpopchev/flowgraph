@@ -33,6 +33,15 @@ check = "uv run pytest tests/functional/test_task_ids_at_one_time.py tests/funct
 expected_output = "changed: an fgraph add task run in the worktree of a work item takes, before it reads, the lock of the record of main and then that of its own copy, through lock_across of src/flowgraph/development/worktrees.py, which run() of src/flowgraph/cli.py takes in place of lock_record for that command; every other write takes the lock it took before; created: tests/development/worktrees/test_lock_across.py states it. No xfail mark is left in tests/functional/test_task_ids_at_one_time.py"
 created = 2026-11-25 08:16:38+00:00
 
+[[tasks]]
+id = "T-0744"
+state = "backlog"
+title = "Update docs/domain-model.md to say the add of a Task takes one lock across the worktrees of a repository"
+description = "FIRST PASS, written on 2026-11-25 before U-0018 and Q-0003 were completed and before the rework of its Feature: the coordinator reviews this Task once both are completed, before the work item starts (S-0166, its decision of 2026-11-25). If no later line of S-0166 says its Tasks were reviewed, stop and say so. Change docs/domain-model.md only; find the passage by grep -n 'takes the lock of the directory of its record\\|every other command, and one added later', never by line number; plain ASCII; no source or test change. Keep the words two adds at one time in two worktrees on one line: the check greps them. After the sentences on which commands take the lock, add: the add of a Task in the worktree of a work item takes the lock of the record of main first, then its own, through `lock_across` of `src/flowgraph/development/worktrees.py`, so two adds at one time in two worktrees are given two ids, or one is refused as a record being written (S-0166, on the answer of Q-0003). README.md states no such passage (grep -n 'being written' README.md): if it does when this Task runs, stop and say so."
+check = "grep -q 'lock_across' docs/domain-model.md && grep -q 'two adds at one time in two worktrees' docs/domain-model.md"
+expected_output = "changed: docs/domain-model.md, Persistence, says in the passage on the lock of a record that the add of a Task in the worktree of a work item takes the lock of the record of main too, so two adds at one time in two worktrees are given two ids (S-0166), and names lock_across"
+created = 2026-11-25 08:16:55+00:00
+
 [[knowledge]]
 kind = "finding"
 text = "Open, decided when Q-0003 is answered: whether this Story stands, becomes the Bugs Q-0003 names, is cut to a guard test, or is removed with F-0026."

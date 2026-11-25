@@ -1,5 +1,5 @@
 id = "U-0013"
-state = "blocked"
+state = "started"
 title = "Raise the refusal of fgraph show for a text that is no id from naming the kinds of item alone to naming the term too"
 description = "Found during T-0292 of S-0070 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. The refusal still names the kinds of item alone, held by tests/functional/test_show_wrong_id.py, while the help of fgraph show names the term. Its Tasks are written when it is ordered."
 parent = "F-0023"
@@ -7,9 +7,6 @@ complexity = "low"
 created = 2026-11-22 16:42:22+00:00
 started = 2026-11-25 02:23:56+00:00
 agent = "haiku-u13"
-since = 2026-11-25 02:59:23+00:00
-reason = "its two Tasks are completed and make check fails, 3 failed and 5473 passed: tests/functional/test_about_item_refused.py::test_about_refuses_what_show_refuses_in_the_same_words for X-0001, T-0001 and S-0000, a file no Task of U-0013 names. The test states that fgraph about refuses a wrong id in the words of fgraph show; U-0013, by the ruling of the coordinator of 2026-11-25, rewords fgraph show alone, so the two differ. Decision needed, a change to the scope of a started work item: either fgraph about says nor the name of a term too, the wording put in parse_shown_id that both share, and the tests of about that state its line change; or the test is reworded to state the line of fgraph about and no longer claims the two are the same"
-waiting_on = "developer"
 
 [criterion]
 given = "a record with the terms of S-0070"

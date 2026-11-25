@@ -50,3 +50,8 @@ created = 2026-11-25 05:04:41+00:00
 kind = "decision"
 text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, under the /goal of Phase 1 the developer set on 2026-11-24, which has the coordinator write the Tasks before a Feature starts; the developer was not asked and reviews them at the close: (1) The new line is the old one with ` nor the name of a term` appended: 'X-0001' is no Story, Upkeep, Bug, Spike or Feature id nor the name of a term; it keeps the echoed text and the kinds, so it is the smaller change than rewording it as the criterion's `no id of a Story ... nor the name of a term`. (2) The words are added in a private wrapper in src/flowgraph/feature/item.py, not in parse_shown_id: parse_shown_id is shared with fgraph about, which words its own refusal (no term in the record and no file) and whose tests state the old words. (3) Only the show refusal changes; a text that reads as a term name (lowercase words) keeps `no term 'x' in the record` and a Feature id below 1 keeps its own line. (4) Two Tasks: code with the four tests that state the line, then the one passage of docs/domain-model.md."
 noted = 2026-11-24 22:09:44+00:00
+
+[[knowledge]]
+kind = "deviation"
+text = "On the developer's word of 2026-11-25, both, to the unblocking proposed that day: fgraph about keeps its own words for a text that is no id, and tests/functional/test_about_item_refused.py, a file no Task of U-0013 named, is reworded to state them, as T-0719. The test no longer claims fgraph about and fgraph show refuse X-0001, T-0001 and S-0000 in the same words, and still claims it of F-0000, S-0009 and F-0009. parse_shown_id is not changed."
+noted = 2026-11-25 05:04:52+00:00

@@ -3,9 +3,12 @@
 Each runs on the store of a record, as the commands of a work item do (`flowgraph.item.commands`).
 """
 
+from dataclasses import dataclass, replace
+from datetime import datetime
+
 from flowgraph.feature import feature_detail
 from flowgraph.item.commands import MESSAGE, Written
-from flowgraph.knowledge.list import collected, newest_first
+from flowgraph.knowledge.list import KnowledgeEntry, collected, newest_first
 from flowgraph.parent import parse_feature_id
 from flowgraph.record import Now
 from flowgraph.record.store import KINDS, Store
@@ -51,6 +54,80 @@ def relate_term_item(first: str, kind: str, second: str, store: Store) -> Writte
     return Written(f"related {first} {kind} {second}\n", MESSAGE.format(f"relate {first}"))
 
 
+@dataclass(frozen=True)
+class TermShown:
+    """The term of fgraph show as plain data: its relations, its items and its knowledge lines."""
+
+    name: str
+    meaning: str
+    added: datetime
+    is_a: tuple[str, ...]
+    part_of: tuple[str, ...]
+    kinds: tuple[str, ...]
+    parts: tuple[str, ...]
+    items: tuple[str, ...] = ()
+    knowledge: tuple[KnowledgeEntry, ...] = ()
+
+
+def _head_of(name: str, store: Store) -> TermShown:
+    """The term of that name with its relations, and no item and no knowledge line yet."""
+    term = store.terms.load_term(name)
+    others = [store.terms.load_term(each) for each in sorted(store.terms.find_term_names())]
+    return TermShown(
+        term.name,
+        term.meaning,
+        term.added,
+        tuple(term.is_a),
+        tuple(term.part_of),
+        tuple(each.name for each in others if name in each.is_a),
+        tuple(each.name for each in others if name in each.part_of),
+    )
+
+
+def term_shown(name: str, store: Store) -> TermShown:
+    """The term of that name with the items and the knowledge lines about it.
+
+    Raises TermNotFoundError when the record holds no such term.
+    """
+    return replace(
+        _head_of(name, store),
+        items=tuple(items_about(name, store)),
+        knowledge=tuple(newest_first(collected(store), None, name)),
+    )
+
+
+def _head_text(shown: TermShown) -> str:
+    """The head of the text of a term: its meaning, its relations, its day added."""
+    relations = [
+        ("is a", ", ".join(shown.is_a)),
+        ("part of", ", ".join(shown.part_of)),
+        ("kinds", ", ".join(shown.kinds)),
+        ("parts", ", ".join(shown.parts)),
+    ]
+    lines = "".join(f"  {label}  {named}\n" for label, named in relations if named)
+    added = shown.added.date().isoformat()
+    return f"{shown.name}\n  means  {shown.meaning}\n{lines}  added  {added}\n"
+
+
+def term_text(shown: TermShown) -> str:
+    """The text of the term: its head, then the items and the knowledge lines about it.
+
+    The lines are the newest first, each with the id of its item. Nothing is listed for none.
+    """
+    items = ", ".join(shown.items)
+    heading = "  knowledge\n" if shown.knowledge else ""
+    return _head_text(shown) + "".join(
+        [
+            f"  items  {items}\n" if items else "",
+            heading,
+            *(
+                f"    {line.item}  {line.kind}  {line.noted.date().isoformat()}  {line.text}\n"
+                for line in shown.knowledge
+            ),
+        ]
+    )
+
+
 def terms_text(store: Store) -> str:
     """The lines fgraph terms writes: each term by name with its meaning, or one line for none."""
     names = sorted(store.terms.find_term_names())
@@ -77,42 +154,12 @@ def items_about(name: str, store: Store) -> list[str]:
     return [detail.id for detail in [*details, *features] if name in detail.about]
 
 
-def _about_lines(name: str, store: Store) -> str:
-    """What is about the term, listed after its relations: the items, then the knowledge lines.
-
-    The lines are the newest first, each with the id of its item. Nothing is listed for none.
-    """
-    items = ", ".join(items_about(name, store))
-    lines = newest_first(collected(store), None, name)
-    heading = "  knowledge\n" if lines else ""
-    return "".join(
-        [
-            f"  items  {items}\n" if items else "",
-            heading,
-            *(
-                f"    {line.item}  {line.kind}  {line.noted.date().isoformat()}  {line.text}\n"
-                for line in lines
-            ),
-        ]
-    )
-
-
 def term_head(name: str, store: Store) -> str:
     """The head of the text of the term of that name: its meaning, its relations, its day added.
 
     Raises TermNotFoundError when the record holds no such term.
     """
-    term = store.terms.load_term(name)
-    others = [store.terms.load_term(each) for each in sorted(store.terms.find_term_names())]
-    relations = [
-        ("is a", ", ".join(term.is_a)),
-        ("part of", ", ".join(term.part_of)),
-        ("kinds", ", ".join(each.name for each in others if name in each.is_a)),
-        ("parts", ", ".join(each.name for each in others if name in each.part_of)),
-    ]
-    lines = "".join(f"  {label}  {named}\n" for label, named in relations if named)
-    added = term.added.date().isoformat()
-    return f"{term.name}\n  means  {term.meaning}\n{lines}  added  {added}\n"
+    return _head_text(_head_of(name, store))
 
 
 def show_term(name: str, store: Store) -> str:
@@ -121,4 +168,4 @@ def show_term(name: str, store: Store) -> str:
     The items and the knowledge lines about it follow its relations, read from the record.
     Raises TermNotFoundError when the record holds no such term.
     """
-    return term_head(name, store) + _about_lines(name, store)
+    return term_text(term_shown(name, store))

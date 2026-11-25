@@ -8,7 +8,7 @@ from flowgraph.parser.base import Commands, new_command
 from flowgraph.parser.brief import brief_command
 from flowgraph.parser.knowledge import knowledge_command, note_command
 from flowgraph.parser.start import start_command
-from flowgraph.status import document
+from flowgraph.status import document, show_document
 from flowgraph.term import KINDS
 
 # The seconds watch waits between two frames, unless others are given.
@@ -26,6 +26,12 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         "id",
         metavar="ID",
         help="the id of the work item or of the Feature, or the name of the term",
+    )
+    show.add_argument(
+        "--format",
+        default=show_document.TEXT,
+        metavar="FORMAT",
+        help=f"the format it prints: {show_document.TEXT}, the default, or {show_document.JSON}",
     )
     about = new_command(
         commands, "about", "list the links of a work item or a Feature, by relation"

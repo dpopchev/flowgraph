@@ -227,6 +227,20 @@ fgraph brief S-0002
 fgraph brief S-0002 --format json
 ```
 
+`fgraph show` of a work item, a Feature or a term takes `--format json` too, and prints
+what its text lists as one JSON document, keys sorted and `null` for nothing, the same
+bytes on two runs; `text` stays the default; another word is refused naming both, exit 2.
+Every key is listed in `docs/domain-model.md`, section Show as JSON:
+
+```sh
+fgraph show S-0001 --format json
+# {
+#   "about": [
+#   ...
+fgraph show S-0001 --format xml
+# fgraph: error: --format 'xml' is not text or json, the two formats of show
+```
+
 Before it commits the work of a Task, an agent asks which files it changed that the brief
 of the started Task does not name: `fgraph brief S-0002 --not-named` prints, in place of
 the brief, each file changed and not committed in the worktree of the work item -- a tracked

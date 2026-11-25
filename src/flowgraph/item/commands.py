@@ -27,8 +27,7 @@ from flowgraph.parent import NO_CRITERION, STANDALONE, FeatureId, Parent, Realiz
 from flowgraph.record import Now
 from flowgraph.record.queue import placed_text, reorder
 from flowgraph.record.store import Store
-from flowgraph.relation.depends import bucketed
-from flowgraph.status import BACKLOG, COMPLETED, STARTED, find_backlog, show_text, status_item
+from flowgraph.status import BACKLOG, COMPLETED, STARTED, find_backlog, status_item
 from flowgraph.task import task_id_text
 from flowgraph.work_item import Complexity, Kind, WorkItemId, work_item_id_text
 
@@ -95,16 +94,6 @@ def reorder_item(item: str, before: str, store: Store) -> Written:
     )
     placed = f"{placed_text(moved)} before {placed_text(other)}"
     return Written(f"moved {placed}\n", MESSAGE.format(f"reorder {placed}"))
-
-
-def show_item(item: str, store: Store) -> str:
-    """The text of the work item of that id.
-
-    Raises WorkItemIdError when the text is the id of no kind and WorkItemNotFoundError when the
-    record holds no such item.
-    """
-    detail = store.find_work_item_detail(parse_work_item_id_of_any_kind(item))
-    return show_text(bucketed(detail, store))
 
 
 def add_item(

@@ -1105,6 +1105,46 @@ The order is fixed: the nodes by id, the edges by their kind in the order above 
 then by their two ends, the knowledge lines by item and time noted, and the keys of
 each object in the order given here, so two runs on one record print the same bytes.
 
+## Show as JSON
+
+`fgraph show ID --format json` prints the item as one JSON document, a second formatter
+of the data the text words, with no fact read back from the text (S-0154). `text` is the
+default and prints what show printed before; a format that is neither is refused naming
+both, exit 2, before the item is read, and an id of board 1 is answered by its archive
+first:
+
+```text
+fgraph: error: --format 'xml' is not text or json, the two formats of show
+```
+
+The contract is that of the brief: keys sorted, an indent of two, a newline, `null` for a
+key that holds nothing and `[]` for an empty list, so two runs print the same bytes. The
+documents are written by `work_item_json` and `feature_json` of
+`src/flowgraph/status/show_document.py` and by `term_json` of
+`src/flowgraph/term/document.py`. `noted`, `on` and `added` are the full ISO time. A write
+and a refusal stay one line, never JSON (the decision of F-0018).
+
+- Work item (27 keys): `about`, `agent`, `amended_by`, `amends`, `bucket`, `commit`,
+  `complexity`, `criterion`, `depends_on`, `description`, `filed_during`, `filed_here`,
+  `id`, `kind`, `knowledge`, `parent`, `progress`, `realized`, `realizes`, `reason`,
+  `state`, `superseded_by`, `supersedes`, `tasks`, `title`, `verified`, `waiting_on`.
+  The `criterion` holds eight parts, `answer`, `decision`, `expected`, `given`,
+  `hypothesis`, `observed`, `then` and `when`, each `null` when its kind does not state
+  it. `depends_on` holds objects of `bucket` and `id`. Each Task holds `bucket`, `check`,
+  `commit`, `description`, `expected_output`, `id`, `progress` (its own lines, each
+  `noted` and `text`), `reason`, `state`, `title` and `waiting_on`. Each knowledge line
+  holds `about`, `governs`, `kind`, `mark`, `noted`, `superseded_by` (the refs that
+  supersede it), `supersedes` and `text`. `verified` holds `answer`, `on` and `text`, or
+  is `null`. `progress` holds the lines of the work item itself, each `noted` and `text`.
+- Feature (12 keys): `about`, `bucket`, `commit`, `criteria`, `description`, `id`,
+  `kind`, `knowledge`, `reason`, `title`, `waiting_on`, `work_items`. `criteria` holds
+  `met`, `number`, `realized_by` and `text`; `work_items` holds `bucket`, `id` and
+  `title`; its knowledge lines are those of a work item.
+- Term (10 keys): `added`, `is_a`, `items`, `kind`, `kinds`, `knowledge`, `meaning`,
+  `name`, `part_of`, `parts`. Each knowledge line holds `about`, `governs`, `item`,
+  `kind`, `mark`, `noted`, `ref`, `supersedes` and `text`, as `fgraph knowledge --format
+  json` lists one.
+
 ## Status as JSON
 
 `fgraph status --format json` is a second formatter of the rows `fgraph status` lists, the

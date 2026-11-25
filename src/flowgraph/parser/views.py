@@ -51,6 +51,6 @@ def view_said(
             return Said(goal_output(args.id, args.hours, store, config.development))
         case "show":
             check_archived(args.id, config.archive, record)
-            return Said(show_any_item(args.id, store))
+            return Said(show_any_item(args.id, store, args.format))
         case _:
             return None

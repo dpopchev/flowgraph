@@ -47,3 +47,8 @@ kind = "finding"
 text = "Open, decided when Q-0003 is answered: whether this Story stands, becomes the Bugs Q-0003 names, is cut to a guard test, or is removed with F-0026."
 noted = 2026-11-25 08:06:23+00:00
 mark = "open"
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25: add first-pass Tasks to each work item of F-0026 to F-0029, and review them once U-0018 and Q-0003 are completed. The Tasks of S-0166 (its three Tasks) are that first pass, written by the coordinator before either was completed: they assume Q-0003 sees two adds give one id, and take one lock for the add of a Task alone. The coordinator reviews them once U-0018 and Q-0003 are completed and before S-0166 starts, and notes the review here as a decision naming each Task kept, amended or removed; until that line is here, S-0166 is not started."
+noted = 2026-11-25 08:17:11+00:00

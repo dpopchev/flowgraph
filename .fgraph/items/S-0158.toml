@@ -46,12 +46,13 @@ commit = "0386a326f76d3e42bbed5e7dad911b1250753bd8"
 
 [[tasks]]
 id = "T-0710"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say fgraph mcp serves five reads as tools, each the JSON its command prints"
 description = "Read the decision of Q-0002 first (uv run fgraph show q2); if it answers no or names another design than this one -- a server written by hand on the standard library and pydantic, one server for main and every worktree, each call a run of fgraph in process in the directory it names -- stop and say so. Change README.md and docs/domain-model.md only (line counts move with every Story before this one: find each passage by grep, never by line number); plain ASCII; no source or test change. Keep the words the five reads of fgraph mcp on one line in each file: the check greps them. docs/domain-model.md, ## Tools over stdio (grep -n '^## Tools over stdio' docs/domain-model.md), right after the paragraph S-0157 wrote that holds each call is a run of fgraph in the directory it names: one paragraph -- the five reads of fgraph mcp (S-0158) are status (directory), brief (directory, id), show (directory, id: a work item, a Feature or a term), knowledge (directory) and about (directory, id: a work item, a Feature, a term or a file), each the command of its name with --format json, so a call is given the same bytes as the command prints there, the documents of Brief, Show as JSON, Status as JSON and of fgraph knowledge and fgraph about named in those sections; they write nothing and take no lock; knowledge takes no filter, an agent reading the lines it needs from the document; an id the record does not hold, as S-0009, is given back as a tool error holding the one line fgraph prints, fgraph: error: no Story S-0009 in the record; the tools are READ_TOOLS of src/flowgraph/mcp/reads.py. README.md: in the paragraph on fgraph mcp S-0157 added (grep -n 'claude mcp add fgraph -- fgraph mcp' README.md finds the block under it), one sentence: the five reads of fgraph mcp are status, brief, show, knowledge and about, each given the JSON its command prints with --format json; and in its sh block the comment line of the tool status becomes # the session lists the tools of fgraph, as mcp__fgraph__status and mcp__fgraph__brief. Keep each edit inside its paragraph or block."
 check = "grep -q 'the five reads of fgraph mcp' README.md && grep -q 'the five reads of fgraph mcp' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, Tools over stdio, says the five reads of fgraph mcp -- status, brief, show, knowledge and about -- with their arguments and the command each runs with --format json, and that an id the record does not hold is a tool error holding the one line of the refusal; README.md says it in the paragraph on fgraph mcp, with the names of the five tools"
 created = 2026-11-24 23:47:55+00:00
+started = 2026-11-25 09:31:40+00:00
 
 [[knowledge]]
 kind = "decision"

@@ -43,3 +43,9 @@ created = 2026-11-25 10:09:40+00:00
 kind = "decision"
 text = "The developer said on 2026-11-25: put Tasks on the work items of Phase 3; those will be reviewed before the phase starts. The Tasks of B-0037 (its 3 Tasks: T-0782, T-0783, T-0785) are that first pass, drafted that day by a read-only subagent against the code of main at 2dc58f08 and filed by the coordinator, who checked their shape -- the opening sentence, the check, that the files they name are on the disk or said to be new -- and read their titles, outputs, checks and open points, not every description. They are reviewed before Phase 3 starts, the review noted here as a decision naming each Task kept, amended or removed; until that line is here, B-0037 is not started."
 noted = 2026-11-25 10:10:46+00:00
+
+[[knowledge]]
+kind = "finding"
+text = "Open at the review of its first-pass Tasks, from their draft of 2026-11-25: (1) src/flowgraph/parser/command.py is at 242 of the 250 lines make lines holds (2026-11-25) and passing args.supersedes makes ruff split the call to about 249: Phase 2 may grow the file first. The other shapes: note_progress given the whole Namespace (it would then read about, governs, mark and supersedes itself), or a step Task that moves the case of note out of command.py first. (2) Reproduced on 2026-11-25 in a throwaway record (fgraph of main): note S-0001 --progress 'a text' --supersedes S-0001#1 exits 0 and keeps the progress line, the option dropped, as B-0037 observed."
+noted = 2026-11-25 10:11:17+00:00
+mark = "open"

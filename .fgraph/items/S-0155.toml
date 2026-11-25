@@ -11,6 +11,11 @@ completed = 2026-11-25 01:38:25+00:00
 agent = "haiku-s155"
 commit = "da5dadf5"
 
+[verified]
+answer = "yes"
+text = "at da5dadf5 on main, the merge of wi/S-0155-raise-the-knowledge-lines, with fgraph of main after the three landings of F-0018 in a throwaway repository with a decision that governs a file and is about a term and an open finding: fgraph knowledge --format json, alone and with --kind decision, --about gate, --search slow and --live, printed one JSON document whose lines hold the refs the text lists for the same options, in its order, each line with about, governs, item, kind, mark, noted, ref, supersedes and text, the same bytes on two runs; --format xml exited 2 with fgraph: error: --format 'xml' is not text or json, the two formats of knowledge. Before the landing, in the worktree, make check said 5231 passed and 14 failed, the same 14 of the temporary directory, which passed with it outside any repository"
+on = 2026-11-25 01:41:32+00:00
+
 [criterion]
 given = "a record with a finding, a decision and a deviation, one about a term and one governing a file"
 when = "fgraph knowledge is run with --format json, alone and with --kind, --about, --search and --live"

@@ -133,3 +133,8 @@ task = "T-0705"
 text = "red: test_mcp_run.py 5 failed (run() has no serve, argparse refuses mcp, SystemExit 2); test_mcp_status.py 11 failed, 2 passed under --runxfail (fgraph mcp exits 2, invalid choice)"
 noted = 2026-11-25 09:04:55+00:00
 task = "T-0706"
+
+[[progress]]
+text = "red: the check fails before the edit (grep of the phrase in README.md exits 1)"
+noted = 2026-11-25 09:07:57+00:00
+task = "T-0707"

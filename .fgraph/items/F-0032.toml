@@ -9,3 +9,9 @@ criteria = [
     "a developer runs make check and it refuses a subpackage that imports one importing it back",
     "a developer reads what a work item waits for in one function",
 ]
+
+[[knowledge]]
+kind = "finding"
+text = "Open, for the developer, asked with the draft of 2026-11-25 and not answered: what the exit gate of the first pass, zero imperative write imports to sibling aggregates, is held to. feature/, item/ and knowledge/ import the Store of record/store.py, a dataclass of callables, and work_item/, feature/ and item/ read and write their own files. The reading of the coordinator: the gate is the Then of U-0019, no subpackage importing one that imports it back, checked by make check; the decision of Q-0004 names it."
+noted = 2026-11-25 09:04:31+00:00
+mark = "open"

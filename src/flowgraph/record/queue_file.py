@@ -7,6 +7,7 @@ from pathlib import Path
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 from flowgraph.item import write_checked
+from flowgraph.item.file_refusal import file_refusal
 from flowgraph.parent import FeatureIdError, parse_feature_id
 from flowgraph.record.queue import Placed, Queue, QueueError, make_queue, placed_text
 from flowgraph.work_item import Kind, WorkItemIdError, parse_work_item_id
@@ -58,11 +59,13 @@ def _queue_held(content: str, kinds: Sequence[Kind]) -> Queue:
 
 
 def _read_file(path: Path, kinds: Sequence[Kind]) -> Queue:
-    """The queue one file holds; raises QueueFileError naming it."""
+    """The queue one file holds; raises QueueFileError naming it, a refused key in one line."""
     content = path.read_text(encoding="utf-8")
     try:
         return _queue_held(content, kinds)
-    except (tomllib.TOMLDecodeError, ValidationError, QueueError) as error:
+    except ValidationError as error:
+        raise QueueFileError(f"{path} holds no queue: {file_refusal(error)}") from error
+    except (tomllib.TOMLDecodeError, QueueError) as error:
         raise QueueFileError(f"{path} holds no queue: {error}") from error
 
 

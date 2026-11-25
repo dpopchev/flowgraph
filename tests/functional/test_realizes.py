@@ -47,7 +47,7 @@ STARTED = (
 )
 NO_REALIZES = (
     "fgraph: error: F-0001 has no realizes: "
-    "a Feature is amended by its title, its description and its criteria"
+    "a Feature is amended by its title, its description, its criteria and its terms"
 )
 KINDS = {
     "upkeep": ("U-0001", ["add", "upkeep", "a title", *CRITERION]),

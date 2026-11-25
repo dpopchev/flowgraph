@@ -1,0 +1,11 @@
+id = "U-0031"
+state = "backlog"
+title = "Cut the files the runs of the suite leave under the temporary directory of the machine from every one of every run to those of the last three"
+description = "Found by the coordinator on 2026-11-25 under the /goal of Phase 1: three agents each ran make check at one time and /tmp ran out of inodes; /tmp/pytest-of-dimitar held 1,008,011 of them, in run directories going back to the morning of 2026-11-24, so the runs before were never cleared; every later test failed in its fixture with no word of the cause, and no command could start. Worked around that night by giving each run a TMPDIR of its own outside /tmp and outside every git work tree, which 14 tests need. Open: why pytest left the old runs, and whether the suite sets its base temporary directory itself. Filed at the end of the Backlog, outside Phase 1. Its Tasks are written when it is ordered."
+complexity = "low"
+created = 2026-11-25 03:43:31+00:00
+
+[criterion]
+given = "a machine whose /tmp is a tmpfs of 1,048,576 inodes, and the suite of this repository, whose functional tests each make a git repository under tmp_path"
+when = "make check is run several times, some of them at one time or ended by a signal"
+then = "the directory pytest keeps under the temporary directory holds the files of its last three runs at most, as pytest means it to, and a run on a full one fails saying the temporary directory is full"

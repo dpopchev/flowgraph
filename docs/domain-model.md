@@ -659,8 +659,9 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
   criterion it had unless `--realizes` is given with it, which is checked
   against the Feature it is put under.
 - A Feature in Backlog is amended too, the reading of S-0057: `amend` of its
-  id rewrites its title, its description and its criteria, one alone or
-  several together, and a part it does not name stays as it was. `--criterion`
+  id rewrites its title, its description, its criteria and its terms (`--about`),
+  one alone or several together, and a part it does not name stays as it was.
+  `--criterion`
   is given once per criterion, as an `add` takes it, and the ones given
   replace the ones the Feature had, whole: none is added to them and none is
   rewritten alone. Each part goes through the constructor an `add` uses, so a
@@ -683,7 +684,7 @@ Backlog is amended through `fgraph`. Agreed by the developer on 2026-11-21.
   does not hold. The parts of a work item are not those of a Feature:
   `--given`, `--when`, `--then`, `--observed`, `--expected`, `--hypothesis`
   and `--parent` given to one are refused naming them, `F-0001 has no given,
-  then: a Feature is amended by its title, its description and its criteria`,
+  then: a Feature is amended by its title, its description, its criteria and its terms`,
   and `--criterion` given to a work item is refused the other way round,
   `S-0001 has no criteria: only a Feature states them`. Nothing is written
   then, the other parts named beside it neither.
@@ -740,8 +741,8 @@ and `--depends-on none` alone takes them all away.
   that would close a cycle, `S-0001 cannot depend on S-0003: it would close a
   cycle`, whether S-0003 depends on S-0001 directly or through others. `none`
   given with an id is refused, `none stands alone: it takes every dependency
-  away`. A Feature is amended by its title, its description and its criteria,
-  so `--depends-on` given to one is refused as a part it has not.
+  away`. A Feature is amended by its title, its description, its criteria and its
+  terms, so `--depends-on` given to one is refused as a part it has not.
 - `fgraph show` lists `depends on` with each id and the bucket it is in now,
   `S-0001 (backlog)`, after the parent, and lists none for a work item that
   depends on none. The file holds the ids as `depends_on = ["S-0001"]`, only
@@ -864,6 +865,10 @@ fails is refused with exit 2, nothing written and no traceback, in one line that
 file that holds it:
 `fgraph: error: <path>: <relation> names <id>, which is not in the record`, or
 `fgraph: error: <path>: <relation> closes a cycle: S-0001 -> S-0002 -> S-0001`.
+An `amends` must name a completed work item at the read as at the write (B-0028): an amends of a
+work item in Backlog, started, blocked or removed, as a file edited by hand or merged can hold, is
+refused the same way, `fgraph: error: <path>: amends names S-0001, which is not completed`; the
+read takes the bucket of the work item from the record as the worktrees compose it, as the write does.
 
 ## About
 
@@ -1033,9 +1038,11 @@ criterion. It is added and then it stands.
 - A term holds its name, its meaning and the time it was added. Its name is its id:
   lowercase words of letters and digits joined by `-`, as `gate` or `work-item`.
   A name that reads as the id of an item, as `S-0001` or `F-0001`, is refused, so
-  an id names one thing, and so is a name that is no such words. A term named as a
-  spelling of an id a command reads, as `f15`, is shadowed by the id: the command
-  reads it as the id, never as the term.
+  an id names one thing, and so is a name that is no such words. A name that is a
+  spelling of an id a command reads, as `f15` or `s3`, is refused at the add (S-0124):
+  `'f15' reads as the id F-0015: a term name is no id`. A term of such a name a record
+  holds already, added before, is read as before, and a command still reads the name
+  as the id, never as the term.
 - A meaning says something: a blank one is refused naming the part, as the
   blank part of an item is.
 - One file per term, `terms/gate.toml` in the record, with `name`, `meaning` and
@@ -1069,7 +1076,10 @@ criterion. It is added and then it stands.
   found as for the work items that depend on one another: the second term reaches
   the first through relations of the same kind.
 - `fgraph relate` is a write of a term, so it is on `main` alone as `fgraph add
-  term` is, and refused on the branch of a work item the same way.
+  term` is, and refused on the branch of a work item the same way, with its own
+  word: `gate is not related here: the branch wi/S-0001-a-slug writes S-0001 alone`,
+  the refusal of `add term` being `... is not added here: ...`. A term the record
+  holds is refused as related, a new one as added.
 - A work item, a Feature and a line of knowledge name the terms they are about,
   each by its name. The item or the line stores them, as `about`, a list of names
   in the order given, each once, in its file: at the top of the file of the item
@@ -1460,7 +1470,9 @@ and its merge tool.
   other work item is noted on `main`. Refused, exit 2 and nothing written: a
   Feature (`F-0001 keeps no progress line: fgraph note --progress takes a work
   item or a Task of it`), `--about` or `--governs` (`a progress line takes no
-  --about and no --governs: it is no knowledge line`), a blank text (`text is
+  --about and no --governs: it is no knowledge line`), `--standing` or `--open`
+  (`a progress line takes no --standing: it is no knowledge line`: a mark is for
+  a knowledge line, and a progress line keeps none), a blank text (`text is
   empty`) and an id the record does not hold (`no Task T-0009 in the record`,
   `no Story S-0009 in the record`). `fgraph show` lists the lines of a Task under
   it as `progress`, with the day and the text, and those of the work item under
@@ -2108,6 +2120,20 @@ and its merge tool.
   nothing written, one line naming the file and why, `fgraph: error:
   <path> holds no Story: <why>`, `holds no Feature: <why>` or `holds no
   queue: <why>`, never a Python traceback.
+- A file of a work item, of a Feature, of a term or the queue that holds a
+  key the model does not take, or a state it does not know, or lacks a key
+  its state takes, is refused in one line in the words of fgraph naming the
+  file and the key or the state (S-0109), the first such error alone: `fgraph:
+  error: <path> holds no Story: token is no key of the state backlog`,
+  `holds no Story: started is missing, which the state blocked takes`,
+  `holds no Story: state is "doing": it takes backlog, started, blocked,
+  completed or removed`, `holds no term: token is no key of the file`; a
+  value of the wrong type is named with its value and the message of the
+  validator, `title is 3 in the state backlog: Input should be a valid
+  string`; never the lines of the validator nor its link to errors.pydantic.dev,
+  as before 2026-11-24. The words are `file_refusal` of
+  `src/flowgraph/item/file_refusal.py`, the shape of the refusal of a
+  `config.toml`.
 - Each time of a file -- created, started, since, completed, removed, noted,
   the `on` of verified, the added of a term -- is read with its offset. A
   file that writes one without, a day alone as `created = 2026-10-11` or a
@@ -3252,7 +3278,7 @@ the validator; a time with no offset is refused in the one line alone.
 | a `token` | refused | `backlog.token Extra inputs are not permitted` |
 | `filed_during = "T-0001"` | refused | `filed during names T-0001, which is not a bug or spike or story or upkeep` |
 | `amends = "F-0001/AC1"` | refused | `amends names F-0001/AC1, which is not in the record` |
-| `amends` a work item in Backlog | read | `amends S-0001`, `amended by S-0002`: the write refuses it, the read does not |
+| `amends` a work item in Backlog | read as of the probe; refused since B-0028 | `amends S-0001`, `amended by S-0002`: the write refused it and the read did not; since B-0028 exit 2: `fgraph: error: <file>: amends names S-0001, which is not completed` |
 | a knowledge line with `type`, `supersedes` | refused | `backlog.knowledge.0.type Extra inputs are not permitted` |
 | `about` a term not in the record | refused | `about names landing, which is not in the record` |
 | a term with an old `added` | read | `terms (1) landing` |

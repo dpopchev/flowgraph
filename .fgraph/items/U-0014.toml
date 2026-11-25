@@ -1,10 +1,19 @@
 id = "U-0014"
-state = "backlog"
+state = "completed"
 title = "Raise the refusals of fgraph relate on the branch of a work item that a test proves, in words that say the term is related, from none to one"
 description = "Found during T-0295 of S-0071 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. relate reuses save_term of src/flowgraph/scope.py, so the refusal reads gate is not added here, and no test proves it. Its Tasks are written when it is ordered."
 parent = "F-0023"
 complexity = "low"
 created = 2026-11-22 16:55:40+00:00
+started = 2026-11-25 02:29:48+00:00
+completed = 2026-11-25 03:09:09+00:00
+agent = "haiku-u14"
+commit = "a668cbb5"
+
+[verified]
+answer = "yes"
+text = "at a668cbb5 on main, the merge of wi/U-0014-raise-the-refusals-of, with fgraph of main in a throwaway repository with the development on, the terms gate and lane on main and S-0001 started: fgraph relate gate part-of lane run in the worktree of S-0001 exited 2 with fgraph: error: gate is not related here: the branch wi/S-0001-a-title writes S-0001 alone, nothing written; fgraph add term there still says new-term is not added here; on main the relate printed related gate part-of lane. The agent saw the test print added before the change and related after. Before the landing, in the worktree: 48 tests of the scope and the terms passed, ruff, the line limit and pyright clean, src/flowgraph/development/scope.py at 243 lines, and the agent's make check said 5516 passed"
+on = 2026-11-25 03:10:34+00:00
 
 [criterion]
 given = "the worktree of a started work item"
@@ -13,21 +22,27 @@ then = "it exits 2 naming the work item the branch owns and saying the term is n
 
 [[tasks]]
 id = "T-0669"
-state = "backlog"
+state = "completed"
 title = "Refuse fgraph relate on the branch of a work item as `gate is not related here`, in src/flowgraph/development/scope.py with the tests that prove it"
 description = "Today (2026-11-24, a throwaway git repository with the development on, S-0001 started, terms gate and lane on main): in the worktree project.worktrees/S-0001-raise-the-stories-fgraph, fgraph relate gate part-of lane prints `fgraph: error: gate is not added here: the branch wi/S-0001-raise-the-stories-fgraph writes S-0001 alone`, exit 2 (no test states it); fgraph add term other --means m there prints `fgraph: error: other is not added here: ...` (tests/functional/test_term_worktree.py states it) and on main fgraph relate gate part-of lane prints `related gate part-of lane`. Files this Task may change: src/flowgraph/development/scope.py (240 lines on 2026-11-24, 242 after; make lines holds 250), tests/development/scope/test_scope.py (161 lines, about 195 after), tests/functional/test_term_worktree.py (145, about 175 after). Red first: write the three tests below and see them fail for the reason in their name before the source changes: the printed word is added, not related. Source: in within of src/flowgraph/development/scope.py (grep -n 'is not added here'), the inner save_term, inside `if scope is not None:`, reads whether the term is held and words the verb: held = term.name in store.terms.find_term_names(); what = \"related\" if held else \"added\"; raise OutOfScopeError(f\"{term.name} is not {what} here: {_alone(scope)}\"). A term saved that the record holds is a relation (add_term_item refuses a name held, so only relate_term_item saves one); the read is made on the refusal path alone, so a save on main asks for nothing; update the docstring of within in one clause (a term is refused as added or, when the record holds it, as related). Tests in tests/development/scope/test_scope.py (marker command is its pytestmark, one assert each; add the imports from flowgraph.record.store import TermStore and from flowgraph.term import Term, make_term; GATE = make_term(\"gate\", \"a check\", CREATED); replace is imported; never and store() are there): (a) test_a_term_the_record_holds_is_refused_as_related_naming_the_owner_of_the_branch: within(replace(store([]), terms=TermStore(never, saved.append, lambda: [\"gate\"])), lambda: SCOPE, never).save_term(GATE) raises OutOfScopeError matching rf\"^gate is not related here: the branch {BRANCH} writes S-0001 alone$\" (saved: list[Term] = []); red. (b) test_a_term_the_record_holds_none_of_is_refused_as_added_naming_the_owner_of_the_branch: the same with lambda: [] and the message gate is not added here: ...; guard, passes today. (c) test_a_term_refused_is_not_saved: with the held case, saved == [] after the pytest.raises block, as test_the_settings_refused_are_not_saved does; guard. (d) test_a_branch_no_work_item_owns_saves_a_term: scope lambda: None, saved == [GATE]; guard. To see (a) fail for its reason and the guards mean something, run them before the source edit: (a) must print `gate is not added here` in the failure. Test in tests/functional/test_term_worktree.py (marker functional is its pytestmark; copy nothing, the fixtures checkout, fgraph, Outcome, WORKTREE, BRANCH are there): a constant RELATE = [\"relate\", \"gate\", \"part-of\", \"lane\"]; a class TestATermRelatedOnTheBranchOfAWorkItem after TestATermAddedOnTheBranchOfAWorkItem, its fixture refused = fgraph(RELATE, tmp_path / WORKTREE); test_exits_with_two (status == 2), test_names_the_work_item_the_branch_owns_and_says_the_term_is_not_related (refused.err.endswith(f\"fgraph: error: gate is not related here: the branch {BRANCH} writes S-0001 alone\\n\")), test_writes_no_relation ('lane' not in (tmp_path / 'project' / '.fgraph' / 'terms' / 'gate.toml').read_text(encoding='utf-8')); say the relate in the module docstring (a term added or related on its branch is refused naming the work item the branch owns). Run the class before the source edit: only the second test fails (it prints added), the first and the third pass today as guards of the arrangement. Existing tests: none changes; tests/functional/test_term_worktree.py keeps its add term case (other is not added here) and tests/functional/test_relate_terms.py and tests/functional/test_term_refused.py keep passing; if one fails, stop and say which. Out of bounds: docs/ (the next Task), README.md, src/flowgraph/term/, src/flowgraph/record/, src/flowgraph/parser/, src/flowgraph/cli.py, every other file of src/ and tests/."
 check = "uv run pytest tests/development/scope/test_scope.py tests/functional/test_term_worktree.py tests/functional/test_relate_terms.py tests/functional/test_term_refused.py -q -p no:cacheprovider && grep -q 'not {what} here' src/flowgraph/development/scope.py && make lines"
 expected_output = "changed: src/flowgraph/development/scope.py, within, refuses the save of a term the record already holds as `<term> is not related here: the branch <branch> writes <id> alone` and that of a new term as before, `<term> is not added here: ...`; changed: tests/development/scope/test_scope.py states both and that nothing is saved; changed: tests/functional/test_term_worktree.py states that fgraph relate gate part-of lane in the worktree of started S-0001 exits 2 with the last error line fgraph: error: gate is not related here: the branch wi/S-0001-raise-the-stories-fgraph writes S-0001 alone and writes no relation"
 created = 2026-11-24 22:08:38+00:00
+started = 2026-11-25 02:32:48+00:00
+completed = 2026-11-25 02:37:07+00:00
+commit = "c0217e75"
 
 [[tasks]]
 id = "T-0670"
-state = "backlog"
+state = "completed"
 title = "Update docs/domain-model.md to say fgraph relate on the branch of a work item is refused as not related here"
 description = "Change docs/domain-model.md only (3343 lines on 2026-11-24); find the passage by grep -n 'fgraph relate` is a write of a term' docs/domain-model.md, never by line number; plain ASCII; no source or test change. The bullet reads: fgraph relate is a write of a term, so it is on main alone as fgraph add term is, and refused on the branch of a work item the same way. Add after the same way: with its own word, `gate is not related here: the branch wi/S-0001-a-slug writes S-0001 alone`, the refusal of add term being `... is not added here: ...`; a term the record holds is refused as related, a new one as added (within of src/flowgraph/development/scope.py). Keep the edit inside that bullet. README.md states no such refusal (grep -n 'not added here' README.md finds nothing) and stays. Out of bounds: README.md, every file of src/ and tests/."
 check = "grep -q 'is not related here' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, in the bullet that says fgraph relate is a write of a term, gives the refusal gate is not related here: the branch wi/S-0001-a-slug writes S-0001 alone beside the add term one"
 created = 2026-11-24 22:08:52+00:00
+started = 2026-11-25 02:37:38+00:00
+completed = 2026-11-25 02:38:50+00:00
+commit = "97816d3d00f4ad40031990e0059bc23dfb70e8d8"
 
 [[knowledge]]
 kind = "decision"

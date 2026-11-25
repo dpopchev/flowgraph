@@ -116,8 +116,8 @@ def amended_feature(
 def _of_feature(named: str, parts: Amendment, criteria: Sequence[str] | None) -> FeatureAmendment:
     """The amendment of the Feature of that name the parts of an amend and its criteria state.
 
-    Every part of an amend but its title and its description is one of a work item. Raises
-    NoSuchPartError naming the ones given.
+    Every part of an amend but its title, its description and its terms is one of a work
+    item; the criteria are given beside the parts. Raises NoSuchPartError naming the ones given.
     """
     taken = {part.name for part in fields(FeatureAmendment)}
     foreign = [
@@ -127,7 +127,7 @@ def _of_feature(named: str, parts: Amendment, criteria: Sequence[str] | None) ->
     ]
     if foreign:
         listed = ", ".join(foreign)
-        only = "a Feature is amended by its title, its description and its criteria"
+        only = "a Feature is amended by its title, its description, its criteria and its terms"
         raise NoSuchPartError(f"{named} has no {listed}: {only}")
     stated = None if criteria is None else tuple(criteria)
     return FeatureAmendment(parts.title, parts.description, stated, parts.about)

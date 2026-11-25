@@ -1,10 +1,19 @@
 id = "U-0017"
-state = "backlog"
+state = "completed"
 title = "Raise the things the help of fgraph about names from an item alone to an item, a term and a file"
 description = "Found during T-0308 of S-0075 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. src/flowgraph/parser.py still says the links of a work item or a Feature, with the metavar ID, since S-0074. Its Tasks are written when it is ordered."
 parent = "F-0023"
 complexity = "low"
 created = 2026-11-22 17:54:57+00:00
+started = 2026-11-25 02:43:08+00:00
+completed = 2026-11-25 03:13:51+00:00
+agent = "haiku-u17"
+commit = "0ee2dc19"
+
+[verified]
+answer = "yes"
+text = "at 0ee2dc19 on main, the merge of wi/U-0017-raise-the-things-the, with fgraph of main: fgraph --help lists about as list the links of a work item, a Feature, a term or a file, by relation, and fgraph about --help says of ID the id of the work item or of the Feature, the name of the term or the path of the file. Before the landing, in the worktree: 257 tests of the parser and the help passed, ruff, the line limit and pyright clean, and the agent's make check, run again after a lint fix of its own line, said 5519 passed"
+on = 2026-11-25 03:14:30+00:00
 
 [criterion]
 given = "main, where fgraph about answers for an item, a term and a file since S-0075"
@@ -13,12 +22,15 @@ then = "its description and its argument name a work item or a Feature, a term a
 
 [[tasks]]
 id = "T-0671"
-state = "backlog"
+state = "completed"
 title = "Name a work item, a Feature, a term and a file in the summary and the argument of fgraph about, in src/flowgraph/parser/item_commands.py and tests/parser/test_help.py"
 description = "Today (2026-11-24) fgraph --help lists `about         list the links of a work item or a Feature, by relation` and fgraph about --help prints `usage: fgraph about [-h] ID`, then `ID          the id of the work item or of the Feature` and the -h line; the command has no description of its own beside its summary, which only the menu of fgraph --help shows (new_command of src/flowgraph/parser/base.py passes it as help=), so the criterion's description is that summary and its argument is the help of ID. Files this Task may change: src/flowgraph/parser/item_commands.py (193 lines on 2026-11-24, the same after) and tests/parser/test_help.py (118 lines, about 135 after). Find the places by grep, never by line number; S-0154 and S-0156 change this same file (show and about get --format) on their own branches, so keep the edit to the two strings: in item_commands, the third argument of the new_command(commands, \"about\", ...) call (grep -n 'list the links of a work item' src/flowgraph/parser/item_commands.py) becomes \"list the links of a work item, a Feature, a term or a file, by relation\" and, in the next statement about.add_argument(\"id\", metavar=\"ID\", help=...) the help becomes \"the id of the work item or of the Feature, the name of the term or the path of the file\"; the metavar stays ID, as show keeps it for an id or a term name. If a line passes 100 columns, let uv run ruff format wrap it. Red first: write the two tests below, see them fail for the reason in their name (the help says work item or a Feature alone), then edit the source. Tests in tests/parser/test_help.py (view is its pytestmark, one assert each, COMMAND_LINE is there; text normalized as \" \".join(text.split()) because argparse wraps help): test_the_menu_lists_about_as_the_links_of_a_work_item_a_feature_a_term_or_a_file: \"list the links of a work item, a Feature, a term or a file, by relation\" in \" \".join(COMMAND_LINE.parser.format_help().split()); test_the_help_of_about_names_the_id_of_an_item_the_name_of_a_term_and_the_path_of_a_file: \"the id of the work item or of the Feature, the name of the term or the path of the file\" in \" \".join(COMMAND_LINE.commands[\"about\",].format_help().split()). Both hold after S-0156 adds its --format argument, since they read a substring. Existing tests: none changes; no test, README.md or docs/ states the old summary (grep -rn 'links of a work item' tests README.md docs finds a docstring of tests/functional/test_about_item.py and the README table line, which are not the help); if one fails, stop and say which. README.md and docs/domain-model.md name no help line of about, so no doc Task. Out of bounds: src/flowgraph/parser/base.py, src/flowgraph/about/, README.md, docs/, every other file of src/ and tests/."
 check = "uv run pytest tests/parser/test_help.py -q -p no:cacheprovider && uv run fgraph --help | tr -s ' \\n' ' ' | grep -q 'a term or a file, by relation' && uv run fgraph about --help | tr -s ' \\n' ' ' | grep -q 'the name of the term or the path of the file' && make lines"
 expected_output = "changed: src/flowgraph/parser/item_commands.py words the summary of about, the line fgraph --help lists, as `list the links of a work item, a Feature, a term or a file, by relation` and the help of its ID argument, the line fgraph about --help lists, as `the id of the work item or of the Feature, the name of the term or the path of the file`; changed: tests/parser/test_help.py states both lines; no other command and no other word of about changes"
 created = 2026-11-24 22:09:05+00:00
+started = 2026-11-25 02:47:15+00:00
+completed = 2026-11-25 02:49:15+00:00
+commit = "d597f2268527ea35daf1b1604e15ab8bb772b1f3"
 
 [[knowledge]]
 kind = "decision"

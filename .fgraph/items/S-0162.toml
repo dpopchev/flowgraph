@@ -40,12 +40,13 @@ commit = "3ba446b52650f107333b958ec0dee3b2b5c11beb"
 
 [[tasks]]
 id = "T-0722"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say Governed by of fgraph brief lists the live lines alone"
 description = "Change README.md and docs/domain-model.md only; find each passage by grep, never by line number; plain ASCII; no source or test change. Keep the words a line a later line supersedes is left out on one line in each file: the check greps them. docs/domain-model.md: grep -n 'Governed by`: every knowledge line' finds the bullet of the brief; it becomes: `Governed by`: every live knowledge line of the record that governs a path one of the Tasks of the work item names, last noted first; a line a later line supersedes is left out (S-0162), by `live_entries`, the rule of `fgraph knowledge --live`, where `fgraph about` of a file lists every one. README.md: grep -n 'prints the whole brief of a work item' finds the paragraph; right after its sentence A section with nothing in it is left out. add the sentence: Under `Governed by` a line a later line supersedes is left out; `fgraph about` of a file lists every one. Leave the lines of the paragraph before that sentence as they are, S-0163 finds one of them by grep; reflow only from the added sentence on. The example block stays. If grep -n 'S-0162' of the two files finds another line when this Task runs (none on 2026-11-25), make it true and say so."
 check = "grep -q 'a line a later line supersedes is left out' README.md && grep -q 'a line a later line supersedes is left out' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, in the bullet of Governed by of the brief, and README.md, in the paragraph that opens fgraph brief prints the whole brief, say the lines under Governed by are the live ones, a line a later line supersedes is left out, and that fgraph about of a file lists every one"
 created = 2026-11-25 06:45:24+00:00
+started = 2026-11-25 06:56:46+00:00
 
 [[knowledge]]
 kind = "decision"

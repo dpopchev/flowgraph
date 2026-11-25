@@ -17,13 +17,15 @@ then = "it exits 2 saying the name reads as the id F-0015, and a record that hol
 
 [[tasks]]
 id = "T-0691"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_term_name_of_an_id.py, failing on the criterion of S-0124"
 description = "One new file, no source change: tests/functional/test_term_name_of_an_id.py (about 75 lines), functional as its pytestmark, one assert per test, through run() of src/flowgraph/cli.py with open_store=open_files, open_git=lambda _: None and no git. Seen on 2026-11-24 in a throwaway record with fgraph of main (692df24): fgraph add term f15 --means 'a thing' and fgraph add term s3 --means 'a thing' each print added f15 (added s3) and exit 0, fgraph terms lists both, and fgraph show f15 exits 2 with no Feature F-0015 in the record: the name is shadowed by the id. Copy fgraph(argv, cwd) and NOW from tests/functional/test_term_refused.py (it returns status, out, err). XFAIL = pytest.mark.xfail(strict=True, reason='S-0124: a term name that reads as an id is added'). Red tests, each under XFAIL: (1) parametrized (name, id) with ids f15, s3, t7, q4: ('f15', 'F-0015'), ('s3', 'S-0003'), ('t7', 'T-0007'), ('q4', 'Q-0004'): (status, err.splitlines()[-1:]) of add term <name> --means 'a meaning' == (2, [f\"fgraph: error: '{name}' reads as the id {id}: a term name is no id\"]); (2) after the refused add term f15, (tmp_path / '.fgraph' / 'terms').exists() is False. Guards, no mark, passing today and after: (3) a record holding a term f15 written before: .fgraph/terms/f15.toml written by hand with the three lines name = \"f15\", meaning = \"a meaning\", added = 2026-01-01T00:00:00Z, as tests/term/test_term_file.py writes a term; fgraph terms gives (0, 'f15  a meaning\\n', ''); (4) parametrized on name f0, x15 and f15a, names that spell no id (id_spelled of src/flowgraph/item/id.py gives each back unchanged, checked on 2026-11-24): add term <name> --means 'a meaning' gives status 0 and the output f'added {name}\\n'. See each marked test fail under --runxfail on the property in its name, none on the arrangement. Existing tests: none changes; if one fails, stop and say which. Out of bounds: every file under src/, every other test file, the docs."
 check = "uv run pytest tests/functional/test_term_name_of_an_id.py -q -p no:cacheprovider && grep -q xfail tests/functional/test_term_name_of_an_id.py"
 expected_output = "created: tests/functional/test_term_name_of_an_id.py states that fgraph add term f15, s3, t7 and q4 each exit 2 with the last error line fgraph: error: 'f15' reads as the id F-0015: a term name is no id (S-0003, T-0007, Q-0004) and write no term; and, as guards, that a record holding a term f15 written before is read and listed by fgraph terms as before, and that f0, x15 and f15a are added. Each red test carries a strict xfail naming S-0124"
 created = 2026-11-24 22:18:21+00:00
 started = 2026-11-25 01:46:29+00:00
+completed = 2026-11-25 01:47:48+00:00
+commit = "e0001f55b887aeda09632859be583708ef3ddaa9"
 
 [[tasks]]
 id = "T-0692"

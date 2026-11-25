@@ -41,3 +41,8 @@ description = "Change README.md and docs/domain-model.md only; find each passage
 check = "grep -q 'with no id the tool start takes the first line of the Backlog that can start' README.md && grep -q 'with no id the tool start takes the first line of the Backlog that can start' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, Tools over stdio, and README.md, in the paragraph on the moves of fgraph mcp, say the id of the tool start is optional and that with no id the tool start takes the first line of the Backlog that can start, as fgraph start --agent does, and that the status tool holds next_to_start, the line it would take"
 created = 2026-11-25 06:49:07+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, on the word of the developer of that day, write the tasks as well and make it ready; the developer reviews them at the close: (1) No tool of its own: the tool start of S-0159 takes its id as optional, and a call with no id runs fgraph start --agent NAME, the claim S-0113 and S-0121 built, atomic by B-0036. (2) No next tool: fgraph status --format json holds next_to_start and can_start, which the status tool of S-0157 returns. (3) A refusal of the start -- nothing can start, no complexity under development.driver = agent, the limit of development.parallel -- is relayed as its one line; the functional test compares it with the line of the command itself. (4) Its Tasks name modules S-0159 has not written yet: they are read again before F-0025 starts."
+noted = 2026-11-25 06:49:15+00:00

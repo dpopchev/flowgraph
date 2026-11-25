@@ -50,3 +50,8 @@ description = "FIRST PASS, written on 2026-11-25 before Phases 2 and 3 were comp
 check = "grep -q 'select subject, kind, object from edges' README.md && grep -q 'the table edges' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, Graph, and README.md, after the example of fgraph graph with jq, say that the table edges of .fgraph/.cache/index.sqlite3 holds one row for each edge fgraph graph exports, its columns subject, kind and object, written with the parse of the file that names it, with a query of it by sqlite3"
 created = 2026-11-25 11:02:20+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25, on the draft of Phase 4 that offered its first-pass Tasks: great, file them. The Tasks of S-0175 (its 4 Tasks: T-0859, T-0860, T-0861, T-0862) are that first pass, drafted that day by a read-only subagent against the code of main at 0ecab493, before Phases 2 and 3 were completed, and filed by the coordinator, who checked their shape -- the opening sentence, the check, the ids they name -- and read their titles, outputs, checks and open points, not every description. They are reviewed before Phase 4 starts, the review noted here as a decision naming each Task kept, amended or removed; until that line is here, S-0175 is not started."
+noted = 2026-11-25 11:02:41+00:00

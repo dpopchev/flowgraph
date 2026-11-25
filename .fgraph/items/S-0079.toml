@@ -1,5 +1,5 @@
 id = "S-0079"
-state = "started"
+state = "completed"
 title = "Raise the refusal of fgraph start of a work item under a Feature not started from naming the Feature to naming the command that starts it"
 description = "Found during T-0301 of S-0073 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. It says S-0001 cannot start: F-0001 is not started, start it first. Its Tasks are written when it is ordered."
 parent = "F-0023"
@@ -7,7 +7,9 @@ realizes = 2
 complexity = "low"
 created = 2026-11-22 17:29:55+00:00
 started = 2026-11-25 01:42:47+00:00
+completed = 2026-11-25 06:39:56+00:00
 agent = "haiku-s79"
+commit = "361bf131"
 
 [criterion]
 given = "a Story under a Feature in Backlog"

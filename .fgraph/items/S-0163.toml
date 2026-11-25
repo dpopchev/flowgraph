@@ -65,3 +65,8 @@ task = "T-0723"
 text = "red: 2 failed, 2 passed, 1 warning in 1.61s"
 noted = 2026-11-25 07:11:49+00:00
 task = "T-0724"
+
+[[progress]]
+text = "red: grep exits 1 with the phrase absent from both files"
+noted = 2026-11-25 07:14:11+00:00
+task = "T-0725"

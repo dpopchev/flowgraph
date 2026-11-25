@@ -66,3 +66,8 @@ task = "T-0730"
 text = "red: 12 failed, 18 passed (the commit tool is not in MOVE_TOOLS: the names test and the three commit argv tests fail on the missing tool, the eight functional value tests fail on Unknown tool: commit, the guards pass)"
 noted = 2026-11-25 10:19:57+00:00
 task = "T-0731"
+
+[[progress]]
+text = "red: the docs check fails, 2 of 2 files hold no commit (directory, id, message) (grep -q exits 1 on README.md and on docs/domain-model.md)"
+noted = 2026-11-25 10:23:51+00:00
+task = "T-0732"

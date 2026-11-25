@@ -6,6 +6,9 @@ parent = "F-0024"
 realizes = 3
 complexity = "low"
 created = 2026-11-25 06:33:02+00:00
+depends_on = [
+    "S-0162",
+]
 
 [criterion]
 given = "a knowledge line about a term governs a file a Task of a work item names"

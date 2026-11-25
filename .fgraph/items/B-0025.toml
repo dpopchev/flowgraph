@@ -4,6 +4,7 @@ title = "Cut the moves the tables of docs/domain-model.md list that fgraph does 
 description = "Found by the subagent of T-0372 of Q-0001 on 2026-11-23, read again by the coordinator; filed at the end of the queue and not burned. Open: whether the tables are corrected to what is built or the three moves are built -- the conversion of a board 1 record meets all three (Field map of docs/domain-model.md: a blocked work item, a work item pruned from doing, a pruned Task). Its Tasks are written when it is ordered."
 parent = "F-0033"
 realizes = 5
+complexity = "low"
 created = 2026-11-23 05:25:12+00:00
 filed_during = "Q-0001"
 
@@ -15,3 +16,14 @@ expected = "the two tables and the code agree: each move a table lists is one fg
 kind = "decision"
 text = "The developer said on 2026-11-23, reading a drawn frame of fgraph watch: blocked can be any work item, a Feature among them; I do not see how a Task can be blocked. So the block of a work item, which the tables list and fgraph does not make, is wanted. Open, for the developer: whether fgraph block stops taking a Task, which it takes today beside a Feature."
 noted = 2026-11-23 11:56:30+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25: put Tasks on the work items of Phase 3; those will be reviewed before the phase starts. No Task is drafted for B-0025: the read-only subagent that drafted the Tasks of its Feature against main at 2dc58f08 found nothing of it to build, as its open finding of that day says. The developer decides at the review whether it is removed or written again."
+noted = 2026-11-25 10:05:27+00:00
+
+[[knowledge]]
+kind = "finding"
+text = "Open at the review of its first-pass Tasks, from their draft of 2026-11-25: (1) No Tasks drafted: nothing B-0025 observes still holds on main of 2026-11-25. Checked: (1) docs/domain-model.md, States are types, lists BlockedStory and says the same five types exist for Story, Bug, Spike, Upkeep and Task; the code holds them: BlockedWorkItem and RemovedWorkItem in src/flowgraph/work_item/model.py, RemovedTask in src/flowgraph/task/model.py (TaskState is five states: Task, StartedTask, BlockedTask, CompletedTask, RemovedTask). (2) Direction lists block StartedX to BlockedX, unblock back, remove from X, StartedX and BlockedX; the code makes each: blocked_work_item and unblocked_work_item (work_item/block.py), removed_work_item of a WorkItem, a StartedWorkItem or a BlockedWorkItem (work_item/removal.py), removed of a Task in any open state (task/moves.py); a probe of every state against every move on 2026-11-25 gave each move the table lists. (3) Persistence no longer says any of the three is not built: grep -n 'not built' docs/domain-model.md finds nothing; it says a started work item is blocked and unblocked (S-0138, on the developer's word on B-0025), a started or blocked work item is removed on main (S-0148) and a Task is removed (S-0147). (4) fgraph block --help and fgraph remove --help both take 'the id of the work item, Task or Feature' (run in a throwaway record). So the expected holds: each move the tables list is one fgraph makes. Proposal for the developer: remove B-0025 as done by S-0138, S-0147 and S-0148; I would keep it if the developer reads the Direction table as also owing the complete of a BlockedFeature (completed_feature completes a blocked Feature, said in prose under Direction, not in the table). (2) The decision of 2026-11-23 on B-0025 leaves open, for the developer, whether fgraph block stops taking a Task (it still takes one, and docs/domain-model.md says so: fgraph block still takes a Task and a Feature, as before). That is a change of behavior, not a correction of the tables: if wanted, a work item of its own."
+noted = 2026-11-25 10:06:54+00:00
+mark = "open"

@@ -1,0 +1,10 @@
+id = "B-0042"
+state = "backlog"
+title = "Cut the texts fgraph cannot write as UTF-8 that end a command in a traceback and leave a .tmp file beside the item from every one to none"
+description = "Filed at the end of the Backlog and not burned; a ninth error type outside the eight B-0039 counts, of the ground of F-0033 and not put under it without the word of the developer. Its Tasks are written when it is ordered."
+complexity = "low"
+created = 2026-11-25 10:06:24+00:00
+
+[criterion]
+observed = "seen on 2026-11-25 in a throwaway record by the read-only subagent that drafted the Tasks of B-0039, not reproduced by the coordinator: fgraph add story given a title holding the byte 0xff, an argument decoded with surrogateescape, ends in a traceback, UnicodeEncodeError: surrogates not allowed, exit 1, raised by write_text in write_checked of src/flowgraph/item/file.py, and leaves items/S-0003.toml.tmp in the record"
+expected = "the command is refused in one line that names the text it cannot write, exit 2, and leaves no file behind"

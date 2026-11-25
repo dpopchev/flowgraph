@@ -1,11 +1,13 @@
 id = "S-0165"
-state = "backlog"
+state = "started"
 title = "Raise the starts an agent makes as a tool with no id from none to one: the first line of the Backlog that can start"
 description = "New on the word of the developer of 2026-11-25. fgraph start --agent NAME with no id takes the first line of the Backlog that can start (S-0113, S-0121); the tool start of S-0159 takes an id (S-0159, its decision). Its Tasks are written before its Feature starts."
 parent = "F-0025"
 realizes = 2
 complexity = "low"
 created = 2026-11-25 06:34:14+00:00
+started = 2026-11-25 10:15:07+00:00
+agent = "haiku-s165"
 depends_on = [
     "S-0159",
 ]

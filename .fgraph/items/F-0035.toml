@@ -9,3 +9,9 @@ criteria = [
     "a user asks which rules hold for a file and reads the live lines that govern it with the terms they reach through is a and part of",
     "a developer reads a measured bound for those three questions, asked in one process on a record of 1,500 files",
 ]
+
+[[knowledge]]
+kind = "finding"
+text = "Open, for the developer, asked with the draft of 2026-11-25 and not answered one by one: (1) the bound of 15 ms is read as measured in one process on a synthetic record of 1,500 files, the start of the interpreter left out; (2) path-to-invariant resolution is read as, for a file, the live lines that govern it and the terms reached through is a and part of; (3) which command asks each of the three questions."
+noted = 2026-11-25 10:02:53+00:00
+mark = "open"

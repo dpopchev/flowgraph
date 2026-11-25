@@ -29,3 +29,8 @@ description = "FIRST PASS, written on 2026-11-25 before Phase 2 was completed: t
 check = "grep -q 'never a missing one (U-0036)' docs/domain-model.md && grep -q 'NoReply' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, in the passage of the answer of a Spike and in the one of CompletedSpike, says that a decision given without its yes or no, and a Spike completed before the answer was taken, hold NoReply, a value of the answer and never a missing one"
 created = 2026-11-25 09:32:14+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25: put Tasks on the work items of Phase 3; those will be reviewed before the phase starts. The Tasks of U-0036 (its 2 Tasks: T-0760, T-0761) are that first pass, drafted that day by a read-only subagent against the code of main at 2dc58f08 and filed by the coordinator, who checked their shape -- the opening sentence, the check, that the files they name are on the disk or said to be new -- and read their titles, outputs, checks and open points, not every description. They are reviewed before Phase 3 starts, the review noted here as a decision naming each Task kept, amended or removed; until that line is here, U-0036 is not started."
+noted = 2026-11-25 09:33:11+00:00

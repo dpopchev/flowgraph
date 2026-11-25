@@ -33,6 +33,15 @@ check = "uv run pytest tests/record -q -p no:cacheprovider && grep -q '^def merg
 expected_output = "created: merged_file(name, base, ours, theirs) of src/flowgraph/record/merge.py returns the text of one file of the record merged from its two copies and the copy both came from -- queue.toml as the order of ours with each entry theirs added, put where theirs has it; the file of an item as the copy whose state is the later by the table of the moves, with the knowledge lines and the progress lines of both, each once, in the order noted -- and None when both copies changed one part to two values no rule orders; created: tests/record/test_merge.py states it. Nothing calls it yet"
 created = 2026-11-25 08:17:45+00:00
 
+[[tasks]]
+id = "T-0747"
+state = "backlog"
+title = "Merge the files of the record through merged_file when fgraph sync or fgraph land meets a conflict in them"
+description = "FIRST PASS, written on 2026-11-25 before U-0018 and Q-0003 were completed and before the rework of its Feature: the coordinator reviews this Task once both are completed, before the work item starts (S-0167, its decision of 2026-11-25). If no later line of S-0167 says its Tasks were reviewed, stop and say so. Open at the review: whether the merge reaches git as a second pass of fgraph over the files git left in conflict, as here, or as a git merge driver registered for .fgraph/ as the draft of F-0027 says; the second writes git configuration, the first does not. First pass: the second pass. The git steps that read the three copies of a file in conflict (git show :1:path, :2:path, :3:path) and that mark it resolved are new adapters in src/flowgraph/development/sync_git.py, each proved on the real git in tests/development/sync; the landing reaches them through its LandingSteps. Red first: remove XFAIL and its marks from tests/functional/test_record_merges.py, see each pair fail on its conflict, then the code. A sync or a landing that merged files of the record so says it in one line, after its own. Out of bounds: src/flowgraph/record/merge.py, src/flowgraph/parser/, every other file of src/ and of tests/, the docs."
+check = "uv run pytest tests/functional/test_record_merges.py tests/functional/test_sync.py tests/functional/test_land_merge.py tests/development/sync tests/development/land tests/record -q -p no:cacheprovider && ! grep -q xfail tests/functional/test_record_merges.py && make lines && uv run pyright"
+expected_output = "changed: sync_branch of src/flowgraph/development/sync.py and the landing of src/flowgraph/development/land.py, when the merge git made stops on a conflict in files of the record alone, write each such file as merged_file gives it and go on; a conflict in any other file, or one merged_file answers None for, is named and aborted as before. No xfail mark is left in tests/functional/test_record_merges.py"
+created = 2026-11-25 08:18:01+00:00
+
 [[knowledge]]
 kind = "finding"
 text = "Open, decided when Q-0003 is answered: whether this Story stands for the pairs Q-0003 names, becomes Bugs, or is removed with F-0027; a merge driver is built only for a conflict that was reproduced."

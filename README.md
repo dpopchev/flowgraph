@@ -227,6 +227,23 @@ fgraph brief S-0002
 fgraph brief S-0002 --format json
 ```
 
+Before it commits the work of a Task, an agent asks which files it changed that the brief
+of the started Task does not name: `fgraph brief S-0002 --not-named` prints, in place of
+the brief, each file changed and not committed in the worktree of the work item -- a tracked
+file changed, staged or not, and a new file git does not ignore -- that the title, the
+expected output and the description of its started Task do not name, by the rule `fgraph
+complete` holds the commit of the Task to; nothing when every file is named. The files of
+the record are never listed. `--format json` prints them as a JSON list. Run on main or in
+the worktree it reads the worktree. It writes nothing. A work item with no started Task and
+a record outside a git work tree are refused, exit 2:
+
+```sh
+fgraph brief S-0002 --not-named
+# docs/notes.md
+# the answer once no Task is started:
+# fgraph: error: S-0002 has no started Task: --not-named reads the brief of the Task started
+```
+
 `fgraph goal F-0001` prints one `/goal` line for a developer to paste into Claude
 Code, naming the work items of the Feature in Backlog in the order they start. It
 reads the record and writes nothing, and fgraph never sets the goal itself. The ids,

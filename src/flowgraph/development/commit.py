@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
 
-from flowgraph.development import git, pull_git, tag_git
+from flowgraph.development import git, pull_git, tag_git, uncommitted_git
 from flowgraph.development.branch import branch_of
 from flowgraph.development.git import GitError
 from flowgraph.development.steps import NO_LANDING, NO_RELEASE, LandingSteps, ReleaseSteps
@@ -36,6 +36,11 @@ def _knows_no_commit(commit: str) -> None:
     return None
 
 
+def _lists_no_change() -> list[str]:
+    """The `uncommitted_files` of a work tree built without it: it lists no file."""
+    return []
+
+
 @dataclass(frozen=True)
 class WorkTree:
     """The git work tree a record is inside: its top and its steps, each bound to it.
@@ -47,8 +52,9 @@ class WorkTree:
     `find_worktree` is the worktree of a branch, or None; `find_worktrees` lists every worktree
     of the repository. `changed_files` lists the files a commit changed, as paths from the top, a
     merge commit by what it brought to its first parent, and answers None for a sha git does not
-    know. `landing` holds the steps only a landing takes, `release` those only a release takes.
-    Each step raises GitError when git refuses it.
+    know. `uncommitted_files` lists the files changed in the work tree and not committed, as
+    paths from the top. `landing` holds the steps only a landing takes, `release` those only a
+    release takes. Each step raises GitError when git refuses it.
     """
 
     path: Path
@@ -60,6 +66,7 @@ class WorkTree:
     find_worktrees: Callable[[], list[Path]]
     ignores: Callable[[Path], bool] = _ignores_nothing
     changed_files: Callable[[str], list[str] | None] = _knows_no_commit
+    uncommitted_files: Callable[[], list[str]] = _lists_no_change
     landing: LandingSteps = NO_LANDING
     release: ReleaseSteps = NO_RELEASE
 
@@ -91,6 +98,7 @@ def open_git(directory: Path) -> WorkTree | None:
         find_worktrees=partial(git.worktrees, top),
         ignores=partial(git.ignores, top),
         changed_files=partial(git.changed_files, top),
+        uncommitted_files=partial(uncommitted_git.uncommitted_files, top),
         landing=LandingSteps(
             merge=partial(git.merge_uncommitted, top),
             abort_merge=partial(git.abort_merge, top),

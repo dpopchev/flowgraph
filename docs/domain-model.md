@@ -948,6 +948,25 @@ holds nothing is `[]`, so two runs on one record print the same bytes. The keys 
 `worktree`. `noted` is the full ISO time. A format that is neither `text` nor `json` is refused
 naming both, exit 2.
 
+`fgraph brief ID --not-named` prints the files changed in the worktree of the work item and not
+committed that the brief of its started Task does not name, one per line by path, or a JSON list
+under `--format json` (S-0153). Changed is what the next commit of the Task can hold -- the
+tracked files changed since HEAD, staged or not, a staged rename by its new path, a deleted file,
+and the files git neither tracks nor ignores -- and not the commits on the branch already, each
+held to the brief of its own Task at its complete. The files under the directory of the record
+are never listed. The rule is `files_not_named` of `src/flowgraph/development/named_files.py`
+over the title, the expected output and the description, the one `fgraph complete` holds the
+commit of a Task to (S-0142), so a file listed is one the complete refuses once it is committed;
+it is not the rule by which `Governed by` names a path (`_named` of
+`src/flowgraph/brief/model.py`). The worktree is the one git holds for the work item, read from
+main or from the worktree, else the work tree of the record. The read is `not_named_of` of
+`src/flowgraph/brief/not_named.py`, the files listed by `uncommitted_files` of
+`src/flowgraph/development/uncommitted_git.py`. It writes nothing and is not conditioned on
+`development.enabled`. Refused, exit 2: a work item with no started Task, with
+`S-0002 has no started Task: --not-named reads the brief of the Task started`, read before git
+is asked, and a record outside a git work tree, with `S-0002 has no files changed to read: the
+record is not inside a git work tree`.
+
 ## Goal
 
 `fgraph goal F-ID [--hours N]` prints one line, the `/goal` a developer pastes into Claude Code

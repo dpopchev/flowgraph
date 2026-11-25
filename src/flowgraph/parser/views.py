@@ -42,7 +42,11 @@ def view_said(
         case "about":
             return Said(about_item(args.id, store, cwd, open_git))
         case "brief":
-            return Said(brief_output(args.id, args.format, store, record, open_git))
+            return Said(
+                brief_output(
+                    args.id, args.format, store, record, open_git, not_named=args.not_named
+                )
+            )
         case "goal":
             return Said(goal_output(args.id, args.hours, store, config.development))
         case "show":

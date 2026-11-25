@@ -49,3 +49,8 @@ created = 2026-11-24 23:50:05+00:00
 kind = "decision"
 text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, under the /goal of Phase 1 the developer set on 2026-11-24, which has the coordinator write the Tasks before a Feature starts; the developer was not asked and reviews them at the close: (1) Two closing tools: land (directory, id, message optional) and verify (directory, id, answer yes|no, text); verify --no files a Bug, as the command does. (2) No tool takes --approved, nor --decision/--answer of a Spike landing: a Spike is landed on the command line; under approver = developer the land tool relays the HELD refusal as its one line. (3) closing.py is a module of its own beside moves.py, reusing ItemArguments of moves.py, so moves.py stays the moves of an agent and the module of each Story is its own. (4) The functional test reads the outcome through fgraph status --format json and the text of fgraph show (exist today), not show --format json, so S-0160 does not wait on S-0154. (5) Three Tasks: the tools are data and SERVED gains them in one line, so tests, wiring and the removal of the xfail marks are one Task; the protection of the streams from the gate is S-0159's."
 noted = 2026-11-24 23:51:28+00:00
+
+[[progress]]
+text = "red: 8 failed, 3 passed under --runxfail (land and verify are Unknown tool; the story stays started); the 3 passing (stdout all replies, developer story started, no approved tool) are unmarked"
+noted = 2026-11-25 10:01:30+00:00
+task = "T-0715"

@@ -10,6 +10,11 @@ completed = 2026-11-25 05:27:20+00:00
 agent = "haiku-u13"
 commit = "58499455"
 
+[verified]
+answer = "yes"
+text = "run on main at 39d25aab on 2026-11-25: fgraph show X-0001 exits 2 with fgraph: error: 'X-0001' is no Story, Upkeep, Bug, Spike or Feature id nor the name of a term; make check prints 5534 passed in 1004.27s, [DONE] all checks passed, exit 0"
+on = 2026-11-25 05:52:58+00:00
+
 [criterion]
 given = "a record with the terms of S-0070"
 when = "fgraph show is given a text that is neither the id of an item nor the name of a term, as X-0001"

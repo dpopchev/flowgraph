@@ -1,7 +1,8 @@
 """The criterion of terms across worktrees: a term is written on main alone, read from a worktree.
 
 The worktree of a started work item reads the terms of the record of main, as it reads the Task
-ids of every worktree; a term added on its branch is refused naming the work item the branch owns.
+ids of every worktree; a term added or related on its branch is refused naming the work item the
+branch owns.
 Run end to end through `run` on a real git repository in a temporary directory, never a faked
 git; the identity of its commits comes from the environment and no git config is read.
 """
@@ -34,6 +35,7 @@ ADD_TASK = [
 ADD_STORY = ["add", "story", "Raise the Stories fgraph lists from 0 to 1", *CRITERION]
 BEFORE = ["add", "term", "gate", "--means", "a check every deliverable passes"]
 AFTER = ["add", "term", "lane", "--means", "one work item in its own worktree"]
+RELATE = ["relate", "gate", "part-of", "lane"]
 BRANCH = "wi/S-0001-raise-the-stories-fgraph"
 WORKTREE = Path("project.worktrees") / "S-0001-raise-the-stories-fgraph"
 IDENTITY = {
@@ -143,3 +145,23 @@ class TestATermAddedOnTheBranchOfAWorkItem:
 
     def test_writes_no_file(self, refused: Outcome, tmp_path: Path) -> None:
         assert not (tmp_path / WORKTREE / ".fgraph" / "terms" / "other.toml").exists()
+
+
+class TestATermRelatedOnTheBranchOfAWorkItem:
+    @pytest.fixture
+    def refused(self, checkout: Path, tmp_path: Path) -> Outcome:
+        return fgraph(RELATE, tmp_path / WORKTREE)
+
+    def test_exits_with_two(self, refused: Outcome) -> None:
+        assert refused.status == 2
+
+    def test_names_the_work_item_the_branch_owns_and_says_the_term_is_not_related(
+        self, refused: Outcome
+    ) -> None:
+        assert refused.err.endswith(
+            f"fgraph: error: gate is not related here: the branch {BRANCH} writes S-0001 alone\n"
+        )
+
+    def test_writes_no_relation(self, refused: Outcome, tmp_path: Path) -> None:
+        gate = tmp_path / "project" / ".fgraph" / "terms" / "gate.toml"
+        assert "lane" not in gate.read_text(encoding="utf-8")

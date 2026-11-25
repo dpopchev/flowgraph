@@ -13,7 +13,9 @@ from flowgraph.development.scope import OutOfScopeError, Scope, scope_in, scope_
 from flowgraph.item.commands import Store
 from flowgraph.record import Settings
 from flowgraph.record.queue import Queue, make_queue
+from flowgraph.record.store import TermStore
 from flowgraph.story import make_story, make_story_id
+from flowgraph.term import Term, make_term
 from flowgraph.upkeep import make_upkeep_id
 from flowgraph.work_item import WorkItemState
 
@@ -25,6 +27,7 @@ CREATED = datetime(2026, 1, 1, tzinfo=UTC)
 SCENARIO = make_scenario("a", "b", "c")
 OWN = make_story(make_story_id(1), "a title", SCENARIO, "", CREATED)
 OTHER = make_story(make_story_id(2), "another title", SCENARIO, "", CREATED)
+GATE = make_term("gate", "a check", CREATED)
 SETTINGS: Settings = {"development": {"enabled": True}}
 
 
@@ -142,6 +145,43 @@ def test_a_branch_no_work_item_owns_saves_the_settings() -> None:
     taking = replace(store([]), save_settings=saved.append)
     within(taking, lambda: None, never).save_settings(SETTINGS)
     assert saved == [SETTINGS]
+
+
+def held_terms(names: list[str], saved: list[Term]) -> Store:
+    """A store whose record holds those term names and that notes the terms it saves."""
+    terms = TermStore(never, saved.append, lambda: names)
+    return replace(store([]), terms=terms)
+
+
+def test_a_term_the_record_holds_is_refused_as_related_naming_the_owner_of_the_branch() -> None:
+    with pytest.raises(
+        OutOfScopeError,
+        match=rf"^gate is not related here: the branch {BRANCH} writes S-0001 alone$",
+    ):
+        within(held_terms(["gate"], []), lambda: SCOPE, never).terms.save_term(GATE)
+
+
+def test_a_term_the_record_holds_none_of_is_refused_as_added_naming_the_owner_of_the_branch() -> (
+    None
+):
+    with pytest.raises(
+        OutOfScopeError,
+        match=rf"^gate is not added here: the branch {BRANCH} writes S-0001 alone$",
+    ):
+        within(held_terms([], []), lambda: SCOPE, never).terms.save_term(GATE)
+
+
+def test_a_term_refused_is_not_saved() -> None:
+    saved: list[Term] = []
+    with pytest.raises(OutOfScopeError):
+        within(held_terms(["gate"], saved), lambda: SCOPE, never).terms.save_term(GATE)
+    assert saved == []
+
+
+def test_a_branch_no_work_item_owns_saves_a_term() -> None:
+    saved: list[Term] = []
+    within(held_terms(["gate"], saved), lambda: None, never).terms.save_term(GATE)
+    assert saved == [GATE]
 
 
 def test_a_read_asks_for_no_scope() -> None:

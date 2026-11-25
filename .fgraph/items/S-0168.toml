@@ -53,3 +53,8 @@ kind = "finding"
 text = "Open, decided at the rework: the Then is the refusal of the draft. Seen on 2026-11-25: every pair of work items worked at one time that day names README.md and docs/domain-model.md in its Tasks, and each merged cleanly by passage, so a refusal on any shared file refuses every such pair. The readings: the refusal as drafted; a line said at the start, nothing refused; a refusal for the files of src/ and tests/ alone."
 noted = 2026-11-25 08:07:45+00:00
 mark = "open"
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25: add first-pass Tasks to each work item of F-0026 to F-0029, and review them once U-0018 and Q-0003 are completed. The Tasks of S-0168 (its four Tasks) are that first pass, written by the coordinator before either was completed: they build the refusal of the draft, which the open finding of S-0168 questions, and a first rule for which words are files, which U-0029 owns. The coordinator reviews them once U-0018 and Q-0003 are completed and before S-0168 starts, and notes the review here as a decision naming each Task kept, amended or removed; until that line is here, S-0168 is not started."
+noted = 2026-11-25 08:19:43+00:00

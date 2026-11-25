@@ -10,6 +10,11 @@ completed = 2026-11-25 03:09:09+00:00
 agent = "haiku-u14"
 commit = "a668cbb5"
 
+[verified]
+answer = "yes"
+text = "at a668cbb5 on main, the merge of wi/U-0014-raise-the-refusals-of, with fgraph of main in a throwaway repository with the development on, the terms gate and lane on main and S-0001 started: fgraph relate gate part-of lane run in the worktree of S-0001 exited 2 with fgraph: error: gate is not related here: the branch wi/S-0001-a-title writes S-0001 alone, nothing written; fgraph add term there still says new-term is not added here; on main the relate printed related gate part-of lane. The agent saw the test print added before the change and related after. Before the landing, in the worktree: 48 tests of the scope and the terms passed, ruff, the line limit and pyright clean, src/flowgraph/development/scope.py at 243 lines, and the agent's make check said 5516 passed"
+on = 2026-11-25 03:10:34+00:00
+
 [criterion]
 given = "the worktree of a started work item"
 when = "fgraph relate gate part-of lane is run there"

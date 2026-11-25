@@ -2108,6 +2108,20 @@ and its merge tool.
   nothing written, one line naming the file and why, `fgraph: error:
   <path> holds no Story: <why>`, `holds no Feature: <why>` or `holds no
   queue: <why>`, never a Python traceback.
+- A file of a work item, of a Feature, of a term or the queue that holds a
+  key the model does not take, or a state it does not know, or lacks a key
+  its state takes, is refused in one line in the words of fgraph naming the
+  file and the key or the state (S-0109), the first such error alone: `fgraph:
+  error: <path> holds no Story: token is no key of the state backlog`,
+  `holds no Story: started is missing, which the state blocked takes`,
+  `holds no Story: state is "doing": it takes backlog, started, blocked,
+  completed or removed`, `holds no term: token is no key of the file`; a
+  value of the wrong type is named with its value and the message of the
+  validator, `title is 3 in the state backlog: Input should be a valid
+  string`; never the lines of the validator nor its link to errors.pydantic.dev,
+  as before 2026-11-24. The words are `file_refusal` of
+  `src/flowgraph/item/file_refusal.py`, the shape of the refusal of a
+  `config.toml`.
 - Each time of a file -- created, started, since, completed, removed, noted,
   the `on` of verified, the added of a term -- is read with its offset. A
   file that writes one without, a day alone as `created = 2026-10-11` or a

@@ -1,0 +1,10 @@
+id = "B-0041"
+state = "backlog"
+title = "Cut the writes of fgraph that go to the file of another item, when a file of items/ is named for one id and holds another, from every one to none"
+description = "Filed at the end of the Backlog and not burned; it is of the ground of F-0033 (B-0039, the errors and the files fgraph cannot read) and is not put under it without the word of the developer. Its Tasks are written when it is ordered."
+complexity = "medium"
+created = 2026-11-25 10:05:56+00:00
+
+[criterion]
+observed = "seen on 2026-11-25 in a throwaway record by the read-only subagent that drafted the Tasks of B-0039, not reproduced by the coordinator: items/S-0003.toml copied by hand from S-0001.toml, its id S-0001, is no refusal -- fgraph status exits 0, and fgraph note S-0003 --finding a finding exits 0, prints noted S-0003 and writes the line into items/S-0001.toml"
+expected = "a file of items/ whose name and id disagree is refused in one line that names the file and the two ids, exit 2, at every command, and nothing is written"

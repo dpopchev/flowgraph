@@ -14,6 +14,11 @@ depends_on = [
     "S-0159",
 ]
 
+[verified]
+answer = "yes"
+text = "run on main at 86952acb, which holds the landing e0252557, on 2026-11-25: in a throwaway git repository under local/scratch/f25 with the development on and one Story in Backlog, a session of Claude Code 2.1.332 in print mode on haiku, given fgraph mcp of main by --mcp-config with --strict-mcp-config, called the tool start with the directory of main, the agent haiku-x1 and no id: it answered started S-0001 and the line of its branch, read from the stream of the session; main holds the commit chore: start S-0001 in the record and fgraph show S-0001 lists bucket in-progress and agent haiku-x1. Worked whole by one subagent on haiku, its branch read by the coordinator: 5 files, each named by a Task; make check on the branch at 60762810: 5762 passed, all checks passed. The branch met a conflict with S-0160 in README.md: the coordinator merged main by hand (039af6dd), both sentences kept, no marker left, the tests of fgraph mcp, make lines and pyright passing on the merged tree."
+on = 2026-11-25 10:45:21+00:00
+
 [criterion]
 given = "fgraph mcp and a Backlog whose first line can start"
 when = "the tool start is called with an agent and no id"

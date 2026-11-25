@@ -12,6 +12,11 @@ agent = "haiku-s124"
 commit = "825388cd"
 filed_during = "S-0118"
 
+[verified]
+answer = "yes"
+text = "at 825388cd on main, the merge of wi/S-0124-cut-the-term-names, with fgraph of main in a throwaway record: fgraph add term f15 exited 2 with fgraph: error: 'f15' reads as the id F-0015: a term name is no id, s3 the same naming S-0003 and t7 naming T-0007, nothing kept; gate and f15a were added; a term file f15.toml put beside them by hand, as a record written before would hold it, was listed by fgraph terms with exit 0 and fgraph status exited 0. Before the landing, in the worktree: 163 tests of the terms passed, ruff, the line limit and pyright clean, and the agent's make check said 5476 passed"
+on = 2026-11-25 02:25:14+00:00
+
 [criterion]
 given = "a record of fgraph"
 when = "fgraph add term f15 is run with its meaning"

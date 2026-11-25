@@ -47,6 +47,7 @@ from flowgraph.item import (
     knowledge_primitives,
     write_checked,
 )
+from flowgraph.item.file_refusal import file_refusal
 from flowgraph.parent import FeatureId, FeatureIdError, feature_id_text, parse_feature_id
 from flowgraph.record import ITEMS
 
@@ -76,13 +77,18 @@ def _read_file(path: Path) -> FeatureState:
 
     A file without a state line, as every one written before a Feature had a state, holds a
     Feature in Backlog. Raises FeatureFileError, for a commit that is no sha too, and for a part
-    its constructor or its moves refuse, as a blank reason; a time with no offset is refused so.
+    its constructor or its moves refuse, as a blank reason; a key or a state the model does not
+    take is refused in one line, the first such error; a time with no offset is refused so.
     """
     try:
         written = tomllib.loads(path.read_text(encoding="utf-8"))
         held = HELD_FEATURE.validate_python({"state": IN_BACKLOG, **written})
         commit = evidence_written(held.commit if isinstance(held, CompletedFeatureFile) else "")
-    except (tomllib.TOMLDecodeError, ValidationError, CommitError, NoOffsetError) as error:
+    except ValidationError as error:
+        raise FeatureFileError(
+            f"{path} holds no Feature: {file_refusal(error, tagged=True)}"
+        ) from error
+    except (tomllib.TOMLDecodeError, CommitError, NoOffsetError) as error:
         raise FeatureFileError(f"{path} holds no Feature: {error}") from error
     try:
         built = _built(held, commit)

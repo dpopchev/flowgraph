@@ -17,9 +17,12 @@ from flowgraph.work_item import (
     work_item_id_text,
 )
 
+# The refusal of a progress line given a mark, the option named as the word of its mark.
+NO_MARK = "a progress line takes no --{mark}: it is no knowledge line"
+
 
 class ProgressLineError(ValueError):
-    """A progress line asked for what it does not take: a Feature, a term or a file."""
+    """A progress line asked for what it does not take: a Feature, a term, a file or a mark."""
 
 
 def note_progress(
@@ -29,17 +32,21 @@ def note_progress(
     now: Now,
     about: Sequence[str] | None = None,
     governs: Sequence[str] | None = None,
+    mark: str | None = None,
 ) -> Written:
     """Keep the progress line on the work item of that id, or on the one that holds the Task.
 
-    The line of a Task names it. Raises ProgressLineError for a Feature or with terms or files,
-    ItemIdError when the text is no id, WorkItemNotFoundError or TaskNotFoundError when the
-    record holds no such item and EmptyPartError when the text is blank; nothing is saved.
+    The line of a Task names it. Raises ProgressLineError for a Feature, with terms, files or a
+    mark (naming its option), ItemIdError when the text is no id, WorkItemNotFoundError or
+    TaskNotFoundError when the record holds no such item and EmptyPartError when the text is
+    blank; nothing is saved.
     """
     if about or governs:
         raise ProgressLineError(
             "a progress line takes no --about and no --governs: it is no knowledge line"
         )
+    if mark is not None:
+        raise ProgressLineError(NO_MARK.format(mark=mark))
     match parse_moved_id(item):
         case FeatureId() as it:
             raise ProgressLineError(

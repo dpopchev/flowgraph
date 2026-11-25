@@ -724,14 +724,24 @@ the start of that work item is, and say so.
 A record whose file was edited by hand or merged to name what is not there is
 refused when it is read, by every command, with exit 2 and nothing written: a
 parent, a dependency, a filed during, a superseded by, an amends or a term
-that the record does not hold, and a cycle of dependencies or of one kind
-between terms. So is a file whose time holds no offset, a day alone as
+that the record does not hold, an amends of a work item that is not completed, and a cycle
+of dependencies or of one kind between terms. So is a file whose time holds no offset, a day alone as
 `created = 2026-10-11`.
 
 ```sh
 fgraph status
+# fgraph: error: /src/project/.fgraph/items/B-0001.toml: amends names S-0001, which is not completed
 # fgraph: error: /src/project/.fgraph/items/S-0002.toml: depends on names S-0099, which is not in the record
 # fgraph: error: /src/project/.fgraph/items/S-0002.toml holds no Story: created = 2026-10-11 is a time with no offset: write it with one, as 2026-01-01 09:00:00+00:00
+```
+
+A file that holds a key or a state fgraph does not keep is refused in one line that
+names the file and the key or the state, never the lines of the validator:
+
+```sh
+fgraph status
+# fgraph: error: /src/project/.fgraph/items/S-0001.toml holds no Story: token is no key of the state backlog
+# fgraph: error: /src/project/.fgraph/items/S-0001.toml holds no Story: started is missing, which the state blocked takes
 ```
 
 A work item can name the one it was found during: `--filed-during ID` of
@@ -1670,8 +1680,10 @@ A work item also keeps progress lines, where the work stands: a hand-off, a
 structure note, the red line of a Task. `fgraph note ID --progress TEXT` keeps
 one on a work item in any state, or on a Task of it, kept on its work item and
 naming the Task, as one write and one commit. A progress line is no knowledge:
-`fgraph knowledge` never lists it, and it takes no `--about` and no `--governs`;
-a Feature takes none. `fgraph show` lists the lines of a Task under it, and
+`fgraph knowledge` never lists it, and it takes no `--about`, no `--governs`,
+no `--standing` and no `--open`, each refused naming the option, as
+`a progress line takes no --standing: it is no knowledge line`; a Feature takes
+none. `fgraph show` lists the lines of a Task under it, and
 those of the work item under `Progress (n)` after the knowledge lines:
 
 ```sh
@@ -2262,10 +2274,10 @@ fgraph add story "Hold" --given a --when b --then c --parent F-0001 --realizes 3
 An add or an amend exits 2 and writes nothing for a work item that stands
 alone, for a number the Feature does not have, for `0`, for a word that is
 neither a number nor `none`, and for a Feature id: a Feature is amended by its
-title, its description and its criteria. A work item started already is not
-amended. `fgraph amend F-0001 --criterion` rewrites the list and leaves the
-number a work item names as written: it then names the criterion now at that
-place, and `fgraph show` says `none of the criteria of F-0001` for a number
+title, its description, its criteria and its terms. A work item started already
+is not amended. `fgraph amend F-0001 --criterion` rewrites the list and leaves
+the number a work item names as written: it then names the criterion now at
+that place, and `fgraph show` says `none of the criteria of F-0001` for a number
 past the end.
 
 Once a work item under a Feature names a criterion of it, `fgraph show` of the
@@ -3070,7 +3082,7 @@ states criteria.
 
 ```sh
 fgraph amend F-0001 --then "fgraph status lists it under Backlog"
-# fgraph: error: F-0001 has no then: a Feature is amended by its title, its description and its criteria
+# fgraph: error: F-0001 has no then: a Feature is amended by its title, its description, its criteria and its terms
 
 fgraph amend F-0001 --title "Raise the kinds of work a project tracks with fgraph from 1 to 4"
 # fgraph: error: F-0001 is started: amend it with --deviation TEXT, what changes in what it was agreed to do

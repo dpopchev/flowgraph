@@ -114,7 +114,8 @@ def within(store: Store, find_scope: FindScope, find_worktree: FindItemWorktree)
     """The store that saves within the scope found when it saves; its reads are as they were.
 
     On the branch of a work item a save of another work item, of the queue, of a Feature, of a
-    term or of the settings raises OutOfScopeError and writes nothing. On any other branch so
+    term (refused as related when the record holds it, else as added) or of the settings raises
+    OutOfScopeError and writes nothing. On any other branch so
     does a Task write of a started work item that has a worktree: the save of a started work
     item that was started already. The scope and the worktree are asked for only at a save.
     """
@@ -146,7 +147,9 @@ def within(store: Store, find_scope: FindScope, find_worktree: FindItemWorktree)
     def save_term(term: Term) -> None:
         scope = find_scope()
         if scope is not None:
-            raise OutOfScopeError(f"{term.name} is not added here: {_alone(scope)}")
+            held = term.name in store.terms.find_term_names()
+            what = "related" if held else "added"
+            raise OutOfScopeError(f"{term.name} is not {what} here: {_alone(scope)}")
         store.terms.save_term(term)
 
     def save_settings(settings: Settings) -> None:

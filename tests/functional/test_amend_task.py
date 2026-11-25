@@ -174,8 +174,8 @@ def test_a_task_in_backlog_of_a_work_item_in_backlog_or_blocked_is_amended(
         ),
         (
             ["amend", "F-0001", "--output", "x"],
-            "F-0001 has no output: a Feature is amended by its title, its description and its"
-            " criteria",
+            "F-0001 has no output: a Feature is amended by its title, its description, its"
+            " criteria and its terms",
         ),
     ],
     ids=[

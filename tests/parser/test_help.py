@@ -74,6 +74,21 @@ def test_relate_names_its_two_terms_and_the_two_kinds_in_its_help() -> None:
     )
 
 
+def test_the_menu_lists_about_as_the_links_of_a_work_item_a_feature_a_term_or_a_file() -> None:
+    menu = " ".join(COMMAND_LINE.parser.format_help().split())
+    assert "list the links of a work item, a Feature, a term or a file, by relation" in menu
+
+
+def test_the_help_of_about_names_the_id_of_an_item_the_name_of_a_term_and_the_path_of_a_file() -> (
+    None
+):
+    helped = " ".join(COMMAND_LINE.commands["about",].format_help().split())
+    assert (
+        "the id of the work item or of the Feature, the name of the term or the path of the file"
+        in helped
+    )
+
+
 def test_every_command_kind_under_add_and_action_under_config_has_its_help() -> None:
     assert sorted(COMMAND_LINE.commands) == sorted(
         [

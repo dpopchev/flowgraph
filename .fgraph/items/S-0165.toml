@@ -43,13 +43,15 @@ commit = "ec327a990e3272b96a1dfdecfa3b17f4ed616a45"
 
 [[tasks]]
 id = "T-0735"
-state = "started"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say the tool start of fgraph mcp with no id takes the first line of the Backlog that can start"
 description = "Change README.md and docs/domain-model.md only; find each passage by grep, never by line number; plain ASCII; no source or test change. Keep the words with no id the tool start takes the first line of the Backlog that can start on one line in each file: the check greps them. In each file grep -n 'the moves of fgraph mcp' finds the paragraph S-0159 wrote (if it finds nothing, stop and say so). docs/domain-model.md: in the list of the moves, the entry of start says its id is optional, and after the list one sentence: with no id the tool start takes the first line of the Backlog that can start, as `fgraph start --agent NAME` does (S-0113, S-0121), and answers with the line that names it, so an agent claims its work with no shell (S-0165); `next_to_start` of the status tool is the line it would take. README.md: the same, in short. S-0164 adds the entry of commit to the same paragraph on its own branch: keep this edit to the entry of start and its sentence. If grep -n 'S-0165' of the two files finds another line when this Task runs, make it true and say so."
 check = "grep -q 'with no id the tool start takes the first line of the Backlog that can start' README.md && grep -q 'with no id the tool start takes the first line of the Backlog that can start' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, Tools over stdio, and README.md, in the paragraph on the moves of fgraph mcp, say the id of the tool start is optional and that with no id the tool start takes the first line of the Backlog that can start, as fgraph start --agent does, and that the status tool holds next_to_start, the line it would take"
 created = 2026-11-25 06:49:07+00:00
 started = 2026-11-25 10:23:06+00:00
+completed = 2026-11-25 10:24:43+00:00
+commit = "f1c9bf2607d5c32491448fccaa1b80a4b9f04be6"
 
 [[knowledge]]
 kind = "decision"

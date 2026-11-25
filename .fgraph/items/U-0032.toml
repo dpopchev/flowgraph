@@ -1,0 +1,13 @@
+id = "U-0032"
+state = "backlog"
+title = "Cut the places of src/flowgraph that word the refusal of a move inline from forty to one function per refusal"
+description = "Phase 3, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0030). The first of F-0030, so the copies of the moves are cut on one wording. Its Tasks are written before its Feature starts."
+parent = "F-0030"
+realizes = 1
+complexity = "low"
+created = 2026-11-25 08:54:41+00:00
+
+[criterion]
+given = "main, where the moves of the work item, the Feature and the Task raise their refusals with words written inline, counted by grep in src/flowgraph on 2026-11-25: is completed already 26 times, is in Backlog: start it first 8 times and is blocked: unblock it first 6 times"
+when = "make check runs"
+then = "it still passes with each of those refusals worded by one function, and every command of fgraph prints what it printed"

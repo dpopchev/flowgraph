@@ -33,3 +33,8 @@ created = 2026-11-24 22:08:25+00:00
 kind = "decision"
 text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, under the /goal of Phase 1 the developer set on 2026-11-24, which has the coordinator write the Tasks before a Feature starts; the developer was not asked and reviews them at the close: (1) The fourth part is named `its terms` (the flag is --about TERM, FeatureAmendment.about), in the series `its title, its description, its criteria and its terms`. (2) Only the refusal of a part a Feature does not take is reworded; the refusal of an amend with no part (amend rewrites no part of F-0001: name one) names no part and stays. (3) The criterion's When (`run with no part to amend`) is tested with a part a Feature does not take (--then, --parent, --output), which is where the three-part sentence is printed. (4) Docstring of _of_feature is corrected in the same Task, since its text (every part but title and description) is stale with the terms."
 noted = 2026-11-24 22:09:55+00:00
+
+[[knowledge]]
+kind = "finding"
+text = "Found on 2026-11-25 by the coordinator, before U-0015 started: the check of T-0667 grepped its description and its criteria under src and tests, words the docstring of src/flowgraph/feature/state.py holds too, a file the Task does not name, so the check could not pass; it now greps amended by its title, its description and its criteria, the refusal alone. The same fault stopped S-0079 at T-0686."
+noted = 2026-11-25 01:54:18+00:00

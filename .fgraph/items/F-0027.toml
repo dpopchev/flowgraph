@@ -6,3 +6,9 @@ created = 2026-11-25 07:47:42+00:00
 criteria = [
     "Concurrent state transitions on distinct items and queue appends merge cleanly without manual conflict resolution",
 ]
+
+[[knowledge]]
+kind = "finding"
+text = "Seen by the coordinator on 2026-11-25 while reviewing the draft, for its rework: fgraph sync and the landing are plain git merges, a conflict named and aborted, fgraph deriving nothing; the Task writes of a started work item are taken in its worktree and refused on main, so the two copies seldom change one file; six landings and the syncs of that day met no conflict in the record while main took about a hundred record commits, and no knowledge line holds the word conflict. No conflict is reproduced yet: the question of Q-0003."
+noted = 2026-11-25 07:48:37+00:00
+mark = "open"

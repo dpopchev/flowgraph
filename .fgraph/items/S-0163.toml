@@ -1,11 +1,12 @@
 id = "S-0163"
-state = "backlog"
+state = "started"
 title = "Raise the terms fgraph brief lists from those of the work item and its Feature to those its governing lines are about too"
 description = "New on the word of the developer of 2026-11-25. Seen that day in a throwaway record: two lines about gate and lease govern src/a.py, a file the Task names, and fgraph brief S-0001 prints no Terms. The reading of the draft's terms matching the paths of the item: a term holds no path, a governing line holds both. Its Tasks are written before its Feature starts."
 parent = "F-0024"
 realizes = 3
 complexity = "low"
 created = 2026-11-25 06:33:02+00:00
+started = 2026-11-25 07:08:41+00:00
 depends_on = [
     "S-0162",
 ]

@@ -1,11 +1,13 @@
 id = "S-0162"
-state = "backlog"
+state = "started"
 title = "Cut the superseded lines fgraph brief lists under Governed by from every one to none"
 description = "New on the word of the developer of 2026-11-25. Seen that day in a throwaway record: with old rule superseded by new rule, both governing src/a.py, Governed by of fgraph brief S-0001 lists both, the old one unmarked; governed_by of the JSON holds both. Governed by was built by S-0116. Its Tasks are written before its Feature starts."
 parent = "F-0024"
 realizes = 2
 complexity = "low"
 created = 2026-11-25 06:32:51+00:00
+started = 2026-11-25 06:51:53+00:00
+agent = "haiku-s162"
 
 [criterion]
 given = "a file two knowledge lines govern, the second superseding the first, and a work item whose Task names the file"

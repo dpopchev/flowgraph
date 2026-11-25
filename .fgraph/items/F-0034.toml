@@ -8,3 +8,8 @@ criteria = [
     "a user runs fgraph show, brief, about, knowledge and graph and each prints what it printed, answered from the index",
     "a developer reads the edges of the record as rows of a subject, a kind and an object in the index, the ones fgraph graph exports",
 ]
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25: the last phase will be Disposable Local Read-Index (Graph Queries) and Distribution, with a first pass of four Features; and on the draft the coordinator showed that day against the repository: great, file them. Filed that day, right after F-0033 and above S-0122: F-0034 with Q-0005, S-0173, S-0174, S-0175; F-0035 with S-0176, S-0177, S-0178, U-0041; F-0036 with S-0179, B-0040, S-0180; F-0037 with S-0181, S-0182, U-0042. The ids F-0031 to F-0034 of the first pass are not those of the record, which gave F-0031 to F-0033 to Phase 3. No item of the Backlog is moved under them. Three points the coordinator asked with the draft were not answered one by one and are kept as open findings on the Features. Their first-pass Tasks are drafted that day and reviewed before the phase starts."
+noted = 2026-11-25 10:00:40+00:00

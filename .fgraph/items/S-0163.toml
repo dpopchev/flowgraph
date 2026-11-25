@@ -14,6 +14,11 @@ depends_on = [
     "S-0162",
 ]
 
+[verified]
+answer = "yes"
+text = "run on main at 1b6eae9c on 2026-11-25 in a throwaway record, a Story about no term whose Task names src/gate.py, a file a decision of another Story about the term gate governs: fgraph brief S-0001 prints Terms (1) and the line gate  a check every deliverable passes before it lands; terms of --format json holds that term with its meaning alone"
+on = 2026-11-25 07:24:46+00:00
+
 [criterion]
 given = "a knowledge line about a term governs a file a Task of a work item names"
 when = "fgraph brief of the work item is run"

@@ -406,11 +406,15 @@ the checkout of main or the worktree of a work item, and is given what the comma
 prints; a refusal comes back as its one line. The server writes nothing itself
 and ends when the session closes its input; the five reads of fgraph mcp are
 status, brief, show, knowledge and about, each given the JSON its command prints
-with `--format json`.
+with `--format json`. Beside them, the moves of fgraph mcp
+are start, hand, block, unblock, note and complete, each called in the directory its
+command is run in, main for the start of a work item, its worktree for its Tasks.
 
 ```sh
 claude mcp add fgraph -- fgraph mcp
 # the session lists the tools of fgraph, as mcp__fgraph__status and mcp__fgraph__brief
+# a complete whose check fails is given back as a tool error:
+# fgraph: error: T-0002 cannot complete: its check "exit 3" exited with status 3
 ```
 
 ## Use

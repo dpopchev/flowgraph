@@ -7,13 +7,14 @@ and a write takes the lock of its record as the command line does, the server ho
 
 import importlib.metadata
 import io
-import sys
+import os
 from collections.abc import Callable, Iterable, Sequence
 from contextlib import redirect_stderr
 from functools import partial
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Protocol, TextIO
 
+from flowgraph.mcp.moves import MOVE_TOOLS
 from flowgraph.mcp.protocol import RunCommand, replied
 from flowgraph.mcp.reads import READ_TOOLS
 from flowgraph.mcp.tools import Command, Ran, Tool
@@ -24,7 +25,7 @@ Write = Callable[[str], object]
 # Serve the tools of fgraph until the input closes; the exit status.
 Serve = Callable[[], int]
 
-SERVED = READ_TOOLS
+SERVED = (*READ_TOOLS, *MOVE_TOOLS)
 NOT_A_DIRECTORY = (
     "fgraph: error: {directory} is not a directory: a call runs fgraph in the directory it names"
 )
@@ -75,15 +76,35 @@ def serve_lines(
     return 0
 
 
+def protocol_streams() -> tuple[TextIO, TextIO]:
+    """Adapter: the protocol's own copies of stdin and stdout, the process left with none of them.
+
+    fd 0 then reads /dev/null and fd 1 writes to stderr, so a check or a gate a call runs neither
+    reads a message nor writes into the replies (S-0159).
+    """
+    protocol_in = os.fdopen(os.dup(0), "r", encoding="utf-8")
+    protocol_out = os.fdopen(os.dup(1), "w", encoding="utf-8")
+    nothing = os.open(os.devnull, os.O_RDONLY)
+    os.dup2(nothing, 0)
+    os.close(nothing)
+    os.dup2(2, 1)
+    return protocol_in, protocol_out
+
+
 def serve_stdio(fgraph: Fgraph) -> int:
-    """Serve SERVED on stdin and stdout, each call a run of fgraph, until stdin closes."""
+    """Serve SERVED on the streams of the protocol, each call a run of fgraph, until stdin closes.
+
+    The streams are those protocol_streams() keeps: sys.stdin and sys.stdout are neither read nor
+    written here, and sys.stdout, still fd 1, then writes to stderr.
+    """
+    protocol_in, protocol_out = protocol_streams()
 
     def write(text: str) -> None:
-        sys.stdout.write(text)
-        sys.stdout.flush()
+        protocol_out.write(text)
+        protocol_out.flush()
 
     return serve_lines(
-        sys.stdin,
+        protocol_in,
         write,
         SERVED,
         partial(called, fgraph),

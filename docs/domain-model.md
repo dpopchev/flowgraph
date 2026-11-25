@@ -1287,6 +1287,20 @@ what `fgraph status --format json` prints there. The modules are `src/flowgraph/
 tool as data), `reads.py` (the reads), `protocol.py` (the reply to a line) and
 `src/flowgraph/mcp/stdio.py` (the shell).
 
+S-0159 adds the moves of fgraph mcp: `start` (`directory`, `id`, and `agent` when a work item is
+handed), `hand` (`directory`, `id`, `agent`), `block` (`directory`, `id`, `reason`,
+`waiting_on`), `unblock` (`directory`, `id`), `note` (`directory`, `id`, `kind` -- finding,
+decision, deviation or progress -- and `text`) and `complete` (`directory`, `id`, `commit`), each
+the command of its name, a text given as `--option=value` so one that starts with a dash is kept.
+Each is written where that command run in the directory of the call writes it (Who writes what):
+the start of a work item on main, the moves of its Tasks, its notes and its hand in its worktree,
+one server serving both. A refusal is a tool error holding its one line, nothing written, as
+`fgraph: error: T-0002 cannot complete: its check "exit 3" exited with status 3`. Before it
+serves, the server keeps fd 0 and fd 1 for the protocol and points them at /dev/null and at
+stderr, so the check of a Task and the gate of a landing, run by `run_gate`, write on its stderr
+and read nothing. The tools are `MOVE_TOOLS` of `src/flowgraph/mcp/moves.py` and the streams
+`protocol_streams` of `src/flowgraph/mcp/stdio.py`.
+
 ### Wire
 
 The probe is a server of about 120 lines on the standard library and pydantic: it reads one
@@ -2955,7 +2969,8 @@ development too.
 Who writes what with the development on, so that two branches never change
 the same file or hand out the same number. With it off no work item has a
 branch: every write is made in the checkout, the start of a work item alone
-held to `main`, and there is no landing:
+held to `main`, and there is no landing. A call of a tool of fgraph mcp is
+written as its command run in the directory it names:
 
 | Write | Where |
 |---|---|

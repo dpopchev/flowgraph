@@ -10,3 +10,8 @@ criteria = [
     "an agent commits the work of its started Task as a tool, a refusal returned as its one line",
     "an agent claims the first work item of the Backlog that can start as a tool, naming none",
 ]
+
+[[knowledge]]
+kind = "finding"
+text = "verified: make check run on main on 2026-11-25 with F-0022 and F-0025 whole, the code of main at e06847d8, the landing of S-0164: 5794 passed, all checks passed, exit 0. Main holds the three merges the coordinator made by hand for S-0159, S-0165 and S-0164, whose branches met one another in README.md and docs/domain-model.md; no file of main holds a conflict marker. Under the word of the developer of that day, delegate F-0025 in parallel of F-0022, S-0164 and S-0165 were each handed whole to one subagent on haiku while S-0160 was worked, and each is verified on main by a session of Claude Code against fgraph mcp."
+noted = 2026-11-25 10:55:44+00:00

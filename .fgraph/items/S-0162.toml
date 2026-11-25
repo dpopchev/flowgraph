@@ -38,3 +38,8 @@ description = "Change README.md and docs/domain-model.md only; find each passage
 check = "grep -q 'a line a later line supersedes is left out' README.md && grep -q 'a line a later line supersedes is left out' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, in the bullet of Governed by of the brief, and README.md, in the paragraph that opens fgraph brief prints the whole brief, say the lines under Governed by are the live ones, a line a later line supersedes is left out, and that fgraph about of a file lists every one"
 created = 2026-11-25 06:45:24+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, on the word of the developer of that day, write the tasks as well and make it ready; the developer reviews them at the close: (1) The live lines are those of live_entries, the rule of fgraph knowledge --live, read over every entry of the record before the governing ones are picked. (2) The brief alone changes: fgraph about of a file still lists every line that governs it, as the criterion names the brief. (3) A superseded line is left out, not marked: the brief is what an agent acts on, and fgraph show keeps the mark. (4) No unit test: the change is one line of the shell brief_of, stated by the functional file, run with no git."
+noted = 2026-11-25 06:45:29+00:00

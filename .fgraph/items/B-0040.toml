@@ -1,0 +1,12 @@
+id = "B-0040"
+state = "backlog"
+title = "Cut the fields of the metadata of the package that say nothing of fgraph from four to none"
+description = "Phase 4, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0036). Seen by the coordinator while reviewing the first pass. Its first-pass Tasks are drafted the same day and reviewed before the phase starts."
+parent = "F-0036"
+realizes = 2
+complexity = "low"
+created = 2026-11-25 09:53:51+00:00
+
+[criterion]
+observed = "pyproject.toml on main on 2026-11-25: description = Add your description here, the placeholder of uv init, and [project] names no license, no urls and no classifiers, while the repository holds LICENSE, MIT"
+expected = "the metadata of the built wheel says what fgraph is in one sentence, names the MIT license and its file, and links the repository"

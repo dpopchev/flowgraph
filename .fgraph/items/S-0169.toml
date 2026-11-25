@@ -30,6 +30,15 @@ check = "uv run pytest tests/functional/test_land_behind_main.py tests/functiona
 expected_output = "changed: behind_main(work_tree, branch, inside) of src/flowgraph/development/sync_git.py lists the files outside the record that main changed since the branch last held it; land_item of src/flowgraph/development/land.py raises LandError with the one line of the criterion, before anything is merged, when no gate is set and that list is not empty; created: tests/development/sync/test_behind_main.py states the adapter on the real git. No xfail mark is left in tests/functional/test_land_behind_main.py"
 created = 2026-11-25 08:20:21+00:00
 
+[[tasks]]
+id = "T-0755"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say a landing with no gate set is refused for a branch that lacks what main changed"
+description = "FIRST PASS, written on 2026-11-25 before U-0018 and Q-0003 were completed and before the rework of its Feature: the coordinator reviews this Task once both are completed, before the work item starts (S-0169, its decision of 2026-11-25). If no later line of S-0169 says its Tasks were reviewed, stop and say so. Change README.md and docs/domain-model.md only; find each passage by grep, never by line number; plain ASCII; no source or test change. Keep the words lacks what main changed since outside the record on one line in each file: the check greps them. docs/domain-model.md: grep -n 'the merge held' finds the passage on the landing; add a bullet: with no gate set, a landing is refused before anything is merged when the branch of the work item lacks what main changed since outside the record -- `S-0002 cannot land: its branch lacks what main changed since outside the record: run fgraph sync in <worktree> first` (S-0169); a main moved by writes of the record alone refuses nothing; with a gate set the landing goes on and the gate checks the merge held; the read is `behind_main` of `src/flowgraph/development/sync_git.py`. README.md: grep -n 'fgraph land' finds its passage; the same in short, with the refusal as a comment line of an sh block. If grep -n 'S-0169' of the two files finds another line when this Task runs, make it true and say so."
+check = "grep -q 'lacks what main changed since outside the record' README.md && grep -q 'lacks what main changed since outside the record' docs/domain-model.md"
+expected_output = "changed: docs/domain-model.md, in the passage on the landing, and README.md, in the passage on fgraph land, say that with no gate set a landing is refused, nothing merged, when the branch lacks a commit of main that changed a file outside the record, with the line naming fgraph sync, and that a gate set checks the merge held in its place"
+created = 2026-11-25 08:20:33+00:00
+
 [[knowledge]]
 kind = "finding"
 text = "Open, decided at the rework: the Then refuses the landing naming fgraph sync. The other readings: the landing runs the sync itself; or development.gate is set to make check in this repository, a configuration and no code, so the gate runs on the merge held, at about 9 minutes under the lock of main for each landing."

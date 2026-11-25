@@ -19,7 +19,7 @@ from flowgraph.development.branch_age import aged
 from flowgraph.development.commit import OpenGit, open_git
 from flowgraph.development.config_git import record_named
 from flowgraph.development.scope import scope_in, within, worktree_of_item
-from flowgraph.development.worktrees import across_worktrees, held_elsewhere, record_of_main
+from flowgraph.development.worktrees import across_worktrees, held_elsewhere, read_record
 from flowgraph.parser import REFUSED, build_command_line, help_asked
 from flowgraph.parser.command import command_said
 from flowgraph.parser.ids import ids_read
@@ -64,20 +64,6 @@ __all__ = ["Store", "open_files", "open_git", "read_config", "record_named", "ru
 
 # Write text to a stream; what it returns is ignored, so a stream's write and a list's append fit.
 Write = Callable[[str], object]
-
-# The commands that list the record of main when run in the worktree of a work item (S-0141).
-LISTS_MAIN = ("status", "watch")
-
-
-def _read_record(command: str | None, located: Path, open_git: OpenGit) -> Path:
-    """The record a command reads: that of main for a LISTS_MAIN command in a work item's worktree.
-
-    The rule is keyed on the work tree that keeps the record, as scope_in is, not on the directory
-    fgraph runs in. Every other command, and a record with no record of main, reads the located one.
-    """
-    if command not in LISTS_MAIN:
-        return located
-    return record_of_main(located, open_git) or located
 
 
 def _watch(
@@ -173,7 +159,7 @@ def run(
         return 0
     match locate(cwd, args.dir, is_dir, find_named):
         case Found(located) | Given(located):
-            path = _read_record(args.command, located, open_git)
+            path = read_record(args.command, located, open_git)
             store = within(
                 across_worktrees(open_store(path), path, open_git, open_store),
                 partial(scope_in, path, open_git),

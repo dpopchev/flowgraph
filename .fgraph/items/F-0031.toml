@@ -8,3 +8,9 @@ criteria = [
     "a developer builds no decision and no answer of a Spike whose yes or no is None",
     "a developer who builds a started work item with no Task, or one with two started Tasks, is refused where it is built",
 ]
+
+[[knowledge]]
+kind = "finding"
+text = "Open, for the developer, asked with the draft of 2026-11-25 and not answered: the first pass has a blocked state require an edge of relation/depends.py. Today --waiting-on is a text that is not blank, and README.md blocks on developer, the reviewer and the sponsor; a required edge to an item refuses each of those. The reading of the coordinator, the smaller: waiting_on stays a text, and no work item is filed for it. If the developer wants the edge, it is a Story of its own, a change of what fgraph block takes."
+noted = 2026-11-25 09:04:14+00:00
+mark = "open"

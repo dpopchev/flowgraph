@@ -58,3 +58,8 @@ noted = 2026-11-25 06:48:38+00:00
 text = "red: 8 failed, 3 passed (under --runxfail: the commit is not served, Unknown tool: commit, so every value test fails on its value; the three guards pass)"
 noted = 2026-11-25 10:17:31+00:00
 task = "T-0730"
+
+[[progress]]
+text = "red: 12 failed, 18 passed (the commit tool is not in MOVE_TOOLS: the names test and the three commit argv tests fail on the missing tool, the eight functional value tests fail on Unknown tool: commit, the guards pass)"
+noted = 2026-11-25 10:19:57+00:00
+task = "T-0731"

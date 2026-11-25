@@ -42,3 +42,8 @@ description = "Change README.md and docs/domain-model.md only; find each passage
 check = "grep -q 'commit (directory, id, message)' README.md && grep -q 'commit (directory, id, message)' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, Tools over stdio, and README.md, in the paragraph on the moves of fgraph mcp, list commit (directory, id, message) among the moves and say it runs fgraph commit in the worktree the call names and answers with the line that holds the sha the tool complete takes"
 created = 2026-11-25 06:48:32+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, on the word of the developer of that day, write the tasks as well and make it ready; the developer reviews them at the close: (1) The tool is commit, one of MOVE_TOOLS beside the moves of S-0159, with directory, id and message; it runs fgraph commit ID --message=TEXT in the directory the call names, as every tool runs its command, so a refusal is the tool error with its one line. (2) It is listed right before complete, the order an agent calls them in. (3) The functional test states the commit and its refusal on one Task; the complete at the sha is stated by the test of S-0159. (4) Its Tasks name modules S-0159 has not written yet: they are read again before F-0025 starts."
+noted = 2026-11-25 06:48:38+00:00

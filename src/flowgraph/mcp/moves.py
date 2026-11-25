@@ -23,9 +23,16 @@ class ItemArguments(ToolArguments):
     id: str = Field(description=ID)
 
 
-class StartArguments(ItemArguments):
-    """The arguments of start: a work item may be handed to an agent as it starts."""
+class StartArguments(ToolArguments):
+    """The arguments of start: the item to start, or none for the first that can start."""
 
+    id: str | None = Field(
+        default=None,
+        description=(
+            "the id of the work item or of its Task, as S-0001 or T-0001; left out, the first"
+            " line of the Backlog that can start"
+        ),
+    )
     agent: str | None = Field(default=None, description=AGENT)
 
 
@@ -60,7 +67,11 @@ class CompleteArguments(ItemArguments):
 
 
 def _start(given: StartArguments) -> list[str]:
-    return ["start", given.id, *([f"--agent={given.agent}"] if given.agent is not None else [])]
+    return [
+        "start",
+        *([given.id] if given.id is not None else []),
+        *([f"--agent={given.agent}"] if given.agent is not None else []),
+    ]
 
 
 def _hand(given: HandArguments) -> list[str]:
@@ -92,7 +103,8 @@ ANSWERS = "; it answers with the line the command prints"
 MOVE_TOOLS = (
     Tool(
         "start",
-        "Start a work item, handed to the agent when one is named, or a Task of it" + ANSWERS,
+        "Start a work item, or a Task of it; with no id, the first work item of the Backlog that"
+        " can start, which an agent claims; handed to the agent when one is named" + ANSWERS,
         StartArguments,
         _start,
     ),

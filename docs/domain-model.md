@@ -1297,11 +1297,13 @@ lines it needs from the document. An id the record does not hold, as S-0009, is 
 tool error holding the one line fgraph prints, `fgraph: error: no Story S-0009 in the record`. The
 tools are `READ_TOOLS` of `src/flowgraph/mcp/reads.py`.
 
-S-0159 adds the moves of fgraph mcp: `start` (`directory`, `id`, and `agent` when a work item is
+S-0159 adds the moves of fgraph mcp: `start` (`directory`, `id` optional, and `agent` when a work item is
 handed), `hand` (`directory`, `id`, `agent`), `block` (`directory`, `id`, `reason`,
 `waiting_on`), `unblock` (`directory`, `id`), `note` (`directory`, `id`, `kind` -- finding,
 decision, deviation or progress -- and `text`) and `complete` (`directory`, `id`, `commit`), each
 the command of its name, a text given as `--option=value` so one that starts with a dash is kept.
+The id of the tool start is optional:
+with no id the tool start takes the first line of the Backlog that can start, as `fgraph start --agent NAME` does (S-0113, S-0121), and answers with the line that names it, so an agent claims its work with no shell (S-0165); `next_to_start` of the status tool is the line it would take.
 Each is written where that command run in the directory of the call writes it (Who writes what):
 the start of a work item on main, the moves of its Tasks, its notes and its hand in its worktree,
 one server serving both. A refusal is a tool error holding its one line, nothing written, as

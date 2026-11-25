@@ -11,6 +11,11 @@ completed = 2026-11-25 08:08:43+00:00
 agent = "haiku-s81"
 commit = "9d8ac8e2"
 
+[verified]
+answer = "yes"
+text = "run on main at fc95df18 on 2026-11-25 in a throwaway record, a Story with a decision noted with --governs src/store.py and src/files.py and a finding that governs none: fgraph knowledge prints 2026-11-25  decision  S-0001#2  keep one store  (governs src/store.py, src/files.py), the ending fgraph show S-0001 gives the same line, and the finding as before, with no ending"
+on = 2026-11-25 08:10:10+00:00
+
 [criterion]
 given = "a record with a line noted with --governs"
 when = "fgraph knowledge is run"

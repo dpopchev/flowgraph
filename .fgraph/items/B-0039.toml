@@ -37,3 +37,8 @@ description = "FIRST PASS, written on 2026-11-25 before Phase 2 was completed: t
 check = "grep -q 'the Story written reads back different' README.md && grep -q 'the Story written reads back different' docs/domain-model.md && grep -q 'NoSettingsStoreError' docs/domain-model.md && grep -q 'contracts no record reaches' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, Persistence, after the bullet on a write read back before it replaces the file, says a write read back different is refused, exit 2, fgraph: error: <path>: the Story written reads back different, its file as it was (B-0039), and that KindError, NoFeatureStoreError, NoTermStoreError and NoSettingsStoreError are contracts no record reaches, with why; README.md says the refusal after the passage of the files refused in one line"
 created = 2026-11-25 09:51:29+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25: put Tasks on the work items of Phase 3; those will be reviewed before the phase starts. The Tasks of B-0039 (its 3 Tasks: T-0770, T-0771, T-0772) are that first pass, drafted that day by a read-only subagent against the code of main at 2dc58f08 and filed by the coordinator, who checked their shape -- the opening sentence, the check, that the files they name are on the disk or said to be new -- and read their titles, outputs, checks and open points, not every description. They are reviewed before Phase 3 starts, the review noted here as a decision naming each Task kept, amended or removed; until that line is here, B-0039 is not started."
+noted = 2026-11-25 09:52:48+00:00

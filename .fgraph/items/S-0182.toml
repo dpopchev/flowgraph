@@ -50,3 +50,8 @@ description = "FIRST PASS, written on 2026-11-25 before Phases 2 and 3 were comp
 check = "grep -qF '[docs/agents.md](docs/agents.md)' README.md && grep -q 'the tool note takes governs' README.md && grep -q 'the tool note takes governs' docs/domain-model.md"
 expected_output = "changed: README.md, in the list Read next under its opening, gains [docs/agents.md](docs/agents.md); README.md, in the passage on fgraph mcp, and docs/domain-model.md, in Tools over stdio, say the tool note takes governs, the files the line governs, each passed as --governs=PATH"
 created = 2026-11-25 10:55:55+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25, on the draft of Phase 4 that offered its first-pass Tasks: great, file them. The Tasks of S-0182 (its 4 Tasks: T-0838, T-0841, T-0842, T-0843) are that first pass, drafted that day by a read-only subagent against the code of main at 0ecab493, before Phases 2 and 3 were completed, and filed by the coordinator, who checked their shape -- the opening sentence, the check, the ids they name -- and read their titles, outputs, checks and open points, not every description. They are reviewed before Phase 4 starts, the review noted here as a decision naming each Task kept, amended or removed; until that line is here, S-0182 is not started."
+noted = 2026-11-25 10:56:15+00:00

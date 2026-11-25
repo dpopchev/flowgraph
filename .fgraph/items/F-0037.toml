@@ -8,3 +8,9 @@ criteria = [
     "an agent or its operator follows one guide to serve fgraph mcp to a session, read a brief and keep a knowledge line that governs a file",
     "a reader of README.md reads an overview that links the quickstart, the guide and docs/domain-model.md",
 ]
+
+[[knowledge]]
+kind = "finding"
+text = "Open, for the developer, asked with the draft of 2026-11-25 and not answered: the path of the quickstart is init, add, start, complete or land, verify, since fgraph verifies a landed work item; and what becomes of docs/board-review.md."
+noted = 2026-11-25 10:03:23+00:00
+mark = "open"

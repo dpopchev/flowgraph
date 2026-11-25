@@ -43,12 +43,13 @@ commit = "dc8548e0d3bb04ec0eaf5429165e887e79a4a1a4"
 
 [[tasks]]
 id = "T-0725"
-state = "backlog"
+state = "started"
 title = "Update README.md and docs/domain-model.md to say Terms of fgraph brief lists the terms its governing lines are about"
 description = "Change README.md and docs/domain-model.md only; find each passage by grep, never by line number; plain ASCII; no source or test change. Keep the words its Feature or a line under on one line in each file: the check greps them. docs/domain-model.md: grep -n 'Terms (n)`: each term' finds the bullet of the brief; it becomes: `Terms (n)`: each term the work item, its Feature or a line under `Governed by` is about, with its meaning, each once, in that order (S-0163). README.md: grep -n 'its Feature is about under' finds the sentence of the paragraph on fgraph brief (if it finds nothing, read the paragraph that holds prints the whole brief of a work item); and the terms it or its Feature is about under `Terms` becomes and the terms it, its Feature or a line under `Governed by` is about under `Terms`. Reflow inside the bullet and the paragraph alone; the example block stays. If grep -n 'S-0163' of the two files finds another line when this Task runs (none on 2026-11-25), make it true and say so."
 check = "grep -q 'its Feature or a line under' README.md && grep -q 'its Feature or a line under' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, in the bullet of Terms (n) of the brief, and README.md, in the paragraph that opens fgraph brief prints the whole brief, say the terms are those the work item, its Feature or a line under Governed by is about"
 created = 2026-11-25 06:45:53+00:00
+started = 2026-11-25 07:13:40+00:00
 
 [[knowledge]]
 kind = "decision"

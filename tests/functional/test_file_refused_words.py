@@ -67,10 +67,6 @@ CASES = [
     ),
 ]
 
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="S-0109: a file refused prints the lines of the validator"
-)
-
 
 @dataclass(frozen=True)
 class Outcome:
@@ -128,7 +124,6 @@ def record(tmp_path: Path) -> Path:
     return tmp_path
 
 
-@XFAIL
 @pytest.mark.parametrize(("edited", "noun", "said"), CASES)
 def test_status_of_a_file_with_a_key_or_a_state_it_does_not_take_names_them_in_one_line(
     record: Path, edited: tuple[str, str | None, str | None], noun: str, said: str
@@ -139,7 +134,6 @@ def test_status_of_a_file_with_a_key_or_a_state_it_does_not_take_names_them_in_o
     assert (refused.status, refused.err.splitlines()[-1:]) == expected
 
 
-@XFAIL
 @pytest.mark.parametrize(("edited", "noun", "said"), CASES)
 def test_the_refusal_prints_no_line_of_the_validator(
     record: Path, edited: tuple[str, str | None, str | None], noun: str, said: str

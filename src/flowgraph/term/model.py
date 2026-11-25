@@ -17,6 +17,7 @@ from pydantic import BaseModel, ConfigDict, ValidationError
 
 from flowgraph.criterion import EmptyPartError, said
 from flowgraph.item import HeldTime, NoOffsetError, write_checked
+from flowgraph.item.file_refusal import file_refusal
 
 # The directory of every term inside a record, one file per term, named by its name.
 TERMS = "terms"
@@ -128,16 +129,17 @@ def term_file(record: Path, name: str) -> Path:
 def _read_file(path: Path) -> Term:
     """The term one file holds, built through its constructor.
 
-    Raises TermFileError naming the path when the file holds no term; a time with no offset is
-    refused so.
+    Raises TermFileError naming the path when the file holds no term; a key the model does not
+    take is refused in one line, the first such error; a time with no offset is refused so.
     """
     try:
         held = _TermFile.model_validate(tomllib.loads(path.read_text(encoding="utf-8")))
         made = make_term(held.name, held.meaning, held.added)
         return replace(made, is_a=tuple(held.is_a), part_of=tuple(held.part_of))
+    except ValidationError as error:
+        raise TermFileError(f"{path} holds no term: {file_refusal(error)}") from error
     except (
         tomllib.TOMLDecodeError,
-        ValidationError,
         TermError,
         EmptyPartError,
         NoOffsetError,

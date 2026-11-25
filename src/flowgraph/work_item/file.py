@@ -12,6 +12,7 @@ from pydantic import ValidationError
 
 from flowgraph.criterion import CommitError, CriterionError, DecisionError, EmptyPartError
 from flowgraph.item import NoOffsetError, task_row, write_checked
+from flowgraph.item.file_refusal import file_refusal
 from flowgraph.knowledge import KnowledgeRow
 from flowgraph.parent import FeatureIdError, RealizesError
 from flowgraph.record import ITEMS
@@ -51,11 +52,16 @@ from flowgraph.work_item.views import DependsRow, VerifiedRow, WorkItemDetail, W
 def _read_file(path: Path, kind: Kind) -> HeldItemFile:
     """The content of one file of a work item of that kind; raises WorkItemFileError naming it.
 
-    A time with no offset is refused so.
+    A key or a state the model does not take is refused in one line, the first such error; a time
+    with no offset is refused so.
     """
     try:
         return HELD_ITEM.validate_python(tomllib.loads(path.read_text(encoding="utf-8")))
-    except (tomllib.TOMLDecodeError, ValidationError, NoOffsetError) as error:
+    except ValidationError as error:
+        raise WorkItemFileError(
+            f"{path} holds no {kind.noun}: {file_refusal(error, tagged=True)}"
+        ) from error
+    except (tomllib.TOMLDecodeError, NoOffsetError) as error:
         raise WorkItemFileError(f"{path} holds no {kind.noun}: {error}") from error
 
 

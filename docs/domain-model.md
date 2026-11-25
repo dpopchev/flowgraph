@@ -864,6 +864,10 @@ fails is refused with exit 2, nothing written and no traceback, in one line that
 file that holds it:
 `fgraph: error: <path>: <relation> names <id>, which is not in the record`, or
 `fgraph: error: <path>: <relation> closes a cycle: S-0001 -> S-0002 -> S-0001`.
+An `amends` must name a completed work item at the read as at the write (B-0028): an amends of a
+work item in Backlog, started, blocked or removed, as a file edited by hand or merged can hold, is
+refused the same way, `fgraph: error: <path>: amends names S-0001, which is not completed`; the
+read takes the bucket of the work item from the record as the worktrees compose it, as the write does.
 
 ## About
 
@@ -3252,7 +3256,7 @@ the validator; a time with no offset is refused in the one line alone.
 | a `token` | refused | `backlog.token Extra inputs are not permitted` |
 | `filed_during = "T-0001"` | refused | `filed during names T-0001, which is not a bug or spike or story or upkeep` |
 | `amends = "F-0001/AC1"` | refused | `amends names F-0001/AC1, which is not in the record` |
-| `amends` a work item in Backlog | read | `amends S-0001`, `amended by S-0002`: the write refuses it, the read does not |
+| `amends` a work item in Backlog | read as of the probe; refused since B-0028 | `amends S-0001`, `amended by S-0002`: the write refused it and the read did not; since B-0028 exit 2: `fgraph: error: <file>: amends names S-0001, which is not completed` |
 | a knowledge line with `type`, `supersedes` | refused | `backlog.knowledge.0.type Extra inputs are not permitted` |
 | `about` a term not in the record | refused | `about names landing, which is not in the record` |
 | a term with an old `added` | read | `terms (1) landing` |

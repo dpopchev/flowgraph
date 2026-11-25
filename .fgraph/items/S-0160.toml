@@ -57,3 +57,8 @@ noted = 2026-11-24 23:51:28+00:00
 text = "red: 8 failed, 3 passed under --runxfail (land and verify are Unknown tool; the story stays started); the 3 passing (stdout all replies, developer story started, no approved tool) are unmarked"
 noted = 2026-11-25 10:01:30+00:00
 task = "T-0715"
+
+[[progress]]
+text = "red: 4 failed, 3 passed in tests/mcp/closing (the argv stubs raise NotImplementedError); functional: 8 failed under --runxfail seen at T-0715 (Unknown tool)"
+noted = 2026-11-25 10:03:50+00:00
+task = "T-0716"

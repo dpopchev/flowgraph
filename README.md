@@ -222,8 +222,9 @@ fgraph about S-0002 --format xml
 coordinator hands an agent: the text of `fgraph show`, then the branch and the
 worktree git holds for it under `Worktree`, its Feature with its knowledge, the
 lines of the record that govern a path one of its Tasks names under `Governed by`,
-and the terms it or its Feature is about under `Terms`. A section with nothing in
-it is left out. Under `Governed by` a line a later line supersedes is left out;
+and the terms it, its Feature or a line under `Governed by` is about under
+`Terms`. A section with nothing in it is left out. Under `Governed by` a line a
+later line supersedes is left out;
 `fgraph about` of a file lists every one. `--format json` prints the same as one
 JSON document, keys sorted and `null` for nothing, the same bytes on two runs. A
 Feature id, a Task id and an id the record does not hold are refused, exit 2:

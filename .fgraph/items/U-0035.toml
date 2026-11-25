@@ -47,3 +47,8 @@ description = "FIRST PASS, written on 2026-11-25 before Phase 2 was completed: t
 check = "grep -q 'never a missing one (U-0035)' docs/domain-model.md && grep -q 'NoAgent' docs/domain-model.md && grep -q 'NoVerification' docs/domain-model.md && grep -q 'NoSuccessor' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, in the passage of the types of each state and in the one of the answer of a closing, says that the agent is an Agent or NoAgent, the answer of the closing a Verification or NoVerification and what supersedes a removed work item a WorkItemId or NoSuccessor, each a value and never a missing one, as the evidence is a Commit or NoCommit, and that a file holds each key only when there is a value"
 created = 2026-11-25 09:29:41+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25: put Tasks on the work items of Phase 3; those will be reviewed before the phase starts. The Tasks of U-0035 (its 4 Tasks: T-0756, T-0757, T-0758, T-0759) are that first pass, drafted that day by a read-only subagent against the code of main at 2dc58f08 and filed by the coordinator, who checked their shape -- the opening sentence, the check, that the files they name are on the disk or said to be new -- and read their titles, outputs, checks and open points, not every description. They are reviewed before Phase 3 starts, the review noted here as a decision naming each Task kept, amended or removed; until that line is here, U-0035 is not started."
+noted = 2026-11-25 09:30:44+00:00

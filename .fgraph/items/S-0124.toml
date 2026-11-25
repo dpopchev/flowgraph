@@ -1,5 +1,5 @@
 id = "S-0124"
-state = "started"
+state = "completed"
 title = "Cut the term names fgraph add term takes that read as an id, as f15 or s3, from every one to none"
 description = "From the plan of S-0118, on the go of the developer of 2026-11-23: once f15 is read as F-0015, a term named f15 or s3 is shadowed by the id in fgraph show and fgraph about. The plan found that make_term also runs when the files of the terms are read (src/flowgraph/term/model.py), so widening the pattern there alone would refuse a record that holds one. Its Tasks are written when it is ordered."
 parent = "F-0023"
@@ -7,7 +7,9 @@ realizes = 3
 complexity = "low"
 created = 2026-11-23 07:16:38+00:00
 started = 2026-11-25 01:43:38+00:00
+completed = 2026-11-25 02:23:46+00:00
 agent = "haiku-s124"
+commit = "825388cd"
 filed_during = "S-0118"
 
 [criterion]

@@ -44,9 +44,6 @@ BESIDE = ["note", "S-0001", "--decision", NEW, "--governs", "src/gate.py"]
 BRIEF = ["brief", "S-0001"]
 BRIEF_JSON = ["brief", "S-0001", "--format", "json"]
 SHOW = ["show", "S-0001"]
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="S-0162: Governed by lists a line a later one supersedes"
-)
 
 
 @dataclass(frozen=True)
@@ -91,14 +88,12 @@ def governed_texts(cwd: Path) -> list[str]:
     return [line["text"] for line in document["governed_by"]]
 
 
-@XFAIL
 def test_the_brief_lists_the_live_line_alone_under_governed_by(tmp_path: Path) -> None:
     out = runs(tmp_path, STORY, TASK, FIRST, SUPERSEDING, BRIEF).out
     governed = out.partition("Governed by\n")[2]
     assert governed == f"  decision  2026-01-01  S-0001  {NEW}\n"
 
 
-@XFAIL
 def test_the_brief_as_json_holds_the_live_line_alone(tmp_path: Path) -> None:
     runs(tmp_path, STORY, TASK, FIRST, SUPERSEDING)
     assert governed_texts(tmp_path) == [NEW]

@@ -1,5 +1,5 @@
 id = "S-0160"
-state = "started"
+state = "completed"
 title = "Raise the moves of the closing of a work item a coordinator makes as tools from none to two: its landing and the answer of its closing"
 description = "New on the plan agreed on 2026-11-24. It waits for S-0159, which holds how a refusal is given back; that order is the reading of the agent, the plan naming none for it. Its Tasks are written before its Feature starts."
 parent = "F-0022"
@@ -7,7 +7,9 @@ realizes = 4
 complexity = "medium"
 created = 2026-11-24 19:52:08+00:00
 started = 2026-11-25 09:57:10+00:00
+completed = 2026-11-25 10:25:51+00:00
 agent = "sonnet-s160"
+commit = "42edfdc3"
 depends_on = [
     "S-0159",
 ]

@@ -1,0 +1,13 @@
+id = "S-0169"
+state = "backlog"
+title = "Cut the landings fgraph takes, with no gate set, of a branch that does not hold main from every one to none"
+description = "Phase 2, Concurrent Worktree and Merge Ergonomics: filed on the word of the developer of 2026-11-25, work items for each feature, under a Feature filed as drafted and still to be reworked; its criterion follows the exit gate of the draft. The draft speaks of a rebase and of re-running the criterion: the history is forward-only, so fgraph sync merges main into the branch, and fgraph verify runs nothing, so no criterion can be re-run yet. What a landing does already: it holds the merge, runs development.gate on it and drops it when the gate fails. The Story is the gap seen on 2026-11-25: with no gate set, S-0161 landed on a branch that did not hold the landing of S-0162 and the merged tree was checked by hand. B-0034 and U-0024 stand beside it in the Backlog. Its Tasks are written when it is reworked."
+parent = "F-0029"
+realizes = 1
+complexity = "low"
+created = 2026-11-25 08:08:01+00:00
+
+[criterion]
+given = "the development on, development.gate not set, and a started work item, its Tasks completed, whose branch does not hold the head of main"
+when = "fgraph land of the work item is run"
+then = "it exits 2 in one line naming fgraph sync, run in its worktree, and nothing is merged"

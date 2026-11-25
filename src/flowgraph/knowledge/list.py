@@ -20,6 +20,7 @@ from flowgraph.knowledge.model import (
     FINDING,
     KnowledgeRow,
     about_text,
+    governs_text,
     kind_name,
     line_ref,
     mark_text,
@@ -153,7 +154,8 @@ def knowledge_text(
 ) -> str:
     """The entries as the lines fgraph knowledge writes, or one line saying there are none.
 
-    Each line is under its ref, or under the id of its item when it has none.
+    Each line is under its ref, or under the id of its item when it has none. A line ends with
+    its mark, its terms and the files it governs, as fgraph show ends it (S-0081).
     """
     if not entries:
         about_it = "" if about is None else f" about {about}"
@@ -162,7 +164,7 @@ def knowledge_text(
         return f"no {only}{kind or 'knowledge'} lines{about_it}{held} in the record\n"
     return "".join(
         f"{entry.noted.date().isoformat()}  {entry.kind}  {entry.ref or entry.item}  {entry.text}"
-        f"{mark_text(entry.mark)}{about_text(entry.about)}\n"
+        f"{mark_text(entry.mark)}{about_text(entry.about)}{governs_text(entry.governs)}\n"
         for entry in entries
     )
 

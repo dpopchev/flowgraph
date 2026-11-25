@@ -204,6 +204,7 @@ tree, or as given outside one, and is not checked against the disk: a governed
 file may be renamed or not yet written. `fgraph about` of the path lists the lines
 that govern it first, under `Governed by`, newest first, each with its kind, its
 date, the id of its item and its text, then the items whose commits touched it.
+`fgraph knowledge` and `fgraph show` list such a line as any other, and each line ends with the files it governs, as `(governs src/gate.py)`.
 A path that no file on the disk and no id or term answers to is read as a path
 when a line governs it, so a file not yet written is answered. Outside a git work
 tree the lines that govern it are listed alone:
@@ -215,6 +216,9 @@ fgraph about src/gate.py
 #   decision  2026-11-22  S-0001  the gate holds no state
 # S-0002  4f2a9c1  Hold the landing
 #   T-0004  91be07d  Add the gate to the landing
+
+fgraph knowledge --search "holds no state"
+# 2026-11-22  decision  S-0001#1  the gate holds no state  (governs src/gate.py)
 ```
 
 `fgraph about` of an item, a term or a file takes `--format json` too and prints its

@@ -1,0 +1,19 @@
+id = "S-0168"
+state = "backlog"
+title = "Cut the starts fgraph takes of a work item whose Tasks name a file the Tasks of another started work item name from every one to none"
+description = "Phase 2, Concurrent Worktree and Merge Ergonomics: filed on the word of the developer of 2026-11-25, work items for each feature, under a Feature filed as drafted and still to be reworked; its criterion follows the exit gate of the draft. The duplicate start of one work item, the other half of the draft, is refused since B-0036. The files a work item declares are read as those its Tasks name, by the rule of files_not_named (S-0142); U-0029, one rule for whether a text names a path, stands beside it in the Backlog. Its Tasks are written when it is reworked."
+parent = "F-0028"
+realizes = 1
+complexity = "medium"
+created = 2026-11-25 08:07:28+00:00
+
+[criterion]
+given = "a started work item whose Task names src/a.py, and a work item in Backlog whose Task names it too"
+when = "fgraph start of the second is run"
+then = "it exits 2 in one line naming the file and the work item that holds it, nothing started"
+
+[[knowledge]]
+kind = "finding"
+text = "Open, decided at the rework: the Then is the refusal of the draft. Seen on 2026-11-25: every pair of work items worked at one time that day names README.md and docs/domain-model.md in its Tasks, and each merged cleanly by passage, so a refusal on any shared file refuses every such pair. The readings: the refusal as drafted; a line said at the start, nothing refused; a refusal for the files of src/ and tests/ alone."
+noted = 2026-11-25 08:07:45+00:00
+mark = "open"

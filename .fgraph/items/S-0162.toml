@@ -62,3 +62,8 @@ task = "T-0720"
 text = "red: 2 failed, 2 passed in 0.38s (the two live-line tests, on the superseded line listed under Governed by)"
 noted = 2026-11-25 06:54:42+00:00
 task = "T-0721"
+
+[[progress]]
+text = "red: check exit 1 (the phrase a line a later line supersedes is left out is in neither file)"
+noted = 2026-11-25 06:57:08+00:00
+task = "T-0722"

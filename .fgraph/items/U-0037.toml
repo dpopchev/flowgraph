@@ -60,3 +60,8 @@ description = "FIRST PASS, written on 2026-11-25 before Phase 2 was completed: t
 check = "grep -q 'StartedTasks' docs/domain-model.md && grep -q 'OpenCriterion' docs/domain-model.md && grep -q 'verified_work_item' docs/domain-model.md && grep -q 'where the state is built (U-0037)' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, in the passage of one started Task and in the one of the decision of a Spike, says that the Tasks of a started or blocked work item are a StartedTasks built by started_tasks alone, that no state before Completed holds an Answer, its criterion an OpenCriterion, and that verified_work_item is the one place an answer of a closing is set and refuses a Spike"
 created = 2026-11-25 09:36:50+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25: put Tasks on the work items of Phase 3; those will be reviewed before the phase starts. The Tasks of U-0037 (its 5 Tasks: T-0762, T-0763, T-0764, T-0765, T-0766) are that first pass, drafted that day by a read-only subagent against the code of main at 2dc58f08 and filed by the coordinator, who checked their shape -- the opening sentence, the check, that the files they name are on the disk or said to be new -- and read their titles, outputs, checks and open points, not every description. They are reviewed before Phase 3 starts, the review noted here as a decision naming each Task kept, amended or removed; until that line is here, U-0037 is not started."
+noted = 2026-11-25 09:38:18+00:00

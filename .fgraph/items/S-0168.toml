@@ -11,3 +11,9 @@ created = 2026-11-25 08:07:28+00:00
 given = "a started work item whose Task names src/a.py, and a work item in Backlog whose Task names it too"
 when = "fgraph start of the second is run"
 then = "it exits 2 in one line naming the file and the work item that holds it, nothing started"
+
+[[knowledge]]
+kind = "finding"
+text = "Open, decided at the rework: the Then is the refusal of the draft. Seen on 2026-11-25: every pair of work items worked at one time that day names README.md and docs/domain-model.md in its Tasks, and each merged cleanly by passage, so a refusal on any shared file refuses every such pair. The readings: the refusal as drafted; a line said at the start, nothing refused; a refusal for the files of src/ and tests/ alone."
+noted = 2026-11-25 08:07:45+00:00
+mark = "open"

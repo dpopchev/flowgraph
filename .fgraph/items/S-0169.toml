@@ -11,3 +11,9 @@ created = 2026-11-25 08:08:01+00:00
 given = "the development on, development.gate not set, and a started work item, its Tasks completed, whose branch does not hold the head of main"
 when = "fgraph land of the work item is run"
 then = "it exits 2 in one line naming fgraph sync, run in its worktree, and nothing is merged"
+
+[[knowledge]]
+kind = "finding"
+text = "Open, decided at the rework: the Then refuses the landing naming fgraph sync. The other readings: the landing runs the sync itself; or development.gate is set to make check in this repository, a configuration and no code, so the gate runs on the merge held, at about 9 minutes under the lock of main for each landing."
+noted = 2026-11-25 08:08:18+00:00
+mark = "open"

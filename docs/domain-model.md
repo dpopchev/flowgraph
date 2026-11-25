@@ -1033,9 +1033,11 @@ criterion. It is added and then it stands.
 - A term holds its name, its meaning and the time it was added. Its name is its id:
   lowercase words of letters and digits joined by `-`, as `gate` or `work-item`.
   A name that reads as the id of an item, as `S-0001` or `F-0001`, is refused, so
-  an id names one thing, and so is a name that is no such words. A term named as a
-  spelling of an id a command reads, as `f15`, is shadowed by the id: the command
-  reads it as the id, never as the term.
+  an id names one thing, and so is a name that is no such words. A name that is a
+  spelling of an id a command reads, as `f15` or `s3`, is refused at the add (S-0124):
+  `'f15' reads as the id F-0015: a term name is no id`. A term of such a name a record
+  holds already, added before, is read as before, and a command still reads the name
+  as the id, never as the term.
 - A meaning says something: a blank one is refused naming the part, as the
   blank part of an item is.
 - One file per term, `terms/gate.toml` in the record, with `name`, `meaning` and

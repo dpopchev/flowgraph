@@ -1,0 +1,12 @@
+id = "S-0170"
+state = "backlog"
+title = "Cut the results of the tool status of fgraph mcp that Claude Code keeps from its model for their size from every one, on a record as big as that of flowgraph, to none"
+description = "Found by the subagent of Q-0002 on 2026-11-25 (docs/domain-model.md, Tools over stdio, Wire and Answer); filed at the end of the Backlog, outside F-0022, and not burned. Claude Code 2.1.332 refused the result inline at its default of 25,000 tokens (MAX_MCP_OUTPUT_TOKENS) and saved it to a file; the JSON of fgraph status lists every item whether or not --all is given. Open: a cut the tool takes (a bucket, the top of each), or the declaration anthropic/maxResultSizeChars, not tried; whether show, brief and knowledge meet the same bound. S-0157 is built as written, its tool returning the whole document. Its Tasks are written when it is ordered."
+complexity = "medium"
+created = 2026-11-25 08:51:05+00:00
+filed_during = "Q-0002"
+
+[criterion]
+given = "the server of fgraph mcp on a record whose fgraph status --format json prints more than Claude Code gives its model inline, as the record of flowgraph: 417,348 characters on 2026-11-25"
+when = "a session of Claude Code calls the tool status"
+then = "the model is given items of the record in the result itself, not an error that names a file"

@@ -1,0 +1,17 @@
+id = "S-0164"
+state = "backlog"
+title = "Raise the commits an agent makes as a tool from none to one"
+description = "New on the word of the developer of 2026-11-25. It runs the command of S-0161 as the tools of S-0159 run theirs; F-0022 files no tool that commits. Its Tasks are written before its Feature starts."
+parent = "F-0025"
+realizes = 1
+complexity = "low"
+created = 2026-11-25 06:34:01+00:00
+depends_on = [
+    "S-0161",
+    "S-0159",
+]
+
+[criterion]
+given = "fgraph mcp and a started Task with changed files its brief names"
+when = "the tool commit is called with the directory, the id of the Task and the message"
+then = "its text is the line fgraph commit prints there, and a refusal is returned as its one line"

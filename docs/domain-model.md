@@ -996,6 +996,23 @@ main or from the worktree, else the work tree of the record. The read is `not_na
 is asked, and a record outside a git work tree, with `S-0002 has no files changed to read: the
 record is not inside a git work tree`.
 
+`fgraph commit T-0001 --message TEXT` commits the work of the started Task (S-0161): every file
+changed and not committed in the work tree of the record, the files `--not-named` reads, the files
+under the directory of the record left out, in one commit by `commit_files`, whose message is the
+text given with the ids at its end, `fix: name the gate (S-0001, T-0001)`. It says `committed
+T-0001 of S-0001 at <sha>`, the sha `fgraph complete T-0001 --commit` takes, and does not complete
+the Task; it writes no file of the record and takes its lock; it is not conditioned on
+`development.enabled`. Refused, exit 2, nothing committed: a changed file the brief does not
+name, by `files_not_named`, the whole commit, with `T-0001 cannot commit: its brief does not name
+other.txt -- nothing is committed; take each back or have the brief name it`; nothing changed,
+with `T-0001 has nothing to commit: no file is changed in <top>`; a Task that is not started or
+whose work item is blocked, with `T-0001 is not started: fgraph commit commits the work of the
+Task started`; a blank message, with `message is empty`; a record outside a git work tree, with
+`T-0001 has no files to commit: the record is not inside a git work tree`; and, run on main for
+a Task whose work item has a worktree, in the words of the block of a Task, `S-0001 is started:
+its Tasks are written in its worktree, <worktree>`. The command is `commit_task` of
+`src/flowgraph/development/commit_task.py`.
+
 ## Goal
 
 `fgraph goal F-ID [--hours N]` prints one line, the `/goal` a developer pastes into Claude Code

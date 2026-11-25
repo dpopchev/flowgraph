@@ -11,6 +11,11 @@ completed = 2026-11-25 07:08:39+00:00
 agent = "haiku-s162"
 commit = "138a9be6"
 
+[verified]
+answer = "yes"
+text = "run on main at d14c4f59 on 2026-11-25 in a throwaway record, a Story whose Task names src/gate.py, two decisions governing it, the second superseding the first: fgraph brief S-0001 prints under Governed by the one line decision  2026-11-25  S-0001  the gate holds no state; governed_by of --format json holds the text the gate holds no state alone"
+on = 2026-11-25 07:09:24+00:00
+
 [criterion]
 given = "a file two knowledge lines govern, the second superseding the first, and a work item whose Task names the file"
 when = "fgraph brief of the work item is run"

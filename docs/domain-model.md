@@ -1287,6 +1287,16 @@ what `fgraph status --format json` prints there. The modules are `src/flowgraph/
 tool as data), `reads.py` (the reads), `protocol.py` (the reply to a line) and
 `src/flowgraph/mcp/stdio.py` (the shell).
 
+Its reads are the five reads of fgraph mcp (S-0158): status (directory), brief
+(directory, id), show (directory, id: a work item, a Feature or a term), knowledge (directory) and
+about (directory, id: a work item, a Feature, a term or a file), each the command of its name with
+`--format json`, so a call is given the same bytes as the command prints there, the documents of
+Brief, Show as JSON, Status as JSON and of fgraph knowledge and fgraph about named in those
+sections. They write nothing and take no lock; knowledge takes no filter, an agent reading the
+lines it needs from the document. An id the record does not hold, as S-0009, is given back as a
+tool error holding the one line fgraph prints, `fgraph: error: no Story S-0009 in the record`. The
+tools are `READ_TOOLS` of `src/flowgraph/mcp/reads.py`.
+
 ### Wire
 
 The probe is a server of about 120 lines on the standard library and pydantic: it reads one

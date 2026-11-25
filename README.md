@@ -404,11 +404,13 @@ server of the Model Context Protocol: the session starts it, lists its tools
 and calls them; each call is a run of fgraph in the directory it names,
 the checkout of main or the worktree of a work item, and is given what the command
 prints; a refusal comes back as its one line. The server writes nothing itself
-and ends when the session closes its input.
+and ends when the session closes its input; the five reads of fgraph mcp are
+status, brief, show, knowledge and about, each given the JSON its command prints
+with `--format json`.
 
 ```sh
 claude mcp add fgraph -- fgraph mcp
-# the session lists the tool status of fgraph, as mcp__fgraph__status
+# the session lists the tools of fgraph, as mcp__fgraph__status and mcp__fgraph__brief
 ```
 
 ## Use

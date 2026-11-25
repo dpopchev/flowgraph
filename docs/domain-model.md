@@ -1560,7 +1560,9 @@ and its merge tool.
 - `fgraph knowledge` is a view of the whole record: it reads every work item and
   every Feature and writes nothing. It lists every line of each, with its date,
   its kind, its ref in place of the id of its item, as `S-0001#2`, and its text,
-  then its mark when it has one, the
+  then its mark when it has one, its terms as `(about gate)` and the files it
+  governs as `(governs src/gate.py)`: each line ends with the files it governs,
+  as `fgraph show` ends it (S-0081), the
   last noted first; lines noted
   at one time come in the reverse of the order they were collected, the work
   items by kind and id before the Features. The decision of a completed Spike is

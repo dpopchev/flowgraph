@@ -59,3 +59,8 @@ description = "FIRST PASS, written on 2026-11-25 before Phases 2 and 3 were comp
 check = "grep -q 'the rules that hold for a file' README.md && grep -q 'the rules that hold for a file' docs/domain-model.md && grep -q 'terms_reached' docs/domain-model.md && grep -q 'about/rules.py' docs/domain-model.md"
 expected_output = "changed: README.md and docs/domain-model.md, after the passage of fgraph about REF --through, say that fgraph about FILE --through lists the rules that hold for a file: the live lines that govern it under Governed by and under Terms every term they reach through about, is a and part of, nearest first, each with its meaning and its edge, as text and as JSON, a file no live line governs said so in one line, and name terms_reached of src/flowgraph/term/reach.py and src/flowgraph/about/rules.py"
 created = 2026-11-25 10:47:09+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25, on the draft of Phase 4 that offered its first-pass Tasks: great, file them. The Tasks of S-0178 (its 5 Tasks: T-0815, T-0816, T-0818, T-0819, T-0822) are that first pass, drafted that day by a read-only subagent against the code of main at 0ecab493, before Phases 2 and 3 were completed, and filed by the coordinator, who checked their shape -- the opening sentence, the check, the ids they name -- and read their titles, outputs, checks and open points, not every description. They are reviewed before Phase 4 starts, the review noted here as a decision naming each Task kept, amended or removed; until that line is here, S-0178 is not started."
+noted = 2026-11-25 10:47:43+00:00

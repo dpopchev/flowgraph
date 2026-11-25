@@ -84,3 +84,8 @@ task = "T-0712"
 text = "red: 3 failed of test_protocol_streams.py (protocol_streams raises NotImplementedError); 7 failed, 9 passed of test_mcp_moves.py under --runxfail (the line checked on the stdout of the server, so the lines of stdout are not all replies, checked is not in stderr, and every reply from the complete on is read one call late)"
 noted = 2026-11-25 09:33:46+00:00
 task = "T-0713"
+
+[[progress]]
+text = "red: the check fails at HEAD af151215 (0 lines of the moves of fgraph mcp in README.md and docs/domain-model.md, 0 of mcp/moves.py)"
+noted = 2026-11-25 09:38:15+00:00
+task = "T-0714"

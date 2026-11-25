@@ -35,3 +35,9 @@ created = 2026-11-25 10:54:35+00:00
 kind = "decision"
 text = "The developer said on 2026-11-25: put Tasks on the work items of Phase 3; those will be reviewed before the phase starts. The Tasks of U-0022 (its 2 Tasks: T-0839, T-0840) are that first pass, drafted that day by a read-only subagent against the code of main at 2dc58f08 and filed by the coordinator, who checked their shape -- the opening sentence, the check, that the files they name are on the disk or said to be new -- and read their titles, outputs, checks and open points, not every description. They are reviewed before Phase 3 starts, the review noted here as a decision naming each Task kept, amended or removed; until that line is here, U-0022 is not started."
 noted = 2026-11-25 10:55:24+00:00
+
+[[knowledge]]
+kind = "finding"
+text = "Open at the review of its first-pass Tasks, from their draft of 2026-11-25: (1) No docs Task: README.md and docs/domain-model.md describe what a work item waits for (Depends on; waits_for of Show as JSON and Status as JSON) but not where the rule lives (grep 'waits.py\\|waiting_for' finds neither on 2026-11-25). (2) A third statement of the rule, outside the two of the Given: brief/document.py words waits_for as the depends_on of the detail whose bucket is not Completed, without the Backlog condition of the other two. Left as it is; file it, or widen U-0022? (3) The rule goes to status/waits.py and not to relation/: relation imports status and status none of relation, so the opposite would make a new pair for U-0019."
+noted = 2026-11-25 10:55:35+00:00
+mark = "open"

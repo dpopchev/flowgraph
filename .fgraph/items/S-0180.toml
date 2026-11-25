@@ -29,3 +29,8 @@ description = "FIRST PASS, written on 2026-11-25 before Phases 2 and 3 were comp
 check = "grep -q 'make dist' README.md && grep -q 'other than that of the last' README.md && grep -q 'make dist: refused -- pyproject.toml names' README.md"
 expected_output = "changed: README.md lists make dist in the block of ## Develop and says, after the sentence that fgraph release bumps no version in a file of the project, that in the checkout of flowgraph make dist refuses a version of pyproject.toml other than that of the last v* tag, with its line, and that the version is bumped in a commit before fgraph release tags it"
 created = 2026-11-25 10:24:12+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25, on the draft of Phase 4 that offered its first-pass Tasks: great, file them. The Tasks of S-0180 (its 2 Tasks: T-0792, T-0794) are that first pass, drafted that day by a read-only subagent against the code of main at 0ecab493, before Phases 2 and 3 were completed, and filed by the coordinator, who checked their shape -- the opening sentence, the check, the ids they name -- and read their titles, outputs, checks and open points, not every description. They are reviewed before Phase 4 starts, the review noted here as a decision naming each Task kept, amended or removed; until that line is here, S-0180 is not started."
+noted = 2026-11-25 10:28:20+00:00

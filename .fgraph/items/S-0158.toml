@@ -52,3 +52,8 @@ created = 2026-11-24 23:47:55+00:00
 kind = "decision"
 text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, under the /goal of Phase 1 the developer set on 2026-11-24, which has the coordinator write the Tasks before a Feature starts; the developer was not asked and reviews them at the close: (1) The five reads are status, brief, show, knowledge and about, one tool per command, each running its command with --format json and returning its stdout as one text. (2) Inputs: brief, show and about take directory and id (show: a work item, a Feature or a term name; about: also a file path); knowledge takes directory alone, no --kind, --about, --search or --live, the criterion naming the lines whole; brief takes no --not-named (S-0153). (3) The refusal of an id the record does not hold is the tool error of S-0157 (isError, the last stderr line); the functional test compares it with the last error line of the command itself, so F-0023 rewording refusals changes nothing. (4) Three Tasks, not four: the tools are data in reads.py and SERVED is READ_TOOLS already, so no wiring Task; the unit tests and the removal of the xfail marks are one Task."
 noted = 2026-11-24 23:50:57+00:00
+
+[[progress]]
+text = "red: 15 failed, 6 passed (the reads brief, show, knowledge and about are not listed nor answered: each call gives an empty result, so no content; the status and the guards pass)"
+noted = 2026-11-25 09:25:20+00:00
+task = "T-0708"

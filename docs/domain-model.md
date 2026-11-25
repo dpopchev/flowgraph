@@ -1260,6 +1260,434 @@ The block of a Task is its own state and is carried by the Task: a Feature does 
 it, as the text line of a Feature does. The node of a Task in `fgraph graph` carries the
 same `state`, with its bucket (see Graph).
 
+## Tools over stdio
+
+The hypothesis of Q-0002: can one stdio server of the Model Context Protocol, written on the
+standard library and pydantic alone, list the commands of fgraph as tools and make both the
+writes of main and those of the worktree of a work item? Its evidence is in four parts, Wire,
+Where a call is written, The mcp package and Answer; each is measured on a probe that is a
+throwaway of `local/scratch/q2/`, never committed.
+
+### Wire
+
+The probe is a server of about 120 lines on the standard library and pydantic: it reads one
+JSON-RPC 2.0 message a line on stdin, writes one reply a line on stdout and logs every line
+read and every reply written to a file of its own, since the client keeps its stderr. Its
+tools run fgraph in process, `run()` of `src/flowgraph/cli.py` with the effects `main()` gives
+it but width and height, `write` and `write_error` appended to lists, in the directory a call
+names: `status` (argv `status --format json`; the argument `directory`) and `start` (the
+arguments `directory`, `id` and an optional `agent: str | None = None`). Each inputSchema is
+the `model_json_schema()` of a pydantic model with `extra="forbid"`. A call whose `run()` exits
+2 is answered with the last line of its error output and `isError: true`.
+
+The client is Claude Code 2.1.332 (`claude --version` printed `2.1.332 (Claude Code)`), run in
+print mode with a config file of the probe and nothing of the configuration of the developer,
+with the model haiku (it reported itself as `claude-haiku-5-5`):
+
+```sh
+claude -p '<a prompt naming the tool and its arguments>' \
+  --mcp-config local/scratch/q2/mcp.json --strict-mcp-config \
+  --allowedTools mcp__fgraph__status mcp__fgraph__start \
+  --model haiku --output-format json < /dev/null
+```
+
+`mcp.json` is `{"mcpServers": {"fgraph": {"type": "stdio", "command": "<a script that runs
+the probe>", "args": []}}}`. `claude mcp add` was never run. The record of each run is a
+throwaway git repository with `[development] enabled = true` in its `config.toml`, a Story
+and a Task. The identity of git came from `GIT_AUTHOR_NAME`, `GIT_AUTHOR_EMAIL`,
+`GIT_COMMITTER_NAME` and `GIT_COMMITTER_EMAIL` in the environment of the `claude` run, which
+the client passed on to the server (two runs without them were answered by the probe with the
+error line of git, see the tool error below).
+
+Each message the client sent, in the order sent and as logged, with the reply of the probe
+(the ids and keys as logged; long values cut):
+
+```sh
+-> {"jsonrpc":"2.0","id":"server-discover-probe-1","method":"server/discover","params":{"_meta":{"io.modelcontextprotocol/protocolVersion":"2026-07-28","io.modelcontextprotocol/clientInfo":{"name":"claude-code","version":"2.1.332",...},"io.modelcontextprotocol/clientCapabilities":{...}}}}
+<- {"jsonrpc":"2.0","id":"server-discover-probe-1","error":{"code":-32601,"message":"Method not found"}}
+-> {"method":"initialize","params":{"protocolVersion":"2025-11-25","capabilities":{"roots":{"listChanged":true},"elicitation":{"form":{},"url":{}}},"clientInfo":{"name":"claude-code","version":"2.1.332",...}},"jsonrpc":"2.0","id":0}
+<- {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-11-25","capabilities":{"tools":{}},"serverInfo":{"name":"fgraph","version":"0.0.0"}}}
+-> {"jsonrpc":"2.0","method":"notifications/initialized"}
+-> {"method":"tools/list","jsonrpc":"2.0","id":1}
+<- {"jsonrpc":"2.0","id":1,"result":{"tools":[{"name":"status",...},{"name":"start",...}]}}
+-> {"method":"tools/call","params":{"name":"status","arguments":{"directory":"<dir>"},"_meta":{"claudecode/toolUseId":"toolu_...","progressToken":2}},"jsonrpc":"2.0","id":2}
+<- {"jsonrpc":"2.0","id":2,"result":{"content":[{"type":"text","text":"<the JSON of status>"}]}}
+-> {"method":"tools/call","params":{"name":"start","arguments":{"directory":"<dir>","id":"S-0009"},"_meta":{...}},"jsonrpc":"2.0","id":3}
+<- {"jsonrpc":"2.0","id":3,"result":{"content":[{"type":"text","text":"fgraph: error: no Story S-0009 in the record"}],"isError":true}}
+```
+
+What the log shows (OBSERVED), against what the coordinator's probe saw on 2.1.331:
+
+- The client first sends `server/discover` with the string id `server-discover-probe-1` and
+  `_meta` naming the protocol version `2026-07-28`, takes the error -32601 and falls back to
+  `initialize` 8 ms later: as seen on 2.1.331.
+- `initialize` is sent with the id `0`, a number that is 0: a request, never a notification
+  (the probe tests `"id" not in message`, not `not id`). Its `protocolVersion` is
+  `2025-11-25`; its `capabilities` are `roots` and `elicitation`; a server reads from its
+  params the `protocolVersion` alone.
+- `notifications/initialized` has no id and takes no reply; `tools/list` follows at once with
+  the id 1 and no `params`.
+- `tools/call` has the ids 2, 3, ...; its params hold `name`, `arguments` and `_meta` (the keys
+  `claudecode/toolUseId` and `progressToken`, the token being the id of the call), which a
+  server ignores. The `arguments` hold what the model wrote.
+- The client sent no `ping` and no other method in these runs.
+- The end: the client closed stdin of the server, the probe read the end of its input (logged
+  as `EOF stdin closed`) and `claude -p` ended. The exit status of the server was NOT
+  observed through the client: the script that runs the probe never wrote its line after the
+  end of `uv run python` (no `exit=` line, and neither the probe nor a `trap` of the script
+  logged a signal), so the client ended it with the end of the print-mode process. Run alone
+  with an empty stdin the probe exits 0 (`printf '' | script; echo $?` printed 0). The
+  coordinator's "the server exits 0" is therefore confirmed for the probe alone, not as the
+  client saw it.
+
+What differs from the coordinator's probe: the version of the client (2.1.332), nothing else.
+
+#### Schemas written by pydantic, an optional argument
+
+`tools/list` answered, for `start` (the `model_json_schema()` of the model, `extra="forbid"`):
+
+```sh
+{"name":"start","description":"Start a work item or Task","inputSchema":{"additionalProperties":false,"properties":{"directory":{"title":"Directory","type":"string"},"id":{"title":"Id","type":"string"},"agent":{"anyOf":[{"type":"string"},{"type":"null"}],"default":null,"title":"Agent"}},"required":["directory","id"],"title":"Start","type":"object"}}
+```
+
+The client took the two tools as `mcp__fgraph__status` and `mcp__fgraph__start`, and the model
+called `start` with the optional argument and without it:
+
+```sh
+-> {"name":"start","arguments":{"directory":"<rec1>","id":"S-0001","agent":"alice"},...}
+<- {"content":[{"type":"text","text":"started S-0001\nbranch wi/S-0001-a-thing-works in <worktree>\n"}]}
+-> {"name":"start","arguments":{"directory":"<rec2>","id":"S-0001"},...}
+<- {"content":[{"type":"text","text":"started S-0001\nbranch wi/S-0001-a-thing-works in <worktree>\n"}]}
+```
+
+With `agent`, the status of the record then listed `"agent": "alice"` on the item. The anyOf of
+string and null was accepted by the client; the model left the argument out when it was not
+asked for it. (The model was asked for `agent` as a number, 7: it sent the string `"7"`; the
+number was not tried.)
+
+#### A tool error as the model is given it
+
+A refusal of fgraph is the reply `{"content":[{"type":"text","text":"<the last line of its
+error output>"}],"isError":true}`. The model quoted the text verbatim in each of the four
+refusals it was given:
+
+```sh
+fgraph: error: no Story S-0009 in the record
+fgraph: error: T-0001 cannot start: S-0001 is in Backlog
+fgraph: error: --agent names the agent of a work item: T-0001 is a Task
+fatal: empty ident name (for <user@host>) not allowed
+```
+
+The last is a finding about fgraph: with no git identity in the environment of the server,
+`run()` returned 2 and the last line of its error output was a line of git, not of fgraph; the
+model read it as a request to set the git identity and said it would not change the
+configuration. The client took `isError: true` as an error of the tool, not of the protocol,
+and the model went on to its next call. An argument the schema forbids, sent straight to the
+probe with no client (`extra="forbid"`), was answered with `isError: true` and the several
+lines of pydantic (`ValidationError: 1 validation error for Start\nbogus\n  Extra inputs are
+not permitted ...`); a client run did not send one.
+
+#### A result of about 384 KB
+
+`tools/call status` with the directory of the checkout of flowgraph itself (`status --format
+json` of main), on 2026-11-25:
+
+```sh
+<- {"jsonrpc":"2.0","id":2,"result":{"content":[{"type":"text","text":"{\n  \"buckets\": [ ...
+```
+
+The reply line was 454332 bytes (the text 417348 characters in 11076 lines: the record of main
+had grown since the 384268 bytes measured earlier). The session was REFUSED the result inline:
+the model was given `Error: result (417,348 characters across 11,076 lines) exceeds maximum
+allowed tokens. Output has been saved to <a file under ~/.claude/projects/.../tool-results/>`,
+followed by advice to grep the file or read it in chunks of about 229 lines; the model did not
+open it. The error holds no part of the JSON. The bound is the variable `MAX_MCP_OUTPUT_TOKENS`
+of Claude Code, whose default is 25,000 tokens (the documentation,
+https://code.claude.com/docs/en/mcp, "MCP output limits and warnings": "the default maximum is
+25,000 tokens", with a warning of the transcript viewer at 10,000; the constant 25000 is also
+the fallback of the function that reads the variable in the binary 2.1.332). The same page
+says a successful text result longer than 50,000 characters is saved to a file whatever its
+token count, unless the tool declares `anthropic/maxResultSizeChars` (not tried). Consequence:
+a tool that returns a whole record, as status of this repository, cannot be read in one call.
+The run took 28 s.
+
+#### claude mcp serve, as a second reference
+
+`claude mcp serve` (2.1.332) driven from a python script that writes a line a message
+(`local/scratch/q2/drive_serve.py`, standard library only), one session for each version:
+
+```sh
+-> initialize {"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"drv","version":"0"}}
+<- {"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{"listChanged":true}},"serverInfo":{"name":"claude/tengu","version":"2.1.332"}},"jsonrpc":"2.0","id":1}
+-> initialize {"protocolVersion":"1999-01-01",...}
+<- {"result":{"protocolVersion":"2025-11-25","capabilities":{"tools":{"listChanged":true}},"serverInfo":{"name":"claude/tengu","version":"2.1.332"}},"jsonrpc":"2.0","id":1}
+-> notifications/initialized
+<- (none)
+-> tools/list
+<- {"result":{"tools":[{"name":"Agent","searchHint":...,"aliases":["Task"],"maxResultSizeChars":100000,"description":...,"inputSchema":...},{"name":"Bash",...},...]},...}
+-> nosuch/method
+<- {"jsonrpc":"2.0","id":3,"error":{"code":-32601,"message":"Method not found"}}
+-> tools/call {"name":"NoSuchTool","arguments":{}}
+<- {"jsonrpc":"2.0","id":4,"error":{"code":-32603,"message":"Tool NoSuchTool not found"}}
+-> tools/call {"name":"Read","arguments":{"file_path":123,"bogus":1}}
+<- {"result":{"content":[{"type":"text","text":"Tool Read arguments failed schema validation: [ ... invalid_type at file_path, unrecognized_keys bogus ]"}],"isError":true},"jsonrpc":"2.0","id":5}
+-> tools/call {"name":"Read","arguments":{"file_path":"/nonexistent/file.txt"}}
+<- {"result":{"content":[{"type":"text","text":"File does not exist. Note: your current working directory is <cwd>."}],"isError":true},"jsonrpc":"2.0","id":6}
+-> tools/call {"name":"Read","arguments":{"file_path":"<a file>"}}
+<- {"result":{"content":[{"type":"text","text":"{\"type\":\"text\",\"file\":{...}}"}]},"jsonrpc":"2.0","id":7}
+-> ping
+<- {"result":{},"jsonrpc":"2.0","id":8}
+```
+
+- 2025-06-18 is answered with 2025-06-18; 1999-01-01 with 2025-11-25.
+- `capabilities` is `{"tools":{"listChanged":true}}`; `serverInfo` is `claude/tengu`.
+- An unknown method is -32601; an unknown tool is the JSON-RPC error -32603; arguments the
+  schema refuses and a failed tool are a result with `isError: true`; a success is
+  `{content:[{type:"text",text}]}` with no `isError`.
+- `tools/list` is one line of 103669 bytes and lists 26 tools, with keys a client needs not
+  read (`searchHint`, `aliases`, `backgrounding`, `maxResultSizeChars`).
+- With stdin closed it exited 0 within 0.02 s (0.06 s in the session that stopped after
+  `initialize`) and wrote nothing to stderr.
+
+What differs from the coordinator's probe: the version of claude (2.1.332), nothing else.
+
+### Where a call is written
+
+The probe of Wire, given more tools (`status`, `start`, `note`, `complete`, `land`, each argument
+`directory` and the arguments of its command), driven from a python script
+(`local/scratch/q2/drive_where.py`) that writes a message, reads its reply and runs git between
+two calls. The record is a throwaway repository under `local/scratch/q2/`, built by a script
+with the development on, `gate = "echo gated"`, one Story S-0001 and one Task T-0001 added
+with `--output "changed: work.txt"` and `--check "echo checked && test -f work.txt"`; its
+commits and those of the work are identified by `GIT_AUTHOR_NAME`, `GIT_AUTHOR_EMAIL`,
+`GIT_COMMITTER_NAME` and `GIT_COMMITTER_EMAIL` of the run, never `git config`. One server
+was started once and made, each call naming its directory, with the commit each left (the
+rows are those of the table Who writes what of Persistence):
+
+| Call, its directory | Commit left | Row of Who writes what |
+|---|---|---|
+| `start S-0001`, main | `chore: start S-0001 in the record` on main; the branch `wi/S-0001-a-thing-works` and its worktree made at that commit | start a work item: `main` |
+| `start T-0001`, the worktree | `chore: start T-0001 of S-0001 in the record` on the branch | start ... its Tasks: its branch |
+| `note T-0001 --progress`, the worktree | `chore: note T-0001 of S-0001 in the record` on the branch | note a progress line ...: its branch |
+| (git add and commit of `work.txt` in the worktree, between two calls) | `feat: work` on the branch | -- |
+| `complete T-0001 --commit <sha>`, the worktree | `chore: complete T-0001 of S-0001 in the record` on the branch, after `feat: work` | complete ... its Tasks: its branch |
+| `status`, the worktree | none (a read) | `status` lists the record of main (`LISTS_MAIN`) |
+| `land S-0001 --message`, main | `feat: land S-0001` then `chore: complete S-0001 in the record` on main | land the work item: `main` |
+
+Each commit was where the row says; `main` held no commit of the Tasks until the landing
+merged the branch. Three more facts, OBSERVED on the same runs:
+
+- A call must name the directory of the row: `complete S-0001` and `land S-0001` named the
+  worktree were refused as `S-0001 completes on main, in <main>: <worktree> is on
+  wi/S-0001-a-thing-works` and `S-0001 lands on main: <worktree> is on wi/S-0001-a-thing-works`,
+  exit 2, answered `isError: true`; run with the directory of main they landed. A Task is
+  written in the worktree and a work item landed on main: a tool takes the directory because
+  the row differs by the command, one server serves both.
+- `status` run in the worktree lists the record of main (LISTS_MAIN, S-0141): in the run where
+  `fgraph add story` was run on main after the branch was made, the status from the worktree
+  listed `S-0002`, which the branch does not hold.
+- A start of a Task before its work item is started, in backlog, is refused with a line of
+  its own (`T-0001 cannot start: S-0001 is in Backlog`), a refusal like the others.
+
+#### Seconds of a call
+
+One call, in process (`run()` of `src/flowgraph/cli.py`) and as a child process
+(`python -m flowgraph.cli`, the same `argv` and directory, its output and error output
+captured), on this machine on 2026-11-25, `uv run` Python 3.14.7, the calls of the table:
+
+| Mode | A call that wrote | Import of `flowgraph.cli` |
+|---|---|---|
+| in process | 0.10 to 0.23 s (start 0.10-0.14, note 0.10-0.15, complete 0.14-0.22, land 0.20-0.23, status 0.13-0.18) | paid once, at the start of the server: `initialize` answered 0.33 to 0.36 s after the script was spawned |
+| child process | 0.42 to 0.72 s (start 0.50-0.65, note 0.52-0.63, complete 0.60-0.72, land 0.67, status 0.59-0.60) | `python -c 'import flowgraph.cli'` printed 0.38, 0.42 and 0.38 s |
+
+A refused call took 0.03 to 0.14 s in process and 0.42 to 0.55 s as a child.
+
+What differs from the coordinator's probe (0.2 to 0.5 s in process, 0.9 to 1.5 s as a child,
+the import alone 1.0 s): every number is lower here, the import being 0.4 s, not 1.0 s; the
+order is the same: a child process costs about four times a call in process and pays the import
+each time.
+
+#### fd 0 and fd 1 of the server
+
+The check of a Task and the gate of a landing are run by `run_gate` of
+`src/flowgraph/development/gate.py`, `subprocess.run(command, shell=True, cwd=directory)`
+with no `stdin`, `stdout` or `stderr`, so they inherit fd 0 and fd 1 of the server. OBSERVED, a
+check `echo "check fd0=$(readlink /proc/$$/fd/0) fd1=$(readlink /proc/$$/fd/1)"`:
+
+```sh
+# the probe as it is, in process
+check fd0=pipe:[31375083] fd1=pipe:[31375084]    <- a line on stdout of the server, before the reply of the call
+# the probe that, before it reads, keeps os.dup(0) and os.dup(1) for the protocol,
+# points fd 0 at /dev/null (os.dup2) and fd 1 at fd 2 (os.dup2)
+check fd0=/dev/null fd1=<the file that stderr of the server is>
+```
+
+- Without the keeping the output of the check was a line of stdout of the server, `checked`,
+  written before the reply of `complete`, and the gate of `land` wrote `gated` the same way: a
+  line that is no JSON-RPC message; a call answered with two lines. A check that reads (a
+  `read`, a `head`, a `cat`) reads the messages of the client from the same pipe: fd 0 is the
+  pipe of the protocol (reading was not tried; the readlink shows the pipe).
+- With the keeping, `checked` and `gated` went to stderr of the server, every line of stdout was
+  a reply (`lines-on-stdout=1` for each call), and fd 0 of a check is /dev/null, which ends a
+  read at once. The probe reads and writes the protocol on the duplicates (`os.fdopen`).
+- As a child process the output of the check is captured with the output of fgraph, and the
+  text of the call was `checked\ncompleted T-0001 of S-0001 at <sha>\n`: the output of the
+  check, then the line of fgraph; for `land`, `gated\nlanded S-0001 at <sha>\nrun: w -> t\n`.
+  In process the reply's text holds the line of fgraph alone.
+
+#### No lock between calls
+
+While the server was open, `fgraph add story` run on main by the command line (a second
+process, `uv run fgraph add story ...`) exited 0 and printed `added S-0002`, and the commit
+`chore: add S-0002 in the record` is on main. The lock of B-0035 is taken by each write of
+`run()` at its start and given back at its commit (`lock_files` of `src/flowgraph/record/lock.py`,
+`takes_lock` of `src/flowgraph/parser/locked.py`), so a server in process holds none between
+two calls: a write of the command line made while the server runs is not refused. A call of the
+server made while the command line writes would wait up to ten seconds, as Persistence says of
+every write (INFERRED from the lock, not run here).
+
+#### Verdict
+
+One server, the directory each call names. The writes of main and those of the worktree of a
+work item differ by the directory of the call and by the command, as the table Who writes what
+says, never by a process: each of the seven calls above wrote where its row says from one
+server started once, and the two calls that named the wrong directory were refused by fgraph
+in one line. A server per worktree buys nothing: it would have to be started for each branch,
+and `status` is the same call from either. In process a call costs 0.1 to 0.2 s against 0.4 to
+0.7 s as a child process, on condition that the server keeps fd 0 and fd 1 for the protocol
+before it reads and points them at /dev/null and stderr, which a child process would not need.
+
+What differs from the coordinator's probe: the seconds (lower), nothing else; the rows, the
+commits, LISTS_MAIN, the check on fd 1 of the server, the keeping of the descriptors and the
+write of the command line while the server was open all agree.
+
+### The mcp package
+
+Resolved on 2026-11-25 without installing it, in `local/scratch/q2/`:
+`printf 'mcp\n' | uv pip compile - --python-version 3.14 --quiet`, on the index of PyPI, which
+answered; `pyproject.toml` and `uv.lock` were not touched, and nothing was added, installed or
+cached into the venv of flowgraph.
+
+- Version and license (OBSERVED, `https://pypi.org/pypi/mcp/json`): `mcp` 2.3.0, uploaded
+  2026-10-02, summary "Model Context Protocol SDK", license MIT (the classifier `License :: OSI
+  Approved :: MIT License`), `requires_python >=3.10`; a wheel of 368,664 bytes, and an sdist of
+  4,171,955 bytes. Its extras are `cli` (typer, python-dotenv) and `rich`.
+- What it pins for Python 3.14 on this machine (Linux): 28 packages with `mcp` itself, 27
+  besides it: annotated-types, anyio, attrs, cffi, click, cryptography, h11, httpcore2, httpx2,
+  idna, jsonschema, jsonschema-specifications, mcp-types, opentelemetry-api, pycparser,
+  pydantic, pydantic-core, pyjwt, python-multipart, referencing, rpds-py, sse-starlette,
+  starlette, truststore, typing-extensions, typing-inspection and uvicorn. `mcp` pins
+  `mcp-types==2.3.0`, exactly.
+- Those fgraph holds already, by `uv.lock` (OBSERVED): 5 of the 27 -- pydantic and the four
+  packages of pydantic (pydantic-core, annotated-types, typing-extensions,
+  typing-inspection); `tomli-w` is held and `mcp` does not ask for it. The pins agree with
+  the lock: pydantic 2.14.4 is that of `pyproject.toml`, and `mcp` asks `pydantic>=2.12.0`.
+- Beyond them: 22 packages new to every install, and `mcp` itself, 23 in all: anyio, attrs,
+  cffi, click, cryptography, h11, httpcore2, httpx2, idna, jsonschema,
+  jsonschema-specifications, mcp-types, opentelemetry-api, pycparser, pyjwt,
+  python-multipart, referencing, rpds-py, sse-starlette, starlette, truststore, uvicorn and mcp.
+  Three of them are built code and not pure Python (INFERRED from what the projects ship:
+  cffi, cryptography and rpds-py publish wheels per platform). The runtime of `uv.lock` today is 6
+  packages (tomli-w, pydantic and its four); with `mcp` it is 29, the new ones 23.
+- As a dependency of fgraph (the `dependencies` of `pyproject.toml`) the 23 are shipped to every
+  user, those who never run `fgraph mcp` among them. As an extra (`pip install
+  flowgraph[mcp]`, `[project.optional-dependencies] mcp = ["mcp>=2.3,<3"]`) they are shipped
+  to those who ask for it; `fgraph mcp` without them would refuse in one line, as the other
+  refusals do, and the command is still listed in `fgraph --help` (INFERRED: a command that is
+  not listed when the package is missing would need the parser to import it, and the parser
+  imports nothing of the package today). The refusal would be written by fgraph and
+  tested without the package, the one case an extra adds to the tests.
+
+What it would replace of the probe (a probe of 122 lines on the standard library and pydantic,
+answering `initialize`, `ping`, `tools/list`, `tools/call`, -32601 for the others, and giving a
+notification no reply): the framing of JSON-RPC, a line a message read and written; the
+negotiation of the version, a list of four dates and one default; the schemas of the tools,
+which pydantic already writes (`model_json_schema()`), the same in both. What the probe did
+not need, and `mcp` would add: its transports (streamable HTTP and SSE, on starlette, uvicorn
+and sse-starlette), its authorization (pyjwt, cryptography, httpx2 and truststore), its
+runtime (anyio, an event loop: the core of fgraph is synchronous, so each `run()` would be
+called from a thread or in a worker and the same descriptors would be kept all the same),
+the types of the protocol (`mcp-types`) and their validation by pydantic, the observability
+(opentelemetry-api). Its class `Server` or `FastMCP` would not keep fd 0 and fd 1 from the
+check of a Task: that stays the code of fgraph (the previous part), so what it saves is the
+framing and the negotiation (the loop and `handle` of the probe), and nothing of the I/O.
+
+The verdict against the runtime of `pyproject.toml`, pydantic and tomli-w alone (INFERRED from
+the counts above and the probe of Wire): written by hand. A server of stdio needs four
+methods, the answer -32601 and about 120 lines, which a client of the 2025-11-25 protocol, as Claude Code 2.1.332
+and `claude mcp serve` both did, answered with no more; `mcp` as a dependency takes the runtime
+from 6 packages to 29 for a transport nobody asked for, three of them built, and `mcp` as an
+extra pays that for the one who asks and splits the tests in two (with it and without). The
+verdict would change if a client demanded what the probe does not do (the lists of resources,
+prompts or tasks, or a progress notification the model reads), or an HTTP transport: then an
+extra is the way, never a dependency. Not tried: the API of `mcp` itself, which this Task did
+not install.
+
+### Answer
+
+Yes: one stdio server of the Model Context Protocol, written on the standard library and
+pydantic alone, lists the commands of fgraph as tools and makes both the writes of main and
+those of the worktree of a work item (OBSERVED in Wire and Where a call is written: the probe
+was listed, called and answered by Claude Code 2.1.332, and wrote on main and on the branch
+of a started work item from one process started once).
+
+The three things the decision names:
+
+- The server is written by hand, on the standard library and pydantic: not on `mcp` as a
+  dependency (6 packages of runtime become 29) and not as an extra, which the probe gives no
+  reason for (The mcp package). The verdict changes if a client demands resources, prompts,
+  tasks or an HTTP transport.
+- A call is written by the directory it names: one server for main and every worktree, never
+  one per worktree. The directory is an argument of every tool; a Task is written in the
+  worktree and a work item completed or landed on main, and the refusal of fgraph when a call
+  names the wrong one is one line (Where a call is written).
+- The client the probe was run with is Claude Code 2.1.332, in print mode with `--mcp-config`
+  and `--strict-mcp-config` and no `claude mcp add`; `claude mcp serve` of the same version is
+  the second reference of the replies. The coordinator's probe of 2.1.331 saw the same wire.
+
+The design the Stories of F-0022 are built on:
+
+- Modules: a package of the server apart from the commands, `mcp` of `src/flowgraph/`: the
+  framing and the methods (`initialize`, `ping`, `tools/list`, `tools/call`; a notification
+  gets no reply, any other method -32601 with the id of the request), the tools, and the
+  effects the server is given, as `main()` gives them to `run()`. The server is of READS of
+  `src/flowgraph/parser/locked.py` and takes no record: it locates none, each call names its
+  directory, and it holds no lock between calls.
+- A tool per command, each with `directory` and the arguments of its command, its inputSchema
+  the `model_json_schema()` of a pydantic model with `extra="forbid"`, an optional argument
+  written `x: str | None = None` (anyOf string and null, which the client took), none taking
+  `--approved`.
+- Each call is a run of fgraph in process: `run()` of `src/flowgraph/cli.py` in the directory
+  named, given the effects of `main()` but width and height, with `write` and `write_error`
+  appended to lists; the reply is `{content: [{type: text, text: <the output>}]}`.
+- A refusal (exit 2) is returned as its last line of error output with `isError: true`, as
+  the model read it and quoted it; an argument the schema refuses is a result with `isError:
+  true` too, as `claude mcp serve` does, never a protocol error; an unknown method is -32601.
+  The last line of error output is a line of git, not of fgraph, when git refuses (no
+  identity): said as it is.
+- The streams of the protocol are kept from the check and the gate: before it reads, the
+  server keeps `os.dup(0)` and `os.dup(1)` for the protocol, points fd 0 at /dev/null and fd 1
+  at fd 2 (`os.dup2`), so `checked` and `gated` go to stderr and every line of stdout is a
+  reply; a child process is not taken, being four times slower and needing no keeping.
+
+Two facts the Stories do not state, found by the probe (the answer holds with them):
+
+- The result of `status --format json` of this repository is 417 KB; Claude Code refused it
+  inline at its default of 25,000 tokens (`MAX_MCP_OUTPUT_TOKENS`) and saved it to a file. The
+  json of `status` lists every item whether or not `--all` is given, so the tool `status`
+  gives the model nothing here unless it takes a cut or declares `anthropic/maxResultSizeChars`
+  (not tried): the Story of the tool `status` writes which it does.
+- `complete` and `land` of a work item name the directory of main, and the Tasks the worktree:
+  the tools `complete` and `land` take `directory` as the others do, and the model must name
+  the one of the row of Who writes what.
+
+The one sentence the landing gives as `--decision`: Yes, a stdio server written by hand on the
+standard library and pydantic (not mcp, as a dependency or an extra) lists the commands of
+fgraph as tools, one server for main and every worktree with each call naming its directory,
+each call a run of fgraph in process with fd 0 and fd 1 kept for the protocol, probed with
+Claude Code 2.1.332 (docs/domain-model.md, Tools over stdio: Wire, Where a call is written,
+The mcp package).
+
 ## Evidence
 
 A completed item carries the proof that it is completed. For a work item,

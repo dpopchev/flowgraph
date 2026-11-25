@@ -29,7 +29,7 @@ from flowgraph.feature import (
     feature_detail,
 )
 from flowgraph.item.commands import MESSAGE, Written
-from flowgraph.item.id import parse_shown_id
+from flowgraph.item.id import ItemIdError, parse_shown_id
 from flowgraph.knowledge.supersede import superseded_rows
 from flowgraph.parent import (
     STANDALONE,
@@ -39,6 +39,7 @@ from flowgraph.parent import (
     parse_feature_id,
 )
 from flowgraph.record import Now
+from flowgraph.record.queue import Placed
 from flowgraph.record.store import Store
 from flowgraph.relation.depends import bucketed
 from flowgraph.status import (
@@ -122,19 +123,27 @@ def show_feature_item(feature: str, store: Store, format_: str = TEXT) -> str:
     return feature_text(detail, rows, bucket)
 
 
+def _shown_id(item: str) -> Placed:
+    """The id fgraph show reads in the text; its refusal says a term name would do as well."""
+    try:
+        return parse_shown_id(item)
+    except ItemIdError as error:
+        raise ItemIdError(f"{error} nor the name of a term") from None
+
+
 def show_any_item(item: str, store: Store, format_: str = TEXT) -> str:
     """What fgraph show gives of the term of that name, or the work item or Feature of that id.
 
     The format is text or json, chosen first, before anything is read. Raises ShowFormatError
     naming both when it is neither, TermNotFoundError for a term name the record holds none of,
     FeatureIdError for a Feature id below 1, ItemIdError for a text that is neither, and the
-    refusal of the record for an id it holds no item of.
+    refusal of the record for an id it holds no item of. ItemIdError says the term too.
     """
     chosen = chosen_show_format(format_)
     if is_term_name(item):
         shown = term_shown(item, store)
         return term_json(shown) if chosen == JSON else term_text(shown)
-    match parse_shown_id(item):
+    match _shown_id(item):
         case FeatureId():
             return show_feature_item(item, store, chosen)
         case WorkItemId() as work_item:

@@ -54,7 +54,7 @@ LINE = (
     "fgraph: error: {old} is in the archive of board 1 at {where} -- show it with: "
     "uv run ~/.claude/skills/board/scripts/board.py --root {root} show {old}"
 )
-NO_ID = "fgraph: error: {!r} is no Story, Upkeep, Bug, Spike or Feature id"
+NO_ID = "fgraph: error: {!r} is no Story, Upkeep, Bug, Spike or Feature id nor the name of a term"
 
 
 @dataclass(frozen=True)

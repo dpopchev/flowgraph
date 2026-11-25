@@ -12,6 +12,11 @@ agent = "sonnet-s109"
 commit = "9d98a66c"
 filed_during = "Q-0001"
 
+[verified]
+answer = "yes"
+text = "at 9d98a66c on main, the merge of wi/S-0109-cut-the-refusals-of, with fgraph of main in a throwaway record whose Story file was edited by hand: with a key token added, fgraph status exited 2 with the one line <path>/S-0001.toml holds no Story: token is no key of the state backlog, one line on stderr beside the usage, no line of the validator and no link; with its state set to doing it exited 2 with <path>/S-0001.toml holds no Story: state is \"doing\": it takes backlog, started, blocked, completed or removed. Before the landing, in the worktree: 675 tests of the files of the record passed, ruff, the line limit and pyright clean, and the agent's make check said 5482 passed"
+on = 2026-11-25 02:33:09+00:00
+
 [criterion]
 given = "a record with an item file that holds a key or a state the model does not take, as a blocked work item or a token"
 when = "fgraph status is run"

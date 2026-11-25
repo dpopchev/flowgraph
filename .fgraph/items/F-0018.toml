@@ -1,9 +1,11 @@
 id = "F-0018"
-state = "started"
+state = "completed"
 title = "Raise the reads of fgraph an agent takes as one JSON document from three -- the status, the brief and the graph -- to six: an item, the knowledge lines and the links of an item too"
 description = "Phase 1, Agent Execution Interface, Scope Gates and Governed Briefs: one of the five Features put on top of the Backlog on the plan the developer agreed on 2026-11-24 with the word file. From the draft of the developer, Uniform --json Projections and Actionable Exit-2 Refusals, reviewed that day against the code. New: fgraph show, fgraph knowledge and fgraph about as JSON; fgraph status, fgraph brief and fgraph graph print it already. Narrowed on 2026-11-24 to its three reads: the refusals of the draft, with the ten work items taken in from the Backlog, are F-0023. The Tasks of its work items are written before it starts."
 created = 2026-11-24 19:50:29+00:00
 started = 2026-11-25 00:26:57+00:00
+completed = 2026-11-25 01:38:41+00:00
+commit = "de63cd27"
 criteria = [
     "an agent reads a work item, a Feature or a term as one JSON document",
     "an agent reads the knowledge lines of the record as one JSON document",

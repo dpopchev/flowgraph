@@ -4,7 +4,7 @@ title = "Cut the states of a work item its types build and its moves refuse from
 description = "Phase 3, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0031). Its Tasks are written before its Feature starts."
 parent = "F-0031"
 realizes = 3
-complexity = "medium"
+complexity = "high"
 created = 2026-11-25 08:56:09+00:00
 depends_on = [
     "U-0035",

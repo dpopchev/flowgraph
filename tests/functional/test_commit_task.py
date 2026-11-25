@@ -114,7 +114,6 @@ def environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setenv("GIT_CONFIG_NOSYSTEM", "1")
 
 
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0161: fgraph has no commit command")
 NAMED = "changed: src/named.py"
 
 
@@ -139,33 +138,27 @@ class TestTheCommitOfAStartedTask:
     def committed(self, worktree: Path) -> Outcome:
         return commit(worktree, *MESSAGE)
 
-    @XFAIL
     def test_it_exits_0(self, committed: Outcome) -> None:
         assert committed.status == 0
 
-    @XFAIL
     def test_it_says_the_sha_of_the_commit(self, committed: Outcome, worktree: Path) -> None:
         sha = git(worktree, "rev-parse", "HEAD")
         assert committed.out == f"committed T-0001 of S-0001 at {sha}\n"
 
-    @XFAIL
     def test_its_subject_cites_the_work_item_and_the_task(
         self, committed: Outcome, worktree: Path
     ) -> None:
         assert git(worktree, "log", "-1", "--format=%s") == "feat: name the files (S-0001, T-0001)"
 
-    @XFAIL
     def test_it_holds_the_two_files_alone(self, committed: Outcome, worktree: Path) -> None:
         files = git(worktree, "show", "--name-only", "--format=", "HEAD").splitlines()
         assert files == ["src/named.py", "tests/test_named.py"]
 
-    @XFAIL
     def test_it_leaves_the_work_tree_clean(self, committed: Outcome, worktree: Path) -> None:
         assert git(worktree, "status", "--porcelain") == ""
 
 
 class TestTheCommitRefused:
-    @XFAIL
     def test_a_changed_file_the_brief_does_not_name_refuses_the_commit(
         self, tmp_path: Path
     ) -> None:
@@ -177,14 +170,12 @@ class TestTheCommitRefused:
         )
         assert last(commit(worktree, *MESSAGE)) == (2, [said])
 
-    @XFAIL
     def test_nothing_changed_refuses_the_commit(self, tmp_path: Path) -> None:
         worktree = started_task(tmp_path, NAMED)
         top = git(worktree, "rev-parse", "--show-toplevel")
         said = f"fgraph: error: T-0001 has nothing to commit: no file is changed in {top}"
         assert last(commit(worktree, *MESSAGE)) == (2, [said])
 
-    @XFAIL
     def test_a_task_not_started_refuses_the_commit(self, tmp_path: Path) -> None:
         worktree = started_task(tmp_path, NAMED, start_task=False)
         changed(worktree, "src/named.py")
@@ -194,7 +185,6 @@ class TestTheCommitRefused:
         )
         assert last(commit(worktree, *MESSAGE)) == (2, [said])
 
-    @XFAIL
     def test_a_blank_message_refuses_the_commit(self, tmp_path: Path) -> None:
         worktree = started_task(tmp_path, NAMED)
         changed(worktree, "src/named.py")
@@ -203,7 +193,6 @@ class TestTheCommitRefused:
             ["fgraph: error: message is empty"],
         )
 
-    @XFAIL
     def test_main_refuses_the_commit_naming_the_worktree(self, tmp_path: Path) -> None:
         worktree = started_task(tmp_path, NAMED)
         changed(worktree, "src/named.py")

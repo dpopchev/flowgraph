@@ -9,7 +9,7 @@ from flowgraph.parser.locked import READS, takes_lock
 pytestmark = pytest.mark.view
 
 WRITES = (
-    *("add", "amend", "start", "block", "unblock", "complete", "land", "remove", "note"),
+    *("add", "amend", "start", "block", "unblock", "commit", "complete", "land", "remove", "note"),
     *("verify", "release", "relate", "reorder", "hand", "sync"),
 )
 

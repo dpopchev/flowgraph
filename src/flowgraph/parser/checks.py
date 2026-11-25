@@ -42,8 +42,8 @@ def check_command(
     A complete refuses a commit the repository does not hold, then a commit of a Task that changed
     a file its brief does not name (S-0142), before the check of its Task runs.
     A start checks, last, that the branch it would make is not there already.
-    A block or an unblock of a Task is checked in the worktree of its work item before the copy
-    of main is read (B-0032). A remove of a started or a blocked work item is made on main alone.
+    A block, an unblock or a commit of a Task is checked in the worktree of its work item before
+    the copy of main is read (B-0032). A remove of a started or a blocked work item is made on main alone.
     An amend of a Task that gives a check is refused with the development off (S-0144).
     A land is held for the developer under development.approver = developer before any git step
     (S-0099), ahead of the other refusals of a landing.
@@ -68,7 +68,7 @@ def check_command(
         check_task_amended(args.check, config.development.enabled, record / CONFIG)
     if args.command == "hand":
         check_agent_taken(args.id, args.agent, config.development.enabled, record / CONFIG)
-    if args.command in ("block", "unblock"):
+    if args.command in ("block", "unblock", "commit"):
         check_task_in_worktree(args.id, store, record, open_git)
     if args.command == "remove":
         check_remove_on_main(args.id, store, record, open_git)

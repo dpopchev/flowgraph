@@ -13,6 +13,7 @@ from flowgraph.criterion import (
 from flowgraph.development import GateError, GitError, SlugError
 from flowgraph.development.approval import ApprovalError
 from flowgraph.development.commit_held import CommitNotHeldError
+from flowgraph.development.commit_task import CommitTaskError
 from flowgraph.development.driver import NoComplexityError
 from flowgraph.development.named_files import FilesNotNamedError
 from flowgraph.development.parallel import ParallelError
@@ -118,6 +119,7 @@ REFUSED = (
     CommitError,
     CommitNeededError,
     CommitNotHeldError,
+    CommitTaskError,
     EmptyPartError,
     CriterionError,
     DecisionError,

@@ -40,7 +40,8 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
     about.add_argument(
         "id",
         metavar="ID",
-        help="the id of the work item or of the Feature, the name of the term or the path of the file",
+        help="the id of the work item or of the Feature, "
+        "the name of the term or the path of the file",
     )
     about.add_argument(
         "--format",

@@ -43,7 +43,8 @@ def check_command(
     a file its brief does not name (S-0142), before the check of its Task runs.
     A start checks, last, that the branch it would make is not there already.
     A block, an unblock or a commit of a Task is checked in the worktree of its work item before
-    the copy of main is read (B-0032). A remove of a started or a blocked work item is made on main alone.
+    the copy of main is read (B-0032). A remove of a started or a blocked work item is made on
+    main alone.
     An amend of a Task that gives a check is refused with the development off (S-0144).
     A land is held for the developer under development.approver = developer before any git step
     (S-0099), ahead of the other refusals of a landing.

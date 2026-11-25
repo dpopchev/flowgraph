@@ -1,8 +1,9 @@
 id = "F-0022"
-state = "backlog"
+state = "started"
 title = "Raise the commands of fgraph an agent calls as tools over stdio, with no shell, from none to those of one work item from its brief to its landing"
 description = "Phase 1, Agent Execution Interface, Scope Gates and Governed Briefs: one of the five Features put on top of the Backlog on the plan the developer agreed on 2026-11-24 with the word file. From the draft of the developer, Local MCP Server (flowgraph mcp), reviewed that day against the code: the command is fgraph, so the server is fgraph mcp; fgraph has no commit command, so no such tool; the runtime of fgraph depends on pydantic and tomli-w alone (pyproject.toml), so whether the server takes a third dependency is the question of its Spike, its first work item. Its reads stand on the JSON of F-0018 and its moves on the writes of F-0019. The Tasks of its work items are written before it starts."
 created = 2026-11-24 19:50:52+00:00
+started = 2026-11-25 08:28:20+00:00
 criteria = [
     "an agent session lists the tools of fgraph and reads the status of the record through one",
     "an agent reads its brief, an item, the knowledge lines and the links of an item as tools",

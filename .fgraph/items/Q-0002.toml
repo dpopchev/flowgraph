@@ -1,10 +1,12 @@
 id = "Q-0002"
-state = "backlog"
+state = "started"
 title = "Settle whether fgraph serves its commands as tools over stdio with no new runtime dependency, one server writing both main and the worktree of a work item"
 description = "New on the plan agreed on 2026-11-24, the first work item of F-0022. Its decision names: the server written by hand or on the mcp package, as a dependency or as an extra; where a call is written, by the directory it names or by one server per worktree (docs/domain-model.md, Persistence, who writes what); and the client the probe was run with. Its Tasks are written before its Feature starts."
 parent = "F-0022"
 complexity = "medium"
 created = 2026-11-24 19:51:42+00:00
+started = 2026-11-25 08:28:20+00:00
+agent = "sonnet-q2"
 
 [criterion]
 hypothesis = "Can one stdio server of the Model Context Protocol, written on the standard library and pydantic alone, list the commands of fgraph as tools and make both the writes of main and those of the worktree of a work item?"

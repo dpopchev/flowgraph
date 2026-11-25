@@ -19,3 +19,11 @@ noted = 2026-11-24 19:56:11+00:00
 kind = "decision"
 text = "The developer decided on 2026-11-25, with the word keep, on the review of a WBS draft, Agent Execution Interface (JSON, MCP and Scoped Epistemics), against Phase 1 as filed: Phase 1 is finished as filed, F-0023, F-0021 and F-0022 unchanged. What the draft asks beyond it -- K-* knowledge records, the built-in terms kept apart from those of a project, a brief scoped by path for its terms, a report of the pass or fail of a criterion, a commit tool and a next tool over MCP -- is planned as a next phase once F-0022 lands, and is not filed now. The refusal as JSON with error codes and the lease with session metadata stay ruled out by the decisions of 2026-11-24 (F-0018, F-0019)."
 noted = 2026-11-25 05:15:20+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25, after the decision keep of that day: it is important to include the MCP drafts. The MCP parts of the WBS draft are filed in the Backlog: F-0024, on top, with S-0161 (fgraph commit), S-0162 (the live lines alone under Governed by) and S-0163 (the terms of the governing lines), and F-0025, right after F-0022, with S-0164 (the tool commit) and S-0165 (the tool start with no id). F-0023, F-0021 and F-0022 are unchanged. Still not filed, for a next phase: the K-* knowledge records, the built-in terms kept apart from those of a project and a report of the pass or fail of a criterion. The refusal as JSON with error codes and the lease with session metadata stay ruled out by the decisions of 2026-11-24 (F-0018, F-0019)."
+noted = 2026-11-25 06:35:07+00:00
+supersedes = [
+    "F-0022#2",
+]

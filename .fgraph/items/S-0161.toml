@@ -11,3 +11,9 @@ created = 2026-11-25 06:32:38+00:00
 given = "a started Task with changed files in its worktree that its brief names"
 when = "fgraph commit T-0001 --message TEXT is run there"
 then = "one commit of the branch holds those files, its message citing the work item and the Task, and fgraph says its sha"
+
+[[knowledge]]
+kind = "finding"
+text = "Open, decided when its Tasks are written: (1) whether a changed file the brief does not name refuses the whole commit or is left out of it; (2) whether the agent gives the type word of the message, as fix or docs, or fgraph derives it; (3) proposed by the agent: the commit does not complete the Task, fgraph complete keeps that move and takes the sha."
+noted = 2026-11-25 06:33:27+00:00
+mark = "open"

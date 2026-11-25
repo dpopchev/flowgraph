@@ -36,7 +36,6 @@ ADD_TASK = [
     *("add", "task", "a task title", "--parent", "S-0001"),
     *("--output", "changed: work.txt", "--check", "true"),
 ]
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0165: the tool start takes no start without an id")
 
 
 @dataclass(frozen=True)
@@ -207,28 +206,23 @@ def start_schema(claims: dict[str, Any]) -> dict[str, Any]:
     return {}
 
 
-@XFAIL
 def test_the_start_with_no_id_answers_started_s_0001(claims: dict[str, Any]) -> None:
     assert text(claims["claimed"]).partition("\n")[0] == "started S-0001"
 
 
-@XFAIL
 def test_the_claim_is_committed_on_main_before_the_direct_start(claims: dict[str, Any]) -> None:
     assert "chore: start S-0001 in the record" in claims["subjects"]
 
 
-@XFAIL
 def test_the_claim_hands_the_story_to_sonnet_a1(claims: dict[str, Any]) -> None:
     assert claims["shown"].get("agent") == "sonnet-a1"
 
 
-@XFAIL
 def test_a_second_start_relays_the_line_of_the_command(claims: dict[str, Any]) -> None:
     content = claims["again"].get("result", {}).get("content")
     assert content == [{"type": "text", "text": last_line(claims["direct"])}]
 
 
-@XFAIL
 def test_the_input_schema_of_start_requires_the_directory_alone(claims: dict[str, Any]) -> None:
     assert start_schema(claims).get("required") == ["directory"]
 

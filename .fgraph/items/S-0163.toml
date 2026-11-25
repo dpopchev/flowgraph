@@ -7,6 +7,7 @@ realizes = 3
 complexity = "low"
 created = 2026-11-25 06:33:02+00:00
 started = 2026-11-25 07:08:41+00:00
+agent = "haiku-s163"
 depends_on = [
     "S-0162",
 ]

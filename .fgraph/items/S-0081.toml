@@ -1,11 +1,13 @@
 id = "S-0081"
-state = "backlog"
+state = "started"
 title = "Raise the knowledge lines fgraph knowledge lists with the files they govern from none to every one"
 description = "Found during T-0311 of S-0076 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. The entry of the list carries the files since S-0076, and knowledge_text of src/flowgraph/knowledge_list.py does not print them. Beside it: fgraph about of a path opens git twice, once to read what governs it and once to read what touched it. Its Tasks are written when it is ordered."
 parent = "F-0021"
 realizes = 1
 complexity = "low"
 created = 2026-11-22 18:10:03+00:00
+started = 2026-11-25 07:27:52+00:00
+agent = "haiku-s81"
 
 [criterion]
 given = "a record with a line noted with --governs"

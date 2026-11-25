@@ -29,6 +29,7 @@ from flowgraph.goal.model import EmptyGoalError, GoalDriverError, GoalHoursError
 from flowgraph.graph import FormatError
 from flowgraph.item.commands import ItemIdError
 from flowgraph.item.progress import ProgressLineError
+from flowgraph.knowledge.document import KnowledgeFormatError
 from flowgraph.knowledge.list import KindListedError
 from flowgraph.knowledge.supersede import LineRefError
 from flowgraph.parent import FeatureIdError, RealizesError
@@ -148,6 +149,7 @@ REFUSED = (
     NothingToStartError,
     PaceError,
     KindListedError,
+    KnowledgeFormatError,
     LineRefError,
     ComplexityError,
     FormatError,

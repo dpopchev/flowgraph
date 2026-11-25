@@ -16,7 +16,6 @@ from flowgraph.cli import open_files, run
 
 pytestmark = pytest.mark.functional
 
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0155: fgraph knowledge takes no --format")
 XML_REFUSAL = "--format 'xml' is not text or json, the two formats of knowledge"
 
 # Each command with the day of January 2026 it is run on: the lines are noted on different days.
@@ -84,12 +83,10 @@ def recorded(tmp_path: Path) -> Path:
     return tmp_path
 
 
-@XFAIL
 def test_knowledge_as_json_lists_the_lines_newest_first_by_ref(recorded: Path) -> None:
     assert [line["ref"] for line in document(recorded)["lines"]] == ALL_REFS
 
 
-@XFAIL
 def test_knowledge_as_json_line_of_the_decision_is_whole(recorded: Path) -> None:
     assert document(recorded)["lines"][2] == {
         "about": [],
@@ -104,12 +101,10 @@ def test_knowledge_as_json_line_of_the_decision_is_whole(recorded: Path) -> None
     }
 
 
-@XFAIL
 def test_knowledge_as_json_line_of_the_finding_holds_its_about(recorded: Path) -> None:
     assert document(recorded)["lines"][3]["about"] == ["gate"]
 
 
-@XFAIL
 def test_knowledge_as_json_line_of_the_superseding_decision_holds_what_it_supersedes(
     recorded: Path,
 ) -> None:
@@ -119,11 +114,11 @@ def test_knowledge_as_json_line_of_the_superseding_decision_holds_what_it_supers
 @pytest.mark.parametrize(
     ("options", "refs"),
     [
-        pytest.param((), ALL_REFS, id="all", marks=XFAIL),
-        pytest.param(("--kind", "decision"), ["S-0001#4", "S-0001#2"], id="kind", marks=XFAIL),
-        pytest.param(("--about", "gate"), ["S-0001#1"], id="about", marks=XFAIL),
-        pytest.param(("--search", "STORE"), ["S-0001#2", "S-0001#1"], id="search", marks=XFAIL),
-        pytest.param(("--live",), ["S-0001#4", "S-0001#3", "S-0001#1"], id="live", marks=XFAIL),
+        pytest.param((), ALL_REFS, id="all"),
+        pytest.param(("--kind", "decision"), ["S-0001#4", "S-0001#2"], id="kind"),
+        pytest.param(("--about", "gate"), ["S-0001#1"], id="about"),
+        pytest.param(("--search", "STORE"), ["S-0001#2", "S-0001#1"], id="search"),
+        pytest.param(("--live",), ["S-0001#4", "S-0001#3", "S-0001#1"], id="live"),
     ],
 )
 def test_knowledge_as_json_holds_the_refs_listed_for_the_options(
@@ -135,11 +130,11 @@ def test_knowledge_as_json_holds_the_refs_listed_for_the_options(
 @pytest.mark.parametrize(
     "options",
     [
-        pytest.param((), id="all", marks=XFAIL),
-        pytest.param(("--kind", "decision"), id="kind", marks=XFAIL),
-        pytest.param(("--about", "gate"), id="about", marks=XFAIL),
-        pytest.param(("--search", "STORE"), id="search", marks=XFAIL),
-        pytest.param(("--live",), id="live", marks=XFAIL),
+        pytest.param((), id="all"),
+        pytest.param(("--kind", "decision"), id="kind"),
+        pytest.param(("--about", "gate"), id="about"),
+        pytest.param(("--search", "STORE"), id="search"),
+        pytest.param(("--live",), id="live"),
     ],
 )
 def test_knowledge_as_json_holds_the_same_refs_as_the_text_for_the_options(
@@ -150,30 +145,25 @@ def test_knowledge_as_json_holds_the_same_refs_as_the_text_for_the_options(
     )
 
 
-@XFAIL
 def test_knowledge_as_json_of_a_filter_with_no_line_is_an_empty_document(recorded: Path) -> None:
     assert document(recorded, "--kind", "deviation", "--about", "gate") == {"lines": []}
 
 
-@XFAIL
 def test_knowledge_as_json_is_canonical_json_with_a_newline(recorded: Path) -> None:
     out = listed(recorded, "--format", "json").out
     assert out == json.dumps(json.loads(out), indent=2, sort_keys=True) + "\n"
 
 
-@XFAIL
 def test_knowledge_as_json_is_the_same_bytes_on_a_second_run(recorded: Path) -> None:
     first = listed(recorded, "--format", "json").out
     second = listed(recorded, "--format", "json").out
     assert second == json.dumps(json.loads(first), indent=2, sort_keys=True) + "\n"
 
 
-@XFAIL
 def test_knowledge_format_text_prints_what_no_format_prints(recorded: Path) -> None:
     assert listed(recorded, "--format", "text").out == listed(recorded).out
 
 
-@XFAIL
 def test_knowledge_format_xml_is_refused_naming_both_formats(recorded: Path) -> None:
     assert XML_REFUSAL in listed(recorded, "--format", "xml").err
 

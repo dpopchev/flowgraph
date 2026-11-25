@@ -2,6 +2,7 @@
 
 import argparse
 
+from flowgraph.knowledge.document import JSON, TEXT
 from flowgraph.parser.base import Commands, new_command
 
 # The summary of note, the help of its ID and of its --progress, each too long for its call.
@@ -68,5 +69,11 @@ def knowledge_command(commands: Commands) -> argparse.ArgumentParser:
         "--live",
         action="store_true",
         help="list the live lines alone: those no later line supersedes",
+    )
+    knowledge.add_argument(
+        "--format",
+        default=TEXT,
+        metavar="FORMAT",
+        help=f"the format it prints: {TEXT}, the default, or {JSON}",
     )
     return knowledge

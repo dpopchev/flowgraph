@@ -184,6 +184,20 @@ fgraph about src/gate.py
 # S-0001  c03d5e8  Run the gate
 ```
 
+A file a later commit deleted is answered the same: the text is read as a path when a
+commit of the history of HEAD changed a file at that path from the top of the work tree,
+so the items whose commits touched it are listed after it is gone; a pattern, a
+directory and a path git never knew are not, and a mistyped id is refused as before.
+
+```sh
+git rm --quiet src/gate.py
+git commit --quiet --message "chore: drop the gate"
+fgraph about src/gate.py
+# S-0002  4f2a9c1  Hold the landing
+#   T-0004  91be07d  Add the gate to the landing
+# S-0001  c03d5e8  Run the gate
+```
+
 A line of knowledge names the files it governs, with `--governs PATH` once per
 file, on `fgraph note`. The path is kept as written from the top of the git work
 tree, or as given outside one, and is not checked against the disk: a governed

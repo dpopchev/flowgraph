@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
 
-from flowgraph.development import git, pull_git, tag_git, uncommitted_git
+from flowgraph.development import git, history_git, pull_git, tag_git, uncommitted_git
 from flowgraph.development.branch import branch_of
 from flowgraph.development.git import GitError
 from flowgraph.development.steps import NO_LANDING, NO_RELEASE, LandingSteps, ReleaseSteps
@@ -36,6 +36,11 @@ def _knows_no_commit(commit: str) -> None:
     return None
 
 
+def _touches_no_path(path: str) -> bool:
+    """The `touched_path` of a work tree built without it: no commit touched a path."""
+    return False
+
+
 def _lists_no_change() -> list[str]:
     """The `uncommitted_files` of a work tree built without it: it lists no file."""
     return []
@@ -52,9 +57,10 @@ class WorkTree:
     `find_worktree` is the worktree of a branch, or None; `find_worktrees` lists every worktree
     of the repository. `changed_files` lists the files a commit changed, as paths from the top, a
     merge commit by what it brought to its first parent, and answers None for a sha git does not
-    know. `uncommitted_files` lists the files changed in the work tree and not committed, as
-    paths from the top. `landing` holds the steps only a landing takes, `release` those only a
-    release takes. Each step raises GitError when git refuses it.
+    know. `touched_path` is true when a commit of the history of HEAD changed the file at a path
+    from the top, a deleted file too. `uncommitted_files` lists the files changed in the work
+    tree and not committed, as paths from the top. `landing` holds the steps only a landing
+    takes, `release` those only a release takes. Each step raises GitError when git refuses it.
     """
 
     path: Path
@@ -69,6 +75,7 @@ class WorkTree:
     uncommitted_files: Callable[[], list[str]] = _lists_no_change
     landing: LandingSteps = NO_LANDING
     release: ReleaseSteps = NO_RELEASE
+    touched_path: Callable[[str], bool] = _touches_no_path
 
 
 # The git work tree the directory is inside, or None when it is inside none.
@@ -120,6 +127,7 @@ def open_git(directory: Path) -> WorkTree | None:
             make_tag=partial(tag_git.make_tag, top),
             push_tag=partial(tag_git.push_tag, top),
         ),
+        touched_path=partial(history_git.touched_path, top),
     )
 
 

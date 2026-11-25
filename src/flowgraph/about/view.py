@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import assert_never
 
 from flowgraph.about.document import TEXT, about_json, chosen_about_format
-from flowgraph.about.file import file_links, is_file_here, is_governed
+from flowgraph.about.file import file_links, is_file_here, is_governed, is_touched
 from flowgraph.about.links import (
     About,
     FileLinks,
@@ -145,18 +145,27 @@ def _term_links(name: str, store: Store) -> TermLinks:
 
 
 def _is_path(text: str, directory: Path, store: Store, open_git: OpenGit) -> bool:
-    """True when the text is a file on the disk or one a line of the record governs."""
-    return is_file_here(text, directory) or is_governed(text, directory, store, open_git)
+    """True when the text is a file on the disk, one a commit changed or one a line governs.
+
+    A file a commit of the history of HEAD changed is one deleted since or not; the git read goes
+    before the governed one, which loads every item of the record.
+    """
+    return (
+        is_file_here(text, directory)
+        or is_touched(text, directory, open_git)
+        or is_governed(text, directory, store, open_git)
+    )
 
 
 def about_links(item: str, store: Store, directory: Path, open_git: OpenGit) -> About:
     """The links of what is named: a work item, a Feature, a term or a file.
 
     The text is read as an id, then as a term, then as the path of a file from the directory
-    fgraph runs in, read from the git work tree of the directory: a file on the disk, or one a
-    line of the record governs. Raises FeatureIdError for a Feature id below 1, ItemIdError for a
-    text that is none of them or a path git cannot answer for and no line governs, and the refusal
-    of `fgraph show` for an id the record holds no item of. Nothing is written.
+    fgraph runs in, read from the git work tree of the directory: a file on the disk, one a commit
+    of the history of HEAD changed, a deleted file too, or one a line of the record governs.
+    Raises FeatureIdError for a Feature id below 1, ItemIdError for a text that is none of them
+    or a path git cannot answer for and no line governs, and the refusal of `fgraph show` for an
+    id the record holds no item of. Nothing is written.
     """
     if is_term_name(item):
         try:

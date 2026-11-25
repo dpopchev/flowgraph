@@ -895,6 +895,15 @@ its count and each linked item is one line, its id, its bucket and its title.
   tag is matched by its own name, a relation to the whole is not followed.
 - A text that is no id and no term name, or a term name the record holds no term of,
   is read as the path of a file when it is a file from the directory fgraph runs in.
+  A file a later commit deleted is answered the same (S-0080): a text is read as the
+  path of a file too when a commit of the history of HEAD changed a file at exactly that
+  path from the top of the work tree -- one `git log` run at the top, the path read
+  literally, a file renamed since read under its old name (`touched_path` of
+  `src/flowgraph/development/history_git.py`); it is then answered as a file on the
+  disk, and a deleted file no commit of the record touched is said so in one line,
+  exit 0. A pattern, a directory, a path git never knew, a file only a branch HEAD does
+  not hold changed and a repository with no commit are not read as a file, so a
+  mistyped id or term is refused as before.
   A file is a derived node of the record: nothing is stored for it. The answer is read
   from git, by the commit each completed work item and each completed Task names: the
   files that commit changed, as paths from the top of the work tree. A merge commit is
@@ -904,7 +913,8 @@ its count and each linked item is one line, its id, its bucket and its title.
   its work item; a file none touched is said so in one line, exit 0. Outside a git
   work tree a path is refused, saying the answer is read from git, and so is a path
   outside the work tree of the directory, exit 2. A text that is no id, no term and
-  no file is refused, exit 2, unless a line of knowledge governs it (below).
+  no file is refused, exit 2, unless a commit of the history of HEAD changed it or a line
+  of knowledge governs it (below).
 - What governs a file is read from the lines of knowledge. A text that is no id and
   no term is read as the path of a file too when a `--governs` line of the record
   names it, on the disk or not; outside a git work tree, or for a path outside the

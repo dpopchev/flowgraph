@@ -1,5 +1,5 @@
 id = "B-0033"
-state = "started"
+state = "completed"
 title = "Cut the progress lines fgraph note takes with a mark it does not keep, --standing or --open, from every one to none"
 description = "Found by the subagent of S-0102 on 2026-11-24, reading _written of src/flowgraph/parser/command.py, where the branch of a progress line never reads the mark, and run again by the coordinator that day on the code of main; filed at the end of the Backlog and not burned. Open: whether the option is refused or the mark kept. Its Tasks and its complexity are written when it is ordered."
 parent = "F-0023"
@@ -7,7 +7,9 @@ realizes = 3
 complexity = "low"
 created = 2026-11-24 07:07:12+00:00
 started = 2026-11-25 01:43:12+00:00
+completed = 2026-11-25 02:29:43+00:00
 agent = "haiku-b33"
+commit = "166050d2"
 filed_during = "S-0102"
 
 [criterion]

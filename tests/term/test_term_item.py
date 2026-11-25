@@ -91,6 +91,32 @@ def test_a_name_that_reads_as_the_id_of_an_item_is_refused() -> None:
 
 
 @pytest.mark.command
+@pytest.mark.parametrize(
+    ("name", "id_"),
+    [("f15", "F-0015"), ("s3", "S-0003"), ("u2", "U-0002"), ("t7", "T-0007"), ("q4", "Q-0004")],
+)
+def test_a_name_that_reads_as_an_id_is_refused_naming_the_id(name: str, id_: str) -> None:
+    line = f"{name!r} reads as the id {id_}: a term name is no id"
+    with pytest.raises(TermError, match=f"^{re.escape(line)}$"):
+        add_term_item(name, "a meaning", store([]), lambda: ADDED)
+
+
+@pytest.mark.command
+def test_a_name_that_reads_as_an_id_is_not_saved() -> None:
+    saved: list[Term] = []
+    with pytest.raises(TermError):
+        add_term_item("f15", "a meaning", store([], saved), lambda: ADDED)
+    assert saved == []
+
+
+@pytest.mark.command
+@pytest.mark.parametrize("name", ["f0", "x15", "f15a"])
+def test_a_name_that_spells_no_id_is_added(name: str) -> None:
+    added = add_term_item(name, "a meaning", store([]), lambda: ADDED)
+    assert added == Written(f"added {name}\n", f"chore: add term {name} in the record")
+
+
+@pytest.mark.command
 def test_a_blank_meaning_is_refused_naming_the_part() -> None:
     with pytest.raises(EmptyPartError, match=re.escape("meaning is empty")):
         add_term_item("gate", " ", store([]), lambda: ADDED)

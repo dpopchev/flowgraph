@@ -13,7 +13,6 @@ from flowgraph.cli import open_files, run
 pytestmark = pytest.mark.functional
 
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0124: a term name that reads as an id is added")
 
 
 def fgraph(argv: list[str], cwd: Path) -> tuple[int, str, str]:
@@ -39,7 +38,6 @@ def last_line(text: str) -> str:
     return text.splitlines()[-1]
 
 
-@XFAIL
 @pytest.mark.parametrize(
     ("name", "id_"),
     [("f15", "F-0015"), ("s3", "S-0003"), ("t7", "T-0007"), ("q4", "Q-0004")],
@@ -52,7 +50,6 @@ def test_a_term_name_that_reads_as_an_id_is_refused(name: str, id_: str, tmp_pat
     )
 
 
-@XFAIL
 def test_a_term_name_that_reads_as_an_id_is_not_written(tmp_path: Path) -> None:
     fgraph(["add", "term", "f15", "--means", "a meaning"], tmp_path)
     assert not (tmp_path / ".fgraph" / "terms").exists()

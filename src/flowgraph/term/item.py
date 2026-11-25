@@ -8,6 +8,7 @@ from datetime import datetime
 
 from flowgraph.feature import feature_detail
 from flowgraph.item.commands import MESSAGE, Written
+from flowgraph.item.id import id_spelled
 from flowgraph.knowledge.list import KnowledgeEntry, collected, newest_first
 from flowgraph.parent import parse_feature_id
 from flowgraph.record import Now
@@ -24,11 +25,14 @@ class TermExistsError(ValueError):
 def add_term_item(name: str, meaning: str, store: Store, now: Now) -> Written:
     """Add the term of that name with that meaning; what the write says.
 
-    Raises TermError when the name is no term name or reads as the id of an item, EmptyPartError
-    when the meaning is blank and TermExistsError when the record holds the name already;
-    nothing is saved then.
+    Raises TermError when the name is no term name, reads as the id of an item or reads as an id
+    a command reads, as f15, EmptyPartError when the meaning is blank and TermExistsError when the
+    record holds the name already; nothing is saved then.
     """
     term = make_term(name, meaning, now())
+    spelled = id_spelled(name)
+    if spelled != name:
+        raise TermError(f"{name!r} reads as the id {spelled}: a term name is no id")
     if name in store.terms.find_term_names():
         raise TermExistsError(f"the record holds the term {name!r} already")
     store.terms.save_term(term)

@@ -9,7 +9,7 @@ from flowgraph.development.commit import OpenGit, Said
 from flowgraph.feature.item import show_any_item
 from flowgraph.goal.read import goal_output
 from flowgraph.graph import graph_text
-from flowgraph.knowledge.list import show_knowledge
+from flowgraph.knowledge.document import knowledge_output
 from flowgraph.record import Config
 from flowgraph.record.archive import check_archived
 from flowgraph.record.store import Store
@@ -34,7 +34,9 @@ def view_said(
     """
     match args.command:
         case "knowledge":
-            return Said(show_knowledge(args.kind, args.about, store, args.search, args.live))
+            return Said(
+                knowledge_output(args.format, args.kind, args.about, store, args.search, args.live)
+            )
         case "terms":
             return Said(terms_text(store))
         case "graph":

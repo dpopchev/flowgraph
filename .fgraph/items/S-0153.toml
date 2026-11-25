@@ -55,13 +55,15 @@ commit = "1d4af20cd0e46e7b6c6210ae025eea42547b8025"
 
 [[tasks]]
 id = "T-0661"
-state = "started"
+state = "completed"
 title = "Answer fgraph brief ID --not-named with the files changed in the worktree that the brief of its started Task does not name"
 description = "Wiring only; no new test file. src/flowgraph/parser/brief.py (23 lines, about 32 after): brief_command adds --not-named, action='store_true', help 'print in its place the files changed and not committed in its worktree that the brief of its started Task does not name'. src/flowgraph/brief/read.py (87 lines, about 97 after): brief_output gains the keyword not_named: bool = False; after the format is chosen and brief_of has read the brief, when not_named it returns not_named_document(not_named_of(brief, record, open_git), chosen) of src/flowgraph/brief/not_named.py; its docstring says so and names the refusals of not_named_of. src/flowgraph/parser/views.py (52 lines): the case brief passes not_named=args.not_named. src/flowgraph/parser/refusals.py (158 lines today, about 162 once F-0019 and S-0142 land): import NotNamedError of flowgraph.brief.not_named on a line of its own right after the import of BriefFormatError, and list it right after BriefFormatError in REFUSED. brief is a view: nothing is written and no commit is made (command_said of src/flowgraph/parser/command.py hands it to view_said); once B-0035 has landed, brief is in READS of src/flowgraph/parser/locked.py and takes no lock -- see that it is listed there, change nothing. Red first: run tests/functional/test_brief_not_named.py with --runxfail and see each red test fail on its property, then wire, then remove XFAIL and its marks and see the whole file pass. Existing tests: none changes -- tests/functional/test_brief.py, tests/functional/test_command_help.py and tests/parser/test_help.py pass as they are; if one fails, stop and say which. Leave alone: src/flowgraph/parser/command.py (237 lines), arguments.py, src/flowgraph/cli.py, src/flowgraph/brief/not_named.py, document.py, text.py, model.py, src/flowgraph/development/, the docs."
 check = "uv run pytest tests/functional/test_brief_not_named.py tests/functional/test_brief.py tests/functional/test_command_help.py tests/brief tests/parser -q -p no:cacheprovider && ! grep -q xfail tests/functional/test_brief_not_named.py && make lines"
 expected_output = "changed: fgraph brief S-0001 --not-named prints, in place of the brief, the files not_named_of of src/flowgraph/brief/not_named.py returns, each on its line, or as a JSON list with --format json, and writes nothing; it exits 2 with the line of NotNamedError, which REFUSED of src/flowgraph/parser/refusals.py lists; fgraph brief without the option prints what it printed; fgraph brief --help lists --not-named. No xfail mark is left in tests/functional/test_brief_not_named.py"
 created = 2026-11-24 21:54:18+00:00
 started = 2026-11-25 00:10:33+00:00
+completed = 2026-11-25 00:12:48+00:00
+commit = "9bcf888f764cb855520e42cddcb033e2a33e19b4"
 
 [[tasks]]
 id = "T-0662"

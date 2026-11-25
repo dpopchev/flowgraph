@@ -42,3 +42,8 @@ description = "FIRST PASS, written on 2026-11-25 before Phases 2 and 3 were comp
 check = "grep -q 'docs/reference.md' docs/domain-model.md && grep -q 'docs/quickstart.md' docs/domain-model.md && ! grep -q 'the README paragraph' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md says, after its opening paragraph, that the commands with their examples are docs/reference.md and the first steps docs/quickstart.md, and its line on the same cases as the README paragraph names the paragraph of docs/reference.md"
 created = 2026-11-25 10:56:55+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25, on the draft of Phase 4 that offered its first-pass Tasks: great, file them. The Tasks of U-0042 (its 3 Tasks: T-0844, T-0845, T-0846) are that first pass, drafted that day by a read-only subagent against the code of main at 0ecab493, before Phases 2 and 3 were completed, and filed by the coordinator, who checked their shape -- the opening sentence, the check, the ids they name -- and read their titles, outputs, checks and open points, not every description. They are reviewed before Phase 4 starts, the review noted here as a decision naming each Task kept, amended or removed; until that line is here, U-0042 is not started."
+noted = 2026-11-25 10:57:15+00:00

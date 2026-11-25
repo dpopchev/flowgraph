@@ -1,0 +1,16 @@
+id = "S-0166"
+state = "backlog"
+title = "Cut the pairs of fgraph add task run at one time in the worktrees of two started work items that are given one id from those Q-0003 sees to none"
+description = "Phase 2, Concurrent Worktree and Merge Ergonomics: filed on the word of the developer of 2026-11-25, work items for each feature, under a Feature filed as drafted and still to be reworked; its criterion follows the exit gate of the draft. The draft names every kind of item and K-* records; the record holds no K-* item and a work item is added on main under its lock (B-0035), so the Story is the Tasks, the one item two worktrees add. It waits for Q-0003: if no pair collides there it is reworded to a guard test or removed. Its Tasks are written once Q-0003 is answered."
+parent = "F-0026"
+realizes = 1
+complexity = "medium"
+created = 2026-11-25 08:06:05+00:00
+depends_on = [
+    "Q-0003",
+]
+
+[criterion]
+given = "two started work items, each in its worktree"
+when = "fgraph add task is run in both at one time"
+then = "each Task gets an id of its own, or one is refused in one line, and no Task is lost"

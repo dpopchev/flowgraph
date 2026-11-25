@@ -125,3 +125,8 @@ task = "T-0704"
 text = "red: 11 failed (NotImplementedError of the three stubs)"
 noted = 2026-11-25 09:01:37+00:00
 task = "T-0705"
+
+[[progress]]
+text = "red: test_mcp_run.py 5 failed (run() has no serve, argparse refuses mcp, SystemExit 2); test_mcp_status.py 11 failed, 2 passed under --runxfail (fgraph mcp exits 2, invalid choice)"
+noted = 2026-11-25 09:04:55+00:00
+task = "T-0706"

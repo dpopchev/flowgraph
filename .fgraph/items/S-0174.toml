@@ -41,3 +41,8 @@ description = "FIRST PASS, written on 2026-11-25 before Phases 2 and 3 were comp
 check = "grep -q 'the files of terms/ too' README.md && grep -q 'the files of terms/ too' docs/domain-model.md"
 expected_output = "changed: the passages S-0173 added to docs/domain-model.md, Persistence, and to README.md say that the files of terms/ too are read through .fgraph/.cache/index.sqlite3, so status, show, brief, about, knowledge and graph, as text and as JSON, parse no file whose bytes did not change and print the bytes they print with none"
 created = 2026-11-25 11:01:04+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25, on the draft of Phase 4 that offered its first-pass Tasks: great, file them. The Tasks of S-0174 (its 3 Tasks: T-0856, T-0857, T-0858) are that first pass, drafted that day by a read-only subagent against the code of main at 0ecab493, before Phases 2 and 3 were completed, and filed by the coordinator, who checked their shape -- the opening sentence, the check, the ids they name -- and read their titles, outputs, checks and open points, not every description. They are reviewed before Phase 4 starts, the review noted here as a decision naming each Task kept, amended or removed; until that line is here, S-0174 is not started."
+noted = 2026-11-25 11:01:26+00:00

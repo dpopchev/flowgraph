@@ -72,3 +72,8 @@ supersedes = [
 text = "red: 10 tests fail under --runxfail on their values (assert 2 == 0; err '' vs the refusal line); the file did not exist before"
 noted = 2026-11-25 06:53:54+00:00
 task = "T-0726"
+
+[[progress]]
+text = "red: E   NotImplementedError (src/flowgraph/development/commit_task.py:33), 10 tests of tests/development/commit_task"
+noted = 2026-11-25 06:55:09+00:00
+task = "T-0727"

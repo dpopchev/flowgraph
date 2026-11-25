@@ -1,0 +1,13 @@
+id = "S-0181"
+state = "backlog"
+title = "Raise the pages that take a new user from an empty directory to a landed and verified work item from none to one, docs/quickstart.md"
+description = "Phase 4, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0037). The quickstart of the first pass: init, add, start, complete or land, verify, and the registering of a rule as a term and a line that governs a file. Five minutes is held by the count of its commands, which a test runs. Its first-pass Tasks are drafted the same day and reviewed before the phase starts."
+parent = "F-0037"
+realizes = 1
+complexity = "medium"
+created = 2026-11-25 09:54:44+00:00
+
+[criterion]
+given = "an empty directory with git and fgraph installed"
+when = "the commands of docs/quickstart.md are run in the order written"
+then = "they end with a term added, a knowledge line that governs a file, and a work item landed with its closing answered yes; a functional test runs those same commands"

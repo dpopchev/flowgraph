@@ -8,3 +8,8 @@ created = 2026-11-22 19:42:38+00:00
 given = "a record of many work items"
 when = "any fgraph command runs"
 then = "the check of the relations reads the terms an item is about from the rows of the record, reading no file of a work item again, and make check passes"
+
+[[knowledge]]
+kind = "finding"
+text = "Seen by the coordinator on 2026-11-25 under the /goal of Phase 1, on this record of about 170 items: a write of fgraph takes 10 to 30 seconds, fgraph status --format json about 29 seconds for 384 KB, and fgraph about of a mistyped id about 20 seconds. Not measured where the time goes; U-0018 names one cause, the read of every work item file at the check of the relations."
+noted = 2026-11-25 03:43:54+00:00

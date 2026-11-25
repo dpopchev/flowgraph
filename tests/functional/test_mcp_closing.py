@@ -19,7 +19,6 @@ import pytest
 
 pytestmark = pytest.mark.functional
 
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0160: fgraph mcp serves no landing")
 IDENTITY = {
     "GIT_AUTHOR_NAME": "a developer",
     "GIT_AUTHOR_EMAIL": "developer@example.com",
@@ -227,22 +226,18 @@ def rev(run: Run, name: str) -> str:
     )
 
 
-@XFAIL
 def test_the_land_answers_its_line(agent: Run) -> None:
     assert text(agent, 2).startswith("landed S-0001 at")
 
 
-@XFAIL
 def test_the_verify_answers_its_line(agent: Run) -> None:
     assert text(agent, 3) == "verified S-0001\n"
 
 
-@XFAIL
 def test_the_story_is_completed_on_main(agent: Run) -> None:
     assert story(agent)["state"] == "completed"
 
 
-@XFAIL
 def test_the_story_is_completed_at_the_merge_commit(agent: Run) -> None:
     project = agent.project
     merge = git(
@@ -251,7 +246,6 @@ def test_the_story_is_completed_at_the_merge_commit(agent: Run) -> None:
     assert [rev(agent, str(story(agent)["commit"]))] == merge.splitlines()
 
 
-@XFAIL
 def test_the_answer_and_its_text_are_kept(agent: Run) -> None:
     shown = cli(agent.project, "show", "S-0001").out
     kept = [
@@ -266,17 +260,14 @@ def test_every_line_of_stdout_is_a_reply(agent: Run) -> None:
     assert [parsed(line).get("jsonrpc") for line in agent.session.out.splitlines()] == ["2.0"] * 4
 
 
-@XFAIL
 def test_the_gate_printed_on_the_stderr_of_the_server(agent: Run) -> None:
     assert "gated" in agent.session.err
 
 
-@XFAIL
 def test_a_landing_waiting_for_the_developer_is_a_tool_error(developer: Run) -> None:
     assert result(developer, 2).get("isError") is True
 
 
-@XFAIL
 def test_a_landing_waiting_for_the_developer_holds_its_one_line(developer: Run) -> None:
     assert result(developer, 2).get("content") == [{"type": "text", "text": HELD}]
 

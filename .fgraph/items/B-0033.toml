@@ -12,6 +12,11 @@ agent = "haiku-b33"
 commit = "166050d2"
 filed_during = "S-0102"
 
+[verified]
+answer = "yes"
+text = "at 166050d2 on main, the merge of wi/B-0033-cut-the-progress-lines, with fgraph of main in a throwaway record: fgraph note S-0001 --progress half way --standing exited 2 with fgraph: error: a progress line takes no --standing: it is no knowledge line, and with --open the same naming --open, nothing kept; the progress line with no mark was noted and fgraph show lists it once; a finding given --standing was noted as before. Before the landing, in the worktree: 220 tests of the progress line and the parser passed, ruff, the line limit and pyright clean, and the agent's make check said 5467 passed"
+on = 2026-11-25 02:34:03+00:00
+
 [criterion]
 observed = "on a throwaway record at d0cfaa7 on main, with S-0001 started, fgraph note S-0001 --progress half way --standing exits 0, prints noted S-0001 and keeps the progress line with no mark; --open the same: the mark is dropped and nothing says so"
 expected = "a progress line given --standing or --open is refused, exit 2, naming the option, as --about and --governs are refused for it, or the mark is kept and listed"

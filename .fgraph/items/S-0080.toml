@@ -11,6 +11,11 @@ completed = 2026-11-25 08:21:20+00:00
 agent = "sonnet-s80"
 commit = "572edff7"
 
+[verified]
+answer = "yes"
+text = "run on main at c40104ad on 2026-11-25 in a throwaway git repository with the development off: a Story and its Task completed at the commit that added work.txt, then a later commit deleted it; fgraph about work.txt exits 0 and prints S-0001 with its commit and T-0001 with its commit under it, the two lines it printed while the file was on the disk; touched_by of --format json holds S-0001 with T-0001; fgraph about never.txt, a path git never knew, exits 2 as before"
+on = 2026-11-25 08:21:52+00:00
+
 [criterion]
 given = "a record in a git repository with a completed Story whose commit changed a file that a later commit deleted"
 when = "fgraph about is run with the path of the deleted file"

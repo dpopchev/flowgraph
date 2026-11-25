@@ -12,6 +12,7 @@ from flowgraph.development import GateError, GitError, SlugError
 from flowgraph.development.approval import ApprovalError
 from flowgraph.development.commit_held import CommitNotHeldError
 from flowgraph.development.driver import NoComplexityError
+from flowgraph.development.named_files import FilesNotNamedError
 from flowgraph.development.parallel import ParallelError
 from flowgraph.development.release import ReleaseError
 from flowgraph.development.scope import NotOnMainError, OutOfScopeError
@@ -105,6 +106,7 @@ REFUSED = (
     VersionError,
     CheckError,
     TaskCheckError,
+    FilesNotNamedError,
     NotOnMainError,
     BranchExistsError,
     ParallelError,

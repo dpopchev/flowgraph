@@ -486,6 +486,17 @@ fgraph complete T-0001 --commit 677f9b0
 # fgraph: error: T-0001 cannot complete: its check "make test" exited with status 2
 ```
 
+The complete of a Task also reads the files its commit changed and refuses one
+the title, the output and the description of the Task do not name, by its path
+from the top of the repository or by a directory with a trailing slash, a line
+number or a test name after a colon cut, so `src/a.py:12` names `src/a.py`; the
+files of the record are never asked; with the development off nothing is asked:
+
+```sh
+fgraph complete T-0001 --commit 3e9ae5c
+# fgraph: error: T-0001 cannot complete: the commit 3e9ae5c changed what its brief does not name: docs/notes.md
+```
+
 A work item can depend on another: `--depends-on ID` of `fgraph add` and of
 `fgraph amend`, once per work item it waits for, of any kind. The start of it
 is refused, with exit 2, while one it depends on is not completed, and the
@@ -1485,7 +1496,7 @@ fgraph start T-0002
 Complete each Task with the commit that holds its work, then the Story with
 the commit on `main` that holds it. `--commit` is a sha of 7 to 40 hex digits;
 with the development on `fgraph` looks it up in git, and with it off it is kept
-as given:
+as given. With the development on that commit holds only files the Task names:
 
 ```sh
 fgraph complete T-0001 --commit 3e9ae5c
@@ -1505,7 +1516,8 @@ fgraph status
 complete exits 2 and names why when the item is still in Backlog, when a
 Story has Tasks not completed, when the item is completed already, when the
 commit is no sha, or, with the development on, when the repository does not hold
-the commit. A completed Story takes no new Task.
+the commit or, for a Task, when the commit changed a file its brief does not
+name. A completed Story takes no new Task.
 
 The commit is the evidence of the development: the work beside the record
 that the item is completed with. So `fgraph complete` needs `--commit` with

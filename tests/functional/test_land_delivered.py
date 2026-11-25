@@ -30,7 +30,17 @@ UNDER_FEATURE = ["--parent", "F-0001"]
 
 def add_task(item: str) -> list[str]:
     """The add of a Task under the work item, with a check, as the development needs one."""
-    return ["add", "task", "a task title", "--parent", item, "--output", "out", "--check", "true"]
+    return [
+        "add",
+        "task",
+        "a task title",
+        "--parent",
+        item,
+        "--output",
+        "work.txt",
+        "--check",
+        "true",
+    ]
 
 
 ONE_STORY = (ADD_FEATURE, [*STORY, *UNDER_FEATURE], add_task("S-0001"), ["start", "F-0001"])

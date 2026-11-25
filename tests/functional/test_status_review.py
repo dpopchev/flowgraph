@@ -43,7 +43,7 @@ def story(number: int) -> list[str]:
 def task(parent: str, *, checked: bool = True) -> list[str]:
     """The command that adds a Task to that work item, with a check while the development is on."""
     check = ["--check", "make test"] if checked else []
-    return ["add", "task", "a task title", "--parent", parent, "--output", "an output", *check]
+    return ["add", "task", "a task title", "--parent", parent, "--output", "work.txt", *check]
 
 
 @dataclass(frozen=True)
@@ -89,8 +89,8 @@ def worktree_of(started: Outcome) -> Path:
 def complete_in(worktree: Path, task_id: str) -> None:
     """Start the Task in the worktree, commit a file there and complete the Task at that commit."""
     fgraph(["start", task_id], worktree)
-    (worktree / f"{task_id}.txt").write_text("the work of the Task\n", encoding="utf-8")
-    git(worktree, "add", f"{task_id}.txt")
+    (worktree / "work.txt").write_text("the work of the Task\n", encoding="utf-8")
+    git(worktree, "add", "work.txt")
     git(worktree, "commit", "--quiet", "--message", f"feat: do {task_id}")
     fgraph(["complete", task_id, "--commit", git(worktree, "rev-parse", "HEAD")], worktree)
 

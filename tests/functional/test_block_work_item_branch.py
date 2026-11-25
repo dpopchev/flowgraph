@@ -29,7 +29,7 @@ def task(parent: str) -> list[str]:
     """The command that adds a Task with a check to that work item."""
     return [
         *("add", "task", "a task title", "--parent", parent),
-        *("--output", "an output", "--check", "make test"),
+        *("--output", "work.txt", "--check", "make test"),
     ]
 
 

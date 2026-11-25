@@ -1171,6 +1171,29 @@ commit, a Task as a work item.
   nothing is saved and no check of the Task is run. A Task is refused as a work
   item is; `fgraph land` writes its own merge commit and is not asked. The
   check is `src/flowgraph/development/commit_held.py`.
+- With the development on and the record inside a git work tree, a record git
+  ignores included, the commit given to `fgraph complete` of a started Task is
+  read (the files that one commit changed, a merge by what it brought to its
+  first parent) and each file is held to the brief of the Task, its title, its
+  expected output and its description (S-0142, the scope rule 1 of board 1). A
+  file is named when a word of those texts, cleaned of the punctuation around it
+  and of a line number or a test name after a colon, is its path from the top of
+  the repository, or is a directory above it written with a trailing slash, so
+  `src/a.py:12` and `src/a.py::test_x` name `src/a.py`, as `fgraph brief` reads a
+  governed path (the decision of 2026-11-24 on S-0142). A bare file name names a
+  file at the top alone, a pattern is not read, the check of the Task is not
+  part of the brief, and a file the brief names to leave alone is named all the
+  same. The files under the directory of the record are never asked, since
+  `fgraph` commits its own writes there. A file not named exits 2 with the line
+  below, each such file listed, nothing saved and the check of the Task not run:
+  `fgraph: error: T-0001 cannot complete: the commit 3e9ae5c changed what its brief does not name: docs/notes.md`.
+  One commit is measured, so work made in several commits is held to its brief
+  by the one given. A work item completed by hand, `fgraph land`, the
+  development off and a record outside a git work tree are not asked. A Task
+  takes no amend, so the way out is a commit of the named files alone, or a
+  Task of its own for the other file. The check is `check_files_named` of
+  `src/flowgraph/development/named_files.py`, run after the commit is known to
+  git and before the check of the Task.
 - With the development off `fgraph complete` takes none, and a `--commit`
   given is still kept as the evidence. The commit given is not looked up, and a
   record outside a git work tree is not asked either, so a record whose shas
@@ -1214,6 +1237,8 @@ commit, a Task as a work item.
   (Evidence).
 - With the development on, `complete` asks that the repository holds the commit
   it is given (Evidence), and still does not ask that `main` holds it.
+- With the development on, a Task is completed only at a commit whose files its
+  brief names (Evidence).
 
 ## Ids
 

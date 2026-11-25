@@ -20,7 +20,7 @@ NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 TITLE = "Raise the Stories fgraph lists from 0 to 1"
 ADD_STORY = ["add", "story", TITLE, *CRITERION]
-ADD_TASK = ["add", "task", "a title", "--parent", "S-0001", "--output", "an output"]
+ADD_TASK = ["add", "task", "a title", "--parent", "S-0001", "--output", "work.txt main.txt"]
 WORKTREE = Path("project.worktrees") / "S-0001-raise-the-stories-fgraph"
 BRANCH = "wi/S-0001-raise-the-stories-fgraph"
 ON = "[development]\nenabled = true\n"

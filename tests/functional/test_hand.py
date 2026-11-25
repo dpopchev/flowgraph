@@ -29,7 +29,7 @@ ADD_TASK = [
     "--parent",
     "S-0001",
     "--output",
-    "an output",
+    "T-0001.txt",
     "--check",
     "make test",
 ]
@@ -37,10 +37,10 @@ CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 ADD_FEATURE = ["add", "feature", "a feature title", "--criterion", "a criterion"]
 ADD_FIRST = [*ADD_STORY[:3], *CRITERION, "--parent", "F-0001"]
 ADD_SECOND = ["add", "story", "another title", *CRITERION, "--parent", "F-0001"]
-TASK_OF_SECOND = [*ADD_TASK[:4], "S-0002", *ADD_TASK[5:]]
+TASK_OF_SECOND = [*ADD_TASK[:4], "S-0002", "--output", "T-0002.txt", *ADD_TASK[7:]]
 ADD_FEATURE_STORIES = (ADD_FEATURE, ADD_FIRST, ADD_TASK, ADD_SECOND, TASK_OF_SECOND)
 ADD_THIRD = ["add", "story", "a third title", *CRITERION]
-TASK_OF_THIRD = [*ADD_TASK[:4], "S-0003", *ADD_TASK[5:]]
+TASK_OF_THIRD = [*ADD_TASK[:4], "S-0003", "--output", "T-0003.txt", *ADD_TASK[7:]]
 LAND = ["land", "S-0001", "--message", "feat: land the first Story"]
 LAND_THIRD = ["land", "S-0003", "--message", "feat: land the third Story"]
 IDENTITY = {

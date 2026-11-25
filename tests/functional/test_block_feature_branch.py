@@ -29,7 +29,7 @@ ADD_TASK = [
     "--parent",
     "S-0001",
     "--output",
-    "an output",
+    "work.txt",
     "--check",
     "make test",
 ]
@@ -41,7 +41,7 @@ TASK_FOR_OTHER = [
     "--parent",
     "S-0002",
     "--output",
-    "an output",
+    "work.txt",
     "--check",
     "make test",
 ]

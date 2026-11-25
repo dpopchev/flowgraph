@@ -41,3 +41,8 @@ created = 2026-11-25 08:03:09+00:00
 kind = "finding"
 text = "Seen by the coordinator on 2026-11-25 under the /goal of Phase 1, on this record of about 170 items: a write of fgraph takes 10 to 30 seconds, fgraph status --format json about 29 seconds for 384 KB, and fgraph about of a mistyped id about 20 seconds. Not measured where the time goes; U-0018 names one cause, the read of every work item file at the check of the relations."
 noted = 2026-11-25 03:43:54+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, on the word of the developer of that day, file u18 and q3 and then work items for each feature; the developer reviews them at the close: (1) The criterion is widened to what the profile of 2026-11-25 shows: the rows read once per Feature are the cost, the read it named first a small part. (2) Three Tasks: the counting test, the rows read once in nodes_and_edges, the terms of an item on its row. (3) The one read of the detail per work item that collected makes for the terms of the knowledge lines stays: about 2 s of 34 on this record, and taking it means one parse shared by the rows and the details, a change of the file reader beyond this item. (4) No memo of parsed files in the adapter: the rows are passed down, so no state is kept between reads. (5) No docs Task: no behavior changes; the time fgraph status takes on this record before and after is noted at its closing."
+noted = 2026-11-25 08:03:36+00:00

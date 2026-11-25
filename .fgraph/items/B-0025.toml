@@ -16,3 +16,8 @@ expected = "the two tables and the code agree: each move a table lists is one fg
 kind = "decision"
 text = "The developer said on 2026-11-23, reading a drawn frame of fgraph watch: blocked can be any work item, a Feature among them; I do not see how a Task can be blocked. So the block of a work item, which the tables list and fgraph does not make, is wanted. Open, for the developer: whether fgraph block stops taking a Task, which it takes today beside a Feature."
 noted = 2026-11-23 11:56:30+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25: put Tasks on the work items of Phase 3; those will be reviewed before the phase starts. No Task is drafted for B-0025: the read-only subagent that drafted the Tasks of its Feature against main at 2dc58f08 found nothing of it to build, as its open finding of that day says. The developer decides at the review whether it is removed or written again."
+noted = 2026-11-25 10:05:27+00:00

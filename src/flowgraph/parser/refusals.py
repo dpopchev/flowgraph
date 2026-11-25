@@ -1,6 +1,7 @@
 """The refusals of a command: each is written as a usage error, whichever command raises it."""
 
 from flowgraph.brief.document import BriefFormatError
+from flowgraph.brief.not_named import NotNamedError
 from flowgraph.criterion import (
     CommitError,
     CommitNeededError,
@@ -152,6 +153,7 @@ REFUSED = (
     FormatError,
     StatusFormatError,
     BriefFormatError,
+    NotNamedError,
     GoalDriverError,
     EmptyGoalError,
     GoalHoursError,

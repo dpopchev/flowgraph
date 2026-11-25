@@ -20,4 +20,10 @@ def brief_command(commands: Commands) -> argparse.ArgumentParser:
         metavar="FORMAT",
         help=f"the format it prints: {TEXT}, the default, or {JSON}",
     )
+    brief.add_argument(
+        "--not-named",
+        action="store_true",
+        help="print in its place the files changed and not committed in its worktree that the "
+        "brief of its started Task does not name",
+    )
     return brief

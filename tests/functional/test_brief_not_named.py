@@ -29,9 +29,6 @@ IDENTITY = {
     "GIT_COMMITTER_NAME": "a developer",
     "GIT_COMMITTER_EMAIL": "developer@example.com",
 }
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="S-0153: fgraph names no changed file outside the brief before the commit"
-)
 
 
 @dataclass(frozen=True)
@@ -128,20 +125,17 @@ class TestTheFilesChangedThatTheBriefDoesNotName:
         changed(worktree, "src/named.py", "other.txt")
         return worktree
 
-    @XFAIL
     def test_it_lists_the_file_the_brief_does_not_name_and_not_the_one_it_names(
         self, worktree: Path
     ) -> None:
         listed = not_named(worktree)
         assert (listed.status, listed.out) == (0, "other.txt\n")
 
-    @XFAIL
     def test_run_on_main_it_lists_the_files_of_the_worktree(
         self, worktree: Path, tmp_path: Path
     ) -> None:
         assert not_named(tmp_path / "project").out == "other.txt\n"
 
-    @XFAIL
     def test_with_format_json_it_prints_a_json_list(self, worktree: Path) -> None:
         assert not_named(worktree, "--format", "json").out == '["other.txt"]\n'
 
@@ -159,7 +153,6 @@ class TestTheFilesChangedThatTheBriefDoesNotName:
         assert (brief.status, brief.out.startswith(shown)) == (0, True)
 
 
-@XFAIL
 def test_a_tracked_file_changed_a_staged_file_and_a_new_file_are_listed_by_path(
     tmp_path: Path,
 ) -> None:
@@ -174,7 +167,6 @@ def test_a_tracked_file_changed_a_staged_file_and_a_new_file_are_listed_by_path(
     assert not_named(worktree).out == "new.txt\nnotes.md\nstaged.txt\n"
 
 
-@XFAIL
 def test_a_file_under_a_directory_named_with_a_trailing_slash_is_not_listed(
     tmp_path: Path,
 ) -> None:
@@ -183,7 +175,6 @@ def test_a_file_under_a_directory_named_with_a_trailing_slash_is_not_listed(
     assert not_named(worktree).out == "other.txt\n"
 
 
-@XFAIL
 @pytest.mark.parametrize(
     ("title", "description"),
     [
@@ -199,7 +190,6 @@ def test_a_file_named_by_the_title_or_the_description_is_not_listed(
     assert not_named(worktree).out == "other.txt\n"
 
 
-@XFAIL
 def test_a_file_of_the_record_is_not_listed(tmp_path: Path) -> None:
     worktree = started_task(tmp_path, "an output")
     config = worktree / ".fgraph" / "config.toml"
@@ -208,14 +198,12 @@ def test_a_file_of_the_record_is_not_listed(tmp_path: Path) -> None:
     assert not_named(worktree).out == "other.txt\n"
 
 
-@XFAIL
 def test_a_clean_worktree_lists_nothing(tmp_path: Path) -> None:
     worktree = started_task(tmp_path, "an output")
     listed = not_named(worktree)
     assert (listed.status, listed.out) == (0, "")
 
 
-@XFAIL
 def test_a_work_item_with_no_started_task_is_refused(tmp_path: Path) -> None:
     worktree = started_task(tmp_path, "an output", start_task=False)
     refused = not_named(worktree)
@@ -225,7 +213,6 @@ def test_a_work_item_with_no_started_task_is_refused(tmp_path: Path) -> None:
     assert (refused.status, refused.err.splitlines()[-1:]) == (2, [said])
 
 
-@XFAIL
 def test_a_record_outside_a_git_work_tree_is_refused(tmp_path: Path) -> None:
     add_task = ["add", "task", "a title", "--parent", "S-0001", "--output", "an output"]
     for argv in (ADD_STORY, add_task, ["start", "S-0001"], ["start", "T-0001"]):

@@ -4,6 +4,7 @@ from pathlib import Path
 
 from flowgraph.brief.document import JSON, brief_json, chosen_brief_format
 from flowgraph.brief.model import Brief, FeatureBrief, TermLine, governing
+from flowgraph.brief.not_named import not_named_document, not_named_of
 from flowgraph.brief.text import brief_text
 from flowgraph.development.commit import OpenGit, kept_in
 from flowgraph.feature import feature_bucket, feature_detail
@@ -76,12 +77,25 @@ def brief_of(item: str, store: Store, record: Path, open_git: OpenGit) -> Brief:
     )
 
 
-def brief_output(item: str, format_: str, store: Store, record: Path, open_git: OpenGit) -> str:
+def brief_output(
+    item: str,
+    format_: str,
+    store: Store,
+    record: Path,
+    open_git: OpenGit,
+    *,
+    not_named: bool = False,
+) -> str:
     """The brief of the work item of that id in that format, text or JSON.
 
-    The format is chosen before anything is read. Raises BriefFormatError naming both formats
-    when it is neither, and the refusals of `brief_of`. Nothing is written.
+    The format is chosen before anything is read. With not_named, the files changed and not
+    committed that the brief of its started Task does not name are printed in its place, in the
+    same format. Raises BriefFormatError naming both formats when it is neither, the refusals of
+    `brief_of` and, with not_named, NotNamedError of `not_named_of`: no started Task, or a
+    record outside a git work tree. Nothing is written.
     """
     chosen = chosen_brief_format(format_)
     brief = brief_of(item, store, record, open_git)
+    if not_named:
+        return not_named_document(not_named_of(brief, record, open_git), chosen)
     return brief_json(brief) if chosen == JSON else brief_text(brief)

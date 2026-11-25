@@ -2,4 +2,4 @@
 enabled = true
 parallel = 5
 driver = "agent"
-merge = "squash"
+merge = "merge-commit"

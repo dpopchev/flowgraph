@@ -1662,8 +1662,10 @@ A work item also keeps progress lines, where the work stands: a hand-off, a
 structure note, the red line of a Task. `fgraph note ID --progress TEXT` keeps
 one on a work item in any state, or on a Task of it, kept on its work item and
 naming the Task, as one write and one commit. A progress line is no knowledge:
-`fgraph knowledge` never lists it, and it takes no `--about` and no `--governs`;
-a Feature takes none. `fgraph show` lists the lines of a Task under it, and
+`fgraph knowledge` never lists it, and it takes no `--about`, no `--governs`,
+no `--standing` and no `--open`, each refused naming the option, as
+`a progress line takes no --standing: it is no knowledge line`; a Feature takes
+none. `fgraph show` lists the lines of a Task under it, and
 those of the work item under `Progress (n)` after the knowledge lines:
 
 ```sh

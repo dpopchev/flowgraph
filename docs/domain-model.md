@@ -1460,7 +1460,9 @@ and its merge tool.
   other work item is noted on `main`. Refused, exit 2 and nothing written: a
   Feature (`F-0001 keeps no progress line: fgraph note --progress takes a work
   item or a Task of it`), `--about` or `--governs` (`a progress line takes no
-  --about and no --governs: it is no knowledge line`), a blank text (`text is
+  --about and no --governs: it is no knowledge line`), `--standing` or `--open`
+  (`a progress line takes no --standing: it is no knowledge line`: a mark is for
+  a knowledge line, and a progress line keeps none), a blank text (`text is
   empty`) and an id the record does not hold (`no Task T-0009 in the record`,
   `no Story S-0009 in the record`). `fgraph show` lists the lines of a Task under
   it as `progress`, with the day and the text, and those of the work item under

@@ -6,6 +6,9 @@ parent = "F-0032"
 realizes = 1
 complexity = "high"
 created = 2026-11-25 08:57:04+00:00
+depends_on = [
+    "Q-0004",
+]
 
 [criterion]
 given = "main, where complete_item of src/flowgraph/item/moves.py and the landing of src/flowgraph/development/land.py call the completion of the Feature and the start of its next work item themselves (src/flowgraph/feature/complete.py, src/flowgraph/feature/next.py)"

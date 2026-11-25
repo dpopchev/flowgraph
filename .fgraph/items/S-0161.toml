@@ -53,3 +53,11 @@ kind = "finding"
 text = "Open, decided when its Tasks are written: (1) whether a changed file the brief does not name refuses the whole commit or is left out of it; (2) whether the agent gives the type word of the message, as fix or docs, or fgraph derives it; (3) proposed by the agent: the commit does not complete the Task, fgraph complete keeps that move and takes the sha."
 noted = 2026-11-25 06:33:27+00:00
 mark = "open"
+
+[[knowledge]]
+kind = "decision"
+text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, on the word of the developer of that day, write the tasks as well and make it ready; the developer reviews them at the close: the three questions left open (S-0161#1) and the rest. (1) A changed file the brief does not name refuses the whole commit, nothing committed, naming each file: leaving it out would leave the work tree changed with no word, and the rule is that of the completion (S-0142). (2) The agent gives the subject whole, its type word included, as fix: name the gate; fgraph puts the ids at its end, (S-0001, T-0001), and derives no type. (3) The commit does not complete the Task: it says the sha, which fgraph complete T-0001 --commit takes, so the check of the Task still runs at its completion. (4) The command is fgraph commit ID --message TEXT, ID a Task id; it commits every file changed and not committed in the work tree of the record outside the record, the files --not-named reads, through commit_files, the step every write of the record commits by. (5) It is run where the work is: on main for a Task whose work item has a worktree it is refused as the block of a Task is, naming the worktree. (6) It is not conditioned on development.enabled, as --not-named is not, and it takes the lock of its record though it writes no file of it, being not of READS. (7) A staged rename is committed by its new path alone, as --not-named lists it; not handled further. (8) Four Tasks: the functional test, the pure module with its unit tests, the wiring, the docs."
+noted = 2026-11-25 06:46:30+00:00
+supersedes = [
+    "S-0161#1",
+]

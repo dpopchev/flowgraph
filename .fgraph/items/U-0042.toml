@@ -1,0 +1,17 @@
+id = "U-0042"
+state = "backlog"
+title = "Cut README.md from the whole reference of fgraph to an overview that links the quickstart, the guide and the specification"
+description = "Phase 4, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0037). It lands last: the Tasks of the earlier phases change passages of README.md they find by grep. Open: where the reference of each command goes, docs/domain-model.md or a page of its own, and what becomes of docs/board-review.md, which the first pass names with no change. Its first-pass Tasks are drafted the same day and reviewed before the phase starts."
+parent = "F-0037"
+realizes = 3
+complexity = "medium"
+created = 2026-11-25 09:55:55+00:00
+depends_on = [
+    "S-0181",
+    "S-0182",
+]
+
+[criterion]
+given = "main, where README.md is 159,046 bytes on 2026-11-25 and holds every command with its examples, and docs/domain-model.md is the specification"
+when = "make check runs"
+then = "it still passes, README.md holding what fgraph is, the install and the links, and no passage of it lost: each is in docs/quickstart.md, docs/agents.md or docs/domain-model.md"

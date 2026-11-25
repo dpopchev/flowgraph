@@ -1,5 +1,5 @@
 id = "S-0158"
-state = "started"
+state = "completed"
 title = "Raise the reads of fgraph an agent calls as tools from one, the status, to five: the brief, an item, the knowledge lines and the links too"
 description = "New on the plan agreed on 2026-11-24. It waits for the three reads as JSON of F-0018. Its Tasks are written before its Feature starts."
 parent = "F-0022"
@@ -7,7 +7,9 @@ realizes = 2
 complexity = "low"
 created = 2026-11-24 19:51:55+00:00
 started = 2026-11-25 09:22:01+00:00
+completed = 2026-11-25 09:49:32+00:00
 agent = "haiku-s158"
+commit = "142e43ed"
 depends_on = [
     "S-0157",
     "S-0154",

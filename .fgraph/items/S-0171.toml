@@ -1,0 +1,13 @@
+id = "S-0171"
+state = "backlog"
+title = "Raise the edges fgraph holds acyclic at every command from three to four: the supersedes of the knowledge lines too"
+description = "Phase 3, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0033). Today no guard reads these edges: a command names lines there already and rewrites none, so it closes no cycle itself. Its Tasks are written before its Feature starts."
+parent = "F-0033"
+realizes = 3
+complexity = "low"
+created = 2026-11-25 08:58:25+00:00
+
+[criterion]
+given = "a record where two knowledge lines each supersede the other, as a hand edit or a merge of two worktrees leaves them"
+when = "any command of fgraph is run"
+then = "it is refused in one line that names the file and the cycle, exit 2, as a cycle of depends on is"

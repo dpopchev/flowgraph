@@ -2,6 +2,8 @@ id = "U-0022"
 state = "backlog"
 title = "Cut the places in src/flowgraph that compute what a work item waits for from two to one"
 description = "Found during T-0335 of S-0085 on 2026-11-23, under the burn of the goal; filed at the end of the queue and not burned. Related to U-0019, the import cycles between subpackages. Its Tasks are written when it is ordered."
+parent = "F-0032"
+realizes = 4
 created = 2026-11-22 23:11:03+00:00
 filed_during = "S-0085"
 

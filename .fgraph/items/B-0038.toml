@@ -1,0 +1,11 @@
+id = "B-0038"
+state = "backlog"
+title = "Cut the refusals of fgraph that end in a line of git, when git has no identity to commit with, from every one to none"
+description = "Filed at the end of the Backlog, outside F-0022, and not burned (docs/domain-model.md, Tools over stdio, Wire). Not reproduced by the coordinator. Its Tasks are written when it is ordered."
+complexity = "low"
+created = 2026-11-25 08:51:26+00:00
+filed_during = "Q-0002"
+
+[criterion]
+observed = "seen by the subagent of Q-0002 on 2026-11-25 in a throwaway repository with no git identity in the environment and none configured: a write of fgraph exits 2 and the last line of its error output is the line of git, fatal: empty ident name ... not allowed, so a tool of fgraph mcp returns that line as its refusal"
+expected = "the write exits 2 with one line of fgraph that says git has no identity to commit with and names user.name and user.email, nothing written"

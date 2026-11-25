@@ -2,6 +2,8 @@ id = "U-0019"
 state = "backlog"
 title = "Cut the import cycles between the subpackages of src/flowgraph from several to none"
 description = "Found during T-0322 of U-0010 on 2026-11-22, under the burn of the goal; filed at the end of the queue and not burned. The imports are acyclic per module and not per subpackage: record.store imports feature, term and work_item while their command modules import the store; item.commands imports development.branch while development.commit, land and scope import item.commands; term.item imports knowledge.list, which imports term.about. So the __init__.py of feature, development, record, knowledge, relation, term and item names their lower modules alone, and the modules that run on the store are imported by their module path. Naming feature.complete in feature/__init__.py makes pyright report the cycle. Its Tasks are written when it is ordered."
+parent = "F-0032"
+realizes = 3
 created = 2026-11-22 21:33:58+00:00
 filed_during = "U-0010"
 

@@ -1,0 +1,12 @@
+id = "B-0039"
+state = "backlog"
+title = "Cut the errors of fgraph that reach the user as a traceback from eight types to none"
+description = "Phase 3, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0033). Its first Task reproduces each before any is fixed. Its Tasks are written before its Feature starts."
+parent = "F-0033"
+realizes = 2
+complexity = "medium"
+created = 2026-11-25 08:58:05+00:00
+
+[criterion]
+observed = "counted by a read-only subagent on main on 2026-11-25, none reproduced: run() of src/flowgraph/cli.py turns into one line the types of REFUSED of src/flowgraph/parser/refusals.py alone, and FeatureMismatchError, TermMismatchError, QueueMismatchError, WorkItemMismatchError, NoFeatureStoreError, NoTermStoreError, NoSettingsStoreError and KindError are raised outside it, so a command that meets one would end in a traceback"
+expected = "each of the eight is refused in one line, fgraph: error: ..., with exit 2, or is shown to be a contract no record reaches"

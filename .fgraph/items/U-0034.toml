@@ -1,0 +1,16 @@
+id = "U-0034"
+state = "backlog"
+title = "Cut the near-literal copies of the start, the complete and the remove among the work item, the Feature and the Task from five pairs to none"
+description = "Phase 3, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0030). Its Tasks are written before its Feature starts."
+parent = "F-0030"
+realizes = 3
+complexity = "medium"
+created = 2026-11-25 08:55:17+00:00
+depends_on = [
+    "U-0033",
+]
+
+[criterion]
+given = "main after the block and the unblock are stated once, where the start of a Task and of a Feature, the start of a work item against each of them, the complete of a Task and of a work item and the remove of a Task and of a Feature are near-literal copies"
+when = "make check runs"
+then = "it still passes with each rule the aggregates share stated once and the rules that differ kept apart -- a blocked Feature completes, a work item needs a Task to start and names its agent, its removal takes its Tasks and a successor -- and every command of fgraph prints what it printed"

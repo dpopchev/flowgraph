@@ -1,0 +1,13 @@
+id = "U-0036"
+state = "backlog"
+title = "Cut the answers of a Spike that hold None in src/flowgraph/criterion/model.py from two to none"
+description = "Phase 3, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0031). Its Tasks are written before its Feature starts."
+parent = "F-0031"
+realizes = 2
+complexity = "low"
+created = 2026-11-25 08:55:55+00:00
+
+[criterion]
+given = "main, where the answer of Decision and that of Answer of src/flowgraph/criterion/model.py are each a Reply or None"
+when = "make check runs"
+then = "it still passes with each a type that says whether the Spike was answered, every file of a record read and written with the bytes it had, and every command of fgraph prints what it printed"

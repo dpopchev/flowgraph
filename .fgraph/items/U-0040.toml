@@ -1,0 +1,13 @@
+id = "U-0040"
+state = "backlog"
+title = "Raise the pairs of a state and a move a test states from some to every one, for the work item, the Feature and the Task"
+description = "Phase 3, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0033). A cell that shows a move fgraph makes wrongly is filed as a Bug, not fixed here. Its Tasks are written before its Feature starts."
+parent = "F-0033"
+realizes = 1
+complexity = "medium"
+created = 2026-11-25 08:57:44+00:00
+
+[criterion]
+given = "main, where no test states a whole table of states against moves: the block and the unblock of a Feature are stated over three states, the other moves a refusal at a time"
+when = "make check runs"
+then = "it passes with one table for each aggregate -- the five states of a work item against its seven moves, those of a Feature against its five and those of a Task against its five -- each cell stating the next state or the one line of its refusal, with no source change"

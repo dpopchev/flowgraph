@@ -1,0 +1,13 @@
+id = "S-0172"
+state = "backlog"
+title = "Raise the started work items fgraph tells that a line governing one of their files was superseded since their start from none to every one"
+description = "Phase 3, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0033). Today a superseded line is left out of Governed by and nothing says it changed. Open: whether fgraph brief, fgraph status or fgraph complete says it; the When is written on the first. Its Tasks are written before its Feature starts."
+parent = "F-0033"
+realizes = 4
+complexity = "medium"
+created = 2026-11-25 08:58:42+00:00
+
+[criterion]
+given = "a started work item whose Task names a file a knowledge line governs, and a later line noted after its start that supersedes that line"
+when = "its agent reads its brief"
+then = "the agent is told in one line, which names the old line and the new one, that the line was superseded since the start"

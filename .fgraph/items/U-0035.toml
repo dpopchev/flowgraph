@@ -1,0 +1,13 @@
+id = "U-0035"
+state = "backlog"
+title = "Cut the fields of the states of a work item that hold None for a phase from five to none"
+description = "Phase 3, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0031). Its Tasks are written before its Feature starts."
+parent = "F-0031"
+realizes = 1
+complexity = "medium"
+created = 2026-11-25 08:55:39+00:00
+
+[criterion]
+given = "main, where agent of the started, the blocked and the completed work item, verified of the completed one and superseded_by of the removed one are each a value or None (src/flowgraph/work_item/model.py)"
+when = "make check runs"
+then = "it still passes with each of the five a type that says which it is, as Evidence is a Commit or NoCommit, every file of a record read and written with the bytes it had, and every command of fgraph prints what it printed"

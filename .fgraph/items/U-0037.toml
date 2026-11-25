@@ -1,0 +1,16 @@
+id = "U-0037"
+state = "backlog"
+title = "Cut the states of a work item its types build and its moves refuse from four to none"
+description = "Phase 3, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0031). Its Tasks are written before its Feature starts."
+parent = "F-0031"
+realizes = 3
+complexity = "medium"
+created = 2026-11-25 08:56:09+00:00
+depends_on = [
+    "U-0035",
+]
+
+[criterion]
+given = "main after the fields of a phase hold no None, where the types build a started work item with no Task, a work item with two started Tasks, a verified Spike and a decision kept before the completion, each refused by a move or at the read of its file"
+when = "make check runs"
+then = "it still passes with each of the four refused where the state is built, a test stating each, and every command of fgraph prints what it printed"

@@ -1,0 +1,16 @@
+id = "U-0039"
+state = "backlog"
+title = "Cut the reactions decided inside the start of a Feature, the removal of a Feature and a closing answered no from three to none"
+description = "Phase 3, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0032). Its Tasks are written before its Feature starts."
+parent = "F-0032"
+realizes = 2
+complexity = "medium"
+created = 2026-11-25 08:57:25+00:00
+depends_on = [
+    "U-0038",
+]
+
+[criterion]
+given = "main after the reactions of a completion and of a landing run at one boundary, where the start of a Feature starts its first work item (src/flowgraph/feature/start.py), the removal of a Feature removes its work items in Backlog (src/flowgraph/feature/remove.py) and fgraph verify --no files a Bug (src/flowgraph/work_item/verify.py), each decided and saved inside its command"
+when = "make check runs"
+then = "it still passes with each of the three returned by its move and run at that boundary, and fgraph start, fgraph remove and fgraph verify print and commit what they did"

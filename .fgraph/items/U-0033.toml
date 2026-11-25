@@ -1,0 +1,16 @@
+id = "U-0033"
+state = "backlog"
+title = "Cut the near-literal copies of the block and the unblock among the work item, the Feature and the Task from six pairs to none"
+description = "Phase 3, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0030). Open, for the writing of its Tasks: whether one typed function states a move for three unions with pyright clean and in fewer lines than the three copies; a prototype answers it before the Tasks are written. Its Tasks are written before its Feature starts."
+parent = "F-0030"
+realizes = 2
+complexity = "medium"
+created = 2026-11-25 08:54:58+00:00
+depends_on = [
+    "U-0032",
+]
+
+[criterion]
+given = "main, where blocked and unblocked of src/flowgraph/task/moves.py, blocked_feature and unblocked_feature of src/flowgraph/feature/moves.py and blocked_work_item and unblocked_work_item of src/flowgraph/work_item/block.py state one rule three times, apart in the fields each copies"
+when = "make check runs"
+then = "it still passes with the rule of each of the two moves stated once, each aggregate keeping its own five states and no state class deriving from another, and every command of fgraph prints what it printed"

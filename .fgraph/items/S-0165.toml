@@ -49,3 +49,8 @@ created = 2026-11-25 06:49:07+00:00
 kind = "decision"
 text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, on the word of the developer of that day, write the tasks as well and make it ready; the developer reviews them at the close: (1) No tool of its own: the tool start of S-0159 takes its id as optional, and a call with no id runs fgraph start --agent NAME, the claim S-0113 and S-0121 built, atomic by B-0036. (2) No next tool: fgraph status --format json holds next_to_start and can_start, which the status tool of S-0157 returns. (3) A refusal of the start -- nothing can start, no complexity under development.driver = agent, the limit of development.parallel -- is relayed as its one line; the functional test compares it with the line of the command itself. (4) Its Tasks name modules S-0159 has not written yet: they are read again before F-0025 starts."
 noted = 2026-11-25 06:49:15+00:00
+
+[[progress]]
+text = "red: 5 failed, 2 passed (the tool start refused with no id, id Field required; the claim not on main; the second start handed opus-b2; the schema requires directory and id)"
+noted = 2026-11-25 10:17:49+00:00
+task = "T-0733"

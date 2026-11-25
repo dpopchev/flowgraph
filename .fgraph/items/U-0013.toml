@@ -39,12 +39,13 @@ commit = "c459a7e238e7014a4cd6beb253adb3949cc125c4"
 
 [[tasks]]
 id = "T-0719"
-state = "backlog"
+state = "started"
 title = "Reword tests/functional/test_about_item_refused.py to state the own line of fgraph about for a text that is no id"
 description = "One file, tests/functional/test_about_item_refused.py (about 45 lines), no source change. Seen on 2026-11-25 in the worktree of U-0013 at cba6bc07: uv run pytest of the file gives 3 failed, 4 passed -- test_about_refuses_what_show_refuses_in_the_same_words for X-0001, T-0001 and S-0000: fgraph about says fgraph: error: 'X-0001' is no Story, Upkeep, Bug, Spike or Feature id, and fgraph show, since T-0665, the same line with nor the name of a term at its end. Decided by the developer on 2026-11-25: fgraph about keeps its words and the test states them. The change: (1) the parametrize of test_about_refuses_what_show_refuses_in_the_same_words keeps F-0000, S-0009 and F-0009 alone, its body as it is; (2) a new test test_about_of_a_text_that_is_no_id_is_refused_in_its_own_words, parametrized over X-0001, T-0001 and S-0000, one assert: refusal('about', text, tmp_path) == (2, [f\"fgraph: error: {text!r} is no Story, Upkeep, Bug, Spike or Feature id\"]); (3) the first line of the module docstring says fgraph about given a wrong id is refused, a text that is no id in its own words and an id the record does not hold as fgraph show refuses it, and writes nothing. The helper refusal and the last test stay. The Task changes a test alone: its red is the three failures above, seen before the edit. Then run make check as one background run and see it pass; if another test fails, stop and say which. Out of bounds: every file under src/, every other test file, README.md, docs/."
 check = "uv run pytest tests/functional/test_about_item_refused.py -q -p no:cacheprovider && grep -q 'Spike or Feature id' tests/functional/test_about_item_refused.py"
 expected_output = "changed: tests/functional/test_about_item_refused.py states that fgraph about X-0001, T-0001 and S-0000 exits 2 with the last error line fgraph: error: '<text>' is no Story, Upkeep, Bug, Spike or Feature id, its own words, and that fgraph about F-0000, S-0009 and F-0009 is refused in the words of fgraph show; its docstring no longer says every wrong id is refused as fgraph show refuses it"
 created = 2026-11-25 05:04:41+00:00
+started = 2026-11-25 05:06:54+00:00
 
 [[knowledge]]
 kind = "decision"

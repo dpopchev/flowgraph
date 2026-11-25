@@ -27,12 +27,13 @@ commit = "c0217e75"
 
 [[tasks]]
 id = "T-0670"
-state = "backlog"
+state = "started"
 title = "Update docs/domain-model.md to say fgraph relate on the branch of a work item is refused as not related here"
 description = "Change docs/domain-model.md only (3343 lines on 2026-11-24); find the passage by grep -n 'fgraph relate` is a write of a term' docs/domain-model.md, never by line number; plain ASCII; no source or test change. The bullet reads: fgraph relate is a write of a term, so it is on main alone as fgraph add term is, and refused on the branch of a work item the same way. Add after the same way: with its own word, `gate is not related here: the branch wi/S-0001-a-slug writes S-0001 alone`, the refusal of add term being `... is not added here: ...`; a term the record holds is refused as related, a new one as added (within of src/flowgraph/development/scope.py). Keep the edit inside that bullet. README.md states no such refusal (grep -n 'not added here' README.md finds nothing) and stays. Out of bounds: README.md, every file of src/ and tests/."
 check = "grep -q 'is not related here' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, in the bullet that says fgraph relate is a write of a term, gives the refusal gate is not related here: the branch wi/S-0001-a-slug writes S-0001 alone beside the add term one"
 created = 2026-11-24 22:08:52+00:00
+started = 2026-11-25 02:37:38+00:00
 
 [[knowledge]]
 kind = "decision"

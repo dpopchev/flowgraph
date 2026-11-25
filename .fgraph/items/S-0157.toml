@@ -101,3 +101,8 @@ task = "T-0701"
 text = "red: the check fails before the move (grep -q ^def read_record exits 1; tests of S-0141 57 passed, a step keeps them green)"
 noted = 2026-11-25 08:53:21+00:00
 task = "T-0702"
+
+[[progress]]
+text = "red: 17 failed, 2 passed (NotImplementedError of the four stubs; the 2 passed are the data of STATUS)"
+noted = 2026-11-25 08:56:37+00:00
+task = "T-0703"

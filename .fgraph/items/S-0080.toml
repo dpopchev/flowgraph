@@ -1,11 +1,13 @@
 id = "S-0080"
-state = "backlog"
+state = "started"
 title = "Raise the files fgraph about answers for from those on disk to every file a commit of the record touched, a deleted one too"
 description = "Found during T-0308 of S-0075 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. A text is read as a path only when it is a file from the directory fgraph runs in, so that a mistyped id or term is refused naming the three; a deleted file is refused the same way. Open: whether to answer a deleted file, and how a mistyped id is then told from a path. Its Tasks are written when it is ordered."
 parent = "F-0021"
 realizes = 2
 complexity = "medium"
 created = 2026-11-22 17:54:58+00:00
+started = 2026-11-25 07:28:06+00:00
+agent = "sonnet-s80"
 
 [criterion]
 given = "a record in a git repository with a completed Story whose commit changed a file that a later commit deleted"

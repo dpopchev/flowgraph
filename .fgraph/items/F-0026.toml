@@ -1,0 +1,19 @@
+id = "F-0026"
+state = "backlog"
+title = "Collision-Free ID Allocation Across Worktrees"
+description = "Phase 2, Concurrent Worktree and Merge Ergonomics: filed as drafted on the word of the developer of 2026-11-25, add the items as drafted and they will be reworked, from the WBS draft of that day, which numbers it F-0023, an id the record gave another Feature. Target modules: item/id.py, work_item/id.py, task/id.py, record/store.py. Scope and deliverables: Prevent duplicate sequential IDs (S-*, B-*, U-*, Q-*, K-*, T-*) when multiple worktrees create items concurrently by scanning all active worktree refs or reserving ID ranges per worktree. Its work items and their Tasks are written when it is reworked."
+created = 2026-11-25 07:46:25+00:00
+criteria = [
+    "Parallel item and knowledge creation across two active worktrees never produces colliding .fgraph/ filenames",
+]
+
+[[knowledge]]
+kind = "finding"
+text = "Seen by the coordinator on 2026-11-25 while reviewing the draft, for its rework: the next Task id is already one above the highest in the record of every worktree (docs/domain-model.md, Persistence), and two Tasks added that day in two worktrees, one after the other, got T-0718 and T-0719; a work item is added on main under its lock (B-0035); the record holds no K-* item. Not seen either way: two adds made at the same moment in two worktrees, each under the lock of its own copy -- the question of Q-0003."
+noted = 2026-11-25 07:47:19+00:00
+mark = "open"
+
+[[knowledge]]
+kind = "decision"
+text = "The developer decided on 2026-11-25: Phase 2, Concurrent Worktree and Merge Ergonomics, takes priority over the remaining work once Phase 1 is completed (F-0021, F-0022, F-0025). Its order in the Backlog: U-0018 first, then the Spike Q-0003, then the four Features filed as drafted, to be reworked -- F-0026, F-0027, F-0028 and F-0029 -- and the rest of the Backlog below them, unchanged. The drafted Features hold no work item yet; no item of the Backlog is moved under them or removed."
+noted = 2026-11-25 07:51:37+00:00

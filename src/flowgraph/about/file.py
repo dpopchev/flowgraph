@@ -33,6 +33,17 @@ def is_governed(text: str, directory: Path, store: Store, open_git: OpenGit) -> 
     return bool(governing(text, directory, store, open_git))
 
 
+def is_touched(text: str, directory: Path, open_git: OpenGit) -> bool:
+    """True when a commit of the history of HEAD changed the file the text names (S-0080).
+
+    The path is taken from the directory fgraph runs in, a file a later commit deleted too. False
+    outside a git work tree and for a path that leads out of it, git not asked then.
+    """
+    work_tree = open_git(directory)
+    file = placed(text, directory, work_tree)
+    return work_tree is not None and file is not None and work_tree.touched_path(file)
+
+
 def file_links(text: str, directory: Path, store: Store, open_git: OpenGit) -> FileLinks:
     """The lines that govern the file, then the completed items whose commit changed it.
 

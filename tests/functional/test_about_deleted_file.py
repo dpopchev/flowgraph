@@ -16,9 +16,6 @@ from flowgraph.cli import open_files, open_git, read_config, run
 
 pytestmark = pytest.mark.functional
 
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="S-0080: a file a later commit deleted is refused as no file"
-)
 
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
@@ -131,11 +128,9 @@ class TestAFileALaterCommitDeleted:
     def about(self, deleted: Path) -> Outcome:
         return fgraph(["about", "work.txt"], deleted)
 
-    @XFAIL
     def test_about_exits_with_zero(self, about: Outcome) -> None:
         assert about.status == 0
 
-    @XFAIL
     def test_about_lists_the_story_with_its_commit_then_the_task_under_it(
         self, about: Outcome, deleted: Path
     ) -> None:
@@ -143,14 +138,12 @@ class TestAFileALaterCommitDeleted:
         story = git(deleted, "log", "--format=%H", "--grep", "land the Story")
         assert about.out == f"S-0001  {story}  {TITLE}\n  T-0001  {task}  {TASK_TITLE}\n"
 
-    @XFAIL
     def test_the_json_lists_the_story_under_touched_by(self, deleted: Path) -> None:
         shown = fgraph(["about", "work.txt", "--format", "json"], deleted).out
         assert [each["id"] for each in json.loads(shown)["touched_by"]] == ["S-0001"]
 
 
 class TestADeletedFileNoCommitOfTheRecordTouched:
-    @XFAIL
     @pytest.mark.parametrize("name", ["other.txt", "notes"], ids=["no-id", "term-name"])
     def test_a_deleted_file_no_commit_of_the_record_touched_is_said_so(
         self, deleted: Path, name: str

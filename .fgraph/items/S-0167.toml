@@ -24,6 +24,15 @@ check = "uv run pytest tests/functional/test_record_merges.py -q -p no:cacheprov
 expected_output = "created: tests/functional/test_record_merges.py states, for each pair of writes the part Merges of the record of docs/domain-model.md lists as a conflict, that fgraph sync in the worktree exits 0 with no conflict named and that fgraph land on main then exits 0; and, as guards, two pairs that part lists as merging cleanly. Each red test carries a strict xfail naming S-0167"
 created = 2026-11-25 08:17:27+00:00
 
+[[tasks]]
+id = "T-0746"
+state = "backlog"
+title = "Add src/flowgraph/record/merge.py: the merge of two copies of one file of the record, by its kind"
+description = "FIRST PASS, written on 2026-11-25 before U-0018 and Q-0003 were completed and before the rework of its Feature: the coordinator reviews this Task once both are completed, before the work item starts (S-0167, its decision of 2026-11-25). If no later line of S-0167 says its Tasks were reviewed, stop and say so. Open at the review, from the pairs Q-0003 names: which files conflict at all, so which of the two rules below is needed, and what later means for two states neither of which follows the other. First pass: a pure module, no I/O, reading and writing TOML through the readers and the writers the record has (src/flowgraph/record/queue_file.py for queue.toml, src/flowgraph/work_item/file.py for an item), never by lines of text. Red first: merged_file as a typed stub raising NotImplementedError, the tests failing for their own reason, then the body. tests/record/test_merge.py, view as its pytestmark, one assert each: a queue both sides appended to holds both entries, ours first; an entry theirs reordered keeps the place theirs gave it when ours left it alone; an item a worktree completed a Task of and main noted a line on holds both; two copies that give one key two values answer None. Out of bounds: src/flowgraph/development/, every other file of src/ and of tests/, the docs."
+check = "uv run pytest tests/record -q -p no:cacheprovider && grep -q '^def merged_file' src/flowgraph/record/merge.py && make lines && uv run pyright"
+expected_output = "created: merged_file(name, base, ours, theirs) of src/flowgraph/record/merge.py returns the text of one file of the record merged from its two copies and the copy both came from -- queue.toml as the order of ours with each entry theirs added, put where theirs has it; the file of an item as the copy whose state is the later by the table of the moves, with the knowledge lines and the progress lines of both, each once, in the order noted -- and None when both copies changed one part to two values no rule orders; created: tests/record/test_merge.py states it. Nothing calls it yet"
+created = 2026-11-25 08:17:45+00:00
+
 [[knowledge]]
 kind = "finding"
 text = "Open, decided when Q-0003 is answered: whether this Story stands for the pairs Q-0003 names, becomes Bugs, or is removed with F-0027; a merge driver is built only for a conflict that was reproduced."

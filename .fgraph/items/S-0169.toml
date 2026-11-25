@@ -8,7 +8,7 @@ complexity = "low"
 created = 2026-11-25 08:08:01+00:00
 
 [criterion]
-given = "the development on, development.gate not set, and a started work item, its Tasks completed, whose branch does not hold the head of main"
+given = "the development on, development.gate not set, and a started work item, its Tasks completed, whose branch lacks a commit of main that changed a file outside the record"
 when = "fgraph land of the work item is run"
 then = "it exits 2 in one line naming fgraph sync, run in its worktree, and nothing is merged"
 

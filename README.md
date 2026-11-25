@@ -409,6 +409,8 @@ status, brief, show, knowledge and about, each given the JSON its command prints
 with `--format json`. Beside them, the moves of fgraph mcp
 are start, hand, block, unblock, note and complete, each called in the directory its
 command is run in, main for the start of a work item, its worktree for its Tasks.
+A coordinator lands a work item and answers its closing with the tools land and verify, run
+on main, and no tool of fgraph mcp takes the approval of a landing.
 
 ```sh
 claude mcp add fgraph -- fgraph mcp
@@ -2108,7 +2110,8 @@ fgraph land S-0001
 
 A record whose `config.toml` names `[development] approver = "developer"` holds
 every landing for the developer: the landing waits, nothing is merged, and the
-command says why. The developer approves it by the same command with
+command says why. The tool land of fgraph mcp is refused the same, with the same
+line, since no tool takes `--approved`. The developer approves it by the same command with
 `--approved`, which is the word of the developer and is kept in no record:
 
 ```sh

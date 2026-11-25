@@ -1,0 +1,10 @@
+id = "Q-0004"
+state = "backlog"
+title = "Settle whether a move of fgraph can return what happened, the reactions of the other aggregates run at one boundary, with every command printing what it printed"
+description = "Phase 3, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0032), its first work item. Its decision names: what a move returns -- events beside the next state, or Written of src/flowgraph/item/commands.py grown; where the boundary sits (src/flowgraph/parser/command.py, src/flowgraph/development/land.py); and what the exit gate of the first pass, zero imperative write imports to sibling aggregates, is held to. Its Tasks are written before its Feature starts."
+parent = "F-0032"
+complexity = "medium"
+created = 2026-11-25 08:56:43+00:00
+
+[criterion]
+hypothesis = "Can the five reactions fgraph decides inside a command of another aggregate -- the Feature completed by its last work item, the next work item started, the first work item started with its Feature, the Bug filed by a closing answered no, the work items removed with their Feature -- each be returned by its move as a value and run at one boundary, every command printing and committing what it does today?"

@@ -6,6 +6,7 @@ parent = "F-0023"
 complexity = "low"
 created = 2026-11-22 16:42:22+00:00
 started = 2026-11-25 02:23:56+00:00
+agent = "haiku-u13"
 
 [criterion]
 given = "a record with the terms of S-0070"

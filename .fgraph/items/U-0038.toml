@@ -1,0 +1,13 @@
+id = "U-0038"
+state = "backlog"
+title = "Cut the reactions decided inside the completion and the landing of a work item from two to none: the Feature it completes and the next work item it starts"
+description = "Phase 3, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0032). It waits for the Spike of F-0032. Its Tasks are written before its Feature starts."
+parent = "F-0032"
+realizes = 1
+complexity = "high"
+created = 2026-11-25 08:57:04+00:00
+
+[criterion]
+given = "main, where complete_item of src/flowgraph/item/moves.py and the landing of src/flowgraph/development/land.py call the completion of the Feature and the start of its next work item themselves (src/flowgraph/feature/complete.py, src/flowgraph/feature/next.py)"
+when = "make check runs"
+then = "it still passes with the move returning what happened and the two reactions run at the boundary the decision of the Spike names, and fgraph complete and fgraph land print and commit what they did"

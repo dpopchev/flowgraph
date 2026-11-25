@@ -1,9 +1,11 @@
 id = "F-0021"
-state = "started"
+state = "completed"
 title = "Raise the two answers on a file fgraph gives from the record, the files a knowledge line governs in fgraph knowledge and the work items that touched a deleted file in fgraph about, from none to both"
 description = "Phase 1, Agent Execution Interface, Scope Gates and Governed Briefs: one of the five Features put on top of the Backlog on the plan the developer agreed on 2026-11-24 with the word file. From the draft of the developer, File-Governed Knowledge and Historical about Context, reviewed that day against the code. Taken in: S-0081 and S-0080, the second with its open question, how a mistyped id is told from a deleted path, decided when its Tasks are written. Left out: the wiring of the brief, built by S-0116 -- fgraph brief lists Governed by, the lines that govern a path a Task names, and Terms, those of the work item and of its Feature (governing of src/flowgraph/brief/model.py); and U-0011, put under F-0018."
 created = 2026-11-24 19:50:47+00:00
 started = 2026-11-25 07:27:52+00:00
+completed = 2026-11-25 08:21:20+00:00
+commit = "572edff7"
 criteria = [
     "a developer reads in fgraph knowledge the files each line governs",
     "a developer asks fgraph about a file a later commit deleted and reads the work items that touched it",

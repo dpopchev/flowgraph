@@ -9,6 +9,7 @@ from flowgraph.criterion import EmptyPartError, make_scenario
 from flowgraph.knowledge import FINDING, make_knowledge_line
 from flowgraph.task import make_task, make_task_id
 from flowgraph.work_item import (
+    WorkItemFileError,
     WorkItemState,
     append_task,
     make_kind,
@@ -35,6 +36,17 @@ BARE = make_work_item(ID, "a title", make_scenario("a", "b", "c"), "", CREATED)
 TASKED = append_task(BARE, make_task(make_task_id(1), "a task title", "an output", "", CREATED))
 STARTED = started_work_item(TASKED, ON)
 REMOVED = removed_work_item(BARE, "a reason", ON)
+FILE = Path("items") / "CH-0001.toml"
+
+
+def written(tmp_path: Path, kind: str) -> None:
+    """Write the work item with one finding line, then make that line's kind the given one."""
+    write_work_item(tmp_path, noted_work_item(BARE, FIRST))
+    path = tmp_path / FILE
+    path.write_text(
+        path.read_text(encoding="utf-8").replace('kind = "finding"', f'kind = "{kind}"'),
+        encoding="utf-8",
+    )
 
 
 @pytest.mark.parametrize("item", [BARE, STARTED, REMOVED], ids=["backlog", "started", "removed"])
@@ -56,6 +68,20 @@ def test_the_detail_read_from_the_file_lists_the_lines_by_kind_time_and_text(
     assert [(row.kind, row.noted, row.text) for row in detail.knowledge] == [
         ("finding", ON, "the first")
     ]
+
+
+def test_a_line_of_a_kind_the_file_does_not_know_is_refused_naming_the_file_and_kind_of_the_item(
+    tmp_path: Path,
+) -> None:
+    written(tmp_path, "hunch")
+    with pytest.raises(WorkItemFileError, match=r"CH-0001\.toml holds no Chore"):
+        read_work_item(tmp_path, ID)
+
+
+@pytest.mark.parametrize("kind", ["decision", "deviation"])
+def test_a_line_of_a_kind_the_file_knows_is_read_back(tmp_path: Path, kind: str) -> None:
+    written(tmp_path, kind)
+    assert read_work_item(tmp_path, ID).knowledge[0].text == "the first"
 
 
 def test_a_blank_text_is_refused_and_nothing_is_saved() -> None:

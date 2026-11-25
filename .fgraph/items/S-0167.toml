@@ -1,0 +1,16 @@
+id = "S-0167"
+state = "backlog"
+title = "Cut the pairs of writes of the record, one on main and one in the worktree of a started work item, that conflict at fgraph sync or fgraph land from those Q-0003 names to none"
+description = "Phase 2, Concurrent Worktree and Merge Ergonomics: filed on the word of the developer of 2026-11-25, work items for each feature, under a Feature filed as drafted and still to be reworked; its criterion follows the exit gate of the draft. The draft asks for a custom git merge driver and a reconciler by domain precedence; the Story states the outcome, how is the Task's. It waits for Q-0003: the pairs it names are its cases, and if none conflicts it is removed. Its Tasks are written once Q-0003 is answered."
+parent = "F-0027"
+realizes = 1
+complexity = "high"
+created = 2026-11-25 08:06:45+00:00
+depends_on = [
+    "Q-0003",
+]
+
+[criterion]
+given = "a started work item in its worktree and a main that took a write of the record since its branch was cut"
+when = "fgraph sync is run in the worktree, then fgraph land on main"
+then = "both merge with no conflict in a file of the record"

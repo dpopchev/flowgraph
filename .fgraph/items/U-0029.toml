@@ -12,3 +12,11 @@ depends_on = [
 given = "main after S-0142, where governing of src/flowgraph/brief/model.py and files_not_named of src/flowgraph/development/named_files.py each say by a rule of its own whether a text names a path"
 when = "fgraph brief of a work item and fgraph complete of a Task are run on Tasks that name a path bare, with a line number and under a directory written with a trailing slash"
 then = "a text that names a path for the one names it for the other, both answers come from one function, and make check passes"
+
+[[knowledge]]
+kind = "finding"
+text = "Found by the agent of S-0142 on 2026-11-25 and not fixed, outside its Tasks: README.md and docs/domain-model.md say that the gate of fgraph complete reads src/a.py:12 and src/a.py::test_x as naming src/a.py, and do not say that fgraph brief reads them so too when it lists its governing lines (governing of src/flowgraph/brief/model.py). To say when the two rules are made one."
+noted = 2026-11-25 00:05:37+00:00
+governs = [
+    "src/flowgraph/brief/model.py",
+]

@@ -38,3 +38,8 @@ description = "FIRST PASS, written on 2026-11-25 before Phases 2 and 3 were comp
 check = "grep -qF '[docs/quickstart.md](docs/quickstart.md)' README.md && grep -q '^Read next:' README.md"
 expected_output = "changed: README.md, right after its opening paragraph and before ## Status, holds Read next: and one item, [docs/quickstart.md](docs/quickstart.md), saying it takes an empty directory to a work item completed and verified in 17 commands"
 created = 2026-11-25 10:51:59+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25, on the draft of Phase 4 that offered its first-pass Tasks: great, file them. The Tasks of S-0181 (its 3 Tasks: T-0831, T-0833, T-0834) are that first pass, drafted that day by a read-only subagent against the code of main at 0ecab493, before Phases 2 and 3 were completed, and filed by the coordinator, who checked their shape -- the opening sentence, the check, the ids they name -- and read their titles, outputs, checks and open points, not every description. They are reviewed before Phase 4 starts, the review noted here as a decision naming each Task kept, amended or removed; until that line is here, S-0181 is not started."
+noted = 2026-11-25 10:52:46+00:00

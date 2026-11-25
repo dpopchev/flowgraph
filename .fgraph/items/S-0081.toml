@@ -46,3 +46,8 @@ created = 2026-11-24 22:11:17+00:00
 kind = "decision"
 text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, under the /goal of Phase 1 the developer set on 2026-11-24, which has the coordinator write the Tasks before a Feature starts; the developer was not asked and reviews them at the close: (1) The files go last on the line, after the mark and the terms, as '  (governs a, b)' through governs_text, the helper and the order fgraph show uses; superseded by is still not printed by fgraph knowledge, since the criterion names the files alone. (2) The change is in knowledge_text alone, so every filter (--kind, --about, --search, --live) lists the files and the line that says there are none is unchanged; --search still reads the text of a line alone, not its files. (3) The JSON of fgraph knowledge is kept as S-0155 defines it (governs already there); a guard test pins it. (4) Three Tasks, not four: the code and its wiring are one line of one module, so the unit tests and the removal of the xfail marks go in one Task."
 noted = 2026-11-24 22:12:18+00:00
+
+[[progress]]
+text = "red: 5 failed, 3 passed, 1 warning in 2.86s"
+noted = 2026-11-25 07:29:48+00:00
+task = "T-0674"

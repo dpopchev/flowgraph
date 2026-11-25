@@ -16,13 +16,15 @@ then = "Governed by lists the live line alone, as text and as JSON"
 
 [[tasks]]
 id = "T-0720"
-state = "started"
+state = "completed"
 title = "Add tests/functional/test_brief_live.py, failing on the criterion of S-0162"
 description = "One new file, no source change: tests/functional/test_brief_live.py (about 90 lines), functional as its pytestmark, one assert per test, run through run() of src/flowgraph/cli.py with open_store=open_files, open_git=lambda _: None and no git, so the development is off and a --governs path is kept as given. Copy NOW, Outcome, fgraph(argv, cwd) and runs(cwd, *argvs) of tests/functional/test_note_progress.py. Seen on 2026-11-25 in a throwaway record with fgraph of main (2cfd9d9f): with old rule superseded by new rule, both governing src/a.py, a file the Task names, fgraph brief S-0001 prints under Governed by both lines, the new then the old, unmarked, and governed_by of --format json holds both. STORY = [add, story, a title, --given, a, --when, b, --then, c]; TASK = [add, task, a task title, --parent, S-0001, --output, changed: src/gate.py holds the gate]; OLD = the gate holds a state; NEW = the gate holds no state; FIRST = [note, S-0001, --decision, OLD, --governs, src/gate.py]; SUPERSEDING = [note, S-0001, --decision, NEW, --governs, src/gate.py, --supersedes, S-0001#1]; BESIDE = the note of NEW with no --supersedes. XFAIL = pytest.mark.xfail(strict=True, reason='S-0162: Governed by lists a line a later one supersedes'). Red tests under XFAIL, after runs(tmp_path, STORY, TASK, FIRST, SUPERSEDING): test_the_brief_lists_the_live_line_alone_under_governed_by: the text that follows the line Governed by in the out of [brief, S-0001] (str.partition on that line with its newline, the third part) == two blanks, decision, two blanks, 2026-01-01, two blanks, S-0001, two blanks, NEW and a newline -- the Story is about no term, so no Terms follows; test_the_brief_as_json_holds_the_live_line_alone: the text of each line of governed_by of json.loads of the out of [brief, S-0001, --format, json] == [NEW]. Guards, no mark, passing today and after: after runs(tmp_path, STORY, TASK, FIRST, BESIDE), sorted of the texts of governed_by == sorted([OLD, NEW]); after the superseding record, superseded by S-0001#2 is in the out of [show, S-0001]. See each marked test fail under --runxfail on its value, not on the arrangement. Existing tests: none changes; if one fails, stop and say which. Out of bounds: every file under src/, every other test file, the docs."
 check = "uv run pytest tests/functional/test_brief_live.py -q -p no:cacheprovider && grep -q xfail tests/functional/test_brief_live.py"
 expected_output = "created: tests/functional/test_brief_live.py states that fgraph brief S-0001, of a Story whose Task names src/gate.py, a file two decisions govern, the second superseding the first, lists under Governed by the second alone, as text and as JSON; and, as guards, that with no supersede it lists both and that fgraph show S-0001 still lists the superseded line with superseded by S-0001#2. Each red test carries a strict xfail naming S-0162"
 created = 2026-11-25 06:45:11+00:00
 started = 2026-11-25 06:52:57+00:00
+completed = 2026-11-25 06:54:10+00:00
+commit = "6c15dbfbd94fc65fdb3fb07e5745e477ce569faf"
 
 [[tasks]]
 id = "T-0721"

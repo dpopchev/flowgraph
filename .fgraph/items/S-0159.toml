@@ -68,3 +68,8 @@ noted = 2026-11-24 23:51:11+00:00
 text = "red: 12 failed, 4 passed under --runxfail (each marked test on its property: start is the error Unknown tool: start, no move listed, no worktree; the 4 passing are the two guards, the lines of stdout and the exit 0, which hold today)"
 noted = 2026-11-25 09:27:51+00:00
 task = "T-0711"
+
+[[progress]]
+text = "red: 12 failed, 4 passed (each argv raised NotImplementedError of its stub; the names, the two refusals and no approval pass on the models)"
+noted = 2026-11-25 09:30:10+00:00
+task = "T-0712"

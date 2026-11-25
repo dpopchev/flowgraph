@@ -46,3 +46,9 @@ created = 2026-11-25 10:33:59+00:00
 kind = "decision"
 text = "The developer said on 2026-11-25: put Tasks on the work items of Phase 3; those will be reviewed before the phase starts. The Tasks of U-0034 (its 3 Tasks: T-0798, T-0800, T-0802) are that first pass, drafted that day by a read-only subagent against the code of main at 2dc58f08 and filed by the coordinator, who checked their shape -- the opening sentence, the check, that the files they name are on the disk or said to be new -- and read their titles, outputs, checks and open points, not every description. They are reviewed before Phase 3 starts, the review noted here as a decision naming each Task kept, amended or removed; until that line is here, U-0034 is not started."
 noted = 2026-11-25 10:36:15+00:00
+
+[[knowledge]]
+kind = "finding"
+text = "Open at the review of its first-pass Tasks, from their draft of 2026-11-25: (1) Lines, from the prototype: the three Tasks cut about 38 lines of refusal cases from the six moves and add about 10 to the table: about 30 shorter. With U-0033 about 45 longer, the two together are about even; the gain is the rule written once, not fewer lines. (2) Kept apart as the Then says: the blocked Feature completes (its own case, before the table), NoTaskError and the holder of the work item's start, all_completed and settled inside its complete, the Tasks and successor of its removal. Also left as they are, though they refuse as a start does for blocked, completed and removed: handed_over (work_item/handed.py) and still_open (work_item/moves.py, refuses as a remove does). Calling work_item_refusal there would cut 4 more lines but makes a hand and a Task write read as a start or a remove; not drafted. Want it? (3) No docs Task, as for U-0033: docs/domain-model.md Direction and the README describe the moves and their states, which do not change, and say nothing of how a refusal is written."
+noted = 2026-11-25 10:37:23+00:00
+mark = "open"

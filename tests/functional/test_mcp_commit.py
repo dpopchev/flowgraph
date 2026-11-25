@@ -41,7 +41,6 @@ REFUSAL = (
     "fgraph: error: T-0001 cannot commit: its brief does not name other.txt -- "
     "nothing is committed; take each back or have the brief name it"
 )
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0164: fgraph mcp serves no commit")
 
 
 @dataclass(frozen=True)
@@ -225,46 +224,38 @@ def commits(project: Project) -> dict[str, Any]:
     return {**step, "before": before, "lines": session.lines, "requests": session.requests}
 
 
-@XFAIL
 def test_the_refused_commit_holds_its_one_line(commits: dict[str, Any]) -> None:
     assert commits["refused"].get("result", {}).get("content") == [
         {"type": "text", "text": REFUSAL}
     ]
 
 
-@XFAIL
 def test_the_refused_commit_is_a_tool_error(commits: dict[str, Any]) -> None:
     assert commits["refused"].get("result", {}).get("isError") is True
 
 
-@XFAIL
 def test_the_commit_answers_its_line_at_its_sha(commits: dict[str, Any]) -> None:
     assert text(commits["committed"]) == f"committed T-0001 of S-0001 at {commits['at']}\n"
 
 
-@XFAIL
 def test_the_commit_has_the_subject_with_the_ids(commits: dict[str, Any], project: Project) -> None:
     subject = git(project.worktree, project.environ, "log", "-1", "--format=%s")
     assert subject == "feat: the work of T-0001 (S-0001, T-0001)"
 
 
-@XFAIL
 def test_the_commit_holds_the_named_file_alone(commits: dict[str, Any], project: Project) -> None:
     names = git(project.worktree, project.environ, "show", "--name-only", "--format=", "HEAD")
     assert names.splitlines() == ["work.txt"]
 
 
-@XFAIL
 def test_the_worktree_is_left_clean(commits: dict[str, Any], project: Project) -> None:
     assert git(project.worktree, project.environ, "status", "--porcelain") == ""
 
 
-@XFAIL
 def test_the_commit_is_listed(commits: dict[str, Any]) -> None:
     assert "commit" in commits["listed"]
 
 
-@XFAIL
 def test_the_commit_requires_its_directory_id_and_message(commits: dict[str, Any]) -> None:
     assert commits["required"] == ["directory", "id", "message"]
 

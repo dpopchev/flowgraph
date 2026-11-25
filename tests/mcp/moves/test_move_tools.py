@@ -23,13 +23,14 @@ def argv(name: str, **arguments: str) -> list[str]:
     return command_of(tool(name), {"directory": DIRECTORY, **arguments}).argv
 
 
-def test_the_moves_are_the_six_commands_in_order() -> None:
+def test_the_moves_are_the_seven_commands_in_order() -> None:
     assert [each.name for each in MOVE_TOOLS] == [
         "start",
         "hand",
         "block",
         "unblock",
         "note",
+        "commit",
         "complete",
     ]
 
@@ -89,6 +90,24 @@ def test_a_note_of_another_kind_is_refused() -> None:
 
 def test_a_text_that_starts_with_a_dash_is_kept_as_the_value() -> None:
     assert argv("note", id="S-0001", kind="finding", text="--x")[-1] == "--finding=--x"
+
+
+def test_a_commit_runs_commit_of_the_id_with_its_message() -> None:
+    assert argv("commit", id="T-0001", message="fix: a change") == [
+        "commit",
+        "T-0001",
+        "--message=fix: a change",
+    ]
+
+
+def test_a_commit_with_no_message_is_refused() -> None:
+    message = "^the arguments of commit are refused: message: Field required$"
+    with pytest.raises(ToolArgumentsError, match=message):
+        argv("commit", id="T-0001")
+
+
+def test_a_commit_message_that_starts_with_a_dash_is_kept_as_the_value() -> None:
+    assert argv("commit", id="T-0001", message="--x")[-1] == "--message=--x"
 
 
 def test_a_complete_names_its_commit() -> None:

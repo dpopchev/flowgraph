@@ -1,5 +1,5 @@
 id = "S-0153"
-state = "started"
+state = "completed"
 title = "Raise the files changed in the worktree of a started Task that fgraph names as outside its brief before the commit from none to every one"
 description = "New on the plan agreed on 2026-11-24, read from the words Pre-Commit of the draft of F-0020; in board 1, board scope. Today the agent learns it at fgraph complete, after the commit. Its Tasks are written before its Feature starts."
 parent = "F-0020"
@@ -7,7 +7,9 @@ realizes = 2
 complexity = "medium"
 created = 2026-11-24 19:51:16+00:00
 started = 2026-11-25 00:03:47+00:00
+completed = 2026-11-25 00:26:33+00:00
 agent = "sonnet-s153"
+commit = "943ce604"
 depends_on = [
     "S-0142",
 ]

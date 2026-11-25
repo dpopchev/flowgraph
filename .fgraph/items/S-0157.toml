@@ -117,3 +117,8 @@ task = "T-0703"
 text = "red: 27 failed (NotImplementedError of the stub of replied)"
 noted = 2026-11-25 08:59:04+00:00
 task = "T-0704"
+
+[[progress]]
+text = "red: 11 failed (NotImplementedError of the three stubs)"
+noted = 2026-11-25 09:01:37+00:00
+task = "T-0705"

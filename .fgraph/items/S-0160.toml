@@ -65,3 +65,8 @@ task = "T-0715"
 text = "red: 4 failed, 3 passed in tests/mcp/closing (the argv stubs raise NotImplementedError); functional: 8 failed under --runxfail seen at T-0715 (Unknown tool)"
 noted = 2026-11-25 10:03:50+00:00
 task = "T-0716"
+
+[[progress]]
+text = "red: the check fails (exit 1): neither file holds the sentence yet"
+noted = 2026-11-25 10:07:53+00:00
+task = "T-0717"

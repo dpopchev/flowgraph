@@ -16,6 +16,11 @@ depends_on = [
     "B-0036",
 ]
 
+[verified]
+answer = "yes"
+text = "run on main at 907ead55, which holds the landing 734fc596, on 2026-11-25: in a throwaway git repository under local/scratch/s159 with the development on, a Story in Backlog and two Tasks, the identity of its commits from the environment, three sessions of Claude Code 2.1.332 in print mode on haiku, each given fgraph mcp of main by --mcp-config with --strict-mcp-config, called the tools and were answered, read from the stream of each session: start of S-0001 with the agent sonnet-a1 on main, started S-0001 and its branch line; start of T-0001 in the worktree, started T-0001 of S-0001; note of its progress, noted S-0001; complete of T-0001 at the commit of work.txt, completed T-0001 of S-0001 at that sha, the word checked its check printed not in the text; start of T-0002, started T-0002 of S-0001; complete of T-0002, whose check is exit 3, is_error true with the one text fgraph: error: T-0002 cannot complete: its check \"exit 3\" exited with status 3. git log: the start of S-0001 is committed on main, which holds no move of a Task; the start of T-0001, the note, the complete and the start of T-0002 are on the branch; after the refusal HEAD of the worktree is the commit of more.txt and git status is empty. The two commits of the work were made by the coordinator between the sessions, no tool committing. Worked whole by one subagent on opus, its branch read by the coordinator: 8 files, each named by a Task; make check on the branch at 03742257: 5724 passed. The branch met a conflict with S-0158 in README.md and docs/domain-model.md: the coordinator merged main by hand, committed the merge with its markers by mistake (5f216bcb) and resolved it in the next commit (ff0696ed), both paragraphs kept; main holds no marker."
+on = 2026-11-25 10:00:08+00:00
+
 [criterion]
 given = "the server of fgraph mcp on a repository with the development on and a planned Story in Backlog"
 when = "the session calls the tools that start the Story with its agent, start its Task, note its progress and complete the Task at its commit, and then the one that completes a Task whose check fails"

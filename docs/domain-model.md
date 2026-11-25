@@ -952,8 +952,10 @@ so the brief of a work item that has none of them is exactly the text of `show`:
   branch with a worktree, else the first branch alone; none for a record outside a git work tree
   or one git ignores.
 - `Feature`: its id, its bucket, its title, its description and its knowledge lines.
-- `Governed by`: every knowledge line of the record that governs a path one of the Tasks of the
-  work item names, last noted first, as `fgraph about` of a file lists them.
+- `Governed by`: every live knowledge line of the record that governs a path one of the Tasks
+  of the work item names, last noted first; a line a later line supersedes is left out (S-0162),
+  by `live_entries`, the rule of `fgraph knowledge --live`, where `fgraph about` of a file lists
+  every one.
 - `Terms (n)`: each term the work item or its Feature is about, with its meaning, each once.
 
 A governed path is named by a Task when it stands as a whole path in the expected output or the

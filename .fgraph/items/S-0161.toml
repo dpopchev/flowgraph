@@ -64,3 +64,8 @@ noted = 2026-11-25 06:46:30+00:00
 supersedes = [
     "S-0161#1",
 ]
+
+[[progress]]
+text = "red: 10 tests fail under --runxfail on their values (assert 2 == 0; err '' vs the refusal line); the file did not exist before"
+noted = 2026-11-25 06:53:54+00:00
+task = "T-0726"

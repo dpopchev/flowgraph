@@ -11,6 +11,11 @@ completed = 2026-11-25 06:39:56+00:00
 agent = "haiku-s79"
 commit = "361bf131"
 
+[verified]
+answer = "yes"
+text = "run on main at 1057920b on 2026-11-25 in a throwaway record: fgraph start S-0001 of a Story under F-0001 in Backlog exits 2 with fgraph: error: S-0001 cannot start: F-0001 is not started: fgraph start F-0001 starts it; fgraph start F-0001 then exits 0 with started F-0001 with S-0001"
+on = 2026-11-25 06:40:23+00:00
+
 [criterion]
 given = "a Story under a Feature in Backlog"
 when = "fgraph start of the Story is run"

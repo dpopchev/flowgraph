@@ -35,9 +35,13 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         help=f"the format it prints: {show_document.TEXT}, the default, or {show_document.JSON}",
     )
     about = new_command(
-        commands, "about", "list the links of a work item or a Feature, by relation"
+        commands, "about", "list the links of a work item, a Feature, a term or a file, by relation"
     )
-    about.add_argument("id", metavar="ID", help="the id of the work item or of the Feature")
+    about.add_argument(
+        "id",
+        metavar="ID",
+        help="the id of the work item or of the Feature, the name of the term or the path of the file",
+    )
     about.add_argument(
         "--format",
         default=about_document.TEXT,

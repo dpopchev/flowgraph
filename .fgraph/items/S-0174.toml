@@ -1,0 +1,16 @@
+id = "S-0174"
+state = "backlog"
+title = "Raise the reads of fgraph answered from the index from one, the status, to six: show, brief, about, knowledge and graph too"
+description = "Phase 4, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0034). It waits for the Story of the status. Its first-pass Tasks are drafted the same day and reviewed before the phase starts."
+parent = "F-0034"
+realizes = 2
+complexity = "medium"
+created = 2026-11-25 09:47:17+00:00
+depends_on = [
+    "S-0173",
+]
+
+[criterion]
+given = "a record with its index built, holding a started Story about a term, with a Task and a knowledge line"
+when = "fgraph show, brief, about, knowledge and graph are run, as text and as JSON"
+then = "each prints the bytes it prints with no index and parses no item file whose content did not change"

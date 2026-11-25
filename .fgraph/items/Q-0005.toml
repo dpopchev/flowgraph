@@ -1,0 +1,13 @@
+id = "Q-0005"
+state = "backlog"
+title = "Settle whether an index kept beside the record answers the reads of fgraph faster than reading each file once"
+description = "Phase 4, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0034). Its decision names: yes or no with the times measured; whether a read may write the index, the reads of fgraph taking no lock today (READS of src/flowgraph/parser/locked.py); where the index lives for the worktree of a work item, each holding its own copy of the record; rows per item or edges alone; and what the Stories of its Feature build, or that they are removed if the answer is no. It waits for U-0018. Its first-pass Tasks are drafted the same day and reviewed before the phase starts."
+parent = "F-0034"
+complexity = "medium"
+created = 2026-11-25 09:43:55+00:00
+depends_on = [
+    "U-0018",
+]
+
+[criterion]
+hypothesis = "Once U-0018 has cut the repeated reads, does a SQLite index under .fgraph/.cache/, refreshed for a file when the hash of its content changes, answer fgraph status, show and about in less time than parsing each file of the record once, on the record of flowgraph and on a synthetic one of 1,500 files?"

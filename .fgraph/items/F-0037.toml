@@ -1,0 +1,10 @@
+id = "F-0037"
+state = "backlog"
+title = "Cut what a new user reads before a first landed work item from the whole of README.md to one quickstart"
+description = "Phase 4, Disposable Local Read-Index (Graph Queries) and Distribution, the last phase, to be completed after Phase 3 (F-0030 to F-0033): filed on the word of the developer of 2026-11-25, great, file them, on the draft the coordinator showed that day from a first pass of the developer of four Features, reviewed against the repository. The first pass numbers it F-0034 and names it Progressive Onboarding and Documentation Split; its target modules: README.md, docs/domain-model.md, docs/board-review.md; its scope: extract a concise 5-minute quickstart (init, add, start, verify, land) and an Agent/MCP and Knowledge setup guide out of the 148 KB README.md, keeping the 227 KB docs/domain-model.md as the deep specification; its exit gate: a new user or agent can initialize a repo, register a domain rule and land a verified item in under five minutes following only the quickstart. Measured by the coordinator on main on 2026-11-25: README.md is 159,046 bytes under four sections, Status, Use, Develop and License; docs/domain-model.md 276,654 bytes; docs/board-review.md 6,365 bytes. Against the first pass: fgraph lands a work item and then keeps the answer of its closing, so the path is init, add, start, complete or land, verify; five minutes is held by no check, so the criterion is the quickstart run by a test; the Tasks of the earlier phases change passages of README.md found by grep, so the cut of README.md lands last. Its first-pass Tasks are drafted the same day and reviewed before the phase starts."
+created = 2026-11-25 09:43:14+00:00
+criteria = [
+    "a new user follows docs/quickstart.md alone and ends with a work item landed and verified",
+    "an agent or its operator follows one guide to serve fgraph mcp to a session, read a brief and keep a knowledge line that governs a file",
+    "a reader of README.md reads an overview that links the quickstart, the guide and docs/domain-model.md",
+]

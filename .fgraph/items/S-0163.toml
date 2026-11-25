@@ -32,3 +32,12 @@ description = "Three files. S-0163 waits for S-0162, which makes the lines under
 check = "uv run pytest tests/brief tests/functional/test_brief.py tests/functional/test_brief_live.py tests/functional/test_brief_terms.py -q -p no:cacheprovider && ! grep -q xfail tests/functional/test_brief_terms.py && make lines && uv run pyright"
 expected_output = "changed: brief_of of src/flowgraph/brief/read.py lists under Terms the terms of the work item, then those of its Feature, then those the lines under Governed by are about, in the order of those lines, each once with its meaning, as text and as JSON; the docstrings of TermLine and Brief of src/flowgraph/brief/model.py say so. No xfail mark is left in tests/functional/test_brief_terms.py"
 created = 2026-11-25 06:45:47+00:00
+
+[[tasks]]
+id = "T-0725"
+state = "backlog"
+title = "Update README.md and docs/domain-model.md to say Terms of fgraph brief lists the terms its governing lines are about"
+description = "Change README.md and docs/domain-model.md only; find each passage by grep, never by line number; plain ASCII; no source or test change. Keep the words its Feature or a line under on one line in each file: the check greps them. docs/domain-model.md: grep -n 'Terms (n)`: each term' finds the bullet of the brief; it becomes: `Terms (n)`: each term the work item, its Feature or a line under `Governed by` is about, with its meaning, each once, in that order (S-0163). README.md: grep -n 'its Feature is about under' finds the sentence of the paragraph on fgraph brief (if it finds nothing, read the paragraph that holds prints the whole brief of a work item); and the terms it or its Feature is about under `Terms` becomes and the terms it, its Feature or a line under `Governed by` is about under `Terms`. Reflow inside the bullet and the paragraph alone; the example block stays. If grep -n 'S-0163' of the two files finds another line when this Task runs (none on 2026-11-25), make it true and say so."
+check = "grep -q 'its Feature or a line under' README.md && grep -q 'its Feature or a line under' docs/domain-model.md"
+expected_output = "changed: docs/domain-model.md, in the bullet of Terms (n) of the brief, and README.md, in the paragraph that opens fgraph brief prints the whole brief, say the terms are those the work item, its Feature or a line under Governed by is about"
+created = 2026-11-25 06:45:53+00:00

@@ -13,11 +13,22 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import assert_never
 
-from flowgraph.about.file import about_file, is_file_here, is_governed
+from flowgraph.about.document import TEXT, about_json, chosen_about_format
+from flowgraph.about.file import file_links, is_file_here, is_governed
+from flowgraph.about.links import (
+    About,
+    FileLinks,
+    ItemLinks,
+    Linked,
+    Reached,
+    ReachedLine,
+    TermLinks,
+)
+from flowgraph.about.text import file_text, item_text, term_about_text
+from flowgraph.brief.model import TermLine
 from flowgraph.development.commit import OpenGit
 from flowgraph.feature import FeatureDetail, feature_bucket, feature_detail
 from flowgraph.item.id import ItemIdError, parse_shown_id
-from flowgraph.knowledge import KnowledgeRow, about_text, governs_text
 from flowgraph.knowledge.list import collected, newest_first
 from flowgraph.parent import FeatureId, feature_id_text, parse_feature_id
 from flowgraph.record.store import Store
@@ -28,80 +39,57 @@ from flowgraph.term import TermNotFoundError, is_term_name
 from flowgraph.term.item import items_about, term_head
 from flowgraph.work_item import WorkItemDetail, WorkItemId
 
-# A heading with the lines under it, the lines already worded.
-type Section = tuple[str, list[str]]
+
+def _listed(
+    ids: Sequence[str], titles: dict[str, str], record: dict[str, Standing]
+) -> list[Linked]:
+    """The work items of those ids, each linked: its id, its bucket and its title."""
+    return [Linked(each, record[each].bucket, titles[each]) for each in ids]
 
 
-def _listed(ids: Sequence[str], titles: dict[str, str], record: dict[str, Standing]) -> list[str]:
-    """The work items of those ids, each as a line: its id, its bucket and its title."""
-    return [f"{each}  {record[each].bucket}  {titles[each]}" for each in ids]
+def _terms(names: Sequence[str], store: Store) -> list[TermLine]:
+    """The terms of those names, each with its meaning."""
+    return [TermLine(name, store.terms.load_term(name).meaning) for name in names]
 
 
-def _terms(names: Sequence[str], store: Store) -> list[str]:
-    """The terms of those names, each as a line: its name and its meaning."""
-    return [f"{name}  {store.terms.load_term(name).meaning}" for name in names]
-
-
-def _knowledge(rows: Sequence[KnowledgeRow]) -> list[str]:
-    """The knowledge lines, each as a line: its kind, its day and its text, then its terms."""
-    return [
-        f"{row.kind}  {row.noted.date().isoformat()}  {row.text}"
-        f"{about_text(row.about)}{governs_text(row.governs)}"
-        for row in rows
-    ]
-
-
-def _feature_line(text: str, store: Store) -> str:
-    """The Feature of that id as a line: its id, its bucket over its work items and its title."""
+def _feature_line(text: str, store: Store) -> Linked:
+    """The Feature of that id linked: its id, its bucket over its work items and its title."""
     feature_id = parse_feature_id(text)
     held = store.features.load_feature(feature_id)
     states = [row.state for row in rows_under(feature_id, store).values()]
-    return f"{text}  {feature_bucket(held, states)}  {held.title}"
+    return Linked(text, feature_bucket(held, states), held.title)
 
 
-def _item_sections(detail: WorkItemDetail, store: Store) -> list[Section]:
-    """The relations of a work item, in the order the view lists them, each with its lines."""
+def _item_links(detail: WorkItemDetail, store: Store) -> ItemLinks:
+    """The relations of a work item, in the order the view lists them, each with its links."""
     detail = bucketed(detail, store)
     record = record_standing(store)
     titles = {row.id: row.title for row in rows_by_id(store).values()}
     own = [detail.superseded_by] if detail.superseded_by else []
     amends = [detail.amends] if detail.amends else []
     during = [detail.filed_during] if detail.filed_during else []
-    return [
-        ("feature", [_feature_line(detail.parent, store)] if detail.parent else []),
-        ("depends on", _listed([row.id for row in detail.depends_on], titles, record)),
-        ("depended on by", _listed(depended_on_by(detail.id, record), titles, record)),
-        ("filed during", _listed(during, titles, record)),
-        ("filed here", _listed(detail.filed_here, titles, record)),
-        ("supersedes", _listed(detail.supersedes, titles, record)),
-        ("superseded by", _listed(own, titles, record)),
-        ("amends", _listed(amends, titles, record)),
-        ("amended by", _listed(detail.amended_by, titles, record)),
-        ("terms", _terms(detail.about, store)),
-        ("knowledge", _knowledge(detail.knowledge)),
-    ]
+    links = {
+        "feature": [_feature_line(detail.parent, store)] if detail.parent else [],
+        "depends on": _listed([row.id for row in detail.depends_on], titles, record),
+        "depended on by": _listed(depended_on_by(detail.id, record), titles, record),
+        "filed during": _listed(during, titles, record),
+        "filed here": _listed(detail.filed_here, titles, record),
+        "supersedes": _listed(detail.supersedes, titles, record),
+        "superseded by": _listed(own, titles, record),
+        "amends": _listed(amends, titles, record),
+        "amended by": _listed(detail.amended_by, titles, record),
+    }
+    return ItemLinks(detail.id, detail.title, links, _terms(detail.about, store), detail.knowledge)
 
 
-def _feature_sections(detail: FeatureDetail, feature: FeatureId, store: Store) -> list[Section]:
+def _feature_links(detail: FeatureDetail, feature: FeatureId, store: Store) -> ItemLinks:
     """The links of a Feature: its work items, its terms and its knowledge lines."""
     record = record_standing(store)
     held = rows_under(feature, store).values()
-    return [
-        (
-            "work items",
-            _listed([row.id for row in held], {row.id: row.title for row in held}, record),
-        ),
-        ("terms", _terms(detail.about, store)),
-        ("knowledge", _knowledge(detail.knowledge)),
-    ]
-
-
-def _text(head: str, sections: Sequence[Section]) -> str:
-    """The head line, then each section that holds a line under its heading with its count."""
-    return head + "".join(
-        f"  {heading} ({len(lines)})\n" + "".join(f"    {line}\n" for line in lines)
-        for heading, lines in sections
-        if lines
+    titles = {row.id: row.title for row in held}
+    links = {"work items": _listed([row.id for row in held], titles, record)}
+    return ItemLinks(
+        feature_id_text(feature), detail.title, links, _terms(detail.about, store), detail.knowledge
     )
 
 
@@ -119,36 +107,40 @@ def terms_under(name: str, over: Mapping[str, tuple[str, ...]]) -> list[str]:
     return reached[1:]
 
 
-def _term_text(name: str, store: Store) -> str:
-    """The text of a term: its head, then the items and knowledge lines about it and under it."""
-    head = term_head(name, store)
+def _term_links(name: str, store: Store) -> TermLinks:
+    """A term: its head, then the items and knowledge lines about it and under it.
+
+    The head is read as `term_head` reads it. Raises TermNotFoundError for a term the record
+    holds none of.
+    """
+    term = store.terms.load_term(name)
     held = {each: store.terms.load_term(each) for each in store.terms.find_term_names()}
-    under = terms_under(name, {each: (*term.is_a, *term.part_of) for each, term in held.items()})
+    under = terms_under(name, {each: (*one.is_a, *one.part_of) for each, one in held.items()})
     lines = collected(store)
     seen_items: set[str] = set()
     seen_lines: set[int] = set()
-    items: list[str] = []
-    knowledge: list[str] = []
+    items: list[Reached] = []
+    knowledge: list[ReachedLine] = []
     for each in [name, *under]:
-        mark = "" if each == name else f"  (via {each})"
+        via = "" if each == name else each
         for id_ in items_about(each, store):
             if id_ not in seen_items:
                 seen_items.add(id_)
-                items.append(f"{id_}{mark}")
+                items.append(Reached(id_, via))
         for line in newest_first(lines, None, each):
             if id(line) not in seen_lines:
                 seen_lines.add(id(line))
-                noted = line.noted.date().isoformat()
-                knowledge.append(f"    {line.item}  {line.kind}  {noted}  {line.text}{mark}\n")
-    return head + _term_about(items, knowledge)
-
-
-def _term_about(items: Sequence[str], knowledge: Sequence[str]) -> str:
-    """The items line and the knowledge lines of a term, each left out for none."""
-    return (
-        (f"  items  {', '.join(items)}\n" if items else "")
-        + ("  knowledge\n" if knowledge else "")
-        + "".join(knowledge)
+                knowledge.append(ReachedLine(line, via))
+    return TermLinks(
+        term.name,
+        term.meaning,
+        term.added,
+        term.is_a,
+        term.part_of,
+        sorted(each for each, one in held.items() if name in one.is_a),
+        sorted(each for each, one in held.items() if name in one.part_of),
+        items,
+        knowledge,
     )
 
 
@@ -157,8 +149,8 @@ def _is_path(text: str, directory: Path, store: Store, open_git: OpenGit) -> boo
     return is_file_here(text, directory) or is_governed(text, directory, store, open_git)
 
 
-def about_item(item: str, store: Store, directory: Path, open_git: OpenGit) -> str:
-    """The text fgraph about gives of what is named: a work item, a Feature, a term or a file.
+def about_links(item: str, store: Store, directory: Path, open_git: OpenGit) -> About:
+    """The links of what is named: a work item, a Feature, a term or a file.
 
     The text is read as an id, then as a term, then as the path of a file from the directory
     fgraph runs in, read from the git work tree of the directory: a file on the disk, or one a
@@ -168,10 +160,10 @@ def about_item(item: str, store: Store, directory: Path, open_git: OpenGit) -> s
     """
     if is_term_name(item):
         try:
-            return _term_text(item, store)
+            return _term_links(item, store)
         except TermNotFoundError as error:
             if _is_path(item, directory, store, open_git):
-                return about_file(item, directory, store, open_git)
+                return file_links(item, directory, store, open_git)
             raise ItemIdError(
                 f"{item!r} is no Story, Upkeep, Bug, Spike or Feature id, no term in the record"
                 " and no file"
@@ -180,15 +172,37 @@ def about_item(item: str, store: Store, directory: Path, open_git: OpenGit) -> s
         placed = parse_shown_id(item)
     except ItemIdError:
         if _is_path(item, directory, store, open_git):
-            return about_file(item, directory, store, open_git)
+            return file_links(item, directory, store, open_git)
         raise
     match placed:
         case FeatureId() as feature:
             detail = feature_detail(store.features.load_feature(feature))
-            head = f"{feature_id_text(feature)}  {detail.title}\n"
-            return _text(head, _feature_sections(detail, feature, store))
+            return _feature_links(detail, feature, store)
         case WorkItemId() as work_item:
-            detail = store.find_work_item_detail(work_item)
-            return _text(f"{detail.id}  {detail.title}\n", _item_sections(detail, store))
+            return _item_links(store.find_work_item_detail(work_item), store)
+        case _ as unreachable:
+            assert_never(unreachable)
+
+
+def about_item(
+    item: str, store: Store, directory: Path, open_git: OpenGit, format_: str = TEXT
+) -> str:
+    """What fgraph about gives of what is named: a work item, a Feature, a term or a file.
+
+    The links of `about_links`, as JSON or worded as text, a term after its head, the words of
+    `fgraph show`. The format is text or json, chosen first: raises AboutFormatError naming both
+    for another, before anything is read. Raises what `about_links` raises.
+    """
+    chosen = chosen_about_format(format_)
+    links = about_links(item, store, directory, open_git)
+    if chosen != TEXT:
+        return about_json(links)
+    match links:
+        case ItemLinks():
+            return item_text(links)
+        case TermLinks():
+            return term_head(links.name, store) + term_about_text(links)
+        case FileLinks():
+            return file_text(links)
         case _ as unreachable:
             assert_never(unreachable)

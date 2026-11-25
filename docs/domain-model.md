@@ -909,6 +909,27 @@ its count and each linked item is one line, its id, its bucket and its title.
   kind, its date, the id of its item and its text; then, as before, the completed
   work items and Tasks whose commits changed it. A governed file no commit touched
   lists the lines alone.
+- `--format json` prints the links as one JSON document (S-0156), a second formatter
+  of the data the text words (`src/flowgraph/about/links.py`, worded by `about/text.py`,
+  formatted by `about/document.py`). `text` is the default and prints what about printed
+  before; a format that is neither is refused naming both, exit 2, before the record or
+  git is read: `--format 'xml' is not text or json, the two formats of about`. The
+  contract is that of the brief: keys sorted, an indent of two, a newline, null for
+  nothing, `[]` for a relation that holds nothing -- every relation is present, where
+  the text leaves out a heading with nothing. A work item holds `id`, `kind`, `title`,
+  `feature`, `depends_on`, `depended_on_by`, `filed_during`, `filed_here`, `supersedes`,
+  `superseded_by`, `amends`, `amended_by` (each a list of `id`, `bucket` and `title`,
+  even where one item at most is linked), `terms` (`name` and `meaning`) and `knowledge`
+  (`about`, `governs`, `kind`, `mark`, `noted`, `supersedes`, `text`). A Feature holds
+  `id`, `kind` feature, `title`, `work_items`, `terms` and `knowledge`. A term holds
+  `name`, `kind` term, `meaning`, `added`, `is_a`, `part_of`, `kinds`, `parts`, `items`
+  (`id` and `via`) and `knowledge` (the keys of a line of `fgraph knowledge --format
+  json`, and `via`), `via` null for what is about the term itself and the term under
+  it otherwise. A file holds `path` as given, `kind` file, `governed_by` (the lines that
+  govern it, as `fgraph knowledge --format json` lists one) and `touched_by` (`id`,
+  `commit` -- null when only a Task touched it -- `title` and `tasks` with `id`, `commit`
+  and `title`). `noted` and `added` are the full ISO time. A write and a refusal stay one
+  line, never JSON (the decision of F-0018).
 
 ## Brief
 

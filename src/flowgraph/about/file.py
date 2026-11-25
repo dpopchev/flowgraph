@@ -8,9 +8,10 @@ from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
 
+from flowgraph.about.links import FileLinks, TouchedTask, Touching
 from flowgraph.development.commit import OpenGit
 from flowgraph.item.id import ItemIdError
-from flowgraph.knowledge.governed import governed_text, governing, placed
+from flowgraph.knowledge.governed import governing, placed
 from flowgraph.record.store import Store
 from flowgraph.status import COMPLETED, rows_by_id
 from flowgraph.work_item import WorkItemRow
@@ -32,22 +33,21 @@ def is_governed(text: str, directory: Path, store: Store, open_git: OpenGit) -> 
     return bool(governing(text, directory, store, open_git))
 
 
-def about_file(text: str, directory: Path, store: Store, open_git: OpenGit) -> str:
+def file_links(text: str, directory: Path, store: Store, open_git: OpenGit) -> FileLinks:
     """The lines that govern the file, then the completed items whose commit changed it.
 
-    The path is taken from the directory fgraph runs in. The lines come first under Governed by,
-    newest first. A work item is listed with its commit when its own commit changed the file, with
-    none when only a Task of it did, and a Task is listed under its work item. A file no commit of
-    the record touched and no line governs is said so in one line. Outside a git work tree, or for
-    a path outside the one of the directory, the lines that govern it alone are listed.
-    Raises ItemIdError there when no line governs it.
+    The path is taken from the directory fgraph runs in. The lines come first, newest first. A
+    work item has its commit when its own commit changed the file, none when only a Task of it
+    did, and a Task is held under its work item. Outside a git work tree, or for a path outside
+    the one of the directory, the lines that govern it alone are held. Raises ItemIdError there
+    when no line governs it.
     """
     work_tree = open_git(directory)
-    governed = governed_text(governing(text, directory, store, open_git))
+    governed = governing(text, directory, store, open_git)
     file = placed(text, directory, work_tree)
     if work_tree is None or file is None:
         if governed:
-            return governed
+            return FileLinks(text, governed, [])
         if work_tree is None:
             raise ItemIdError(
                 f"{text!r} is a file: the answer for a file is read from git, and {directory}"
@@ -62,8 +62,8 @@ def about_file(text: str, directory: Path, store: Store, open_git: OpenGit) -> s
         return bool(commit) and file in (work_tree.changed_files(commit) or [])
 
     done = [row for row in rows_by_id(store).values() if row.state == COMPLETED]
-    lines = "".join(_lines(row, touched) for row in sorted(done, key=_completed, reverse=True))
-    return governed + lines or f"no commit of the record touched {text}\n"
+    found = (_touching(row, touched) for row in sorted(done, key=_completed, reverse=True))
+    return FileLinks(text, governed, [each for each in found if each])
 
 
 def _completed(row: WorkItemRow) -> datetime:
@@ -71,11 +71,12 @@ def _completed(row: WorkItemRow) -> datetime:
     return row.completed or _BEFORE_ALL
 
 
-def _lines(row: WorkItemRow, touched: Touched) -> str:
-    """The lines of a work item the file touched: its own, then each Task of it that did."""
+def _touching(row: WorkItemRow, touched: Touched) -> Touching | None:
+    """The work item as the file touched it: its own commit, then each Task of it that did."""
     own = touched(row.commit)
-    tasks = [task for task in row.tasks if touched(task.commit)]
+    tasks = [
+        TouchedTask(task.id, task.commit, task.title) for task in row.tasks if touched(task.commit)
+    ]
     if not own and not tasks:
-        return ""
-    head = f"{row.id}  {row.commit if own else '-'}  {row.title}\n"
-    return head + "".join(f"  {task.id}  {task.commit}  {task.title}\n" for task in tasks)
+        return None
+    return Touching(row.id, row.commit if own else "", row.title, tasks)

@@ -42,7 +42,7 @@ def view_said(
         case "graph":
             return Said(graph_text(args.format, store))
         case "about":
-            return Said(about_item(args.id, store, cwd, open_git))
+            return Said(about_item(args.id, store, cwd, open_git, args.format))
         case "brief":
             return Said(
                 brief_output(

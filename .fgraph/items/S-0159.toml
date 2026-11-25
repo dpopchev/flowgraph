@@ -76,3 +76,8 @@ task = "T-0711"
 text = "red: 12 failed, 4 passed (each argv raised NotImplementedError of its stub; the names, the two refusals and no approval pass on the models)"
 noted = 2026-11-25 09:30:10+00:00
 task = "T-0712"
+
+[[progress]]
+text = "red: 3 failed of test_protocol_streams.py (protocol_streams raises NotImplementedError); 7 failed, 9 passed of test_mcp_moves.py under --runxfail (the line checked on the stdout of the server, so the lines of stdout are not all replies, checked is not in stderr, and every reply from the complete on is read one call late)"
+noted = 2026-11-25 09:33:46+00:00
+task = "T-0713"

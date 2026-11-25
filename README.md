@@ -202,6 +202,22 @@ fgraph about src/gate.py
 #   T-0004  91be07d  Add the gate to the landing
 ```
 
+`fgraph about` of an item, a term or a file takes `--format json` too and prints its
+links as one JSON document, each relation under its key with `[]` for none, keys
+sorted and null for nothing, the same bytes on two runs; text stays the default;
+another word is refused naming both, exit 2:
+
+```sh
+fgraph about S-0002 --format json
+# {
+#   "amended_by": [],
+#   "amends": [],
+#   "depended_on_by": [],
+#   ...
+fgraph about S-0002 --format xml
+# fgraph: error: --format 'xml' is not text or json, the two formats of about
+```
+
 `fgraph brief` prints the whole brief of a work item in any state, the input a
 coordinator hands an agent: the text of `fgraph show`, then the branch and the
 worktree git holds for it under `Worktree`, its Feature with its knowledge, the

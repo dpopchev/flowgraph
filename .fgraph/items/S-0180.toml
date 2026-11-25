@@ -1,0 +1,13 @@
+id = "S-0180"
+state = "backlog"
+title = "Raise the wheels of a release that carry the version of its tag from those bumped by hand to every one"
+description = "Phase 4, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0036). Open, decided at the review: the build reads the version from the tag, or make dist refuses a version that is not that of the tag on HEAD. fgraph release serves any repository and reads no pyproject.toml, so the check is of mk/wheel.mk, not of src/flowgraph/development/release.py, where the first pass has it. Its first-pass Tasks are drafted the same day and reviewed before the phase starts."
+parent = "F-0036"
+realizes = 3
+complexity = "low"
+created = 2026-11-25 09:54:08+00:00
+
+[criterion]
+given = "main tagged v0.20.0 by fgraph release while pyproject.toml still names 0.19.0"
+when = "the developer runs make dist"
+then = "it is refused in one line naming the two versions, or the wheel carries 0.20.0"

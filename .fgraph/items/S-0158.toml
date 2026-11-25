@@ -60,3 +60,8 @@ noted = 2026-11-24 23:50:57+00:00
 text = "red: 15 failed, 6 passed (the reads brief, show, knowledge and about are not listed nor answered: each call gives an empty result, so no content; the status and the guards pass)"
 noted = 2026-11-25 09:25:20+00:00
 task = "T-0708"
+
+[[progress]]
+text = "red: 6 failed, 3 passed in tests/mcp/reads (the argv of brief, show, knowledge and about raise NotImplementedError, and READ_TOOLS is still status alone; the three refusals of the argument models pass, the models being part of this red step)"
+noted = 2026-11-25 09:28:16+00:00
+task = "T-0709"

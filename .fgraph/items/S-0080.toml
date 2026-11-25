@@ -63,3 +63,8 @@ noted = 2026-11-24 22:12:30+00:00
 text = "red: 5 failed, 12 passed under --runxfail (about work.txt: exit 2 'work.txt' is no Story...id; other.txt/notes print nothing)"
 noted = 2026-11-25 07:29:58+00:00
 task = "T-0677"
+
+[[progress]]
+text = "red: 11 failed, 1 passed (NotImplementedError of the typed stub touched_path)"
+noted = 2026-11-25 07:31:26+00:00
+task = "T-0678"

@@ -47,3 +47,8 @@ description = "FIRST PASS, written on 2026-11-25 before Phases 2 and 3 were comp
 check = "grep -q '^### Index answer' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, Read index, gains ### Index answer: yes or no to the hypothesis of Q-0005, from the three parts before it, with the times it rests on; whether a read may write the index; where the index lives for the worktree of a work item; rows per file (the parse of each file) or the edges alone; how git ignores it; the hash or the stat; what S-0173, S-0174 and S-0175 build, or that they are removed if the answer is no; and the one sentence the landing gives as --decision"
 created = 2026-11-25 10:58:20+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25, on the draft of Phase 4 that offered its first-pass Tasks: great, file them. The Tasks of Q-0005 (its 4 Tasks: T-0847, T-0848, T-0849, T-0850) are that first pass, drafted that day by a read-only subagent against the code of main at 0ecab493, before Phases 2 and 3 were completed, and filed by the coordinator, who checked their shape -- the opening sentence, the check, the ids they name -- and read their titles, outputs, checks and open points, not every description. They are reviewed before Phase 4 starts, the review noted here as a decision naming each Task kept, amended or removed; until that line is here, Q-0005 is not started."
+noted = 2026-11-25 10:58:43+00:00

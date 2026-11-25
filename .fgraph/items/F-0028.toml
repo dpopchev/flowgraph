@@ -1,0 +1,8 @@
+id = "F-0028"
+state = "backlog"
+title = "Cross-Worktree Scope & Claim Isolation"
+description = "Phase 2, Concurrent Worktree and Merge Ergonomics: filed as drafted on the word of the developer of 2026-11-25, add the items as drafted and they will be reworked, from the WBS draft of that day, which numbers it F-0025, an id the record gave another Feature. Target modules: development/worktrees.py, development/parallel.py, development/scope.py. Scope and deliverables: Inspect active sibling Git worktrees on start and scope checks to detect overlapping file-scope declarations or duplicate active item assignments across parallel branches. Its work items and their Tasks are written when it is reworked."
+created = 2026-11-25 07:49:03+00:00
+criteria = [
+    "Starting or scoping a worktree whose declared files overlap an active sibling worktree triggers an explicit refusal",
+]

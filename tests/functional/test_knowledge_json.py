@@ -1,4 +1,6 @@
-"""The criterion of S-0155: `fgraph knowledge --format json` prints the lines the text lists, as one JSON document.
+"""The criterion of S-0155: `fgraph knowledge --format json` prints the lines the text lists.
+
+The lines are printed as one JSON document.
 
 Run end to end through `run` on the file adapters of a temporary record, with no git.
 """

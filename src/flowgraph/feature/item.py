@@ -28,7 +28,7 @@ from flowgraph.feature import (
     feature_bucket,
     feature_detail,
 )
-from flowgraph.item.commands import MESSAGE, Written, show_item
+from flowgraph.item.commands import MESSAGE, Written
 from flowgraph.item.id import parse_shown_id
 from flowgraph.knowledge.supersede import superseded_rows
 from flowgraph.parent import (
@@ -40,10 +40,26 @@ from flowgraph.parent import (
 )
 from flowgraph.record import Now
 from flowgraph.record.store import Store
-from flowgraph.status import BACKLOG, backlog_as_added, feature_text, in_show_order, rows_under
+from flowgraph.relation.depends import bucketed
+from flowgraph.status import (
+    BACKLOG,
+    backlog_as_added,
+    feature_text,
+    in_show_order,
+    rows_under,
+    show_text,
+)
+from flowgraph.status.show_document import (
+    JSON,
+    TEXT,
+    chosen_show_format,
+    feature_json,
+    work_item_json,
+)
 from flowgraph.task import CompletedAlreadyError
 from flowgraph.term import is_term_name
-from flowgraph.term.item import show_term
+from flowgraph.term.document import term_json
+from flowgraph.term.item import term_shown, term_text
 from flowgraph.work_item import WorkItemId, WorkItemRow
 
 
@@ -85,13 +101,14 @@ def add_feature_item(
     return Written(f"added {text}\n", MESSAGE.format(f"add {text}"))
 
 
-def show_feature_item(feature: str, store: Store) -> str:
+def show_feature_item(feature: str, store: Store, format_: str = TEXT) -> str:
     """The text of the Feature of that id: its criteria, then its work items with their buckets.
 
     Its bucket is that of its own state over the states of those work items, as a list shows
     it. They are listed by kind and number, those in Backlog among them in the order the queue
-    gives: the one they start in. Raises FeatureIdError when the text is no Feature id and
-    FeatureNotFoundError when the record holds no such Feature.
+    gives: the one they start in. The format is json for its JSON document, else its text.
+    Raises FeatureIdError when the text is no Feature id and FeatureNotFoundError when the
+    record holds no such Feature.
     """
     feature_id = parse_feature_id(feature)
     shown = store.features.load_feature(feature_id)
@@ -99,23 +116,30 @@ def show_feature_item(feature: str, store: Store) -> str:
     detail = replace(detail, knowledge=superseded_rows(detail.id, detail.knowledge, store))
     held = rows_under(feature_id, store)
     rows = in_show_order(held, backlog_as_added(held), store.load_queue())
-    return feature_text(detail, rows, feature_bucket(shown, [row.state for row in rows]))
+    bucket = feature_bucket(shown, [row.state for row in rows])
+    if format_ == JSON:
+        return feature_json(detail, rows, bucket)
+    return feature_text(detail, rows, bucket)
 
 
-def show_any_item(item: str, store: Store) -> str:
-    """The text fgraph show gives of the term of that name, or the work item or Feature of that id.
+def show_any_item(item: str, store: Store, format_: str = TEXT) -> str:
+    """What fgraph show gives of the term of that name, or the work item or Feature of that id.
 
-    Raises TermNotFoundError for a term name the record holds none of, FeatureIdError for a
-    Feature id below 1, ItemIdError for a text that is neither, and the refusal of `show_item` or
-    of `show_feature_item` for an id the record holds no item of.
+    The format is text or json, chosen first, before anything is read. Raises ShowFormatError
+    naming both when it is neither, TermNotFoundError for a term name the record holds none of,
+    FeatureIdError for a Feature id below 1, ItemIdError for a text that is neither, and the
+    refusal of the record for an id it holds no item of.
     """
+    chosen = chosen_show_format(format_)
     if is_term_name(item):
-        return show_term(item, store)
+        shown = term_shown(item, store)
+        return term_json(shown) if chosen == JSON else term_text(shown)
     match parse_shown_id(item):
         case FeatureId():
-            return show_feature_item(item, store)
-        case WorkItemId():
-            return show_item(item, store)
+            return show_feature_item(item, store, chosen)
+        case WorkItemId() as work_item:
+            detail = bucketed(store.find_work_item_detail(work_item), store)
+            return work_item_json(detail) if chosen == JSON else show_text(detail)
         case _ as unreachable:
             assert_never(unreachable)
 

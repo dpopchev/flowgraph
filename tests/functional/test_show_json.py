@@ -29,7 +29,6 @@ RECORD = [
     ["add", "task", "a task title", "--parent", "S-0001", "--output", "changed: src/gate.py"],
     ["note", "S-0001", "--finding", "a thing learned", "--about", "gate"],
 ]
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0154: fgraph show takes no --format")
 IDS = [
     pytest.param("S-0001", id="story"),
     pytest.param("F-0001", id="feature"),
@@ -87,7 +86,6 @@ def document(recorded: Path, item: str) -> dict[str, Any]:
     return json.loads(printed(recorded, item, "--format", "json").out)
 
 
-@XFAIL
 class TestTheStoryAsJson:
     def test_its_id(self, recorded: Path) -> None:
         assert document(recorded, "S-0001")["id"] == "S-0001"
@@ -138,7 +136,6 @@ class TestTheStoryAsJson:
         assert document(recorded, "S-0001")["commit"] is None
 
 
-@XFAIL
 class TestTheFeatureAsJson:
     def test_its_id(self, recorded: Path) -> None:
         assert document(recorded, "F-0001")["id"] == "F-0001"
@@ -165,7 +162,6 @@ class TestTheFeatureAsJson:
         ] == [(1, "a developer sees it", ["S-0001"], False)]
 
 
-@XFAIL
 class TestTheTermAsJson:
     def test_its_name_kind_and_meaning(self, recorded: Path) -> None:
         shown = document(recorded, "gate")
@@ -189,7 +185,6 @@ class TestTheTermAsJson:
 
 
 class TestTheFormatOfShow:
-    @XFAIL
     @pytest.mark.parametrize("item", IDS)
     def test_it_is_printed_with_sorted_keys_an_indent_of_two_and_a_newline(
         self, recorded: Path, item: str
@@ -197,19 +192,16 @@ class TestTheFormatOfShow:
         out = printed(recorded, item, "--format", "json").out
         assert out == json.dumps(json.loads(out), indent=2, sort_keys=True) + "\n"
 
-    @XFAIL
     @pytest.mark.parametrize("item", IDS)
     def test_it_prints_the_same_bytes_twice(self, recorded: Path, item: str) -> None:
         first = printed(recorded, item, "--format", "json").out
         second = printed(recorded, item, "--format", "json").out
         assert second == json.dumps(json.loads(first), indent=2, sort_keys=True) + "\n"
 
-    @XFAIL
     @pytest.mark.parametrize("item", IDS)
     def test_the_format_text_prints_what_show_prints(self, recorded: Path, item: str) -> None:
         assert printed(recorded, item, "--format", "text").out == printed(recorded, item).out
 
-    @XFAIL
     def test_a_format_that_is_neither_is_refused_naming_both(self, recorded: Path) -> None:
         refusal = "--format 'xml' is not text or json, the two formats of show"
         assert refusal in printed(recorded, "S-0001", "--format", "xml").err

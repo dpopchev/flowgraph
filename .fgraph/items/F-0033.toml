@@ -11,3 +11,9 @@ criteria = [
     "a developer reads in the tables of docs/domain-model.md only the moves fgraph makes",
     "a user who gives --supersedes with a progress line is refused in one line, nothing written",
 ]
+
+[[knowledge]]
+kind = "finding"
+text = "Open, for the developer, asked with the draft of 2026-11-25 and not answered: (1) the order -- the coordinator recommends that U-0040, the tables of every state against every move, lands before F-0030, F-0031 and F-0032 start, as the net under their three refactorings, where the first pass has it last; it is filed under F-0033, the last of Phase 3, until the developer orders it. (2) Where a superseded governing line is said to a started work item, S-0172: fgraph brief, fgraph status or fgraph complete. (3) B-0025 may hold nothing now: BlockedWorkItem of work_item/model.py and RemovedTask of task/model.py exist and grep finds no passage of docs/domain-model.md saying a move is not built; it is checked when it is ordered."
+noted = 2026-11-25 09:04:49+00:00
+mark = "open"

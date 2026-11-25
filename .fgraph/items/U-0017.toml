@@ -10,6 +10,11 @@ completed = 2026-11-25 03:13:51+00:00
 agent = "haiku-u17"
 commit = "0ee2dc19"
 
+[verified]
+answer = "yes"
+text = "at 0ee2dc19 on main, the merge of wi/U-0017-raise-the-things-the, with fgraph of main: fgraph --help lists about as list the links of a work item, a Feature, a term or a file, by relation, and fgraph about --help says of ID the id of the work item or of the Feature, the name of the term or the path of the file. Before the landing, in the worktree: 257 tests of the parser and the help passed, ruff, the line limit and pyright clean, and the agent's make check, run again after a lint fix of its own line, said 5519 passed"
+on = 2026-11-25 03:14:30+00:00
+
 [criterion]
 given = "main, where fgraph about answers for an item, a term and a file since S-0075"
 when = "fgraph about --help is run"

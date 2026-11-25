@@ -10,6 +10,11 @@ completed = 2026-11-25 03:05:37+00:00
 agent = "haiku-u15"
 commit = "c0b90ad7"
 
+[verified]
+answer = "yes"
+text = "at c0b90ad7 on main, the merge of wi/U-0015-raise-the-parts-the, with fgraph of main in a throwaway record holding a Feature: fgraph amend F-0001 --then x exited 2 with fgraph: error: F-0001 has no then: a Feature is amended by its title, its description, its criteria and its terms, and --output x the same with no output: the refusal that named three parts names four. Read as the coordinator ruled on 2026-11-25: a bare fgraph amend F-0001, with no part at all, still prints amend rewrites no part of F-0001: name one, which names no part and was left as it is; the When of U-0015 says with no part to amend, so whether that line is to name the four parts too is the developer's to say. Before the landing, in the worktree: 100 tests of the amend passed, ruff, the line limit and pyright clean, and the agent's make check said 5500 passed"
+on = 2026-11-25 03:11:22+00:00
+
 [criterion]
 given = "a Feature in Backlog, which fgraph amend takes --about for since S-0072"
 when = "fgraph amend of the Feature is run with no part to amend"

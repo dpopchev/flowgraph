@@ -18,7 +18,6 @@ from flowgraph.cli import open_files, open_git, read_config, run
 
 pytestmark = pytest.mark.functional
 
-XFAIL = pytest.mark.xfail(strict=True, reason="S-0156: fgraph about takes no --format")
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 CRITERION = ("--given", "a state", "--when", "an action", "--then", "another")
 STORY_TITLE = "Raise the Stories fgraph lists from 0 to 1"
@@ -158,29 +157,24 @@ def canonical(text: str) -> str:
 
 
 class TestTheStoryAsJson:
-    @XFAIL
     def test_it_holds_its_id_kind_and_title(self, checkout: Checkout) -> None:
         story = document(checkout, "S-0001")
         assert (story["id"], story["kind"], story["title"]) == ("S-0001", "story", STORY_TITLE)
 
-    @XFAIL
     def test_it_holds_the_story_that_depends_on_it(self, checkout: Checkout) -> None:
         assert document(checkout, "S-0001")["depended_on_by"] == [
             {"bucket": "backlog", "id": "S-0002", "title": SECOND_TITLE}
         ]
 
-    @XFAIL
     def test_it_holds_the_terms(self, checkout: Checkout) -> None:
         assert document(checkout, "S-0001")["terms"] == [{"meaning": MEANING, "name": "gate"}]
 
-    @XFAIL
     def test_it_holds_the_knowledge(self, checkout: Checkout) -> None:
         lines = document(checkout, "S-0001")["knowledge"]
         assert [(line["kind"], line["text"], line["governs"]) for line in lines] == [
             ("decision", DECISION, ["work.txt"])
         ]
 
-    @XFAIL
     @pytest.mark.parametrize("relation", RELATIONS)
     def test_a_relation_that_holds_nothing_is_empty(
         self, checkout: Checkout, relation: str
@@ -189,16 +183,13 @@ class TestTheStoryAsJson:
 
 
 class TestTheTermAsJson:
-    @XFAIL
     def test_it_holds_its_name_kind_and_meaning(self, checkout: Checkout) -> None:
         term = document(checkout, "gate")
         assert (term["name"], term["kind"], term["meaning"]) == ("gate", "term", MEANING)
 
-    @XFAIL
     def test_it_holds_the_item_about_it(self, checkout: Checkout) -> None:
         assert document(checkout, "gate")["items"] == [{"id": "S-0001", "via": None}]
 
-    @XFAIL
     def test_it_holds_the_line_about_it(self, checkout: Checkout) -> None:
         lines = document(checkout, "gate")["knowledge"]
         assert [(line["item"], line["text"], line["via"]) for line in lines] == [
@@ -207,24 +198,20 @@ class TestTheTermAsJson:
 
 
 class TestTheFileAsJson:
-    @XFAIL
     def test_it_holds_its_path_and_kind(self, checkout: Checkout) -> None:
         file = document(checkout, "work.txt")
         assert (file["path"], file["kind"]) == ("work.txt", "file")
 
-    @XFAIL
     def test_it_holds_the_line_that_governs_it(self, checkout: Checkout) -> None:
         lines = document(checkout, "work.txt")["governed_by"]
         assert [(line["item"], line["text"]) for line in lines] == [("S-0001", DECISION)]
 
-    @XFAIL
     def test_it_holds_the_story_that_touched_it_with_its_commit(self, checkout: Checkout) -> None:
         touched = document(checkout, "work.txt")["touched_by"]
         assert [(each["id"], each["commit"], each["title"]) for each in touched] == [
             ("S-0001", checkout.story, STORY_TITLE)
         ]
 
-    @XFAIL
     def test_it_holds_the_task_that_touched_it_with_its_commit(self, checkout: Checkout) -> None:
         touched = document(checkout, "work.txt")["touched_by"]
         assert [(task["id"], task["commit"]) for task in touched[0]["tasks"]] == [
@@ -234,17 +221,14 @@ class TestTheFileAsJson:
 
 @pytest.mark.parametrize("item", ["S-0001", "gate", "work.txt"], ids=["story", "term", "file"])
 class TestEachDocument:
-    @XFAIL
     def test_it_is_printed_canonical(self, checkout: Checkout, item: str) -> None:
         printed = about(checkout, item, "--format", "json").out
         assert printed == canonical(printed)
 
-    @XFAIL
     def test_a_second_run_prints_the_same_bytes(self, checkout: Checkout, item: str) -> None:
         first = about(checkout, item, "--format", "json").out
         assert about(checkout, item, "--format", "json").out == canonical(first)
 
-    @XFAIL
     def test_the_text_format_prints_what_no_format_prints(
         self, checkout: Checkout, item: str
     ) -> None:
@@ -253,7 +237,6 @@ class TestEachDocument:
 
 
 class TestTheFormatRefused:
-    @XFAIL
     def test_a_format_that_is_neither_is_refused_naming_both(self, checkout: Checkout) -> None:
         assert "--format 'xml' is not text or json, the two formats of about" in (
             about(checkout, "S-0001", "--format", "xml").err

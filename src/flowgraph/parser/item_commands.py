@@ -2,6 +2,7 @@
 
 import argparse
 
+from flowgraph.about import document as about_document
 from flowgraph.graph import JSON
 from flowgraph.parser.amend import amend_command
 from flowgraph.parser.base import Commands, new_command
@@ -31,6 +32,12 @@ def item_commands(commands: Commands) -> dict[str, argparse.ArgumentParser]:
         commands, "about", "list the links of a work item or a Feature, by relation"
     )
     about.add_argument("id", metavar="ID", help="the id of the work item or of the Feature")
+    about.add_argument(
+        "--format",
+        default=about_document.TEXT,
+        metavar="FORMAT",
+        help=f"the format it prints: {about_document.TEXT}, the default, or {about_document.JSON}",
+    )
     brief = brief_command(commands)
     start = start_command(commands)
     block = new_command(commands, "block", "block a started work item, Task or Feature")

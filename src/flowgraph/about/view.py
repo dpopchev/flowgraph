@@ -13,6 +13,7 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import assert_never
 
+from flowgraph.about.document import TEXT, about_json, chosen_about_format
 from flowgraph.about.file import file_links, is_file_here, is_governed
 from flowgraph.about.links import (
     About,
@@ -183,13 +184,19 @@ def about_links(item: str, store: Store, directory: Path, open_git: OpenGit) -> 
             assert_never(unreachable)
 
 
-def about_item(item: str, store: Store, directory: Path, open_git: OpenGit) -> str:
-    """The text fgraph about gives of what is named: a work item, a Feature, a term or a file.
+def about_item(
+    item: str, store: Store, directory: Path, open_git: OpenGit, format_: str = TEXT
+) -> str:
+    """What fgraph about gives of what is named: a work item, a Feature, a term or a file.
 
-    The links of `about_links`, worded: a term after its head, the words of `fgraph show`.
-    Raises what `about_links` raises.
+    The links of `about_links`, as JSON or worded as text, a term after its head, the words of
+    `fgraph show`. The format is text or json, chosen first: raises AboutFormatError naming both
+    for another, before anything is read. Raises what `about_links` raises.
     """
+    chosen = chosen_about_format(format_)
     links = about_links(item, store, directory, open_git)
+    if chosen != TEXT:
+        return about_json(links)
     match links:
         case ItemLinks():
             return item_text(links)

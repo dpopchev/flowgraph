@@ -1,0 +1,9 @@
+id = "F-0025"
+state = "backlog"
+title = "Raise the steps of a work item fgraph mcp leaves to the shell that an agent makes as tools from none to two: the commit of a Task and the claim of the next work item"
+description = "Phase 1, Agent Execution Interface, Scope Gates and Governed Briefs: added on the word of the developer of 2026-11-25, it is important to include the MCP drafts, after the review of the WBS draft, Agent Execution Interface (JSON, MCP and Scoped Epistemics), whose row Local MCP Server and Path-Scoped Brief Injection asks for a commit tool, a next tool and a brief of the active rules and the terms of its paths. It holds the two tools, listed right after F-0022, whose moves they stand on (S-0159); the commit tool runs the command of S-0161 (F-0024). No next tool is filed: fgraph status --format json holds next_to_start and can_start, which the status tool of S-0157 returns. The Tasks of its work items are written before it starts."
+created = 2026-11-25 06:33:47+00:00
+criteria = [
+    "an agent commits the work of its started Task as a tool, a refusal returned as its one line",
+    "an agent claims the first work item of the Backlog that can start as a tool, naming none",
+]

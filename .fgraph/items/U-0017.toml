@@ -6,6 +6,7 @@ parent = "F-0023"
 complexity = "low"
 created = 2026-11-22 17:54:57+00:00
 started = 2026-11-25 02:43:08+00:00
+agent = "haiku-u17"
 
 [criterion]
 given = "main, where fgraph about answers for an item, a term and a file since S-0075"

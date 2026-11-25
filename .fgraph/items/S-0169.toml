@@ -44,3 +44,8 @@ kind = "finding"
 text = "Open, decided at the rework: the Then refuses the landing naming fgraph sync. The other readings: the landing runs the sync itself; or development.gate is set to make check in this repository, a configuration and no code, so the gate runs on the merge held, at about 9 minutes under the lock of main for each landing."
 noted = 2026-11-25 08:08:18+00:00
 mark = "open"
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25: add first-pass Tasks to each work item of F-0026 to F-0029, and review them once U-0018 and Q-0003 are completed. The Tasks of S-0169 (its three Tasks) are that first pass, written by the coordinator before either was completed: they build the refusal that names fgraph sync; the open finding of S-0169 holds the two other readings. Its Given was amended that day from a branch that does not hold the head of main to one that lacks a commit of main that changed a file outside the record: main moves by a write of the record at nearly every command, so the first wording would have refused nearly every landing. The coordinator reviews them once U-0018 and Q-0003 are completed and before S-0169 starts, and notes the review here as a decision naming each Task kept, amended or removed; until that line is here, S-0169 is not started."
+noted = 2026-11-25 08:20:45+00:00

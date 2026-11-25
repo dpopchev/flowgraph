@@ -6,6 +6,7 @@ parent = "F-0023"
 complexity = "low"
 created = 2026-11-22 11:20:25+00:00
 started = 2026-11-25 03:05:41+00:00
+agent = "haiku-u11"
 
 [criterion]
 given = "main, where fgraph note refuses none or two of --finding, --decision and --deviation, and the read of a file refuses a knowledge line of a kind it does not know"

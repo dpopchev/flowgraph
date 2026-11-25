@@ -6,6 +6,9 @@ parent = "F-0030"
 realizes = 3
 complexity = "medium"
 created = 2026-11-25 08:55:17+00:00
+depends_on = [
+    "U-0033",
+]
 
 [criterion]
 given = "main after the block and the unblock are stated once, where the start of a Task and of a Feature, the start of a work item against each of them, the complete of a Task and of a work item and the remove of a Task and of a Feature are near-literal copies"

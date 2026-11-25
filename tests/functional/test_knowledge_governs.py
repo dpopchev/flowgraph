@@ -15,10 +15,6 @@ from flowgraph.cli import open_files, run
 
 pytestmark = pytest.mark.functional
 
-XFAIL = pytest.mark.xfail(
-    strict=True, reason="S-0081: fgraph knowledge does not list the files a line governs"
-)
-
 # Each command with the day of January 2026 it is run on: the lines are noted on different days.
 SCRIPT = [
     (1, ["add", "term", "gate", "--means", "a check before a landing"]),
@@ -98,7 +94,6 @@ def recorded(tmp_path: Path) -> Path:
     return tmp_path
 
 
-@XFAIL
 def test_knowledge_lists_the_files_a_line_governs_at_its_end(recorded: Path) -> None:
     assert listed(recorded).out == (
         "2026-01-04  finding  S-0001#3  is the queue one file too  (open)  (about gate)"
@@ -108,7 +103,6 @@ def test_knowledge_lists_the_files_a_line_governs_at_its_end(recorded: Path) -> 
     )
 
 
-@XFAIL
 @pytest.mark.parametrize(
     "text",
     [
@@ -122,14 +116,12 @@ def test_knowledge_ends_a_line_as_show_ends_it(text: str, recorded: Path) -> Non
     )
 
 
-@XFAIL
 def test_knowledge_of_a_kind_lists_the_files_of_its_decision(recorded: Path) -> None:
     assert listed(recorded, "--kind", "decision").out == (
         "2026-01-03  decision  S-0001#2  keep one store  (governs src/store.py, src/files.py)\n"
     )
 
 
-@XFAIL
 def test_knowledge_about_a_term_lists_the_files_of_its_finding(recorded: Path) -> None:
     assert listed(recorded, "--about", "gate").out.splitlines()[0] == (
         "2026-01-04  finding  S-0001#3  is the queue one file too  (open)  (about gate)"

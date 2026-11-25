@@ -1,7 +1,7 @@
 """The criterion of B-0033: a progress line given --standing or --open is refused, not marked.
 
 Run end to end through `run` on a record in a temporary directory, through the file adapters of
-the package; no git is opened. The red tests are strict xfails until the refusal is wired.
+the package; no git is opened.
 """
 
 from collections.abc import Sequence
@@ -15,7 +15,6 @@ from flowgraph.cli import open_files, run
 
 pytestmark = pytest.mark.functional
 
-XFAIL = pytest.mark.xfail(strict=True, reason="B-0033: a progress line drops the mark it is given")
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 ADD_STORY = ["add", "story", "a title", "--given", "a", "--when", "b", "--then", "c"]
 ADD_TASK = ["add", "task", "a task title", "--parent", "S-0001", "--output", "an output"]
@@ -67,7 +66,6 @@ def record(tmp_path: Path) -> Path:
     return tmp_path
 
 
-@XFAIL
 @pytest.mark.parametrize(
     ("item", "option"),
     [("S-0001", "--standing"), ("S-0001", "--open"), ("T-0001", "--standing")],
@@ -83,7 +81,6 @@ def test_a_progress_line_given_a_mark_is_refused_naming_its_option(
     )
 
 
-@XFAIL
 def test_a_progress_line_given_a_mark_leaves_the_file_of_the_work_item_as_it_was(
     record: Path,
 ) -> None:

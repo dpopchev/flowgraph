@@ -17,3 +17,8 @@ mark = "open"
 kind = "decision"
 text = "The developer decided on 2026-11-25: Phase 2, Concurrent Worktree and Merge Ergonomics, takes priority over the remaining work once Phase 1 is completed (F-0021, F-0022, F-0025). Its order in the Backlog: U-0018 first, then the Spike Q-0003, then the four Features filed as drafted, to be reworked -- F-0026, F-0027, F-0028 and F-0029 -- and the rest of the Backlog below them, unchanged. The drafted Features hold no work item yet; no item of the Backlog is moved under them or removed."
 noted = 2026-11-25 07:51:37+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25: add first-pass Tasks to each work item of F-0026 to F-0029, and remember to review them once U-0018 and Q-0003 are completed. Filed that day: the first-pass Tasks of S-0166, S-0167, S-0168 and S-0169, each opening with the words FIRST PASS and each Story holding the decision that its Tasks are reviewed before it starts. The review is the coordinator's, made once U-0018 and Q-0003 are completed and noted on each Story; none of the four Stories is started before its review is noted."
+noted = 2026-11-25 08:20:56+00:00

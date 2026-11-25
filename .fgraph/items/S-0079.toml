@@ -1,5 +1,5 @@
 id = "S-0079"
-state = "started"
+state = "blocked"
 title = "Raise the refusal of fgraph start of a work item under a Feature not started from naming the Feature to naming the command that starts it"
 description = "Found during T-0301 of S-0073 on 2026-11-22, under the burn of the Backlog; filed at the end of the queue and not burned. It says S-0001 cannot start: F-0001 is not started, start it first. Its Tasks are written when it is ordered."
 parent = "F-0023"
@@ -8,6 +8,9 @@ complexity = "low"
 created = 2026-11-22 17:29:55+00:00
 started = 2026-11-25 01:42:47+00:00
 agent = "haiku-s79"
+since = 2026-11-25 01:54:47+00:00
+reason = "the checks of T-0686 and T-0687, written by the coordinator on 2026-11-25, cannot pass: they grep start it first, words 26 other lines of src and tests and five lines of README.md and docs/domain-model.md hold in the refusal X is in Backlog: start it first, in files the Tasks do not name. Decision needed, a change to two Tasks of a started work item: the two greps read is not started, start it first, the refusal S-0079 rewords, alone. The work of T-0686 is done and not committed in the worktree, in four files the Task names; 400 tests of it pass"
+waiting_on = "developer"
 
 [criterion]
 given = "a Story under a Feature in Backlog"

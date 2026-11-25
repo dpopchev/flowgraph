@@ -11,6 +11,11 @@ completed = 2026-11-25 01:37:59+00:00
 agent = "sonnet-s154"
 commit = "0fa05cbe"
 
+[verified]
+answer = "yes"
+text = "at 0fa05cbe on main, the merge of wi/S-0154-raise-the-items-fgraph, with fgraph of main after the three landings of F-0018 in a throwaway repository holding a Story under a Feature, both about a term: fgraph show --format json of S-0001 printed one JSON document of 27 keys, of F-0001 one of 12 keys and of the term gate one of 10 keys, each the same bytes on two runs; fgraph show S-0001 --format xml exited 2 with fgraph: error: --format 'xml' is not text or json, the two formats of show. Before the landing, in the worktree, make check said 5319 passed and 14 failed, the 14 being the tests of a directory outside a git work tree run with a temporary directory the coordinator had put inside one; run again with it outside any repository the 14 passed. After the three landings, on main: 1325 tests of show, knowledge, about, the parser and the status passed, ruff, the line limit and pyright clean"
+on = 2026-11-25 01:41:24+00:00
+
 [criterion]
 given = "a record with a Feature, a Story under it that holds a Task and a knowledge line, and a term"
 when = "fgraph show is run with --format json on the Story, on the Feature and on the term"

@@ -88,3 +88,8 @@ task = "T-0727"
 text = "red: 12 failed, 98 passed (functional/test_commit_task.py, test_command_help[commit], tests/parser/test_help.py: no commit command)"
 noted = 2026-11-25 06:57:39+00:00
 task = "T-0728"
+
+[[progress]]
+text = "red: grep -q 'fgraph commit T-0001 --message' README.md exited 1 before the edit (no such text in either file)"
+noted = 2026-11-25 07:01:13+00:00
+task = "T-0729"

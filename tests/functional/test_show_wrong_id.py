@@ -1,8 +1,8 @@
-"""The criterion of fgraph show given a wrong id: it names every kind it takes, the Feature too.
+"""The criterion of fgraph show given a wrong id: it names every kind, the Feature and the term.
 
-`fgraph show` takes the id of a Story, an Upkeep, a Bug, a Spike or a Feature; a Feature id below
-1 is refused as a Feature id. Run end to end on a record in a temporary directory, through the
-file adapters of the package.
+`fgraph show` takes the id of a Story, an Upkeep, a Bug, a Spike or a Feature, or the name of a
+term; a Feature id below 1 is refused as a Feature id. Run end to end on a record in a temporary
+directory, through the file adapters of the package.
 """
 
 from datetime import UTC, datetime
@@ -37,10 +37,13 @@ def refusal(text: str, cwd: Path) -> tuple[int, list[str]]:
 @pytest.mark.parametrize(
     "text", ["X-0001", "T-0001", "S-0000"], ids=["no-kind", "task", "below-one"]
 )
-def test_show_of_no_id_it_takes_exits_with_two_and_names_every_kind_and_the_feature(
+def test_show_of_no_id_it_takes_exits_with_two_and_names_every_kind_the_feature_and_the_term(
     text: str, tmp_path: Path
 ) -> None:
-    named = f"fgraph: error: '{text}' is no Story, Upkeep, Bug, Spike or Feature id"
+    named = (
+        f"fgraph: error: '{text}' is no Story, Upkeep, Bug, Spike or Feature id"
+        " nor the name of a term"
+    )
     assert refusal(text, tmp_path) == (2, [named])
 
 

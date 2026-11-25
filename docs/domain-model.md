@@ -1720,10 +1720,11 @@ and its merge tool.
   work item is added, and `fgraph show` lists its criteria and its work items
   with their buckets.
 - `fgraph show` takes the id of a work item of any kind or of a Feature
-  (B-0003). A text that is neither is refused naming every kind and the
-  Feature, `'T-0001' is no Story, Upkeep, Bug, Spike or Feature id`; a text
-  written `F-` and a number below 1 is refused as a Feature id,
-  `a Feature id counts from 1: 0 is below 1`.
+  (B-0003). A text that is neither an id nor the name of a term is refused
+  naming every kind, the Feature and the term, `'T-0001' is no Story, Upkeep,
+  Bug, Spike or Feature id nor the name of a term`; a text written `F-` and a
+  number below 1 is refused as a Feature id, `a Feature id counts from 1: 0 is
+  below 1`.
 - `fgraph start`, `fgraph complete`, `fgraph amend` and `fgraph remove` take
   a Feature too, so their refusal of a wrong id names it (B-0018): start and
   complete, which take a Task as well, `'X-1' is no Story, Upkeep, Bug,

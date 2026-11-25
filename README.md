@@ -734,6 +734,15 @@ fgraph status
 # fgraph: error: /src/project/.fgraph/items/S-0002.toml holds no Story: created = 2026-10-11 is a time with no offset: write it with one, as 2026-01-01 09:00:00+00:00
 ```
 
+A file that holds a key or a state fgraph does not keep is refused in one line that
+names the file and the key or the state, never the lines of the validator:
+
+```sh
+fgraph status
+# fgraph: error: /src/project/.fgraph/items/S-0001.toml holds no Story: token is no key of the state backlog
+# fgraph: error: /src/project/.fgraph/items/S-0001.toml holds no Story: started is missing, which the state blocked takes
+```
+
 A work item can name the one it was found during: `--filed-during ID` of
 `fgraph add`, of every kind of work item, once. The other work item has no
 say in it, and `fgraph show` lists it from both sides, the second read from the

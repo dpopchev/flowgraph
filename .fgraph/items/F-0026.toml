@@ -6,3 +6,9 @@ created = 2026-11-25 07:46:25+00:00
 criteria = [
     "Parallel item and knowledge creation across two active worktrees never produces colliding .fgraph/ filenames",
 ]
+
+[[knowledge]]
+kind = "finding"
+text = "Seen by the coordinator on 2026-11-25 while reviewing the draft, for its rework: the next Task id is already one above the highest in the record of every worktree (docs/domain-model.md, Persistence), and two Tasks added that day in two worktrees, one after the other, got T-0718 and T-0719; a work item is added on main under its lock (B-0035); the record holds no K-* item. Not seen either way: two adds made at the same moment in two worktrees, each under the lock of its own copy -- the question of Q-0003."
+noted = 2026-11-25 07:47:19+00:00
+mark = "open"

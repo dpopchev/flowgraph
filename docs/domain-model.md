@@ -1268,6 +1268,25 @@ writes of main and those of the worktree of a work item? Its evidence is in four
 Where a call is written, The mcp package and Answer; each is measured on a probe that is a
 throwaway of `local/scratch/q2/`, never committed.
 
+`fgraph mcp` serves the commands of fgraph as tools of the Model Context Protocol to an agent
+session over stdio, with no shell (S-0157, on the decision of Q-0002). It reads one JSON-RPC 2.0
+message a line on stdin and writes one reply a line on stdout and nothing else there. `initialize`
+answers the version asked when it is one of 2025-11-25, 2025-06-18, 2025-03-26 and 2024-11-05,
+else 2025-11-25, the capability `tools` and `serverInfo` fgraph; `ping`, `tools/list` and
+`tools/call` are answered; a notification is given no reply; any other method is answered -32601,
+so a client that asks first a newer method, as Claude Code asks `server/discover`, falls back. A
+line that is no JSON is -32700 and one that is no message -32600, with the id null; a tool it does
+not hold is -32602 and a run that raised -32603; arguments a tool does not take are a tool error
+naming the first one. Here each call is a run of fgraph in the directory it names, `run()` of
+`src/flowgraph/cli.py` in process on the effects `main()` gives it, so one server writes main and
+the worktree of a work item; the result is what the command printed, a refusal its one line as a
+tool error (`isError`). `mcp` writes nothing itself and is of `READS`, so the server holds no lock
+while it serves and each write takes its own as the command line does; it needs no record; it
+exits 0 when stdin closes. The tool of S-0157 is `status`, its one argument `directory`, returning
+what `fgraph status --format json` prints there. The modules are `src/flowgraph/mcp/tools.py` (a
+tool as data), `reads.py` (the reads), `protocol.py` (the reply to a line) and
+`src/flowgraph/mcp/stdio.py` (the shell).
+
 ### Wire
 
 The probe is a server of about 120 lines on the standard library and pydantic: it reads one
@@ -2983,7 +3002,7 @@ seconds, then exits 2 with the line below, nothing written, and is run again:
 ```
 
 The views take none: `status`, `watch`, `show`, `about`, `brief`,
-`knowledge`, `terms`, `graph` and `goal`, the `READS` of
+`knowledge`, `terms`, `graph`, `goal` and `mcp`, which writes nothing itself, the `READS` of
 `src/flowgraph/parser/locked.py`, and `config show`; every other command,
 and one added later until it is listed there, takes it. A landing holds it
 through its gate, so another write of `main` waits or is refused meanwhile,

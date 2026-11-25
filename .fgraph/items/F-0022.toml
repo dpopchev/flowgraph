@@ -14,3 +14,8 @@ criteria = [
 kind = "decision"
 text = "The developer gave the go on 2026-11-24, with the word file, to the plan shown that day (F-0018, its decision). For F-0022: the command is fgraph mcp; its first work item is the Spike Q-0002, on a third runtime dependency and on where a call is written; no tool commits, fgraph holding no such command, and no tool takes the approval of a landing."
 noted = 2026-11-24 19:56:11+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer decided on 2026-11-25, with the word keep, on the review of a WBS draft, Agent Execution Interface (JSON, MCP and Scoped Epistemics), against Phase 1 as filed: Phase 1 is finished as filed, F-0023, F-0021 and F-0022 unchanged. What the draft asks beyond it -- K-* knowledge records, the built-in terms kept apart from those of a project, a brief scoped by path for its terms, a report of the pass or fail of a criterion, a commit tool and a next tool over MCP -- is planned as a next phase once F-0022 lands, and is not filed now. The refusal as JSON with error codes and the lease with session metadata stay ruled out by the decisions of 2026-11-24 (F-0018, F-0019)."
+noted = 2026-11-25 05:15:20+00:00

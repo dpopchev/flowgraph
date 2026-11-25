@@ -4,6 +4,7 @@ title = "Cut the progress lines fgraph note takes with --supersedes, which it do
 description = "Filed at the end of the Backlog, outside Phase 1; it changes the lines B-0033 changes, so it is built after it. Its Tasks are written when it is ordered."
 parent = "F-0033"
 realizes = 6
+complexity = "low"
 created = 2026-11-24 22:20:19+00:00
 filed_during = "B-0033"
 

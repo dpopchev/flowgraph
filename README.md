@@ -64,6 +64,7 @@ the typed edges of the whole record as JSON.
 | the release of the trunk        | `fgraph release` tags `main` with its next `v*` version  |
 | the links of an item            | `fgraph about` lists every relation, both sides, by id   |
 | the brief of a work item        | `fgraph brief` prints it whole, as text or as JSON       |
+| the commit of a Task            | `fgraph commit` commits the files its brief names        |
 | the /goal line of a Feature     | `fgraph goal` prints it, for a developer to paste        |
 | the export of the record        | `fgraph graph` prints its nodes and edges as JSON        |
 | the ontology                    | started: terms, related by is-a and part-of              |
@@ -273,6 +274,20 @@ fgraph brief S-0002 --not-named
 # docs/notes.md
 # the answer once no Task is started:
 # fgraph: error: S-0002 has no started Task: --not-named reads the brief of the Task started
+```
+
+Then `fgraph commit T-0001 --message TEXT` commits them: every file changed and not committed in
+the work tree of the started Task, in one commit whose message is the text given with the ids of
+the work item and the Task at its end. It says the sha, which `fgraph complete` takes, and does
+not complete the Task. A changed file the brief does not name refuses the whole commit, exit 2,
+and nothing is committed:
+
+```sh
+fgraph commit T-0001 --message 'fix: name the gate'
+# committed T-0001 of S-0001 at 3e9ae5c...
+fgraph complete T-0001 --commit 3e9ae5c
+# a file the brief does not name:
+# fgraph: error: T-0001 cannot commit: its brief does not name other.txt -- nothing is committed; take each back or have the brief name it
 ```
 
 `fgraph goal F-0001` prints one `/goal` line for a developer to paste into Claude

@@ -10,6 +10,7 @@ from pathlib import Path
 
 from flowgraph.development import RunGate
 from flowgraph.development.commit import OpenGit, Said, commit_written
+from flowgraph.development.commit_task import commit_task
 from flowgraph.development.land import land_item
 from flowgraph.development.release import release_trunk
 from flowgraph.development.remove_started import branch_removed
@@ -222,6 +223,8 @@ def command_said(
             return commit_written(done.written, store, record, open_git, done.config)
         case "config":
             return Said(show_config(config))
+        case "commit":
+            return commit_task(args.id, args.message, store, record, open_git)
         case "land":
             decision = decision_given(args)
             return land_item(

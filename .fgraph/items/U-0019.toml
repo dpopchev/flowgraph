@@ -48,3 +48,8 @@ description = "FIRST PASS, written on 2026-11-25 before Phase 2 was completed: t
 check = "grep -q 'tests/test_subpackage_imports.py' README.md && grep -q 'the check of its relations at the read' README.md"
 expected_output = "changed: README.md, under its table of the subpackages of src/flowgraph/, says make check refuses two subpackages that import each other beyond the pairs left to cut, named in tests/test_subpackage_imports.py (U-0019), and its rows of graph/ and relation/ say graph/ checks the relations at the read"
 created = 2026-11-25 10:52:59+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "The developer said on 2026-11-25: put Tasks on the work items of Phase 3; those will be reviewed before the phase starts. The Tasks of U-0019 (its 4 Tasks: T-0832, T-0835, T-0836, T-0837) are that first pass, drafted that day by a read-only subagent against the code of main at 2dc58f08 and filed by the coordinator, who checked their shape -- the opening sentence, the check, that the files they name are on the disk or said to be new -- and read their titles, outputs, checks and open points, not every description. They are reviewed before Phase 3 starts, the review noted here as a decision naming each Task kept, amended or removed; until that line is here, U-0019 is not started."
+noted = 2026-11-25 10:53:50+00:00

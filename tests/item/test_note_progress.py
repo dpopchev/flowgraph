@@ -121,3 +121,23 @@ def test_a_progress_line_of_a_task_the_record_does_not_hold_is_refused() -> None
 def test_a_progress_line_of_a_text_that_is_no_id_is_refused() -> None:
     with pytest.raises(ItemIdError):
         note_progress("nope", "a text", store([STARTED], []), lambda: ON)
+
+
+@pytest.mark.parametrize("mark", ["standing", "open"])
+def test_a_progress_line_given_a_mark_is_refused_naming_its_option(mark: str) -> None:
+    line = f"a progress line takes no --{mark}: it is no knowledge line"
+    with pytest.raises(ProgressLineError, match=f"^{re.escape(line)}$"):
+        note_progress("S-0001", "a text", store([STARTED], []), lambda: ON, mark=mark)
+
+
+def test_a_progress_line_given_a_mark_saves_nothing() -> None:
+    saved: list[WorkItemState] = []
+    with pytest.raises(ProgressLineError):
+        note_progress("S-0001", "a text", store([STARTED], saved), lambda: ON, mark="standing")
+    assert saved == []
+
+
+def test_a_progress_line_of_a_task_given_a_mark_is_refused_naming_its_option() -> None:
+    line = "a progress line takes no --standing: it is no knowledge line"
+    with pytest.raises(ProgressLineError, match=f"^{re.escape(line)}$"):
+        note_progress("T-0001", "a text", store([STARTED], []), lambda: ON, mark="standing")

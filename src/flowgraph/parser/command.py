@@ -152,7 +152,9 @@ def _written(
         case "remove":
             return remove_named(args.id, args.reason, store, now, args.superseded_by)
         case "note" if args.progress is not None:
-            return note_progress(args.id, args.progress, store, now, args.about, args.governs)
+            return note_progress(
+                args.id, args.progress, store, now, args.about, args.governs, args.mark
+            )
         case "note":
             kind, text = next(
                 (kind, text)

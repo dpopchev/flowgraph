@@ -16,30 +16,39 @@ expected = "a progress line given --standing or --open is refused, exit 2, namin
 
 [[tasks]]
 id = "T-0688"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_note_progress_mark.py, failing on the criterion of B-0033"
 description = "One new file, no source change: tests/functional/test_note_progress_mark.py (about 80 lines), functional as its pytestmark, one assert per test, through run() of src/flowgraph/cli.py with open_store=open_files, open_git=lambda _: None and no git. Seen on 2026-11-24 in a throwaway record with fgraph of main (692df24): fgraph note S-0002 --progress 'half way' --standing exits 0 and prints noted S-0002, --open the same, and fgraph show S-0002 lists both under Progress (2) with no mark; fgraph note T-0001 --progress y --open prints noted T-0001 of S-0002, exit 0; while --about gate and --governs a.py with --progress exit 2 with a progress line takes no --about and no --governs: it is no knowledge line. Copy from tests/functional/test_note_progress.py: NOW, ADD_STORY, ADD_TASK, RECORD, Outcome, fgraph(argv, cwd), runs(cwd, *argvs) and the fixture record (S-0001 started, its T-0001 started). XFAIL = pytest.mark.xfail(strict=True, reason='B-0033: a progress line drops the mark it is given'). Red tests, each under XFAIL: (1) parametrized (item, option) with ids standing, open, task: (S-0001, --standing), (S-0001, --open), (T-0001, --standing): (status, err.splitlines()[-1:]) of fgraph note <item> --progress 'a text' <option> == (2, [f'fgraph: error: a progress line takes no {option}: it is no knowledge line']); (2) the text of .fgraph/items/S-0001.toml before and after fgraph note S-0001 --progress 'a text' --standing is the same. Guard, no mark, passing today and after: (3) runs of [note, S-0001, --finding, x, --standing] and [show, S-0001]: its output holds the line '  finding  2026-01-01  x  (standing)'. See each marked test fail under --runxfail on the property in its name, none on the arrangement. Existing tests: none changes; if one fails, stop and say which. Out of bounds: every file under src/, every other test file, the docs."
 check = "uv run pytest tests/functional/test_note_progress_mark.py -q -p no:cacheprovider && grep -q xfail tests/functional/test_note_progress_mark.py"
 expected_output = "created: tests/functional/test_note_progress_mark.py states that fgraph note S-0001 --progress TEXT --standing, the same with --open, and fgraph note T-0001 --progress TEXT --standing, exit 2 with the last error line fgraph: error: a progress line takes no --standing: it is no knowledge line (no --open for --open) and leave the file of S-0001 as it was; and, as a guard, that a finding with --standing is kept with its mark. Each red test carries a strict xfail naming B-0033"
 created = 2026-11-24 22:17:40+00:00
+started = 2026-11-25 01:46:39+00:00
+completed = 2026-11-25 01:47:50+00:00
+commit = "86dc893b"
 
 [[tasks]]
 id = "T-0689"
-state = "backlog"
+state = "completed"
 title = "Refuse a progress line given --standing or --open, naming the option"
 description = "src/flowgraph/item/progress.py (60 lines on 2026-11-24, about 66 after): note_progress gains a last parameter mark: str | None = None, the word the options --standing and --open store under dest mark (const standing or open, src/flowgraph/parser/knowledge.py); add NO_MARK = 'a progress line takes no --{mark}: it is no knowledge line' with its comment line; right after the check of about and governs, when mark is not None raise ProgressLineError(NO_MARK.format(mark=mark)), before the id is read, so nothing is loaded or saved; the docstring says ProgressLineError is raised for a Feature, with terms or files, or with a mark, naming its option. src/flowgraph/parser/command.py (237 lines on 2026-11-24, 239 after; make lines holds 250): in the case note if args.progress is not None (grep 'note_progress(args.id'), pass args.mark as the last argument, the call wrapped over three lines to stay within 100 columns; nothing else of that file changes. Red first: the new parameter as a typed stub that is never read, the tests below seen failing, then the check. Tests in tests/item/test_note_progress.py (123 lines, command as its pytestmark, about 140 after), one assert each: a progress line given a mark is refused naming its option, parametrized on mark standing and open: pytest.raises(ProgressLineError, match=f'^{re.escape(line)}$') with line 'a progress line takes no --standing: it is no knowledge line' and the same with --open, of note_progress('S-0001', 'a text', store([STARTED], []), lambda: ON, mark=mark); a progress line given a mark saves nothing: the saved list is [] after the refusal; a progress line of a Task given a mark is refused the same (T-0001). Then remove XFAIL and its marks from tests/functional/test_note_progress_mark.py, each red test seen failing before the wiring of command.py. Existing tests: none changes, mark defaulting to None; if one fails, stop and say which. Out of bounds: src/flowgraph/parser/knowledge.py (the options stay), src/flowgraph/knowledge/, src/flowgraph/work_item/progress.py, src/flowgraph/parser/refusals.py (ProgressLineError is listed already), every other file of src/ and of tests/, the docs."
 check = "uv run pytest tests/item/test_note_progress.py tests/functional/test_note_progress.py tests/functional/test_note_progress_mark.py tests/functional/test_note_progress_branch.py tests/parser -q -p no:cacheprovider && ! grep -q xfail tests/functional/test_note_progress_mark.py && uv run pyright && make lines"
 expected_output = "changed: note_progress of src/flowgraph/item/progress.py takes mark and raises ProgressLineError a progress line takes no --standing: it is no knowledge line (no --open: for open) when a mark is given, nothing saved, after the refusal of --about and --governs; command_said of src/flowgraph/parser/command.py passes args.mark; tests/item/test_note_progress.py states it. No xfail mark is left in tests/functional/test_note_progress_mark.py"
 created = 2026-11-24 22:17:55+00:00
+started = 2026-11-25 01:48:16+00:00
+completed = 2026-11-25 01:57:09+00:00
+commit = "b510e966"
 
 [[tasks]]
 id = "T-0690"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say a progress line given --standing or --open is refused"
 description = "Change README.md (3367 lines on 2026-11-24) and docs/domain-model.md (3343 lines on 2026-11-24) only, more once F-0019, F-0020 and F-0018 land; find each passage by grep, never by line number; plain ASCII; no source or test change. Write the refusal exactly as NO_MARK of src/flowgraph/item/progress.py words it for --standing, and keep the words a progress line takes no --standing: it is no knowledge line on one line in each file: the check greps them. docs/domain-model.md: in the bullet starting A progress line is one `[[progress]]` table (grep -n 'A progress line is one' docs/domain-model.md), in its list of what is refused, right after the clause of --about or --governs, add `--standing` or `--open`, the option given named (`a progress line takes no --standing: it is no knowledge line`, B-0033): a mark is for a knowledge line, and a progress line keeps none. README.md: in the paragraph starting A work item also keeps progress lines (grep -n 'A work item also keeps progress lines' README.md), it takes no `--about` and no `--governs` becomes it takes no `--about`, no `--governs`, no `--standing` and no `--open`, each refused naming the option, as `a progress line takes no --standing: it is no knowledge line`. Keep each edit inside its bullet or paragraph. If grep -n 'B-0033' of the two files finds a line when this Task runs (none today), make it true and say so."
 check = "grep -q 'a progress line takes no --standing: it is no knowledge line' README.md && grep -q 'a progress line takes no --standing: it is no knowledge line' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, in the bullet of the progress line, lists --standing and --open among its refusals with the line a progress line takes no --standing: it is no knowledge line; README.md says a progress line takes no --standing and no --open, with the line"
 created = 2026-11-24 22:18:08+00:00
+started = 2026-11-25 01:57:40+00:00
+completed = 2026-11-25 01:58:50+00:00
+commit = "b938933f959f9d9268a9c6388d22b284dfd2a33b"
 
 [[knowledge]]
 kind = "decision"

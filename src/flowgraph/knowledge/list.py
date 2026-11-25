@@ -193,14 +193,14 @@ def collected(store: Store) -> list[KnowledgeEntry]:
     return entries
 
 
-def show_knowledge(
+def listed_knowledge(
     kind: str | None,
     about: str | None,
     store: Store,
     search: str | None = None,
     live: bool = False,
-) -> str:
-    """The text fgraph knowledge gives: the lines of the record, of that kind when one is named.
+) -> list[KnowledgeEntry]:
+    """The entries fgraph knowledge lists for the options, newest first: both formats read them.
 
     The lines about that term alone when one is named, and those whose text holds the search when
     one is given. With live the live lines alone: the supersede is read over every line of the
@@ -214,6 +214,20 @@ def show_knowledge(
     lines = collected(store)
     if live:
         lines = live_entries(lines)
+    return newest_first(holding(lines, text), narrowed, term)
+
+
+def show_knowledge(
+    kind: str | None,
+    about: str | None,
+    store: Store,
+    search: str | None = None,
+    live: bool = False,
+) -> str:
+    """The text fgraph knowledge gives: the lines of the record, of that kind when one is named.
+
+    It is the text of listed_knowledge for the same options; the refusals are listed_knowledge's.
+    """
     return knowledge_text(
-        newest_first(holding(lines, text), narrowed, term), narrowed, term, text, live
+        listed_knowledge(kind, about, store, search, live), kind, about, search, live
     )

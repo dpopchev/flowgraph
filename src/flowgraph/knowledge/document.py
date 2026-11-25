@@ -9,7 +9,8 @@ import json
 from collections.abc import Iterable
 from typing import Any
 
-from flowgraph.knowledge.list import KnowledgeEntry
+from flowgraph.knowledge.list import KnowledgeEntry, listed_knowledge, show_knowledge
+from flowgraph.record.store import Store
 
 # The two formats of knowledge; the first is the default.
 TEXT = "text"
@@ -53,3 +54,22 @@ def knowledge_json(entries: Iterable[KnowledgeEntry]) -> str:
     """The lines as one JSON document, {lines: [...]}, each line with its nine fields."""
     document = {"lines": [_line(entry) for entry in entries]}
     return json.dumps(document, indent=2, sort_keys=True) + "\n"
+
+
+def knowledge_output(
+    format_: str,
+    kind: str | None,
+    about: str | None,
+    store: Store,
+    search: str | None = None,
+    live: bool = False,
+) -> str:
+    """The output of fgraph knowledge in the format asked for: the same lines in either format.
+
+    Raises KnowledgeFormatError before the record is read when the format is neither, and the
+    refusals of listed_knowledge; nothing is written.
+    """
+    chosen = chosen_knowledge_format(format_)
+    if chosen == JSON:
+        return knowledge_json(listed_knowledge(kind, about, store, search, live))
+    return show_knowledge(kind, about, store, search, live)

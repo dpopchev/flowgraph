@@ -6,6 +6,7 @@ parent = "F-0023"
 complexity = "low"
 created = 2026-11-22 16:55:40+00:00
 started = 2026-11-25 02:29:48+00:00
+agent = "haiku-u14"
 
 [criterion]
 given = "the worktree of a started work item"

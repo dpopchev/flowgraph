@@ -1,11 +1,13 @@
 id = "S-0154"
-state = "backlog"
+state = "started"
 title = "Raise the items fgraph show prints as JSON from none to every one: a work item, a Feature and a term"
 description = "New on the plan agreed on 2026-11-24. Seen on 2026-11-24 at 2d612af on main. fgraph show S-0002 --format json exits 2 with unrecognized arguments: --format json. The contract is that of the JSON of fgraph brief (docs/domain-model.md, Brief): sorted keys, an indent of two, null and [] for nothing. Its Tasks are written before its Feature starts."
 parent = "F-0018"
 realizes = 1
 complexity = "medium"
 created = 2026-11-24 19:51:23+00:00
+started = 2026-11-25 00:26:57+00:00
+agent = "sonnet-s154"
 
 [criterion]
 given = "a record with a Feature, a Story under it that holds a Task and a knowledge line, and a term"

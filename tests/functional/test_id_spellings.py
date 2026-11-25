@@ -75,5 +75,8 @@ def test_show_of_x15_is_refused_as_a_term_missing_from_the_record(record: Path) 
 
 @pytest.mark.parametrize("text", ["sp-15", "f-0"])
 def test_show_of_a_text_that_is_no_id_is_refused_echoed_as_typed(text: str, record: Path) -> None:
-    named = f"fgraph: error: '{text}' is no Story, Upkeep, Bug, Spike or Feature id"
+    named = (
+        f"fgraph: error: '{text}' is no Story, Upkeep, Bug, Spike or Feature id"
+        " nor the name of a term"
+    )
     assert refusal(text, record) == (2, [named])

@@ -14,6 +14,11 @@ depends_on = [
     "S-0159",
 ]
 
+[verified]
+answer = "yes"
+text = "run on main at de5975f4, which holds the landing 42edfdc3, on 2026-11-25: in two throwaway git repositories under local/scratch/s160 with the development on and the gate echo gated, each holding a started Story whose one Task is completed, one session of Claude Code 2.1.332 in print mode on haiku, given fgraph mcp of main by --mcp-config with --strict-mcp-config, listed thirteen tools -- about, block, brief, complete, hand, knowledge, land, note, show, start, status, unblock and verify -- and called three, read from the stream of the session: under approver agent, land of S-0001 with a message answered landed S-0001 at 23e0c7d and the run line, the word gated its gate printed not in the text, and verify with the answer yes and the text it holds answered verified S-0001; fgraph show S-0001 there lists bucket completed, commit 23e0c7d, the commit feat: land S-0001 of git log, and verified yes 2026-11-25 it holds. Under approver developer, land of S-0001 came back is_error true with the one text fgraph: error: S-0001 cannot land: development.approver = developer, the landing waits for the developer -- run fgraph land S-0001 --approved once the developer approves it, and S-0001 is still in-progress. Worked whole by one subagent on sonnet, its branch read by the coordinator: 7 files, each named by a Task; make check on the branch at e078152f: 5770 passed, all checks passed; make check on main before this landing, S-0157, S-0158 and S-0159 together: 5752 passed."
+on = 2026-11-25 10:27:40+00:00
+
 [criterion]
 given = "the server of fgraph mcp on a repository with the development on and a started Story whose Tasks are all completed"
 when = "the session calls the tool that lands the Story and then the one that keeps the answer of its closing"

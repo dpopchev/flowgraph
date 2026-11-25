@@ -65,3 +65,8 @@ task = "T-0733"
 text = "red: 3 failed, 16 passed (start with no id refused: id Field required; the schema of start requires directory and id)"
 noted = 2026-11-25 10:19:53+00:00
 task = "T-0734"
+
+[[progress]]
+text = "red: check failing (the sentence with no id the tool start takes the first line of the Backlog that can start is in neither README.md nor docs/domain-model.md)"
+noted = 2026-11-25 10:23:34+00:00
+task = "T-0735"

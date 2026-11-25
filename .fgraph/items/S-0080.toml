@@ -79,3 +79,8 @@ task = "T-0678"
 text = "red: is_touched stub: 6 failed (NotImplementedError); functional file before wiring under --runxfail: 5 failed, 12 passed"
 noted = 2026-11-25 07:34:24+00:00
 task = "T-0679"
+
+[[progress]]
+text = "red: the check before the edit: grep -q 'A file a later commit deleted is answered' README.md exited 1 (phrase absent)"
+noted = 2026-11-25 07:56:42+00:00
+task = "T-0680"

@@ -33,7 +33,7 @@ TASK_FOR_THIRD = ["add", "task", "a task title", "--parent", "S-0003", "--output
 SECOND_WITHOUT_A_TASK = (ADD_FEATURE, ADD_STORY, ADD_OTHER, ADD_TASK)
 TWO_STORIES = (*SECOND_WITHOUT_A_TASK, TASK_FOR_OTHER)
 START_FEATURE = ["start", "F-0001"]
-NOT_STARTED = "F-0001 is not started, start it first"
+NOT_STARTED = "F-0001 is not started: fgraph start F-0001 starts it"
 
 
 @dataclass(frozen=True)

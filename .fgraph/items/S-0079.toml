@@ -16,32 +16,57 @@ then = "it exits 2 saying fgraph start F-0001 starts it"
 
 [[tasks]]
 id = "T-0685"
-state = "backlog"
+state = "completed"
 title = "Add tests/functional/test_start_feature_command.py, failing on the criterion of S-0079"
 description = "One new file, no source change: tests/functional/test_start_feature_command.py (about 60 lines), functional as its pytestmark, one assert per test, through run() of src/flowgraph/cli.py with open_store=open_files, open_git=lambda _: None and no git. Seen on 2026-11-24 in a throwaway record with fgraph of main (692df24): fgraph start S-0001 of a Story under F-0001 in Backlog exits 2 with fgraph: error: S-0001 cannot start: F-0001 is not started, start it first. Copy from tests/functional/test_note_progress.py: NOW, Outcome, fgraph(argv, cwd) and runs(cwd, *argvs). RECORD: add feature 'a feature title' --criterion 'a criterion'; add story 'a title' --given 'a state' --when 'an action' --then 'another' --parent F-0001; add task 'a task title' --parent S-0001 --output 'an output' (the start of a Feature is refused while a work item of it holds no Task). XFAIL = pytest.mark.xfail(strict=True, reason='S-0079: the refusal names the Feature, not the command that starts it'). Red test under XFAIL: test_the_start_of_a_story_under_a_feature_not_started_names_the_command_that_starts_it: (status, err.splitlines()[-1:]) of runs(tmp_path, *RECORD, [start, S-0001]) == (2, ['fgraph: error: S-0001 cannot start: F-0001 is not started: fgraph start F-0001 starts it']). Guard, no mark, passing today and after: test_the_command_the_refusal_names_starts_the_feature: after RECORD and the refused start S-0001, runs of [start, F-0001] gives (status, out) == (0, 'started F-0001 with S-0001\\n'). See the marked test fail under --runxfail on the line, not on the arrangement. Existing tests: none changes; if one fails, stop and say which. Out of bounds: every file under src/, every other test file, the docs."
 check = "uv run pytest tests/functional/test_start_feature_command.py -q -p no:cacheprovider && grep -q xfail tests/functional/test_start_feature_command.py"
 expected_output = "created: tests/functional/test_start_feature_command.py states that fgraph start S-0001 of a Story under a Feature in Backlog exits 2 with the last error line fgraph: error: S-0001 cannot start: F-0001 is not started: fgraph start F-0001 starts it, and, as a guard, that the command it names, fgraph start F-0001, then exits 0 with started F-0001 with S-0001. The red test carries a strict xfail naming S-0079"
 created = 2026-11-24 22:16:55+00:00
+started = 2026-11-25 01:46:29+00:00
+completed = 2026-11-25 01:48:11+00:00
+commit = "be06bcbfed4257d31250d9de4572ea6077e43b38"
 
 [[tasks]]
 id = "T-0686"
-state = "backlog"
+state = "removed"
 title = "Name fgraph start F-0001 in the refusal of the start of a work item under a Feature not started"
 description = "src/flowgraph/feature/start.py (216 lines on 2026-11-24, the same after): in check_start_under_feature, the case Feature() raises FeatureNotStartedError(f'{named} cannot start: {feature} is not started: fgraph start {feature} starts it'), split over two string pieces if it passes 100 columns; find it by grep 'start it first'. Its docstring says FeatureNotStartedError names the Feature and the command that starts it. The refusals of a blocked, a completed and a removed Feature are left as they are. Red first, in this order: change the expectations, see them fail, then the line. Existing tests that change: tests/feature/test_feature_start.py (458 lines), test_a_work_item_started_before_its_feature_is_refused_naming_the_feature, whose match becomes r'^S-0001 cannot start: F-0001 is not started: fgraph start F-0001 starts it$'; tests/functional/test_start_feature.py (268 lines), whose constant NOT_STARTED becomes 'F-0001 is not started: fgraph start F-0001 starts it' (used twice, for S-0003 and S-0001, both under F-0001); remove XFAIL and its mark from tests/functional/test_start_feature_command.py. A grep of tests on 2026-11-24 for start it first finds these two alone; if another test fails, stop and say which. Out of bounds: src/flowgraph/parser/refusals.py (FeatureNotStartedError is listed already), src/flowgraph/feature/__init__.py, every other file of src/ and of tests/, the docs."
 check = "uv run pytest tests/feature tests/functional/test_start_feature.py tests/functional/test_start_feature_command.py -q -p no:cacheprovider && ! grep -q xfail tests/functional/test_start_feature_command.py && ! grep -rq 'start it first' src tests && make lines"
 expected_output = "changed: check_start_under_feature of src/flowgraph/feature/start.py refuses the start of a work item under a Feature in Backlog with FeatureNotStartedError S-0001 cannot start: F-0001 is not started: fgraph start F-0001 starts it; tests/feature/test_feature_start.py and tests/functional/test_start_feature.py state the new line. No xfail mark is left in tests/functional/test_start_feature_command.py"
 created = 2026-11-24 22:17:11+00:00
+removed = 2026-11-25 05:03:10+00:00
+reason = "replaced on the developer's word of 2026-11-25: its check grepped start it first, words the refusals of an item in Backlog hold in files it does not name, and a started Task takes no amend; filed again with the same brief and the check grepping is not started, start it first, the refusal S-0079 rewords, alone"
 
 [[tasks]]
 id = "T-0687"
-state = "backlog"
+state = "completed"
 title = "Update README.md and docs/domain-model.md to say the refusal of the start of a work item under a Feature not started names fgraph start F-0001"
 description = "Change README.md (3367 lines on 2026-11-24) and docs/domain-model.md (3343 lines on 2026-11-24) only, more once F-0019, F-0020 and F-0018 land; find each passage by grep 'start it first', never by line number; plain ASCII; no source or test change. Write the refusal exactly as check_start_under_feature of src/flowgraph/feature/start.py words it, on one line in each file. docs/domain-model.md: in the bullet starting A work item does not start before its Feature, the refusal is refused with exit 2, naming the Feature and the command that starts it, `S-0001 cannot start: F-0001 is not started: fgraph start F-0001 starts it` (S-0079); the rest of the bullet as it is. README.md: in the paragraph starting A work item does not start before its Feature, exits 2 naming the Feature becomes exits 2 naming the Feature and the command that starts it; in the sh block after it, the comment line becomes # fgraph: error: S-0001 cannot start: F-0001 is not started: fgraph start F-0001 starts it. Keep each edit inside its line; leave the other refusals of a start as they are. If grep -n 'S-0079' of the two files finds a line when this Task runs (none today), make it true and say so."
-check = "grep -q 'F-0001 is not started: fgraph start F-0001 starts it' README.md && grep -q 'F-0001 is not started: fgraph start F-0001 starts it' docs/domain-model.md && ! grep -q 'start it first' README.md docs/domain-model.md"
+check = "grep -q 'F-0001 is not started: fgraph start F-0001 starts it' README.md && grep -q 'F-0001 is not started: fgraph start F-0001 starts it' docs/domain-model.md && ! grep -q 'is not started, start it first' README.md docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, in the bullet A work item does not start before its Feature, and README.md, in the paragraph and the example of the start of a work item under a Feature, give the refusal S-0001 cannot start: F-0001 is not started: fgraph start F-0001 starts it in place of the old one"
 created = 2026-11-24 22:17:25+00:00
+started = 2026-11-25 05:12:00+00:00
+completed = 2026-11-25 05:12:44+00:00
+commit = "d9d522c0838eb32d6a08f1e9abdde746fe4232dd"
+
+[[tasks]]
+id = "T-0718"
+state = "completed"
+title = "Name fgraph start F-0001 in the refusal of the start of a work item under a Feature not started"
+description = "src/flowgraph/feature/start.py (216 lines on 2026-11-24, the same after): in check_start_under_feature, the case Feature() raises FeatureNotStartedError(f'{named} cannot start: {feature} is not started: fgraph start {feature} starts it'), split over two string pieces if it passes 100 columns; find it by grep 'start it first'. Its docstring says FeatureNotStartedError names the Feature and the command that starts it. The refusals of a blocked, a completed and a removed Feature are left as they are. Red first, in this order: change the expectations, see them fail, then the line. Existing tests that change: tests/feature/test_feature_start.py (458 lines), test_a_work_item_started_before_its_feature_is_refused_naming_the_feature, whose match becomes r'^S-0001 cannot start: F-0001 is not started: fgraph start F-0001 starts it$'; tests/functional/test_start_feature.py (268 lines), whose constant NOT_STARTED becomes 'F-0001 is not started: fgraph start F-0001 starts it' (used twice, for S-0003 and S-0001, both under F-0001); remove XFAIL and its mark from tests/functional/test_start_feature_command.py. A grep of tests on 2026-11-24 for start it first finds these two alone; if another test fails, stop and say which. Out of bounds: src/flowgraph/parser/refusals.py (FeatureNotStartedError is listed already), src/flowgraph/feature/__init__.py, every other file of src/ and of tests/, the docs. Filed on 2026-11-25 in place of T-0686, removed that day: its brief word for word, its check grepping is not started, start it first alone. The work of T-0686 is in the worktree, not committed, in the four files named: read it, run the check and commit it; do not write it again."
+check = "uv run pytest tests/feature tests/functional/test_start_feature.py tests/functional/test_start_feature_command.py -q -p no:cacheprovider && ! grep -q xfail tests/functional/test_start_feature_command.py && ! grep -rq 'is not started, start it first' src tests && make lines"
+expected_output = "changed: check_start_under_feature of src/flowgraph/feature/start.py refuses the start of a work item under a Feature in Backlog with FeatureNotStartedError S-0001 cannot start: F-0001 is not started: fgraph start F-0001 starts it; tests/feature/test_feature_start.py and tests/functional/test_start_feature.py state the new line. No xfail mark is left in tests/functional/test_start_feature_command.py"
+created = 2026-11-25 05:03:20+00:00
+started = 2026-11-25 05:06:47+00:00
+completed = 2026-11-25 05:11:37+00:00
+commit = "83ac10af862a0952bfa6cee471c5c0cbbf91dc88"
 
 [[knowledge]]
 kind = "decision"
 text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, under the /goal of Phase 1 the developer set on 2026-11-24, which has the coordinator write the Tasks before a Feature starts; the developer was not asked and reviews them at the close: (1) The words: S-0001 cannot start: F-0001 is not started: fgraph start F-0001 starts it -- the old head kept, the command named as the criterion says it; the command is given with no --dir or other option. (2) Only the refusal of a Feature in Backlog changes; a blocked Feature (unblock it first) and a completed or removed one keep their words, though the blocked one could name fgraph unblock F-0001 by the same reading."
 noted = 2026-11-24 22:19:17+00:00
+
+[[knowledge]]
+kind = "deviation"
+text = "On the developer's word of 2026-11-25, both, to the unblocking proposed that day: the checks of its two open Tasks grep is not started, start it first, the refusal S-0079 rewords, in place of start it first, words the refusals of an item in Backlog hold in src, tests, README.md and docs/domain-model.md, files the Tasks do not name. T-0687 is amended. T-0686, started, takes no amend (T-0686 is started already), so it is removed and filed again as T-0718 with its brief word for word and the narrowed check; its work stays in the worktree, not committed, for T-0718."
+noted = 2026-11-25 05:03:42+00:00

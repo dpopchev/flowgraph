@@ -342,7 +342,7 @@ def test_a_feature_the_record_does_not_hold_is_not_started() -> None:
 def test_a_work_item_started_before_its_feature_is_refused_naming_the_feature() -> None:
     with pytest.raises(
         FeatureNotStartedError,
-        match=r"^S-0001 cannot start: F-0001 is not started, start it first$",
+        match=r"^S-0001 cannot start: F-0001 is not started: fgraph start F-0001 starts it$",
     ):
         check_start_under_feature("S-0001", store([story(1), story(2)]))
 

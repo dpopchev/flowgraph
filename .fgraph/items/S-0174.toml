@@ -4,7 +4,7 @@ title = "Raise the reads of fgraph answered from the index from one, the status,
 description = "Phase 4, drafted on 2026-11-25 and filed on the word of the developer of that day (F-0034). It waits for the Story of the status. Its first-pass Tasks are drafted the same day and reviewed before the phase starts."
 parent = "F-0034"
 realizes = 2
-complexity = "medium"
+complexity = "low"
 created = 2026-11-25 09:47:17+00:00
 depends_on = [
     "S-0173",

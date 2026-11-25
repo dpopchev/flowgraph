@@ -1,11 +1,13 @@
 id = "S-0161"
-state = "backlog"
+state = "started"
 title = "Raise the commits of the work of a started Task fgraph makes from none to one: the changed files its brief names, citing the work item and the Task"
 description = "New on the word of the developer of 2026-11-25. fgraph has no commit command (F-0022, its decision of 2026-11-24: no tool commits); the scope it reads is that of fgraph brief --not-named (S-0153) and of the completion of a Task (S-0142). Its Tasks are written before its Feature starts."
 parent = "F-0024"
 realizes = 1
 complexity = "medium"
 created = 2026-11-25 06:32:38+00:00
+started = 2026-11-25 06:51:38+00:00
+agent = "sonnet-s161"
 
 [criterion]
 given = "a started Task with changed files in its worktree that its brief names"

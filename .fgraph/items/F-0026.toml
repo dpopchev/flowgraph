@@ -1,0 +1,8 @@
+id = "F-0026"
+state = "backlog"
+title = "Collision-Free ID Allocation Across Worktrees"
+description = "Phase 2, Concurrent Worktree and Merge Ergonomics: filed as drafted on the word of the developer of 2026-11-25, add the items as drafted and they will be reworked, from the WBS draft of that day, which numbers it F-0023, an id the record gave another Feature. Target modules: item/id.py, work_item/id.py, task/id.py, record/store.py. Scope and deliverables: Prevent duplicate sequential IDs (S-*, B-*, U-*, Q-*, K-*, T-*) when multiple worktrees create items concurrently by scanning all active worktree refs or reserving ID ranges per worktree. Its work items and their Tasks are written when it is reworked."
+created = 2026-11-25 07:46:25+00:00
+criteria = [
+    "Parallel item and knowledge creation across two active worktrees never produces colliding .fgraph/ filenames",
+]

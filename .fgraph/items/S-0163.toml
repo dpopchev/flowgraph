@@ -41,3 +41,8 @@ description = "Change README.md and docs/domain-model.md only; find each passage
 check = "grep -q 'its Feature or a line under' README.md && grep -q 'its Feature or a line under' docs/domain-model.md"
 expected_output = "changed: docs/domain-model.md, in the bullet of Terms (n) of the brief, and README.md, in the paragraph that opens fgraph brief prints the whole brief, say the terms are those the work item, its Feature or a line under Governed by is about"
 created = 2026-11-25 06:45:53+00:00
+
+[[knowledge]]
+kind = "decision"
+text = "Ruled by the coordinator on 2026-11-25 while writing its Tasks, on the word of the developer of that day, write the tasks as well and make it ready; the developer reviews them at the close: (1) The terms that match the paths of a work item, in the words of the draft, are read as the terms its governing lines are about: a term holds no path, a governing line holds both. (2) They are listed after the terms of the work item and of its Feature, in the order of the lines under Governed by, each once. (3) It waits for S-0162, so the lines read are the live ones and the two do not change brief_of at one time. (4) No unit test: the change is in the shell brief_of, stated by the functional file, run with no git."
+noted = 2026-11-25 06:46:00+00:00

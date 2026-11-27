@@ -5,7 +5,7 @@ description = "Grouped on the word of the developer of 2026-11-27 from the inbox
 created = 2026-11-27 12:40:52+00:00
 criteria = [
     "a lane that completes a Task whose check already exits 0 before its first work commit is refused or warned",
-    "a lane completes a Task marked a guard whose check held from the start, and the record keeps that it is a guard",
+    "a lane completes a Task marked a guard when it is planned, whose check held from the start, and the record keeps that it is a guard",
 ]
 
 [[knowledge]]

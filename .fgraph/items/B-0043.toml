@@ -7,3 +7,9 @@ created = 2026-11-27 12:02:53+00:00
 [criterion]
 observed = "a .gitignore of * and !.gitignore committed, then fgraph init, fgraph config set and fgraph add write the record, exit 0 and commit nothing, with no line saying so; git log --oneline shows no commit of the record"
 expected = "a refusal or a warning that names the ignore rule and the lines that re-include .fgraph/, as [WARN] the record is ignored by git: nothing was committed"
+
+[[knowledge]]
+kind = "finding"
+text = "Not decided by the sender: a refusal before the write (fgraph: error: .fgraph/ is ignored by .gitignore line 1 -- add !.fgraph/ and !.fgraph/** first) or a warning after it ([WARN] the record is ignored by git: nothing was committed). About 1 repository in 10 ignores by default."
+noted = 2026-11-27 12:06:09+00:00
+mark = "open"

@@ -1,0 +1,9 @@
+id = "B-0043"
+state = "backlog"
+title = "Cut the writes of fgraph on a record git ignores that commit nothing and say nothing, while git.commit is true, from every one to none"
+description = "From the inbox note 2026-11-25-claude-limits-against-board-1 of the session of ~/.claude, filed as written; observed with the wheel of v0.20.0. S-0023 made the write without a commit deliberate; this is the silence alone."
+created = 2026-11-27 12:02:53+00:00
+
+[criterion]
+observed = "a .gitignore of * and !.gitignore committed, then fgraph init, fgraph config set and fgraph add write the record, exit 0 and commit nothing, with no line saying so; git log --oneline shows no commit of the record"
+expected = "a refusal or a warning that names the ignore rule and the lines that re-include .fgraph/, as [WARN] the record is ignored by git: nothing was committed"

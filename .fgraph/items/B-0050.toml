@@ -1,0 +1,9 @@
+id = "B-0050"
+state = "backlog"
+title = "Cut the landings fgraph makes with the checkout of main dirty that print nothing of the dirty paths from every one to none"
+description = "From the inbox note 2026-11-27-claude-checkout-scope of the session of ~/.claude (Q-0003 of ~/.claude), filed as written."
+created = 2026-11-27 12:04:17+00:00
+
+[criterion]
+observed = "fgraph land U-0001 from a checkout with other.txt modified makes the merge and prints nothing of the dirty file"
+expected = "land refuses or warns, as git merge would on a conflicting path, naming the dirty paths"

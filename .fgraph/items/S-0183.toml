@@ -8,3 +8,9 @@ created = 2026-11-27 12:04:38+00:00
 given = "a record of fgraph and a SessionStart hook"
 when = "the hook runs the one command"
 then = "it prints the status, the live knowledge lines and the open questions as plain text under the 10,000 characters a hook may print"
+
+[[knowledge]]
+kind = "finding"
+text = "Not decided by the sender: whether fgraph status should name the next line that can start when status.backlog = 1 hides it (it printed ... 1 more, 0 can start for a second Bug with no Task), or a session reads fgraph status --backlog at its start instead."
+noted = 2026-11-27 12:06:49+00:00
+mark = "open"

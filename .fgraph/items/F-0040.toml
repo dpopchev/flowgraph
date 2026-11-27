@@ -22,3 +22,8 @@ supersedes = [
 kind = "decision"
 text = "Developed under the goal line the developer pasted on 2026-11-27 at 13:15Z: /goal Develop F-0040 until fgraph show F-0040 lists B-0047 and S-0190 completed, or stop after 8 hours; this session is the coordinator, one subagent per work item, at most development.parallel at once."
 noted = 2026-11-27 13:15:42+00:00
+
+[[knowledge]]
+kind = "deviation"
+text = "T-0864 of S-0190 removed and replaced by T-0871, on the word of the developer of 2026-11-27 at the halt of the lane: no test file names task_primitives or task_held, so the persistence tests go to tests/story/test_task_file.py, through the write and read of the store; fgraph refused the amend of the blocked Task (B-0052); T-0871 is worked before T-0865."
+noted = 2026-11-27 13:50:19+00:00

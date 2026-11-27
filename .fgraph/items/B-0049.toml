@@ -7,3 +7,9 @@ created = 2026-11-27 12:04:08+00:00
 [criterion]
 observed = "U-0001 started, T-0001 naming named.txt; other.txt written in the checkout; fgraph brief U-0001 --not-named prints nothing, fgraph commit T-0001 commits named.txt alone, complete and land exit 0, git status of the checkout still shows M other.txt"
 expected = "--not-named lists other.txt, or commit or land refuses or warns, naming the dirty checkout path"
+
+[[knowledge]]
+kind = "finding"
+text = "Not decided by the sender: whether fgraph should own the shape of a write it cannot see (a Bash redirect, sed -i, a heredoc; lane-bash-guard of board 1 refuses by shape) or leave it to the hooks of the host; whether fgraph commit keeps refusing the whole commit (exit 2) on one unnamed dirty file rather than committing the named ones and naming the rest; and how a change another agent makes in the checkout during a command of a lane is kept from being counted as the write of that lane (B-0015 of ~/.claude)."
+noted = 2026-11-27 12:06:39+00:00
+mark = "open"

@@ -7,3 +7,12 @@ criteria = [
     "a lane that completes a Task whose check already exits 0 before its first work commit is refused or warned",
     "a lane completes a Task marked a guard whose check held from the start, and the record keeps that it is a guard",
 ]
+
+[[knowledge]]
+kind = "decision"
+text = "The developer ruled on 2026-11-27: fgraph complete refuses a Task whose check already exits 0 at the parent of the first commit on its branch whose subject cites the Task; a Task marked a guard is the way out the refusal names, so S-0190 lands before B-0047. Before is that parent: record-only commits and merges of main change no work file, so they do not move it."
+noted = 2026-11-27 12:49:47+00:00
+mark = "standing"
+supersedes = [
+    "B-0047#1",
+]

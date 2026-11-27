@@ -8,3 +8,9 @@ created = 2026-11-27 12:04:58+00:00
 given = "a coordinator on the checkout of main with fgraph mcp served"
 when = "it files a plan"
 then = "it calls tools for add (feature, story, upkeep, bug, spike, task, term), amend, remove and reorder, with no shell"
+
+[[knowledge]]
+kind = "finding"
+text = "Not decided by the sender: whether the planning moves belong in fgraph mcp at all -- a plan is agreed by the developer before the first add, so a tool for add may want an explicit confirmation argument."
+noted = 2026-11-27 12:06:58+00:00
+mark = "open"

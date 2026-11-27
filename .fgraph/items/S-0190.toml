@@ -1,0 +1,10 @@
+id = "S-0190"
+state = "backlog"
+title = "Raise the Tasks a check meant to pass on its first run is accepted for, with that word recorded, from none to every one marked a guard"
+description = "From the inbox note 2026-11-27-claude-complete-without-red of the session of ~/.claude, filed as written. Pairs with the Bug of complete without a red."
+created = 2026-11-27 12:05:48+00:00
+
+[criterion]
+given = "a Task whose check is a guard on purpose"
+when = "it is marked a guard and completed"
+then = "complete accepts the check that held before the first work commit and records that it is a guard"

@@ -5,6 +5,9 @@ description = "From the inbox note 2026-11-27-claude-complete-without-red of the
 parent = "F-0040"
 realizes = 1
 created = 2026-11-27 12:03:31+00:00
+depends_on = [
+    "S-0190",
+]
 
 [criterion]
 observed = "T-0052 of S-0012 in ~/.claude completed although its check exited 0 before the edit, the file already naming --governs; the lane noted red: exit 0 -- guard and complete printed completed"

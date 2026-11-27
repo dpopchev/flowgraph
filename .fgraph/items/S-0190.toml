@@ -5,9 +5,6 @@ description = "From the inbox note 2026-11-27-claude-complete-without-red of the
 parent = "F-0040"
 realizes = 2
 created = 2026-11-27 12:05:48+00:00
-depends_on = [
-    "B-0047",
-]
 
 [criterion]
 given = "a Task whose check is a guard on purpose"

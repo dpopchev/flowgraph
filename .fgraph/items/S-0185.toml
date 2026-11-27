@@ -2,6 +2,8 @@ id = "S-0185"
 state = "backlog"
 title = "Raise the planning moves an agent makes as tools of fgraph mcp from none to every one: add of each kind, amend, remove and reorder"
 description = "From the inbox note 2026-11-26-claude-mcp-gaps of the session of ~/.claude, filed as written. Constraint: every tool keeps the directory argument."
+parent = "F-0039"
+realizes = 2
 created = 2026-11-27 12:04:58+00:00
 
 [criterion]

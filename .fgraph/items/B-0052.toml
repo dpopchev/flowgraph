@@ -1,0 +1,10 @@
+id = "B-0052"
+state = "backlog"
+title = "Cut the started and blocked Tasks fgraph amend refuses although its help says a started item is amended with its deviation from every one to none"
+description = "Found by the coordinator on 2026-11-27 while amending T-0864 on the word of the developer, at the halt of the lane of S-0190."
+created = 2026-11-27 13:48:35+00:00
+filed_during = "S-0190"
+
+[criterion]
+observed = "fgraph amend T-0864 --description TEXT on a blocked Task of the started S-0190 is refused with T-0864 is blocked; with --deviation it is refused with T-0864 takes no --deviation: a Task keeps no knowledge line; unblocked, amended of src/flowgraph/task/amend.py:35-41 refuses a started Task too, while fgraph amend --help says rewrite parts of a work item, a Feature or a Task: in Backlog, or started with its deviation"
+expected = "a started or blocked Task takes an amend of its description with the deviation kept on its work item or its root, or the help of fgraph amend says a Task is amended in Backlog alone and names the way out (remove it and add another)"

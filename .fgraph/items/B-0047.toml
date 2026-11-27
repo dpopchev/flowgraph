@@ -2,6 +2,8 @@ id = "B-0047"
 state = "backlog"
 title = "Cut the Tasks fgraph complete accepts whose check already exits 0 before the first work commit of the Task from every one to none"
 description = "From the inbox note 2026-11-27-claude-complete-without-red of the session of ~/.claude (S-0012 of F-0004 there), filed as written; board 1 asked the same in 2026-11-25-claude-limits-against-board-1, the red proof of a Task."
+parent = "F-0040"
+realizes = 1
 created = 2026-11-27 12:03:31+00:00
 
 [criterion]

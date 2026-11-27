@@ -1,0 +1,10 @@
+id = "S-0189"
+state = "backlog"
+title = "Raise the reads a PreToolUse hook calls to tell whether a path is in the brief of the started work item from none to one"
+description = "From the inbox note 2026-11-27-claude-checkout-scope of the session of ~/.claude (Q-0003 of ~/.claude), filed as written."
+created = 2026-11-27 12:05:38+00:00
+
+[criterion]
+given = "a work item started and a PreToolUse hook"
+when = "the hook runs fgraph scope PATH or similar"
+then = "its exit status answers in or out of the brief, so the hook holds no copy of the logic of fgraph"

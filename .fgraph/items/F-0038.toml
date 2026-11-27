@@ -1,0 +1,12 @@
+id = "F-0038"
+state = "backlog"
+title = "Raise the writes outside the brief of a started work item that fgraph names, in the checkout of main and in other worktrees, from none to every one"
+description = "Grouped on the word of the developer of 2026-11-27 from the inbox notes of the session of ~/.claude filed that day. Kept apart from F-0028, which compares the files of two started work items."
+created = 2026-11-27 12:40:32+00:00
+criteria = [
+    "a coordinator who wrote a tracked file of the checkout of main while a work item is started in branch mode sees fgraph brief --not-named, commit and land name it",
+    "a developer who lands a work item with the checkout of main dirty sees the dirty paths named",
+    "an agent that runs fgraph brief ID --not-named from the checkout is told which tree it read, or sees the dirty paths of both",
+    "a lane that writes outside every open wi/ worktree sees the commands of its work item name the path; under trunk the checkout is the tree of the lane",
+    "a PreToolUse hook that asks fgraph whether a path is in the brief of the started work item is answered by its exit status",
+]

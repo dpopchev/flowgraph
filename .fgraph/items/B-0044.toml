@@ -1,0 +1,9 @@
+id = "B-0044"
+state = "backlog"
+title = "Cut the runs of fgraph --version that end in an error from every one to none"
+description = "From the inbox note 2026-11-25-claude-limits-against-board-1 of the session of ~/.claude, filed as written; observed with the wheel of v0.20.0."
+created = 2026-11-27 12:03:03+00:00
+
+[criterion]
+observed = "fgraph --version prints fgraph: error: unrecognized arguments: --version"
+expected = "the version of the wheel, which a skill and a hook need to say which fgraph answered"

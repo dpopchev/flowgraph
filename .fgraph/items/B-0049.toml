@@ -1,0 +1,9 @@
+id = "B-0049"
+state = "backlog"
+title = "Cut the dirty tracked files of the checkout of main that fgraph brief --not-named, commit, complete and land pass in silence while a work item is started in branch mode from every one to none"
+description = "From the inbox note 2026-11-27-claude-checkout-scope of the session of ~/.claude (Q-0003 of ~/.claude), filed as written. Constraints: read-only on the checkout, never revert or stash; a path git ignores is never named; the record writes fgraph makes on main are never counted dirty."
+created = 2026-11-27 12:04:08+00:00
+
+[criterion]
+observed = "U-0001 started, T-0001 naming named.txt; other.txt written in the checkout; fgraph brief U-0001 --not-named prints nothing, fgraph commit T-0001 commits named.txt alone, complete and land exit 0, git status of the checkout still shows M other.txt"
+expected = "--not-named lists other.txt, or commit or land refuses or warns, naming the dirty checkout path"

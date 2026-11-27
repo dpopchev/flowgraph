@@ -1,0 +1,9 @@
+id = "B-0046"
+state = "backlog"
+title = "Cut the checks of a Task written in the form of board 1, a command then -> and an expected result, that fgraph takes silently from every one to none"
+description = "From the inbox note 2026-11-25-claude-limits-against-board-1 of the session of ~/.claude, filed as written; observed with the wheel of v0.20.0."
+created = 2026-11-27 12:03:22+00:00
+
+[criterion]
+observed = "a check grep -c 'hello' work.txt -> 1 is run through a shell by fgraph complete: the arrow redirects the output into a file named 1 in the worktree and the check passes on the exit status of grep alone"
+expected = "fgraph add task --check refuses or warns on a check holding ' -> ', or its help says it is one shell command judged by its exit status with no expected result"

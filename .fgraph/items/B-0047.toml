@@ -55,3 +55,9 @@ kind = "finding"
 text = "Not decided by the sender: refuse or warn by default -- board 1 refused, a refusal blocks a lane mid-goal; and which commit is before the first edit when the branch also holds record-only commits (start, note) and a merge of main."
 noted = 2026-11-27 12:06:20+00:00
 mark = "open"
+
+[[knowledge]]
+kind = "finding"
+text = "Accepted on the plan agreed by the developer on 2026-11-27: work that no commit subject cites, committed by raw git commit and not through fgraph commit or the tool commit of fgraph mcp, runs no red proof, so a lane could pass a check that cannot fail that way. Falling back to the parent of --commit SHA would close it but breaks tests/functional/test_complete_task_check.py:135-137 and the fgraph mcp tests that commit by raw git. Open: whether to close it later, and whether T-0052 of ~/.claude was committed by hand."
+noted = 2026-11-27 13:13:48+00:00
+mark = "open"

@@ -2,6 +2,8 @@ id = "S-0186"
 state = "backlog"
 title = "Raise the moves of the close and of the configuration an agent makes as tools of fgraph mcp from none to four: release, goal, config show and config set"
 description = "From the inbox note 2026-11-26-claude-mcp-gaps of the session of ~/.claude, filed as written."
+parent = "F-0039"
+realizes = 3
 created = 2026-11-27 12:05:07+00:00
 
 [criterion]

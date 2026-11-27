@@ -2,6 +2,8 @@ id = "S-0187"
 state = "backlog"
 title = "Raise the writes of the ontology an agent makes as tools of fgraph mcp from none to two: terms and relate"
 description = "From the inbox note 2026-11-26-claude-mcp-gaps of the session of ~/.claude, filed as written. Constraint: a term and a relation stay written on main alone."
+parent = "F-0039"
+realizes = 4
 created = 2026-11-27 12:05:18+00:00
 
 [criterion]

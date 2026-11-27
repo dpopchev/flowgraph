@@ -1,0 +1,9 @@
+id = "B-0045"
+state = "backlog"
+title = "Cut the meanings fgraph gives --dir, one for init and another for every other command, from two to one"
+description = "From the inbox note 2026-11-25-claude-limits-against-board-1 of the session of ~/.claude, filed as written; observed with the wheel of v0.20.0."
+created = 2026-11-27 12:03:12+00:00
+
+[criterion]
+observed = "fgraph -d DIR/.fgraph init in a directory with no record refuses as --dir DIR/.fgraph is no directory, while fgraph -d DIR init makes DIR/.fgraph and every later command takes -d DIR/.fgraph"
+expected = "one meaning of --dir for init and for the other commands, or a refusal that names the form init takes"

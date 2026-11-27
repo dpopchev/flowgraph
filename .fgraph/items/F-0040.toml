@@ -1,8 +1,9 @@
 id = "F-0040"
-state = "backlog"
+state = "started"
 title = "Raise the checks of a Task that fgraph complete proves could fail from none to every one, a guard on purpose recorded as one"
 description = "Grouped on the word of the developer of 2026-11-27 from the inbox notes of the session of ~/.claude filed that day."
 created = 2026-11-27 12:40:52+00:00
+started = 2026-11-27 13:16:26+00:00
 criteria = [
     "a lane that completes a Task whose check already exits 0 before its first work commit is refused or warned",
     "a lane completes a Task marked a guard when it is planned, whose check held from the start, and the record keeps that it is a guard",

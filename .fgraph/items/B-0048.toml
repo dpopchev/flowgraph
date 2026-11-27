@@ -2,6 +2,8 @@ id = "B-0048"
 state = "backlog"
 title = "Cut the options of fgraph note the tool note of fgraph mcp does not take from five to none"
 description = "From the inbox note 2026-11-26-claude-mcp-gaps of the session of ~/.claude, filed as written. T-0841 of S-0182 already plans governs; the other four are not planned."
+parent = "F-0039"
+realizes = 1
 created = 2026-11-27 12:03:59+00:00
 
 [criterion]

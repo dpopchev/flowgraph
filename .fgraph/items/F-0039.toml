@@ -1,0 +1,11 @@
+id = "F-0039"
+state = "backlog"
+title = "Raise the moves an agent makes as tools of fgraph mcp, with no shell, from those of one work item to every move of the record"
+description = "Grouped on the word of the developer of 2026-11-27 from the inbox notes of the session of ~/.claude filed that day."
+created = 2026-11-27 12:40:42+00:00
+criteria = [
+    "an agent that keeps a note through the tool note can give it every option of fgraph note: standing, open, about, governs and supersedes",
+    "a coordinator files a plan through tools: add of each kind, amend, remove and reorder",
+    "an agent closes and configures a record through the tools release, goal, config show and config set",
+    "an agent writes a term and a relation through the tools terms and relate, on main alone",
+]

@@ -1,0 +1,10 @@
+id = "S-0188"
+state = "backlog"
+title = "Raise the writes of a lane outside every open wi/ worktree the commands of its work item name from none to every one"
+description = "From the inbox note 2026-11-27-claude-checkout-scope of the session of ~/.claude (Q-0003 of ~/.claude), filed as written. Replaces the hooks lane-guard and lane-bash-warn of board 1 (board 1 B-0004)."
+created = 2026-11-27 12:05:28+00:00
+
+[criterion]
+given = "a lane working its work item in its wi/ worktree"
+when = "it writes the checkout or the worktree of another lane"
+then = "the commands of its work item name the path; under development.mode trunk the checkout is the tree of the lane"

@@ -2,6 +2,8 @@ id = "B-0051"
 state = "backlog"
 title = "Cut the runs of fgraph brief ID --not-named from the checkout that read the worktree alone without saying so from every one to none"
 description = "From the inbox note 2026-11-27-claude-checkout-scope of the session of ~/.claude (Q-0003 of ~/.claude), filed as written."
+parent = "F-0038"
+realizes = 3
 created = 2026-11-27 12:04:28+00:00
 
 [criterion]

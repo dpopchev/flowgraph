@@ -7,3 +7,9 @@ created = 2026-11-27 12:04:17+00:00
 [criterion]
 observed = "fgraph land U-0001 from a checkout with other.txt modified makes the merge and prints nothing of the dirty file"
 expected = "land refuses or warns, as git merge would on a conflicting path, naming the dirty paths"
+
+[[knowledge]]
+kind = "finding"
+text = "Not decided by the sender: refuse or warn on a dirty checkout at land -- a refusal blocks a goal run mid-way."
+noted = 2026-11-27 12:06:29+00:00
+mark = "open"

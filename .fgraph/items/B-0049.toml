@@ -2,6 +2,8 @@ id = "B-0049"
 state = "backlog"
 title = "Cut the dirty tracked files of the checkout of main that fgraph brief --not-named, commit, complete and land pass in silence while a work item is started in branch mode from every one to none"
 description = "From the inbox note 2026-11-27-claude-checkout-scope of the session of ~/.claude (Q-0003 of ~/.claude), filed as written. Constraints: read-only on the checkout, never revert or stash; a path git ignores is never named; the record writes fgraph makes on main are never counted dirty."
+parent = "F-0038"
+realizes = 1
 created = 2026-11-27 12:04:08+00:00
 
 [criterion]

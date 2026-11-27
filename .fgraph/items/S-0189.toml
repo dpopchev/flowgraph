@@ -2,6 +2,8 @@ id = "S-0189"
 state = "backlog"
 title = "Raise the reads a PreToolUse hook calls to tell whether a path is in the brief of the started work item from none to one"
 description = "From the inbox note 2026-11-27-claude-checkout-scope of the session of ~/.claude (Q-0003 of ~/.claude), filed as written."
+parent = "F-0038"
+realizes = 5
 created = 2026-11-27 12:05:38+00:00
 
 [criterion]
